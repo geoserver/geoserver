@@ -4,6 +4,7 @@
  */
 package org.geoserver.featurestemplating.web;
 
+import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -31,58 +32,48 @@ public class TemplateInfoPage extends GeoServerSecuredPage {
     private AjaxLink<Object> remove;
 
     public TemplateInfoPage() {
-        add(
-                new AjaxLink<Object>("addNew") {
+        add(new AjaxLink<Object>("addNew") {
 
-                    private static final long serialVersionUID = -4136656891019857299L;
+            @Serial
+            private static final long serialVersionUID = -4136656891019857299L;
 
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        setResponsePage(
-                                new TemplateConfigurationPage(
-                                        new Model<>(new TemplateInfo()), true));
-                    }
-                });
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                setResponsePage(new TemplateConfigurationPage(new Model<>(new TemplateInfo()), true));
+            }
+        });
 
         add(remove = newRemoveLink());
 
-        tablePanel =
-                new GeoServerTablePanel<TemplateInfo>(
-                        "tablePanel", new TemplateInfoProvider(), true) {
-                    @Override
-                    protected Component getComponentForProperty(
-                            String id,
-                            IModel<TemplateInfo> itemModel,
-                            GeoServerDataProvider.Property<TemplateInfo> property) {
-                        if (property.equals(TemplateInfoProvider.NAME)) {
-                            return new SimpleAjaxLink<TemplateInfo>(
-                                    id, itemModel, TemplateInfoProvider.NAME.getModel(itemModel)) {
+        tablePanel = new GeoServerTablePanel<TemplateInfo>("tablePanel", new TemplateInfoProvider(), true) {
+            @Override
+            protected Component getComponentForProperty(
+                    String id, IModel<TemplateInfo> itemModel, GeoServerDataProvider.Property<TemplateInfo> property) {
+                if (property.equals(TemplateInfoProvider.NAME)) {
+                    return new SimpleAjaxLink<TemplateInfo>(
+                            id, itemModel, TemplateInfoProvider.NAME.getModel(itemModel)) {
 
-                                @Override
-                                protected void onClick(AjaxRequestTarget target) {
-                                    setResponsePage(
-                                            new TemplateConfigurationPage(getModel(), false));
-                                }
-                            };
-                        } else if (property.equals(TemplateInfoProvider.EXTENSION))
-                            return new Label(
-                                    id, TemplateInfoProvider.EXTENSION.getModel(itemModel));
-                        else if (property.equals(TemplateInfoProvider.WORKSPACE))
-                            return new Label(
-                                    id, TemplateInfoProvider.WORKSPACE.getModel(itemModel));
-                        else if (property.equals(TemplateInfoProvider.FEATURE_TYPE_INFO)) {
-                            return new Label(
-                                    id, TemplateInfoProvider.FEATURE_TYPE_INFO.getModel(itemModel));
+                        @Override
+                        protected void onClick(AjaxRequestTarget target) {
+                            setResponsePage(new TemplateConfigurationPage(getModel(), false));
                         }
-                        return null;
-                    }
+                    };
+                } else if (property.equals(TemplateInfoProvider.EXTENSION))
+                    return new Label(id, TemplateInfoProvider.EXTENSION.getModel(itemModel));
+                else if (property.equals(TemplateInfoProvider.WORKSPACE))
+                    return new Label(id, TemplateInfoProvider.WORKSPACE.getModel(itemModel));
+                else if (property.equals(TemplateInfoProvider.FEATURE_TYPE_INFO)) {
+                    return new Label(id, TemplateInfoProvider.FEATURE_TYPE_INFO.getModel(itemModel));
+                }
+                return null;
+            }
 
-                    @Override
-                    protected void onSelectionUpdate(AjaxRequestTarget target) {
-                        remove.setEnabled(tablePanel.getSelection().size() > 0);
-                        target.add(remove);
-                    }
-                };
+            @Override
+            protected void onSelectionUpdate(AjaxRequestTarget target) {
+                remove.setEnabled(tablePanel.getSelection().size() > 0);
+                target.add(remove);
+            }
+        };
         tablePanel.setOutputMarkupId(true);
         tablePanel.setEnabled(true);
         add(tablePanel);
@@ -93,6 +84,7 @@ public class TemplateInfoPage extends GeoServerSecuredPage {
 
     private AjaxLink<Object> newRemoveLink() {
         return new AjaxLink<Object>("removeSelected") {
+            @Serial
             private static final long serialVersionUID = 2421854498051377608L;
 
             @Override
@@ -108,19 +100,16 @@ public class TemplateInfoPage extends GeoServerSecuredPage {
             @Override
             protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
                 super.updateAjaxAttributes(attributes);
-                AjaxCallListener ajaxCall =
-                        new AjaxCallListener() {
+                AjaxCallListener ajaxCall = new AjaxCallListener() {
 
-                            @Override
-                            public CharSequence getPrecondition(Component component) {
-                                CharSequence message =
-                                        new ParamResourceModel(
-                                                        "confirmRemove", TemplateInfoPage.this)
-                                                .getString();
-                                message = JavaScriptUtils.escapeQuotes(message);
-                                return "return confirm('" + message + "');";
-                            }
-                        };
+                    @Override
+                    public CharSequence getPrecondition(Component component) {
+                        CharSequence message =
+                                new ParamResourceModel("confirmRemove", TemplateInfoPage.this).getString();
+                        message = JavaScriptUtils.escapeQuotes(message);
+                        return "return confirm('" + message + "');";
+                    }
+                };
                 attributes.getAjaxCallListeners().add(ajaxCall);
             }
         };

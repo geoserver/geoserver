@@ -51,11 +51,23 @@ public class MapMLEncoder {
      * @param output OutputStream
      */
     public void encode(Mapml mapml, OutputStream output) {
+        encode(mapml, output, false);
+    }
+
+    /**
+     * Use Marshaller to encode MapML object onto an output stream with optional pretty-printing
+     *
+     * @param mapml MapML object
+     * @param output OutputStream
+     * @param prettyPrint true to enable pretty-printing with 2-space indents, false for dense markup
+     */
+    public void encode(Mapml mapml, OutputStream output, boolean prettyPrint) {
         try {
-            XMLStreamWriter writer =
-                    new Wrapper(XMLOutputFactory.newInstance().createXMLStreamWriter(output));
-            createMarshaller().marshal(mapml, writer);
-            writer.flush();
+            XMLOutputFactory factory = XMLOutputFactory.newInstance();
+            Wrapper wrapper = new Wrapper(factory.createXMLStreamWriter(output));
+            wrapper.setIndenting(prettyPrint);
+            createMarshaller().marshal(mapml, wrapper);
+            wrapper.flush();
         } catch (JAXBException | XMLStreamException e) {
             throw new ServiceException(e);
         }
@@ -70,22 +82,25 @@ public class MapMLEncoder {
     public Mapml decode(Reader reader) {
         try {
             Unmarshaller unmarshaller = context.createUnmarshaller();
-            unmarshaller.setEventHandler(
-                    new javax.xml.bind.helpers.DefaultValidationEventHandler());
+            unmarshaller.setEventHandler(new javax.xml.bind.helpers.DefaultValidationEventHandler());
             return (Mapml) unmarshaller.unmarshal(reader);
         } catch (JAXBException e) {
             throw new ServiceException(e);
         }
     }
 
-    /**
-     * Wrapper class to provide control over namespace prefixing even if XML implementation classes
-     * are regenerated
-     */
+    /** Wrapper class to provide control over namespace prefixing even if XML implementation classes are regenerated */
     static class Wrapper implements XMLStreamWriter {
 
         private final XMLStreamWriter writer;
         private static final String NS_PREFIX = "";
+        public static final String MAPML_INDENT_PROPERTY = "mapml.indent";
+        private static final String INDENT = "  ";
+
+        private boolean indenting = false;
+        private int depth = 0;
+        private boolean needsIndent = false;
+        private boolean lastWasStartElement = false;
 
         /**
          * Constructor
@@ -96,43 +111,90 @@ public class MapMLEncoder {
             this.writer = writer;
         }
 
+        /** Writes indentation if pretty-printing is enabled */
+        private void writeIndent() throws XMLStreamException {
+            if (indenting && needsIndent) {
+                writer.writeCharacters("\n");
+                for (int i = 0; i < depth; i++) {
+                    writer.writeCharacters(INDENT);
+                }
+                needsIndent = false;
+            }
+        }
+
         @Override
         public void writeStartElement(String localName) throws XMLStreamException {
+            writeIndent();
             writer.writeStartElement(localName);
+            depth++;
+            needsIndent = true;
+            lastWasStartElement = true;
         }
 
         @Override
-        public void writeStartElement(String namespaceURI, String localName)
-                throws XMLStreamException {
+        public void writeStartElement(String namespaceURI, String localName) throws XMLStreamException {
+            writeIndent();
             writer.writeStartElement(namespaceURI, localName);
+            depth++;
+            needsIndent = true;
+            lastWasStartElement = true;
         }
 
         @Override
-        public void writeStartElement(String prefix, String localName, String namespaceURI)
-                throws XMLStreamException {
+        public void writeStartElement(String prefix, String localName, String namespaceURI) throws XMLStreamException {
+            writeIndent();
             writer.writeStartElement(NS_PREFIX, localName, namespaceURI);
+            depth++;
+            needsIndent = true;
+            lastWasStartElement = true;
         }
 
         @Override
-        public void writeEmptyElement(String namespaceURI, String localName)
-                throws XMLStreamException {
-            writer.writeEmptyElement(namespaceURI, localName);
+        public void writeEmptyElement(String namespaceURI, String localName) throws XMLStreamException {
+            // Force HTML-compatible empty elements with explicit end tags
+            writeIndent();
+            writer.writeStartElement(namespaceURI, localName);
+            writer.writeEndElement();
+            needsIndent = true;
         }
 
         @Override
-        public void writeEmptyElement(String prefix, String localName, String namespaceURI)
-                throws XMLStreamException {
-            writer.writeEmptyElement(prefix, localName, namespaceURI);
+        public void writeEmptyElement(String prefix, String localName, String namespaceURI) throws XMLStreamException {
+            // Force HTML-compatible empty elements with explicit end tags
+            writeIndent();
+            writer.writeStartElement(NS_PREFIX, localName, namespaceURI);
+            writer.writeEndElement();
+            needsIndent = true;
         }
 
         @Override
         public void writeEmptyElement(String localName) throws XMLStreamException {
-            writer.writeEmptyElement(localName);
+            // Force HTML-compatible empty elements with explicit end tags
+            writeIndent();
+            writer.writeStartElement(localName);
+            writer.writeEndElement();
+            needsIndent = true;
         }
 
         @Override
         public void writeEndElement() throws XMLStreamException {
+            depth--;
+            // For empty elements (start immediately followed by end), keep on same line
+            if (needsIndent && !lastWasStartElement) {
+                writeIndent();
+            } else if (lastWasStartElement) {
+                // Note: empty string typically doesn't add content but signals "non-empty" to writer
+                writer.writeCharacters("");
+            }
             writer.writeEndElement();
+
+            // Add two newlines after the root closing tag
+            if (depth == 0 && indenting) {
+                writer.writeCharacters("\n\n");
+            }
+
+            needsIndent = true;
+            lastWasStartElement = false;
         }
 
         @Override
@@ -156,15 +218,13 @@ public class MapMLEncoder {
         }
 
         @Override
-        public void writeAttribute(
-                String prefix, String namespaceURI, String localName, String value)
+        public void writeAttribute(String prefix, String namespaceURI, String localName, String value)
                 throws XMLStreamException {
             writer.writeAttribute(prefix, namespaceURI, localName, value);
         }
 
         @Override
-        public void writeAttribute(String namespaceURI, String localName, String value)
-                throws XMLStreamException {
+        public void writeAttribute(String namespaceURI, String localName, String value) throws XMLStreamException {
             writer.writeAttribute(namespaceURI, localName, value);
         }
 
@@ -180,7 +240,9 @@ public class MapMLEncoder {
 
         @Override
         public void writeComment(String data) throws XMLStreamException {
+            writeIndent();
             writer.writeComment(data);
+            needsIndent = true;
         }
 
         @Override
@@ -189,8 +251,7 @@ public class MapMLEncoder {
         }
 
         @Override
-        public void writeProcessingInstruction(String target, String data)
-                throws XMLStreamException {
+        public void writeProcessingInstruction(String target, String data) throws XMLStreamException {
             writer.writeProcessingInstruction(target, data);
         }
 
@@ -226,11 +287,17 @@ public class MapMLEncoder {
 
         @Override
         public void writeCharacters(String text) throws XMLStreamException {
+            // Don't indent before text content as it would alter the actual content
+            needsIndent = false;
+            lastWasStartElement = false;
             writer.writeCharacters(text);
         }
 
         @Override
         public void writeCharacters(char[] text, int start, int len) throws XMLStreamException {
+            // Don't indent before text content as it would alter the actual content
+            needsIndent = false;
+            lastWasStartElement = false;
             writer.writeCharacters(text, start, len);
         }
 
@@ -261,7 +328,28 @@ public class MapMLEncoder {
 
         @Override
         public Object getProperty(String name) throws IllegalArgumentException {
+            if (MAPML_INDENT_PROPERTY.equals(name)) {
+                return indenting;
+            }
             return writer.getProperty(name);
+        }
+
+        /**
+         * Sets the indenting property for pretty-printing
+         *
+         * @param indent true to enable pretty-printing with 2-space indents, false for dense markup
+         */
+        public void setIndenting(boolean indent) {
+            this.indenting = indent;
+        }
+
+        /**
+         * Gets the current indenting state
+         *
+         * @return true if pretty-printing is enabled
+         */
+        public boolean isIndenting() {
+            return indenting;
         }
     }
 }

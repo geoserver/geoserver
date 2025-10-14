@@ -123,10 +123,7 @@ public class DataStoreFileUploadWFSTest extends CatalogRESTTestSupport {
         zout.flush();
         zout.close();
 
-        put(
-                ROOT_PATH + "/workspaces/gs/datastores/pds/file.properties",
-                out.toByteArray(),
-                "application/zip");
+        put(ROOT_PATH + "/workspaces/gs/datastores/pds/file.properties", out.toByteArray(), "application/zip");
 
         Document dom = getAsDOM("wfs?request=getfeature&typename=gs:pds");
         assertFeatures(dom);
@@ -163,11 +160,8 @@ public class DataStoreFileUploadWFSTest extends CatalogRESTTestSupport {
     public void testShapeFileUploadWithCharset() throws Exception {
         /* Requires that a zipped shapefile (chinese_poly.zip) be in test-data directory */
         byte[] bytes = shpChineseZipAsBytes();
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        ROOT_PATH + "/workspaces/gs/datastores/chinese_poly/file.shp?charset=UTF-8",
-                        bytes,
-                        "application/zip");
+        MockHttpServletResponse response = putAsServletResponse(
+                ROOT_PATH + "/workspaces/gs/datastores/chinese_poly/file.shp?charset=UTF-8", bytes, "application/zip");
         assertEquals(201, response.getStatus());
 
         MockHttpServletResponse response2 =
@@ -209,15 +203,13 @@ public class DataStoreFileUploadWFSTest extends CatalogRESTTestSupport {
             f.mkdir();
 
             File zip = new File(f, "pds.zip");
-            IOUtils.copy(
-                    getClass().getResourceAsStream("test-data/pds.zip"), new FileOutputStream(zip));
+            IOUtils.copy(getClass().getResourceAsStream("test-data/pds.zip"), new FileOutputStream(zip));
             org.geoserver.rest.util.IOUtils.inflate(new ZipFile(zip), Files.asResource(f), null);
 
-            MockHttpServletResponse resp =
-                    putAsServletResponse(
-                            ROOT_PATH + "/workspaces/gs/datastores/pds/external.shp",
-                            URLs.fileToUrl(new File(f, "pds.shp")).toString(),
-                            "text/plain");
+            MockHttpServletResponse resp = putAsServletResponse(
+                    ROOT_PATH + "/workspaces/gs/datastores/pds/external.shp",
+                    URLs.fileToUrl(new File(f, "pds.shp")).toString(),
+                    "text/plain");
             assertEquals(201, resp.getStatus());
 
             dom = getAsDOM("wfs?request=getfeature&typename=gs:pds");
@@ -251,19 +243,18 @@ public class DataStoreFileUploadWFSTest extends CatalogRESTTestSupport {
         Catalog cat = getCatalog();
         assertNull(cat.getDataStoreByName("gs", "foo_h2"));
 
-        String xml =
-                "<dataStore>"
-                        + " <name>foo_h2</name>"
-                        + " <type>H2</type>"
-                        + " <connectionParameters>"
-                        + "<namespace>"
-                        + MockData.DEFAULT_URI
-                        + "</namespace>"
-                        + "<database>target/foo</database>"
-                        + "<dbtype>h2</dbtype>"
-                        + " </connectionParameters>"
-                        + "<workspace>gs</workspace>"
-                        + "</dataStore>";
+        String xml = "<dataStore>"
+                + " <name>foo_h2</name>"
+                + " <type>H2</type>"
+                + " <connectionParameters>"
+                + "<namespace>"
+                + MockData.DEFAULT_URI
+                + "</namespace>"
+                + "<database>target/foo</database>"
+                + "<dbtype>h2</dbtype>"
+                + " </connectionParameters>"
+                + "<workspace>gs</workspace>"
+                + "</dataStore>";
 
         post(ROOT_PATH + "/workspaces/gs/datastores", xml);
 
@@ -287,10 +278,7 @@ public class DataStoreFileUploadWFSTest extends CatalogRESTTestSupport {
         assertNull(cat.getDataStoreByName("gs", "pds"));
 
         byte[] bytes = shpZipAsBytes();
-        put(
-                ROOT_PATH + "/workspaces/gs/datastores/pds/file.shp?target=h2",
-                bytes,
-                "application/zip");
+        put(ROOT_PATH + "/workspaces/gs/datastores/pds/file.shp?target=h2", bytes, "application/zip");
 
         DataStoreInfo ds = cat.getDataStoreByName("gs", "pds");
         assertNotNull(ds);
@@ -310,10 +298,7 @@ public class DataStoreFileUploadWFSTest extends CatalogRESTTestSupport {
         assertNull(cat.getDataStoreByName("gs", "store with spaces"));
 
         byte[] bytes = shpZipAsBytes();
-        put(
-                ROOT_PATH + "/workspaces/gs/datastores/store%20with%20spaces/file.shp",
-                bytes,
-                "application/zip");
+        put(ROOT_PATH + "/workspaces/gs/datastores/store%20with%20spaces/file.shp", bytes, "application/zip");
 
         DataStoreInfo ds = cat.getDataStoreByName("gs", "store with spaces");
         assertNull(ds);

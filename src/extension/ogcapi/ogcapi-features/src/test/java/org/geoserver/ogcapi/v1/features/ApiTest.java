@@ -28,6 +28,7 @@ import io.swagger.v3.oas.models.servers.Server;
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -49,32 +50,27 @@ public class ApiTest extends FeaturesTestSupport {
 
     @Test
     public void testApiJson() throws Exception {
-        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
-        FeatureConformance features = FeatureConformance.configuration(wfs);
-        features.setIDs(true); // enable
-        getGeoServer().save(wfs);
-        try {
-            MockHttpServletResponse response =
-                    getAsMockHttpServletResponse("ogc/features/v1/openapi", 200);
-            validateJSONAPI(response);
-        } finally {
-            features.setIDs(null); // default
-            getGeoServer().save(wfs);
-        }
+        MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/features/v1/openapi", 200);
+        validateJSONAPI(response);
     }
 
     @Test
     public void testApiJsonExtension() throws Exception {
         WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
         FeatureConformance features = FeatureConformance.configuration(wfs);
-        features.setIDs(true); // enable
+        // enable a few optional extensions
+        features.setIDs(true);
+        features.setSortBy(true);
+        features.setPropertySelection(true);
         getGeoServer().save(wfs);
         try {
-            MockHttpServletResponse response =
-                    getAsMockHttpServletResponse("ogc/features/v1/openapi.json", 200);
+            MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/features/v1/openapi.json", 200);
             validateJSONAPI(response);
         } finally {
-            features.setIDs(null); // default
+            // restore defaults
+            features.setIDs(null);
+            features.setSortBy(null);
+            features.setPropertySelection(null);
             getGeoServer().save(wfs);
         }
     }
@@ -82,8 +78,7 @@ public class ApiTest extends FeaturesTestSupport {
     private void validateJSONAPI(MockHttpServletResponse response)
             throws UnsupportedEncodingException, JsonProcessingException {
         assertThat(
-                response.getContentType(),
-                CoreMatchers.startsWith(OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE));
+                response.getContentType(), CoreMatchers.startsWith(OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE));
         String json = response.getContentAsString();
         LOGGER.log(Level.INFO, json);
 
@@ -94,21 +89,16 @@ public class ApiTest extends FeaturesTestSupport {
 
     @Test
     public void testHTMLEncoding() throws Exception {
-        MockHttpServletResponse response =
-                getAsMockHttpServletResponse("ogc/features/v1?f=text/html", 200);
+        MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/features/v1?f=text/html", 200);
         assertEquals("text/html", response.getContentType());
         String html = response.getContentAsString();
         GeoServerBaseTestSupport.LOGGER.info(html);
-        assertThat(
-                html,
-                containsString(
-                        "<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\">"));
+        assertThat(html, containsString("<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\">"));
     }
 
     @Test
     public void testApiHTML() throws Exception {
-        MockHttpServletResponse response =
-                getAsMockHttpServletResponse("ogc/features/v1/openapi?f=text/html", 200);
+        MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/features/v1/openapi?f=text/html", 200);
         assertEquals("text/html", response.getContentType());
         String html = response.getContentAsString();
         LOGGER.info(html);
@@ -124,16 +114,12 @@ public class ApiTest extends FeaturesTestSupport {
                         "<link rel=\"icon\" type=\"image/png\" href=\"http://localhost:8080/geoserver/swagger-ui/favicon-16x16.png\" sizes=\"16x16\" />"));
         assertThat(
                 html,
-                containsString(
-                        "<script src=\"http://localhost:8080/geoserver/swagger-ui/swagger-ui-bundle.js\">"));
+                containsString("<script src=\"http://localhost:8080/geoserver/swagger-ui/swagger-ui-bundle.js\">"));
         assertThat(
                 html,
                 containsString(
                         "<script src=\"http://localhost:8080/geoserver/swagger-ui/swagger-ui-standalone-preset.js\">"));
-        assertThat(
-                html,
-                containsString(
-                        "<script src=\"http://localhost:8080/geoserver/webresources/ogcapi/api.js\">"));
+        assertThat(html, containsString("<script src=\"http://localhost:8080/geoserver/webresources/ogcapi/api.js\">"));
         assertThat(
                 html,
                 containsString(
@@ -194,8 +180,8 @@ public class ApiTest extends FeaturesTestSupport {
             MockHttpServletResponse response = dispatch(request);
             assertEquals(200, response.getStatus());
             assertThat(response.getContentType(), CoreMatchers.startsWith("application/yaml"));
-            String yaml =
-                    string(new ByteArrayInputStream(response.getContentAsString().getBytes()));
+            String yaml = string(
+                    new ByteArrayInputStream(response.getContentAsString().getBytes()));
 
             ObjectMapper mapper = Yaml.mapper();
             OpenAPI api = mapper.readValue(yaml, OpenAPI.class);
@@ -210,9 +196,7 @@ public class ApiTest extends FeaturesTestSupport {
         // only one server
         List<Server> servers = api.getServers();
         assertThat(servers, hasSize(1));
-        assertThat(
-                servers.get(0).getUrl(),
-                equalTo("http://localhost:8080/geoserver/ogc/features/v1"));
+        assertThat(servers.get(0).getUrl(), equalTo("http://localhost:8080/geoserver/ogc/features/v1"));
 
         // info version is spec version
         assertEquals("1.0.1", api.getInfo().getVersion());
@@ -248,26 +232,32 @@ public class ApiTest extends FeaturesTestSupport {
         List<Parameter> parameters = itemsGet.getParameters();
         List<String> itemGetParamNames =
                 parameters.stream().map(p -> p.get$ref()).collect(Collectors.toList());
-        assertThat(
-                itemGetParamNames,
-                containsInAnyOrder(
-                        "#/components/parameters/collectionId",
-                        "#/components/parameters/limit",
-                        "#/components/parameters/bbox",
-                        "#/components/parameters/datetime",
-                        "#/components/parameters/filter",
-                        "#/components/parameters/filter-lang",
-                        "#/components/parameters/filter-crs",
-                        "#/components/parameters/sortby",
-                        "#/components/parameters/crs",
-                        "#/components/parameters/bbox-crs",
-                        "#/components/parameters/otherParameters",
-                        "#/components/parameters/ids"));
+        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
+        FeatureConformance features = FeatureConformance.configuration(wfs);
+        List<String> expectedItemsParams = new ArrayList<>(Arrays.asList(
+                "#/components/parameters/collectionId",
+                "#/components/parameters/limit",
+                "#/components/parameters/bbox",
+                "#/components/parameters/datetime",
+                "#/components/parameters/filter",
+                "#/components/parameters/filter-lang",
+                "#/components/parameters/filter-crs",
+                "#/components/parameters/crs",
+                "#/components/parameters/bbox-crs",
+                "#/components/parameters/otherParameters"));
+        if (features.sortBy(wfs)) expectedItemsParams.add("#/components/parameters/sortby");
+        if (features.ids(wfs)) expectedItemsParams.add("#/components/parameters/ids");
+        if (features.propertySelection(wfs)) {
+            expectedItemsParams.add("#/components/parameters/properties");
+            expectedItemsParams.add("#/components/parameters/exclude-properties");
+        }
+
+        assertThat(itemGetParamNames, containsInAnyOrder(expectedItemsParams.toArray(String[]::new)));
 
         // filter languages
         Parameter langs = api.getComponents().getParameters().get("filter-lang");
         assertEquals(
-                Arrays.asList(APIFilterParser.ECQL_TEXT, APIFilterParser.CQL2_TEXT),
+                Arrays.asList(APIFilterParser.ECQL_TEXT, APIFilterParser.CQL2_TEXT, APIFilterParser.CQL2_JSON),
                 langs.getSchema().getEnum());
 
         // ... feature
@@ -280,17 +270,15 @@ public class ApiTest extends FeaturesTestSupport {
         Parameter collectionId = params.get("collectionId");
         @SuppressWarnings("unchecked")
         List<String> collectionIdValues = collectionId.getSchema().getEnum();
-        List<String> expectedCollectionIds =
-                getCatalog().getFeatureTypes().stream()
-                        .map(ft -> ft.prefixedName())
-                        .collect(Collectors.toList());
+        List<String> expectedCollectionIds = getCatalog().getFeatureTypes().stream()
+                .map(ft -> ft.prefixedName())
+                .collect(Collectors.toList());
         assertThat(collectionIdValues, equalTo(expectedCollectionIds));
 
         // check the limit parameter
         Parameter limit = params.get("limit");
         Schema limitSchema = limit.getSchema();
         Assert.assertEquals(BigDecimal.valueOf(1), limitSchema.getMinimum());
-        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
         Assert.assertEquals(wfs.getMaxFeatures(), limitSchema.getMaximum().intValue());
         assertEquals(wfs.getMaxFeatures(), ((Number) limitSchema.getDefault()).intValue());
     }
@@ -304,7 +292,8 @@ public class ApiTest extends FeaturesTestSupport {
         MockHttpServletResponse response = dispatch(request);
         assertEquals(200, response.getStatus());
         assertEquals("application/yaml", response.getContentType());
-        String yaml = string(new ByteArrayInputStream(response.getContentAsString().getBytes()));
+        String yaml =
+                string(new ByteArrayInputStream(response.getContentAsString().getBytes()));
 
         // System.out.println(yaml);
 
@@ -315,8 +304,7 @@ public class ApiTest extends FeaturesTestSupport {
         @SuppressWarnings("unchecked")
         List<String> collectionIdValues = collectionId.getSchema().getEnum();
         List<String> expectedCollectionIds =
-                getCatalog().getFeatureTypesByNamespace(getCatalog().getNamespaceByPrefix("cdf"))
-                        .stream()
+                getCatalog().getFeatureTypesByNamespace(getCatalog().getNamespaceByPrefix("cdf")).stream()
                         .map(ft -> ft.getName())
                         .collect(Collectors.toList());
         assertThat(collectionIdValues, equalTo(expectedCollectionIds));
@@ -325,10 +313,9 @@ public class ApiTest extends FeaturesTestSupport {
     @Test
     @Ignore
     public void testFilterCRS() throws Exception {
-        fail(
-                "We should to enumerate all supported filter-crs values, but they are likely too many, "
-                        + "and we'd have to inspect all the collections to find an exhaustive list for the"
-                        + "test. The ATS does not seem to check it either, so taking a not but not "
-                        + "implementing for the time being.");
+        fail("We should to enumerate all supported filter-crs values, but they are likely too many, "
+                + "and we'd have to inspect all the collections to find an exhaustive list for the "
+                + "test. The ATS does not seem to check it either, so taking a not but not "
+                + "implementing for the time being.");
     }
 }

@@ -47,8 +47,7 @@ public class WMTSXStreamLoader extends XStreamServiceLoader<WMTSInfo> {
             service.setTitle("GeoServer Web Map Tile Service");
         }
         if (service.getAbstract() == null) {
-            service.setAbstract(
-                    "Predefined map tiles generated from vector data, raster data, and imagery.");
+            service.setAbstract("Predefined map tiles generated from vector data, raster data, and imagery.");
         }
         if (service.getFees() == null) {
             service.setFees("NONE");

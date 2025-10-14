@@ -8,14 +8,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.web.ServiceDescription;
 import org.geoserver.web.ServiceLinkDescription;
+import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSResourceVoter;
 import org.junit.Test;
 
@@ -29,8 +33,7 @@ public class WFSServiceDescriptionProviderTest extends GeoServerSystemTestSuppor
 
     @Test
     public void serviceDescriptorAndLinks() {
-        WFSServiceDescriptionProvider provider =
-                GeoServerExtensions.bean(WFSServiceDescriptionProvider.class);
+        WFSServiceDescriptionProvider provider = GeoServerExtensions.bean(WFSServiceDescriptionProvider.class);
 
         List<ServiceDescription> services = provider.getServices(null, null);
         List<ServiceLinkDescription> links = provider.getServiceLinks(null, null);
@@ -51,9 +54,88 @@ public class WFSServiceDescriptionProviderTest extends GeoServerSystemTestSuppor
     }
 
     @Test
+    public void disabledServiceCheck() {
+        WFSServiceDescriptionProvider provider = GeoServerExtensions.bean(WFSServiceDescriptionProvider.class);
+        Catalog catalog = getCatalog();
+        GeoServer geoServer = getGeoServer();
+        GeoServerInfo global = geoServer.getGlobal();
+        WFSInfo wfs = geoServer.getService(WFSInfo.class);
+
+        WorkspaceInfo cite = catalog.getWorkspaceByName("cite");
+
+        LayerInfo buildings = catalog.getLayerByName("Buildings");
+        try {
+            // check enable/disable global services
+            List<ServiceDescription> services;
+            services = provider.getServices(null, null).stream()
+                    .filter(s -> s.isAvailable())
+                    .collect(Collectors.toList());
+            assertEquals(1, services.size());
+            services = provider.getServices(cite, null).stream()
+                    .filter(s -> s.isAvailable())
+                    .collect(Collectors.toList());
+            assertEquals(1, services.size());
+            services = provider.getServices(cite, buildings).stream()
+                    .filter(s -> s.isAvailable())
+                    .collect(Collectors.toList());
+            assertEquals(1, services.size());
+
+            global.setGlobalServices(false);
+            geoServer.save(global);
+            services = provider.getServices(null, null).stream()
+                    .filter(s -> s.isAvailable())
+                    .collect(Collectors.toList());
+            assertEquals(0, services.size());
+            services = provider.getServices(cite, null).stream()
+                    .filter(s -> s.isAvailable())
+                    .collect(Collectors.toList());
+            assertEquals(1, services.size());
+            services = provider.getServices(cite, buildings).stream()
+                    .filter(s -> s.isAvailable())
+                    .collect(Collectors.toList());
+            assertEquals(1, services.size());
+
+            // check enable/disable WFSInfo
+            global.setGlobalServices(true);
+            geoServer.save(global);
+            services = provider.getServices(null, null).stream()
+                    .filter(s -> s.isAvailable())
+                    .collect(Collectors.toList());
+            assertEquals(1, services.size());
+            services = provider.getServices(cite, null).stream()
+                    .filter(s -> s.isAvailable())
+                    .collect(Collectors.toList());
+            assertEquals(1, services.size());
+            services = provider.getServices(cite, buildings).stream()
+                    .filter(s -> s.isAvailable())
+                    .collect(Collectors.toList());
+            assertEquals(1, services.size());
+
+            wfs.setEnabled(false);
+            geoServer.save(wfs);
+            services = provider.getServices(null, null).stream()
+                    .filter(s -> s.isAvailable())
+                    .collect(Collectors.toList());
+            assertEquals(0, services.size());
+            services = provider.getServices(cite, null).stream()
+                    .filter(s -> s.isAvailable())
+                    .collect(Collectors.toList());
+            assertEquals(0, services.size());
+            services = provider.getServices(cite, buildings).stream()
+                    .filter(s -> s.isAvailable())
+                    .collect(Collectors.toList());
+            assertEquals(0, services.size());
+        } finally {
+            global.setGlobalServices(true);
+            geoServer.save(global);
+            wfs.setEnabled(true);
+            geoServer.save(wfs);
+        }
+    }
+
+    @Test
     public void ignoreCoverage() {
-        WFSServiceDescriptionProvider provider =
-                GeoServerExtensions.bean(WFSServiceDescriptionProvider.class);
+        WFSServiceDescriptionProvider provider = GeoServerExtensions.bean(WFSServiceDescriptionProvider.class);
         Catalog catalog = getCatalog();
         WorkspaceInfo gs = catalog.getWorkspaceByName("gs");
         LayerInfo world = catalog.getLayerByName("World");

@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.web.panel.attribute;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -19,6 +20,7 @@ import org.geoserver.metadata.data.dto.AttributeConfiguration;
 
 public class DropDownPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -1829729746678003578L;
 
     public DropDownPanel(
@@ -37,66 +39,59 @@ public class DropDownPanel extends Panel {
         }
     }
 
-    private DropDownChoice<String> createDropDown(
-            String attributeKey, IModel<String> model, List<String> values) {
-        DropDownChoice<String> choice =
-                new DropDownChoice<>("dropdown", model, values, createRenderer(attributeKey));
+    private DropDownChoice<String> createDropDown(String attributeKey, IModel<String> model, List<String> values) {
+        DropDownChoice<String> choice = new DropDownChoice<>("dropdown", model, values, createRenderer(attributeKey));
         choice.setNullValid(true);
         return choice;
     }
 
     private DropDownChoice<String> createDropDown(
-            String attributeKey,
-            IModel<String> model,
-            List<String> values,
-            IModel<List<String>> selectedValues) {
-        DropDownChoice<String> choice =
-                new DropDownChoice<>(
-                        "dropdown",
-                        model,
-                        new IModel<List<String>>() {
-                            private static final long serialVersionUID = -2410089772309709492L;
-
-                            @Override
-                            public List<String> getObject() {
-                                Set<String> currentList = new TreeSet<>();
-                                currentList.addAll(values);
-                                currentList.removeIf(i -> selectedValues.getObject().contains(i));
-                                if (!Strings.isEmpty(model.getObject())) {
-                                    currentList.add(model.getObject());
-                                }
-                                return new ArrayList<>(currentList);
-                            }
-
-                            @Override
-                            public void setObject(List<String> object) {
-                                throw new UnsupportedOperationException();
-                            }
-                        },
-                        createRenderer(attributeKey));
-        choice.add(
-                new AjaxFormComponentUpdatingBehavior("change") {
-                    private static final long serialVersionUID = 1989673955080590525L;
+            String attributeKey, IModel<String> model, List<String> values, IModel<List<String>> selectedValues) {
+        DropDownChoice<String> choice = new DropDownChoice<>(
+                "dropdown",
+                model,
+                new IModel<List<String>>() {
+                    @Serial
+                    private static final long serialVersionUID = -2410089772309709492L;
 
                     @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        target.add(
-                                DropDownPanel.this.findParent(
-                                        RepeatableAttributesTablePanel.class));
+                    public List<String> getObject() {
+                        Set<String> currentList = new TreeSet<>();
+                        currentList.addAll(values);
+                        currentList.removeIf(i -> selectedValues.getObject().contains(i));
+                        if (!Strings.isEmpty(model.getObject())) {
+                            currentList.add(model.getObject());
+                        }
+                        return new ArrayList<>(currentList);
                     }
-                });
+
+                    @Override
+                    public void setObject(List<String> object) {
+                        throw new UnsupportedOperationException();
+                    }
+                },
+                createRenderer(attributeKey));
+        choice.add(new AjaxFormComponentUpdatingBehavior("change") {
+            @Serial
+            private static final long serialVersionUID = 1989673955080590525L;
+
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                target.add(DropDownPanel.this.findParent(RepeatableAttributesTablePanel.class));
+            }
+        });
         choice.setNullValid(true);
         return choice;
     }
 
     private IChoiceRenderer<String> createRenderer(String attributeKey) {
         return new IChoiceRenderer<>() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
             public Object getDisplayValue(String object) {
-                return getString(
-                        AttributeConfiguration.PREFIX + attributeKey + "." + object, null, object);
+                return getString(AttributeConfiguration.PREFIX + attributeKey + "." + object, null, object);
             }
 
             @Override

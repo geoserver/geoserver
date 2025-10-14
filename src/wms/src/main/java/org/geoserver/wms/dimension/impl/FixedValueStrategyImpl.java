@@ -33,10 +33,8 @@ public class FixedValueStrategyImpl extends AbstractDefaultValueSelectionStrateg
 
     @Override
     @SuppressWarnings("unchecked") // we don't know the type of Range at compile time
-    public Object getDefaultValue(
-            ResourceInfo resource, String dimensionName, DimensionInfo dimension, Class<?> clz) {
-        if (value instanceof Range) {
-            Range r = (Range) value;
+    public Object getDefaultValue(ResourceInfo resource, String dimensionName, DimensionInfo dimension, Class<?> clz) {
+        if (value instanceof Range r) {
             if (clz.isAssignableFrom(r.getElementClass())) {
                 return r;
             } else {

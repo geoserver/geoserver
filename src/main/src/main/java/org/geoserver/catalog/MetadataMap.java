@@ -5,6 +5,7 @@
  */
 package org.geoserver.catalog;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
@@ -15,8 +16,8 @@ import org.geotools.util.Converters;
 /**
  * A map used to store metadata on catalog and configuration objects.
  *
- * <p>This map is used to convert values from the map to a specified type, via the {@link
- * #get(String, Class)} method. Usage:
+ * <p>This map is used to convert values from the map to a specified type, via the {@link #get(String, Class)} method.
+ * Usage:
  *
  * <pre>
  * MetadataMap map = new MetadataMap();
@@ -31,7 +32,9 @@ import org.geotools.util.Converters;
  */
 public class MetadataMap implements Map<String, Serializable>, Serializable {
 
+    @Serial
     private static final long serialVersionUID = -3267986531863264568L;
+
     protected String id;
 
     protected Map<String, Serializable> map;

@@ -4,6 +4,7 @@
  */
 package org.geoserver.wcs2_0.eo.web;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
@@ -15,6 +16,7 @@ import org.geoserver.web.services.AdminPagePanel;
 import org.geoserver.web.util.MapModel;
 
 public class WCSEOAdminPanel extends AdminPagePanel {
+    @Serial
     private static final long serialVersionUID = 1302234327415740649L;
 
     public WCSEOAdminPanel(String id, IModel<?> model) {
@@ -22,15 +24,11 @@ public class WCSEOAdminPanel extends AdminPagePanel {
 
         PropertyModel<MetadataMap> metadata = new PropertyModel<>(model, "metadata");
 
-        CheckBox enabled =
-                new CheckBox("enabled", new MapModel<>(metadata, WCSEOMetadata.ENABLED.key));
+        CheckBox enabled = new CheckBox("enabled", new MapModel<>(metadata, WCSEOMetadata.ENABLED.key));
         add(enabled);
 
-        TextField<Integer> defaultCount =
-                new TextField<>(
-                        "defaultCount",
-                        new MapModel<>(metadata, WCSEOMetadata.COUNT_DEFAULT.key),
-                        Integer.class);
+        TextField<Integer> defaultCount = new TextField<>(
+                "defaultCount", new MapModel<>(metadata, WCSEOMetadata.COUNT_DEFAULT.key), Integer.class);
         defaultCount.add(RangeValidator.minimum(1));
         add(defaultCount);
     }

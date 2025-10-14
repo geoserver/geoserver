@@ -48,8 +48,7 @@ public class GetRecordById {
 
     private List<RecordDescriptor> recordDescriptors;
 
-    public GetRecordById(
-            CSWInfo csw, CatalogStore store, List<RecordDescriptor> recordDescriptors) {
+    public GetRecordById(CSWInfo csw, CatalogStore store, List<RecordDescriptor> recordDescriptors) {
         this.csw = csw;
         this.store = store;
         this.recordDescriptors = recordDescriptors;
@@ -69,9 +68,7 @@ public class GetRecordById {
             int numberOfRecordsMatched = 0;
             int[] counts = new int[queries.size()];
             for (int i = 0; i < queries.size(); i++) {
-                counts[i] =
-                        store.getRecordsCount(
-                                queries.get(i).query, Transaction.AUTO_COMMIT, queries.get(i).rd);
+                counts[i] = store.getRecordsCount(queries.get(i).query, Transaction.AUTO_COMMIT, queries.get(i).rd);
                 numberOfRecordsMatched += counts[i];
             }
 
@@ -95,15 +92,14 @@ public class GetRecordById {
 
             ElementSetType elementSet = getElementSetName(request);
 
-            CSWRecordsResult result =
-                    new CSWRecordsResult(
-                            elementSet,
-                            request.getOutputSchema(),
-                            numberOfRecordsMatched,
-                            numberOfRecordsMatched,
-                            0,
-                            timestamp,
-                            records);
+            CSWRecordsResult result = new CSWRecordsResult(
+                    elementSet,
+                    request.getOutputSchema(),
+                    numberOfRecordsMatched,
+                    numberOfRecordsMatched,
+                    0,
+                    timestamp,
+                    records);
             return result;
         } catch (IOException e) {
             throw new ServiceException("Request failed due to: " + e.getMessage(), e);
@@ -111,8 +107,9 @@ public class GetRecordById {
     }
 
     private ElementSetType getElementSetName(GetRecordByIdType request) {
-        ElementSetType elementSet =
-                request.getElementSetName() != null ? request.getElementSetName().getValue() : null;
+        ElementSetType elementSet = request.getElementSetName() != null
+                ? request.getElementSetName().getValue()
+                : null;
         if (elementSet == null) {
             // the default is "summary"
             elementSet = ElementSetType.SUMMARY;
@@ -121,8 +118,7 @@ public class GetRecordById {
     }
 
     private List<GetRecords.WrappedQuery> toGtQueries(
-            List<RecordDescriptor> rds, EList<URI> ids, GetRecordByIdType request)
-            throws IOException {
+            List<RecordDescriptor> rds, EList<URI> ids, GetRecordByIdType request) throws IOException {
         // prepare to build the queries
 
         Set<FeatureId> fids = new HashSet<>();
@@ -150,10 +146,7 @@ public class GetRecordById {
         return result;
     }
 
-    /**
-     * Search for the record descriptor maching the request, throws a service exception in case none
-     * is found
-     */
+    /** Search for the record descriptor maching the request, throws a service exception in case none is found */
     private List<RecordDescriptor> getRecordDescriptors(GetRecordByIdType request) {
         String outputSchema = request.getOutputSchema();
         if (outputSchema == null) {

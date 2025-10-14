@@ -5,13 +5,21 @@
  */
 package org.geoserver.web.demo;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.matchesRegex;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
@@ -56,6 +64,14 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
     public void testValues() throws Exception {
         tester.startPage(MapPreviewPage.class);
         tester.assertRenderedPage(MapPreviewPage.class);
+        List<String> scripts = TagTester.createTags(
+                        tester.getLastResponseAsString(), tag -> tag.getName().equalsIgnoreCase("script"), false)
+                .stream()
+                .map(tag -> tag.getAttribute("src"))
+                .collect(Collectors.toList());
+        String regex =
+                "^.*/" + MapPreviewPage.class.getName() + "/" + MapPreviewPage.class.getSimpleName() + ".*\\.js$";
+        assertThat(scripts, hasItem(matchesRegex(regex)));
     }
 
     @Test
@@ -77,8 +93,7 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
         tester.clickLink("table:navigatorBottom:navigator:next", true);
 
         @SuppressWarnings("unchecked")
-        DataView<Component> data =
-                (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        DataView<Component> data = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
 
         boolean exists = false;
         for (org.apache.wicket.Component datum : data) {
@@ -109,8 +124,7 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
         tester.clickLink("table:navigatorBottom:navigator:next", true);
 
         @SuppressWarnings("unchecked")
-        DataView<Component> data =
-                (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        DataView<Component> data = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
 
         boolean exists = false;
         for (org.apache.wicket.Component datum : data) {
@@ -125,7 +139,6 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testMaxNumberOfFeaturesForPreview() throws Exception {
 
         GeoServer geoserver = getGeoServer();
@@ -137,8 +150,9 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
 
         tester.startPage(MapPreviewPage.class);
         tester.assertRenderedPage(MapPreviewPage.class);
-
-        assertMaxFeaturesInData(tester.getLastResponseAsString(), maxFeatures);
+        TagTester maxFeaturesTag = tester.getTagById("maxFeatures");
+        assertNotNull("Missing maxFeatures field", maxFeaturesTag);
+        assertEquals(Integer.toString(maxFeatures), maxFeaturesTag.getAttribute("value"));
 
         maxFeatures = 0;
         wfsInfo.setMaxNumberOfFeaturesForPreview(maxFeatures);
@@ -146,22 +160,9 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
 
         tester.startPage(MapPreviewPage.class);
         tester.assertRenderedPage(MapPreviewPage.class);
-
-        assertMaxFeaturesInData(tester.getLastResponseAsString(), maxFeatures);
-    }
-
-    /**
-     * Max features is handled by a Javascript building the URLs client, so we need to check its
-     * code to make sure the maxFeatures parameter is being set correctly.
-     */
-    private void assertMaxFeaturesInData(String html, int maxFeatures) {
-        String PREFIX = "var maxFeature = '";
-        String END = "';";
-        if (maxFeatures > 0) {
-            assertThat(html, containsString(PREFIX + "&maxFeatures=" + maxFeatures + END));
-        } else {
-            assertThat(html, containsString(PREFIX + END));
-        }
+        maxFeaturesTag = tester.getTagById("maxFeatures");
+        assertNotNull("Missing maxFeatures field", maxFeaturesTag);
+        assertEquals(Integer.toString(maxFeatures), maxFeaturesTag.getAttribute("value"));
     }
 
     @Test
@@ -169,14 +170,11 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
         tester.startPage(MapPreviewPage.class);
         tester.assertRenderedPage(MapPreviewPage.class);
 
-        Label optionLabel =
-                (Label)
-                        tester.getComponentFromLastRenderedPage(
-                                "table:listContainer:items:4:itemProperties:4:component:menu:wfs:wfsFormats:3");
+        Label optionLabel = (Label) tester.getComponentFromLastRenderedPage(
+                "table:listContainer:items:4:itemProperties:4:component:menu:wfs:wfsFormats:3");
         assertEquals("GML3.2", optionLabel.getDefaultModelObjectAsString());
         for (Behavior b : optionLabel.getBehaviors()) {
-            if (b instanceof AttributeModifier) {
-                AttributeModifier am = (AttributeModifier) b;
+            if (b instanceof AttributeModifier am) {
                 String url = am.toString();
                 assertFalse(url.contains("gml+xml"));
                 assertTrue(url.contains("gml%2Bxml"));
@@ -198,8 +196,7 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
             // print(tester.getLastRenderedPage(), true, true, true);
 
             @SuppressWarnings("unchecked")
-            DataView<Component> data =
-                    (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+            DataView<Component> data = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
 
             boolean exists = false;
             String path = null;
@@ -212,18 +209,12 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
                     path = c.getPageRelativePath();
 
                     // check visible links
-                    ExternalLink olLink =
-                            (ExternalLink)
-                                    c.get("itemProperties:3:component:commonFormat:0")
-                                            .getDefaultModelObject();
-                    ExternalLink gmlLink =
-                            (ExternalLink)
-                                    c.get("itemProperties:3:component:commonFormat:1")
-                                            .getDefaultModelObject();
-                    ExternalLink kmlLink =
-                            (ExternalLink)
-                                    c.get("itemProperties:3:component:commonFormat:2")
-                                            .getDefaultModelObject();
+                    ExternalLink olLink = (ExternalLink)
+                            c.get("itemProperties:3:component:commonFormat:0").getDefaultModelObject();
+                    ExternalLink gmlLink = (ExternalLink)
+                            c.get("itemProperties:3:component:commonFormat:1").getDefaultModelObject();
+                    ExternalLink kmlLink = (ExternalLink)
+                            c.get("itemProperties:3:component:commonFormat:2").getDefaultModelObject();
 
                     assertEquals(
                             "http://localhost/context/cite/wms?service=WMS&amp;version=1.1.0&amp;"
@@ -234,23 +225,20 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
                             olLink.getDefaultModelObjectAsString());
                     assertThat(
                             gmlLink.getDefaultModelObjectAsString(),
-                            containsString(
-                                    "http://localhost/context/cite/ows?service=WFS&amp;version=1"
-                                            + ".0.0&amp;request=GetFeature&amp;"
-                                            + "typeName=cite%3ALakes%20%2B%20a%20plus"));
+                            containsString("http://localhost/context/cite/ows?service=WFS&amp;version=1"
+                                    + ".0.0&amp;request=GetFeature&amp;"
+                                    + "typeName=cite%3ALakes%20%2B%20a%20plus"));
                     assertEquals(
-                            kmlLink.getDefaultModelObjectAsString(),
-                            "http://localhost/context/cite/wms/kml?layers=cite%3ALakes%20%2B%20a%20plus");
+                            "http://localhost/context/cite/wms/kml?layers=cite%3ALakes%20%2B%20a%20plus",
+                            kmlLink.getDefaultModelObjectAsString());
 
                     // check formats
-                    RepeatingView wmsFormats =
-                            (RepeatingView) c.get("itemProperties:4:component:menu:wms:wmsFormats");
+                    RepeatingView wmsFormats = (RepeatingView) c.get("itemProperties:4:component:menu:wms:wmsFormats");
                     if (wmsFormats != null) {
                         assertFormat(wmsFormats, "JPEG-PNG", true);
                     }
 
-                    RepeatingView wfsFormats =
-                            (RepeatingView) c.get("itemProperties:4:component:menu:wfs:wfsFormats");
+                    RepeatingView wfsFormats = (RepeatingView) c.get("itemProperties:4:component:menu:wfs:wfsFormats");
                     if (wfsFormats != null) {
                         assertFormat(wfsFormats, "CSV", true);
                         assertFormat(wfsFormats, "text/csv", true);
@@ -260,11 +248,8 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
             assertTrue("Could not find layer with expected name", exists);
 
             String html = tester.getLastResponseAsString();
-            TagTester menuTester =
-                    TagTester.createTagByAttribute(
-                            html,
-                            "wicketPath",
-                            path.replace(":", "_") + "_itemProperties_4_component_menu");
+            TagTester menuTester = TagTester.createTagByAttribute(
+                    html, "wicketPath", path.replace(":", "_") + "_itemProperties_4_component_menu");
             assertThat(
                     menuTester.getAttribute("wmsLink"),
                     containsString(
@@ -280,15 +265,11 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
     }
 
     private void assertFormat(RepeatingView view, String format, boolean expected) {
-        Boolean found =
-                view.visitChildren(
-                        Label.class,
-                        (IVisitor<Label, Boolean>)
-                                (label, visit) -> {
-                                    if (label.getDefaultModelObjectAsString().contains(format)) {
-                                        visit.stop(true);
-                                    }
-                                });
+        Boolean found = view.visitChildren(Label.class, (IVisitor<Label, Boolean>) (label, visit) -> {
+            if (label.getDefaultModelObjectAsString().contains(format)) {
+                visit.stop(true);
+            }
+        });
         assertEquals(format, expected, found == null ? false : found);
     }
 
@@ -318,17 +299,14 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
             tester.startPage(MapPreviewPage.class);
             print(tester.getLastRenderedPage(), true, true, true);
 
-            DataView<Component> data =
-                    (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+            DataView<Component> data = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
 
             for (org.apache.wicket.Component datum : data) {
                 MarkupContainer c = (MarkupContainer) datum;
 
                 // check OL preview link
-                ExternalLink link =
-                        (ExternalLink)
-                                c.get("itemProperties:3:component:commonFormat:0")
-                                        .getDefaultModelObject();
+                ExternalLink link = (ExternalLink)
+                        c.get("itemProperties:3:component:commonFormat:0").getDefaultModelObject();
                 String location = link.getDefaultModelObjectAsString();
                 assertThat(location, containsString("srs=IAU%3A49900"));
             }
@@ -336,5 +314,19 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
         } finally {
             LocalWorkspace.remove();
         }
+    }
+
+    @Test
+    public void testCachingImages() throws Exception {
+        // test that the "?antiCache=###" query string is not appended to the img src
+        tester.startPage(MapPreviewPage.class);
+        tester.assertRenderedPage(MapPreviewPage.class);
+        tester.clickLink("table:navigatorBottom:navigator:next", true);
+        List<TagTester> images = TagTester.createTags(
+                tester.getLastResponseAsString(), tag -> tag.getName().equalsIgnoreCase("img"), false);
+        assertThat(images, not(empty()));
+        images.stream()
+                .map(image -> image.getAttribute("src"))
+                .forEach(src -> assertThat(src, allOf(containsString("/img/icons/"), endsWith(".png"))));
     }
 }

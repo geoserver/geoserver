@@ -181,8 +181,7 @@ public abstract class BackupRestoreItem<T> {
         if (backupFacade.getRestoreExecutions() != null
                 && !backupFacade.getRestoreExecutions().isEmpty()
                 && backupFacade.getRestoreExecutions().containsKey(jobExecution.getId())) {
-            this.currentJobExecution =
-                    backupFacade.getRestoreExecutions().get(jobExecution.getId());
+            this.currentJobExecution = backupFacade.getRestoreExecutions().get(jobExecution.getId());
             this.catalog = ((RestoreExecutionAdapter) currentJobExecution).getRestoreCatalog();
             this.isNew = true;
         } else {
@@ -204,8 +203,7 @@ public abstract class BackupRestoreItem<T> {
         JobParameters jobParameters = this.currentJobExecution.getJobParameters();
 
         boolean parameterizePasswords =
-                Boolean.parseBoolean(
-                        jobParameters.getString(Backup.PARAM_PARAMETERIZE_PASSWDS, "false"));
+                Boolean.parseBoolean(jobParameters.getString(Backup.PARAM_PARAMETERIZE_PASSWDS, "false"));
 
         if (parameterizePasswords) {
             // here we set some customized XML handling code. For backups, we add a converter that
@@ -213,25 +211,18 @@ public abstract class BackupRestoreItem<T> {
             // outgoing passwords. for restores, a handler for those tokenized backups.
             if (!isNew) {
                 this.xp.registerLocalConverter(
-                        StoreInfoImpl.class,
-                        "connectionParameters",
-                        this.createParameterizingMapConverter(xstream));
+                        StoreInfoImpl.class, "connectionParameters", this.createParameterizingMapConverter(xstream));
                 this.xp.registerConverter(this.createStoreConverter(xstream));
             } else {
-                String concatenatedPasswordTokens =
-                        jobParameters.getString(Backup.PARAM_PASSWORD_TOKENS);
-                Map<String, String> passwordTokens =
-                        parseConcatenatedPasswordTokens(concatenatedPasswordTokens);
+                String concatenatedPasswordTokens = jobParameters.getString(Backup.PARAM_PASSWORD_TOKENS);
+                Map<String, String> passwordTokens = parseConcatenatedPasswordTokens(concatenatedPasswordTokens);
                 this.xp.registerConverter(new TokenizedFieldConverter(passwordTokens));
-                xstream.registerBreifMapComplexType("tokenizedPassword", BackupRestoreItem.class);
+                xstream.registerBriefMapComplexType("tokenizedPassword", BackupRestoreItem.class);
             }
         }
 
-        this.dryRun =
-                Boolean.parseBoolean(jobParameters.getString(Backup.PARAM_DRY_RUN_MODE, "false"));
-        this.bestEffort =
-                Boolean.parseBoolean(
-                        jobParameters.getString(Backup.PARAM_BEST_EFFORT_MODE, "false"));
+        this.dryRun = Boolean.parseBoolean(jobParameters.getString(Backup.PARAM_DRY_RUN_MODE, "false"));
+        this.bestEffort = Boolean.parseBoolean(jobParameters.getString(Backup.PARAM_BEST_EFFORT_MODE, "false"));
 
         // Initialize Filters
         this.filters = new Filter[3];
@@ -274,14 +265,12 @@ public abstract class BackupRestoreItem<T> {
     private Map<String, String> parseConcatenatedPasswordTokens(String concatenatedPasswordTokens) {
         Map<String, String> tokenMap = new HashMap<>();
         if (concatenatedPasswordTokens != null) {
-            Arrays.stream(concatenatedPasswordTokens.split(","))
-                    .forEach(
-                            tokenPair -> {
-                                String[] tokenPairSplit = tokenPair.split("=");
-                                if (tokenPairSplit.length == 2) {
-                                    tokenMap.put(tokenPairSplit[0], tokenPairSplit[1]);
-                                }
-                            });
+            Arrays.stream(concatenatedPasswordTokens.split(",")).forEach(tokenPair -> {
+                String[] tokenPairSplit = tokenPair.split("=");
+                if (tokenPairSplit.length == 2) {
+                    tokenMap.put(tokenPairSplit[0], tokenPairSplit[1]);
+                }
+            });
         }
         return tokenMap;
     }
@@ -309,9 +298,7 @@ public abstract class BackupRestoreItem<T> {
     /** @param resource */
     public boolean logValidationExceptions(T resource, Throwable e) {
         CatalogException validationException =
-                e != null
-                        ? new CatalogException(e)
-                        : new CatalogException("Invalid resource: " + resource);
+                e != null ? new CatalogException(e) : new CatalogException("Invalid resource: " + resource);
         if (!isBestEffort()) {
             getCurrentJobExecution().addFailureExceptions(Arrays.asList(validationException));
             throw validationException;
@@ -322,15 +309,13 @@ public abstract class BackupRestoreItem<T> {
     }
 
     /** */
-    protected boolean filteredResource(
-            T resource, WorkspaceInfo ws, boolean strict, Class<?> clazz) {
+    protected boolean filteredResource(T resource, WorkspaceInfo ws, boolean strict, Class<?> clazz) {
         // Filtering Resources
         if (!filterIsValid()) {
             return false;
         }
         if (resource == null || clazz == WorkspaceInfo.class) {
-            if ((strict && ws == null)
-                    || (ws != null && getFilters()[0] != null && !getFilters()[0].evaluate(ws))) {
+            if ((strict && ws == null) || (ws != null && getFilters()[0] != null && !getFilters()[0].evaluate(ws))) {
                 LOGGER.info("Skipped filtered workspace: " + ws);
                 return true;
             }
@@ -342,13 +327,12 @@ public abstract class BackupRestoreItem<T> {
             } else if (clazz == LayerInfo.class) {
                 skip = getFilters()[2] != null && !getFilters()[2].evaluate(resource);
             } else if (clazz == ResourceInfo.class) {
-                skip =
-                        ((ResourceInfo) resource).getStore() == null
-                                ||
-                                // (getFilters()[1] != null &&
-                                // !getFilters()[1].evaluate(((ResourceInfo)
-                                // resource).getStore())) ||
-                                (getFilters()[2] != null && !getFilters()[2].evaluate(resource));
+                skip = ((ResourceInfo) resource).getStore() == null
+                        ||
+                        // (getFilters()[1] != null &&
+                        // !getFilters()[1].evaluate(((ResourceInfo)
+                        // resource).getStore())) ||
+                        (getFilters()[2] != null && !getFilters()[2].evaluate(resource));
             }
         }
         if (skip) {
@@ -363,10 +347,9 @@ public abstract class BackupRestoreItem<T> {
     }
 
     private MapConverter createParameterizingMapConverter(XStreamPersister xstream) {
-        return xstream.new BreifMapConverter() {
+        return xstream.new BriefMapConverter() {
             @Override
-            public void marshal(
-                    Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
+            public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
                 ParameterizedFieldsHolder fieldsToParametrize =
                         (ParameterizedFieldsHolder) context.get(ENCRYPTED_FIELDS_KEY);
 
@@ -391,17 +374,16 @@ public abstract class BackupRestoreItem<T> {
                                 && fieldsToParametrize.getFields().contains(entry.getKey())) {
 
                             writer.startNode("tokenizedPassword");
-                            str =
-                                    "${"
-                                            + fieldsToParametrize
-                                                    .getStoreInfo()
-                                                    .getWorkspace()
-                                                    .getName()
-                                            + ":"
-                                            + fieldsToParametrize.getStoreInfo().getName()
-                                            + "."
-                                            + entry.getKey().toString()
-                                            + ".encryptedValue}";
+                            str = "${"
+                                    + fieldsToParametrize
+                                            .getStoreInfo()
+                                            .getWorkspace()
+                                            .getName()
+                                    + ":"
+                                    + fieldsToParametrize.getStoreInfo().getName()
+                                    + "."
+                                    + entry.getKey().toString()
+                                    + ".encryptedValue}";
                             writer.setValue(str);
                             writer.endNode();
                         } else {
@@ -422,8 +404,7 @@ public abstract class BackupRestoreItem<T> {
     private ReflectionConverter createStoreConverter(XStreamPersister xstream) {
         return xstream.new StoreInfoConverter() {
             @Override
-            protected void doMarshal(
-                    Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
+            protected void doMarshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
                 GeoServerSecurityManager secMgr =
                         xstream.isEncryptPasswordFields() ? xstream.getSecurityManager() : null;
                 if (secMgr != null && secMgr.isInitialized()) {
@@ -431,8 +412,7 @@ public abstract class BackupRestoreItem<T> {
                     // connection
                     // parameter of this store
                     Set<String> encryptedFields =
-                            secMgr.getConfigPasswordEncryptionHelper()
-                                    .getEncryptedFields((StoreInfo) source);
+                            secMgr.getConfigPasswordEncryptionHelper().getEncryptedFields((StoreInfo) source);
 
                     if (!encryptedFields.isEmpty()) {
                         context.put(
@@ -449,8 +429,7 @@ public abstract class BackupRestoreItem<T> {
     public Converter getTokenizedPasswordConverter() {
         return new Converter() {
             @Override
-            public void marshal(
-                    Object source, HierarchicalStreamWriter writer, MarshallingContext context) {}
+            public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {}
 
             @Override
             public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
@@ -484,27 +463,19 @@ public abstract class BackupRestoreItem<T> {
 
     /** */
     private ResourceInfo unwrapSecured(ResourceInfo info) {
-        if (info instanceof SecuredFeatureTypeInfo)
-            return ((SecuredFeatureTypeInfo) info).unwrap(ResourceInfo.class);
-        if (info instanceof SecuredCoverageInfo)
-            return ((SecuredCoverageInfo) info).unwrap(ResourceInfo.class);
-        if (info instanceof SecuredWMSLayerInfo)
-            return ((SecuredWMSLayerInfo) info).unwrap(ResourceInfo.class);
-        if (info instanceof SecuredWMTSLayerInfo)
-            return ((SecuredWMTSLayerInfo) info).unwrap(ResourceInfo.class);
+        if (info instanceof SecuredFeatureTypeInfo typeInfo) return typeInfo.unwrap(ResourceInfo.class);
+        if (info instanceof SecuredCoverageInfo coverageInfo) return coverageInfo.unwrap(ResourceInfo.class);
+        if (info instanceof SecuredWMSLayerInfo layerInfo) return layerInfo.unwrap(ResourceInfo.class);
+        if (info instanceof SecuredWMTSLayerInfo layerInfo) return layerInfo.unwrap(ResourceInfo.class);
         return info;
     }
 
     /** */
     private StoreInfo unwrapSecured(StoreInfo info) {
-        if (info instanceof SecuredDataStoreInfo)
-            return ((SecuredDataStoreInfo) info).unwrap(StoreInfo.class);
-        if (info instanceof SecuredWMSLayerInfo)
-            return ((SecuredWMSLayerInfo) info).unwrap(StoreInfo.class);
-        if (info instanceof SecuredWMTSLayerInfo)
-            return ((SecuredWMTSLayerInfo) info).unwrap(StoreInfo.class);
-        if (info instanceof SecuredCoverageStoreInfo)
-            return ((SecuredCoverageStoreInfo) info).unwrap(StoreInfo.class);
+        if (info instanceof SecuredDataStoreInfo storeInfo) return storeInfo.unwrap(StoreInfo.class);
+        if (info instanceof SecuredWMSLayerInfo layerInfo) return layerInfo.unwrap(StoreInfo.class);
+        if (info instanceof SecuredWMTSLayerInfo layerInfo) return layerInfo.unwrap(StoreInfo.class);
+        if (info instanceof SecuredCoverageStoreInfo storeInfo) return storeInfo.unwrap(StoreInfo.class);
         return info;
     }
 
@@ -535,16 +506,11 @@ public abstract class BackupRestoreItem<T> {
         for (StoreInfo store : srcCatalog.getFacade().getStores(DataStoreInfo.class)) {
             DataStoreInfo targetDataStore = catalog.getDataStoreByName(store.getName());
             if (store != null && targetDataStore == null) {
-                WorkspaceInfo targetWorkspace =
-                        store.getWorkspace() != null
-                                ? catalog.getWorkspaceByName(store.getWorkspace().getName())
-                                : null;
-                targetDataStore =
-                        (DataStoreInfo)
-                                clone(
-                                        (DataStoreInfo) unwrap(unwrapSecured(store)),
-                                        targetWorkspace,
-                                        DataStoreInfo.class);
+                WorkspaceInfo targetWorkspace = store.getWorkspace() != null
+                        ? catalog.getWorkspaceByName(store.getWorkspace().getName())
+                        : null;
+                targetDataStore = (DataStoreInfo)
+                        clone((DataStoreInfo) unwrap(unwrapSecured(store)), targetWorkspace, DataStoreInfo.class);
                 if (targetDataStore != null) {
                     catalog.add(targetDataStore);
                     catalog.save(catalog.getDataStore(targetDataStore.getId()));
@@ -552,24 +518,18 @@ public abstract class BackupRestoreItem<T> {
             }
         }
         for (ResourceInfo resource : srcCatalog.getFacade().getResources(FeatureTypeInfo.class)) {
-            FeatureTypeInfo targetResource =
-                    catalog.getResourceByName(resource.getName(), FeatureTypeInfo.class);
+            FeatureTypeInfo targetResource = catalog.getResourceByName(resource.getName(), FeatureTypeInfo.class);
             if (resource != null && targetResource == null) {
                 DataStoreInfo targetDataStore =
                         catalog.getDataStoreByName(resource.getStore().getName());
-                NamespaceInfo targetNamespace =
-                        resource.getNamespace() != null
-                                ? catalog.getNamespaceByPrefix(resource.getNamespace().getPrefix())
-                                : null;
+                NamespaceInfo targetNamespace = resource.getNamespace() != null
+                        ? catalog.getNamespaceByPrefix(resource.getNamespace().getPrefix())
+                        : null;
                 if (targetDataStore != null) {
                     targetResource =
-                            clone(
-                                    (FeatureTypeInfo) unwrap(unwrapSecured(resource)),
-                                    targetNamespace,
-                                    targetDataStore);
+                            clone((FeatureTypeInfo) unwrap(unwrapSecured(resource)), targetNamespace, targetDataStore);
                     catalog.add(targetResource);
-                    catalog.save(
-                            catalog.getResource(targetResource.getId(), FeatureTypeInfo.class));
+                    catalog.save(catalog.getResource(targetResource.getId(), FeatureTypeInfo.class));
                 }
             }
         }
@@ -578,16 +538,11 @@ public abstract class BackupRestoreItem<T> {
         for (StoreInfo store : srcCatalog.getFacade().getStores(WMSStoreInfo.class)) {
             WMSStoreInfo targetWMSStore = catalog.getWMSStoreByName(store.getName());
             if (store != null && targetWMSStore == null) {
-                WorkspaceInfo targetWorkspace =
-                        store.getWorkspace() != null
-                                ? catalog.getWorkspaceByName(store.getWorkspace().getName())
-                                : null;
-                targetWMSStore =
-                        (WMSStoreInfo)
-                                clone(
-                                        (WMSStoreInfo) unwrap(unwrapSecured(store)),
-                                        targetWorkspace,
-                                        WMSStoreInfo.class);
+                WorkspaceInfo targetWorkspace = store.getWorkspace() != null
+                        ? catalog.getWorkspaceByName(store.getWorkspace().getName())
+                        : null;
+                targetWMSStore = (WMSStoreInfo)
+                        clone((WMSStoreInfo) unwrap(unwrapSecured(store)), targetWorkspace, WMSStoreInfo.class);
                 if (targetWMSStore != null) {
                     catalog.add(targetWMSStore);
                     catalog.save(catalog.getStore(targetWMSStore.getId(), WMSStoreInfo.class));
@@ -599,16 +554,11 @@ public abstract class BackupRestoreItem<T> {
         for (StoreInfo store : srcCatalog.getFacade().getStores(WMTSStoreInfo.class)) {
             WMTSStoreInfo targetWMTSStore = catalog.getWMTSStoreByName(store.getName());
             if (store != null && targetWMTSStore == null) {
-                WorkspaceInfo targetWorkspace =
-                        store.getWorkspace() != null
-                                ? catalog.getWorkspaceByName(store.getWorkspace().getName())
-                                : null;
-                targetWMTSStore =
-                        (WMTSStoreInfo)
-                                clone(
-                                        (WMTSStoreInfo) unwrap(unwrapSecured(store)),
-                                        targetWorkspace,
-                                        WMTSStoreInfo.class);
+                WorkspaceInfo targetWorkspace = store.getWorkspace() != null
+                        ? catalog.getWorkspaceByName(store.getWorkspace().getName())
+                        : null;
+                targetWMTSStore = (WMTSStoreInfo)
+                        clone((WMTSStoreInfo) unwrap(unwrapSecured(store)), targetWorkspace, WMTSStoreInfo.class);
                 if (targetWMTSStore != null) {
                     catalog.add(targetWMTSStore);
                     catalog.save(catalog.getStore(targetWMTSStore.getId(), WMTSStoreInfo.class));
@@ -620,16 +570,11 @@ public abstract class BackupRestoreItem<T> {
         for (StoreInfo store : srcCatalog.getFacade().getStores(CoverageStoreInfo.class)) {
             CoverageStoreInfo targetCoverageStore = catalog.getCoverageStoreByName(store.getName());
             if (store != null && targetCoverageStore == null) {
-                WorkspaceInfo targetWorkspace =
-                        store.getWorkspace() != null
-                                ? catalog.getWorkspaceByName(store.getWorkspace().getName())
-                                : null;
-                targetCoverageStore =
-                        (CoverageStoreInfo)
-                                clone(
-                                        (CoverageStoreInfo) unwrap(unwrapSecured(store)),
-                                        targetWorkspace,
-                                        CoverageStoreInfo.class);
+                WorkspaceInfo targetWorkspace = store.getWorkspace() != null
+                        ? catalog.getWorkspaceByName(store.getWorkspace().getName())
+                        : null;
+                targetCoverageStore = (CoverageStoreInfo) clone(
+                        (CoverageStoreInfo) unwrap(unwrapSecured(store)), targetWorkspace, CoverageStoreInfo.class);
                 if (targetCoverageStore != null) {
                     catalog.add(targetCoverageStore);
                     catalog.save(catalog.getCoverageStore(targetCoverageStore.getId()));
@@ -637,21 +582,16 @@ public abstract class BackupRestoreItem<T> {
             }
         }
         for (ResourceInfo resource : srcCatalog.getFacade().getResources(CoverageInfo.class)) {
-            CoverageInfo targetResource =
-                    catalog.getResourceByName(resource.getName(), CoverageInfo.class);
+            CoverageInfo targetResource = catalog.getResourceByName(resource.getName(), CoverageInfo.class);
             if (resource != null && targetResource == null) {
                 CoverageStoreInfo targetCoverageStore =
                         catalog.getCoverageStoreByName(resource.getStore().getName());
-                NamespaceInfo targetNamespace =
-                        resource.getNamespace() != null
-                                ? catalog.getNamespaceByPrefix(resource.getNamespace().getPrefix())
-                                : null;
+                NamespaceInfo targetNamespace = resource.getNamespace() != null
+                        ? catalog.getNamespaceByPrefix(resource.getNamespace().getPrefix())
+                        : null;
                 if (targetCoverageStore != null) {
                     targetResource =
-                            clone(
-                                    (CoverageInfo) unwrap(unwrapSecured(resource)),
-                                    targetNamespace,
-                                    targetCoverageStore);
+                            clone((CoverageInfo) unwrap(unwrapSecured(resource)), targetNamespace, targetCoverageStore);
                     catalog.add(targetResource);
                     catalog.save(catalog.getResource(targetResource.getId(), CoverageInfo.class));
                 }
@@ -662,10 +602,9 @@ public abstract class BackupRestoreItem<T> {
         for (StyleInfo s : srcCatalog.getFacade().getStyles()) {
             StyleInfo targetStyle = catalog.getStyleByName(s.getName());
             if (s != null && targetStyle == null) {
-                WorkspaceInfo targetWorkspace =
-                        s.getWorkspace() != null
-                                ? catalog.getWorkspaceByName(s.getWorkspace().getName())
-                                : null;
+                WorkspaceInfo targetWorkspace = s.getWorkspace() != null
+                        ? catalog.getWorkspaceByName(s.getWorkspace().getName())
+                        : null;
                 targetStyle = clone((StyleInfo) unwrap(s), targetWorkspace);
                 catalog.add(targetStyle);
                 catalog.save(catalog.getStyle(targetStyle.getId()));
@@ -680,21 +619,16 @@ public abstract class BackupRestoreItem<T> {
                 StoreInfo sourceStoreInfo = sourceResourceInfo.getStore();
                 StoreInfo targetStoreInfo = null;
                 if (sourceStoreInfo instanceof DataStoreInfo) {
-                    targetStoreInfo =
-                            catalog.getStoreByName(sourceStoreInfo.getName(), DataStoreInfo.class);
+                    targetStoreInfo = catalog.getStoreByName(sourceStoreInfo.getName(), DataStoreInfo.class);
                 } else if (sourceStoreInfo instanceof CoverageStoreInfo) {
-                    targetStoreInfo =
-                            catalog.getStoreByName(
-                                    sourceStoreInfo.getName(), CoverageStoreInfo.class);
+                    targetStoreInfo = catalog.getStoreByName(sourceStoreInfo.getName(), CoverageStoreInfo.class);
                 }
                 if (targetStoreInfo != null) {
                     ResourceInfo targetResourceInfo = null;
                     if (sourceStoreInfo instanceof DataStoreInfo) {
-                        targetResourceInfo =
-                                catalog.getFeatureTypeByName(sourceResourceInfo.getName());
+                        targetResourceInfo = catalog.getFeatureTypeByName(sourceResourceInfo.getName());
                     } else if (sourceStoreInfo instanceof CoverageStoreInfo) {
-                        targetResourceInfo =
-                                catalog.getCoverageByName(sourceResourceInfo.getName());
+                        targetResourceInfo = catalog.getCoverageByName(sourceResourceInfo.getName());
                     }
                     if (targetResourceInfo != null) {
                         targetLayerInfo = clone((LayerInfo) unwrap(l), targetResourceInfo);
@@ -709,10 +643,9 @@ public abstract class BackupRestoreItem<T> {
             for (LayerGroupInfo lg : srcCatalog.getFacade().getLayerGroups()) {
                 LayerGroupInfo targetLayerGroup = catalog.getLayerGroupByName(lg.getName());
                 if (targetLayerGroup == null) {
-                    WorkspaceInfo targetWorkspace =
-                            lg.getWorkspace() != null
-                                    ? catalog.getWorkspaceByName(lg.getWorkspace().getName())
-                                    : null;
+                    WorkspaceInfo targetWorkspace = lg.getWorkspace() != null
+                            ? catalog.getWorkspaceByName(lg.getWorkspace().getName())
+                            : null;
                     targetLayerGroup = clone((LayerGroupInfo) unwrap(lg), targetWorkspace);
                     catalog.add(targetLayerGroup);
                     catalog.save(catalog.getLayerGroup(targetLayerGroup.getId()));
@@ -726,16 +659,14 @@ public abstract class BackupRestoreItem<T> {
 
         // Set the original default WorkSpace and NameSpace
         if (srcCatalog.getFacade().getDefaultWorkspace() != null) {
-            WorkspaceInfo targetDefaultWorkspace =
-                    catalog.getWorkspaceByName(
-                            srcCatalog.getFacade().getDefaultWorkspace().getName());
+            WorkspaceInfo targetDefaultWorkspace = catalog.getWorkspaceByName(
+                    srcCatalog.getFacade().getDefaultWorkspace().getName());
             catalog.setDefaultWorkspace(targetDefaultWorkspace);
         }
 
         if (srcCatalog.getFacade().getDefaultNamespace() != null) {
-            NamespaceInfo targetDefaultNameSpace =
-                    catalog.getNamespaceByPrefix(
-                            srcCatalog.getFacade().getDefaultNamespace().getPrefix());
+            NamespaceInfo targetDefaultNameSpace = catalog.getNamespaceByPrefix(
+                    srcCatalog.getFacade().getDefaultNamespace().getPrefix());
             catalog.setDefaultNamespace(targetDefaultNameSpace);
         }
     }
@@ -777,47 +708,32 @@ public abstract class BackupRestoreItem<T> {
             if (source instanceof DataStoreInfoImpl) {
                 ((DataStoreInfoImpl) target).setDefault(((StoreInfoImpl) source).isDefault());
                 ((DataStoreInfoImpl) target)
-                        .setConnectionParameters(
-                                ((DataStoreInfoImpl) source).getConnectionParameters());
+                        .setConnectionParameters(((DataStoreInfoImpl) source).getConnectionParameters());
                 ((DataStoreInfoImpl) target).setMetadata(((StoreInfoImpl) source).getMetadata());
             }
 
-            if (source instanceof CoverageStoreInfoImpl) {
-                ((CoverageStoreInfoImpl) target).setURL(((CoverageStoreInfoImpl) source).getURL());
+            if (source instanceof CoverageStoreInfoImpl impl) {
+                ((CoverageStoreInfoImpl) target).setURL(impl.getURL());
             }
 
-            if (source instanceof WMSStoreInfoImpl) {
-                ((WMSStoreInfoImpl) target)
-                        .setCapabilitiesURL(((WMSStoreInfoImpl) source).getCapabilitiesURL());
-                ((WMSStoreInfoImpl) target).setUsername(((WMSStoreInfoImpl) source).getUsername());
-                ((WMSStoreInfoImpl) target).setPassword(((WMSStoreInfoImpl) source).getPassword());
-                ((WMSStoreInfoImpl) target)
-                        .setConnectTimeout(((WMSStoreInfoImpl) source).getConnectTimeout());
-                ((WMSStoreInfoImpl) target)
-                        .setMaxConnections(((WMSStoreInfoImpl) source).getMaxConnections());
-                ((WMSStoreInfoImpl) target)
-                        .setReadTimeout(((WMSStoreInfoImpl) source).getReadTimeout());
-                ((WMSStoreInfoImpl) target)
-                        .setUseConnectionPooling(
-                                ((WMSStoreInfoImpl) source).isUseConnectionPooling());
+            if (source instanceof WMSStoreInfoImpl impl) {
+                ((WMSStoreInfoImpl) target).setCapabilitiesURL(impl.getCapabilitiesURL());
+                ((WMSStoreInfoImpl) target).setUsername(impl.getUsername());
+                ((WMSStoreInfoImpl) target).setPassword(impl.getPassword());
+                ((WMSStoreInfoImpl) target).setConnectTimeout(impl.getConnectTimeout());
+                ((WMSStoreInfoImpl) target).setMaxConnections(impl.getMaxConnections());
+                ((WMSStoreInfoImpl) target).setReadTimeout(impl.getReadTimeout());
+                ((WMSStoreInfoImpl) target).setUseConnectionPooling(impl.isUseConnectionPooling());
             }
 
-            if (source instanceof WMTSStoreInfoImpl) {
-                ((WMTSStoreInfoImpl) target)
-                        .setCapabilitiesURL(((WMTSStoreInfoImpl) source).getCapabilitiesURL());
-                ((WMTSStoreInfoImpl) target)
-                        .setUsername(((WMTSStoreInfoImpl) source).getUsername());
-                ((WMTSStoreInfoImpl) target)
-                        .setPassword(((WMTSStoreInfoImpl) source).getPassword());
-                ((WMTSStoreInfoImpl) target)
-                        .setConnectTimeout(((WMTSStoreInfoImpl) source).getConnectTimeout());
-                ((WMTSStoreInfoImpl) target)
-                        .setMaxConnections(((WMTSStoreInfoImpl) source).getMaxConnections());
-                ((WMTSStoreInfoImpl) target)
-                        .setReadTimeout(((WMTSStoreInfoImpl) source).getReadTimeout());
-                ((WMTSStoreInfoImpl) target)
-                        .setUseConnectionPooling(
-                                ((WMTSStoreInfoImpl) source).isUseConnectionPooling());
+            if (source instanceof WMTSStoreInfoImpl impl) {
+                ((WMTSStoreInfoImpl) target).setCapabilitiesURL(impl.getCapabilitiesURL());
+                ((WMTSStoreInfoImpl) target).setUsername(impl.getUsername());
+                ((WMTSStoreInfoImpl) target).setPassword(impl.getPassword());
+                ((WMTSStoreInfoImpl) target).setConnectTimeout(impl.getConnectTimeout());
+                ((WMTSStoreInfoImpl) target).setMaxConnections(impl.getMaxConnections());
+                ((WMTSStoreInfoImpl) target).setReadTimeout(impl.getReadTimeout());
+                ((WMTSStoreInfoImpl) target).setUseConnectionPooling(impl.isUseConnectionPooling());
             }
         }
 
@@ -827,11 +743,10 @@ public abstract class BackupRestoreItem<T> {
                 ((DataStoreInfo) target).getDataStore(null);
 
                 // connection ok
-                LOGGER.config(
-                        "Processed data store '"
-                                + target.getName()
-                                + "', "
-                                + (target.isEnabled() ? "enabled" : "disabled"));
+                LOGGER.config("Processed data store '"
+                        + target.getName()
+                        + "', "
+                        + (target.isEnabled() ? "enabled" : "disabled"));
             } catch (Exception e) {
                 LOGGER.warning("Error connecting to '" + target.getName() + "'");
                 LOGGER.log(Level.INFO, "", e);
@@ -844,8 +759,7 @@ public abstract class BackupRestoreItem<T> {
         return target;
     }
 
-    protected FeatureTypeInfo clone(
-            FeatureTypeInfo source, NamespaceInfo namespace, StoreInfo store) {
+    protected FeatureTypeInfo clone(FeatureTypeInfo source, NamespaceInfo namespace, StoreInfo store) {
         FeatureTypeInfo target = catalog.getFactory().createFeatureType();
         target.setStore(store);
         target.setNamespace(namespace);
@@ -869,20 +783,14 @@ public abstract class BackupRestoreItem<T> {
         target.setSRS(source.getSRS());
         target.setTitle(source.getTitle());
 
-        if (source instanceof FeatureTypeInfoImpl) {
-            ((FeatureTypeInfoImpl) target)
-                    .setMetadata(((FeatureTypeInfoImpl) source).getMetadata());
-            ((FeatureTypeInfoImpl) target)
-                    .setMetadataLinks(((FeatureTypeInfoImpl) source).getMetadataLinks());
-            ((FeatureTypeInfoImpl) target).setAlias(((FeatureTypeInfoImpl) source).getAlias());
-            ((FeatureTypeInfoImpl) target)
-                    .setAttributes(((FeatureTypeInfoImpl) source).getAttributes());
-            ((FeatureTypeInfoImpl) target)
-                    .setDataLinks(((FeatureTypeInfoImpl) source).getDataLinks());
-            ((FeatureTypeInfoImpl) target)
-                    .setKeywords(((FeatureTypeInfoImpl) source).getKeywords());
-            ((FeatureTypeInfoImpl) target)
-                    .setResponseSRS(((FeatureTypeInfoImpl) source).getResponseSRS());
+        if (source instanceof FeatureTypeInfoImpl impl) {
+            ((FeatureTypeInfoImpl) target).setMetadata(impl.getMetadata());
+            ((FeatureTypeInfoImpl) target).setMetadataLinks(impl.getMetadataLinks());
+            ((FeatureTypeInfoImpl) target).setAlias(impl.getAlias());
+            ((FeatureTypeInfoImpl) target).setAttributes(impl.getAttributes());
+            ((FeatureTypeInfoImpl) target).setDataLinks(impl.getDataLinks());
+            ((FeatureTypeInfoImpl) target).setKeywords(impl.getKeywords());
+            ((FeatureTypeInfoImpl) target).setResponseSRS(impl.getResponseSRS());
         }
 
         return target;
@@ -909,21 +817,17 @@ public abstract class BackupRestoreItem<T> {
         target.setSRS(source.getSRS());
         target.setTitle(source.getTitle());
 
-        if (source instanceof CoverageInfoImpl) {
-            ((CoverageInfoImpl) target).setDataLinks(((CoverageInfoImpl) source).getDataLinks());
-            ((CoverageInfoImpl) target).setDimensions(((CoverageInfoImpl) source).getDimensions());
-            ((CoverageInfoImpl) target)
-                    .setInterpolationMethods(((CoverageInfoImpl) source).getInterpolationMethods());
-            ((CoverageInfoImpl) target).setKeywords(((CoverageInfoImpl) source).getKeywords());
-            ((CoverageInfoImpl) target).setMetadata(((CoverageInfoImpl) source).getMetadata());
-            ((CoverageInfoImpl) target)
-                    .setMetadataLinks(((CoverageInfoImpl) source).getMetadataLinks());
-            ((CoverageInfoImpl) target).setParameters(((CoverageInfoImpl) source).getParameters());
-            ((CoverageInfoImpl) target).setRequestSRS(((CoverageInfoImpl) source).getRequestSRS());
-            ((CoverageInfoImpl) target)
-                    .setResponseSRS(((CoverageInfoImpl) source).getResponseSRS());
-            ((CoverageInfoImpl) target)
-                    .setSupportedFormats(((CoverageInfoImpl) source).getSupportedFormats());
+        if (source instanceof CoverageInfoImpl impl) {
+            ((CoverageInfoImpl) target).setDataLinks(impl.getDataLinks());
+            ((CoverageInfoImpl) target).setDimensions(impl.getDimensions());
+            ((CoverageInfoImpl) target).setInterpolationMethods(impl.getInterpolationMethods());
+            ((CoverageInfoImpl) target).setKeywords(impl.getKeywords());
+            ((CoverageInfoImpl) target).setMetadata(impl.getMetadata());
+            ((CoverageInfoImpl) target).setMetadataLinks(impl.getMetadataLinks());
+            ((CoverageInfoImpl) target).setParameters(impl.getParameters());
+            ((CoverageInfoImpl) target).setRequestSRS(impl.getRequestSRS());
+            ((CoverageInfoImpl) target).setResponseSRS(impl.getResponseSRS());
+            ((CoverageInfoImpl) target).setSupportedFormats(impl.getSupportedFormats());
         }
 
         return target;
@@ -958,11 +862,11 @@ public abstract class BackupRestoreItem<T> {
         target.setTitle(source.getTitle());
         target.setType(source.getType());
 
-        if (source instanceof LayerInfoImpl) {
-            ((LayerInfoImpl) target).setAuthorityURLs(((LayerInfoImpl) source).getAuthorityURLs());
-            ((LayerInfoImpl) target).setIdentifiers(((LayerInfoImpl) source).getIdentifiers());
-            ((LayerInfoImpl) target).setMetadata(((LayerInfoImpl) source).getMetadata());
-            ((LayerInfoImpl) target).setStyles(((LayerInfoImpl) source).getStyles());
+        if (source instanceof LayerInfoImpl impl) {
+            ((LayerInfoImpl) target).setAuthorityURLs(impl.getAuthorityURLs());
+            ((LayerInfoImpl) target).setIdentifiers(impl.getIdentifiers());
+            ((LayerInfoImpl) target).setMetadata(impl.getMetadata());
+            ((LayerInfoImpl) target).setStyles(impl.getStyles());
         }
 
         return target;
@@ -1020,7 +924,8 @@ public abstract class BackupRestoreItem<T> {
             if (l != null) {
                 ((LayerGroupInfoImpl) target).setRootLayer(l);
                 if (source.getRootLayerStyle() != null) {
-                    StyleInfo s = catalog.getStyleByName(source.getRootLayerStyle().getName());
+                    StyleInfo s =
+                            catalog.getStyleByName(source.getRootLayerStyle().getName());
                     if (s != null) {
                         ((LayerGroupInfoImpl) target).setRootLayerStyle(s);
                     }
@@ -1040,8 +945,7 @@ public abstract class BackupRestoreItem<T> {
         }
 
         @Override
-        public void marshal(
-                Object source, HierarchicalStreamWriter writer, MarshallingContext context) {}
+        public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {}
 
         @Override
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {

@@ -6,6 +6,7 @@
 
 package org.geoserver.csw;
 
+import java.io.Serial;
 import org.geoserver.config.impl.ServiceInfoImpl;
 
 /**
@@ -16,6 +17,7 @@ import org.geoserver.config.impl.ServiceInfoImpl;
 public class CSWInfoImpl extends ServiceInfoImpl implements CSWInfo {
 
     /** */
+    @Serial
     private static final long serialVersionUID = -986573241436434750L;
 
     boolean canonicalSchemaLocation;

@@ -18,8 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  *
  * @author vickdw Created on 10/23/18
  */
-public class JasyptPasswordEncoderWrapper extends AbstractGeoserverPasswordEncoder
-        implements PasswordEncoder {
+public class JasyptPasswordEncoderWrapper extends AbstractGeoserverPasswordEncoder implements PasswordEncoder {
 
     // The password encryptor or string digester to be internally used
     private PasswordEncryptor passwordEncryptor = null;
@@ -32,9 +31,8 @@ public class JasyptPasswordEncoderWrapper extends AbstractGeoserverPasswordEncod
     }
 
     /**
-     * Sets a password encryptor to be used. Only one of <tt>setPasswordEncryptor</tt> or
-     * <tt>setStringDigester</tt> should be called. If both are, the last call will define which
-     * method will be used.
+     * Sets a password encryptor to be used. Only one of <tt>setPasswordEncryptor</tt> or <tt>setStringDigester</tt>
+     * should be called. If both are, the last call will define which method will be used.
      *
      * @param passwordEncryptor the password encryptor instance to be used.
      */
@@ -44,9 +42,8 @@ public class JasyptPasswordEncoderWrapper extends AbstractGeoserverPasswordEncod
     }
 
     /**
-     * Sets a string digester to be used. Only one of <tt>setPasswordEncryptor</tt> or
-     * <tt>setStringDigester</tt> should be called. If both are, the last call will define which
-     * method will be used.
+     * Sets a string digester to be used. Only one of <tt>setPasswordEncryptor</tt> or <tt>setStringDigester</tt> should
+     * be called. If both are, the last call will define which method will be used.
      *
      * @param stringDigester the string digester instance to be used.
      */
@@ -56,9 +53,8 @@ public class JasyptPasswordEncoderWrapper extends AbstractGeoserverPasswordEncod
     }
 
     /**
-     * Encodes a password. This implementation completely ignores salt, as jasypt's
-     * <tt>PasswordEncryptor</tt> and <tt>StringDigester</tt> normally use a random one. Thus, it
-     * can be safely passed as <tt>null</tt>.
+     * Encodes a password. This implementation completely ignores salt, as jasypt's <tt>PasswordEncryptor</tt> and
+     * <tt>StringDigester</tt> normally use a random one. Thus, it can be safely passed as <tt>null</tt>.
      *
      * @param rawPass The password to be encoded.
      * @param salt The salt, which will be ignored. It can be null.
@@ -73,9 +69,8 @@ public class JasyptPasswordEncoderWrapper extends AbstractGeoserverPasswordEncod
     }
 
     /**
-     * Checks a password's validity. This implementation completely ignores salt, as jasypt's
-     * <tt>PasswordEncryptor</tt> and <tt>StringDigester</tt> normally use a random one. Thus, it
-     * can be safely passed as <tt>null</tt>.
+     * Checks a password's validity. This implementation completely ignores salt, as jasypt's <tt>PasswordEncryptor</tt>
+     * and <tt>StringDigester</tt> normally use a random one. Thus, it can be safely passed as <tt>null</tt>.
      *
      * @param encPass The encrypted password (digest) against which to check.
      * @param rawPass The password to be checked.

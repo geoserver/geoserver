@@ -29,7 +29,6 @@ import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.junit.Test;
 
-@SuppressWarnings("unchecked")
 public class WorkspaceNamespaceConstencyTest {
 
     @Test
@@ -186,19 +185,18 @@ public class WorkspaceNamespaceConstencyTest {
     }
 
     protected StoreInfo hasNamespace(final String namespace) {
-        EasyMock.reportMatcher(
-                new IArgumentMatcher() {
-                    @Override
-                    public boolean matches(Object argument) {
-                        return namespace.equals(
-                                ((StoreInfo) argument).getConnectionParameters().get("namespace"));
-                    }
+        EasyMock.reportMatcher(new IArgumentMatcher() {
+            @Override
+            public boolean matches(Object argument) {
+                return namespace.equals(
+                        ((StoreInfo) argument).getConnectionParameters().get("namespace"));
+            }
 
-                    @Override
-                    public void appendTo(StringBuffer buffer) {
-                        buffer.append("hasNamespace '").append(namespace).append("'");
-                    }
-                });
+            @Override
+            public void appendTo(StringBuffer buffer) {
+                buffer.append("hasNamespace '").append(namespace).append("'");
+            }
+        });
         return null;
     }
 }

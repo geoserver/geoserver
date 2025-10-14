@@ -24,13 +24,17 @@ import org.springframework.util.Assert;
 /** @author carlo cancellieri - geosolutions SAS */
 public class Controller {
 
-    @Autowired JMSConfiguration config;
+    @Autowired
+    JMSConfiguration config;
 
-    @Autowired ReadOnlyGeoServerLoader loader;
+    @Autowired
+    ReadOnlyGeoServerLoader loader;
 
-    @Autowired ApplicationContext ctx;
+    @Autowired
+    ApplicationContext ctx;
 
-    @Autowired JMSContainer container;
+    @Autowired
+    JMSContainer container;
 
     public void setInstanceName(final String name) {
         Assert.notNull(name, "Unable to setup a null name");
@@ -86,24 +90,19 @@ public class Controller {
                 // .info("Connecting...");
                 if (container.connect()) {
                     // .info("Now GeoServer is registered with the destination");
-                    config.putConfiguration(
-                            ConnectionConfiguration.CONNECTION_KEY, Boolean.TRUE.toString());
+                    config.putConfiguration(ConnectionConfiguration.CONNECTION_KEY, Boolean.TRUE.toString());
                 } else {
-                    config.putConfiguration(
-                            ConnectionConfiguration.CONNECTION_KEY, Boolean.FALSE.toString());
-                    throw new IOException(
-                            "Connection error: Registration aborted due to a connection problem");
+                    config.putConfiguration(ConnectionConfiguration.CONNECTION_KEY, Boolean.FALSE.toString());
+                    throw new IOException("Connection error: Registration aborted due to a connection problem");
                 }
             }
         } else {
             if (container.isRunning()) {
                 // LOGGER.info("Disconnecting...");
                 if (container.disconnect()) {
-                    config.putConfiguration(
-                            ConnectionConfiguration.CONNECTION_KEY, Boolean.FALSE.toString());
+                    config.putConfiguration(ConnectionConfiguration.CONNECTION_KEY, Boolean.FALSE.toString());
                 } else {
-                    config.putConfiguration(
-                            ConnectionConfiguration.CONNECTION_KEY, Boolean.TRUE.toString());
+                    config.putConfiguration(ConnectionConfiguration.CONNECTION_KEY, Boolean.TRUE.toString());
                     throw new IOException("Disconnection error");
                 }
             }

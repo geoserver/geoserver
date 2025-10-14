@@ -27,8 +27,7 @@ public class OSEOWebTestSupport extends GeoServerWicketTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
-        GeoServerOpenSearchTestSupport.setupBasicOpenSearch(
-                testData, getCatalog(), getGeoServer(), false);
+        GeoServerOpenSearchTestSupport.setupBasicOpenSearch(testData, getCatalog(), getGeoServer(), false);
         OSEOInfo service = getGeoServer().getService(OSEOInfo.class);
         openSearchAccessStoreId = service.getOpenSearchAccessStoreId();
     }

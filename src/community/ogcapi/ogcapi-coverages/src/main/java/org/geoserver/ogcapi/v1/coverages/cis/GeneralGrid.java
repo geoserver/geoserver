@@ -6,10 +6,7 @@ package org.geoserver.ogcapi.v1.coverages.cis;
 
 import java.util.List;
 
-/**
- * A general n-D grid is defined through a sequence of axes, each of which can be of a particular
- * axis type.
- */
+/** A general n-D grid is defined through a sequence of axes, each of which can be of a particular axis type. */
 public class GeneralGrid {
 
     private String type = "GeneralGridCoverageType";
@@ -18,8 +15,7 @@ public class GeneralGrid {
     private List<Axis> axis;
     private GridLimits gridLimits;
 
-    public GeneralGrid(
-            String srsName, List<String> axisLabels, List<Axis> axis, GridLimits gridLimits) {
+    public GeneralGrid(String srsName, List<String> axisLabels, List<Axis> axis, GridLimits gridLimits) {
         this.srsName = srsName;
         this.axisLabels = axisLabels;
         this.axis = axis;

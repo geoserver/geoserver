@@ -45,8 +45,7 @@ public class GeoPackageProcessTileTest extends WPSTestSupport {
         Tile topLeftTile = gpkg.reader(gpkg.tiles().get(0), 1, 1, 0, 0, 0, 0).next();
         BufferedImage tileImg = ImageIO.read(new ByteArrayInputStream(topLeftTile.getData()));
 
-        ImageAssert.assertEquals(
-                URLs.urlToFile(getClass().getResource("wps_toplefttile.png")), tileImg, 250);
+        ImageAssert.assertEquals(URLs.urlToFile(getClass().getResource("wps_toplefttile.png")), tileImg, 250);
         gpkg.close();
     }
 

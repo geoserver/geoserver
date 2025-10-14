@@ -32,7 +32,7 @@ Our official documentation is contained as part of our `official code repository
 
 .. seealso::
    
-   To learn more about contributing to the GeoServer documentation, we recommend reading the `Documentatiom Guide <https://docs.geoserver.org/latest/en/docguide/>`__ and joining GeoServer Developers (see below).
+   To learn more about contributing to the GeoServer documentation, we recommend reading the `Documentation Guide <https://docs.geoserver.org/latest/en/docguide/>`__ and joining GeoServer Developers (see below).
 
 .. note::
    

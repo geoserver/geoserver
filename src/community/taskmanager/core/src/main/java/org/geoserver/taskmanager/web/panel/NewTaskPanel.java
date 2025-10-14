@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.web.panel;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
@@ -18,57 +19,51 @@ import org.geoserver.taskmanager.util.TaskManagerBeans;
 
 public class NewTaskPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -1678565286034119572L;
 
     public NewTaskPanel(String id, Configuration config) {
         super(id);
         add(new FeedbackPanel("feedback").setOutputMarkupId(true));
         add(new TextField<String>("name", new Model<String>()).setRequired(true));
-        add(
-                new DropDownChoice<String>(
-                                "type",
-                                new Model<String>(),
-                                new Model<ArrayList<String>>(getTaskTypeNames(config)))
-                        .setRequired(true)
-                        .setOutputMarkupId(true));
-        add(
-                new DropDownChoice<String>(
-                                "copy",
-                                new Model<String>(),
-                                new Model<ArrayList<String>>(
-                                        new ArrayList<String>(config.getTasks().keySet())))
-                        .setOutputMarkupId(true));
+        add(new DropDownChoice<String>(
+                        "type", new Model<String>(), new Model<ArrayList<String>>(getTaskTypeNames(config)))
+                .setRequired(true)
+                .setOutputMarkupId(true));
+        add(new DropDownChoice<String>(
+                        "copy",
+                        new Model<String>(),
+                        new Model<ArrayList<String>>(
+                                new ArrayList<String>(config.getTasks().keySet())))
+                .setOutputMarkupId(true));
 
-        getCopyField()
-                .add(
-                        new OnChangeAjaxBehavior() {
-                            private static final long serialVersionUID = -5575115165929413404L;
+        getCopyField().add(new OnChangeAjaxBehavior() {
+            @Serial
+            private static final long serialVersionUID = -5575115165929413404L;
 
-                            @Override
-                            protected void onUpdate(AjaxRequestTarget target) {
-                                if (getCopyField().getConvertedInput() != null) {
-                                    getTypeField()
-                                            .getModel()
-                                            .setObject(
-                                                    config.getTasks()
-                                                            .get(getCopyField().getConvertedInput())
-                                                            .getType());
-                                    target.add(getTypeField());
-                                }
-                            }
-                        });
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                if (getCopyField().getConvertedInput() != null) {
+                    getTypeField()
+                            .getModel()
+                            .setObject(config.getTasks()
+                                    .get(getCopyField().getConvertedInput())
+                                    .getType());
+                    target.add(getTypeField());
+                }
+            }
+        });
 
-        getTypeField()
-                .add(
-                        new OnChangeAjaxBehavior() {
-                            private static final long serialVersionUID = -1427899086435643578L;
+        getTypeField().add(new OnChangeAjaxBehavior() {
+            @Serial
+            private static final long serialVersionUID = -1427899086435643578L;
 
-                            @Override
-                            protected void onUpdate(AjaxRequestTarget target) {
-                                getCopyField().getModel().setObject(null);
-                                target.add(getCopyField());
-                            }
-                        });
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                getCopyField().getModel().setObject(null);
+                target.add(getCopyField());
+            }
+        });
     }
 
     private ArrayList<String> getTaskTypeNames(Configuration config) {

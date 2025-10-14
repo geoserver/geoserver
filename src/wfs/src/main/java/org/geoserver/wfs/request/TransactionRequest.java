@@ -37,10 +37,10 @@ import org.geotools.api.data.Transaction;
 public abstract class TransactionRequest extends RequestObject {
 
     public static TransactionRequest adapt(Object request) {
-        if (request instanceof TransactionType) {
-            return new WFS11((EObject) request);
-        } else if (request instanceof net.opengis.wfs20.TransactionType) {
-            return new WFS20((EObject) request);
+        if (request instanceof TransactionType type) {
+            return new WFS11(type);
+        } else if (request instanceof net.opengis.wfs20.TransactionType type) {
+            return new WFS20(type);
         }
         return null;
     }
@@ -123,8 +123,7 @@ public abstract class TransactionRequest extends RequestObject {
         @Override
         public List<TransactionElement> getElements() {
             List<TransactionElement> list = new ArrayList<>();
-            for (Iterator it = ((TransactionType) adaptee).getGroup().valueListIterator();
-                    it.hasNext(); ) {
+            for (Iterator it = ((TransactionType) adaptee).getGroup().valueListIterator(); it.hasNext(); ) {
                 EObject el = (EObject) it.next();
                 if (el instanceof DeleteElementType) {
                     list.add(new Delete.WFS11(el));
@@ -196,8 +195,7 @@ public abstract class TransactionRequest extends RequestObject {
 
         @Override
         public Replace createReplace() {
-            throw new UnsupportedOperationException(
-                    "Replace not supported in WFS 1.1 transactions");
+            throw new UnsupportedOperationException("Replace not supported in WFS 1.1 transactions");
         }
 
         @SuppressWarnings("unchecked") // EMF model without generics
@@ -212,25 +210,22 @@ public abstract class TransactionRequest extends RequestObject {
             tx.setVersion(request.getVersion());
             tx.setHandle(request.getHandle());
             tx.setLockId(request.getLockId());
-            tx.setReleaseAction(
-                    request.isReleaseActionAll()
-                            ? AllSomeType.ALL_LITERAL
-                            : AllSomeType.SOME_LITERAL);
+            tx.setReleaseAction(request.isReleaseActionAll() ? AllSomeType.ALL_LITERAL : AllSomeType.SOME_LITERAL);
             tx.setBaseUrl(request.getBaseUrl());
             tx.setExtendedProperties(request.getExtendedProperties());
 
             for (TransactionElement te : request.getElements()) {
-                if (te instanceof Delete) {
-                    tx.getDelete().add(Delete.WFS11.unadapt((Delete) te));
+                if (te instanceof Delete delete) {
+                    tx.getDelete().add(Delete.WFS11.unadapt(delete));
                 }
-                if (te instanceof Update) {
-                    tx.getUpdate().add(Update.WFS11.unadapt((Update) te));
+                if (te instanceof Update update) {
+                    tx.getUpdate().add(Update.WFS11.unadapt(update));
                 }
-                if (te instanceof Insert) {
-                    tx.getInsert().add(Insert.WFS11.unadapt((Insert) te));
+                if (te instanceof Insert insert) {
+                    tx.getInsert().add(Insert.WFS11.unadapt(insert));
                 }
-                if (te instanceof Native) {
-                    tx.getNative().add(Native.WFS11.unadapt((Native) te));
+                if (te instanceof Native native1) {
+                    tx.getNative().add(Native.WFS11.unadapt(native1));
                 }
             }
 
@@ -279,23 +274,20 @@ public abstract class TransactionRequest extends RequestObject {
 
         @Override
         public void setReleaseActionAll() {
-            ((net.opengis.wfs20.TransactionType) adaptee)
-                    .setReleaseAction(net.opengis.wfs20.AllSomeType.ALL);
+            ((net.opengis.wfs20.TransactionType) adaptee).setReleaseAction(net.opengis.wfs20.AllSomeType.ALL);
         }
 
         @Override
         public void setReleaseActionSome() {
-            ((net.opengis.wfs20.TransactionType) adaptee)
-                    .setReleaseAction(net.opengis.wfs20.AllSomeType.SOME);
+            ((net.opengis.wfs20.TransactionType) adaptee).setReleaseAction(net.opengis.wfs20.AllSomeType.SOME);
         }
 
         @Override
         public List<TransactionElement> getElements() {
             List<TransactionElement> list = new ArrayList<>();
-            Iterator it =
-                    ((net.opengis.wfs20.TransactionType) adaptee)
-                            .getAbstractTransactionAction()
-                            .iterator();
+            Iterator it = ((net.opengis.wfs20.TransactionType) adaptee)
+                    .getAbstractTransactionAction()
+                    .iterator();
             while (it.hasNext()) {
                 EObject el = (EObject) it.next();
                 if (el instanceof DeleteType) {
@@ -318,8 +310,7 @@ public abstract class TransactionRequest extends RequestObject {
         @Override
         public void setElements(List<TransactionElement> elements) {
             net.opengis.wfs20.TransactionType tx = (net.opengis.wfs20.TransactionType) adaptee;
-            EList<AbstractTransactionActionType> transactionElements =
-                    tx.getAbstractTransactionAction();
+            EList<AbstractTransactionActionType> transactionElements = tx.getAbstractTransactionAction();
             transactionElements.clear();
             elements.stream()
                     .map(e -> (AbstractTransactionActionType) e.getAdaptee())
@@ -373,10 +364,9 @@ public abstract class TransactionRequest extends RequestObject {
             if (pElement == null) {
                 return false;
             }
-            Iterator<AbstractTransactionActionType> it =
-                    ((net.opengis.wfs20.TransactionType) adaptee)
-                            .getAbstractTransactionAction()
-                            .iterator();
+            Iterator<AbstractTransactionActionType> it = ((net.opengis.wfs20.TransactionType) adaptee)
+                    .getAbstractTransactionAction()
+                    .iterator();
             while (it.hasNext()) {
                 EObject el = it.next();
                 if (pElement.getAdaptee() == el) {

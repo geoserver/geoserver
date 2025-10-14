@@ -38,10 +38,9 @@ public class CollectionDAPA extends AbstractDocument {
 
     public CollectionDAPA(String collectionId, FeatureTypeInfo info) throws IOException {
         this.id = collectionId;
-        this.description =
-                "The following endpoints are available to retrieve and process the "
-                        + collectionId
-                        + " zones in addition to the standard DGGS queries.\n The endpoints are described in the API definition and the links point to the specification of the operation in the OpenAPI definition with the available input parameters and the response schema";
+        this.description = "The following endpoints are available to retrieve and process the "
+                + collectionId
+                + " zones in addition to the standard DGGS queries.\n The endpoints are described in the API definition and the links point to the specification of the operation in the OpenAPI definition with the available input parameters and the response schema";
         this.variables = new DAPAVariables(collectionId, info);
         this.variables.getLinks().clear();
         this.minResolution = getMinResolution(info);
@@ -103,8 +102,9 @@ public class CollectionDAPA extends AbstractDocument {
         endpoint.setTitle(
                 "Retrieve a time series for selected variables for each zone in an area and apply functions on the values of each time series.");
         endpoint.setDescription(
-                "This DAPA endpoint returns a time aggregate for each zone in an area, in the selected time interval.\n"
-                        + "Each result contains contains the aggregation functions evaluated over the time series of each value associated to the zone.");
+                """
+                This DAPA endpoint returns a time aggregate for each zone in an area, in the selected time interval.
+                Each result contains contains the aggregation functions evaluated over the time series of each value associated to the zone.""");
         Link executeLink = getExecuteLink(collectionId, "processes/area:aggregate-time");
         endpoint.addLink(executeLink);
         endpoint.setMediaTypes(AGGREGATION_MEDIA_TYPES);
@@ -133,8 +133,7 @@ public class CollectionDAPA extends AbstractDocument {
                 "This DAPA endpoint returns a time series in the selected zone (or point), in the selected time interval or at the selected time instant (parameter datetime).");
         endpoint.setDescription(
                 "The time series contains values for each selected variable (parameter variables) for which a value can be interpolated at the location.");
-        Link executeLink =
-                getExecuteLink(collectionId, "processes/position:retrieve", "geom", center);
+        Link executeLink = getExecuteLink(collectionId, "processes/position:retrieve", "geom", center);
         endpoint.addLink(executeLink);
         endpoint.setMediaTypes(Arrays.asList("application/geo+json", "application/dggs+json"));
 
@@ -147,8 +146,7 @@ public class CollectionDAPA extends AbstractDocument {
                 "This DAPA endpoint returns values at the selected zone (parameter geom or zone_id) in the selected time interval or at the selected time instant (parameter datetime).");
         endpoint.setDescription(
                 "All values in the time interval for each requested variable (parameter variables) are aggregated and each of the requested statistical functions (parameter functions) is applied to the aggregated values.");
-        Link executeLink =
-                getExecuteLink(collectionId, "processes/position:aggregate-time", "geom", center);
+        Link executeLink = getExecuteLink(collectionId, "processes/position:aggregate-time", "geom", center);
         endpoint.addLink(executeLink);
         endpoint.setMediaTypes(AGGREGATION_MEDIA_TYPES);
 

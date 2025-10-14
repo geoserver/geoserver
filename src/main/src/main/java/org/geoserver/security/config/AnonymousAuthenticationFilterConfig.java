@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.config;
 
+import java.io.Serial;
 import org.geoserver.security.filter.GeoServerAnonymousAuthenticationFilter;
 
 /**
@@ -12,8 +13,8 @@ import org.geoserver.security.filter.GeoServerAnonymousAuthenticationFilter;
  *
  * @author mcr
  */
-public class AnonymousAuthenticationFilterConfig extends SecurityFilterConfig
-        implements SecurityAuthFilterConfig {
+public class AnonymousAuthenticationFilterConfig extends SecurityFilterConfig implements SecurityAuthFilterConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 }

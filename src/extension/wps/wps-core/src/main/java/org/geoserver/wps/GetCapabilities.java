@@ -6,9 +6,7 @@
 
 package org.geoserver.wps;
 
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 import net.opengis.ows11.KeywordsType;
@@ -29,7 +27,6 @@ import net.opengis.wps10.Wps10Factory;
 import org.eclipse.emf.common.util.ECollections;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.ows.Ows11Util;
-import org.geoserver.ows.util.RequestUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wps.process.GeoServerProcessors;
 import org.geotools.api.feature.type.Name;
@@ -52,17 +49,6 @@ public class GetCapabilities {
 
     @SuppressWarnings("unchecked") // EMF model without generics
     public WPSCapabilitiesType run(GetCapabilitiesType request) throws WPSException {
-        // do the version negotiation dance
-        List<String> provided = Collections.singletonList("1.0.0");
-        List<String> accepted = null;
-        if (request.getAcceptVersions() != null)
-            accepted = request.getAcceptVersions().getVersion();
-        String version = RequestUtils.getVersionOws11(provided, accepted);
-
-        if (!"1.0.0".equals(version)) {
-            throw new WPSException("Could not understand version:" + version);
-        }
-
         // TODO: add update sequence negotiation
 
         // encode the response
@@ -152,17 +138,14 @@ public class GetCapabilities {
             }
         }
         // sort it
-        ECollections.sort(
-                po.getProcess(),
-                (Comparator)
-                        (o1, o2) -> {
-                            ProcessBriefType pb1 = (ProcessBriefType) o1;
-                            ProcessBriefType pb2 = (ProcessBriefType) o2;
+        ECollections.sort(po.getProcess(), (Comparator) (o1, o2) -> {
+            ProcessBriefType pb1 = (ProcessBriefType) o1;
+            ProcessBriefType pb2 = (ProcessBriefType) o2;
 
-                            final String id1 = pb1.getIdentifier().getValue();
-                            final String id2 = pb2.getIdentifier().getValue();
-                            return id1.compareTo(id2);
-                        });
+            final String id1 = pb1.getIdentifier().getValue();
+            final String id2 = pb2.getIdentifier().getValue();
+            return id1.compareTo(id2);
+        });
 
         LanguagesType1 languages = wpsf.createLanguagesType1();
         caps.setLanguages(languages);

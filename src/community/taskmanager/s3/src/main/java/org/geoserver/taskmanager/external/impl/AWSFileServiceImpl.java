@@ -10,6 +10,7 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.S3ClientOptions;
+import java.io.Serial;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -22,6 +23,7 @@ import java.net.URLEncoder;
  */
 public class AWSFileServiceImpl extends AbstractS3FileServiceImpl {
 
+    @Serial
     private static final long serialVersionUID = -5960841858385823283L;
 
     private boolean anonymous;
@@ -71,13 +73,12 @@ public class AWSFileServiceImpl extends AbstractS3FileServiceImpl {
     @Override
     public URI getURI(String filePath) {
         try {
-            String uri =
-                    "s3://"
-                            + rootFolder
-                            + "/"
-                            + URLEncoder.encode(filePath.toString(), "UTF-8").replaceAll("%2F", "/")
-                            + "?useAnon="
-                            + anonymous;
+            String uri = "s3://"
+                    + rootFolder
+                    + "/"
+                    + URLEncoder.encode(filePath.toString(), "UTF-8").replaceAll("%2F", "/")
+                    + "?useAnon="
+                    + anonymous;
             if (awsRegion != null) {
                 uri += "&awsRegion=" + awsRegion;
             }
@@ -90,8 +91,7 @@ public class AWSFileServiceImpl extends AbstractS3FileServiceImpl {
     @Override
     public AmazonS3 getS3Client() {
         if (rootFolder == null) {
-            throw new IllegalStateException(
-                    "The rootfolder is required, add a property: alias.s3.rootfolder");
+            throw new IllegalStateException("The rootfolder is required, add a property: alias.s3.rootfolder");
         }
         Regions region;
         if (awsRegion != null) {
@@ -100,9 +100,8 @@ public class AWSFileServiceImpl extends AbstractS3FileServiceImpl {
             } catch (IllegalArgumentException e) {
                 // probably not great to have a default, but we can't just blow up if this
                 // property isn't set
-                LOGGER.warning(
-                        "AWS_REGION property is set, but not set correctly. "
-                                + "Check that the AWS_REGION property matches the Regions enum");
+                LOGGER.warning("AWS_REGION property is set, but not set correctly. "
+                        + "Check that the AWS_REGION property matches the Regions enum");
                 region = Regions.US_EAST_1;
             }
         } else {

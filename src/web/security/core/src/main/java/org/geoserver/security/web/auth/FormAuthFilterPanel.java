@@ -15,11 +15,9 @@ import org.geoserver.security.filter.GeoServerUserNamePasswordAuthenticationFilt
  *
  * @author Justin Deoliveira, OpenGeo
  */
-public class FormAuthFilterPanel
-        extends AuthenticationFilterPanel<UsernamePasswordAuthenticationFilterConfig> {
+public class FormAuthFilterPanel extends AuthenticationFilterPanel<UsernamePasswordAuthenticationFilterConfig> {
 
-    public FormAuthFilterPanel(
-            String id, IModel<UsernamePasswordAuthenticationFilterConfig> model) {
+    public FormAuthFilterPanel(String id, IModel<UsernamePasswordAuthenticationFilterConfig> model) {
         super(id, model);
 
         add(new TextField<>("usernameParameterName"));

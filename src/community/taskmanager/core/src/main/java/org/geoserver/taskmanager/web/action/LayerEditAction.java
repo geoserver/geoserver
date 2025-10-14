@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.web.action;
 
+import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class LayerEditAction implements Action {
 
+    @Serial
     private static final long serialVersionUID = 6978608806982184868L;
 
     private static final String NAME = "LayerEdit";
@@ -32,11 +34,9 @@ public class LayerEditAction implements Action {
             IModel<String> valueModel,
             List<String> dependentValues) {
         String[] prefixname = valueModel.getObject().split(":", 2);
-        onPage.setResponsePage(
-                new ResourceConfigurationPage(
-                                prefixname.length > 1 ? prefixname[0] : null,
-                                prefixname[prefixname.length - 1])
-                        .setReturnPage(onPage));
+        onPage.setResponsePage(new ResourceConfigurationPage(
+                        prefixname.length > 1 ? prefixname[0] : null, prefixname[prefixname.length - 1])
+                .setReturnPage(onPage));
     }
 
     @Override

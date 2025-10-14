@@ -5,6 +5,7 @@
  */
 package org.geoserver.importer.transform;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +25,7 @@ import org.geotools.util.logging.Logging;
  */
 public abstract class TransformChain<T extends ImportTransform> implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 4090734786225748502L;
 
     static Logger LOGGER = Logging.getLogger(TransformChain.class);
@@ -89,9 +91,7 @@ public abstract class TransformChain<T extends ImportTransform> implements Seria
         for (PreTransform tx : filter(transforms, PreTransform.class)) {
             try {
                 LOGGER.log(
-                        Level.FINE,
-                        "Task {0}, pre-transform {1} running on data {2}",
-                        new Object[] {item, tx, data});
+                        Level.FINE, "Task {0}, pre-transform {1} running on data {2}", new Object[] {item, tx, data});
                 tx.apply(item, data);
             } catch (Exception e) {
                 error(tx, e);
@@ -104,9 +104,8 @@ public abstract class TransformChain<T extends ImportTransform> implements Seria
         for (PostTransform tx : filter(transforms, PostTransform.class)) {
             try {
                 LOGGER.log(
-                        Level.FINE,
-                        "Task {0}, post-transform {1} running using data {2}",
-                        new Object[] {task, tx, data});
+                        Level.FINE, "Task {0}, post-transform {1} running using data {2}", new Object[] {task, tx, data
+                        });
                 tx.apply(task, data);
             } catch (Exception e) {
                 error(tx, e);

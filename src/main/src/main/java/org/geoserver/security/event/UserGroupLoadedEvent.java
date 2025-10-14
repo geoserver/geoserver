@@ -6,20 +6,22 @@
 
 package org.geoserver.security.event;
 
+import java.io.Serial;
 import java.util.EventObject;
 import org.geoserver.security.GeoServerUserGroupService;
 
 /**
  * Event fired after loading user/groups from the backend store into memory
  *
- * <p>This event is intended for stateful services of type {@link GeoServerUserGroupService}. If the
- * backend is changed externally and a reload occurs, listeners should be notified.
+ * <p>This event is intended for stateful services of type {@link GeoServerUserGroupService}. If the backend is changed
+ * externally and a reload occurs, listeners should be notified.
  *
  * @author christian
  */
 public class UserGroupLoadedEvent extends EventObject {
 
     /** */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public UserGroupLoadedEvent(GeoServerUserGroupService source) {

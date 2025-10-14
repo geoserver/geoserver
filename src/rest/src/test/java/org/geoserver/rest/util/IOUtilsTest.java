@@ -28,60 +28,58 @@ import org.junit.rules.TemporaryFolder;
 
 public class IOUtilsTest {
 
-    @Rule public TemporaryFolder temp = new TemporaryFolder(new File("target"));
+    @Rule
+    public TemporaryFolder temp = new TemporaryFolder(new File("target"));
 
-    /** URLCheck used to restrict content to schemas.opengis.net. */
-    private static URLChecker opengisChecker =
-            new URLChecker() {
-                @Override
-                public String getName() {
-                    return "schemas.opengis.net";
-                }
+    /** URLCheck used to restrict content to https://geoserver.org/about. */
+    private static URLChecker geoserverAboutChecker = new URLChecker() {
+        @Override
+        public String getName() {
+            return "aboutGeoServer";
+        }
 
-                @Override
-                public boolean isEnabled() {
-                    return true;
-                }
+        @Override
+        public boolean isEnabled() {
+            return true;
+        }
 
-                @Override
-                public boolean confirm(String s) {
-                    return s.startsWith("https://schemas.opengis.net/");
-                }
-            };
+        @Override
+        public boolean confirm(String s) {
+            return s.startsWith("https://geoserver.org/about");
+        }
+    };
 
-    private static URLChecker tmpChecker =
-            new URLChecker() {
-                String tmpDir =
-                        new File(System.getProperty("java.io.tmpdir"))
-                                .getAbsoluteFile()
-                                .toURI()
-                                .toString();
+    private static URLChecker tmpChecker = new URLChecker() {
+        String tmpDir = new File(System.getProperty("java.io.tmpdir"))
+                .getAbsoluteFile()
+                .toURI()
+                .toString();
 
-                @Override
-                public String getName() {
-                    return "java.io.tmpdir";
-                }
+        @Override
+        public String getName() {
+            return "java.io.tmpdir";
+        }
 
-                @Override
-                public boolean isEnabled() {
-                    return true;
-                }
+        @Override
+        public boolean isEnabled() {
+            return true;
+        }
 
-                @Override
-                public boolean confirm(String s) {
-                    return s.startsWith(tmpDir);
-                }
-            };
+        @Override
+        public boolean confirm(String s) {
+            return s.startsWith(tmpDir);
+        }
+    };
 
     @BeforeClass
     public static void setupURLCheckers() throws Exception {
-        URLCheckers.register(opengisChecker);
+        URLCheckers.register(geoserverAboutChecker);
         URLCheckers.register(tmpChecker);
     }
 
     @AfterClass
     public static void teardownURLCheckers() throws Exception {
-        URLCheckers.deregister(opengisChecker);
+        URLCheckers.deregister(geoserverAboutChecker);
         URLCheckers.deregister(tmpChecker);
     }
 
@@ -114,12 +112,11 @@ public class IOUtilsTest {
     public void testUpload() throws IOException {
         File destDir = temp.newFolder("upload").toPath().toFile();
         destDir.mkdirs();
-        Resource newFile = new GeoServerResourceLoader(destDir).get("vehicles.xml");
+        Resource newFile = new GeoServerResourceLoader(destDir).get("about.html");
 
-        URL uploadURL =
-                new URL("https://schemas.opengis.net/movingfeatures/1.0/examples/vehicles.xml");
+        URL uploadURL = new URL("https://geoserver.org/about");
         IOUtils.upload(uploadURL, newFile);
-        assertSame("uploaded", newFile.getType(), Resource.Type.RESOURCE);
+        assertSame("uploaded", Resource.Type.RESOURCE, newFile.getType());
 
         URL osgeoURL = new URL("https://geoserver.org/img/osgeo-logo.png");
         Resource logoFile = new GeoServerResourceLoader(destDir).get("osgeo-logo.png");
@@ -128,6 +125,6 @@ public class IOUtilsTest {
             fail("geoserver.org blocked");
         } catch (Exception failed) {
         }
-        assertSame("blocked", logoFile.getType(), Resource.Type.UNDEFINED);
+        assertSame("blocked", Resource.Type.UNDEFINED, logoFile.getType());
     }
 }

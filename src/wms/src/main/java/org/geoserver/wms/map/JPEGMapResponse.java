@@ -5,7 +5,6 @@
  */
 package org.geoserver.wms.map;
 
-import com.sun.media.imageioimpl.common.PackageUtil;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -26,10 +25,7 @@ import org.geotools.image.ImageWorker;
 public final class JPEGMapResponse extends RenderedImageMapResponse {
 
     /** Logger. */
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(JPEGMapResponse.class.toString());
-
-    private static final boolean CODEC_LIB_AVAILABLE = PackageUtil.isCodecLibAvailable();
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(JPEGMapResponse.class.toString());
 
     /**
      * Default capabilities for JPEG .
@@ -45,8 +41,7 @@ public final class JPEGMapResponse extends RenderedImageMapResponse {
      *
      * <p>We should soon support multipage tiff.
      */
-    private static MapProducerCapabilities CAPABILITIES =
-            new MapProducerCapabilities(true, false, false);
+    private static MapProducerCapabilities CAPABILITIES = new MapProducerCapabilities(true, false, false);
 
     /** the only MIME type this map producer supports */
     private static final String MIME_TYPE = "image/jpeg";
@@ -56,17 +51,15 @@ public final class JPEGMapResponse extends RenderedImageMapResponse {
     }
 
     @Override
-    public void formatImageOutputStream(
-            RenderedImage image, OutputStream outStream, WMSMapContent mapContent)
+    public void formatImageOutputStream(RenderedImage image, OutputStream outStream, WMSMapContent mapContent)
             throws IOException {
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("About to write a JPEG image.");
         }
 
-        boolean JPEGNativeAcc = wms.getJPEGNativeAcceleration() && CODEC_LIB_AVAILABLE;
         float quality = (100 - wms.getJpegCompression()) / 100.0f;
         ImageWorker iw = new ImageWorker(image);
-        iw.writeJPEG(outStream, "JPEG", quality, JPEGNativeAcc);
+        iw.writeJPEG(outStream, "JPEG", quality);
         RasterCleaner.addImage(iw.getRenderedImage());
 
         if (LOGGER.isLoggable(Level.FINE)) {

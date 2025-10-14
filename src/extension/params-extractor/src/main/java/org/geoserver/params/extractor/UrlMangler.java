@@ -36,11 +36,10 @@ public class UrlMangler implements URLMangler {
 
     private HttpServletRequest getHttpRequest(Request request) {
         HttpServletRequest httpRequest = request.getHttpRequest();
-        while (httpRequest instanceof HttpServletRequestWrapper
-                && !(httpRequest instanceof RequestWrapper)) {
+        while (httpRequest instanceof HttpServletRequestWrapper && !(httpRequest instanceof RequestWrapper)) {
             ServletRequest servlet = ((HttpServletRequestWrapper) httpRequest).getRequest();
-            if (servlet instanceof HttpServletRequest) {
-                httpRequest = (HttpServletRequest) servlet;
+            if (servlet instanceof HttpServletRequest servletRequest) {
+                httpRequest = servletRequest;
             } else {
                 throw new RuntimeException("Only HttpRequest is supported");
             }
@@ -49,20 +48,16 @@ public class UrlMangler implements URLMangler {
     }
 
     @Override
-    public void mangleURL(
-            StringBuilder baseURL, StringBuilder path, Map<String, String> kvp, URLType type) {
+    public void mangleURL(StringBuilder baseURL, StringBuilder path, Map<String, String> kvp, URLType type) {
         Request request = Dispatcher.REQUEST.get();
         if (request == null || !"GetCapabilities".equalsIgnoreCase(request.getRequest())) {
-            Utils.debug(
-                    LOGGER,
-                    "Not a capabilities request, ignored by the parameters extractor URL mangler.");
+            Utils.debug(LOGGER, "Not a capabilities request, ignored by the parameters extractor URL mangler.");
             return;
         }
         forwardOriginalUri(request, path);
         Map<String, Object> requestRawKvp = request.getRawKvp();
         HttpServletRequest httpRequest = getHttpRequest(request);
-        if (httpRequest instanceof RequestWrapper) {
-            RequestWrapper requestWrapper = (RequestWrapper) httpRequest;
+        if (httpRequest instanceof RequestWrapper requestWrapper) {
             Map<String, String[]> parameters = requestWrapper.getOriginalParameters();
             requestRawKvp = new KvpMap<>(KvpUtils.normalize(parameters));
         }
@@ -73,8 +68,8 @@ public class UrlMangler implements URLMangler {
     private void forwardOriginalUri(Request request, StringBuilder path) {
         HttpServletRequest httpRequest = getHttpRequest(request);
         String requestUri = httpRequest.getRequestURI();
-        if (httpRequest instanceof RequestWrapper) {
-            requestUri = ((RequestWrapper) httpRequest).getOriginalRequestURI();
+        if (httpRequest instanceof RequestWrapper wrapper) {
+            requestUri = wrapper.getOriginalRequestURI();
         }
         int i = httpRequest.getContextPath().length() + 1;
         String pathInfo = requestUri.substring(i);
@@ -89,8 +84,7 @@ public class UrlMangler implements URLMangler {
             }
             Map.Entry<String, Object> rawParameter =
                     Utils.caseInsensitiveSearch(echoParameter.getParameter(), requestRawKvp);
-            if (rawParameter != null
-                    && Utils.caseInsensitiveSearch(echoParameter.getParameter(), kvp) == null) {
+            if (rawParameter != null && Utils.caseInsensitiveSearch(echoParameter.getParameter(), kvp) == null) {
                 if (rawParameter.getValue() instanceof String) {
                     kvp.put(rawParameter.getKey(), (String) rawParameter.getValue());
                 }

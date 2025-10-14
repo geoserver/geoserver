@@ -38,11 +38,10 @@ import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
 
 /**
- * Handles the persistence of configuration files when changes happen to the catalog, such as
- * rename, remove and change of workspace.
+ * Handles the persistence of configuration files when changes happen to the catalog, such as rename, remove and change
+ * of workspace.
  */
-public class GeoServerConfigPersister
-        implements CatalogListener, ConfigurationListener, ExtensionPriority {
+public class GeoServerConfigPersister implements CatalogListener, ConfigurationListener, ExtensionPriority {
 
     /** logging instance */
     static Logger LOGGER = Logging.getLogger("org.geoserver.config");
@@ -61,32 +60,32 @@ public class GeoServerConfigPersister
     public void handleAddEvent(CatalogAddEvent event) {
         Object source = event.getSource();
         try {
-            if (source instanceof WorkspaceInfo) {
-                addWorkspace((WorkspaceInfo) source);
-            } else if (source instanceof NamespaceInfo) {
-                addNamespace((NamespaceInfo) source);
-            } else if (source instanceof DataStoreInfo) {
-                addDataStore((DataStoreInfo) source);
-            } else if (source instanceof WMTSStoreInfo) {
-                addWMTSStore((WMTSStoreInfo) source);
-            } else if (source instanceof WMSStoreInfo) {
-                addWMSStore((WMSStoreInfo) source);
-            } else if (source instanceof FeatureTypeInfo) {
-                addFeatureType((FeatureTypeInfo) source);
-            } else if (source instanceof CoverageStoreInfo) {
-                addCoverageStore((CoverageStoreInfo) source);
-            } else if (source instanceof CoverageInfo) {
-                addCoverage((CoverageInfo) source);
-            } else if (source instanceof WMSLayerInfo) {
-                addWMSLayer((WMSLayerInfo) source);
-            } else if (source instanceof WMTSLayerInfo) {
-                addWMTSLayer((WMTSLayerInfo) source);
-            } else if (source instanceof LayerInfo) {
-                addLayer((LayerInfo) source);
-            } else if (source instanceof StyleInfo) {
-                addStyle((StyleInfo) source);
-            } else if (source instanceof LayerGroupInfo) {
-                addLayerGroup((LayerGroupInfo) source);
+            if (source instanceof WorkspaceInfo ws) {
+                addWorkspace(ws);
+            } else if (source instanceof NamespaceInfo ns) {
+                addNamespace(ns);
+            } else if (source instanceof DataStoreInfo ds) {
+                addDataStore(ds);
+            } else if (source instanceof WMTSStoreInfo wmtss) {
+                addWMTSStore(wmtss);
+            } else if (source instanceof WMSStoreInfo wmss) {
+                addWMSStore(wmss);
+            } else if (source instanceof FeatureTypeInfo fti) {
+                addFeatureType(fti);
+            } else if (source instanceof CoverageStoreInfo csi) {
+                addCoverageStore(csi);
+            } else if (source instanceof CoverageInfo ci) {
+                addCoverage(ci);
+            } else if (source instanceof WMSLayerInfo wmsi) {
+                addWMSLayer(wmsi);
+            } else if (source instanceof WMTSLayerInfo wmtsi) {
+                addWMTSLayer(wmtsi);
+            } else if (source instanceof LayerInfo li) {
+                addLayer(li);
+            } else if (source instanceof StyleInfo si) {
+                addStyle(si);
+            } else if (source instanceof LayerGroupInfo lgi) {
+                addLayerGroup(lgi);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -103,46 +102,48 @@ public class GeoServerConfigPersister
             if (i > -1) {
                 String newName = (String) event.getNewValues().get(i);
 
-                if (source instanceof WorkspaceInfo) {
-                    renameWorkspace((WorkspaceInfo) source, newName);
-                } else if (source instanceof StoreInfo) {
-                    renameStore((StoreInfo) source, newName);
-                } else if (source instanceof ResourceInfo) {
-                    renameResource((ResourceInfo) source, newName);
-                } else if (source instanceof StyleInfo) {
-                    renameStyle((StyleInfo) source, newName);
-                } else if (source instanceof LayerGroupInfo) {
-                    renameLayerGroup((LayerGroupInfo) source, newName);
+                if (source instanceof WorkspaceInfo ws) {
+                    renameWorkspace(ws, newName);
+                } else if (source instanceof StoreInfo s) {
+                    renameStore(s, newName);
+                } else if (source instanceof ResourceInfo r) {
+                    renameResource(r, newName);
+                } else if (source instanceof StyleInfo s) {
+                    renameStyle(s, newName);
+                } else if (source instanceof LayerGroupInfo lg) {
+                    renameLayerGroup(lg, newName);
                 }
             }
 
             // handle the case of a store changing workspace
-            if (source instanceof StoreInfo) {
+            if (source instanceof StoreInfo info) {
                 i = event.getPropertyNames().indexOf("workspace");
                 if (i > -1) {
-                    WorkspaceInfo newWorkspace = (WorkspaceInfo) event.getNewValues().get(i);
-                    Resource oldDir = dd.get((StoreInfo) source);
+                    WorkspaceInfo newWorkspace =
+                            (WorkspaceInfo) event.getNewValues().get(i);
+                    Resource oldDir = dd.get(info);
                     moveResToDir(oldDir, dd.get(newWorkspace));
                 }
             }
 
             // handle the case of a feature type changing store
-            if (source instanceof FeatureTypeInfo) {
+            if (source instanceof FeatureTypeInfo info) {
                 i = event.getPropertyNames().indexOf("store");
                 if (i > -1) {
                     StoreInfo newStore = (StoreInfo) event.getNewValues().get(i);
-                    Resource oldDir = dd.get((FeatureTypeInfo) source);
+                    Resource oldDir = dd.get(info);
                     Resource newDir = dd.get(newStore);
                     moveResToDir(oldDir, newDir);
                 }
             }
 
             // handle the case of a layer group changing workspace
-            if (source instanceof LayerGroupInfo) {
+            if (source instanceof LayerGroupInfo info) {
                 i = event.getPropertyNames().indexOf("workspace");
                 if (i > -1) {
-                    final WorkspaceInfo newWorkspace = (WorkspaceInfo) event.getNewValues().get(i);
-                    final Resource oldRes = dd.config((LayerGroupInfo) source);
+                    final WorkspaceInfo newWorkspace =
+                            (WorkspaceInfo) event.getNewValues().get(i);
+                    final Resource oldRes = dd.config(info);
                     final Resource newDir = dd.getLayerGroups(newWorkspace);
                     moveResToDir(oldRes, newDir);
                 }
@@ -152,7 +153,8 @@ public class GeoServerConfigPersister
             if (source instanceof Catalog) {
                 i = event.getPropertyNames().indexOf("defaultWorkspace");
                 if (i > -1) {
-                    WorkspaceInfo defWorkspace = (WorkspaceInfo) event.getNewValues().get(i);
+                    WorkspaceInfo defWorkspace =
+                            (WorkspaceInfo) event.getNewValues().get(i);
                     // SG don't bother with a default workspace if we do not have one
                     if (defWorkspace != null) {
                         persist(defWorkspace, dd.getWorkspaces("default.xml"));
@@ -169,32 +171,32 @@ public class GeoServerConfigPersister
     public void handlePostModifyEvent(CatalogPostModifyEvent event) {
         Object source = event.getSource();
         try {
-            if (source instanceof WorkspaceInfo) {
-                modifyWorkspace((WorkspaceInfo) source);
-            } else if (source instanceof DataStoreInfo) {
-                modifyDataStore((DataStoreInfo) source);
-            } else if (source instanceof WMTSStoreInfo) {
-                modifyWMTSStore((WMTSStoreInfo) source);
-            } else if (source instanceof WMSStoreInfo) {
-                modifyWMSStore((WMSStoreInfo) source);
-            } else if (source instanceof NamespaceInfo) {
-                modifyNamespace((NamespaceInfo) source);
-            } else if (source instanceof FeatureTypeInfo) {
-                modifyFeatureType((FeatureTypeInfo) source);
-            } else if (source instanceof CoverageStoreInfo) {
-                modifyCoverageStore((CoverageStoreInfo) source);
-            } else if (source instanceof CoverageInfo) {
-                modifyCoverage((CoverageInfo) source);
-            } else if (source instanceof WMSLayerInfo) {
-                modifyWMSLayer((WMSLayerInfo) source);
-            } else if (source instanceof WMTSLayerInfo) {
-                modifyWMTSLayer((WMTSLayerInfo) source);
-            } else if (source instanceof LayerInfo) {
-                modifyLayer((LayerInfo) source);
-            } else if (source instanceof StyleInfo) {
-                modifyStyle((StyleInfo) source);
-            } else if (source instanceof LayerGroupInfo) {
-                modifyLayerGroup((LayerGroupInfo) source);
+            if (source instanceof WorkspaceInfo ws) {
+                modifyWorkspace(ws);
+            } else if (source instanceof DataStoreInfo ds) {
+                modifyDataStore(ds);
+            } else if (source instanceof WMTSStoreInfo wmtss) {
+                modifyWMTSStore(wmtss);
+            } else if (source instanceof WMSStoreInfo wmss) {
+                modifyWMSStore(wmss);
+            } else if (source instanceof NamespaceInfo ns) {
+                modifyNamespace(ns);
+            } else if (source instanceof FeatureTypeInfo fti) {
+                modifyFeatureType(fti);
+            } else if (source instanceof CoverageStoreInfo cs) {
+                modifyCoverageStore(cs);
+            } else if (source instanceof CoverageInfo ci) {
+                modifyCoverage(ci);
+            } else if (source instanceof WMSLayerInfo wmsi) {
+                modifyWMSLayer(wmsi);
+            } else if (source instanceof WMTSLayerInfo wmtsi) {
+                modifyWMTSLayer(wmtsi);
+            } else if (source instanceof LayerInfo li) {
+                modifyLayer(li);
+            } else if (source instanceof StyleInfo si) {
+                modifyStyle(si);
+            } else if (source instanceof LayerGroupInfo lgi) {
+                modifyLayerGroup(lgi);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -205,32 +207,32 @@ public class GeoServerConfigPersister
     public void handleRemoveEvent(CatalogRemoveEvent event) {
         Object source = event.getSource();
         try {
-            if (source instanceof WorkspaceInfo) {
-                removeWorkspace((WorkspaceInfo) source);
-            } else if (source instanceof NamespaceInfo) {
-                removeNamespace((NamespaceInfo) source);
-            } else if (source instanceof DataStoreInfo) {
-                removeDataStore((DataStoreInfo) source);
-            } else if (source instanceof FeatureTypeInfo) {
-                removeFeatureType((FeatureTypeInfo) source);
-            } else if (source instanceof CoverageStoreInfo) {
-                removeCoverageStore((CoverageStoreInfo) source);
-            } else if (source instanceof CoverageInfo) {
-                removeCoverage((CoverageInfo) source);
-            } else if (source instanceof WMTSStoreInfo) {
-                removeWMTSStore((WMTSStoreInfo) source);
-            } else if (source instanceof WMTSLayerInfo) {
-                removeWMTSLayer((WMTSLayerInfo) source);
-            } else if (source instanceof WMSStoreInfo) {
-                removeWMSStore((WMSStoreInfo) source);
-            } else if (source instanceof WMSLayerInfo) {
-                removeWMSLayer((WMSLayerInfo) source);
-            } else if (source instanceof LayerInfo) {
-                removeLayer((LayerInfo) source);
-            } else if (source instanceof StyleInfo) {
-                removeStyle((StyleInfo) source);
-            } else if (source instanceof LayerGroupInfo) {
-                removeLayerGroup((LayerGroupInfo) source);
+            if (source instanceof WorkspaceInfo ws) {
+                removeWorkspace(ws);
+            } else if (source instanceof NamespaceInfo ns) {
+                removeNamespace(ns);
+            } else if (source instanceof DataStoreInfo ds) {
+                removeDataStore(ds);
+            } else if (source instanceof FeatureTypeInfo fti) {
+                removeFeatureType(fti);
+            } else if (source instanceof CoverageStoreInfo csi) {
+                removeCoverageStore(csi);
+            } else if (source instanceof CoverageInfo ci) {
+                removeCoverage(ci);
+            } else if (source instanceof WMTSStoreInfo wmtss) {
+                removeWMTSStore(wmtss);
+            } else if (source instanceof WMTSLayerInfo wmtsi) {
+                removeWMTSLayer(wmtsi);
+            } else if (source instanceof WMSStoreInfo wmss) {
+                removeWMSStore(wmss);
+            } else if (source instanceof WMSLayerInfo wmsi) {
+                removeWMSLayer(wmsi);
+            } else if (source instanceof LayerInfo li) {
+                removeLayer(li);
+            } else if (source instanceof StyleInfo si) {
+                removeStyle(si);
+            } else if (source instanceof LayerGroupInfo lgi) {
+                removeLayerGroup(lgi);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -239,10 +241,7 @@ public class GeoServerConfigPersister
 
     @Override
     public void handleGlobalChange(
-            GeoServerInfo global,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {}
+            GeoServerInfo global, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {}
 
     @Override
     public void handlePostGlobalChange(GeoServerInfo global) {
@@ -260,10 +259,7 @@ public class GeoServerConfigPersister
 
     @Override
     public void handleSettingsModified(
-            SettingsInfo settings,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {
+            SettingsInfo settings, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
         // handle case of settings changing workspace
         int i = propertyNames.indexOf("workspace");
         if (i > -1) {
@@ -292,10 +288,7 @@ public class GeoServerConfigPersister
 
     @Override
     public void handleLoggingChange(
-            LoggingInfo logging,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {}
+            LoggingInfo logging, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {}
 
     @Override
     public void handlePostLoggingChange(LoggingInfo logging) {
@@ -310,10 +303,7 @@ public class GeoServerConfigPersister
 
     @Override
     public void handleServiceChange(
-            ServiceInfo service,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {}
+            ServiceInfo service, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {}
 
     @Override
     public void handlePostServiceChange(ServiceInfo service) {}
@@ -603,7 +593,7 @@ public class GeoServerConfigPersister
     private void renameLayerGroup(LayerGroupInfo lg, String newName) throws IOException {
         LOGGER.fine("Renaming layer group " + lg.getName() + " to " + newName);
         Resource xml = dd.config(lg);
-        renameRes(xml, String.format("%s.xml", newName));
+        renameRes(xml, "%s.xml".formatted(newName));
     }
 
     private void modifyLayerGroup(LayerGroupInfo lg) throws IOException {

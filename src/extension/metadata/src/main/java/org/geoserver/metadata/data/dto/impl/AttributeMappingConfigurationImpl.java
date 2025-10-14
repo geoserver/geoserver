@@ -4,19 +4,21 @@
  */
 package org.geoserver.metadata.data.dto.impl;
 
+import java.io.Serial;
 import org.geoserver.metadata.data.dto.AttributeMappingConfiguration;
 import org.geoserver.metadata.data.dto.MappingTypeEnum;
 
 /**
  * Object that matches yaml structure.
  *
- * <p>The part describes one mapping between the geoserver fields en the xml metadata from
- * geonetwork. The geonetwork field is described as an xpath expression.
+ * <p>The part describes one mapping between the geoserver fields en the xml metadata from geonetwork. The geonetwork
+ * field is described as an xpath expression.
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
 public class AttributeMappingConfigurationImpl implements AttributeMappingConfiguration {
 
+    @Serial
     private static final long serialVersionUID = -2528238667226248014L;
 
     String geoserver;

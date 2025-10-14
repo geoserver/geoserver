@@ -4,9 +4,11 @@
  */
 package org.geoserver.security.web.csp;
 
+import com.google.common.base.Preconditions;
 import com.google.common.net.HttpHeaders;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.Serial;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -54,6 +56,7 @@ import org.geoserver.web.GeoServerSecuredPage;
 /** Page for configuring the Content-Security-Policy HTTP response header. */
 public class CSPConfigurationPage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = -5935887226717780789L;
 
     private TextArea<String> testResultField;
@@ -71,47 +74,48 @@ public class CSPConfigurationPage extends GeoServerSecuredPage {
         form.add(new CheckBox("allowOverride", new PropertyModel<>(model, "allowOverride")));
         form.add(new CheckBox("injectProxyBase", new PropertyModel<>(model, "injectProxyBase")));
         form.add(new TextArea<>("remoteResources", new PropertyModel<>(model, "remoteResources")));
+        form.add(new TextArea<>("formAction", new PropertyModel<>(model, "formAction")));
         form.add(new TextArea<>("frameAncestors", new PropertyModel<>(model, "frameAncestors")));
         form.add(new CSPPolicyPanel("policies", this.config));
         form.add(new TextArea<>("testUrl", new PropertyModel<>(this, "testUrl")));
-        form.add(
-                new AjaxSubmitLink("testLink") {
-                    private static final long serialVersionUID = 1700932575669734348L;
+        form.add(new AjaxSubmitLink("testLink") {
+            @Serial
+            private static final long serialVersionUID = 1700932575669734348L;
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        testContentSecurityPolicy(target);
-                    }
-                });
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                testContentSecurityPolicy(target);
+            }
+        });
         this.testResultField = new TextArea<>("testResult", new Model<>(""));
         form.add(this.testResultField.setOutputMarkupId(true).setEnabled(false));
-        form.add(
-                new SubmitLink("save", form) {
-                    private static final long serialVersionUID = -8900006356449150190L;
+        form.add(new SubmitLink("save", form) {
+            @Serial
+            private static final long serialVersionUID = -8900006356449150190L;
 
-                    @Override
-                    public void onSubmit() {
-                        saveConfiguration(true);
-                    }
-                });
-        form.add(
-                new Button("apply") {
-                    private static final long serialVersionUID = -3327108081898697618L;
+            @Override
+            public void onSubmit() {
+                saveConfiguration(true);
+            }
+        });
+        form.add(new Button("apply") {
+            @Serial
+            private static final long serialVersionUID = -3327108081898697618L;
 
-                    @Override
-                    public void onSubmit() {
-                        saveConfiguration(false);
-                    }
-                });
-        form.add(
-                new Button("cancel") {
-                    private static final long serialVersionUID = 7567566240358171893L;
+            @Override
+            public void onSubmit() {
+                saveConfiguration(false);
+            }
+        });
+        form.add(new Button("cancel") {
+            @Serial
+            private static final long serialVersionUID = 7567566240358171893L;
 
-                    @Override
-                    public void onSubmit() {
-                        doReturn();
-                    }
-                });
+            @Override
+            public void onSubmit() {
+                doReturn();
+            }
+        });
         add(form);
     }
 
@@ -126,6 +130,9 @@ public class CSPConfigurationPage extends GeoServerSecuredPage {
      */
     private void saveConfiguration(boolean doReturn) {
         try {
+            Preconditions.checkArgument(
+                    !this.config.getFormAction().contains("'none'"),
+                    "form-action containing 'none' is not allowed here");
             getCSPHeaderDAO().setConfig(new CSPConfiguration(this.config));
             if (doReturn) {
                 doReturn();
@@ -172,10 +179,8 @@ public class CSPConfigurationPage extends GeoServerSecuredPage {
         String pathInfo = path.startsWith(context) ? path.substring(context.length()) : path;
         Map<String, List<String>> listMap = new LinkedHashMap<>();
         URLEncodedUtils.parse(url.getQuery(), StandardCharsets.UTF_8, '&')
-                .forEach(
-                        p ->
-                                listMap.computeIfAbsent(p.getName(), x -> new ArrayList<>())
-                                        .add(p.getValue()));
+                .forEach(p -> listMap.computeIfAbsent(p.getName(), x -> new ArrayList<>())
+                        .add(p.getValue()));
         Map<String, String[]> parameterMap = new LinkedHashMap<>();
         listMap.forEach((k, v) -> parameterMap.put(k, v.toArray(new String[v.size()])));
         return new HttpServletRequest() {
@@ -216,8 +221,7 @@ public class CSPConfigurationPage extends GeoServerSecuredPage {
             }
 
             @Override
-            public AsyncContext startAsync(
-                    ServletRequest servletRequest, ServletResponse servletResponse) {
+            public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse) {
                 throw new UnsupportedOperationException();
             }
 
@@ -482,8 +486,7 @@ public class CSPConfigurationPage extends GeoServerSecuredPage {
             }
 
             @Override
-            public <T extends HttpUpgradeHandler> T upgrade(Class<T> aClass)
-                    throws IOException, ServletException {
+            public <T extends HttpUpgradeHandler> T upgrade(Class<T> aClass) throws IOException, ServletException {
                 throw new UnsupportedOperationException();
             }
 

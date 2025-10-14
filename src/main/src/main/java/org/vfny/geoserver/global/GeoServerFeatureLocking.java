@@ -18,15 +18,13 @@ import org.geotools.api.filter.Filter;
 /**
  * GeoServer wrapper for backend Geotools2 DataStore.
  *
- * <p>Support FeatureSource decorator for FeatureTypeInfo that takes care of mapping the
- * FeatureTypeInfo's FeatureSource with the schema and definition query configured for it.
+ * <p>Support FeatureSource decorator for FeatureTypeInfo that takes care of mapping the FeatureTypeInfo's FeatureSource
+ * with the schema and definition query configured for it.
  *
- * <p>Because GeoServer requires that attributes always be returned in the same order we need a way
- * to smoothly inforce this. Could we use this class to do so? It would need to support writing and
- * locking though.
+ * <p>Because GeoServer requires that attributes always be returned in the same order we need a way to smoothly inforce
+ * this. Could we use this class to do so? It would need to support writing and locking though.
  *
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class GeoServerFeatureLocking extends GeoServerFeatureStore implements SimpleFeatureLocking {
     /**
@@ -35,8 +33,7 @@ public class GeoServerFeatureLocking extends GeoServerFeatureStore implements Si
      * @param locking GeoTools2 FeatureSource
      * @param settings Settings for this store
      */
-    GeoServerFeatureLocking(
-            FeatureLocking<SimpleFeatureType, SimpleFeature> locking, Settings settings) {
+    GeoServerFeatureLocking(FeatureLocking<SimpleFeatureType, SimpleFeature> locking, Settings settings) {
         super(locking, settings);
     }
 
@@ -48,8 +45,7 @@ public class GeoServerFeatureLocking extends GeoServerFeatureStore implements Si
     /**
      * Description ...
      *
-     * @see
-     *     org.vfny.geoserver.global.GeoServerFeatureStore#setFeatureLock(org.geotools.api.data.FeatureLock)
+     * @see FeatureLocking#setFeatureLock(org.geotools.api.data.FeatureLock)
      */
     @Override
     @SuppressWarnings("unchecked")

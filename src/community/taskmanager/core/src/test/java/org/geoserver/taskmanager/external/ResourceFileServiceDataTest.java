@@ -10,7 +10,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.platform.resource.FileSystemResourceStore;
@@ -33,7 +33,8 @@ import org.junit.rules.TemporaryFolder;
  */
 public class ResourceFileServiceDataTest extends AbstractTaskManagerTest {
 
-    @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
 
     public ResourceStore resourceStore;
 
@@ -116,9 +117,10 @@ public class ResourceFileServiceDataTest extends AbstractTaskManagerTest {
 
         Assert.assertEquals(5, folders.size());
         Assert.assertTrue(folders.contains("foo"));
-        Assert.assertTrue(folders.contains(Paths.get("foo", "bar").toString()));
-        Assert.assertTrue(folders.contains(Paths.get("foo", "bar", "foobar").toString()));
-        Assert.assertTrue(folders.contains(Paths.get("foo", "bar", "foobar", "barfoo").toString()));
+        Assert.assertTrue(folders.contains(Path.of("foo", "bar").toString()));
+        Assert.assertTrue(folders.contains(Path.of("foo", "bar", "foobar").toString()));
+        Assert.assertTrue(
+                folders.contains(Path.of("foo", "bar", "foobar", "barfoo").toString()));
         Assert.assertTrue(folders.contains("hello"));
     }
 }

@@ -19,26 +19,22 @@ import org.geoserver.security.impl.GeoServerRole;
  * GeoserverRoleStore valStore = new RoleStoreValidationWrapper(store);
  * valStore.addRole(..);
  * valStore.store()
- * </code> Since the {@link GeoServerRoleStore} interface does not allow to throw {@link
- * RoleServiceException} objects directly, these objects a wrapped into an IOException. Use {@link
- * IOException#getCause()} to get the proper exception.
+ * </code> Since the {@link GeoServerRoleStore} interface does not allow to throw {@link RoleServiceException} objects
+ * directly, these objects a wrapped into an IOException. Use {@link IOException#getCause()} to get the proper
+ * exception.
  *
  * @author christian
  */
-public class RoleStoreValidationWrapper extends RoleServiceValidationWrapper
-        implements GeoServerRoleStore {
+public class RoleStoreValidationWrapper extends RoleServiceValidationWrapper implements GeoServerRoleStore {
 
     /** @see RoleServiceValidationWrapper */
     public RoleStoreValidationWrapper(
-            GeoServerRoleStore store,
-            boolean checkAgainstRules,
-            GeoServerUserGroupService... services) {
+            GeoServerRoleStore store, boolean checkAgainstRules, GeoServerUserGroupService... services) {
         super(store, checkAgainstRules, services);
     }
 
     /** @see RoleServiceValidationWrapper */
-    public RoleStoreValidationWrapper(
-            GeoServerRoleStore store, GeoServerUserGroupService... services) {
+    public RoleStoreValidationWrapper(GeoServerRoleStore store, GeoServerUserGroupService... services) {
         super(store, services);
     }
 

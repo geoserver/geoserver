@@ -31,7 +31,10 @@ import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.config.CatalogModificationUserUpdater;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.rest.RestBaseController;
 import org.geotools.api.data.DataStore;
 import org.geotools.api.data.DataStoreFinder;
@@ -99,9 +102,8 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
         Object datastores = ((JSONObject) json).getJSONObject("dataStores").get("dataStore");
         assertNotNull(datastores);
 
-        if (datastores instanceof JSONArray) {
-            assertEquals(
-                    catalog.getDataStoresByWorkspace("sf").size(), ((JSONArray) datastores).size());
+        if (datastores instanceof JSONArray array) {
+            assertEquals(catalog.getDataStoresByWorkspace("sf").size(), array.size());
         } else {
             assertEquals(1, catalog.getDataStoresByWorkspace("sf").size());
         }
@@ -126,13 +128,15 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
     @Test
     public void testPutAllUnauthorized() throws Exception {
         assertEquals(
-                405, putAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores").getStatus());
+                405,
+                putAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores").getStatus());
     }
 
     @Test
     public void testDeleteAllUnauthorized() throws Exception {
         assertEquals(
-                405, deleteAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores").getStatus());
+                405,
+                deleteAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores").getStatus());
     }
 
     @Test
@@ -145,9 +149,7 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
         assertXpathExists("/dataStore/connectionParameters", dom);
         assertThat(
                 xp.evaluate("/dataStore/featureTypes/atom:link/@href", dom),
-                endsWith(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/sf/datastores/sf/featuretypes.xml"));
+                endsWith(RestBaseController.ROOT_PATH + "/workspaces/sf/datastores/sf/featuretypes.xml"));
     }
 
     @Test
@@ -159,8 +161,7 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
         assertXpathExists("/dataStore/connectionParameters", dom);
         assertXpathEvaluatesTo("true", "/dataStore/enabled", dom);
 
-        String xml =
-                "<dataStore>" + "<name>sf</name>" + "<enabled>false</enabled>" + "</dataStore>";
+        String xml = "<dataStore>" + "<name>sf</name>" + "<enabled>false</enabled>" + "</dataStore>";
 
         MockHttpServletResponse response =
                 putAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores/sf", xml, "text/xml");
@@ -236,26 +237,24 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
     public void testPostAsXML() throws Exception {
 
         File dir = setupNewDataStore();
-        String xml =
-                "<dataStore>"
-                        + "<name>newDataStore</name>"
-                        + "<connectionParameters>"
-                        + "<namespace><string>sf</string></namespace>"
-                        + "<directory>"
-                        + "<string>"
-                        + dir.getAbsolutePath()
-                        + "</string>"
-                        + "</directory>"
-                        + "</connectionParameters>"
-                        + "<workspace>sf</workspace>"
-                        + "</dataStore>";
+        String xml = "<dataStore>"
+                + "<name>newDataStore</name>"
+                + "<connectionParameters>"
+                + "<namespace><string>sf</string></namespace>"
+                + "<directory>"
+                + "<string>"
+                + dir.getAbsolutePath()
+                + "</string>"
+                + "</directory>"
+                + "</connectionParameters>"
+                + "<workspace>sf</workspace>"
+                + "</dataStore>";
         MockHttpServletResponse response =
                 postAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores", xml, "text/xml");
         assertEquals(201, response.getStatus());
         assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
-        assertTrue(
-                response.getHeader("Location").endsWith("/workspaces/sf/datastores/newDataStore"));
+        assertTrue(response.getHeader("Location").endsWith("/workspaces/sf/datastores/newDataStore"));
 
         DataStoreInfo newDataStore = catalog.getDataStoreByName("newDataStore");
         assertNotNull(newDataStore);
@@ -268,25 +267,23 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
     @Test
     public void testPostAsXMLNoWorkspace() throws Exception {
         File dir = setupNewDataStore();
-        String xml =
-                "<dataStore>"
-                        + "<name>newDataStore</name>"
-                        + "<connectionParameters>"
-                        + "<namespace><string>sf</string></namespace>"
-                        + "<directory>"
-                        + "<string>"
-                        + dir.getAbsolutePath()
-                        + "</string>"
-                        + "</directory>"
-                        + "</connectionParameters>"
-                        + "</dataStore>";
+        String xml = "<dataStore>"
+                + "<name>newDataStore</name>"
+                + "<connectionParameters>"
+                + "<namespace><string>sf</string></namespace>"
+                + "<directory>"
+                + "<string>"
+                + dir.getAbsolutePath()
+                + "</string>"
+                + "</directory>"
+                + "</connectionParameters>"
+                + "</dataStore>";
         MockHttpServletResponse response =
                 postAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores", xml, "text/xml");
         assertEquals(201, response.getStatus());
         assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
-        assertTrue(
-                response.getHeader("Location").endsWith("/workspaces/sf/datastores/newDataStore"));
+        assertTrue(response.getHeader("Location").endsWith("/workspaces/sf/datastores/newDataStore"));
 
         DataStoreInfo newDataStore = catalog.getDataStoreByName("newDataStore");
         assertNotNull(newDataStore);
@@ -300,26 +297,24 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
     public void testPostAsJSON() throws Exception {
         removeStore("sf", "newDataStore");
         File dir = setupNewDataStore();
-        String json =
-                "{'dataStore':{"
-                        + "'connectionParameters': {"
-                        + "'namespace': {'string':'sf'},"
-                        + "'directory': {'string':'"
-                        + dir.getAbsolutePath().replace('\\', '/')
-                        + "'}"
-                        + "},"
-                        + "'workspace':'sf',"
-                        + "'name':'newDataStore',"
-                        + "}"
-                        + "}";
+        String json = "{'dataStore':{"
+                + "'connectionParameters': {"
+                + "'namespace': {'string':'sf'},"
+                + "'directory': {'string':'"
+                + dir.getAbsolutePath().replace('\\', '/')
+                + "'}"
+                + "},"
+                + "'workspace':'sf',"
+                + "'name':'newDataStore',"
+                + "}"
+                + "}";
         MockHttpServletResponse response =
                 postAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores", json, "text/json");
 
         assertEquals(201, response.getStatus());
         assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
-        assertTrue(
-                response.getHeader("Location").endsWith("/workspaces/sf/datastores/newDataStore"));
+        assertTrue(response.getHeader("Location").endsWith("/workspaces/sf/datastores/newDataStore"));
 
         DataStoreInfo newDataStore = catalog.getDataStoreByName("newDataStore");
         assertNotNull(newDataStore);
@@ -331,8 +326,7 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPostToResource() throws Exception {
-        String xml =
-                "<dataStore>" + "<name>sf</name>" + "<enabled>false</enabled>" + "</dataStore>";
+        String xml = "<dataStore>" + "<name>sf</name>" + "<enabled>false</enabled>" + "</dataStore>";
 
         MockHttpServletResponse response =
                 postAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores/sf", xml, "text/xml");
@@ -344,8 +338,7 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
         Document dom = getAsDOM(ROOT_PATH + "/workspaces/sf/datastores/sf.xml");
         assertXpathEvaluatesTo("true", "/dataStore/enabled", dom);
 
-        String xml =
-                "<dataStore>" + "<name>sf</name>" + "<enabled>false</enabled>" + "</dataStore>";
+        String xml = "<dataStore>" + "<name>sf</name>" + "<enabled>false</enabled>" + "</dataStore>";
 
         MockHttpServletResponse response =
                 putAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores/sf", xml, "text/xml");
@@ -363,18 +356,17 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
         Document dom = getAsDOM(ROOT_PATH + "/workspaces/sf/datastores/sf.xml");
         assertXpathEvaluatesTo("2", "count(//dataStore/connectionParameters/*)", dom);
 
-        String xml =
-                "<dataStore>"
-                        + "<name>sf</name>"
-                        + "<connectionParameters>"
-                        + "<one>"
-                        + "<string>1</string>"
-                        + "</one>"
-                        + "<two>"
-                        + "<string>2</string>"
-                        + "</two>"
-                        + "</connectionParameters>"
-                        + "</dataStore>";
+        String xml = "<dataStore>"
+                + "<name>sf</name>"
+                + "<connectionParameters>"
+                + "<one>"
+                + "<string>1</string>"
+                + "</one>"
+                + "<two>"
+                + "<string>2</string>"
+                + "</two>"
+                + "</connectionParameters>"
+                + "</dataStore>";
 
         MockHttpServletResponse response =
                 putAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores/sf", xml, "text/xml");
@@ -406,8 +398,7 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
         String xml = "<dataStore>" + "<name>changed</name>" + "</dataStore>";
 
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        ROOT_PATH + "/workspaces/sf/datastores/nonExistant", xml, "text/xml");
+                putAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores/nonExistant", xml, "text/xml");
         assertEquals(404, response.getStatus());
     }
 
@@ -423,23 +414,22 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
     public void testDelete() throws Exception {
         removeStore("sf", "newDataStore");
         File dir = setupNewDataStore();
-        String xml =
-                "<dataStore>"
-                        + "<name>newDataStore</name>"
-                        + "<connectionParameters>"
-                        + "<entry>"
-                        + "<string>namespace</string>"
-                        + "<string>sf</string>"
-                        + "</entry>"
-                        + "<entry>"
-                        + "<string>directory</string>"
-                        + "<string>"
-                        + dir.getAbsolutePath()
-                        + "</string>"
-                        + "</entry>"
-                        + "</connectionParameters>"
-                        + "<workspace>sf</workspace>"
-                        + "</dataStore>";
+        String xml = "<dataStore>"
+                + "<name>newDataStore</name>"
+                + "<connectionParameters>"
+                + "<entry>"
+                + "<string>namespace</string>"
+                + "<string>sf</string>"
+                + "</entry>"
+                + "<entry>"
+                + "<string>directory</string>"
+                + "<string>"
+                + dir.getAbsolutePath()
+                + "</string>"
+                + "</entry>"
+                + "</connectionParameters>"
+                + "<workspace>sf</workspace>"
+                + "</dataStore>";
         MockHttpServletResponse response =
                 postAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores", xml, "text/xml");
         assertEquals(201, response.getStatus());
@@ -457,7 +447,8 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
     public void testDeleteNonEmptyForbidden() throws Exception {
         assertEquals(
                 403,
-                deleteAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores/sf").getStatus());
+                deleteAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores/sf")
+                        .getStatus());
     }
 
     @Test
@@ -509,29 +500,28 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
     private void createDataStore(String workspace, String name) throws Exception {
         removeStore(workspace, name);
         File dir = setupNewDataStore(name);
-        String xml =
-                "<dataStore>"
-                        + "<name>"
-                        + name
-                        + "</name>"
-                        + "<connectionParameters>"
-                        + "<entry>"
-                        + "<string>namespace</string>"
-                        + "<string>"
-                        + workspace
-                        + "</string>"
-                        + "</entry>"
-                        + "<entry>"
-                        + "<string>directory</string>"
-                        + "<string>"
-                        + dir.getAbsolutePath()
-                        + "</string>"
-                        + "</entry>"
-                        + "</connectionParameters>"
-                        + "<workspace>"
-                        + workspace
-                        + "</workspace>"
-                        + "</dataStore>";
+        String xml = "<dataStore>"
+                + "<name>"
+                + name
+                + "</name>"
+                + "<connectionParameters>"
+                + "<entry>"
+                + "<string>namespace</string>"
+                + "<string>"
+                + workspace
+                + "</string>"
+                + "</entry>"
+                + "<entry>"
+                + "<string>directory</string>"
+                + "<string>"
+                + dir.getAbsolutePath()
+                + "</string>"
+                + "</entry>"
+                + "</connectionParameters>"
+                + "<workspace>"
+                + workspace
+                + "</workspace>"
+                + "</dataStore>";
         MockHttpServletResponse response =
                 postAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores", xml, "text/xml");
         assertEquals(201, response.getStatus());
@@ -563,15 +553,13 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
     @Test
     public void testDataStoreReset() throws Exception {
         // force initialization, grab the store, check it's not wrapped
-        DataStoreInfo store =
-                getCatalog().getDataStoreByName(SystemTestData.PRIMITIVEGEOFEATURE.getPrefix());
+        DataStoreInfo store = getCatalog().getDataStoreByName(SystemTestData.PRIMITIVEGEOFEATURE.getPrefix());
         DataStore dataStore = (DataStore) store.getDataStore(null);
         assertNotNull(dataStore);
         assertThat(dataStore, Matchers.instanceOf(PropertyDataStore.class));
 
         // force feature type initialization too, check it has the expected structure
-        FeatureTypeInfo fti =
-                getCatalog().getFeatureTypeByName(getLayerId(SystemTestData.PRIMITIVEGEOFEATURE));
+        FeatureTypeInfo fti = getCatalog().getFeatureTypeByName(getLayerId(SystemTestData.PRIMITIVEGEOFEATURE));
         FeatureType featureType = fti.getFeatureType();
         assertNotNull(featureType.getDescriptor("description"));
         assertNull(featureType.getDescriptor("identifier"));
@@ -582,11 +570,10 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
         assertEquals(200, response.getStatus());
 
         // copy over a different file, will change the feature type structure enough
-        try (InputStream is =
-                        SystemTestData.class.getResourceAsStream(
-                                "PrimitiveGeoFeatureId.properties");
-                OutputStream os =
-                        getDataDirectory().get("sf/PrimitiveGeoFeature.properties").out()) {
+        try (InputStream is = SystemTestData.class.getResourceAsStream("PrimitiveGeoFeatureId.properties");
+                OutputStream os = getDataDirectory()
+                        .get("sf/PrimitiveGeoFeature.properties")
+                        .out()) {
             IOUtils.copy(is, os);
         }
 
@@ -603,5 +590,82 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
         assertNotSame(featureTypeNew, featureType);
         assertNotNull(featureTypeNew.getDescriptor("description"));
         assertNotNull(featureTypeNew.getDescriptor("identifier"));
+    }
+
+    @Test
+    public void testPostWithModificationUserAsXMLWithTrackUserTrue() throws Exception {
+        GeoServerExtensionsHelper.property(CatalogModificationUserUpdater.TRACK_USER, "true");
+        GeoServerInfo info = getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(false);
+        createStoreForTrackUserTest(info);
+
+        DataStoreInfo newDataStore = catalog.getDataStoreByName("newDataStore");
+        assertNotNull(newDataStore.getModifiedBy());
+        GeoServerExtensionsHelper.clear();
+    }
+
+    @Test
+    public void testPostWithModificationUserAsXMLWithTrackUserFalse() throws Exception {
+        GeoServerExtensionsHelper.property(CatalogModificationUserUpdater.TRACK_USER, "false");
+        GeoServerInfo info = getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(true);
+        createStoreForTrackUserTest(info);
+
+        DataStoreInfo newDataStore = catalog.getDataStoreByName("newDataStore");
+        assertNull(newDataStore.getModifiedBy());
+        GeoServerExtensionsHelper.clear();
+    }
+
+    @Test
+    public void testPostWithModificationUserAsXMLWithoutTrackUser() throws Exception {
+        GeoServerInfo info = getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(true);
+        createStoreForTrackUserTest(info);
+
+        DataStoreInfo newDataStore = catalog.getDataStoreByName("newDataStore");
+        assertNotNull(newDataStore.getModifiedBy());
+        GeoServerExtensionsHelper.clear();
+    }
+
+    @Test
+    public void testPutWithModificationUser() throws Exception {
+        GeoServerExtensionsHelper.property(CatalogModificationUserUpdater.TRACK_USER, "true");
+        GeoServerInfo info = getGeoServer().getGlobal();
+        info.getSettings().setShowModifiedUserInAdminList(true);
+        getGeoServer().save(info);
+        Document dom = getAsDOM(ROOT_PATH + "/workspaces/sf/datastores/sf.xml");
+        assertXpathEvaluatesTo("true", "/dataStore/enabled", dom);
+
+        String xml = "<dataStore>" + "<name>sf</name>" + "<enabled>false</enabled>" + "</dataStore>";
+
+        MockHttpServletResponse response =
+                putAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores/sf", xml, "text/xml");
+        assertEquals(200, response.getStatus());
+
+        dom = getAsDOM(ROOT_PATH + "/workspaces/sf/datastores/sf.xml");
+        assertXpathEvaluatesTo("false", "/dataStore/enabled", dom);
+
+        assertFalse(catalog.getDataStoreByName("sf", "sf").isEnabled());
+        assertNotNull(catalog.getDataStoreByName("sf", "sf").getDateModified());
+        assertNotNull(catalog.getDataStoreByName("sf", "sf").getModifiedBy());
+        GeoServerExtensionsHelper.clear();
+    }
+
+    private void createStoreForTrackUserTest(GeoServerInfo info) throws Exception {
+        getGeoServer().save(info);
+        File dir = setupNewDataStore();
+        String xml = "<dataStore>"
+                + "<name>newDataStore</name>"
+                + "<connectionParameters>"
+                + "<namespace><string>sf</string></namespace>"
+                + "<directory>"
+                + "<string>"
+                + dir.getAbsolutePath()
+                + "</string>"
+                + "</directory>"
+                + "</connectionParameters>"
+                + "<workspace>sf</workspace>"
+                + "</dataStore>";
+        postAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores", xml, "text/xml");
     }
 }

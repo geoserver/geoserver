@@ -38,8 +38,7 @@ public class CSPPredicateParameterTest {
 
     @Test
     public void testPredicateMatches() {
-        CSPPredicateParameter predicate =
-                new CSPPredicateParameter("(?i)^service$", "(?i)^(wms)?$");
+        CSPPredicateParameter predicate = new CSPPredicateParameter("(?i)^service$", "(?i)^(wms)?$");
         this.request.removeAllParameters();
         assertTrue(predicate.test(this.wrapper));
         this.request.removeAllParameters();
@@ -59,8 +58,7 @@ public class CSPPredicateParameterTest {
 
     @Test
     public void testPredicateNotMatches() {
-        CSPPredicateParameter predicate =
-                new CSPPredicateParameter("(?i)^service$", "(?i)^(wms)?$");
+        CSPPredicateParameter predicate = new CSPPredicateParameter("(?i)^service$", "(?i)^(wms)?$");
         this.request.setParameter("service", "wfs");
         assertFalse(predicate.test(this.wrapper));
         this.request.removeAllParameters();

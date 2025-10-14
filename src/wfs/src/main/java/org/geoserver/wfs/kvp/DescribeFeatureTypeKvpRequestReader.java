@@ -12,6 +12,7 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import net.opengis.wfs.DescribeFeatureTypeType;
 import net.opengis.wfs.WfsFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.emf.ecore.EFactory;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.wfs.WFSInfo;
@@ -27,8 +28,7 @@ public class DescribeFeatureTypeKvpRequestReader extends WFSKvpRequestReader {
         this.catalog = catalog;
     }
 
-    public DescribeFeatureTypeKvpRequestReader(
-            final Catalog catalog, Class<?> requestBean, EFactory factory) {
+    public DescribeFeatureTypeKvpRequestReader(final Catalog catalog, Class<?> requestBean, EFactory factory) {
         super(requestBean, factory);
         this.catalog = catalog;
     }
@@ -76,19 +76,23 @@ public class DescribeFeatureTypeKvpRequestReader extends WFSKvpRequestReader {
             } else if (kvp.get("NAMESPACES") instanceof NamespaceSupport) {
                 namespaces = (NamespaceSupport) kvp.get("namespaces");
             } else {
-                LOGGER.warning(
-                        "There's a namespace parameter but it seems it wasn't parsed to a "
-                                + NamespaceSupport.class.getName()
-                                + ": "
-                                + kvp.get("namespace"));
+                LOGGER.warning("There's a namespace parameter but it seems it wasn't parsed to a "
+                        + NamespaceSupport.class.getName()
+                        + ": "
+                        + kvp.get("namespace"));
             }
         }
+
         if (namespaces != null) {
             List<QName> typeNames = req.getTypeNames();
             List<QName> newList = new ArrayList<>(typeNames.size());
             for (QName name : typeNames) {
                 String localPart = name.getLocalPart();
                 String prefix = name.getPrefix();
+
+                if (StringUtils.isBlank(prefix)) {
+                    prefix = namespaces.getPrefix(name.getNamespaceURI());
+                }
                 String namespaceURI = name.getNamespaceURI();
                 if (XMLConstants.DEFAULT_NS_PREFIX.equals(prefix)) {
                     // no prefix specified, did the request specify a default namespace?

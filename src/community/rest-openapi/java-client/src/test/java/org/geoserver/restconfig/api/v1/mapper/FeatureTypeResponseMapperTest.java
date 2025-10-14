@@ -26,16 +26,18 @@ public class FeatureTypeResponseMapperTest extends SerializationTest {
 
     public @Test void testMetadataLinks() throws IOException {
         final String response =
-                "{\n"
-                        + "            \"metadataLink\": [\n"
-                        + "                {\n"
-                        + "                    \"about\": \"Sample Metadata Title\",\n"
-                        + "                    \"type\": \"text\\/plain\",\n"
-                        + "                    \"metadataType\": \"ISO19115:2003\",\n"
-                        + "                    \"content\": \"http:\\/\\/geoserver.org\"\n"
-                        + "                }\n"
-                        + "            ]\n"
-                        + "        },\n";
+                """
+                {
+                            "metadataLink": [
+                                {
+                                    "about": "Sample Metadata Title",
+                                    "type": "text\\/plain",
+                                    "metadataType": "ISO19115:2003",
+                                    "content": "http:\\/\\/geoserver.org"
+                                }
+                            ]
+                        },
+                """;
         MetadataLinks decodedResponse = super.decode(response, MetadataLinks.class);
         assertNotNull(decodedResponse);
         List<MetadataLinkInfo> list = decodedResponse.getMetadataLink();
@@ -54,10 +56,7 @@ public class FeatureTypeResponseMapperTest extends SerializationTest {
                 super.decode("FeatureTypeInfo.json", FeatureTypeInfo.class, FeatureTypeInfo.class);
 
         final FeatureTypeResponseWrapper responseWrapper =
-                super.decode(
-                        "FeatureTypeResponse.json",
-                        FeatureTypeInfo.class,
-                        FeatureTypeResponseWrapper.class);
+                super.decode("FeatureTypeResponse.json", FeatureTypeInfo.class, FeatureTypeResponseWrapper.class);
         final FeatureTypeResponse response = responseWrapper.getFeatureType();
         FeatureTypeInfo mapped = mapper.map(response);
 

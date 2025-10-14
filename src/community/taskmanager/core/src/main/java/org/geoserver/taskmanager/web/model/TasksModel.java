@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.web.model;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,12 +15,12 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 
 public class TasksModel extends GeoServerDataProvider<Task> {
 
+    @Serial
     private static final long serialVersionUID = -5237816029300683075L;
 
     public static final Property<Task> NAME = new BeanProperty<Task>("name", "name");
     public static final Property<Task> TYPE = new BeanProperty<Task>("type", "type");
-    public static final Property<Task> PARAMETERS =
-            new BeanProperty<Task>("parameters", "parameters");
+    public static final Property<Task> PARAMETERS = new BeanProperty<Task>("parameters", "parameters");
 
     private IModel<Configuration> configurationModel;
 

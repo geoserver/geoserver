@@ -7,24 +7,29 @@ package org.geoserver.security.csp;
 import static com.google.common.base.MoreObjects.firstNonNull;
 
 import com.google.common.base.Preconditions;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
+import org.geoserver.filters.SecurityHeadersFilter;
+import org.geoserver.platform.GeoServerExtensions;
 
 /** Contains the configuration the setting Content-Security-Policy response header. */
 public class CSPConfiguration implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 975607551448404268L;
 
     // default values
     private static final Boolean DEFAULT_ENABLED = true;
-    // TODO: can switch to false after all Wicket CSP issues are fixed
-    private static final Boolean DEFAULT_REPORT_ONLY = true;
+    private static final Boolean DEFAULT_REPORT_ONLY = false;
     private static final Boolean DEFAULT_ALLOW_OVERRIDE = false;
     private static final Boolean DEFAULT_INJECT_PROXY_BASE = false;
     private static final String DEFAULT_REMOTE_RESOURCES = "";
+    private static final String DEFAULT_FORM_ACTION = "'self'";
     private static final String DEFAULT_FRAME_ANCESTORS = "";
 
     /** Whether the Content-Security-Policy header is enabled */
@@ -42,6 +47,9 @@ public class CSPConfiguration implements Serializable {
     /** Remote hosts to add to fetch directives for static web files */
     private String remoteResources;
 
+    /** Hosts to add to the form-action directive */
+    private String formAction;
+
     /** Hosts to add to the frame-ancestors directive */
     private String frameAncestors;
 
@@ -56,6 +64,7 @@ public class CSPConfiguration implements Serializable {
                 DEFAULT_ALLOW_OVERRIDE,
                 DEFAULT_INJECT_PROXY_BASE,
                 DEFAULT_REMOTE_RESOURCES,
+                DEFAULT_FORM_ACTION,
                 DEFAULT_FRAME_ANCESTORS,
                 new ArrayList<>());
     }
@@ -68,6 +77,7 @@ public class CSPConfiguration implements Serializable {
      * @param allowOverride whether to allow other components to completely override the CSP
      * @param injectProxyBase whether to inject the proxy base URL into fetch directives
      * @param remoteResources remote hosts to add to fetch directives for static web files
+     * @param formAction hosts to add to the form-action directive
      * @param frameAncestors hosts to add to the frame-ancestors directive
      * @param policies the policies for individual Content-Security-Policy headers
      */
@@ -77,6 +87,7 @@ public class CSPConfiguration implements Serializable {
             boolean allowOverride,
             boolean injectProxyBase,
             String remoteResources,
+            String formAction,
             String frameAncestors,
             List<CSPPolicy> policies) {
         this.enabled = enabled;
@@ -84,6 +95,7 @@ public class CSPConfiguration implements Serializable {
         this.allowOverride = allowOverride;
         this.injectProxyBase = injectProxyBase;
         this.remoteResources = remoteResources;
+        this.formAction = formAction;
         this.frameAncestors = frameAncestors;
         this.policies = policies;
     }
@@ -100,6 +112,7 @@ public class CSPConfiguration implements Serializable {
                 other.isAllowOverride(),
                 other.isInjectProxyBase(),
                 other.getRemoteResources(),
+                other.getFormAction(),
                 other.getFrameAncestors(),
                 other.getPolicies().stream().map(CSPPolicy::new).collect(Collectors.toList()));
     }
@@ -154,6 +167,16 @@ public class CSPConfiguration implements Serializable {
         this.remoteResources = externalResources;
     }
 
+    /** @return hosts to add to the form-action directive */
+    public String getFormAction() {
+        return this.formAction;
+    }
+
+    /** @param formActions hosts to add to the form-action directive */
+    public void setFormAction(String formActions) {
+        this.formAction = formActions;
+    }
+
     /** @return hosts to add to the frame-ancestors directive */
     public String getFrameAncestors() {
         return this.frameAncestors;
@@ -175,9 +198,8 @@ public class CSPConfiguration implements Serializable {
     }
 
     /**
-     * Gets the value of the field that matches the specific key, trimming leading and trailing
-     * whitespace from the value and returns that value or an empty string if no field matches the
-     * key.
+     * Gets the value of the field that matches the specific key, trimming leading and trailing whitespace from the
+     * value and returns that value or an empty string if no field matches the key.
      *
      * @param key the field key
      * @return the field value or an empty string
@@ -186,11 +208,36 @@ public class CSPConfiguration implements Serializable {
         switch (key) {
             case CSPUtils.GEOSERVER_CSP_REMOTE_RESOURCES:
                 return CSPUtils.trimWhitespace(this.remoteResources);
+            case CSPUtils.GEOSERVER_CSP_FORM_ACTION:
+                return CSPUtils.trimWhitespace(this.formAction);
             case CSPUtils.GEOSERVER_CSP_FRAME_ANCESTORS:
-                return CSPUtils.trimWhitespace(this.frameAncestors);
+                return getFrameAncestors(CSPUtils.trimWhitespace(this.frameAncestors));
             default:
                 return "";
         }
+    }
+
+    /**
+     * Determines the value for the frame-ancestors directive based on the geoserver.xframe.shouldSetPolicy and
+     * geoserver.xframe.policy system properties if no value is provided in the configuration.
+     *
+     * @param frameAncestors the frame ancestors from the configuration
+     * @return the frame ancestors value to use
+     */
+    private static String getFrameAncestors(String frameAncestors) {
+        if (!frameAncestors.isEmpty()) {
+            return frameAncestors;
+        }
+        String shouldSet = GeoServerExtensions.getProperty(SecurityHeadersFilter.GEOSERVER_XFRAME_SHOULD_SET_POLICY);
+        if (StringUtils.isBlank(shouldSet) || "true".equalsIgnoreCase(shouldSet)) {
+            String policy = GeoServerExtensions.getProperty(SecurityHeadersFilter.GEOSERVER_XFRAME_POLICY);
+            if (StringUtils.isBlank(policy) || "SAMEORIGIN".equals(policy)) {
+                return "'self'";
+            } else if ("DENY".equals(policy)) {
+                return "'none'";
+            }
+        }
+        return "";
     }
 
     /**
@@ -212,22 +259,19 @@ public class CSPConfiguration implements Serializable {
      * @return this configuration object
      */
     public CSPConfiguration parseFilters() {
-        getPolicies().stream()
-                .map(CSPPolicy::getRules)
-                .flatMap(List::stream)
-                .forEach(CSPRule::parseFilter);
+        getPolicies().stream().map(CSPPolicy::getRules).flatMap(List::stream).forEach(CSPRule::parseFilter);
         return this;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof CSPConfiguration) {
-            CSPConfiguration other = (CSPConfiguration) obj;
+        if (obj instanceof CSPConfiguration other) {
             return Objects.equals(this.enabled, other.enabled)
                     && Objects.equals(this.reportOnly, other.reportOnly)
                     && Objects.equals(this.allowOverride, other.allowOverride)
                     && Objects.equals(this.injectProxyBase, other.injectProxyBase)
                     && Objects.equals(this.remoteResources, other.remoteResources)
+                    && Objects.equals(this.formAction, other.formAction)
                     && Objects.equals(this.frameAncestors, other.frameAncestors)
                     && Objects.equals(this.policies, other.policies);
         }
@@ -242,6 +286,7 @@ public class CSPConfiguration implements Serializable {
                 this.allowOverride,
                 this.injectProxyBase,
                 this.remoteResources,
+                this.formAction,
                 this.frameAncestors,
                 this.policies);
     }
@@ -253,6 +298,7 @@ public class CSPConfiguration implements Serializable {
         this.allowOverride = firstNonNull(this.allowOverride, DEFAULT_ALLOW_OVERRIDE);
         this.injectProxyBase = firstNonNull(this.injectProxyBase, DEFAULT_INJECT_PROXY_BASE);
         this.remoteResources = firstNonNull(this.remoteResources, DEFAULT_REMOTE_RESOURCES);
+        this.formAction = firstNonNull(this.formAction, DEFAULT_FORM_ACTION);
         this.frameAncestors = firstNonNull(this.frameAncestors, DEFAULT_FRAME_ANCESTORS);
         this.policies = firstNonNull(this.policies, new ArrayList<>());
         long count = this.policies.stream().map(CSPPolicy::getName).distinct().count();

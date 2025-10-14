@@ -20,11 +20,10 @@ import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.locationtech.jts.geom.Geometry;
 
 /**
- * FeatureCollection that does two things required by the importer; a) provide cancel functionality
- * b) Do some FeatureType Transforming
+ * FeatureCollection that does two things required by the importer; a) provide cancel functionality b) Do some
+ * FeatureType Transforming
  *
- * <p>This class is simply wraps the FeatureIterator with two iterators wrappers that provide the
- * above functionality.
+ * <p>This class is simply wraps the FeatureIterator with two iterators wrappers that provide the above functionality.
  */
 class ImportTransformFeatureCollection<T extends FeatureType, F extends Feature>
         extends DecoratingFeatureCollection<T, F> {
@@ -73,8 +72,7 @@ class ImportTransformFeatureCollection<T extends FeatureType, F extends Feature>
      *
      * <p>The emulates the behavior of the Importer's low-level feature transformation.
      */
-    private class TransformingFeatureIterator<F extends Feature>
-            extends DecoratingFeatureIterator<F> {
+    private static class TransformingFeatureIterator<F extends Feature> extends DecoratingFeatureIterator<F> {
 
         SimpleFeatureBuilder featureBuilder;
 
@@ -142,11 +140,10 @@ class ImportTransformFeatureCollection<T extends FeatureType, F extends Feature>
     }
 
     /**
-     * Simple FeatureIterator that will handle canceling. If the monitor cancels, the iterator will
-     * say there are no more elementss (hasNext() will be false)
+     * Simple FeatureIterator that will handle canceling. If the monitor cancels, the iterator will say there are no
+     * more elementss (hasNext() will be false)
      */
-    private class CancelableFeatureIterator<F extends Feature>
-            extends DecoratingFeatureIterator<F> {
+    private static class CancelableFeatureIterator<F extends Feature> extends DecoratingFeatureIterator<F> {
         ProgressMonitor monitor;
 
         public CancelableFeatureIterator(FeatureIterator<F> fi, ProgressMonitor monitor) {

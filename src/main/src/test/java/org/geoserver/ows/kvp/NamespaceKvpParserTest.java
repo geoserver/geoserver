@@ -75,8 +75,7 @@ public class NamespaceKvpParserTest {
     @Test
     public void testMultiple() throws Exception {
         NamespaceSupport ctx =
-                parser.parse(
-                        "xmlns(foo=http://bar), xmlns(ex=http://example.com),xmlns(gs=http://geoserver.org)");
+                parser.parse("xmlns(foo=http://bar), xmlns(ex=http://example.com),xmlns(gs=http://geoserver.org)");
         assertEquals("http://bar", ctx.getURI("foo"));
         assertEquals("http://example.com", ctx.getURI("ex"));
         assertEquals("http://geoserver.org", ctx.getURI("gs"));
@@ -88,7 +87,6 @@ public class NamespaceKvpParserTest {
         assertEquals("http://default.namespace.com", ctx.getURI(XMLConstants.DEFAULT_NS_PREFIX));
     }
 
-    @SuppressWarnings("unchecked")
     private List<String> getPrefixes(NamespaceSupport ctx) {
         Enumeration<String> prefixes = ctx.getPrefixes();
         List<String> l = new ArrayList<>();
@@ -102,8 +100,7 @@ public class NamespaceKvpParserTest {
     public void testWfs20Syntax() throws Exception {
         NamespaceKvpParser parser = new NamespaceKvpParser("namespaces", true);
         NamespaceSupport ctx =
-                parser.parse(
-                        "xmlns(http://bar), xmlns(ex,http://example.com),xmlns(gs,http://geoserver.org)");
+                parser.parse("xmlns(http://bar), xmlns(ex,http://example.com),xmlns(gs,http://geoserver.org)");
         assertEquals("http://bar", ctx.getURI(""));
         assertEquals("http://example.com", ctx.getURI("ex"));
         assertEquals("http://geoserver.org", ctx.getURI("gs"));

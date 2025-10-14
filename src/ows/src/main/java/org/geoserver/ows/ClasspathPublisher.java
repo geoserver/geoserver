@@ -12,8 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * Controller which publishes files through a web interface from the classpath
  *
- * <p>To use this controller, it should be mapped to a particular url in the url mapping of the
- * spring dispatcher servlet. Example:
+ * <p>To use this controller, it should be mapped to a particular url in the url mapping of the spring dispatcher
+ * servlet. Example:
  *
  * <pre>
  * <code>
@@ -39,8 +39,7 @@ public class ClasspathPublisher extends AbstractURLPublisher {
     /**
      * Creates the new classpath publisher.
      *
-     * @param clazz the class used to perform classpath lookups with {@link
-     *     Class#getResource(String)}
+     * @param clazz the class used to perform classpath lookups with {@link Class#getResource(String)}
      */
     public ClasspathPublisher(Class<?> clazz) {
         this.clazz = clazz;

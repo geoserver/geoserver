@@ -46,13 +46,7 @@ public class RasterElevationDimensionDefaultValueTest extends WMSTestSupport {
     public void setup() throws Exception {
         wms = getWMS(); // with the initialized application context
         ((SystemTestData) testData)
-                .addRasterLayer(
-                        WATTEMP,
-                        "watertemp.zip",
-                        null,
-                        Collections.emptyMap(),
-                        getClass(),
-                        getCatalog());
+                .addRasterLayer(WATTEMP, "watertemp.zip", null, Collections.emptyMap(), getClass(), getCatalog());
     }
 
     @Test
@@ -189,8 +183,7 @@ public class RasterElevationDimensionDefaultValueTest extends WMSTestSupport {
         assertEquals(0, defaultRange.getMaxValue(), 0d);
     }
 
-    protected void setupCoverageElevationDimension(
-            QName name, DimensionDefaultValueSetting defaultValue) {
+    protected void setupCoverageElevationDimension(QName name, DimensionDefaultValueSetting defaultValue) {
         CoverageInfo info = getCatalog().getCoverageByName(name.getLocalPart());
         DimensionInfo di = new DimensionInfoImpl();
         di.setEnabled(true);

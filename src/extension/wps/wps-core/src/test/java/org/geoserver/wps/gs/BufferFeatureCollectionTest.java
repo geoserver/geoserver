@@ -30,7 +30,6 @@ public class BufferFeatureCollectionTest extends WPSTestSupport {
     FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
 
     @Test
-    @SuppressWarnings("PMD.SimplifiableTestAssertion") // JTS geometry equality
     public void testExecutePoint() throws Exception {
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.setName("featureType");
@@ -61,7 +60,6 @@ public class BufferFeatureCollectionTest extends WPSTestSupport {
     }
 
     @Test
-    @SuppressWarnings("PMD.SimplifiableTestAssertion") // JTS geometry equality
     public void testExecuteLineString() throws Exception {
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.setName("featureType");
@@ -103,7 +101,6 @@ public class BufferFeatureCollectionTest extends WPSTestSupport {
     }
 
     @Test
-    @SuppressWarnings("PMD.SimplifiableTestAssertion") // JTS geometry equality
     public void testExecutePolygon() throws Exception {
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.setName("featureType");
@@ -122,8 +119,7 @@ public class BufferFeatureCollectionTest extends WPSTestSupport {
                 j++;
             }
             array[3] = new Coordinate(numFeatures, numFeatures);
-            LinearRing shell =
-                    new LinearRing(new CoordinateArraySequence(array), new GeometryFactory());
+            LinearRing shell = new LinearRing(new CoordinateArraySequence(array), new GeometryFactory());
             b.add(gf.createPolygon(shell, null));
             b.add(0);
             features.add(b.buildFeature(numFeatures + ""));
@@ -141,8 +137,7 @@ public class BufferFeatureCollectionTest extends WPSTestSupport {
                     j++;
                 }
                 array[3] = new Coordinate(numFeatures, numFeatures);
-                LinearRing shell =
-                        new LinearRing(new CoordinateArraySequence(array), new GeometryFactory());
+                LinearRing shell = new LinearRing(new CoordinateArraySequence(array), new GeometryFactory());
                 Geometry expected = gf.createPolygon(shell, null).buffer(distance);
 
                 SimpleFeature sf = iterator.next();
@@ -152,7 +147,6 @@ public class BufferFeatureCollectionTest extends WPSTestSupport {
     }
 
     @Test
-    @SuppressWarnings("PMD.SimplifiableTestAssertion") // JTS geometry equality
     public void testExecuteBufferAttribute() throws Exception {
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.setName("featureType");
@@ -172,8 +166,7 @@ public class BufferFeatureCollectionTest extends WPSTestSupport {
                 j++;
             }
             array[3] = new Coordinate(numFeatures, numFeatures);
-            LinearRing shell =
-                    new LinearRing(new CoordinateArraySequence(array), new GeometryFactory());
+            LinearRing shell = new LinearRing(new CoordinateArraySequence(array), new GeometryFactory());
             b.add(gf.createPolygon(shell, null));
             b.add(0);
             b.add(500);
@@ -192,8 +185,7 @@ public class BufferFeatureCollectionTest extends WPSTestSupport {
                     j++;
                 }
                 array[3] = new Coordinate(numFeatures, numFeatures);
-                LinearRing shell =
-                        new LinearRing(new CoordinateArraySequence(array), new GeometryFactory());
+                LinearRing shell = new LinearRing(new CoordinateArraySequence(array), new GeometryFactory());
                 Geometry expected = gf.createPolygon(shell, null).buffer(500);
 
                 SimpleFeature sf = iterator.next();

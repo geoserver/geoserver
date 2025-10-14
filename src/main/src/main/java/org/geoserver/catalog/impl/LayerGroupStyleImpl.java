@@ -153,14 +153,6 @@ public class LayerGroupStyleImpl implements LayerGroupStyle {
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-                id,
-                name,
-                title,
-                internationalTitle,
-                abstractTxt,
-                internationalAbstract,
-                layers,
-                styles);
+        return Objects.hash(id, name, title, internationalTitle, abstractTxt, internationalAbstract, layers, styles);
     }
 }

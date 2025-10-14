@@ -28,8 +28,7 @@ public class NewUserPage extends AbstractUserPage {
 
     @Override
     protected void onFormSubmit(GeoServerUser user) throws IOException, PasswordPolicyException {
-        GeoServerUserGroupStore ugStore =
-                new UserGroupStoreValidationWrapper(getUserGroupStore(ugServiceName));
+        GeoServerUserGroupStore ugStore = new UserGroupStoreValidationWrapper(getUserGroupStore(ugServiceName));
         try {
             ugStore.addUser(user);
 
@@ -49,7 +48,8 @@ public class NewUserPage extends AbstractUserPage {
         GeoServerRoleStore gaStore = null;
         try {
             if (hasRoleStore(getSecurityManager().getActiveRoleService().getName())) {
-                gaStore = getRoleStore(getSecurityManager().getActiveRoleService().getName());
+                gaStore =
+                        getRoleStore(getSecurityManager().getActiveRoleService().getName());
                 gaStore = new RoleStoreValidationWrapper(gaStore);
                 for (GeoServerRole role : rolePalette.getSelectedRoles()) {
                     gaStore.associateRoleToUser(role, user.getUsername());

@@ -12,14 +12,15 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * Wrapper class for a {@link GeoServerUserGroupService} object decoding the passwords.
  *
  * <p>This is needed for some authentication mechanisms, HTTP Digest authentication as an example.
  *
- * <p>Decoding is only possible for {@link GeoServerUserPasswordEncoder} objects of type {@link
- * PasswordEncodingType#PLAIN} or {@link PasswordEncodingType#ENCRYPT}
+ * <p>Decoding is only possible for {@link PasswordEncoder} objects of type {@link PasswordEncodingType#PLAIN} or
+ * {@link PasswordEncodingType#ENCRYPT}
  *
  * @author christian
  */
@@ -29,23 +30,16 @@ public class DecodingUserDetailsService implements UserDetailsService {
     protected GeoServerMultiplexingPasswordEncoder encoder;
 
     /** Creates a new Instance */
-    public static DecodingUserDetailsService newInstance(GeoServerUserGroupService service)
-            throws IOException {
+    public static DecodingUserDetailsService newInstance(GeoServerUserGroupService service) throws IOException {
         DecodingUserDetailsService decodingService = new DecodingUserDetailsService();
         decodingService.setGeoserverUserGroupService(service);
         return decodingService;
     }
 
-    /**
-     * Protected, use {@link #canBeUsedFor(GeoServerUserGroupService)} followed by {@link
-     * #newInstance(GeoServerUserGroupService)}
-     */
+    /** Protected, use {@link #newInstance(GeoServerUserGroupService)} */
     protected DecodingUserDetailsService() {}
 
-    /**
-     * sets the wrapped {@link GeoServerUserGroupService} objects and prepares the {@link
-     * GeoServerUserPasswordEncoder}
-     */
+    /** Sets the wrapped {@link GeoServerUserGroupService} objects and prepares the {@link PasswordEncoder} */
     public void setGeoserverUserGroupService(GeoServerUserGroupService service) throws IOException {
         this.service = service;
         encoder = new GeoServerMultiplexingPasswordEncoder(service.getSecurityManager(), service);
@@ -53,8 +47,7 @@ public class DecodingUserDetailsService implements UserDetailsService {
 
     /** loads the user and decodes the password to plain text (if possible). */
     @Override
-    public UserDetails loadUserByUsername(String username)
-            throws UsernameNotFoundException, DataAccessException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException {
         GeoServerUser user = (GeoServerUser) service.loadUserByUsername(username);
         if (user == null) return null;
         try {

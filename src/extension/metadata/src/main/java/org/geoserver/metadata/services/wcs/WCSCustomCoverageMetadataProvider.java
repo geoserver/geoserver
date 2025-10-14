@@ -65,10 +65,7 @@ public class WCSCustomCoverageMetadataProvider implements WCS20CoverageMetadataP
             return;
         }
         @SuppressWarnings("unchecked")
-        String xml =
-                (String)
-                        ((HashMap<String, Serializable>) custom)
-                                .get(MetadataConstants.WCS_FIELD_ATTRIBUTE);
+        String xml = (String) ((HashMap<String, Serializable>) custom).get(MetadataConstants.WCS_FIELD_ATTRIBUTE);
         if (xml == null) {
             return;
         }
@@ -76,30 +73,22 @@ public class WCSCustomCoverageMetadataProvider implements WCS20CoverageMetadataP
         try {
             SAXParserFactory.newInstance()
                     .newSAXParser()
-                    .parse(
-                            new InputSource(new StringReader(xml)),
-                            new DefaultHandler() {
-                                @Override
-                                public void startElement(
-                                        String uri,
-                                        String localName,
-                                        String qName,
-                                        Attributes attributes) {
-                                    tx.start(qName, attributes);
-                                }
+                    .parse(new InputSource(new StringReader(xml)), new DefaultHandler() {
+                        @Override
+                        public void startElement(String uri, String localName, String qName, Attributes attributes) {
+                            tx.start(qName, attributes);
+                        }
 
-                                @Override
-                                public void endElement(String uri, String localName, String qName)
-                                        throws SAXException {
-                                    tx.end(qName);
-                                }
+                        @Override
+                        public void endElement(String uri, String localName, String qName) throws SAXException {
+                            tx.end(qName);
+                        }
 
-                                @Override
-                                public void characters(char[] ch, int start, int length)
-                                        throws SAXException {
-                                    tx.chars(new String(ch, start, length));
-                                }
-                            });
+                        @Override
+                        public void characters(char[] ch, int start, int length) throws SAXException {
+                            tx.chars(new String(ch, start, length));
+                        }
+                    });
         } catch (SAXException | ParserConfigurationException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
         }

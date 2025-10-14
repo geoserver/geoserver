@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.layergroup;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.wicket.Component;
@@ -21,6 +22,7 @@ import org.geoserver.web.wicket.SimpleAjaxLink;
 
 /** Reusable base class listing layer groups with clickable names */
 public abstract class LayerGroupListPanel extends GeoServerTablePanel<LayerGroupInfo> {
+    @Serial
     private static final long serialVersionUID = -4906590200057066912L;
 
     static Property<LayerGroupInfo> NAME = new BeanProperty<>("name", "name");
@@ -28,31 +30,30 @@ public abstract class LayerGroupListPanel extends GeoServerTablePanel<LayerGroup
     static Property<LayerGroupInfo> WORKSPACE = new BeanProperty<>("workspace", "workspace.name");
 
     public LayerGroupListPanel(String id, WorkspaceInfo workspace) {
-        super(
-                id,
-                new GeoServerDataProvider<>() {
+        super(id, new GeoServerDataProvider<>() {
 
-                    private static final long serialVersionUID = 6471805356307807737L;
+            @Serial
+            private static final long serialVersionUID = 6471805356307807737L;
 
-                    @Override
-                    protected List<LayerGroupInfo> getItems() {
-                        if (workspace == null) {
-                            return getCatalog().getLayerGroups();
-                        } else {
-                            return getCatalog().getLayerGroupsByWorkspace(workspace);
-                        }
-                    }
+            @Override
+            protected List<LayerGroupInfo> getItems() {
+                if (workspace == null) {
+                    return getCatalog().getLayerGroups();
+                } else {
+                    return getCatalog().getLayerGroupsByWorkspace(workspace);
+                }
+            }
 
-                    @Override
-                    protected List<Property<LayerGroupInfo>> getProperties() {
-                        return Arrays.asList(NAME, WORKSPACE);
-                    }
+            @Override
+            protected List<Property<LayerGroupInfo>> getProperties() {
+                return Arrays.asList(NAME, WORKSPACE);
+            }
 
-                    @Override
-                    public IModel<LayerGroupInfo> newModel(LayerGroupInfo object) {
-                        return new LayerGroupDetachableModel(object);
-                    }
-                });
+            @Override
+            public IModel<LayerGroupInfo> newModel(LayerGroupInfo object) {
+                return new LayerGroupDetachableModel(object);
+            }
+        });
         getTopPager().setVisible(false);
     }
 
@@ -63,6 +64,7 @@ public abstract class LayerGroupListPanel extends GeoServerTablePanel<LayerGroup
         IModel<?> model = property.getModel(itemModel);
         if (NAME == property) {
             return new SimpleAjaxLink<>(id, (IModel<String>) model) {
+                @Serial
                 private static final long serialVersionUID = -5189072047640596694L;
 
                 @Override

@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.web.model;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,13 +15,12 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 
 public class BatchElementsModel extends GeoServerDataProvider<BatchElement> {
 
+    @Serial
     private static final long serialVersionUID = -5237816029300683075L;
 
     public static final Property<BatchElement> INDEX = new BeanProperty<BatchElement>("index", "");
-    public static final Property<BatchElement> NAME =
-            new BeanProperty<BatchElement>("name", "task.fullName");
-    public static final Property<BatchElement> TYPE =
-            new BeanProperty<BatchElement>("type", "task.type");
+    public static final Property<BatchElement> NAME = new BeanProperty<BatchElement>("name", "task.fullName");
+    public static final Property<BatchElement> TYPE = new BeanProperty<BatchElement>("type", "task.type");
 
     private IModel<Batch> batchModel;
 
@@ -29,8 +29,7 @@ public class BatchElementsModel extends GeoServerDataProvider<BatchElement> {
     }
 
     @Override
-    protected List<org.geoserver.web.wicket.GeoServerDataProvider.Property<BatchElement>>
-            getProperties() {
+    protected List<org.geoserver.web.wicket.GeoServerDataProvider.Property<BatchElement>> getProperties() {
         return Arrays.asList(INDEX, NAME, TYPE);
     }
 

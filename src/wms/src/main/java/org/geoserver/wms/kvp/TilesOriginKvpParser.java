@@ -21,7 +21,8 @@ public class TilesOriginKvpParser extends KvpParser {
         List coordValues = KvpUtils.readFlat(value);
 
         if (coordValues.size() != 2) {
-            throw new ServiceException(value + " is not a valid coordinate", getClass().getName());
+            throw new ServiceException(
+                    value + " is not a valid coordinate", getClass().getName());
         }
 
         try {

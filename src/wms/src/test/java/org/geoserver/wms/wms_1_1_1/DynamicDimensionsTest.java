@@ -39,15 +39,14 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 /**
- * Dynaminc dimensions differ for custom ones in that the reader does not know about the until it's
- * generated, while simple custom dimensions are hard coded and known to the Format class as well
+ * Dynaminc dimensions differ for custom ones in that the reader does not know about the until it's generated, while
+ * simple custom dimensions are hard coded and known to the Format class as well
  *
  * @author Andrea Aime - GeoSolutions
  */
 public class DynamicDimensionsTest extends WMSDimensionsTestSupport {
 
-    private static final QName WATTEMP =
-            new QName(MockData.DEFAULT_URI, "watertemp", MockData.DEFAULT_PREFIX);
+    private static final QName WATTEMP = new QName(MockData.DEFAULT_URI, "watertemp", MockData.DEFAULT_PREFIX);
     private static final String DIMENSION_NAME = "WAVELENGTH";
     private static final String CAPABILITIES_REQUEST = "wms?request=getCapabilities&version=1.1.1";
     private static final String BBOX = "0,40,15,45";
@@ -63,12 +62,7 @@ public class DynamicDimensionsTest extends WMSDimensionsTestSupport {
         Map<LayerProperty, Object> propertyMap = new HashMap<>();
         propertyMap.put(LayerProperty.STYLE, "temperature");
         testData.addRasterLayer(
-                WATTEMP,
-                "watertempDynamicDims.zip",
-                null,
-                propertyMap,
-                SystemTestData.class,
-                getCatalog());
+                WATTEMP, "watertempDynamicDims.zip", null, propertyMap, SystemTestData.class, getCatalog());
 
         GeoServerInfo global = getGeoServer().getGlobal();
         global.getSettings().setProxyBaseUrl("src/test/resources/geoserver");
@@ -124,21 +118,19 @@ public class DynamicDimensionsTest extends WMSDimensionsTestSupport {
         setExceptionsOnInvalidDimension(false);
 
         // check that we get no data when requesting an incorrect value for custom dimension
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wms?bbox="
-                                + BBOX
-                                + "&styles="
-                                + "&layers="
-                                + LAYERS
-                                + "&Format=image/png"
-                                + "&request=GetMap"
-                                + "&width=550"
-                                + "&height=250"
-                                + "&srs=EPSG:4326"
-                                + "&DIM_"
-                                + DIMENSION_NAME
-                                + "=bad_dimension_value");
+        MockHttpServletResponse response = getAsServletResponse("wms?bbox="
+                + BBOX
+                + "&styles="
+                + "&layers="
+                + LAYERS
+                + "&Format=image/png"
+                + "&request=GetMap"
+                + "&width=550"
+                + "&height=250"
+                + "&srs=EPSG:4326"
+                + "&DIM_"
+                + DIMENSION_NAME
+                + "=bad_dimension_value");
         BufferedImage image = ImageIO.read(getBinaryInputStream(response));
         assertTrue(isEmpty(image));
     }
@@ -150,26 +142,21 @@ public class DynamicDimensionsTest extends WMSDimensionsTestSupport {
         setExceptionsOnInvalidDimension(true);
 
         // check that we get no data when requesting an incorrect value for custom dimension
-        Document dom =
-                getAsDOM(
-                        "wms?bbox="
-                                + BBOX
-                                + "&styles="
-                                + "&layers="
-                                + LAYERS
-                                + "&Format=image/png"
-                                + "&request=GetMap"
-                                + "&width=550"
-                                + "&height=250"
-                                + "&srs=EPSG:4326"
-                                + "&DIM_"
-                                + DIMENSION_NAME
-                                + "=bad_dimension_value");
+        Document dom = getAsDOM("wms?bbox="
+                + BBOX
+                + "&styles="
+                + "&layers="
+                + LAYERS
+                + "&Format=image/png"
+                + "&request=GetMap"
+                + "&width=550"
+                + "&height=250"
+                + "&srs=EPSG:4326"
+                + "&DIM_"
+                + DIMENSION_NAME
+                + "=bad_dimension_value");
         String message = checkLegacyException(dom, INVALID_DIMENSION_VALUE, "DIM_WAVELENGTH");
-        assertThat(
-                message,
-                containsString(
-                        "Could not find a match for 'WAVELENGTH' value: 'bad_dimension_value'"));
+        assertThat(message, containsString("Could not find a match for 'WAVELENGTH' value: 'bad_dimension_value'"));
     }
 
     /** Syntactically valid, but not in the list of allowed values */
@@ -179,21 +166,19 @@ public class DynamicDimensionsTest extends WMSDimensionsTestSupport {
         setExceptionsOnInvalidDimension(true);
 
         // check that we get no data when requesting an incorrect value for custom dimension
-        Document dom =
-                getAsDOM(
-                        "wms?bbox="
-                                + BBOX
-                                + "&styles="
-                                + "&layers="
-                                + LAYERS
-                                + "&Format=image/png"
-                                + "&request=GetMap"
-                                + "&width=550"
-                                + "&height=250"
-                                + "&srs=EPSG:4326"
-                                + "&DIM_"
-                                + DIMENSION_NAME
-                                + "=50");
+        Document dom = getAsDOM("wms?bbox="
+                + BBOX
+                + "&styles="
+                + "&layers="
+                + LAYERS
+                + "&Format=image/png"
+                + "&request=GetMap"
+                + "&width=550"
+                + "&height=250"
+                + "&srs=EPSG:4326"
+                + "&DIM_"
+                + DIMENSION_NAME
+                + "=50");
         String message = checkLegacyException(dom, INVALID_DIMENSION_VALUE, "DIM_WAVELENGTH");
         assertThat(message, containsString("Could not find a match for 'WAVELENGTH' value: '50'"));
     }
@@ -203,18 +188,16 @@ public class DynamicDimensionsTest extends WMSDimensionsTestSupport {
         setupRasterDimension(DIMENSION_NAME, DimensionPresentation.LIST, "nano meters", "nm");
 
         // check that we get data when requesting a correct value for custom dimension
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wms?bbox="
-                                + BBOX
-                                + "&styles="
-                                + "&layers="
-                                + LAYERS
-                                + "&Format=image/png"
-                                + "&request=GetMap"
-                                + "&width=550"
-                                + "&height=250"
-                                + "&srs=EPSG:4326");
+        MockHttpServletResponse response = getAsServletResponse("wms?bbox="
+                + BBOX
+                + "&styles="
+                + "&layers="
+                + LAYERS
+                + "&Format=image/png"
+                + "&request=GetMap"
+                + "&width=550"
+                + "&height=250"
+                + "&srs=EPSG:4326");
         BufferedImage image = ImageIO.read(getBinaryInputStream(response));
         assertFalse(isEmpty(image));
         // this pixel is red-ish with the default value, 020, but black with 100
@@ -226,22 +209,20 @@ public class DynamicDimensionsTest extends WMSDimensionsTestSupport {
         setupRasterDimension(DIMENSION_NAME, DimensionPresentation.LIST, "nano meters", "nm");
 
         // check that we get data when requesting a correct value for custom dimension
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wms?bbox="
-                                + BBOX
-                                + "&styles="
-                                + "&layers="
-                                + LAYERS
-                                + "&Format=image/png"
-                                + "&request=GetMap"
-                                + "&width=550"
-                                + "&height=250"
-                                + "&srs=EPSG:4326"
-                                + "&bgColor=0x0000FF"
-                                + "&DIM_"
-                                + DIMENSION_NAME
-                                + "=100");
+        MockHttpServletResponse response = getAsServletResponse("wms?bbox="
+                + BBOX
+                + "&styles="
+                + "&layers="
+                + LAYERS
+                + "&Format=image/png"
+                + "&request=GetMap"
+                + "&width=550"
+                + "&height=250"
+                + "&srs=EPSG:4326"
+                + "&bgColor=0x0000FF"
+                + "&DIM_"
+                + DIMENSION_NAME
+                + "=100");
         BufferedImage image = ImageIO.read(getBinaryInputStream(response));
         assertFalse(isEmpty(image));
         // this pixel is red-ish with the default value, 020, but blue with 100
@@ -253,20 +234,18 @@ public class DynamicDimensionsTest extends WMSDimensionsTestSupport {
         setupRasterDimension(DIMENSION_NAME, DimensionPresentation.LIST, "nano meters", "nm");
 
         // check that we get data when requesting a correct value for custom dimension
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wms?bbox="
-                                + BBOX
-                                + "&styles="
-                                + "&layers="
-                                + LAYERS
-                                + "&Format=image/png"
-                                + "&request=GetMap"
-                                + "&width=550"
-                                + "&height=250"
-                                + "&srs=EPSG:4326"
-                                + "&bgColor=0x0000FF"
-                                + "&DIM_wAvElEnGtH=100");
+        MockHttpServletResponse response = getAsServletResponse("wms?bbox="
+                + BBOX
+                + "&styles="
+                + "&layers="
+                + LAYERS
+                + "&Format=image/png"
+                + "&request=GetMap"
+                + "&width=550"
+                + "&height=250"
+                + "&srs=EPSG:4326"
+                + "&bgColor=0x0000FF"
+                + "&DIM_wAvElEnGtH=100");
         BufferedImage image = ImageIO.read(getBinaryInputStream(response));
         assertFalse(isEmpty(image));
         // this pixel is red-ish with the default value, 020, but blue with 100
@@ -284,7 +263,7 @@ public class DynamicDimensionsTest extends WMSDimensionsTestSupport {
         info.getMetadata().put(ResourceInfo.CUSTOM_DIMENSION_PREFIX + metadata, di);
 
         info.getParameters()
-                .put(AbstractGridFormat.USE_JAI_IMAGEREAD.getName().toString(), Boolean.FALSE);
+                .put(AbstractGridFormat.USE_IMAGEN_IMAGEREAD.getName().toString(), Boolean.FALSE);
         getCatalog().save(info);
     }
 

@@ -27,8 +27,7 @@ public class EmailAddressValidatorTest {
 
     @Test
     public void shouldFailIfEmailIsInvalid() {
-        StringValidatable validatable =
-                new StringValidatable("test@gmail.com\"><script>alert('XSS')</script>");
+        StringValidatable validatable = new StringValidatable("test@gmail.com\"><script>alert('XSS')</script>");
         new EmailAddressValidator().validate(validatable);
         assertFalse(validatable.isValid());
     }

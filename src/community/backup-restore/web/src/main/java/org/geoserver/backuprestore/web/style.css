@@ -62,3 +62,16 @@ legend span.no-border {
     height:50em;
     font-size:small
 }
+
+.fieldset-margins fieldset {
+    margin-top: 3em;
+}
+
+#sources li {
+    margin: 0;
+    padding: 0;
+}
+
+#sources li:first-child {
+    margin: 0.3em 0 0;
+}

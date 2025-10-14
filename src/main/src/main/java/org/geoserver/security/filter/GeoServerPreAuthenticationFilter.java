@@ -37,8 +37,8 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 public abstract class GeoServerPreAuthenticationFilter extends GeoServerSecurityFilter
         implements AuthenticationCachingFilter, GeoServerAuthenticationFilter {
 
-    private AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails>
-            authenticationDetailsSource = new WebAuthenticationDetailsSource();
+    private AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails> authenticationDetailsSource =
+            new WebAuthenticationDetailsSource();
     protected AuthenticationEntryPoint aep;
 
     @Override
@@ -61,9 +61,7 @@ public abstract class GeoServerPreAuthenticationFilter extends GeoServerSecurity
                     SecurityContextHolder.getContext().getAuthentication();
             if (postAuthentication != null && cacheKey != null) {
                 if (cacheAuthentication(postAuthentication, (HttpServletRequest) request)) {
-                    getSecurityManager()
-                            .getAuthenticationCache()
-                            .put(getName(), cacheKey, postAuthentication);
+                    getSecurityManager().getAuthenticationCache().put(getName(), cacheKey, postAuthentication);
                 }
             }
         }
@@ -72,21 +70,19 @@ public abstract class GeoServerPreAuthenticationFilter extends GeoServerSecurity
         chain.doFilter(request, response);
     }
 
-    /**
-     * subclasses should return the principal, <code>null</code> if no principal was authenticated
-     */
+    /** subclasses should return the principal, {@code null} if no principal was authenticated */
     protected abstract String getPreAuthenticatedPrincipal(HttpServletRequest request);
 
     /**
-     * subclasses should return the roles for the principal obtained by {@link
-     * #getPreAuthenticatedPrincipal(HttpServletRequest)}
+     * subclasses should return the roles for the principal obtained by
+     * {@link #getPreAuthenticatedPrincipal(HttpServletRequest)}
      */
-    protected abstract Collection<GeoServerRole> getRoles(
-            HttpServletRequest request, String principal) throws IOException;
+    protected abstract Collection<GeoServerRole> getRoles(HttpServletRequest request, String principal)
+            throws IOException;
 
     /**
-     * Try to authenticate and adds {@link GeoServerRole#AUTHENTICATED_ROLE} Takes care of the
-     * special user named {@link GeoServerUser#ROOT_USERNAME}
+     * Try to authenticate and adds {@link GeoServerRole#AUTHENTICATED_ROLE} Takes care of the special user named
+     * {@link GeoServerUser#ROOT_USERNAME}
      */
     protected void doAuthenticate(HttpServletRequest request, HttpServletResponse response) {
 
@@ -95,15 +91,12 @@ public abstract class GeoServerPreAuthenticationFilter extends GeoServerSecurity
             return;
         }
 
-        LOGGER.log(
-                Level.FINE,
-                "preAuthenticatedPrincipal = " + principal + ", trying to authenticate");
+        LOGGER.log(Level.FINE, "preAuthenticatedPrincipal = " + principal + ", trying to authenticate");
 
         PreAuthenticatedAuthenticationToken result = null;
         if (GeoServerUser.ROOT_USERNAME.equals(principal)) {
-            result =
-                    createPreAuthenticatedAuthenticationToken(
-                            principal, null, Collections.singleton(GeoServerRole.ADMIN_ROLE));
+            result = createPreAuthenticatedAuthenticationToken(
+                    principal, null, Collections.singleton(GeoServerRole.ADMIN_ROLE));
         } else {
             Collection<GeoServerRole> roles = null;
             try {
@@ -111,8 +104,7 @@ public abstract class GeoServerPreAuthenticationFilter extends GeoServerSecurity
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            if (roles.contains(GeoServerRole.AUTHENTICATED_ROLE) == false)
-                roles.add(GeoServerRole.AUTHENTICATED_ROLE);
+            if (roles.contains(GeoServerRole.AUTHENTICATED_ROLE) == false) roles.add(GeoServerRole.AUTHENTICATED_ROLE);
             result = createPreAuthenticatedAuthenticationToken(principal, null, roles);
         }
 
@@ -131,14 +123,12 @@ public abstract class GeoServerPreAuthenticationFilter extends GeoServerSecurity
         return new PreAuthenticatedAuthenticationToken(principal, credentials, roles);
     }
 
-    public AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails>
-            getAuthenticationDetailsSource() {
+    public AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails> getAuthenticationDetailsSource() {
         return authenticationDetailsSource;
     }
 
     public void setAuthenticationDetailsSource(
-            AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails>
-                    authenticationDetailsSource) {
+            AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails> authenticationDetailsSource) {
         this.authenticationDetailsSource = authenticationDetailsSource;
     }
 

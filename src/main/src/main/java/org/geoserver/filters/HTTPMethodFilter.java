@@ -27,9 +27,7 @@ public class HTTPMethodFilter implements GeoServerFilter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        if (request instanceof HttpServletRequest && response instanceof HttpServletResponse) {
-            HttpServletRequest httpRequest = (HttpServletRequest) request;
-            HttpServletResponse httpResponse = (HttpServletResponse) response;
+        if (request instanceof HttpServletRequest httpRequest && response instanceof HttpServletResponse httpResponse) {
             if (!HTTP_METHOD_OPTIONS.contains(httpRequest.getMethod())) {
                 httpResponse.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
             } else {

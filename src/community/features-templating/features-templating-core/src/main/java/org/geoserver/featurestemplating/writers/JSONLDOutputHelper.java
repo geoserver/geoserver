@@ -48,15 +48,14 @@ public class JSONLDOutputHelper {
     }
 
     /**
-     * Retrieve all the vendor options from all the involved templates and populate and
-     * EncodingHints map suitable to be consumed by the TemplateWriter.
+     * Retrieve all the vendor options from all the involved templates and populate and EncodingHints map suitable to be
+     * consumed by the TemplateWriter.
      *
      * @param collectionList the list of FeatureCollection being encoded.
      * @return the EncodingHints map.
      * @throws ExecutionException
      */
-    public EncodingHints optionsToEncodingHints(List<FeatureCollection> collectionList)
-            throws ExecutionException {
+    public EncodingHints optionsToEncodingHints(List<FeatureCollection> collectionList) throws ExecutionException {
         EncodingHints encodingHints = new EncodingHints();
         List<JsonNode> allContexts = new ArrayList<>();
         for (FeatureCollection collection : collectionList) {
@@ -67,8 +66,7 @@ public class JSONLDOutputHelper {
             if (rootBuilder != null) {
                 VendorOptions options = rootBuilder.getVendorOptions();
                 JsonNode node = options.get(CONTEXT, JsonNode.class);
-                if (node == null)
-                    node = rootBuilder.getEncodingHints().get(CONTEXT, JsonNode.class);
+                if (node == null) node = rootBuilder.getEncodingHints().get(CONTEXT, JsonNode.class);
                 if (node != null) allContexts.add(node);
                 putEncodingHintIfAbsent(encodingHints, options, JSONLD_TYPE, String.class);
                 putEncodingHintIfAbsent(encodingHints, options, COLLECTION_NAME, String.class);
@@ -160,9 +158,7 @@ public class JSONLDOutputHelper {
             RootBuilder root = loader.getTemplate(fti, request.getOutputFormat(), request);
             if (root == null) {
                 String message =
-                        "Unable to find a JSON-LD template for type "
-                                + fti.prefixedName()
-                                + " throwing exception.";
+                        "Unable to find a JSON-LD template for type " + fti.prefixedName() + " throwing exception.";
                 LOGGER.info(message);
                 throw new RuntimeException(message);
             }

@@ -59,14 +59,13 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
         tester.startPage(new CRSPanelTestPage(crs));
 
-        GSModalWindow window =
-                (GSModalWindow) tester.getComponentFromLastRenderedPage("form:crs:popup");
+        GSModalWindow window = (GSModalWindow) tester.getComponentFromLastRenderedPage("form:crs:popup");
         assertFalse(window.isShown());
 
         tester.clickLink("form:crs:wkt", true);
         assertTrue(window.isShown());
 
-        tester.assertModelValue("form:crs:popup:modal:content:wkt", crs.toWKT());
+        tester.assertModelValue("form:crs:popup:modal:overlay:dialog:content:content:wkt", crs.toWKT());
     }
 
     @Test
@@ -74,12 +73,10 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         // see GEOS-3207
         tester.startPage(new CRSPanelTestPage());
 
-        GSModalWindow window =
-                (GSModalWindow) tester.getComponentFromLastRenderedPage("form:crs:popup");
+        GSModalWindow window = (GSModalWindow) tester.getComponentFromLastRenderedPage("form:crs:popup");
         assertFalse(window.isShown());
 
-        GeoServerAjaxFormLink link =
-                (GeoServerAjaxFormLink) tester.getComponentFromLastRenderedPage("form:crs:wkt");
+        GeoServerAjaxFormLink link = (GeoServerAjaxFormLink) tester.getComponentFromLastRenderedPage("form:crs:wkt");
         assertFalse(link.isEnabled());
     }
 
@@ -217,14 +214,13 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         CoordinateReferenceSystem crs = CRS.decode("IAU:30100");
         tester.startPage(new CRSPanelTestPage(crs));
 
-        GSModalWindow window =
-                (GSModalWindow) tester.getComponentFromLastRenderedPage("form:crs:popup");
+        GSModalWindow window = (GSModalWindow) tester.getComponentFromLastRenderedPage("form:crs:popup");
         assertFalse(window.isShown());
 
         tester.clickLink("form:crs:wkt", true);
         assertTrue(window.isShown());
 
-        tester.assertModelValue("form:crs:popup:modal:content:wkt", crs.toWKT());
+        tester.assertModelValue("form:crs:popup:modal:overlay:dialog:content:content:wkt", crs.toWKT());
     }
 
     @Test
@@ -232,8 +228,7 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         CoordinateReferenceSystem crs = CRS.decode("IAU:30100");
         tester.startPage(new CRSPanelTestPage(crs));
 
-        GSModalWindow window =
-                (GSModalWindow) tester.getComponentFromLastRenderedPage("form:crs:popup");
+        GSModalWindow window = (GSModalWindow) tester.getComponentFromLastRenderedPage("form:crs:popup");
         assertFalse(window.isShown());
 
         // open the CRS list panel
@@ -242,19 +237,16 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
 
         // filter by name
         FormTester ft = tester.newFormTester("form");
-        ft.setValue("crs:popup:modal:content:table:filterForm:filter", "IAU:30115");
-        ft.submit("crs:popup:modal:content:table:filterForm:submit");
+        ft.setValue("crs:popup:modal:overlay:dialog:content:content:table:filterForm:filter", "IAU:30115");
+        ft.submit("crs:popup:modal:overlay:dialog:content:content:table:filterForm:submit");
 
         // find and click the link with the 30115 code
-        tester.getLastRenderedPage()
-                .visitChildren(
-                        AjaxLink.class,
-                        (link, visit) -> {
-                            if ("IAU:30115".equals(link.getDefaultModelObjectAsString())) {
-                                visit.stop();
-                                tester.executeAjaxEvent(link, "click");
-                            }
-                        });
+        tester.getLastRenderedPage().visitChildren(AjaxLink.class, (link, visit) -> {
+            if ("IAU:30115".equals(link.getDefaultModelObjectAsString())) {
+                visit.stop();
+                tester.executeAjaxEvent(link, "click");
+            }
+        });
 
         // window closed
         assertFalse(window.isShown());

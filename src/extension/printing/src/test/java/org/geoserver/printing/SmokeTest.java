@@ -13,19 +13,24 @@ import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Test;
 
 public class SmokeTest extends GeoServerSystemTestSupport {
 
-    @Test
-    public void testServiceExists() throws Exception {
-        // place the configuration file in the data dir (whicih is also used as the servlet context
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        // place the configuration file in the data dir (which is also used as the servlet context
         // lookup)
         GeoServerDataDirectory dd = getDataDirectory();
         try (InputStream is = getClass().getResourceAsStream("/test.yaml")) {
             FileUtils.copyInputStreamToFile(is, new File(dd.root(), "test.yaml"));
         }
+    }
+
+    @Test
+    public void testServiceExists() throws Exception {
         JSON json = getAsJSON("/pdf/info.json?app=test");
 
         assertTrue(json instanceof JSONObject);
@@ -37,12 +42,10 @@ public class SmokeTest extends GeoServerSystemTestSupport {
         assertTrue(obj.containsKey("printURL"));
         assertTrue(obj.containsKey("createURL"));
 
-        json =
-                json(
-                        postAsServletResponse(
-                                "/pdf/create.json",
-                                "{\"app\":\"test\",\"units\":\"m\",\"srs\":\"EPSG:900913\",\"layout\":\"A4 portrait\",\"dpi\":75,\"outputFilename\":\"mapstore-print\",\"layers\":[],\"legends\":[],\"pages\":[{\"mapTitle\":\"\",\"center\":[1263949.7576605,5859225.6448425],\"scale\":200000,\"rotation\":0,\"comment\":\"\"}]}",
-                                "application/json"));
+        json = json(postAsServletResponse(
+                "/pdf/create.json",
+                "{\"app\":\"test\",\"units\":\"m\",\"srs\":\"EPSG:900913\",\"layout\":\"A4 portrait test\",\"dpi\":75,\"outputFilename\":\"mapstore-print\",\"layers\":[],\"legends\":[],\"pages\":[{\"mapTitle\":\"\",\"center\":[1263949.7576605,5859225.6448425],\"scale\":200000,\"rotation\":0,\"comment\":\"\"}]}",
+                "application/json"));
 
         assertTrue(json instanceof JSONObject);
 

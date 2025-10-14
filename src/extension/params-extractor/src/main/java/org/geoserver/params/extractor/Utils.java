@@ -22,20 +22,18 @@ public final class Utils {
     private Utils() {}
 
     public static void info(Logger logger, String message, Object... messageArguments) {
-        logger.info(() -> String.format(message, messageArguments));
+        logger.info(() -> message.formatted(messageArguments));
     }
 
     public static void debug(Logger logger, String message, Object... messageArguments) {
-        logger.fine(() -> String.format(message, messageArguments));
+        logger.fine(() -> message.formatted(messageArguments));
     }
 
-    public static void error(
-            Logger logger, Throwable cause, String message, Object... messageArguments) {
-        logger.log(Level.SEVERE, cause, () -> String.format(message, messageArguments));
+    public static void error(Logger logger, Throwable cause, String message, Object... messageArguments) {
+        logger.log(Level.SEVERE, cause, () -> message.formatted(messageArguments));
     }
 
-    public static void checkCondition(
-            boolean condition, String failMessage, Object... failMessageArguments) {
+    public static void checkCondition(boolean condition, String failMessage, Object... failMessageArguments) {
         if (!condition) {
             throw exception(failMessage, failMessageArguments);
         }
@@ -49,16 +47,14 @@ public final class Utils {
         return new ParamsExtractorException(null, message, messageArguments);
     }
 
-    public static ParamsExtractorException exception(
-            Throwable cause, String message, Object... messageArguments) {
+    public static ParamsExtractorException exception(Throwable cause, String message, Object... messageArguments) {
         return new ParamsExtractorException(cause, message, messageArguments);
     }
 
     private static final class ParamsExtractorException extends RuntimeException {
 
-        public ParamsExtractorException(
-                Throwable cause, String message, Object... messageArguments) {
-            super(String.format(message, messageArguments), cause);
+        public ParamsExtractorException(Throwable cause, String message, Object... messageArguments) {
+            super(message.formatted(messageArguments), cause);
         }
     }
 
@@ -73,7 +69,7 @@ public final class Utils {
     public static Map<String, String[]> parseParameters(Optional<String> queryString)
             throws UnsupportedEncodingException {
         Map<String, String[]> parameters = new HashMap<>();
-        if (!queryString.isPresent()) {
+        if (queryString.isEmpty()) {
             return parameters;
         }
         final String[] parametersParts = queryString.get().split("&");
@@ -99,8 +95,7 @@ public final class Utils {
     public static <K, V> Map.Entry<K, V> caseInsensitiveSearch(String key, Map<K, V> map) {
         if (map != null) {
             for (Map.Entry<K, V> entry : map.entrySet()) {
-                if (entry.getKey() instanceof String
-                        && ((String) entry.getKey()).equalsIgnoreCase(key)) {
+                if (entry.getKey() instanceof String && ((String) entry.getKey()).equalsIgnoreCase(key)) {
                     return entry;
                 }
             }

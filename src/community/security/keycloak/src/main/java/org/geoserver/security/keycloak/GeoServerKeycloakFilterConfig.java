@@ -6,6 +6,7 @@ package org.geoserver.security.keycloak;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.io.Serial;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
@@ -20,15 +21,16 @@ import org.keycloak.adapters.KeycloakDeploymentBuilder;
 import org.keycloak.representations.adapters.config.AdapterConfig;
 
 /**
- * Configuration for Keycloak authentication, wrapped for use with GeoServer. This is essentially
- * the base {@link AdapterConfig} with some additional bits to help xstream read/write XML. The
- * adapter config should be input exactly as provided by the Keycloak server.
+ * Configuration for Keycloak authentication, wrapped for use with GeoServer. This is essentially the base
+ * {@link AdapterConfig} with some additional bits to help xstream read/write XML. The adapter config should be input
+ * exactly as provided by the Keycloak server.
  */
 public class GeoServerKeycloakFilterConfig extends PreAuthenticatedUserNameFilterConfig
         implements SecurityAuthFilterConfig, SecurityAuthProviderConfig, Cloneable {
 
     private static final Logger LOG = Logging.getLogger(GeoServerKeycloakFilterConfig.class);
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     protected String id;
@@ -42,8 +44,7 @@ public class GeoServerKeycloakFilterConfig extends PreAuthenticatedUserNameFilte
     private boolean enableRedirectEntryPoint = false;
 
     /**
-     * Convert the adapter configuration into an object we can use to configure the rest of the
-     * context.
+     * Convert the adapter configuration into an object we can use to configure the rest of the context.
      *
      * @return configuration for the Keycloak-Java adapter
      * @throws IOException if the provided string does not represent valid config
@@ -51,8 +52,7 @@ public class GeoServerKeycloakFilterConfig extends PreAuthenticatedUserNameFilte
     public AdapterConfig readAdapterConfig() throws IOException {
         LOG.log(Level.FINER, "GeoServerKeycloakFilterConfig.readAdapterConfig ENTRY");
         try {
-            return KeycloakDeploymentBuilder.loadAdapterConfig(
-                    IOUtils.toInputStream(getAdapterConfig()));
+            return KeycloakDeploymentBuilder.loadAdapterConfig(IOUtils.toInputStream(getAdapterConfig()));
         } catch (RuntimeException e) {
             throw new IOException(e);
         }
@@ -137,8 +137,7 @@ public class GeoServerKeycloakFilterConfig extends PreAuthenticatedUserNameFilte
     // Don't be surprised if the copies behave badly though.
     @Override
     public SecurityConfig clone(boolean allowEnvParametrization) {
-        final GeoServerEnvironment gsEnvironment =
-                GeoServerExtensions.bean(GeoServerEnvironment.class);
+        final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
         GeoServerKeycloakFilterConfig target;
         try {
             target = (GeoServerKeycloakFilterConfig) this.clone();

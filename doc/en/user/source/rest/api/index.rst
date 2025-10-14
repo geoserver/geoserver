@@ -35,3 +35,7 @@ This section describes the GeoServer REST configuration API.
    userrole
    resources
    urlchecks
+   filterchains
+   authenticationfilters
+   authenticationproviders
+   usergroupservices

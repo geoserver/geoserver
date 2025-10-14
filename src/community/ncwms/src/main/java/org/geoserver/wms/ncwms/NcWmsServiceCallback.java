@@ -22,8 +22,7 @@ public class NcWmsServiceCallback extends AbstractDispatcherCallback {
     @SuppressWarnings("unchecked")
     public Service serviceDispatched(Request request, Service service) throws ServiceException {
         Object req = request.getKvp().get("REQUEST");
-        if ("wms".equals(service.getId().toLowerCase())
-                && NcWmsService.GET_TIME_SERIES_REQUEST.equals(req)) {
+        if ("wms".equals(service.getId().toLowerCase()) && NcWmsService.GET_TIME_SERIES_REQUEST.equals(req)) {
             /*
              * HACK: we are using GetFeatureInfoRequest and GetFeatureInfoKvpReader for parsing a GetTimeSeries. As the valid INFO_FORMATs are
              * different, we need to fool the GetFeatureInfoKvpReader
@@ -32,8 +31,7 @@ public class NcWmsServiceCallback extends AbstractDispatcherCallback {
             String requestedFormat = (String) kvp.get("INFO_FORMAT");
             kvp.put("INFO_FORMAT", "text/plain");
             kvp.put(NcWmsService.TIME_SERIES_INFO_FORMAT_PARAM_NAME, requestedFormat);
-            return new Service(
-                    service.getId(), this.service, service.getVersion(), service.getOperations());
+            return new Service(service.getId(), this.service, service.getVersion(), service.getOperations());
         }
         return service;
     }

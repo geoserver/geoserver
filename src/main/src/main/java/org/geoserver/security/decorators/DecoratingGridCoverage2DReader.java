@@ -9,7 +9,7 @@ import it.geosolutions.imageio.maskband.DatasetLayout;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
-import javax.media.jai.ImageLayout;
+import org.eclipse.imagen.ImageLayout;
 import org.geotools.api.coverage.grid.Format;
 import org.geotools.api.coverage.grid.GridEnvelope;
 import org.geotools.api.parameter.GeneralParameterValue;
@@ -23,8 +23,8 @@ import org.geotools.coverage.grid.io.OverviewPolicy;
 import org.geotools.geometry.GeneralBounds;
 
 /**
- * Delegates every method to the delegate grid coverage reader. Subclasses will override selected
- * methods to perform their "decoration" job
+ * Delegates every method to the delegate grid coverage reader. Subclasses will override selected methods to perform
+ * their "decoration" job
  *
  * @author Andrea Aime
  */
@@ -97,13 +97,12 @@ public abstract class DecoratingGridCoverage2DReader implements GridCoverage2DRe
     }
 
     @Override
-    public GridCoverage2D read(GeneralParameterValue[] parameters)
-            throws IllegalArgumentException, IOException {
+    public GridCoverage2D read(GeneralParameterValue... parameters) throws IllegalArgumentException, IOException {
         return delegate.read(parameters);
     }
 
     @Override
-    public GridCoverage2D read(String coverageName, GeneralParameterValue[] parameters)
+    public GridCoverage2D read(String coverageName, GeneralParameterValue... parameters)
             throws IllegalArgumentException, IOException {
         return delegate.read(coverageName, parameters);
     }
@@ -129,20 +128,17 @@ public abstract class DecoratingGridCoverage2DReader implements GridCoverage2DRe
     }
 
     @Override
-    public Set<ParameterDescriptor<List>> getDynamicParameters(String coverageName)
-            throws IOException {
+    public Set<ParameterDescriptor<List>> getDynamicParameters(String coverageName) throws IOException {
         return delegate.getDynamicParameters(coverageName);
     }
 
     @Override
-    public double[] getReadingResolutions(OverviewPolicy policy, double[] requestedResolution)
-            throws IOException {
+    public double[] getReadingResolutions(OverviewPolicy policy, double[] requestedResolution) throws IOException {
         return delegate.getReadingResolutions(policy, requestedResolution);
     }
 
     @Override
-    public double[] getReadingResolutions(
-            String coverageName, OverviewPolicy policy, double[] requestedResolution)
+    public double[] getReadingResolutions(String coverageName, OverviewPolicy policy, double[] requestedResolution)
             throws IOException {
         return delegate.getReadingResolutions(coverageName, policy, requestedResolution);
     }

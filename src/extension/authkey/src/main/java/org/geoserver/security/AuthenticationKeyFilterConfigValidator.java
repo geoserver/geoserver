@@ -23,44 +23,36 @@ public class AuthenticationKeyFilterConfigValidator extends FilterConfigValidato
     }
 
     @Override
-    public void validateFilterConfig(SecurityNamedServiceConfig config)
-            throws FilterConfigException {
+    public void validateFilterConfig(SecurityNamedServiceConfig config) throws FilterConfigException {
 
-        if (config instanceof AuthenticationKeyFilterConfig)
-            validateFilterConfig((AuthenticationKeyFilterConfig) config);
+        if (config instanceof AuthenticationKeyFilterConfig filterConfig) validateFilterConfig(filterConfig);
         else super.validateFilterConfig(config);
     }
 
-    public void validateFilterConfig(AuthenticationKeyFilterConfig config)
-            throws FilterConfigException {
+    public void validateFilterConfig(AuthenticationKeyFilterConfig config) throws FilterConfigException {
 
         checkExistingUGService(config.getUserGroupServiceName());
 
         if (!isNotEmpty(config.getAuthKeyParamName())) {
-            throw createFilterException(
-                    AuthenticationKeyFilterConfigException.AUTH_KEY_PARAM_NAME_REQUIRED);
+            throw createFilterException(AuthenticationKeyFilterConfigException.AUTH_KEY_PARAM_NAME_REQUIRED);
         }
         if (!isNotEmpty(config.getAuthKeyMapperName())) {
-            throw createFilterException(
-                    AuthenticationKeyFilterConfigException.AUTH_KEY_MAPPER_NAME_REQUIRED);
+            throw createFilterException(AuthenticationKeyFilterConfigException.AUTH_KEY_MAPPER_NAME_REQUIRED);
         }
 
         try {
             lookupBean(config.getAuthKeyMapperName());
         } catch (NoSuchBeanDefinitionException ex) {
             throw createFilterException(
-                    AuthenticationKeyFilterConfigException.AUTH_KEY_MAPPER_NOT_FOUND_$1,
-                    config.getAuthKeyMapperName());
+                    AuthenticationKeyFilterConfigException.AUTH_KEY_MAPPER_NOT_FOUND_$1, config.getAuthKeyMapperName());
         }
 
         // validates mapper parameters
-        AuthenticationKeyMapper mapper =
-                (AuthenticationKeyMapper) lookupBean(config.getAuthKeyMapperName());
+        AuthenticationKeyMapper mapper = (AuthenticationKeyMapper) lookupBean(config.getAuthKeyMapperName());
         for (String paramName : config.getMapperParameters().keySet()) {
             if (!mapper.getAvailableParameters().contains(paramName)) {
                 throw createFilterException(
-                        AuthenticationKeyFilterConfigException.INVALID_AUTH_KEY_MAPPER_PARAMETER_$3,
-                        paramName);
+                        AuthenticationKeyFilterConfigException.INVALID_AUTH_KEY_MAPPER_PARAMETER_$3, paramName);
             }
             mapper.validateParameter(paramName, config.getMapperParameters().get(paramName));
         }
@@ -72,8 +64,7 @@ public class AuthenticationKeyFilterConfigValidator extends FilterConfigValidato
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        if (mapper.supportsReadOnlyUserGroupService() == false
-                && service.canCreateStore() == false) {
+        if (mapper.supportsReadOnlyUserGroupService() == false && service.canCreateStore() == false) {
             throw createFilterException(
                     AuthenticationKeyFilterConfigException.INVALID_AUTH_KEY_MAPPER_$2,
                     config.getAuthKeyMapperName(),
@@ -82,8 +73,7 @@ public class AuthenticationKeyFilterConfigValidator extends FilterConfigValidato
     }
 
     @Override
-    protected AuthenticationKeyFilterConfigException createFilterException(
-            String errorid, Object... args) {
+    protected AuthenticationKeyFilterConfigException createFilterException(String errorid, Object... args) {
         return new AuthenticationKeyFilterConfigException(errorid, args);
     }
 }

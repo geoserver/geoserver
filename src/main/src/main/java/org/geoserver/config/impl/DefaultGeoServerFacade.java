@@ -185,13 +185,12 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
     @Override
     public <T extends ServiceInfo> T getService(WorkspaceInfo workspace, Class<T> clazz) {
         List<ServiceInfo> wsServices = services.findByWorkspace(workspace);
-        Optional<T> found =
-                wsServices.stream()
-                        .filter(clazz::isInstance)
-                        .map(clazz::cast)
-                        .findFirst()
-                        .map(s -> ModificationProxy.create(s, clazz));
-        if (!found.isPresent()) {
+        Optional<T> found = wsServices.stream()
+                .filter(clazz::isInstance)
+                .map(clazz::cast)
+                .findFirst()
+                .map(s -> ModificationProxy.create(s, clazz));
+        if (found.isEmpty()) {
             LOGGER.log(
                     Level.FINE,
                     "Could not locate service of type {0} in workspace {1}, available services were {2}",
@@ -208,10 +207,9 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
         }
 
         if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.log(
-                    Level.FINE,
-                    "Could not locate service of type {0} and id {1}, got {2}",
-                    new Object[] {clazz, id, serviceInfo});
+            LOGGER.log(Level.FINE, "Could not locate service of type {0} and id {1}, got {2}", new Object[] {
+                clazz, id, serviceInfo
+            });
         }
 
         return null;
@@ -223,19 +221,17 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
     }
 
     @Override
-    public <T extends ServiceInfo> T getServiceByName(
-            String name, WorkspaceInfo workspace, Class<T> clazz) {
+    public <T extends ServiceInfo> T getServiceByName(String name, WorkspaceInfo workspace, Class<T> clazz) {
 
         List<ServiceInfo> wsServices = services.findByWorkspace(workspace);
-        Optional<T> found =
-                wsServices.stream()
-                        .filter(s -> name.equals(s.getName()))
-                        .filter(clazz::isInstance)
-                        .map(clazz::cast)
-                        .findFirst()
-                        .map(s -> ModificationProxy.create(s, clazz));
+        Optional<T> found = wsServices.stream()
+                .filter(s -> name.equals(s.getName()))
+                .filter(clazz::isInstance)
+                .map(clazz::cast)
+                .findFirst()
+                .map(s -> ModificationProxy.create(s, clazz));
 
-        if (!found.isPresent() && LOGGER.isLoggable(Level.FINE)) {
+        if (found.isEmpty() && LOGGER.isLoggable(Level.FINE)) {
             LOGGER.log(
                     Level.FINE,
                     "Could not locate service of type {0} in workspace {1} and name \'{2}\', available services were {3}",
@@ -384,8 +380,9 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
 
         public List<ServiceInfo> findByWorkspace(WorkspaceInfo workspace) {
             String workspaceId = workspaceId(workspace);
-            return new ArrayList<>(
-                    workspaceIdMap.getOrDefault(workspaceId, Collections.emptyMap()).values());
+            return new ArrayList<>(workspaceIdMap
+                    .getOrDefault(workspaceId, Collections.emptyMap())
+                    .values());
         }
 
         private String workspaceId(WorkspaceInfo ws) {

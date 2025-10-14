@@ -5,10 +5,19 @@
  */
 package org.geoserver.gwc.web.layer;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.matchesRegex;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.wicket.util.tester.TagTester;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -63,8 +72,14 @@ public class CachedLayersPageTest extends GeoServerWicketTestSupport {
 
         tester.startPage(page);
         tester.assertRenderedPage(CachedLayersPage.class);
-
-        // print(page, true, true);
+        List<String> scripts = TagTester.createTags(
+                        tester.getLastResponseAsString(), tag -> tag.getName().equalsIgnoreCase("script"), false)
+                .stream()
+                .map(tag -> tag.getAttribute("src"))
+                .collect(Collectors.toList());
+        String regex =
+                "^.*/" + CachedLayersPage.class.getName() + "/" + CachedLayersPage.class.getSimpleName() + ".*\\.js$";
+        assertThat(scripts, hasItem(matchesRegex(regex)));
     }
 
     @Test
@@ -74,8 +89,7 @@ public class CachedLayersPageTest extends GeoServerWicketTestSupport {
         assertNotNull(tileLayer);
 
         tester.startComponentInPage(
-                new ConfigureCachedLayerAjaxLink(
-                        "test", new TileLayerDetachableModel(tileLayer.getName()), null));
+                new ConfigureCachedLayerAjaxLink("test", new TileLayerDetachableModel(tileLayer.getName()), null));
         // tester.debugComponentTrees();
         tester.executeAjaxEvent("test:link", "click");
         tester.assertNoErrorMessage();
@@ -98,11 +112,10 @@ public class CachedLayersPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testMangleSeedLink() {
         // Mimic a Proxy URL mangler
-        URLMangler testMangler =
-                (base, path, map, type) -> {
-                    base.setLength(0);
-                    base.append("http://rewrite/");
-                };
+        URLMangler testMangler = (base, path, map, type) -> {
+            base.setLength(0);
+            base.append("http://rewrite/");
+        };
         extensions.singleton("testMangler", testMangler, URLMangler.class);
 
         CachedLayersPage page = new CachedLayersPage();
@@ -122,11 +135,10 @@ public class CachedLayersPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testManglePreviewLink() {
         // Mimic a Proxy URL mangler
-        URLMangler testMangler =
-                (base, path, map, type) -> {
-                    base.setLength(0);
-                    base.append("http://rewrite/");
-                };
+        URLMangler testMangler = (base, path, map, type) -> {
+            base.setLength(0);
+            base.append("http://rewrite/");
+        };
         extensions.singleton("testMangler", testMangler, URLMangler.class);
         assertPreviewLinks("http://rewrite/gwc/demo/cgf");
     }
@@ -134,14 +146,13 @@ public class CachedLayersPageTest extends GeoServerWicketTestSupport {
     private static void assertPreviewLinks(String url) {
         CachedLayersPage page = new CachedLayersPage();
         tester.startPage(page);
-        List<TagTester> tags =
-                TagTester.createTags(
-                        tester.getLastResponseAsString(),
-                        tag -> {
-                            String value = tag.getAttributes().getString("value");
-                            return value != null && value.startsWith(url);
-                        },
-                        false);
+        List<TagTester> tags = TagTester.createTags(
+                tester.getLastResponseAsString(),
+                tag -> {
+                    String value = tag.getAttributes().getString("value");
+                    return value != null && value.startsWith(url);
+                },
+                false);
         assertEquals("Incorrect number of preview links starting with " + url, 20, tags.size());
     }
 
@@ -178,8 +189,22 @@ public class CachedLayersPageTest extends GeoServerWicketTestSupport {
         tester.assertVisible("dialog");
 
         // click submit
-        tester.clickLink("dialog:dialog:modal:content:form:submit", true);
+        tester.clickLink("dialog:dialog:modal:overlay:dialog:content:content:form:submit", true);
 
         tester.assertNoErrorMessage();
+    }
+
+    @Test
+    public void testCachingImages() {
+        // test that the "?antiCache=###" query string is not appended to the img src
+        tester.startPage(CachedLayersPage.class);
+        tester.assertRenderedPage(CachedLayersPage.class);
+        tester.clickLink("table:navigatorBottom:navigator:next", true);
+        List<TagTester> images = TagTester.createTags(
+                tester.getLastResponseAsString(), tag -> tag.getName().equalsIgnoreCase("img"), false);
+        assertThat(images, not(empty()));
+        images.stream()
+                .map(image -> image.getAttribute("src"))
+                .forEach(src -> assertThat(src, allOf(containsString("/img/icons/"), endsWith(".png"))));
     }
 }

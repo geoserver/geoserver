@@ -35,9 +35,7 @@ public class JSONDescribeLayerResponse extends DescribeLayerResponse {
     /** A logger for this class. */
     protected static final Logger LOGGER = Logging.getLogger(JSONDescribeLayerResponse.class);
 
-    /**
-     * The MIME type of the format this response produces, supported formats see {@link JSONType}
-     */
+    /** The MIME type of the format this response produces, supported formats see {@link JSONType} */
     private final JSONType type;
 
     protected final WMS wms;
@@ -47,8 +45,7 @@ public class JSONDescribeLayerResponse extends DescribeLayerResponse {
         super(outputFormat);
         this.wms = wms;
         this.type = JSONType.getJSONType(outputFormat);
-        if (type == null)
-            throw new IllegalArgumentException("Not supported mime type for:" + outputFormat);
+        if (type == null) throw new IllegalArgumentException("Not supported mime type for:" + outputFormat);
     }
 
     /** Actually write the passed DescribeLayerModel on the OutputStream */
@@ -59,9 +56,8 @@ public class JSONDescribeLayerResponse extends DescribeLayerResponse {
 
         switch (type) {
             case JSON:
-                OutputStreamWriter osw =
-                        new OutputStreamWriter(
-                                output, wms.getGeoServer().getSettings().getCharset());
+                OutputStreamWriter osw = new OutputStreamWriter(
+                        output, wms.getGeoServer().getSettings().getCharset());
                 Writer outWriter = new BufferedWriter(osw);
 
                 writeJSON(outWriter, layers);
@@ -108,8 +104,7 @@ public class JSONDescribeLayerResponse extends DescribeLayerResponse {
             json.endArray();
             json.endObject();
         } catch (JSONException jsonException) {
-            ServiceException serviceException =
-                    new ServiceException("Error: " + jsonException.getMessage());
+            ServiceException serviceException = new ServiceException("Error: " + jsonException.getMessage());
             serviceException.initCause(jsonException);
             throw serviceException;
         }

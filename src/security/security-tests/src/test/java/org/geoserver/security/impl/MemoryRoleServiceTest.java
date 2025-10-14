@@ -97,8 +97,7 @@ public class MemoryRoleServiceTest extends AbstractRoleServiceTest {
 
         RoleCalculator calc = new RoleCalculator(ugService, service);
 
-        SortedSet<GeoServerRole> roles =
-                calc.calculateRoles(ugService.createUserObject("user1", "abc", true));
+        SortedSet<GeoServerRole> roles = calc.calculateRoles(ugService.createUserObject("user1", "abc", true));
         assertEquals(4, roles.size());
         assertTrue(roles.contains(adminRole));
         assertTrue(roles.contains(GeoServerRole.ADMIN_ROLE));

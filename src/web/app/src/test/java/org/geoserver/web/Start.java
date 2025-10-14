@@ -22,9 +22,12 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.naming.NamingException;
 import javax.security.auth.x500.X500Principal;
+import org.apache.commons.dbcp.BasicDataSource;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.jetty.http.HttpVersion;
+import org.eclipse.jetty.plus.jndi.Resource;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
@@ -32,35 +35,33 @@ import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
+import org.eclipse.jetty.util.resource.PathResource;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.xml.XmlConfiguration;
 
 /**
  * Jetty starter, will run geoserver inside the Jetty web container.<br>
- * Useful for debugging, especially in IDE were you have direct dependencies between the sources of
- * the various modules (such as Eclipse).
+ * Useful for debugging, especially in IDE were you have direct dependencies between the sources of the various modules
+ * (such as Eclipse).
  *
  * @author wolf
  */
-@SuppressWarnings(
-        "deprecation") // deep BouncyCastle API changes, need someone that understands it to replace
+@SuppressWarnings("deprecation") // deep BouncyCastle API changes, need someone that understands it to replace
 // current code
 public class Start {
-    private static final Logger log =
-            org.geotools.util.logging.Logging.getLogger(Start.class.getName());
+    private static final Logger log = org.geotools.util.logging.Logging.getLogger(Start.class.getName());
 
     public static void main(String[] args) {
         final Server jettyServer = new Server();
 
         HttpConfiguration httpConfig = new HttpConfiguration();
-        try (ServerConnector http =
-                        new ServerConnector(jettyServer, new HttpConnectionFactory(httpConfig));
+        try (ServerConnector http = new ServerConnector(jettyServer, new HttpConnectionFactory(httpConfig));
                 ServerConnector https = getHTTPSConnector(jettyServer, httpConfig)) {
             http.setPort(Integer.getInteger("jetty.port", 8080));
             http.setAcceptQueueSize(100);
             http.setIdleTimeout(1000 * 60 * 60);
-            http.setSoLingerTime(-1);
+            // setSoLingerTime was removed in Jetty 10
 
             // Use this to set a limit on the number of threads used to respond requests
             // BoundedThreadPool tp = new BoundedThreadPool();
@@ -68,8 +69,10 @@ public class Start {
             // tp.setMaxThreads(8);
             // conn.setThreadPool(tp);
 
-            jettyServer.setConnectors(
-                    https != null ? new Connector[] {http, https} : new Connector[] {http});
+            jettyServer.setConnectors(https != null ? new Connector[] {http, https} : new Connector[] {http});
+
+            // uncomment call and customize method to create a JNDI data source
+            // addJNDIDataSource();
 
             /*Constraint constraint = new Constraint();
             constraint.setName(Constraint.__BASIC_AUTH);;
@@ -99,7 +102,7 @@ public class Start {
             String jettyConfigFile = System.getProperty("jetty.config.file");
             if (jettyConfigFile != null) {
                 log.info("Loading Jetty config from file: " + jettyConfigFile);
-                (new XmlConfiguration(new FileInputStream(jettyConfigFile))).configure(jettyServer);
+                (new XmlConfiguration(PathResource.newResource(jettyConfigFile))).configure(jettyServer);
             }
 
             long start = System.currentTimeMillis();
@@ -140,38 +143,55 @@ public class Start {
                 try {
                     jettyServer.stop();
                 } catch (Exception e1) {
-                    log.log(
-                            Level.SEVERE,
-                            "Unable to stop the " + "Jetty server:" + e1.getMessage(),
-                            e1);
+                    log.log(Level.SEVERE, "Unable to stop the " + "Jetty server:" + e1.getMessage(), e1);
                 }
             }
         }
     }
 
-    private static ServerConnector getHTTPSConnector(
-            Server jettyServer, HttpConfiguration httpConfig) {
+    /**
+     * Adds a JNDI data source to the Jetty server. Uncomment call in the main method, and customize the pool parameters
+     * and name as needed.
+     */
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
+    private static void addJNDIDataSource() throws NamingException {
+        // Create the JNDI data source
+        BasicDataSource dataSource = new BasicDataSource();
+        dataSource.setDriverClassName("org.postgresql.Driver");
+        dataSource.setUrl("jdbc:postgresql://localhost:5432/mydb");
+        dataSource.setUsername("user");
+        dataSource.setPassword("pwd");
+        dataSource.setMaxActive(20);
+        dataSource.setMaxIdle(5);
+        dataSource.setMinIdle(2);
+        dataSource.setInitialSize(5);
+        dataSource.setAccessToUnderlyingConnectionAllowed(true);
+
+        // Bind the data source to JNDI
+        new Resource("java:comp/env/jdbc/myds", dataSource);
+    }
+
+    private static ServerConnector getHTTPSConnector(Server jettyServer, HttpConfiguration httpConfig) {
         // SSL host name given ?
         String sslHost = System.getProperty("ssl.hostname");
         ServerConnector https = null;
         if (sslHost != null && !sslHost.isEmpty()) {
             Security.addProvider(new BouncyCastleProvider());
-            SslContextFactory ssl = createSSLContextFactory(sslHost);
+            SslContextFactory.Server ssl = createSSLContextFactory(sslHost);
 
             HttpConfiguration httpsConfig = new HttpConfiguration(httpConfig);
             httpsConfig.addCustomizer(new SecureRequestCustomizer());
 
-            https =
-                    new ServerConnector(
-                            jettyServer,
-                            new SslConnectionFactory(ssl, HttpVersion.HTTP_1_1.asString()),
-                            new HttpConnectionFactory(httpsConfig));
+            https = new ServerConnector(
+                    jettyServer,
+                    new SslConnectionFactory(ssl, HttpVersion.HTTP_1_1.asString()),
+                    new HttpConnectionFactory(httpsConfig));
             https.setPort(Integer.getInteger("jetty.ssl.port", 8443));
         }
         return https;
     }
 
-    private static SslContextFactory createSSLContextFactory(String hostname) {
+    private static SslContextFactory.Server createSSLContextFactory(String hostname) {
         String password = System.getProperty("jetty.keystore.password", "changeit");
 
         String keyStoreLocation = System.getProperty("jetty.keystore");
@@ -191,12 +211,13 @@ public class Start {
             log.log(Level.WARNING, "NO SSL available", e);
             return null;
         }
-        SslContextFactory ssl = new SslContextFactory();
+        SslContextFactory.Server ssl = new SslContextFactory.Server();
         ssl.setKeyStorePath(keyStoreFile.getAbsolutePath());
         ssl.setKeyStorePassword(password);
 
         File javaHome = new File(System.getProperty("java.home"));
-        File cacerts = new File(javaHome, "lib").toPath().resolve("security/cacerts").toFile();
+        File cacerts =
+                new File(javaHome, "lib").toPath().resolve("security/cacerts").toFile();
 
         if (!cacerts.exists()) {
             return null;
@@ -208,8 +229,8 @@ public class Start {
         return ssl;
     }
 
-    private static void assureSelfSignedServerCertificate(
-            String hostname, File keyStoreFile, String password) throws Exception {
+    private static void assureSelfSignedServerCertificate(String hostname, File keyStoreFile, String password)
+            throws Exception {
 
         KeyStore privateKS = KeyStore.getInstance("JKS");
         if (keyStoreFile.exists()) {
@@ -237,14 +258,11 @@ public class Start {
         if (random < 0) random *= -1;
         v3CertGen.setSerialNumber(BigInteger.valueOf(random));
         v3CertGen.setIssuerDN(
-                new org.bouncycastle.jce.X509Principal(
-                        "CN=" + hostname + ", OU=None, O=None L=None, C=None"));
+                new org.bouncycastle.jce.X509Principal("CN=" + hostname + ", OU=None, O=None L=None, C=None"));
         v3CertGen.setNotBefore(new Date(System.currentTimeMillis() - 1000L * 60 * 60 * 24 * 30));
-        v3CertGen.setNotAfter(
-                new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 365 * 10)));
+        v3CertGen.setNotAfter(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 365 * 10)));
         v3CertGen.setSubjectDN(
-                new org.bouncycastle.jce.X509Principal(
-                        "CN=" + hostname + ", OU=None, O=None L=None, C=None"));
+                new org.bouncycastle.jce.X509Principal("CN=" + hostname + ", OU=None, O=None L=None, C=None"));
 
         v3CertGen.setPublicKey(KPair.getPublic());
         v3CertGen.setSignatureAlgorithm("MD5WithRSAEncryption");
@@ -259,25 +277,23 @@ public class Start {
         }
 
         privateKS.setKeyEntry(
-                hostname + ".key",
-                KPair.getPrivate(),
-                password.toCharArray(),
-                new java.security.cert.Certificate[] {PKCertificate});
+                hostname + ".key", KPair.getPrivate(), password.toCharArray(), new java.security.cert.Certificate[] {
+                    PKCertificate
+                });
 
         privateKS.setCertificateEntry(hostname + ".cert", PKCertificate);
 
         privateKS.store(new FileOutputStream(keyStoreFile), password.toCharArray());
     }
 
-    private static boolean keyStoreContainsCertificate(KeyStore ks, String hostname)
-            throws Exception {
+    private static boolean keyStoreContainsCertificate(KeyStore ks, String hostname) throws Exception {
         Enumeration<String> e = ks.aliases();
         while (e.hasMoreElements()) {
             String alias = e.nextElement();
             if (ks.isCertificateEntry(alias)) {
                 Certificate c = ks.getCertificate(alias);
-                if (c instanceof X509Certificate) {
-                    X500Principal p = ((X509Certificate) c).getSubjectX500Principal();
+                if (c instanceof X509Certificate certificate) {
+                    X500Principal p = certificate.getSubjectX500Principal();
                     if (p.getName().contains(hostname)) return true;
                 }
             }

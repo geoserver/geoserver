@@ -54,11 +54,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 @RequestMapping(
         path = RestBaseController.ROOT_PATH + "/namespaces",
-        produces = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_HTML_VALUE
-        })
+        produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
 public class NamespaceController extends AbstractCatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(NamespaceController.class);
@@ -70,11 +66,7 @@ public class NamespaceController extends AbstractCatalogController {
 
     @GetMapping(
             value = "/{namespaceName}",
-            produces = {
-                MediaType.APPLICATION_JSON_VALUE,
-                MediaType.TEXT_HTML_VALUE,
-                MediaType.APPLICATION_XML_VALUE
-            })
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE})
     public RestWrapper<NamespaceInfo> namespaceGet(@PathVariable String namespaceName) {
 
         NamespaceInfo namespace = catalog.getNamespaceByPrefix(namespaceName);
@@ -103,8 +95,7 @@ public class NamespaceController extends AbstractCatalogController {
                 MediaType.APPLICATION_JSON_VALUE
             })
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<String> namespacePost(
-            @RequestBody NamespaceInfo namespace, UriComponentsBuilder builder) {
+    public ResponseEntity<String> namespacePost(@RequestBody NamespaceInfo namespace, UriComponentsBuilder builder) {
 
         catalog.add(namespace);
         String name = namespace.getName();
@@ -137,9 +128,7 @@ public class NamespaceController extends AbstractCatalogController {
                 MediaType.APPLICATION_JSON_VALUE
             })
     public void namespacePut(
-            @RequestBody NamespaceInfo namespace,
-            @PathVariable String prefix,
-            UriComponentsBuilder builder) {
+            @RequestBody NamespaceInfo namespace, @PathVariable String prefix, UriComponentsBuilder builder) {
 
         if ("default".equals(prefix)) {
             catalog.setDefaultNamespace(namespace);
@@ -147,9 +136,7 @@ public class NamespaceController extends AbstractCatalogController {
             // name must exist
             NamespaceInfo nsi = catalog.getNamespaceByPrefix(prefix);
             if (nsi == null) {
-                throw new RestException(
-                        "Can't change a non existant namespace (" + prefix + ")",
-                        HttpStatus.NOT_FOUND);
+                throw new RestException("Can't change a non existant namespace (" + prefix + ")", HttpStatus.NOT_FOUND);
             }
 
             String infoName = namespace.getName();
@@ -167,8 +154,7 @@ public class NamespaceController extends AbstractCatalogController {
 
         NamespaceInfo ns = catalog.getNamespaceByPrefix(prefix);
         if (prefix.equals("default")) {
-            throw new RestException(
-                    "Can't delete the default namespace", HttpStatus.METHOD_NOT_ALLOWED);
+            throw new RestException("Can't delete the default namespace", HttpStatus.METHOD_NOT_ALLOWED);
         }
         if (ns == null) {
             throw new RestException("Namespace '" + prefix + "' not found", HttpStatus.NOT_FOUND);
@@ -190,8 +176,7 @@ public class NamespaceController extends AbstractCatalogController {
     protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
         return new ObjectToMapWrapper<>(NamespaceInfo.class) {
             @Override
-            protected void wrapInternal(
-                    Map<String, Object> properties, SimpleHash model, NamespaceInfo namespace) {
+            protected void wrapInternal(Map<String, Object> properties, SimpleHash model, NamespaceInfo namespace) {
                 if (properties == null) {
                     properties = hashToProperties(model);
                 }
@@ -203,8 +188,7 @@ public class NamespaceController extends AbstractCatalogController {
                     properties.put("isDefault", Boolean.FALSE);
                 }
                 List<Map<String, Map<String, String>>> resources = new ArrayList<>();
-                List<ResourceInfo> res =
-                        catalog.getResourcesByNamespace(namespace, ResourceInfo.class);
+                List<ResourceInfo> res = catalog.getResourcesByNamespace(namespace, ResourceInfo.class);
                 for (ResourceInfo r : res) {
                     HashMap<String, String> props = new HashMap<>();
                     props.put("name", r.getName());
@@ -228,49 +212,44 @@ public class NamespaceController extends AbstractCatalogController {
 
     @Override
     public boolean supports(
-            MethodParameter methodParameter,
-            Type targetType,
-            Class<? extends HttpMessageConverter<?>> converterType) {
+            MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return NamespaceInfo.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
     @Override
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
-        persister.setCallback(
-                new XStreamPersister.Callback() {
-                    @Override
-                    protected Class<NamespaceInfo> getObjectClass() {
-                        return NamespaceInfo.class;
-                    }
+        persister.setCallback(new XStreamPersister.Callback() {
+            @Override
+            protected Class<NamespaceInfo> getObjectClass() {
+                return NamespaceInfo.class;
+            }
 
-                    @Override
-                    protected CatalogInfo getCatalogObject() {
-                        Map<String, String> uriTemplateVars = getURITemplateVariables();
-                        String prefix = uriTemplateVars.get("namespaceName");
+            @Override
+            protected CatalogInfo getCatalogObject() {
+                Map<String, String> uriTemplateVars = getURITemplateVariables();
+                String prefix = uriTemplateVars.get("namespaceName");
 
-                        if (prefix == null) {
-                            return null;
-                        }
-                        return catalog.getNamespaceByPrefix(prefix);
-                    }
+                if (prefix == null) {
+                    return null;
+                }
+                return catalog.getNamespaceByPrefix(prefix);
+            }
 
-                    @Override
-                    protected void postEncodeNamespace(
-                            NamespaceInfo cs,
-                            HierarchicalStreamWriter writer,
-                            MarshallingContext context) {}
+            @Override
+            protected void postEncodeNamespace(
+                    NamespaceInfo cs, HierarchicalStreamWriter writer, MarshallingContext context) {}
 
-                    @Override
-                    protected void postEncodeReference(
-                            Object obj,
-                            String ref,
-                            String prefix,
-                            HierarchicalStreamWriter writer,
-                            MarshallingContext context) {
-                        if (obj instanceof NamespaceInfo) {
-                            converter.encodeLink("/namespaces/" + converter.encode(ref), writer);
-                        }
-                    }
-                });
+            @Override
+            protected void postEncodeReference(
+                    Object obj,
+                    String ref,
+                    String prefix,
+                    HierarchicalStreamWriter writer,
+                    MarshallingContext context) {
+                if (obj instanceof NamespaceInfo) {
+                    converter.encodeLink("/namespaces/" + converter.encode(ref), writer);
+                }
+            }
+        });
     }
 }

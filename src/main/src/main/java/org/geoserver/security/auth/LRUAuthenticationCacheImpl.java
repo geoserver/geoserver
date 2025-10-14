@@ -16,13 +16,11 @@ import org.geotools.util.logging.Logging;
 import org.springframework.security.core.Authentication;
 
 /**
- * An {@link AuthenticationCache} implementation using a {@link LRUCache} for caching authentication
- * tokens.
+ * An {@link AuthenticationCache} implementation using a {@link LRUCache} for caching authentication tokens.
  *
  * <p>For an explanation of the time parameters, see {@link AuthenticationCacheEntry}
  *
- * <p>The class uses a {@link ReentrantReadWriteLock} object to synchronize access from multiple
- * threads
+ * <p>The class uses a {@link ReentrantReadWriteLock} object to synchronize access from multiple threads
  *
  * <p>Additionally, a {@link TimerTask} is started to remove expired entries.
  *
@@ -44,8 +42,7 @@ public class LRUAuthenticationCacheImpl implements AuthenticationCache {
         this(DEFAULT_IDLE_TIME, DEFAULT_LIVE_TIME, maxEntries);
     }
 
-    public LRUAuthenticationCacheImpl(
-            int timeToIdleSeconds, int timeToLiveSeconds, int maxEntries) {
+    public LRUAuthenticationCacheImpl(int timeToIdleSeconds, int timeToLiveSeconds, int maxEntries) {
         super();
         this.timeToIdleSeconds = timeToIdleSeconds;
         this.timeToLiveSeconds = timeToLiveSeconds;
@@ -103,12 +100,11 @@ public class LRUAuthenticationCacheImpl implements AuthenticationCache {
 
     @Override
     public Authentication get(String filterName, String cacheKey) {
-        readLock.lock();
         boolean hasTobeRemoved = false;
+        readLock.lock();
         try {
             long currentTime = System.currentTimeMillis();
-            AuthenticationCacheEntry entry =
-                    cache.get(new AuthenticationCacheKey(filterName, cacheKey));
+            AuthenticationCacheEntry entry = cache.get(new AuthenticationCacheKey(filterName, cacheKey));
             if (entry == null) return null;
             if (entry.hasExpired(currentTime)) {
                 hasTobeRemoved = true;

@@ -67,12 +67,7 @@ public class StylePageFormatColumnTest extends StylePageTest {
 
     private String findFormatLabelText(DataView dv, int formatColumnIndex) {
         Item i = (Item) dv.getItems().next();
-        Label label =
-                (Label)
-                        i.get(
-                                "itemProperties:"
-                                        + formatColumnIndex
-                                        + ":component:styleFormatLabel");
+        Label label = (Label) i.get("itemProperties:" + formatColumnIndex + ":component:styleFormatLabel");
 
         return label.getDefaultModelObjectAsString();
     }
@@ -81,8 +76,7 @@ public class StylePageFormatColumnTest extends StylePageTest {
     public void formatColumnPresenceTest() {
 
         Catalog catalog = getCatalog();
-        DataView dv =
-                (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
 
         assertEquals(dv.size(), catalog.getStyles().size());
 
@@ -100,10 +94,9 @@ public class StylePageFormatColumnTest extends StylePageTest {
         ft.setValue("filter", "testStyleFormatLabelSld11");
         ft.submit("submit");
 
-        DataView dv =
-                (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
 
-        assertEquals(dv.size(), 1);
+        assertEquals(1, dv.size());
 
         int formatColumnIndex = findFormatColumnIndex(dv);
         assertTrue(formatColumnIndex > -1);
@@ -119,10 +112,9 @@ public class StylePageFormatColumnTest extends StylePageTest {
         ft.setValue("filter", "testStyleFormatLabelSld10");
         ft.submit("submit");
 
-        DataView dv =
-                (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
 
-        assertEquals(dv.size(), 1);
+        assertEquals(1, dv.size());
 
         int formatColumnIndex = findFormatColumnIndex(dv);
         assertTrue(formatColumnIndex > -1);

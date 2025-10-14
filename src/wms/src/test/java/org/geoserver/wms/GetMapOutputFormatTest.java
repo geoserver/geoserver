@@ -16,7 +16,6 @@ import org.junit.Test;
  * An integration test for the GetMapOutputFormat implementations
  *
  * @author Gabriel Roldan (TOPP)
- * @version $Id$
  */
 public class GetMapOutputFormatTest extends WMSTestSupport {
 

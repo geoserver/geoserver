@@ -27,22 +27,19 @@ import org.w3c.dom.Element;
  *
  * <p>Usage:
  *
- * <pre>
- *         <code>
+ * <pre>{@code
+ * Map dataStores = ...
+ * Map nameSpaces = ...
  *
- *                  Map dataStores = ...
- *                  Map nameSpaces = ...
+ * CatalogWriter writer = new CatalogWriter();
+ * writer.dataStores( dataStores );
+ * writer.nameSpaces( nameSpaces );
  *
- *                  CatalogWriter writer = new CatalogWriter();
- *                  writer.dataStores( dataStores );
- *                  writer.nameSpaces( nameSpaces );
- *
- *                  File catalog = new File( &quot;.../catalog.xml&quot; );
- *                  writer.write( catalog );
+ * File catalog = new File( ".../catalog.xml" );
+ * writer.write( catalog );
  *
  *
- * </code>
- * </pre>
+ * }</pre>
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
@@ -80,9 +77,7 @@ public class CatalogWriter {
      * @param namespaces map of id to namespace prefix map
      */
     public void dataStores(
-            Map /* <String,Map> */ dataStores,
-            Map /*<String,String>*/ namespaces,
-            Set /*<String>*/ disabled) {
+            Map /* <String,Map> */ dataStores, Map /*<String,String>*/ namespaces, Set /*<String>*/ disabled) {
         Element dataStoresElement = document.createElement("datastores");
         catalog.appendChild(dataStoresElement);
 
@@ -157,7 +152,8 @@ public class CatalogWriter {
     /**
      * Writes "namespace" elements to the catalog.xml file.
      *
-     * @param namespaces map of <prefix,uri>, default uri is located under the empty string key.
+     * @param namespaces map of &lt;prefix,urilt;prefix,uriprefix,urigt;&gt;, default uri is located under the empty
+     *     string key.
      */
     public void namespaces(Map namespaces) {
         namespaces(namespaces, Collections.emptyList());
@@ -205,7 +201,7 @@ public class CatalogWriter {
     /**
      * Writes "style" elements to the catalog.xml file.
      *
-     * @param styles map of <id,filename>
+     * @param styles map of &lt;id,filename&gt;
      */
     public void styles(Map styles) {
         Element stylesElement = document.createElement("styles");
@@ -242,7 +238,7 @@ public class CatalogWriter {
             tx.transform(source, result);
         } catch (Exception e) {
             String msg = "Could not write catalog to " + file;
-            throw (IOException) new IOException(msg).initCause(e);
+            throw new IOException(msg, e);
         }
     }
 }

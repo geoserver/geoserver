@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.data.impl;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,6 +31,7 @@ import org.hibernate.annotations.FetchMode;
 @Table(indexes = {@Index(name = "schedulerReferenceIndex", columnList = "schedulerReference")})
 public class BatchRunImpl extends BaseImpl implements BatchRun {
 
+    @Serial
     private static final long serialVersionUID = 2468505054020768482L;
 
     @Id
@@ -41,11 +43,7 @@ public class BatchRunImpl extends BaseImpl implements BatchRun {
     @JoinColumn(name = "batch")
     private BatchImpl batch;
 
-    @OneToMany(
-            fetch = FetchType.EAGER,
-            targetEntity = RunImpl.class,
-            mappedBy = "batchRun",
-            cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, targetEntity = RunImpl.class, mappedBy = "batchRun", cascade = CascadeType.ALL)
     @OrderBy("start")
     @Fetch(FetchMode.SUBSELECT)
     private List<Run> runs = new ArrayList<Run>();
@@ -53,7 +51,8 @@ public class BatchRunImpl extends BaseImpl implements BatchRun {
     @Column(nullable = false)
     private Boolean interruptMe = false;
 
-    @Column private String schedulerReference;
+    @Column
+    private String schedulerReference;
 
     @Override
     public Long getId() {

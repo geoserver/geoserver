@@ -21,8 +21,7 @@ import org.junit.Test;
 public class TurboJPEGMapResponseTest extends WMSTestSupport {
 
     protected RenderedImageMapOutputFormat getProducerInstance() {
-        return new RenderedImageMapOutputFormat(
-                "image/jpeg", new String[] {"image/jpeg"}, getWMS());
+        return new RenderedImageMapOutputFormat("image/jpeg", new String[] {"image/jpeg"}, getWMS());
     }
 
     /** Make sure we find the {@link TurboJPEGMapResponse}. */

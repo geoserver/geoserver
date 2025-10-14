@@ -65,8 +65,7 @@ public class GetLegendGraphicTest extends WMSTestSupport {
         testData.addStyle("scaleDependent", "scaleDependent.sld", getClass(), catalog);
         testData.addStyle(FOOTPRINTS_STYLE, "footprints.sld", getClass(), catalog);
 
-        testData.addVectorLayer(
-                SF_STATES, Collections.emptyMap(), "states.properties", getClass(), catalog);
+        testData.addVectorLayer(SF_STATES, Collections.emptyMap(), "states.properties", getClass(), catalog);
 
         LegendInfo legend = new LegendInfoImpl();
         legend.setWidth(22);
@@ -80,13 +79,9 @@ public class GetLegendGraphicTest extends WMSTestSupport {
         testData.addStyle(null, "raster_legend", "raster.sld", getClass(), catalog, legend);
         // setup a ws specific style with custom legend too
         WorkspaceInfo defaultWorkspace = catalog.getDefaultWorkspace();
-        File wsFile =
-                getResourceLoader()
-                        .createFile(
-                                "workspaces", defaultWorkspace.getName(), "styles", "legend.png");
+        File wsFile = getResourceLoader().createFile("workspaces", defaultWorkspace.getName(), "styles", "legend.png");
         getResourceLoader().copyFromClassPath("../legend.png", wsFile, getClass());
-        testData.addStyle(
-                defaultWorkspace, "wsCustom", "point_test.sld", getClass(), catalog, legend);
+        testData.addStyle(defaultWorkspace, "wsCustom", "point_test.sld", getClass(), catalog, legend);
     }
 
     @After
@@ -101,20 +96,16 @@ public class GetLegendGraphicTest extends WMSTestSupport {
         gs.save(wms);
     }
 
-    /**
-     * Tests GML output does not break when asking for an area that has no data with GML feature
-     * bounding enabled
-     */
+    /** Tests GML output does not break when asking for an area that has no data with GML feature bounding enabled */
     @Test
     public void testPlain() throws Exception {
-        BufferedImage image =
-                getAsImage(
-                        "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                                + "&layer="
-                                + getLayerId(MockData.LAKES)
-                                + "&style=Lakes"
-                                + "&format=image/png&width=20&height=20",
-                        "image/png");
+        BufferedImage image = getAsImage(
+                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                        + "&layer="
+                        + getLayerId(MockData.LAKES)
+                        + "&style=Lakes"
+                        + "&format=image/png&width=20&height=20",
+                "image/png");
         assertPixel(image, 10, 10, Converters.convert("#4040C0", Color.class));
     }
 
@@ -125,15 +116,14 @@ public class GetLegendGraphicTest extends WMSTestSupport {
      */
     @Test
     public void testFootprints() throws Exception {
-        BufferedImage image =
-                getAsImage(
-                        "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                                + "&layer="
-                                + getLayerId(MockData.LAKES)
-                                + "&style="
-                                + FOOTPRINTS_STYLE
-                                + "&format=image/png&width=20&height=20",
-                        "image/png");
+        BufferedImage image = getAsImage(
+                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                        + "&layer="
+                        + getLayerId(MockData.LAKES)
+                        + "&style="
+                        + FOOTPRINTS_STYLE
+                        + "&format=image/png&width=20&height=20",
+                "image/png");
         assertPixel(image, 10, 10, Converters.convert("#d4d4d4", Color.class));
     }
 
@@ -141,13 +131,11 @@ public class GetLegendGraphicTest extends WMSTestSupport {
     public void testPlainMemoryLimit() throws Exception {
         // 1kb, not enough for even the smallest image
         setMemoryLimit(1);
-        Document dom =
-                getAsDOM(
-                        "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                                + "&layer="
-                                + getLayerId(MockData.LAKES)
-                                + "&style=Lakes"
-                                + "&format=image/png&width=20&height=20");
+        Document dom = getAsDOM("wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                + "&layer="
+                + getLayerId(MockData.LAKES)
+                + "&style=Lakes"
+                + "&format=image/png&width=20&height=20");
         String message = checkLegacyException(dom, ServiceException.MAX_MEMORY_EXCEEDED, null);
         assertEquals(LegendGraphicBuilder.MEMORY_USAGE_EXCEEDED, message.trim());
     }
@@ -155,45 +143,37 @@ public class GetLegendGraphicTest extends WMSTestSupport {
     @Test
     public void testHighMemoryLimit() throws Exception {
         // going to increase the size of the image sample until we get OOM
-        String template =
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                        + "&layer="
-                        + getLayerId(MockData.LAKES)
-                        + "&style=Lakes"
-                        + "&format=image/png&width=%d&height=%d";
+        String template = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                + "&layer="
+                + getLayerId(MockData.LAKES)
+                + "&style=Lakes"
+                + "&format=image/png&width=%d&height=%d";
 
         // 8 MB limit, a 2000x2000 uses 16MB
         setMemoryLimit(8196);
         int[] sizes = {20, 200, 1000, 2000};
         for (int size : sizes) {
-            MockHttpServletResponse response =
-                    getAsServletResponse(String.format(template, size, size));
+            MockHttpServletResponse response = getAsServletResponse(template.formatted(size, size));
             if (size < 2000) {
                 assertEquals("image/png", getBaseMimeType(response.getContentType()));
             } else {
-                assertEquals(
-                        "application/vnd.ogc.se_xml", getBaseMimeType(response.getContentType()));
+                assertEquals("application/vnd.ogc.se_xml", getBaseMimeType(response.getContentType()));
                 Document dom = dom(response, true);
-                String message =
-                        checkLegacyException(dom, ServiceException.MAX_MEMORY_EXCEEDED, null);
+                String message = checkLegacyException(dom, ServiceException.MAX_MEMORY_EXCEEDED, null);
                 assertEquals(LegendGraphicBuilder.MEMORY_USAGE_EXCEEDED, message.trim());
             }
         }
     }
 
-    /**
-     * Tests GML output does not break when asking for an area that has no data with GML feature
-     * bounding enabled
-     */
+    /** Tests GML output does not break when asking for an area that has no data with GML feature bounding enabled */
     @Test
     public void testEnv() throws Exception {
         // no params, use fallback
-        String base =
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                        + "&layer="
-                        + getLayerId(MockData.LAKES)
-                        + "&style=paramFill"
-                        + "&format=image/png&width=20&height=20";
+        String base = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                + "&layer="
+                + getLayerId(MockData.LAKES)
+                + "&style=paramFill"
+                + "&format=image/png&width=20&height=20";
         BufferedImage image = getAsImage(base, "image/png");
         assertPixel(image, 10, 10, Converters.convert("#FFFFFF", Color.class));
 
@@ -205,26 +185,26 @@ public class GetLegendGraphicTest extends WMSTestSupport {
     /** Tests an custom legend graphic */
     @Test
     public void testCustomLegend() throws Exception {
-        String base =
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                        + "&layer="
-                        + SF_STATES_ID
-                        + "&style=custom"
-                        + "&format=image/png&width=22&height=22";
+        String base = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                + "&layer="
+                + SF_STATES_ID
+                + "&style=custom"
+                + "&format=image/png&width=22&height=22";
 
         BufferedImage image = getAsImage(base, "image/png");
         Resource resource = getResourceLoader().get("styles/legend.png");
         BufferedImage expected = ImageIO.read(resource.file());
 
-        assertEquals(getPixelColor(expected, 10, 2).getRGB(), getPixelColor(image, 10, 2).getRGB());
+        assertEquals(
+                getPixelColor(expected, 10, 2).getRGB(),
+                getPixelColor(image, 10, 2).getRGB());
 
         // test external image dimensions
-        base =
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                        + "&layer="
-                        + SF_STATES_ID
-                        + "&style=custom"
-                        + "&format=image/png";
+        base = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                + "&layer="
+                + SF_STATES_ID
+                + "&style=custom"
+                + "&format=image/png";
 
         image = getAsImage(base, "image/png");
 
@@ -239,12 +219,11 @@ public class GetLegendGraphicTest extends WMSTestSupport {
         assertEquals("alpha", expectedColor.getAlpha(), actualColor.getAlpha());
 
         // test rescale
-        base =
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                        + "&layer="
-                        + SF_STATES_ID
-                        + "&style=custom"
-                        + "&format=image/png&width=16&height=16";
+        base = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                + "&layer="
+                + SF_STATES_ID
+                + "&style=custom"
+                + "&format=image/png&width=16&height=16";
 
         image = getAsImage(base, "image/png");
 
@@ -261,12 +240,11 @@ public class GetLegendGraphicTest extends WMSTestSupport {
     public void testCustomLegendWsSpecific() throws Exception {
         String wsName = getCatalog().getDefaultWorkspace().getName();
         String styleName = wsName + ":wsCustom";
-        String base =
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                        + "&layer="
-                        + SF_STATES_ID
-                        + "&format=image/png&width=22&height=22&style="
-                        + styleName;
+        String base = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                + "&layer="
+                + SF_STATES_ID
+                + "&format=image/png&width=22&height=22&style="
+                + styleName;
 
         BufferedImage image = getAsImage(base, "image/png");
 
@@ -292,25 +270,23 @@ public class GetLegendGraphicTest extends WMSTestSupport {
             catalog.save(statesLayer);
 
             // get the default legend graphic, it should be the custom image
-            BufferedImage image =
-                    getAsImage(
-                            "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                                    + "&layer="
-                                    + SF_STATES_ID
-                                    + "&format=image/png&width=22&height=22",
-                            "image/png");
+            BufferedImage image = getAsImage(
+                    "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                            + "&layer="
+                            + SF_STATES_ID
+                            + "&format=image/png&width=22&height=22",
+                    "image/png");
             ImageAssert.assertEquals(expected, image, 0);
 
             // the above again, but setting the workspace specific style
             statesLayer.setDefaultStyle(wsCustomStyle);
             catalog.save(statesLayer);
-            image =
-                    getAsImage(
-                            "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                                    + "&layer="
-                                    + SF_STATES_ID
-                                    + "&format=image/png&width=22&height=22",
-                            "image/png");
+            image = getAsImage(
+                    "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                            + "&layer="
+                            + SF_STATES_ID
+                            + "&format=image/png&width=22&height=22",
+                    "image/png");
             ImageAssert.assertEquals(expected, image, 0);
         } finally {
             statesLayer.setDefaultStyle(statesDefaultStyle);
@@ -321,12 +297,11 @@ public class GetLegendGraphicTest extends WMSTestSupport {
     /** Tests an unscaled states legend */
     @Test
     public void testStatesLegend() throws Exception {
-        String base =
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                        + "&layer="
-                        + SF_STATES_ID
-                        + "&style=Population"
-                        + "&format=image/png&width=20&height=20";
+        String base = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                + "&layer="
+                + SF_STATES_ID
+                + "&style=Population"
+                + "&format=image/png&width=20&height=20";
         BufferedImage image = getAsImage(base, "image/png");
 
         // check RGB is in the expected positions
@@ -338,12 +313,11 @@ public class GetLegendGraphicTest extends WMSTestSupport {
     /** Tests a dpi rescaled legend */
     @Test
     public void testStatesLegendDpiRescaled() throws Exception {
-        String base =
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                        + "&layer="
-                        + SF_STATES_ID
-                        + "&style=Population"
-                        + "&format=image/png&width=20&height=20&legend_options=dpi:180";
+        String base = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                + "&layer="
+                + SF_STATES_ID
+                + "&style=Population"
+                + "&format=image/png&width=20&height=20&legend_options=dpi:180";
         BufferedImage image = getAsImage(base, "image/png");
 
         assertPixel(image, 20, 20, Color.RED);
@@ -359,12 +333,11 @@ public class GetLegendGraphicTest extends WMSTestSupport {
     public void testMemoryLimitDpiRescaled() throws Exception {
         // 40 kb are enough to store the legend image (uses 17KB), but not when scaled up 2x
         setMemoryLimit(40);
-        String base =
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                        + "&layer="
-                        + SF_STATES_ID
-                        + "&style=Population"
-                        + "&format=image/png&width=20&height=20";
+        String base = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                + "&layer="
+                + SF_STATES_ID
+                + "&style=Population"
+                + "&format=image/png&width=20&height=20";
         // this one works, can be parsed as an image
         getAsImage(base, "image/png");
         // this one throws an exception
@@ -377,12 +350,11 @@ public class GetLegendGraphicTest extends WMSTestSupport {
     /** Tests a dpi rescaled legend with specific rule name */
     @Test
     public void testStatesLegendDpiRescaledSingleRule() throws Exception {
-        String base =
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                        + "&layer="
-                        + SF_STATES_ID
-                        + "&style=Population"
-                        + "&format=image/png&width=20&height=20&legend_options=dpi:180&rule=2-4M";
+        String base = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                + "&layer="
+                + SF_STATES_ID
+                + "&style=Population"
+                + "&format=image/png&width=20&height=20&legend_options=dpi:180&rule=2-4M";
         BufferedImage image = getAsImage(base, "image/png");
 
         // ImageIO.write(image, "PNG", new java.io.File("/tmp/rule.png"));
@@ -398,12 +370,11 @@ public class GetLegendGraphicTest extends WMSTestSupport {
     /** Tests a uom rescaled legend */
     @Test
     public void testStatesLegendUomRescaled() throws Exception {
-        String base =
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                        + "&layer="
-                        + SF_STATES_ID
-                        + "&style=uom"
-                        + "&format=image/png&width=20&height=20&scale=1000000";
+        String base = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                + "&layer="
+                + SF_STATES_ID
+                + "&style=uom"
+                + "&format=image/png&width=20&height=20&scale=1000000";
         BufferedImage image = getAsImage(base, "image/png");
 
         assertPixel(image, 10, 10, Color.BLUE);
@@ -411,12 +382,11 @@ public class GetLegendGraphicTest extends WMSTestSupport {
         assertPixel(image, 1, 10, Color.WHITE);
 
         // halve the scale denominator, we're zooming in, the thickness should double
-        base =
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                        + "&layer="
-                        + SF_STATES_ID
-                        + "&style=uom"
-                        + "&format=image/png&width=20&height=20&scale=500000";
+        base = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                + "&layer="
+                + SF_STATES_ID
+                + "&style=uom"
+                + "&format=image/png&width=20&height=20&scale=500000";
         image = getAsImage(base, "image/png");
 
         assertPixel(image, 10, 10, Color.BLUE);
@@ -428,12 +398,11 @@ public class GetLegendGraphicTest extends WMSTestSupport {
     @Test
     public void testStatesLegendDpiUomRescaled() throws Exception {
         // halve the scale denominator, we're zooming in, the thickness should double
-        String base =
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                        + "&layer="
-                        + SF_STATES_ID
-                        + "&style=uom"
-                        + "&format=image/png&width=20&height=20&scale=1000000&&legend_options=dpi:180";
+        String base = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                + "&layer="
+                + SF_STATES_ID
+                + "&style=uom"
+                + "&format=image/png&width=20&height=20&scale=1000000&&legend_options=dpi:180";
         BufferedImage image = getAsImage(base, "image/png");
 
         assertPixel(image, 30, 10, Color.BLUE);
@@ -452,11 +421,8 @@ public class GetLegendGraphicTest extends WMSTestSupport {
                 "wms?LEGEND_OPTIONS=forceLabels:on&REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=200&HEIGHT=20&LAYER="
                         + getLayerId(MockData.POLYGONS)
                         + "&SLD_BODY=";
-        String sld =
-                IOUtils.toString(
-                        TestData.class.getResource("externalEntities.sld"), StandardCharsets.UTF_8);
-        MockHttpServletResponse response =
-                getAsServletResponse(base + URLEncoder.encode(sld, UTF_8.name()));
+        String sld = IOUtils.toString(TestData.class.getResource("externalEntities.sld"), StandardCharsets.UTF_8);
+        MockHttpServletResponse response = getAsServletResponse(base + URLEncoder.encode(sld, UTF_8.name()));
         // should fail with an error message poiting at entity resolution
         assertEquals("application/vnd.ogc.se_xml", getBaseMimeType(response.getContentType()));
         final String content = response.getContentAsString();
@@ -466,84 +432,76 @@ public class GetLegendGraphicTest extends WMSTestSupport {
 
     @Test
     public void testNoLegendBelowMinScaleDenominator() throws Exception {
-        BufferedImage image =
-                getAsImage(
-                        "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                                + "&layer="
-                                + getLayerId(MockData.LAKES)
-                                + "&style=scaleDependent"
-                                + "&format=image/png&width=20&height=20&scale=5000",
-                        "image/png");
+        BufferedImage image = getAsImage(
+                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                        + "&layer="
+                        + getLayerId(MockData.LAKES)
+                        + "&style=scaleDependent"
+                        + "&format=image/png&width=20&height=20&scale=5000",
+                "image/png");
         assertEquals(1, image.getHeight());
     }
 
     @Test
     public void testTransparentBelowMinScaleDenominator() throws Exception {
-        BufferedImage image =
-                getAsImage(
-                        "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                                + "&layer="
-                                + getLayerId(MockData.LAKES)
-                                + "&style=scaleDependent"
-                                + "&format=image/png&width=20&height=20&scale=5000"
-                                + "&transparent=true",
-                        "image/png");
+        BufferedImage image = getAsImage(
+                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                        + "&layer="
+                        + getLayerId(MockData.LAKES)
+                        + "&style=scaleDependent"
+                        + "&format=image/png&width=20&height=20&scale=5000"
+                        + "&transparent=true",
+                "image/png");
         assertEquals(1, image.getHeight());
     }
 
     @Test
     public void testNoLegendAboveMinScaleDenominator() throws Exception {
-        BufferedImage image =
-                getAsImage(
-                        "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                                + "&layer="
-                                + getLayerId(MockData.LAKES)
-                                + "&style=scaleDependent"
-                                + "&format=image/png&width=20&height=20&scale=150000",
-                        "image/png");
+        BufferedImage image = getAsImage(
+                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                        + "&layer="
+                        + getLayerId(MockData.LAKES)
+                        + "&style=scaleDependent"
+                        + "&format=image/png&width=20&height=20&scale=150000",
+                "image/png");
         assertEquals(1, image.getHeight());
     }
 
     @Test
     public void testLegendHeight() throws Exception {
-        String base =
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                        + "&layer="
-                        + SF_STATES_ID
-                        + "&style=Population"
-                        + "&format=image/png&width=20&height=20";
+        String base = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                + "&layer="
+                + SF_STATES_ID
+                + "&style=Population"
+                + "&format=image/png&width=20&height=20";
         BufferedImage image = getAsImage(base, "image/png");
         assertEquals(80, image.getHeight());
     }
 
-    /**
-     * Test for GEOS-7636 GetLegendGraphic ignores the OnlineResource configured in the style for
-     * raster layers
-     */
+    /** Test for GEOS-7636 GetLegendGraphic ignores the OnlineResource configured in the style for raster layers */
     @Test
     public void testLegendOnRaster() throws Exception {
-        String base =
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                        + "&layer=wcs:World&style=raster_legend"
-                        + "&format=image/png&width=22&height=22";
+        String base = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                + "&layer=wcs:World&style=raster_legend"
+                + "&format=image/png&width=22&height=22";
 
         BufferedImage image = getAsImage(base, "image/png");
         Resource resource = getResourceLoader().get("styles/legend.png");
         BufferedImage expected = ImageIO.read(resource.file());
 
-        assertEquals(getPixelColor(expected, 10, 2).getRGB(), getPixelColor(image, 10, 2).getRGB());
+        assertEquals(
+                getPixelColor(expected, 10, 2).getRGB(),
+                getPixelColor(image, 10, 2).getRGB());
     }
 
     @Test
     public void testJpegRasterLegend() throws Exception {
-        String base =
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                        + "&layer=wcs:World&style=raster"
-                        + "&format=image/jpeg&width=32&height=32";
+        String base = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                + "&layer=wcs:World&style=raster"
+                + "&format=image/jpeg&width=32&height=32";
 
         BufferedImage image = getAsImage(base, "image/jpeg");
-        BufferedImage expected =
-                ImageIO.read(getClass().getResourceAsStream("../rasterLegend.png"));
+        BufferedImage expected = ImageIO.read(getClass().getResourceAsStream("../rasterLegend.png"));
 
         ImageAssert.assertEquals(expected, image, 0);
     }
@@ -565,11 +523,10 @@ public class GetLegendGraphicTest extends WMSTestSupport {
         catalog.add(group);
 
         // going to increase the number of layers until it does beyond limit
-        String request =
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                        + "&layer=MEMORY_TEST_GROUP"
-                        + "&style="
-                        + "&format=image/png&width=20&height=20";
+        String request = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                + "&layer=MEMORY_TEST_GROUP"
+                + "&style="
+                + "&format=image/png&width=20&height=20";
 
         // one layer
         BufferedImage image = getAsImage(request, "image/png");
@@ -597,20 +554,16 @@ public class GetLegendGraphicTest extends WMSTestSupport {
         assertEquals(LegendGraphicBuilder.MEMORY_USAGE_EXCEEDED, message.trim());
     }
 
-    /**
-     * [GEOS-11312] Test for respecting int max value as memory limit (kb) for GetLegendGraphic
-     * requests
-     */
+    /** [GEOS-11312] Test for respecting int max value as memory limit (kb) for GetLegendGraphic requests */
     @Test
     public void testMaxMemoryLimit() throws Exception {
         setMemoryLimit(Integer.MAX_VALUE);
-        String request =
-                String.format(
-                        "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                                + "&layer=%s"
-                                + "&style="
-                                + "&format=image/png&width=20&height=20",
-                        SF_STATES_ID);
+        String request = String.format(
+                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                        + "&layer=%s"
+                        + "&style="
+                        + "&format=image/png&width=20&height=20",
+                SF_STATES_ID);
 
         BufferedImage image = getAsImage(request, "image/png");
         assertThat(image.getWidth() * image.getHeight() * 4, Matchers.lessThan(15 * 1024));

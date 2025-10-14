@@ -47,8 +47,7 @@ public class CSWGetDomainResponse extends Response {
     }
 
     @Override
-    public void write(Object value, OutputStream output, Operation operation)
-            throws IOException, ServiceException {
+    public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
         try (@SuppressWarnings("unchecked")
                 CloseableIterator<String> result = (CloseableIterator<String>) value) {
             RequestBaseType request = (RequestBaseType) operation.getParameters()[0];
@@ -60,10 +59,7 @@ public class CSWGetDomainResponse extends Response {
 
     /** Actually encodes the response into a set of records */
     protected void transformResponse(
-            OutputStream output,
-            CloseableIterator<String> result,
-            RequestBaseType request,
-            CSWInfo csw) {
+            OutputStream output, CloseableIterator<String> result, RequestBaseType request, CSWInfo csw) {
         CSWDomainValuesTransformer transformer =
                 new CSWDomainValuesTransformer(request, csw.isCanonicalSchemaLocation());
         try {

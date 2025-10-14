@@ -56,10 +56,7 @@ public class XMLUserGroupConfigDetailsPanelTest extends AbstractSecurityNamedSer
     }
 
     protected String getPasswordEncoderName() {
-        return formTester
-                .getForm()
-                .get("details:config.passwordEncoderName")
-                .getDefaultModelObjectAsString();
+        return formTester.getForm().get("details:config.passwordEncoderName").getDefaultModelObjectAsString();
     }
 
     protected void setPasswordPolicy(String policyName) {
@@ -67,10 +64,7 @@ public class XMLUserGroupConfigDetailsPanelTest extends AbstractSecurityNamedSer
     }
 
     protected String getPasswordPolicyName() {
-        return formTester
-                .getForm()
-                .get("details:config.passwordPolicyName")
-                .getDefaultModelObjectAsString();
+        return formTester.getForm().get("details:config.passwordPolicyName").getDefaultModelObjectAsString();
     }
 
     protected void setFileName(String fileName) {
@@ -86,11 +80,7 @@ public class XMLUserGroupConfigDetailsPanelTest extends AbstractSecurityNamedSer
     }
 
     protected Integer getCheckInterval() {
-        String temp =
-                formTester
-                        .getForm()
-                        .get("details:config.checkInterval")
-                        .getDefaultModelObjectAsString();
+        String temp = formTester.getForm().get("details:config.checkInterval").getDefaultModelObjectAsString();
         if (temp == null || temp.isEmpty()) return 0;
         return Integer.valueOf(temp);
     }
@@ -100,11 +90,7 @@ public class XMLUserGroupConfigDetailsPanelTest extends AbstractSecurityNamedSer
     }
 
     protected Boolean getValidating() {
-        String temp =
-                formTester
-                        .getForm()
-                        .get("details:config.validating")
-                        .getDefaultModelObjectAsString();
+        String temp = formTester.getForm().get("details:config.validating").getDefaultModelObjectAsString();
         return Boolean.valueOf(temp);
     }
 
@@ -155,8 +141,7 @@ public class XMLUserGroupConfigDetailsPanelTest extends AbstractSecurityNamedSer
         assertEquals(3, countItems());
         assertNotNull(getSecurityNamedServiceConfig("default"));
 
-        XMLUserGroupServiceConfig xmlConfig =
-                (XMLUserGroupServiceConfig) getSecurityNamedServiceConfig("default2");
+        XMLUserGroupServiceConfig xmlConfig = (XMLUserGroupServiceConfig) getSecurityNamedServiceConfig("default2");
         assertNotNull(xmlConfig);
         assertEquals("default2", xmlConfig.getName());
         assertEquals(XMLUserGroupService.class.getName(), xmlConfig.getClassName());
@@ -167,9 +152,7 @@ public class XMLUserGroupConfigDetailsPanelTest extends AbstractSecurityNamedSer
         assertTrue(xmlConfig.isValidating());
 
         // reload from manager
-        xmlConfig =
-                (XMLUserGroupServiceConfig)
-                        getSecurityManager().loadUserGroupServiceConfig("default2");
+        xmlConfig = (XMLUserGroupServiceConfig) getSecurityManager().loadUserGroupServiceConfig("default2");
         assertNotNull(xmlConfig);
         assertEquals("default2", xmlConfig.getName());
         assertEquals(getDigestPasswordEncoder().getName(), xmlConfig.getPasswordEncoderName());
@@ -200,7 +183,8 @@ public class XMLUserGroupConfigDetailsPanelTest extends AbstractSecurityNamedSer
         // detailsPage = (UserGroupTabbedPage) tester.getLastRenderedPage();
         newFormTester("panel:panel:panel:form");
         formTester.setValue("panel:passwordPolicyName", PasswordValidatorImpl.MASTERPASSWORD_NAME);
-        formTester.setValue("panel:passwordEncoderName", getPlainTextPasswordEncoder().getName());
+        formTester.setValue(
+                "panel:passwordEncoderName", getPlainTextPasswordEncoder().getName());
 
         assertEquals(getDigestPasswordEncoder().getName(), xmlConfig.getPasswordEncoderName());
         assertEquals(PasswordValidatorImpl.DEFAULT_NAME, xmlConfig.getPasswordPolicyName());
@@ -241,9 +225,7 @@ public class XMLUserGroupConfigDetailsPanelTest extends AbstractSecurityNamedSer
         assertFalse(xmlConfig.isValidating());
 
         // reload from manager
-        xmlConfig =
-                (XMLUserGroupServiceConfig)
-                        getSecurityManager().loadUserGroupServiceConfig("default2");
+        xmlConfig = (XMLUserGroupServiceConfig) getSecurityManager().loadUserGroupServiceConfig("default2");
         assertEquals(getDigestPasswordEncoder().getName(), xmlConfig.getPasswordEncoderName());
         assertEquals(PasswordValidatorImpl.MASTERPASSWORD_NAME, xmlConfig.getPasswordPolicyName());
         assertEquals("abc.xml", xmlConfig.getFileName());

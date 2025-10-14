@@ -7,9 +7,15 @@ package org.geoserver.web.ogcapi;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
+import java.util.List;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.web.ServiceDescription;
+import org.geoserver.web.ServiceLinkDescription;
 import org.geoserver.web.ogcapi.provider.TestCaseInfo;
 import org.geoserver.web.ogcapi.provider.TestCaseInfoImpl;
 import org.geoserver.web.ogcapi.provider.TestCaseOgcApiServiceDescriptionProvider;
@@ -24,10 +30,15 @@ public class OgcApiServiceDescriptionProviderTest extends GeoServerSystemTestSup
     /** Tests really basic info in the object. */
     @Test
     public void testBasic() {
-        var provider = new TestCaseOgcApiServiceDescriptionProvider(this.getGeoServer());
+        TestCaseOgcApiServiceDescriptionProvider provider =
+                new TestCaseOgcApiServiceDescriptionProvider(this.getGeoServer());
         assertEquals("TestCaseServiceType", provider.getServiceType());
         assertEquals("OGCAPI-TestCase", provider.getServiceName());
         assertEquals("TestCase", provider.getSpecificServiceType());
+        assertTrue(
+                "skip service capabilities",
+                provider.getServiceTypes()
+                        .containsAll(Arrays.asList(provider.getServiceType(), provider.getSpecificServiceType())));
 
         assertEquals(TestCaseInfo.class, provider.getInfoClass());
         assertEquals(TestCaseService.class, provider.getServiceClass());
@@ -35,18 +46,19 @@ public class OgcApiServiceDescriptionProviderTest extends GeoServerSystemTestSup
 
     @Test
     public void testURLMangler() {
-        var provider = new TestCaseOgcApiServiceDescriptionProvider(this.getGeoServer());
-        var link = "../ogc/features/v1";
+        TestCaseOgcApiServiceDescriptionProvider provider =
+                new TestCaseOgcApiServiceDescriptionProvider(this.getGeoServer());
+        String link = "../ogc/features/v1";
 
-        var mangled = provider.ogcApiCustomCapabilitiesLinkMangler(link, null, null);
+        String mangled = provider.ogcApiCustomCapabilitiesLinkMangler(link, null, null);
         assertEquals(link, mangled); // no change
 
-        var wsInfo = getCatalog().getWorkspaceByName("cite");
+        WorkspaceInfo wsInfo = getCatalog().getWorkspaceByName("cite");
 
         mangled = provider.ogcApiCustomCapabilitiesLinkMangler(link, wsInfo, null);
         assertEquals("../cite/ogc/features/v1", mangled);
 
-        var layerInfo = getCatalog().getLayerByName("DividedRoutes");
+        LayerInfo layerInfo = getCatalog().getLayerByName("DividedRoutes");
 
         mangled = provider.ogcApiCustomCapabilitiesLinkMangler(link, wsInfo, layerInfo);
         assertEquals("../cite/DividedRoutes/ogc/features/v1", mangled);
@@ -71,9 +83,10 @@ public class OgcApiServiceDescriptionProviderTest extends GeoServerSystemTestSup
     /** basic test of the provider* */
     @Test
     public void testProvider() {
-        var provider = new TestCaseOgcApiServiceDescriptionProvider(this.getGeoServer());
+        TestCaseOgcApiServiceDescriptionProvider provider =
+                new TestCaseOgcApiServiceDescriptionProvider(this.getGeoServer());
 
-        var descriptions = provider.getServices(null, null);
+        List<ServiceDescription> descriptions = provider.getServices(null, null);
         assertEquals(1, descriptions.size());
         assertEquals("TestCaseServiceType", descriptions.get(0).getServiceType());
         assertTrue(descriptions.get(0).getDescriptionPriority() < 100);
@@ -83,16 +96,17 @@ public class OgcApiServiceDescriptionProviderTest extends GeoServerSystemTestSup
     /** tests the links - esp the actual link when its WS-based of WS-and-layer based* */
     @Test
     public void testLinks() {
-        var provider = new TestCaseOgcApiServiceDescriptionProvider(this.getGeoServer());
+        TestCaseOgcApiServiceDescriptionProvider provider =
+                new TestCaseOgcApiServiceDescriptionProvider(this.getGeoServer());
 
-        var links = provider.getServiceLinks(null, null);
+        List<ServiceLinkDescription> links = provider.getServiceLinks(null, null);
         assertEquals(1, links.size());
         assertEquals("TestCaseServiceType", links.get(0).getServiceType());
         assertEquals("TestCase", links.get(0).getSpecificServiceType());
         assertEquals("OGCAPI-TestCase", links.get(0).getProtocol());
         assertEquals("../ogc/TestCaseService/v1", links.get(0).getLink());
 
-        var ws = getCatalog().getWorkspaceByName("cite");
+        WorkspaceInfo ws = getCatalog().getWorkspaceByName("cite");
 
         links = provider.getServiceLinks(ws, null);
         assertEquals(1, links.size());
@@ -101,13 +115,14 @@ public class OgcApiServiceDescriptionProviderTest extends GeoServerSystemTestSup
         assertEquals("OGCAPI-TestCase", links.get(0).getProtocol());
         assertEquals("../cite/ogc/TestCaseService/v1", links.get(0).getLink());
 
-        var layer = getCatalog().getLayerByName("DividedRoutes");
+        LayerInfo layer = getCatalog().getLayerByName("DividedRoutes");
 
         links = provider.getServiceLinks(ws, layer);
         assertEquals(1, links.size());
         assertEquals("TestCaseServiceType", links.get(0).getServiceType());
         assertEquals("TestCase", links.get(0).getSpecificServiceType());
         assertEquals("OGCAPI-TestCase", links.get(0).getProtocol());
-        assertEquals("../cite/DividedRoutes/ogc/TestCaseService/v1", links.get(0).getLink());
+        assertEquals(
+                "../cite/DividedRoutes/ogc/TestCaseService/v1", links.get(0).getLink());
     }
 }

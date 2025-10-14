@@ -115,11 +115,9 @@ public abstract class AbstractTabbedListPageTest<T> extends AbstractSecurityWick
     protected void doRemove(String pathForLink) throws Exception {
         Page testPage = listPage(getServiceName());
 
-        String selectAllPath =
-                getTabbedPanelPath() + ":panel:table:listContainer:selectAllContainer:selectAll";
+        String selectAllPath = getTabbedPanelPath() + ":panel:table:listContainer:selectAllContainer:selectAll";
         tester.assertComponent(selectAllPath, CheckBox.class);
-        CheckBox selectAllComponent =
-                (CheckBox) tester.getComponentFromLastRenderedPage(selectAllPath);
+        CheckBox selectAllComponent = (CheckBox) tester.getComponentFromLastRenderedPage(selectAllPath);
 
         // simulate setting a form value, without an actual form around it
         setFormComponentValue(selectAllComponent, "true");
@@ -137,24 +135,20 @@ public abstract class AbstractTabbedListPageTest<T> extends AbstractSecurityWick
     protected abstract void simulateDeleteSubmit() throws Exception;
 
     protected Component getRemoveLink() {
-        Component result =
-                tester.getLastRenderedPage()
-                        .get(getTabbedPanelPath() + ":panel:header:removeSelected");
+        Component result = tester.getLastRenderedPage().get(getTabbedPanelPath() + ":panel:header:removeSelected");
         assertNotNull(result);
         return result;
     }
 
     protected Component getRemoveLinkWithRoles() {
         Component result =
-                tester.getLastRenderedPage()
-                        .get(getTabbedPanelPath() + ":panel:header:removeSelectedWithRoles");
+                tester.getLastRenderedPage().get(getTabbedPanelPath() + ":panel:header:removeSelectedWithRoles");
         assertNotNull(result);
         return result;
     }
 
     protected Component getAddLink() {
-        Component result =
-                tester.getLastRenderedPage().get(getTabbedPanelPath() + ":panel:header:addNew");
+        Component result = tester.getLastRenderedPage().get(getTabbedPanelPath() + ":panel:header:addNew");
         assertNotNull(result);
         return result;
     }

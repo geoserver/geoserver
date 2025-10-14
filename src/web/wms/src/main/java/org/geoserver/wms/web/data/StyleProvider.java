@@ -6,6 +6,7 @@
 package org.geoserver.wms.web.data;
 
 import static org.geoserver.catalog.Predicates.sortBy;
+import static org.geoserver.config.CatalogModificationUserUpdater.TRACK_USER;
 
 import com.google.common.collect.Lists;
 import java.util.Arrays;
@@ -18,6 +19,8 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.config.SettingsInfo;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.style.StyleDetachableModel;
 import org.geoserver.web.wicket.GeoServerDataProvider;
@@ -32,16 +35,15 @@ public class StyleProvider extends GeoServerDataProvider<StyleInfo> {
 
     public static Property<StyleInfo> WORKSPACE = new BeanProperty<>("workspace", "workspace.name");
 
-    static final Property<StyleInfo> MODIFIED_TIMESTAMP =
-            new BeanProperty<>("datemodfied", "dateModified");
+    static final Property<StyleInfo> MODIFIED_TIMESTAMP = new BeanProperty<>("datemodfied", "dateModified");
 
-    static final Property<StyleInfo> CREATED_TIMESTAMP =
-            new BeanProperty<>("datecreated", "dateCreated");
+    static final Property<StyleInfo> CREATED_TIMESTAMP = new BeanProperty<>("datecreated", "dateCreated");
+
+    static final Property<StyleInfo> MODIFIED_BY = new BeanProperty<>("modifiedby", "modifiedBy");
 
     static final Property<StyleInfo> FORMAT = new BeanProperty<>("format", "format");
 
-    static final Property<StyleInfo> FORMAT_VERSION =
-            new BeanProperty<>("formatversion", "formatVersion");
+    static final Property<StyleInfo> FORMAT_VERSION = new BeanProperty<>("formatversion", "formatVersion");
 
     static List<Property<StyleInfo>> PROPERTIES = Arrays.asList(NAME, FORMAT, WORKSPACE);
 
@@ -60,16 +62,16 @@ public class StyleProvider extends GeoServerDataProvider<StyleInfo> {
         List<Property<StyleInfo>> modifiedPropertiesList =
                 PROPERTIES.stream().map(c -> c).collect(Collectors.toList());
         // check geoserver properties
-        if (GeoServerApplication.get()
-                .getGeoServer()
-                .getSettings()
-                .isShowCreatedTimeColumnsInAdminList())
-            modifiedPropertiesList.add(CREATED_TIMESTAMP);
-        if (GeoServerApplication.get()
-                .getGeoServer()
-                .getSettings()
-                .isShowModifiedTimeColumnsInAdminList())
-            modifiedPropertiesList.add(MODIFIED_TIMESTAMP);
+        SettingsInfo settings = GeoServerApplication.get().getGeoServer().getSettings();
+        if (settings.isShowCreatedTimeColumnsInAdminList()) modifiedPropertiesList.add(CREATED_TIMESTAMP);
+        if (settings.isShowModifiedTimeColumnsInAdminList()) modifiedPropertiesList.add(MODIFIED_TIMESTAMP);
+        String trackUser = GeoServerExtensions.getProperty(TRACK_USER);
+        if (trackUser == null
+                        && GeoServerApplication.get()
+                                .getGeoServer()
+                                .getSettings()
+                                .isShowModifiedUserInAdminList()
+                || Boolean.parseBoolean(trackUser)) modifiedPropertiesList.add(MODIFIED_BY);
         return modifiedPropertiesList;
     }
 
@@ -101,10 +103,7 @@ public class StyleProvider extends GeoServerDataProvider<StyleInfo> {
         }
     }
 
-    /**
-     * Returns the requested page of layer objects after applying any keyword filtering set on the
-     * page
-     */
+    /** Returns the requested page of layer objects after applying any keyword filtering set on the page */
     private CloseableIterator<StyleInfo> filteredItems(Integer first, Integer count) {
         final Catalog catalog = getCatalog();
 

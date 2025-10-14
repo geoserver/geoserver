@@ -21,7 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public final class ConfigDirConfiguration implements JMSConfigurationExt {
 
-    @Autowired GeoServerResourceLoader loader;
+    @Autowired
+    GeoServerResourceLoader loader;
 
     public static final String CONFIGDIR_KEY = "CLUSTER_CONFIG_DIR";
 
@@ -42,11 +43,13 @@ public final class ConfigDirConfiguration implements JMSConfigurationExt {
 
     @Override
     public void initDefaults(JMSConfiguration config) throws IOException {
-        config.putConfiguration(CONFIGDIR_KEY, JMSConfiguration.getConfigPathDir().toString());
+        config.putConfiguration(
+                CONFIGDIR_KEY, JMSConfiguration.getConfigPathDir().toString());
     }
 
     @Override
     public boolean override(JMSConfiguration config) throws IOException {
-        return config.override(CONFIGDIR_KEY, JMSConfiguration.getConfigPathDir().toString());
+        return config.override(
+                CONFIGDIR_KEY, JMSConfiguration.getConfigPathDir().toString());
     }
 }

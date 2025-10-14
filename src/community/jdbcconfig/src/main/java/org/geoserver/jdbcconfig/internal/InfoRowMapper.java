@@ -28,8 +28,7 @@ public final class InfoRowMapper<T extends Info> implements RowMapper<T> {
         this(type, binding, 1);
     }
 
-    public InfoRowMapper(
-            final Class<T> type, final XStreamInfoSerialBinding binding, final int colNum) {
+    public InfoRowMapper(final Class<T> type, final XStreamInfoSerialBinding binding, final int colNum) {
 
         this.type = type;
         this.binding = binding;

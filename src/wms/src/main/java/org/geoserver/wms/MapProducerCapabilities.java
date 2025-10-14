@@ -6,7 +6,7 @@
 package org.geoserver.wms;
 
 /**
- * Class to record capabilities for a {@link RasterMapProducer}.
+ * Class to record capabilities for a RasterMapProducer.
  *
  * @author Simone Giannecchini, GeoSolutions SAS
  */
@@ -19,9 +19,7 @@ public class MapProducerCapabilities {
     private final boolean transparencySupported;
 
     public MapProducerCapabilities(
-            boolean tiledRequestsSupported,
-            boolean paletteSupported,
-            boolean transparencySupported) {
+            boolean tiledRequestsSupported, boolean paletteSupported, boolean transparencySupported) {
         super();
         this.tiledRequestsSupported = tiledRequestsSupported;
         this.paletteSupported = paletteSupported;

@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-backup-restore</artifactId>
-    <version>2.27-SNAPSHOT</version>
+    <version>3.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.community.backuprestore</groupId>
@@ -15,7 +15,7 @@
   <name>GeoServer Config Backup And Restore Core Module</name>
 
   <properties>
-    <spring.batch.version>3.0.7.RELEASE</spring.batch.version>
+    <spring.batch.version>3.0.10.RELEASE</spring.batch.version>
   </properties>
 
   <dependencies>
@@ -29,7 +29,6 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-messaging</artifactId>
-      <version>${spring.version}</version>
     </dependency>
 
     <!-- Spring Batch dependencies -->

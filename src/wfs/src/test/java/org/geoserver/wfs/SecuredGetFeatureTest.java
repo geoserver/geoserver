@@ -49,15 +49,12 @@ public class SecuredGetFeatureTest extends WFSTestSupport {
 
     @Test
     public void testGetNoAuthHide() throws Exception {
-        DataAccessRuleDAO dao =
-                GeoServerExtensions.bean(DataAccessRuleDAO.class, applicationContext);
+        DataAccessRuleDAO dao = GeoServerExtensions.bean(DataAccessRuleDAO.class, applicationContext);
         dao.setCatalogMode(CatalogMode.HIDE);
 
         // no auth, hide mode, we should get an error stating the layer is not there
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&version=1.1.0&service=wfs&typeName="
-                                + getLayerId(SystemTestData.BUILDINGS));
+        Document doc = getAsDOM(
+                "wfs?request=GetFeature&version=1.1.0&service=wfs&typeName=" + getLayerId(SystemTestData.BUILDINGS));
         // print(doc);
         checkOws10Exception(doc);
         assertXpathEvaluatesTo("Unknown namespace [cite]", "//ows:ExceptionText/text()", doc);
@@ -65,35 +62,27 @@ public class SecuredGetFeatureTest extends WFSTestSupport {
 
     @Test
     public void testGetNoAuthChallenge() throws Exception {
-        DataAccessRuleDAO dao =
-                GeoServerExtensions.bean(DataAccessRuleDAO.class, applicationContext);
+        DataAccessRuleDAO dao = GeoServerExtensions.bean(DataAccessRuleDAO.class, applicationContext);
         dao.setCatalogMode(CatalogMode.CHALLENGE);
 
         // this test seems to fail on the build server without storing the rules...
         dao.storeRules();
 
-        MockHttpServletResponse resp =
-                getAsServletResponse(
-                        "wfs?request=GetFeature&version=1.0.0&service=wfs&typeName="
-                                + getLayerId(SystemTestData.BUILDINGS));
+        MockHttpServletResponse resp = getAsServletResponse(
+                "wfs?request=GetFeature&version=1.0.0&service=wfs&typeName=" + getLayerId(SystemTestData.BUILDINGS));
         assertEquals(401, resp.getStatus());
         assertEquals("Basic realm=\"GeoServer Realm\"", resp.getHeader("WWW-Authenticate"));
     }
 
     @Test
     public void testInvalidAuthChallenge() throws Exception {
-        DataAccessRuleDAO dao =
-                GeoServerExtensions.bean(DataAccessRuleDAO.class, applicationContext);
+        DataAccessRuleDAO dao = GeoServerExtensions.bean(DataAccessRuleDAO.class, applicationContext);
         dao.setCatalogMode(CatalogMode.CHALLENGE);
 
-        MockHttpServletRequest request =
-                createRequest(
-                        "wfs?request=GetFeature&version=1.0.0&service=wfs&typeName="
-                                + getLayerId(SystemTestData.BUILDINGS));
+        MockHttpServletRequest request = createRequest(
+                "wfs?request=GetFeature&version=1.0.0&service=wfs&typeName=" + getLayerId(SystemTestData.BUILDINGS));
         request.setMethod("GET");
-        request.addHeader(
-                "Authorization",
-                "Basic " + new String(Base64.encodeBase64("cite:wrongpassword".getBytes())));
+        request.addHeader("Authorization", "Basic " + new String(Base64.encodeBase64("cite:wrongpassword".getBytes())));
 
         MockHttpServletResponse resp = dispatch(request);
         assertEquals(401, resp.getStatus());
@@ -111,17 +100,13 @@ public class SecuredGetFeatureTest extends WFSTestSupport {
     }
 
     private void checkValidAuth(String username, String password)
-            throws Exception, ParserConfigurationException, SAXException, IOException,
-                    XpathException {
-        DataAccessRuleDAO dao =
-                GeoServerExtensions.bean(DataAccessRuleDAO.class, applicationContext);
+            throws Exception, ParserConfigurationException, SAXException, IOException, XpathException {
+        DataAccessRuleDAO dao = GeoServerExtensions.bean(DataAccessRuleDAO.class, applicationContext);
         dao.setCatalogMode(CatalogMode.CHALLENGE);
 
         setRequestAuth(username, password);
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&version=1.0.0&service=wfs&typeName="
-                                + getLayerId(SystemTestData.BUILDINGS));
+        Document doc = getAsDOM(
+                "wfs?request=GetFeature&version=1.0.0&service=wfs&typeName=" + getLayerId(SystemTestData.BUILDINGS));
         // print(doc);
         assertXpathEvaluatesTo("1", "count(/wfs:FeatureCollection)", doc);
     }

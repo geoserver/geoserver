@@ -61,8 +61,7 @@ public class GeoServerBasicAuthenticationFilterTest {
     }
 
     private GeoServerBasicAuthenticationFilter createAuthenticationFilter() {
-        GeoServerBasicAuthenticationFilter authenticationFilter =
-                new GeoServerBasicAuthenticationFilter();
+        GeoServerBasicAuthenticationFilter authenticationFilter = new GeoServerBasicAuthenticationFilter();
         GeoServerSecurityManager sm;
         try {
             sm = new GeoServerSecurityManager(new GeoServerDataDirectory(new File("target")));
@@ -77,15 +76,13 @@ public class GeoServerBasicAuthenticationFilterTest {
 
     @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
     private MockHttpServletRequest createRequest() {
-        MockHttpServletRequest request =
-                new GeoServerAbstractTestSupport.GeoServerMockHttpServletRequest();
+        MockHttpServletRequest request = new GeoServerAbstractTestSupport.GeoServerMockHttpServletRequest();
         request.setScheme("http");
         request.setServerName("localhost");
         request.setContextPath("/geoserver");
         request.setRemoteAddr("127.0.0.1");
         String token = "admin:" + PASSWORD;
-        request.addHeader(
-                "Authorization", "Basic " + new String(Base64.encodeBase64(token.getBytes())));
+        request.addHeader("Authorization", "Basic " + new String(Base64.encodeBase64(token.getBytes())));
         return request;
     }
 

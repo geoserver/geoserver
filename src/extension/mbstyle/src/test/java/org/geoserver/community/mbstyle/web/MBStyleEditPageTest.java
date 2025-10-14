@@ -49,29 +49,31 @@ public class MBStyleEditPageTest extends GeoServerWicketTestSupport {
     public void testMbstyleChange() throws Exception {
 
         String json =
-                "{\n"
-                        + "  \"version\": 8, \n"
-                        + "  \"name\": \"places\",\n"
-                        + "  \"sprite\": \"http://localhost:8080/geoserver/styles/mbsprites\",\n"
-                        + "  \"layers\": [\n"
-                        + "    {\n"
-                        + "      \"id\": \"circle\",\n"
-                        + "      \"source-layer\": \"Buildings\",\n"
-                        + "      \"type\": \"symbol\",\n"
-                        + "      \"layout\": {\n"
-                        + "        \"icon-image\": \"circle\",\n"
-                        + "        \"icon-size\": {\n"
-                        + "          \"property\": \"POP_MAX\",\n"
-                        + "          \"type\": \"exponential\",\n"
-                        + "          \"stops\": [\n"
-                        + "            [0, 0.7],\n"
-                        + "            [40000000, 3.7]\n"
-                        + "          ]\n"
-                        + "        }\n"
-                        + "      }\n"
-                        + "    }\n"
-                        + "  ]\n"
-                        + " }\n";
+                """
+                {
+                  "version": 8,\s
+                  "name": "places",
+                  "sprite": "http://localhost:8080/geoserver/styles/mbsprites",
+                  "layers": [
+                    {
+                      "id": "circle",
+                      "source-layer": "Buildings",
+                      "type": "symbol",
+                      "layout": {
+                        "icon-image": "circle",
+                        "icon-size": {
+                          "property": "POP_MAX",
+                          "type": "exponential",
+                          "stops": [
+                            [0, 0.7],
+                            [40000000, 3.7]
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                 }
+                """;
 
         FormTester form = tester.newFormTester("styleForm");
         form.setValue("context:panel:format", MBStyleHandler.FORMAT);
@@ -86,11 +88,13 @@ public class MBStyleEditPageTest extends GeoServerWicketTestSupport {
         tester.assertModelValue("styleForm:context:panel:previewStyleGroup", true);
         assertNotNull(getCatalog().getStyleByName("mbstyle").getSLD());
         Style style = getCatalog().getStyleByName("mbstyle").getStyle();
-        Symbolizer sym = style.featureTypeStyles().get(0).rules().get(0).symbolizers().get(0);
+        Symbolizer sym =
+                style.featureTypeStyles().get(0).rules().get(0).symbolizers().get(0);
         TextSymbolizer label = (TextSymbolizer) sym;
-        ExternalGraphic eg = (ExternalGraphic) label.getGraphic().graphicalSymbols().get(0);
+        ExternalGraphic eg =
+                (ExternalGraphic) label.getGraphic().graphicalSymbols().get(0);
         assertEquals(
-                eg.getURI(),
-                "http://localhost:8080/geoserver/styles/mbsprites#icon=${strURLEncode('circle')}&size=${strURLEncode(Interpolate(POP_MAX,0,0.7,40000000,3.7,'numeric'))}");
+                "http://localhost:8080/geoserver/styles/mbsprites#icon=${strURLEncode('circle')}&size=${strURLEncode(Interpolate(POP_MAX,0,0.7,40000000,3.7,'numeric'))}",
+                eg.getURI());
     }
 }

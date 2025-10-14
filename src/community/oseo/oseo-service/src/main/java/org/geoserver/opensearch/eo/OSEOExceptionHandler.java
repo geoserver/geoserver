@@ -38,8 +38,7 @@ public class OSEOExceptionHandler extends ServiceExceptionHandler {
     @Override
     public void handleServiceException(ServiceException exception, Request request) {
         HttpServletResponse response = request.getHttpResponse();
-        if (exception instanceof OWS20Exception) {
-            OWS20Exception ex = (OWS20Exception) exception;
+        if (exception instanceof OWS20Exception ex) {
             if (ex.getHttpCode() != null) {
                 response.setStatus(ex.getHttpCode());
             } else {
@@ -54,10 +53,7 @@ public class OSEOExceptionHandler extends ServiceExceptionHandler {
             if (format != null && format.contains("json")) writeJSONResponse(exception, request);
             else writeXMLResponse(exception, request);
         } catch (Exception ex) {
-            LOGGER.log(
-                    Level.INFO,
-                    "Problem writing exception information back to calling client:",
-                    ex);
+            LOGGER.log(Level.INFO, "Problem writing exception information back to calling client:", ex);
         }
     }
 

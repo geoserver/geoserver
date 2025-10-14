@@ -35,8 +35,8 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 
 /**
- * Helper class for Template responses which mainly allows to obtain a writer according to the
- * specified format and provides some methods to retrieve a ${@link FeatureTypeInfo}
+ * Helper class for Template responses which mainly allows to obtain a writer according to the specified format and
+ * provides some methods to retrieve a ${@link FeatureTypeInfo}
  */
 public class TemplateGetFeatureResponseHelper {
 
@@ -60,15 +60,10 @@ public class TemplateGetFeatureResponseHelper {
         switch (format) {
             case JSON:
             case GEOJSON:
-                outputWriter =
-                        new GeoJSONWriter(
-                                new JsonFactory().createGenerator(output, JsonEncoding.UTF8),
-                                format);
+                outputWriter = new GeoJSONWriter(new JsonFactory().createGenerator(output, JsonEncoding.UTF8), format);
                 break;
             case JSONLD:
-                outputWriter =
-                        new JSONLDWriter(
-                                new JsonFactory().createGenerator(output, JsonEncoding.UTF8));
+                outputWriter = new JSONLDWriter(new JsonFactory().createGenerator(output, JsonEncoding.UTF8));
                 break;
             case GML2:
             case GML31:
@@ -81,8 +76,7 @@ public class TemplateGetFeatureResponseHelper {
                 if (xMLOutputFactory.isPropertySupported(ESCAPE_CHARS))
                     xMLOutputFactory.setProperty(ESCAPE_CHARS, false);
                 try {
-                    XMLStreamWriter xMLStreamWriter =
-                            xMLOutputFactory.createXMLStreamWriter(output, "UTF-8");
+                    XMLStreamWriter xMLStreamWriter = xMLOutputFactory.createXMLStreamWriter(output, "UTF-8");
 
                     if (format.equals(TemplateIdentifier.HTML))
                         outputWriter = new XHTMLTemplateWriter(xMLStreamWriter, output);
@@ -113,29 +107,24 @@ public class TemplateGetFeatureResponseHelper {
             if (!(xMLOutputFactory instanceof WstxOutputFactory)) {
                 xMLOutputFactory = new WstxOutputFactory();
             }
-            ((WstxOutputFactory) xMLOutputFactory)
-                    .getConfig()
-                    .setTextEscaperFactory(
-                            new EscapingWriterFactory() {
-                                @Override
-                                public Writer createEscapingWriterFor(Writer writer, String s) {
-                                    return writer;
-                                }
+            ((WstxOutputFactory) xMLOutputFactory).getConfig().setTextEscaperFactory(new EscapingWriterFactory() {
+                @Override
+                public Writer createEscapingWriterFor(Writer writer, String s) {
+                    return writer;
+                }
 
-                                @Override
-                                public Writer createEscapingWriterFor(
-                                        OutputStream outputStream, String s) {
-                                    return new OutputStreamWriter(outputStream);
-                                }
-                            });
+                @Override
+                public Writer createEscapingWriterFor(OutputStream outputStream, String s) {
+                    return new OutputStreamWriter(outputStream);
+                }
+            });
         }
         return xMLOutputFactory;
     }
 
     FeatureTypeInfo getFirstFeatureTypeInfo(Object request) {
         FeatureTypeInfo result;
-        if (request instanceof GetFeatureInfoRequest)
-            result = getFirstFeatureTypeInfo((GetFeatureInfoRequest) request);
+        if (request instanceof GetFeatureInfoRequest infoRequest) result = getFirstFeatureTypeInfo(infoRequest);
         else result = getFirstFeatureTypeInfo(GetFeatureRequest.adapt(request));
         return result;
     }
@@ -143,15 +132,14 @@ public class TemplateGetFeatureResponseHelper {
     FeatureTypeInfo getFirstFeatureTypeInfo(GetFeatureInfoRequest request) {
         Optional<MapLayerInfo> op =
                 request.getQueryLayers().stream().filter(ml -> ml != null).findFirst();
-        if (!op.isPresent()) return null;
+        if (op.isEmpty()) return null;
         return op.get().getFeature();
     }
 
     FeatureTypeInfo getFirstFeatureTypeInfo(GetFeatureRequest request) {
         Query query = request.getQueries().get(0);
         QName typeName = query.getTypeNames().get(0);
-        return getFeatureTypeInfo(
-                new NameImpl(typeName.getNamespaceURI(), typeName.getLocalPart()));
+        return getFeatureTypeInfo(new NameImpl(typeName.getNamespaceURI(), typeName.getLocalPart()));
     }
 
     FeatureTypeInfo getFeatureTypeInfo(FeatureCollection collection) {

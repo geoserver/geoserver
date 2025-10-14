@@ -12,6 +12,7 @@ import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -30,14 +31,20 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.util.IOUtils;
 import org.geoserver.wcs.CoverageCleanerCallback;
+import org.geoserver.wps.process.RawData;
+import org.geoserver.wps.resource.WPSResourceManager;
 import org.geoserver.wps.xml.WPSConfiguration;
 import org.geotools.api.coverage.grid.GridCoverage;
+import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.process.Processors;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.Parser;
 import org.junit.After;
+import org.junit.Assert;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXParseException;
@@ -51,6 +58,10 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
     public static String WCS_PREFIX = "wcs";
     public static String WCS_URI = "http://www.opengis.net/wcs/1.1.1";
     public static QName TASMANIA_DEM = new QName(WCS_URI, "DEM", WCS_PREFIX);
+    public static QName TASMANIA_DEM_NODATA = new QName(WCS_URI, "DEMNODATA", WCS_PREFIX);
+    public static QName HOLE = new QName(WCS_URI, "hole", WCS_PREFIX);
+    public static QName ELSHAPED = new QName(WCS_URI, "ElShaped", WCS_PREFIX);
+    public static QName RAIN = new QName(WCS_URI, "rain", WCS_PREFIX);
     public static QName TASMANIA_BM = new QName(WCS_URI, "BlueMarble", WCS_PREFIX);
     public static QName ROTATED_CAD = new QName(WCS_URI, "RotatedCad", WCS_PREFIX);
     public static QName WORLD = new QName(WCS_URI, "World", WCS_PREFIX);
@@ -67,6 +78,57 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
         Processors.addProcessFactory(MultiRawProcess.getFactory());
         Processors.addProcessFactory(MultiOutputEchoProcess.getFactory());
     }
+
+    public static class AutoCloseableResource implements AutoCloseable {
+        WPSResourceManager resourceManager;
+
+        RawData rawData;
+
+        Resource resource;
+
+        public File getFile() {
+            return file;
+        }
+
+        File file;
+
+        public AutoCloseableResource(WPSResourceManager resourceManager, RawData rawData) throws IOException {
+
+            // Final checks on the result
+            Assert.assertNotNull(rawData);
+
+            this.resourceManager = resourceManager;
+            this.rawData = rawData;
+            this.resource = resourceManager.getTemporaryResource(rawData.getFileExtension());
+            this.file = resource.file();
+            try (InputStream in = rawData.getInputStream()) {
+                IOUtils.copy(in, file);
+            }
+        }
+
+        @Override
+        public void close() throws IOException {
+            // clean up process
+            IOUtils.delete(file, true);
+            resourceManager.finished(resourceManager.getExecutionId(true));
+        }
+    }
+
+    public static class AutoDisposableGridCoverage2D extends GridCoverage2D implements AutoCloseable {
+
+        public AutoDisposableGridCoverage2D(CharSequence name, GridCoverage2D coverage) {
+            super(name, coverage);
+        }
+
+        @Override
+        public void close() {
+            CoverageCleanerCallback.disposeCoverage(this);
+        }
+    }
+
+    protected void setUpInternal(SystemTestData testData) throws Exception {}
+
+    protected void setUpNamespaces(Map<String, String> namespaces) {}
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -141,8 +203,7 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
     }
 
     /** Validates a document against the */
-    protected void checkValidationErrors(Document dom, Configuration configuration)
-            throws Exception {
+    protected void checkValidationErrors(Document dom, Configuration configuration) throws Exception {
         Parser p = new Parser(configuration);
         p.setValidating(true);
         p.parse(new DOMSource(dom));
@@ -150,8 +211,7 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
         if (!p.getValidationErrors().isEmpty()) {
             for (Exception exception : p.getValidationErrors()) {
                 SAXParseException ex = (SAXParseException) exception;
-                LOGGER.warning(
-                        ex.getLineNumber() + "," + ex.getColumnNumber() + " -" + ex.toString());
+                LOGGER.warning(ex.getLineNumber() + "," + ex.getColumnNumber() + " -" + ex.toString());
             }
             fail("Document did not validate.");
         }
@@ -178,12 +238,13 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
         props.put(LayerProperty.STYLE, styleName);
 
         // wcs 1.1
-        testData.addRasterLayer(
-                TASMANIA_DEM, "tazdem.tiff", TIFF, props, MockData.class, getCatalog());
-        testData.addRasterLayer(
-                TASMANIA_BM, "tazbm.tiff", TIFF, props, MockData.class, getCatalog());
-        testData.addRasterLayer(
-                ROTATED_CAD, "rotated.tiff", TIFF, props, MockData.class, getCatalog());
+        testData.addRasterLayer(TASMANIA_DEM, "tazdem.tiff", TIFF, props, MockData.class, getCatalog());
+        testData.addRasterLayer(TASMANIA_DEM_NODATA, "tazdemNoData2.tiff", TIFF, props, MockData.class, getCatalog());
+        testData.addRasterLayer(HOLE, "hole.zip", null, props, MockData.class, getCatalog());
+        testData.addRasterLayer(ELSHAPED, "elshaped.zip", null, props, MockData.class, getCatalog());
+        testData.addRasterLayer(RAIN, "rain.zip", "asc", props, MockData.class, getCatalog());
+        testData.addRasterLayer(TASMANIA_BM, "tazbm.tiff", TIFF, props, MockData.class, getCatalog());
+        testData.addRasterLayer(ROTATED_CAD, "rotated.tiff", TIFF, props, MockData.class, getCatalog());
         testData.addRasterLayer(WORLD, "world.tiff", TIFF, props, MockData.class, getCatalog());
     }
 
@@ -198,30 +259,25 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
     }
 
     protected Document waitForProcess(
-            String statusLocation,
-            long maxWaitSeconds,
-            ThrowingFunction<Document, Boolean> exitCondition)
+            String statusLocation, long maxWaitSeconds, ThrowingFunction<Document, Boolean> exitCondition)
             throws Exception {
-        await().atMost(maxWaitSeconds, SECONDS)
-                .until(
-                        () -> {
-                            MockHttpServletResponse response = getAsServletResponse(statusLocation);
-                            String contents = response.getContentAsString();
-                            // super weird... and I believe related to the testing harness... just
-                            // ignoring it for the moment.
-                            if ("".equals(contents)) {
-                                return false;
-                            }
-                            Document dom = dom(new ByteArrayInputStream(contents.getBytes()));
-                            // print(dom);
-                            return exitCondition.apply(dom);
-                        });
+        await().atMost(maxWaitSeconds, SECONDS).until(() -> {
+            MockHttpServletResponse response = getAsServletResponse(statusLocation);
+            String contents = response.getContentAsString();
+            // super weird... and I believe related to the testing harness... just
+            // ignoring it for the moment.
+            if ("".equals(contents)) {
+                return false;
+            }
+            Document dom = dom(new ByteArrayInputStream(contents.getBytes()));
+            // print(dom);
+            return exitCondition.apply(dom);
+        });
 
         return getAsDOM(statusLocation);
     }
 
-    protected Document waitForProcessEnd(String statusLocation, long maxWaitSeconds)
-            throws Exception {
+    protected Document waitForProcessEnd(String statusLocation, long maxWaitSeconds) throws Exception {
         return waitForProcess(statusLocation, maxWaitSeconds, this::executionComplete);
     }
 
@@ -235,8 +291,7 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
         return xp.getMatchingNodes(xpath, d).getLength();
     }
 
-    protected Document waitForProcessStart(String statusLocation, long maxWaitSeconds)
-            throws Exception {
+    protected Document waitForProcessStart(String statusLocation, long maxWaitSeconds) throws Exception {
         return waitForProcess(statusLocation, maxWaitSeconds, this::executionStarted);
     }
 

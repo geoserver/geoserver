@@ -44,10 +44,8 @@ import org.springframework.http.HttpStatus;
 public class TiledCollectionDocument extends AbstractCollectionDocument<TileLayer> {
     static final Logger LOGGER = Logging.getLogger(TiledCollectionDocument.class);
 
-    public static final String REL_TILESETS_MAP =
-            "http://www.opengis.net/def/rel/ogc/1.0/tilesets-map";
-    public static final String REL_TILESETS_VECTOR =
-            "http://www.opengis.net/def/rel/ogc/1.0/tilesets-vector";
+    public static final String REL_TILESETS_MAP = "http://www.opengis.net/def/rel/ogc/1.0/tilesets-map";
+    public static final String REL_TILESETS_VECTOR = "http://www.opengis.net/def/rel/ogc/1.0/tilesets-vector";
 
     WMS wms;
     TileLayer layer;
@@ -60,20 +58,17 @@ public class TiledCollectionDocument extends AbstractCollectionDocument<TileLaye
      * Builds a description of a tiled collection
      *
      * @param tileLayer The tile layer being described
-     * @param summary If true, the info provided is minimal and assumed to be part of a {@link
-     *     TiledCollectionsDocument}, otherwise it's full and assumed to be the main response
+     * @param summary If true, the info provided is minimal and assumed to be part of a
+     *     {@link TiledCollectionsDocument}, otherwise it's full and assumed to be the main response
      */
     public TiledCollectionDocument(WMS wms, TileLayer tileLayer, boolean summary)
             throws FactoryException, TransformException {
         super(tileLayer);
         // basic info
         this.layer = tileLayer;
-        this.id =
-                tileLayer instanceof GeoServerTileLayer
-                        ? ((GeoServerTileLayer) tileLayer).getContextualName()
-                        : tileLayer.getName();
-        if (tileLayer instanceof GeoServerTileLayer) {
-            PublishedInfo published = ((GeoServerTileLayer) tileLayer).getPublishedInfo();
+        this.id = tileLayer instanceof GeoServerTileLayer gstl ? gstl.getContextualName() : tileLayer.getName();
+        if (tileLayer instanceof GeoServerTileLayer serverTileLayer) {
+            PublishedInfo published = serverTileLayer.getPublishedInfo();
             setTitle(published.getTitle());
             setDescription(published.getAbstract());
             this.extent = getExtentsFromPublished(published);
@@ -84,35 +79,35 @@ public class TiledCollectionDocument extends AbstractCollectionDocument<TileLaye
         // backlinks in same and other formats
         addSelfLinks("ogc/tiles/v1/collections/" + id);
 
+        // raw tiles links, if any (if the vector tiles plugin is missing or formats not
+        // configured, will be empty)
+        List<MimeType> tileTypes = tileLayer.getMimeTypes();
+
+        dataTiles = tileTypes.stream().anyMatch(mt -> mt.isVector());
+        if (dataTiles) {
+            // tiles
+            new LinksBuilder(TilesDocument.class, "ogc/tiles/v1/collections/")
+                    .segment(id, true)
+                    .segment("tiles")
+                    .title("Tiles metadata as ")
+                    .rel(REL_TILESETS_VECTOR)
+                    .classification("tilesets-vector")
+                    .add(this);
+        }
+
+        // map tiles links (a layer might not have image tiles configured, need to check)
+        mapTiles = tileTypes.stream().anyMatch(mt -> !mt.isVector());
+        if (mapTiles) {
+            new LinksBuilder(TilesDocument.class, "ogc/tiles/v1/collections/")
+                    .segment(id, true)
+                    .segment("map/tiles")
+                    .title("Map tiles metadata as ")
+                    .rel(REL_TILESETS_MAP)
+                    .classification("tilesets-maps")
+                    .add(this);
+        }
+
         if (!summary) {
-            // raw tiles links, if any (if the vector tiles plugin is missing or formats not
-            // configured, will be empty)
-            List<MimeType> tileTypes = tileLayer.getMimeTypes();
-
-            dataTiles = tileTypes.stream().anyMatch(mt -> mt.isVector());
-            if (dataTiles) {
-                // tiles
-                new LinksBuilder(TilesDocument.class, "ogc/tiles/v1/collections/")
-                        .segment(id, true)
-                        .segment("tiles")
-                        .title("Tiles metadata as ")
-                        .rel(REL_TILESETS_VECTOR)
-                        .classification("tilesets-vector")
-                        .add(this);
-            }
-
-            // map tiles links (a layer might not have image tiles configured, need to check)
-            mapTiles = tileTypes.stream().anyMatch(mt -> !mt.isVector());
-            if (mapTiles) {
-                new LinksBuilder(TilesDocument.class, "ogc/tiles/v1/collections/")
-                        .segment(id, true)
-                        .segment("map/tiles")
-                        .title("Map tiles metadata as ")
-                        .rel(REL_TILESETS_MAP)
-                        .classification("tilesets-maps")
-                        .add(this);
-            }
-
             // styles document links
             new LinksBuilder(StylesDocument.class, "ogc/tiles/v1/collections/")
                     .segment(id, true)
@@ -122,28 +117,24 @@ public class TiledCollectionDocument extends AbstractCollectionDocument<TileLaye
                     .add(this);
 
             // style links
-            if (tileLayer instanceof GeoServerTileLayer) {
-                PublishedInfo published = ((GeoServerTileLayer) tileLayer).getPublishedInfo();
-                if (published instanceof LayerInfo) {
-                    LayerInfo layerInfo = (LayerInfo) published;
+            if (tileLayer instanceof GeoServerTileLayer serverTileLayer) {
+                PublishedInfo published = serverTileLayer.getPublishedInfo();
+                if (published instanceof LayerInfo layerInfo) {
                     LinkedHashSet<StyleInfo> stylesInfo =
                             new LinkedHashSet<>(Arrays.asList(layerInfo.getDefaultStyle()));
                     stylesInfo.addAll(layerInfo.getStyles());
-                    stylesInfo.forEach(
-                            style -> {
-                                this.styles.add(new StyleDocument(style));
-                            });
+                    stylesInfo.forEach(style -> {
+                        this.styles.add(new StyleDocument(style));
+                    });
                 } else {
                     LayerGroupInfo group = (LayerGroupInfo) published;
                     if (group != null && TilesService.isStyleGroup(group)) {
-                        StyleDocument styleDocument = new StyleDocument(group.getStyles().get(0));
+                        StyleDocument styleDocument =
+                                new StyleDocument(group.getStyles().get(0));
                         this.styles.add(styleDocument);
                     } else {
                         // layer group? no named styles for the moment
-                        this.styles.add(
-                                new StyleDocument(
-                                        StyleDocument.DEFAULT_STYLE_NAME,
-                                        "The layer default style"));
+                        this.styles.add(new StyleDocument(StyleDocument.DEFAULT_STYLE_NAME, "The layer default style"));
                     }
                 }
             } else {
@@ -151,9 +142,7 @@ public class TiledCollectionDocument extends AbstractCollectionDocument<TileLaye
                 if (style != null) {
                     this.styles.add(new StyleDocument(style, "The layer default style"));
                 } else {
-                    this.styles.add(
-                            new StyleDocument(
-                                    StyleDocument.DEFAULT_STYLE_NAME, "The layer default style"));
+                    this.styles.add(new StyleDocument(StyleDocument.DEFAULT_STYLE_NAME, "The layer default style"));
                 }
             }
 
@@ -170,18 +159,14 @@ public class TiledCollectionDocument extends AbstractCollectionDocument<TileLaye
         }
     }
 
-    private CollectionExtents getExtentFromGridsets(TileLayer tileLayer)
-            throws FactoryException, TransformException {
-        Set<String> srsSet =
-                layer.getGridSubsets().stream()
-                        .map(gs -> tileLayer.getGridSubset(gs).getSRS().toString())
-                        .collect(Collectors.toSet());
+    private CollectionExtents getExtentFromGridsets(TileLayer tileLayer) throws FactoryException, TransformException {
+        Set<String> srsSet = layer.getGridSubsets().stream()
+                .map(gs -> tileLayer.getGridSubset(gs).getSRS().toString())
+                .collect(Collectors.toSet());
         if (srsSet.isEmpty()) {
             throw new APIException(
                     APIException.NO_APPLICABLE_CODE,
-                    "Could not compute the extent for layer "
-                            + tileLayer.getName()
-                            + ", no gridsets are configured",
+                    "Could not compute the extent for layer " + tileLayer.getName() + ", no gridsets are configured",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
         if (srsSet.contains("EPSG:4326")) {
@@ -203,18 +188,15 @@ public class TiledCollectionDocument extends AbstractCollectionDocument<TileLaye
         }
     }
 
-    private CollectionExtents getExtentsFromGridSubset(GridSubset subset)
-            throws FactoryException, TransformException {
+    private CollectionExtents getExtentsFromGridSubset(GridSubset subset) throws FactoryException, TransformException {
         BoundingBox bbox = subset.getOriginalExtent();
-        ReferencedEnvelope re =
-                new ReferencedEnvelope(
-                        bbox.getMinX(),
-                        bbox.getMaxX(),
-                        bbox.getMinY(),
-                        bbox.getMaxY(),
-                        CRS.decode(subset.getSRS().toString(), true));
-        if (!CRS.equalsIgnoreMetadata(
-                re.getCoordinateReferenceSystem(), DefaultGeographicCRS.WGS84)) {
+        ReferencedEnvelope re = new ReferencedEnvelope(
+                bbox.getMinX(),
+                bbox.getMaxX(),
+                bbox.getMinY(),
+                bbox.getMaxY(),
+                CRS.decode(subset.getSRS().toString(), true));
+        if (!CRS.equalsIgnoreMetadata(re.getCoordinateReferenceSystem(), DefaultGeographicCRS.WGS84)) {
             re = re.transform(DefaultGeographicCRS.WGS84, true);
         }
         return new CollectionExtents(re);
@@ -223,10 +205,10 @@ public class TiledCollectionDocument extends AbstractCollectionDocument<TileLaye
     private CollectionExtents getExtentsFromPublished(PublishedInfo published) {
         try {
             ReferencedEnvelope bbox = null;
-            if (published instanceof LayerInfo) {
-                bbox = ((LayerInfo) published).getResource().getLatLonBoundingBox();
-            } else if (published instanceof LayerGroupInfo) {
-                bbox = ((LayerGroupInfo) published).getBounds();
+            if (published instanceof LayerInfo info1) {
+                bbox = info1.getResource().getLatLonBoundingBox();
+            } else if (published instanceof LayerGroupInfo info) {
+                bbox = info.getBounds();
                 if (!CRS.equalsIgnoreMetadata(bbox, DefaultGeographicCRS.WGS84)) {
                     bbox = bbox.transform(DefaultGeographicCRS.WGS84, true);
                 }
@@ -236,10 +218,7 @@ public class TiledCollectionDocument extends AbstractCollectionDocument<TileLaye
             }
         } catch (TransformException | FactoryException e) {
             throw new APIException(
-                    "InternalError",
-                    "Failed to reproject native bounds to WGS84",
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    e);
+                    "InternalError", "Failed to reproject native bounds to WGS84", HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
 
         return null;

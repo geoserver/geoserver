@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>2.27-SNAPSHOT</version>
+    <version>3.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
@@ -100,18 +100,6 @@
       </modules>
     </profile>
     <profile>
-      <id>webservice</id>
-      <modules>
-        <module>app-schema</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>app-schema</id>
-      <modules>
-        <module>app-schema</module>
-      </modules>
-    </profile>
-    <profile>
       <id>programming-guide</id>
       <modules>
         <module>programming-guide</module>
@@ -150,7 +138,6 @@
         <module>solr</module>
         <module>elasticsearch</module>
         <module>wps-remote</module>
-        <module>gwc-distributed</module>
         <module>jdbcstore</module>
         <module>gdal</module>
         <module>gwc-azure-blob</module>
@@ -162,7 +149,6 @@
         <module>notification</module>
         <module>notification-common</module>
         <module>notification-geonode</module>
-        <module>jdbc-metrics</module>
         <module>oseo</module>
         <module>s3-geotiff</module>
         <module>netcdf-ghrsst</module>
@@ -184,21 +170,17 @@
         <module>libdeflate</module>
         <module>vector-mosaic</module>
         <module>proxy-base-ext</module>
-        <module>xslt</module>
-        <module>imagemap</module>
-        <module>datadir-catalog-loader</module>
         <module>wps-longitudinal-profile</module>
         <module>monitor-kafka</module>
+        <module>monitor-micrometer</module>
         <module>graticule</module>
         <module>wfs-freemarker</module>
         <module>stac-datastore</module>
         <module>acl</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>sextante</id>
-      <modules>
-        <module>wps-sextante</module>
+        <module>geoparquet</module>
+        <module>wps-download-netcdf</module>
+        <module>singlestore</module>
+        <module>pmtiles-store</module>
       </modules>
     </profile>
     <profile>
@@ -306,18 +288,6 @@
       </modules>
     </profile>
     <profile>
-      <id>gwc-distributed</id>
-      <activation>
-        <property>
-          <name>all</name>
-          <value>true</value>
-        </property>
-      </activation>
-      <modules>
-        <module>gwc-distributed</module>
-      </modules>
-    </profile>
-    <profile>
       <id>jdbcstore</id>
       <modules>
         <module>jdbcconfig</module>
@@ -407,15 +377,15 @@
       </modules>
     </profile>
     <profile>
-      <id>oseo</id>
+      <id>oidc</id>
       <modules>
-        <module>oseo</module>
+        <module>security</module>
       </modules>
     </profile>
     <profile>
-      <id>jdbc-metrics</id>
+      <id>oseo</id>
       <modules>
-        <module>jdbc-metrics</module>
+        <module>oseo</module>
       </modules>
     </profile>
     <profile>
@@ -461,15 +431,15 @@
       </modules>
     </profile>
     <profile>
-      <id>monitor-hibernate</id>
-      <modules>
-        <module>monitor-hibernate</module>
-      </modules>
-    </profile>
-    <profile>
       <id>monitor-kafka</id>
       <modules>
         <module>monitor-kafka</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>monitor-micrometer</id>
+      <modules>
+        <module>monitor-micrometer</module>
       </modules>
     </profile>
     <profile>
@@ -482,6 +452,13 @@
       <id>ogcapi</id>
       <modules>
         <module>ogcapi</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>ogcapi-tiles</id>
+      <modules>
+        <module>ogcapi/ogcapi-tiles</module>
+        <module>ogcapi/web-tiles</module>
       </modules>
     </profile>
     <profile>
@@ -569,24 +546,6 @@
       </modules>
     </profile>
     <profile>
-      <id>xslt</id>
-      <modules>
-        <module>xslt</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>imagemap</id>
-      <modules>
-        <module>imagemap</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>datadir-catalog-loader</id>
-      <modules>
-        <module>datadir-catalog-loader</module>
-      </modules>
-    </profile>
-    <profile>
       <id>wps-longitudinal-profile</id>
       <modules>
         <module>wps-longitudinal-profile</module>
@@ -602,6 +561,30 @@
       <id>wfs-freemarker</id>
       <modules>
         <module>wfs-freemarker</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>geoparquet</id>
+      <modules>
+        <module>geoparquet</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>wps-download-netcdf</id>
+      <modules>
+        <module>wps-download-netcdf</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>singlestore</id>
+      <modules>
+        <module>singlestore</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>pmtiles-store</id>
+      <modules>
+        <module>pmtiles-store</module>
       </modules>
     </profile>
     <profile>

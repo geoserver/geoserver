@@ -9,18 +9,14 @@ import java.util.List;
 import org.locationtech.jts.geom.Coordinate;
 
 /**
- * A class to represent a clipped and tagged polygon, that is, a Polygon that has been clipped on
- * the server side, introducing extra vertices to the boundary of the polygon. The polygon boundary
- * and holes are represented as a list of visible and invisible coordinate lists, which the
- * generator will translate into a MapML document making sure the invisible ones are associated to
- * an invisible <code>map-span</code>.
+ * A class to represent a clipped and tagged polygon, that is, a Polygon that has been clipped on the server side,
+ * introducing extra vertices to the boundary of the polygon. The polygon boundary and holes are represented as a list
+ * of visible and invisible coordinate lists, which the generator will translate into a MapML document making sure the
+ * invisible ones are associated to an invisible <code>map-span</code>.
  */
 class TaggedPolygon {
 
-    /**
-     * A class to represent a tagged coordinate sequence, that is, a list of coordinates with a
-     * visibility flag.
-     */
+    /** A class to represent a tagged coordinate sequence, that is, a list of coordinates with a visibility flag. */
     static class TaggedCoordinateSequence {
 
         boolean visible;
@@ -42,18 +38,13 @@ class TaggedPolygon {
 
         @Override
         public String toString() {
-            return "TaggedCoordinateSequence{"
-                    + "visible="
-                    + visible
-                    + ", coordinates="
-                    + coordinates
-                    + '}';
+            return "TaggedCoordinateSequence{" + "visible=" + visible + ", coordinates=" + coordinates + '}';
         }
     }
 
     /**
-     * A class to represent a clipped linestring, that is, a LineString made of visible and
-     * invisible coordinate sequences.
+     * A class to represent a clipped linestring, that is, a LineString made of visible and invisible coordinate
+     * sequences.
      */
     static class TaggedLineString {
         List<TaggedCoordinateSequence> coordinates;

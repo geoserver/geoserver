@@ -4,17 +4,17 @@
  */
 package org.geoserver.web.publish;
 
+import java.io.Serial;
 import org.geoserver.catalog.PublishedInfo;
 
 /**
- * Extension point for sections of the configuration pages that work for both layers and
- * layergroups.
+ * Extension point for sections of the configuration pages that work for both layers and layergroups.
  *
  * @author Niels Charlier
  */
-public class CommonPublishedConfigurationPanelInfo
-        extends PublishedConfigurationPanelInfo<PublishedInfo> {
+public class CommonPublishedConfigurationPanelInfo extends PublishedConfigurationPanelInfo<PublishedInfo> {
 
+    @Serial
     private static final long serialVersionUID = 8382295309912226673L;
 
     @Override

@@ -27,9 +27,7 @@ public interface ComplexAttributeGenerator extends Serializable {
     }
 
     default Component getDialogContent(String id, LayerInfo layerInfo) {
-        return new Label(
-                id,
-                new StringResourceModel("RepeatableComplexAttributesTablePanel.confirmGenerate"));
+        return new Label(id, new StringResourceModel("RepeatableComplexAttributesTablePanel.confirmGenerate"));
     }
 
     default int getDialogContentHeight() {

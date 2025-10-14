@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.data.store.cog.panel;
 
+import java.io.Serial;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -44,13 +45,12 @@ public class CogRasterEditPanel extends StoreEditPanel {
         setDefaultModel(model);
         final CheckBox checkBox = new CheckBox("isCog", new PropertyModel<Boolean>(this, "isCog"));
 
-        CogUrlParamPanel file =
-                new CogUrlParamPanel(
-                        "url",
-                        new PropertyModel(model, "URL"),
-                        new ResourceModel("url", "URL"),
-                        new PropertyModel<Boolean>(this, "isCog"),
-                        true);
+        CogUrlParamPanel file = new CogUrlParamPanel(
+                "url",
+                new PropertyModel(model, "URL"),
+                new ResourceModel("url", "URL"),
+                new PropertyModel<Boolean>(this, "isCog"),
+                true);
         file.setOutputMarkupId(true);
         file.setFileFilter(new Model(new ExtensionFileFilter(EXTENSIONS)));
         file.getFormComponent().add(new CombinedCogFileExistsValidator(checkBox.getModel()));
@@ -62,16 +62,14 @@ public class CogRasterEditPanel extends StoreEditPanel {
         container.setOutputMarkupId(true);
         add(container);
 
-        final PropertyModel<MetadataMap> metadata =
-                new PropertyModel<MetadataMap>(model, "metadata");
+        final PropertyModel<MetadataMap> metadata = new PropertyModel<MetadataMap>(model, "metadata");
 
         // Check if already configured
         MetadataMap metadataObject = metadata.getObject();
         IModel<CogSettings> cogSettingsModel =
                 new MetadataMapModel(metadata, CogSettings.COG_SETTINGS_KEY, CogSettings.class);
         if (metadataObject != null && metadataObject.containsKey(CogSettings.COG_SETTINGS_KEY)) {
-            cogSettingsModel.setObject(
-                    (CogSettings) metadataObject.get(CogSettings.COG_SETTINGS_KEY));
+            cogSettingsModel.setObject((CogSettings) metadataObject.get(CogSettings.COG_SETTINGS_KEY));
             isCog = true;
             checkBox.setModelObject(isCog);
         }
@@ -82,38 +80,37 @@ public class CogRasterEditPanel extends StoreEditPanel {
         cogSettingsPanel.setOutputMarkupId(true);
         cogSettingsPanel.setVisible(checkBox.getModelObject().booleanValue());
         container.add(cogSettingsPanel);
-        checkBox.add(
-                new OnChangeAjaxBehavior() {
-                    private static final long serialVersionUID = 1L;
+        checkBox.add(new OnChangeAjaxBehavior() {
+            @Serial
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        boolean isCog = checkBox.getModelObject().booleanValue();
-                        cogSettingsPanel.setVisible(isCog);
-                        target.add(container);
-                        if (isCog) {
-                            GeoServer gs = GeoServerExtensions.bean(GeoServer.class);
-                            MetadataMap globalMap = gs.getGlobal().getSettings().getMetadata();
-                            CogSettings defaultSettings =
-                                    globalMap.get(CogSettings.COG_SETTINGS_KEY, CogSettings.class);
-                            CogSettings cogSettings;
-                            if (defaultSettings == null) {
-                                cogSettings = new CogSettingsStore();
-                            } else {
-                                cogSettings = new CogSettingsStore(defaultSettings);
-                            }
-                            cogSettingsModel.setObject(cogSettings);
-                        } else {
-                            metadataObject.remove(CogSettings.COG_SETTINGS_KEY);
-                        }
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                boolean isCog = checkBox.getModelObject().booleanValue();
+                cogSettingsPanel.setVisible(isCog);
+                target.add(container);
+                if (isCog) {
+                    GeoServer gs = GeoServerExtensions.bean(GeoServer.class);
+                    MetadataMap globalMap = gs.getGlobal().getSettings().getMetadata();
+                    CogSettings defaultSettings = globalMap.get(CogSettings.COG_SETTINGS_KEY, CogSettings.class);
+                    CogSettings cogSettings;
+                    if (defaultSettings == null) {
+                        cogSettings = new CogSettingsStore();
+                    } else {
+                        cogSettings = new CogSettingsStore(defaultSettings);
                     }
-                });
+                    cogSettingsModel.setObject(cogSettings);
+                } else {
+                    metadataObject.remove(CogSettings.COG_SETTINGS_KEY);
+                }
+            }
+        });
     }
 
     /**
-     * When the store is not configured as a COG, it will perform standard file validation as a
-     * common raster store. When COG is selected, a cog:// prefix will be added to make sure that
-     * only the COG enabled raster format will support that type of url.
+     * When the store is not configured as a COG, it will perform standard file validation as a common raster store.
+     * When COG is selected, a cog:// prefix will be added to make sure that only the COG enabled raster format will
+     * support that type of url.
      */
     static class CombinedCogFileExistsValidator implements IValidator<String> {
 
@@ -135,8 +132,7 @@ public class CogRasterEditPanel extends StoreEditPanel {
             try {
                 URI uri = new URI(uriSpec);
                 if (!cog.getObject()
-                        && ((uri.getScheme() != null
-                                && !CogSettings.COG_SCHEMA.equals(uri.getScheme())))) {
+                        && ((uri.getScheme() != null && !CogSettings.COG_SCHEMA.equals(uri.getScheme())))) {
                     fileExistsValidator.validate(validatable);
                 }
                 // Avoid validation if it's a cog
@@ -155,18 +151,15 @@ public class CogRasterEditPanel extends StoreEditPanel {
         public CogModel(IModel<String> delegate, IModel<Boolean> cog) {
             this.delegate = delegate;
             this.cog = cog;
-            this.fileModel =
-                    new FileModel(
-                            delegate,
-                            GeoServerExtensions.bean(GeoServerResourceLoader.class)
-                                    .getBaseDirectory());
+            this.fileModel = new FileModel(
+                    delegate,
+                    GeoServerExtensions.bean(GeoServerResourceLoader.class).getBaseDirectory());
         }
 
         @Override
         public String getObject() {
             Object obj = delegate.getObject();
-            if (obj instanceof URL) {
-                URL url = (URL) obj;
+            if (obj instanceof URL url) {
                 return url.toExternalForm();
             }
             return (String) obj;

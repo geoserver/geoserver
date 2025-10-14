@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -34,9 +34,11 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class FileServiceDataTest extends AbstractTaskManagerTest {
 
-    @Autowired LookupService<FileService> fileServiceRegistry;
+    @Autowired
+    LookupService<FileService> fileServiceRegistry;
 
-    @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Test
     public void testFileRegistry() {
@@ -56,10 +58,10 @@ public class FileServiceDataTest extends AbstractTaskManagerTest {
         String filename = System.currentTimeMillis() + "-test.txt";
         String path = FileUtils.getTempDirectoryPath() + "/" + filename;
 
-        Assert.assertFalse(Files.exists(Paths.get(path)));
+        Assert.assertFalse(Files.exists(Path.of(path)));
         String content = "test the file service";
         service.create(filename, IOUtils.toInputStream(content, "UTF-8"));
-        Assert.assertTrue(Files.exists(Paths.get(path)));
+        Assert.assertTrue(Files.exists(Path.of(path)));
 
         boolean fileExists = service.checkFileExists(filename);
         Assert.assertTrue(fileExists);
@@ -68,7 +70,7 @@ public class FileServiceDataTest extends AbstractTaskManagerTest {
         Assert.assertEquals(content, actualContent);
 
         service.delete(filename);
-        Assert.assertFalse(Files.exists(Paths.get(path)));
+        Assert.assertFalse(Files.exists(Path.of(path)));
     }
 
     @Test
@@ -91,10 +93,10 @@ public class FileServiceDataTest extends AbstractTaskManagerTest {
         String filename = System.currentTimeMillis() + "-test.txt";
         String path = FileUtils.getTempDirectoryPath() + "/" + filename;
 
-        Assert.assertFalse(Files.exists(Paths.get(path)));
+        Assert.assertFalse(Files.exists(Path.of(path)));
         String content = "test the file service";
         service.create(filename, IOUtils.toInputStream(content, "UTF-8"), true);
-        Assert.assertTrue(Files.exists(Paths.get(path)));
+        Assert.assertTrue(Files.exists(Path.of(path)));
 
         boolean fileExists = service.checkFileExists(filename);
         Assert.assertTrue(fileExists);
@@ -104,7 +106,7 @@ public class FileServiceDataTest extends AbstractTaskManagerTest {
         Assert.assertEquals(content + "extra text\n", actualContent);
 
         service.delete(filename);
-        Assert.assertFalse(Files.exists(Paths.get(path)));
+        Assert.assertFalse(Files.exists(Path.of(path)));
     }
 
     @Test
@@ -115,15 +117,15 @@ public class FileServiceDataTest extends AbstractTaskManagerTest {
         String filename = "subfolder/" + System.currentTimeMillis() + "-test.txt";
         String path = FileUtils.getTempDirectoryPath() + "/fileservicetest/" + filename;
 
-        Assert.assertFalse(Files.exists(Paths.get(path)));
+        Assert.assertFalse(Files.exists(Path.of(path)));
         service.create(filename, IOUtils.toInputStream("test the file service", "UTF-8"));
-        Assert.assertTrue(Files.exists(Paths.get(path)));
+        Assert.assertTrue(Files.exists(Path.of(path)));
 
         boolean fileExists = service.checkFileExists(filename);
         Assert.assertTrue(fileExists);
 
         service.delete(filename);
-        Assert.assertFalse(Files.exists(Paths.get(path)));
+        Assert.assertFalse(Files.exists(Path.of(path)));
 
         List<String> folders = service.listSubfolders();
         Assert.assertEquals(1, folders.size());
@@ -144,8 +146,7 @@ public class FileServiceDataTest extends AbstractTaskManagerTest {
     @Test
     public void testListSubFolders() throws IOException {
         FileServiceImpl service = new FileServiceImpl();
-        service.setRootFolder(
-                FileUtils.getTempDirectoryPath() + "/folder-" + System.currentTimeMillis() + "/");
+        service.setRootFolder(FileUtils.getTempDirectoryPath() + "/folder-" + System.currentTimeMillis() + "/");
 
         InputStream content = IOUtils.toInputStream("test the file service", "UTF-8");
 
@@ -160,9 +161,10 @@ public class FileServiceDataTest extends AbstractTaskManagerTest {
 
         Assert.assertEquals(5, folders.size());
         Assert.assertTrue(folders.contains("foo"));
-        Assert.assertTrue(folders.contains(Paths.get("foo", "bar").toString()));
-        Assert.assertTrue(folders.contains(Paths.get("foo", "bar", "foobar").toString()));
-        Assert.assertTrue(folders.contains(Paths.get("foo", "bar", "foobar", "barfoo").toString()));
+        Assert.assertTrue(folders.contains(Path.of("foo", "bar").toString()));
+        Assert.assertTrue(folders.contains(Path.of("foo", "bar", "foobar").toString()));
+        Assert.assertTrue(
+                folders.contains(Path.of("foo", "bar", "foobar", "barfoo").toString()));
         Assert.assertTrue(folders.contains("hello"));
     }
 

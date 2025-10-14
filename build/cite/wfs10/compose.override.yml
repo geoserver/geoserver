@@ -8,9 +8,13 @@ services:
         GEOSERVER_DATA_DIR_SRC: "./wfs10/citewfs-1.0"
 
   teamengine:
-    volumes:
-      - ./wfs10/wfs-1.0.0.xml:/home/teamengine/te_base/forms/wfs-1.0.0.xml
-    command: /run-test.sh wfs10
+    image: ogccite/teamengine-production
+    healthcheck:
+      test: "curl -f http://localhost:8080/teamengine/ || exit 1"
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 5s
 
   postgres:
     image: postgis/postgis:15-3.5-alpine

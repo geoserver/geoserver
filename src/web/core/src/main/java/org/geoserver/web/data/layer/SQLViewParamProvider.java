@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.layer;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -20,6 +21,7 @@ import org.geotools.util.logging.Logging;
 public class SQLViewParamProvider extends GeoServerDataProvider<Parameter> {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 4823593149295419810L;
 
     private static final String DEFAULT_REGEXP = "^[\\w\\d\\s]+$";
@@ -30,8 +32,7 @@ public class SQLViewParamProvider extends GeoServerDataProvider<Parameter> {
 
     static final Property<Parameter> NAME = new BeanProperty<>("name", "name");
 
-    static final Property<Parameter> DEFAULT_VALUE =
-            new BeanProperty<>("defaultValue", "defaultValue");
+    static final Property<Parameter> DEFAULT_VALUE = new BeanProperty<>("defaultValue", "defaultValue");
 
     static final Property<Parameter> REGEXP = new BeanProperty<>("regexp", "regexp");
 
@@ -45,8 +46,7 @@ public class SQLViewParamProvider extends GeoServerDataProvider<Parameter> {
     }
 
     @Override
-    protected List<org.geoserver.web.wicket.GeoServerDataProvider.Property<Parameter>>
-            getProperties() {
+    protected List<org.geoserver.web.wicket.GeoServerDataProvider.Property<Parameter>> getProperties() {
         return Arrays.asList(NAME, DEFAULT_VALUE, REGEXP);
     }
 

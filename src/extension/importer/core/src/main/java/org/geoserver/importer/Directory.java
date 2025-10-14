@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -37,6 +38,7 @@ public class Directory extends FileData {
 
     private static final Logger LOGGER = Logging.getLogger(Directory.class);
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /** list of files contained in directory */
@@ -59,8 +61,7 @@ public class Directory extends FileData {
     public static Directory createNew(File parent) throws IOException {
         File directory = File.createTempFile("tmp", "", parent);
         if (!directory.delete() || !directory.mkdir())
-            throw new IOException(
-                    "Error creating temp directory at " + directory.getAbsolutePath());
+            throw new IOException("Error creating temp directory at " + directory.getAbsolutePath());
         return new Directory(directory);
     }
 
@@ -93,8 +94,7 @@ public class Directory extends FileData {
         // if the file is an archive, unpack it
         VFSWorker vfs = new VFSWorker();
         if (vfs.canHandle(file)) {
-            LOGGER.fine(
-                    "unpacking " + file.getAbsolutePath() + " to " + this.file.getAbsolutePath());
+            LOGGER.fine("unpacking " + file.getAbsolutePath() + " to " + this.file.getAbsolutePath());
             vfs.extractTo(file, this.file);
 
             LOGGER.fine("deleting " + file.getAbsolutePath());
@@ -261,8 +261,7 @@ public class Directory extends FileData {
 
             for (Iterator<FileData> it = dir.getFiles().iterator(); it.hasNext(); ) {
                 FileData f = it.next();
-                if (f instanceof Directory) {
-                    Directory d = (Directory) f;
+                if (f instanceof Directory d) {
                     it.remove();
                     q.addLast(d);
                 }
@@ -329,8 +328,8 @@ public class Directory extends FileData {
     //    }
 
     /**
-     * Returns the data format of the files in the directory iff all the files are of the same
-     * format, if they are not this returns null.
+     * Returns the data format of the files in the directory iff all the files are of the same format, if they are not
+     * this returns null.
      */
     public DataFormat format() throws IOException {
         if (files.isEmpty()) {
@@ -440,8 +439,7 @@ public class Directory extends FileData {
             output = new File(archiveDir, outputName + id + ".zip");
             id++;
         }
-        try (ZipOutputStream zout =
-                new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(output)))) {
+        try (ZipOutputStream zout = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(output)))) {
 
             // don't call zout.close in finally block, if an error occurs and the zip
             // file is empty by chance, the second error will mask the first
@@ -454,7 +452,7 @@ public class Directory extends FileData {
                     // nothing, we're totally aborting
                 }
                 output.delete();
-                if (ex instanceof IOException) throw (IOException) ex;
+                if (ex instanceof IOException exception) throw exception;
                 throw (IOException) new IOException("Error archiving").initCause(ex);
             }
         } finally {
@@ -486,8 +484,8 @@ public class Directory extends FileData {
     @Override
     public FileData part(final String name) {
         List<FileData> files = this.files;
-        if (this instanceof Filtered) {
-            files = ((Filtered) this).filter;
+        if (this instanceof Filtered filtered) {
+            files = filtered.filter;
         }
 
         try {

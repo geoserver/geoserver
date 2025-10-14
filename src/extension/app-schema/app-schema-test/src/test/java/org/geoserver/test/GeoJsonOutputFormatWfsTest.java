@@ -76,10 +76,8 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
     @Test
     public void testGetGeoJsonResponseWfs11() throws Exception {
         // execute the WFS 1.1.0 request
-        JSON response =
-                getAsJSON(
-                        "wfs?request=GetFeature&version=1.1.0"
-                                + "&typename=st_gml31:Station_gml31&outputFormat=application/json");
+        JSON response = getAsJSON("wfs?request=GetFeature&version=1.1.0"
+                + "&typename=st_gml31:Station_gml31&outputFormat=application/json");
         // validate the obtained response
         checkStation1Exists(response);
     }
@@ -87,10 +85,8 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
     @Test
     public void testGetGeoJsonResponseWfs20() throws Exception {
         // execute the WFS 2.0 request
-        JSON response =
-                getAsJSON(
-                        "wfs?request=GetFeature&version=2.0"
-                                + "&typenames=st_gml32:Station_gml32&outputFormat=application/json");
+        JSON response = getAsJSON("wfs?request=GetFeature&version=2.0"
+                + "&typenames=st_gml32:Station_gml32&outputFormat=application/json");
         // validate the obtained response
         checkStation1Exists(response);
         // check complex types with simple content that miss their value do not get a datatype
@@ -117,14 +113,13 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
     public void testGetGeoJsonResponseWfs20WithNullGeometryAttribute() throws Exception {
         // tests that with a null geometry value and minOccurs 0 in mappings
         // conf, ComplexGeoJSONWriter doesn't throw npe but encode a geometry:null attribute
-        JSON response =
-                getAsJSON(
-                        "wfs?request=GetFeature&version=2.0"
-                                + "&typenames=st_gml32:Station_gml32&outputFormat=application/json");
+        JSON response = getAsJSON("wfs?request=GetFeature&version=2.0"
+                + "&typenames=st_gml32:Station_gml32&outputFormat=application/json");
         // validate the obtained response
         checkStation1Exists(response);
         // get station number 3 which should have null geometry value
-        JSONObject station3 = (JSONObject) ((JSONObject) response).getJSONArray("features").get(2);
+        JSONObject station3 =
+                (JSONObject) ((JSONObject) response).getJSONArray("features").get(2);
         JSONObject geometry = station3.getJSONObject("geometry");
         // check we got the geometry key encoded
         assertTrue(station3.containsKey("geometry"));
@@ -153,12 +148,8 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
         // check the x-links for measurements exist
         JSONArray measurements = station.getJSONArray("measurements");
         assertThat(measurements.size(), is(2));
-        assertThat(
-                measurements.getJSONObject(0).getString("@href"),
-                containsString("http://www.stations.org/ms."));
-        assertThat(
-                measurements.getJSONObject(1).getString("@href"),
-                containsString("http://www.stations.org/ms."));
+        assertThat(measurements.getJSONObject(0).getString("@href"), containsString("http://www.stations.org/ms."));
+        assertThat(measurements.getJSONObject(1).getString("@href"), containsString("http://www.stations.org/ms."));
     }
 
     @Test
@@ -167,14 +158,13 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
         JSON json = getAsJSON(path);
         JSONObject properties = getFeaturePropertiesById(json, "borehole.GA.17322");
         assertThat(properties, is(notNullValue()));
-        JSONObject timeInstant =
-                getNestedObject(
-                        properties,
-                        "relatedSamplingFeature",
-                        "relatedSamplingFeature",
-                        "properties",
-                        "samplingTime",
-                        "TimeInstant");
+        JSONObject timeInstant = getNestedObject(
+                properties,
+                "relatedSamplingFeature",
+                "relatedSamplingFeature",
+                "properties",
+                "samplingTime",
+                "TimeInstant");
         // property file uses a java.util.Date, but the database uses a java.sql.Date, hence
         // different encodings
         assertThat(
@@ -189,8 +179,7 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
         JSONObject properties = getFeaturePropertiesById(json, "borehole.GA.17322");
         assertThat(properties, is(notNullValue()));
         JSONObject samplingLocation =
-                getNestedObject(
-                        properties, "relatedSamplingFeature", "relatedSamplingFeature", "geometry");
+                getNestedObject(properties, "relatedSamplingFeature", "relatedSamplingFeature", "geometry");
         JSONArray coordinates = samplingLocation.getJSONArray("coordinates");
         assertThat(coordinates.size(), is(2));
         JSONArray c1 = coordinates.getJSONArray(0);
@@ -225,15 +214,13 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
         assertEquals("BoreholeCollar", collarProperties.getString("@featureType"));
         JSONObject indexData = properties.getJSONObject("indexData");
         assertEquals("BoreholeDetails", indexData.getString("@dataType"));
-        assertEquals(
-                "BoundingShape", indexData.getJSONObject("coredInterval").getString("@dataType"));
+        assertEquals("BoundingShape", indexData.getJSONObject("coredInterval").getString("@dataType"));
 
         // get the sampled feature, which is a linked one
         JSONArray sampledFeatures = properties.getJSONArray("sampledFeature");
         assertEquals(1, sampledFeatures.size());
         JSONObject sampledFeature = sampledFeatures.getJSONObject(0);
-        assertEquals(
-                "http://www.opengis.net/def/nil/OGC/0/unknown", sampledFeature.getString("@href"));
+        assertEquals("http://www.opengis.net/def/nil/OGC/0/unknown", sampledFeature.getString("@href"));
         assertEquals(
                 "http://www.geosciml.org/geosciml/2.0/doc/GeoSciML/GeologicUnit/GeologicUnit.html",
                 sampledFeature.getString("@role"));

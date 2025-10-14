@@ -43,11 +43,10 @@ public class WorkspacesClientIT {
         assertNotNull(defaultWorkspace.get().getName());
 
         final String currentDefault = defaultWorkspace.get().getName();
-        final String newDefault =
-                client.findAllNames().stream()
-                        .filter(name -> !currentDefault.equals(name))
-                        .findFirst()
-                        .get();
+        final String newDefault = client.findAllNames().stream()
+                .filter(name -> !currentDefault.equals(name))
+                .findFirst()
+                .get();
 
         client.setDeafultWorkspace(newDefault);
 
@@ -79,7 +78,7 @@ public class WorkspacesClientIT {
     }
 
     public @Test void testCRUD() {
-        String name = String.format("%s-%d", testName.getMethodName(), rnd.nextInt((int) 1e6));
+        String name = "%s-%d".formatted(testName.getMethodName(), rnd.nextInt((int) 1e6));
         testCRUD(name);
     }
 

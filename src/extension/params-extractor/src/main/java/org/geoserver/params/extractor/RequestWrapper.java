@@ -30,10 +30,7 @@ public final class RequestWrapper extends HttpServletRequestWrapper {
         originalParameters = request.getParameterMap();
         // extract URL portions for servletpath and pathinfo
         final Pattern pathsPattern =
-                Pattern.compile(
-                        "^"
-                                + request.getContextPath()
-                                + "(/[^?/#]+)(/[^?#]*[^/?#])?(?:/|/?[?#].*)?$");
+                Pattern.compile("^" + request.getContextPath() + "(/[^?/#]+)(/[^?#]*[^/?#])?(?:/|/?[?#].*)?$");
         Matcher matcher = pathsPattern.matcher(urlTransform.getOriginalRequestUri());
         if (matcher.matches()) {
             servletPath = Optional.ofNullable(matcher.group(1)).orElse("");

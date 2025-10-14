@@ -47,8 +47,7 @@ import org.w3c.dom.Element;
 
 public class XMLRoleStore extends AbstractRoleStore {
 
-    static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.security.xml");
+    static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.security.xml");
 
     protected Resource roleResource;
     // TODO: use resource locking system

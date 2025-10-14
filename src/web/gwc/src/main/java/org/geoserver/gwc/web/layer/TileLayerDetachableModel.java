@@ -5,6 +5,7 @@
  */
 package org.geoserver.gwc.web.layer;
 
+import java.io.Serial;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.geoserver.gwc.GWC;
 import org.geowebcache.layer.TileLayer;
@@ -12,11 +13,12 @@ import org.geowebcache.layer.TileLayer;
 /**
  * A loadable model for {@link TileLayer}s used by {@link CachedLayerProvider}.
  *
- * <p>Warning, don't use it in a tabbed form or in any other places where you might need to keep the
- * modifications in a resource stable across page loads.
+ * <p>Warning, don't use it in a tabbed form or in any other places where you might need to keep the modifications in a
+ * resource stable across page loads.
  */
 class TileLayerDetachableModel extends LoadableDetachableModel<TileLayer> {
 
+    @Serial
     private static final long serialVersionUID = -2511578156425555123L;
 
     private String name;

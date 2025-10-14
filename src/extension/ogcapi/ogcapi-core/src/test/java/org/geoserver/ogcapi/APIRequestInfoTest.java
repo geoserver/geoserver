@@ -9,6 +9,7 @@ import static org.geoserver.ogcapi.MappingJackson2YAMLMessageConverter.APPLICATI
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 import java.util.Collection;
@@ -28,8 +29,8 @@ import org.junit.Test;
 import org.springframework.http.MediaType;
 
 /**
- * Test class for APIRequestInfo, uses custom callbacks to test the APIRequestInfo object (as it's
- * available during the request processing)
+ * Test class for APIRequestInfo, uses custom callbacks to test the APIRequestInfo object (as it's available during the
+ * request processing)
  */
 public class APIRequestInfoTest extends GeoServerSystemTestSupport {
 
@@ -41,12 +42,10 @@ public class APIRequestInfoTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testProducibleMediaTypes() throws Exception {
-        testDuringOperationExecuted(
-                ri -> {
-                    Collection<MediaType> mediaTypes =
-                            ri.getProducibleMediaTypes(Message.class, true);
-                    assertThat(mediaTypes, Matchers.hasItems(APPLICATION_JSON, APPLICATION_YAML));
-                });
+        testDuringOperationExecuted(ri -> {
+            Collection<MediaType> mediaTypes = ri.getProducibleMediaTypes(Message.class, true);
+            assertThat(mediaTypes, Matchers.hasItems(APPLICATION_JSON, APPLICATION_YAML));
+        });
     }
 
     @Test
@@ -55,38 +54,60 @@ public class APIRequestInfoTest extends GeoServerSystemTestSupport {
     }
 
     @Test
+    public void testLandingPageContext() throws Exception {
+        testDuringOperationExecuted("ogc/hello/v1", ri -> {
+            assertEquals("ogc/hello/v1", ri.getServiceLandingPage());
+            assertEquals("/geoserver/ogc/hello/v1", ri.getRequest().getRequestURI());
+        });
+    }
+
+    @Test
+    public void testLandingPageContextWorkspace() throws Exception {
+        testDuringOperationExecuted("cite/ogc/hello/v1", ri -> {
+            assertEquals(
+                    "http://localhost:8080/geoserver/cite/ogc/hello/v1",
+                    ri.getRequest().getRequestURL().toString());
+        });
+    }
+
+    @Test
+    public void testLandingPageContextWorkspaceLayer() throws Exception {
+        testDuringOperationExecuted("cite/Buildings/ogc/hello/v1", ri -> {
+            assertEquals(
+                    "http://localhost:8080/geoserver/cite/Buildings/ogc/hello/v1",
+                    ri.getRequest().getRequestURL().toString());
+        });
+    }
+
+    @Test
     public void testService() throws Exception {
-        testDuringOperationExecuted(
-                ri -> {
-                    Service service = ri.getService();
-                    assertEquals("Hello", service.getId());
-                    assertThat(service.getService(), Matchers.instanceOf(HelloService.class));
-                });
+        testDuringOperationExecuted(ri -> {
+            Service service = ri.getService();
+            assertEquals("Hello", service.getId());
+            assertThat(service.getService(), Matchers.instanceOf(HelloService.class));
+        });
     }
 
     @Test
     public void testIsFormatRequested() throws Exception {
-        testDuringOperationExecuted(
-                ri -> {
-                    assertTrue(ri.isFormatRequested(APPLICATION_JSON, APPLICATION_JSON));
-                });
+        testDuringOperationExecuted(ri -> {
+            assertTrue(ri.isFormatRequested(APPLICATION_JSON, APPLICATION_JSON));
+        });
     }
 
     @Test
     public void testQueryMap() throws Exception {
         APIDispatcher dispatcher = getAPIDispatcher();
-        dispatcher.callbacks.add(
-                new TestDispatcherCallback() {
-                    @Override
-                    public Object operationExecuted(
-                            Request request, Operation operation, Object result) {
-                        APIRequestInfo ri = APIRequestInfo.get();
-                        assertThat(ri.getSimpleQueryMap(), Matchers.hasEntry("k1", "v1"));
-                        assertThat(ri.getSimpleQueryMap(), Matchers.hasEntry("k2", "v2"));
+        dispatcher.callbacks.add(new TestDispatcherCallback() {
+            @Override
+            public Object operationExecuted(Request request, Operation operation, Object result) {
+                APIRequestInfo ri = APIRequestInfo.get();
+                assertThat(ri.getSimpleQueryMap(), Matchers.hasEntry("k1", "v1"));
+                assertThat(ri.getSimpleQueryMap(), Matchers.hasEntry("k2", "v2"));
 
-                        return null;
-                    }
-                });
+                return null;
+            }
+        });
         // check no exceptions have been thrown
         JSONObject json = (JSONObject) getAsJSON("ogc/hello/v1?k1=v1&k2=v2");
         assertEquals("Landing page", json.get("message"));
@@ -94,56 +115,70 @@ public class APIRequestInfoTest extends GeoServerSystemTestSupport {
 
     @Test
     public void getLinks() throws Exception {
-        testDuringOperationExecuted(
-                ri -> {
-                    List<Link> links =
-                            ri.getLinksFor(
-                                    "ogc/hello/v1/echo",
-                                    Message.class,
-                                    "Message as ",
-                                    "alternate",
-                                    true,
-                                    "test",
-                                    null);
-                    assertEquals(4, links.size());
+        testDuringOperationExecuted(ri -> {
+            List<Link> links =
+                    ri.getLinksFor("ogc/hello/v1/echo", Message.class, "Message as ", "alternate", true, "test", null);
+            assertEquals(4, links.size());
 
-                    // check the links are correctly built
-                    Set<String> mimeTypes = new HashSet<>();
-                    for (Link link : links) {
-                        assertEquals("alternate", link.getRel());
-                        assertEquals("test", link.getClassification());
-                        assertEquals("Message as " + link.getType(), link.getTitle());
-                        mimeTypes.add(link.getType());
-                    }
-                    assertThat(
-                            mimeTypes,
-                            Matchers.hasItems(
-                                    MediaType.APPLICATION_JSON_VALUE,
-                                    MediaType.TEXT_HTML_VALUE,
-                                    MediaType.TEXT_PLAIN_VALUE,
-                                    APPLICATION_YAML_VALUE));
-                });
+            // check the links are correctly built
+            Set<String> mimeTypes = new HashSet<>();
+            for (Link link : links) {
+                assertEquals("alternate", link.getRel());
+                assertEquals("test", link.getClassification());
+                assertEquals("Message as " + link.getType(), link.getTitle());
+                mimeTypes.add(link.getType());
+            }
+            assertThat(
+                    mimeTypes,
+                    Matchers.hasItems(
+                            MediaType.APPLICATION_JSON_VALUE,
+                            MediaType.TEXT_HTML_VALUE,
+                            MediaType.TEXT_PLAIN_VALUE,
+                            APPLICATION_YAML_VALUE));
+        });
     }
 
     private APIDispatcher getAPIDispatcher() {
         return applicationContext.getBean(APIDispatcher.class);
     }
 
+    /**
+     * Test {@code ogc/hello/v1} path to global service (ie with no context).
+     *
+     * @param consumer
+     * @throws Exception
+     */
     private void testDuringOperationExecuted(Consumer<APIRequestInfo> consumer) throws Exception {
-        APIDispatcher dispatcher = getAPIDispatcher();
-        dispatcher.callbacks.add(
-                new TestDispatcherCallback() {
-                    @Override
-                    public Object operationExecuted(
-                            Request request, Operation operation, Object result) {
-                        APIRequestInfo ri = APIRequestInfo.get();
-                        consumer.accept(ri);
+        testDuringOperationExecuted("ogc/hello/v1/", consumer);
+    }
 
-                        return null;
-                    }
-                });
+    /**
+     * Ask the APIDispatcher to process the provided path, testing the resulting APIRequestInfo.
+     *
+     * @param path
+     * @param consumer
+     * @throws Exception
+     */
+    private void testDuringOperationExecuted(final String path, Consumer<APIRequestInfo> consumer) throws Exception {
+        APIDispatcher dispatcher = getAPIDispatcher();
+        dispatcher.callbacks.add(new TestDispatcherCallback() {
+            @Override
+            public Object operationExecuted(Request request, Operation operation, Object result) {
+                APIRequestInfo ri = APIRequestInfo.get();
+                consumer.accept(ri);
+
+                return null;
+            }
+        });
         // check no exceptions have been thrown
-        JSONObject json = (JSONObject) getAsJSON("ogc/hello/v1/");
-        assertEquals("Landing page", json.get("message"));
+
+        JSONObject json = (JSONObject) getAsJSON(path);
+        if (!"Landing page".equals(json.get("message"))) {
+            if ("NoApplicableCode".equals(json.get("type")) && json.has("title")) {
+                fail(path + " failure: " + json.getString("title"));
+            } else {
+                fail(path + " failure: " + json.toString());
+            }
+        }
     }
 }

@@ -46,8 +46,7 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
 
     public static final double DELTA = 1e-6;
 
-    public static QName POLYPHEMUS =
-            new QName(CiteTestData.WCS_URI, "polyphemus", CiteTestData.WCS_PREFIX);
+    public static QName POLYPHEMUS = new QName(CiteTestData.WCS_URI, "polyphemus", CiteTestData.WCS_PREFIX);
     public static QName NO2 = new QName(CiteTestData.WCS_URI, "NO2", CiteTestData.WCS_PREFIX);
     public static QName O3 = new QName(CiteTestData.WCS_URI, "O3", CiteTestData.WCS_PREFIX);
     public static QName TEMPERATURE_SURFACE_NETCDF =
@@ -55,12 +54,8 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
     public static QName TEMPERATURE_SURFACE_GRIB =
             new QName(CiteTestData.WCS_URI, "TMP_P0_L100_GLC0_surface", CiteTestData.WCS_PREFIX);
     public static QName SNOW_DEPTH_GRIB =
-            new QName(
-                    CiteTestData.WCS_URI,
-                    "Snow_depth_water_equivalent_surface",
-                    CiteTestData.WCS_PREFIX);
-    public static QName SAMPLEKM =
-            new QName(CiteTestData.WCS_URI, "samplekm", CiteTestData.WCS_PREFIX);
+            new QName(CiteTestData.WCS_URI, "Snow_depth_water_equivalent_surface", CiteTestData.WCS_PREFIX);
+    public static QName SAMPLEKM = new QName(CiteTestData.WCS_URI, "samplekm", CiteTestData.WCS_PREFIX);
 
     @BeforeClass
     public static void init() {
@@ -74,7 +69,6 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected GetCoverageType parse(String url) throws Exception {
         Map<String, Object> rawKvp = new CaseInsensitiveMap<>(KvpUtils.parseQueryString(url));
         Map<String, Object> kvp = new CaseInsensitiveMap<>(parseKvp(rawKvp));
@@ -88,43 +82,29 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
         super.onSetUp(testData);
         testData.addRasterLayer(POLYPHEMUS, "pol.zip", null, null, this.getClass(), getCatalog());
         setupRasterDimension(getLayerId(NO2), ResourceInfo.TIME, DimensionPresentation.LIST, null);
-        setupRasterDimension(
-                getLayerId(NO2), ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
+        setupRasterDimension(getLayerId(NO2), ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
         setupRasterDimension(getLayerId(O3), ResourceInfo.TIME, DimensionPresentation.LIST, null);
-        setupRasterDimension(
-                getLayerId(O3), ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
+        setupRasterDimension(getLayerId(O3), ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
         testData.addRasterLayer(
-                TEMPERATURE_SURFACE_NETCDF,
-                "rotated-pole.nc",
-                null,
-                null,
-                this.getClass(),
-                getCatalog());
+                TEMPERATURE_SURFACE_NETCDF, "rotated-pole.nc", null, null, this.getClass(), getCatalog());
         testData.addRasterLayer(
-                TEMPERATURE_SURFACE_GRIB,
-                "rap-native.grib2",
-                null,
-                null,
-                this.getClass(),
-                getCatalog());
-        testData.addRasterLayer(
-                SNOW_DEPTH_GRIB, "cosmo-eu.grib2", null, null, this.getClass(), getCatalog());
+                TEMPERATURE_SURFACE_GRIB, "rap-native.grib2", null, null, this.getClass(), getCatalog());
+        testData.addRasterLayer(SNOW_DEPTH_GRIB, "cosmo-eu.grib2", null, null, this.getClass(), getCatalog());
         testData.addRasterLayer(SAMPLEKM, "samplekm.nc", null, null, this.getClass(), getCatalog());
     }
 
     /**
-     * This test checks if an exception is not thrown when is requested an image with a total size
-     * lower than the maximum geoserver output size.
+     * This test checks if an exception is not thrown when is requested an image with a total size lower than the
+     * maximum geoserver output size.
      */
     @Test
     public void testOutputMemoryNotExceeded() throws Exception {
         // Setting of the output limit to 40 Kb
         setOutputLimit(40);
         // http response from the request inside the string
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "ows?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__NO2&format=application/x-netcdf&subset=http://www.opengis.net/def/axis/OGC/0/elevation(450)");
+        MockHttpServletResponse response = getAsServletResponse(
+                "ows?request=GetCoverage&service=WCS&version=2.0.1"
+                        + "&coverageId=wcs__NO2&format=application/x-netcdf&subset=http://www.opengis.net/def/axis/OGC/0/elevation(450)");
         // The status code should be correct
         assertEquals(200, response.getStatus());
         // The output format should be netcdf
@@ -134,18 +114,16 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
     }
 
     /**
-     * This test checks if an exception is thrown when is requested an image with a total size
-     * greater than the maximum geoserver output memory allowed.
+     * This test checks if an exception is thrown when is requested an image with a total size greater than the maximum
+     * geoserver output memory allowed.
      */
     @Test
     public void testOutputMemoryExceeded() throws Exception {
         // Setting of the output limit to 40 Kb
         setOutputLimit(40);
         // http response from the request inside the string
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "ows?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__NO2&format=application/x-netcdf");
+        MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__NO2&format=application/x-netcdf");
         // The output format should be xml because an exception must be thrown
         assertEquals("application/xml", response.getContentType());
         // Reset output limit
@@ -153,18 +131,17 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
     }
 
     /**
-     * This test checks if an exception is not thrown when is requested an image with a total size
-     * lower than the maximum geoserver input size.
+     * This test checks if an exception is not thrown when is requested an image with a total size lower than the
+     * maximum geoserver input size.
      */
     @Test
     public void testInputMemoryCorrect() throws Exception {
         // Setting of the input limit to 40 Kb
         setInputLimit(40);
         // http response from the request inside the string
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "ows?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__NO2&format=application/x-netcdf&subset=http://www.opengis.net/def/axis/OGC/0/elevation(450)");
+        MockHttpServletResponse response = getAsServletResponse(
+                "ows?request=GetCoverage&service=WCS&version=2.0.1"
+                        + "&coverageId=wcs__NO2&format=application/x-netcdf&subset=http://www.opengis.net/def/axis/OGC/0/elevation(450)");
         // The status code should be correct
         assertEquals(200, response.getStatus());
         // The output format should be netcdf
@@ -174,18 +151,16 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
     }
 
     /**
-     * This test checks if an exception is thrown when is requested an image with a total size
-     * greater than the maximum geoserver input memory allowed.
+     * This test checks if an exception is thrown when is requested an image with a total size greater than the maximum
+     * geoserver input memory allowed.
      */
     @Test
     public void testInputMemoryExceeded() throws Exception {
         // Setting of the input limit to 40 Kb
         setInputLimit(40);
         // http response from the request inside the string
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "ows?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__NO2&format=application/x-netcdf");
+        MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__NO2&format=application/x-netcdf");
         // The output format should be xml because an exception must be thrown
         assertEquals("application/xml", response.getContentType());
         // Reset input limit
@@ -195,18 +170,13 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
     /** Test NetCDF output from a NetCDF file with a rotated pole projection. */
     @Test
     public void testNetcdfRotatedPole() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "ows?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageid=wcs__Temperature_surface_NetCDF&format=application/x-netcdf");
+        MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageid=wcs__Temperature_surface_NetCDF&format=application/x-netcdf");
         assertEquals(200, response.getStatus());
         assertEquals("application/x-netcdf", response.getContentType());
         byte[] responseBytes = getBinary(response);
-        File file =
-                File.createTempFile(
-                        "netcdf-rotated-pole-",
-                        "-wcs__Temperature_surface_NetCDF.nc",
-                        new File("./target"));
+        File file = File.createTempFile(
+                "netcdf-rotated-pole-", "-wcs__Temperature_surface_NetCDF.nc", new File("./target"));
         FileUtils.writeByteArrayToFile(file, responseBytes);
         try (NetcdfDataset dataset = NetcdfDatasets.openDataset(file.getAbsolutePath())) {
             assertNotNull(dataset);
@@ -223,7 +193,8 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
             assertEquals(1, rlonVar.getDimensions().size());
             assertEquals(rlonDim, rlonVar.getDimensions().get(0));
             assertEquals("grid_longitude", rlonVar.findAttribute("long_name").getStringValue());
-            assertEquals("grid_longitude", rlonVar.findAttribute("standard_name").getStringValue());
+            assertEquals(
+                    "grid_longitude", rlonVar.findAttribute("standard_name").getStringValue());
             assertEquals("degrees", rlonVar.findAttribute("units").getStringValue());
             assertArrayEquals(
                     new float[] {-30, -20, -10, 0, 10, 20, 30},
@@ -237,9 +208,7 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
             assertEquals("grid_latitude", rlatVar.findAttribute("standard_name").getStringValue());
             assertEquals("degrees", rlatVar.findAttribute("units").getStringValue());
             assertArrayEquals(
-                    new float[] {-20, -10, 0, 10, 20},
-                    (float[]) rlatVar.read().copyTo1DJavaArray(),
-                    (float) DELTA);
+                    new float[] {-20, -10, 0, 10, 20}, (float[]) rlatVar.read().copyTo1DJavaArray(), (float) DELTA);
             // check projection variable
             Variable projVar = dataset.findVariable("rotated_latitude_longitude");
             assertNotNull(projVar);
@@ -281,24 +250,16 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
         }
     }
 
-    /**
-     * Test NetCDF output from an RAP native GRIB2 file with a GDS template 32769 rotated pole
-     * projection.
-     */
+    /** Test NetCDF output from an RAP native GRIB2 file with a GDS template 32769 rotated pole projection. */
     @Test
     public void testRapNativeGribRotatedPole() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "ows?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageid=wcs__TMP_P0_L100_GLC0_surface&format=application/x-netcdf");
+        MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageid=wcs__TMP_P0_L100_GLC0_surface&format=application/x-netcdf");
         assertEquals(200, response.getStatus());
         assertEquals("application/x-netcdf", response.getContentType());
         byte[] responseBytes = getBinary(response);
-        File file =
-                File.createTempFile(
-                        "rap-native-grib-rotated-pole-",
-                        "-wcs__Temperature_surface.nc",
-                        new File("./target"));
+        File file = File.createTempFile(
+                "rap-native-grib-rotated-pole-", "-wcs__Temperature_surface.nc", new File("./target"));
         FileUtils.writeByteArrayToFile(file, responseBytes);
         try (NetcdfDataset dataset = NetcdfDatasets.openDataset(file.getAbsolutePath())) {
             assertNotNull(dataset);
@@ -315,7 +276,8 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
             assertEquals(1, rlonVar.getDimensions().size());
             assertEquals(rlonDim, rlonVar.getDimensions().get(0));
             assertEquals("grid_longitude", rlonVar.findAttribute("long_name").getStringValue());
-            assertEquals("grid_longitude", rlonVar.findAttribute("standard_name").getStringValue());
+            assertEquals(
+                    "grid_longitude", rlonVar.findAttribute("standard_name").getStringValue());
             assertEquals("degrees", rlonVar.findAttribute("units").getStringValue());
             assertArrayEquals(
                     new float[] {-30, -20, -10, 0, 10, 20, 30},
@@ -329,9 +291,7 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
             assertEquals("grid_latitude", rlatVar.findAttribute("standard_name").getStringValue());
             assertEquals("degrees", rlatVar.findAttribute("units").getStringValue());
             assertArrayEquals(
-                    new float[] {-20, -10, 0, 10, 20},
-                    (float[]) rlatVar.read().copyTo1DJavaArray(),
-                    (float) DELTA);
+                    new float[] {-20, -10, 0, 10, 20}, (float[]) rlatVar.read().copyTo1DJavaArray(), (float) DELTA);
             // check projection variable
             Variable projVar = dataset.findVariable("rotated_latitude_longitude");
             assertNotNull(projVar);
@@ -373,23 +333,16 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
         }
     }
 
-    /**
-     * Test NetCDF output from a COSMO EU GRIB2 file with a GDS template 1 rotated pole projection.
-     */
+    /** Test NetCDF output from a COSMO EU GRIB2 file with a GDS template 1 rotated pole projection. */
     @Test
     public void testCosmoEuGribRotatedPole() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "ows?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageid=wcs__Snow_depth_water_equivalent_surface&format=application/x-netcdf");
+        MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageid=wcs__Snow_depth_water_equivalent_surface&format=application/x-netcdf");
         assertEquals(200, response.getStatus());
         assertEquals("application/x-netcdf", response.getContentType());
         byte[] responseBytes = getBinary(response);
-        File file =
-                File.createTempFile(
-                        "cosmo-eu-grib-rotated-pole-",
-                        "-wcs__Snow_depth_water_equivalent_surface.nc",
-                        new File("./target"));
+        File file = File.createTempFile(
+                "cosmo-eu-grib-rotated-pole-", "-wcs__Snow_depth_water_equivalent_surface.nc", new File("./target"));
         FileUtils.writeByteArrayToFile(file, responseBytes);
         try (NetcdfDataset dataset = NetcdfDatasets.openDataset(file.getAbsolutePath())) {
             assertNotNull(dataset);
@@ -406,12 +359,11 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
             assertEquals(1, rlonVar.getDimensions().size());
             assertEquals(rlonDim, rlonVar.getDimensions().get(0));
             assertEquals("grid_longitude", rlonVar.findAttribute("long_name").getStringValue());
-            assertEquals("grid_longitude", rlonVar.findAttribute("standard_name").getStringValue());
+            assertEquals(
+                    "grid_longitude", rlonVar.findAttribute("standard_name").getStringValue());
             assertEquals("degrees", rlonVar.findAttribute("units").getStringValue());
             assertArrayEquals(
-                    new float[] {-18, -8, 2, 12, 22},
-                    (float[]) rlonVar.read().copyTo1DJavaArray(),
-                    (float) DELTA);
+                    new float[] {-18, -8, 2, 12, 22}, (float[]) rlonVar.read().copyTo1DJavaArray(), (float) DELTA);
             Variable rlatVar = dataset.findVariable("rlat");
             assertNotNull(rlatVar);
             assertEquals(1, rlatVar.getDimensions().size());
@@ -420,9 +372,7 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
             assertEquals("grid_latitude", rlatVar.findAttribute("standard_name").getStringValue());
             assertEquals("degrees", rlatVar.findAttribute("units").getStringValue());
             assertArrayEquals(
-                    new float[] {-20, -10, 0, 10, 20},
-                    (float[]) rlatVar.read().copyTo1DJavaArray(),
-                    (float) DELTA);
+                    new float[] {-20, -10, 0, 10, 20}, (float[]) rlatVar.read().copyTo1DJavaArray(), (float) DELTA);
             // check projection variable
             Variable projVar = dataset.findVariable("rotated_latitude_longitude");
             assertNotNull(projVar);
@@ -452,8 +402,8 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
             assertEquals(rlonDim, dataVar.getDimensions().get(1));
             assertArrayEquals(
                     new float[] {
-                        100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114,
-                        115, 116, 117, 118, 119, 120, 121, 122, 123, 124
+                        100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118,
+                        119, 120, 121, 122, 123, 124
                     },
                     (float[]) dataVar.read().copyTo1DJavaArray(),
                     (float) DELTA);
@@ -475,10 +425,8 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
         getCatalog().save(info);
 
         try {
-            MockHttpServletResponse response =
-                    getAsServletResponse(
-                            "ows?request=GetCoverage&service=WCS&version=2.0.1"
-                                    + "&coverageId=wcs__O3&format=application/x-netcdf");
+            MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1"
+                    + "&coverageId=wcs__O3&format=application/x-netcdf");
             // The status code should be correct
             assertEquals(200, response.getStatus());
             // The output format should be netcdf
@@ -497,12 +445,10 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
             }
 
             // read enhanced to validate scaling
-            EnumSet<NetcdfDataset.Enhance> enhanceMode =
-                    EnumSet.of(NetcdfDataset.Enhance.CoordSystems);
+            EnumSet<NetcdfDataset.Enhance> enhanceMode = EnumSet.of(NetcdfDataset.Enhance.CoordSystems);
             enhanceMode.add(NetcdfDataset.Enhance.ApplyScaleOffset);
             DatasetUrl url = DatasetUrl.findDatasetUrl(file.getAbsolutePath());
-            try (NetcdfDataset dataset =
-                    NetcdfDatasets.openDataset(url, enhanceMode, 4096, null, null)) {
+            try (NetcdfDataset dataset = NetcdfDatasets.openDataset(url, enhanceMode, 4096, null, null)) {
                 assertNotNull(dataset);
                 final Variable variable = dataset.findVariable("O3");
                 // not read as packed this time
@@ -526,10 +472,8 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
     @Test
     public void testKmAxisUnitSupport() throws Exception {
         NetCDFCRSUtilities.setConvertAxisKm(false);
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "ows?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageid=wcs__samplekm&format=application/x-netcdf");
+        MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageid=wcs__samplekm&format=application/x-netcdf");
         assertEquals(200, response.getStatus());
         assertEquals("application/x-netcdf", response.getContentType());
         byte[] responseBytes = getBinary(response);

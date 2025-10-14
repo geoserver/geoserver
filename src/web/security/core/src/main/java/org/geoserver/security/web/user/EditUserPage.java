@@ -66,7 +66,8 @@ public class EditUserPage extends AbstractUserPage {
         GeoServerRoleStore roleStore = null;
         try {
             if (hasRoleStore(getSecurityManager().getActiveRoleService().getName())) {
-                roleStore = getRoleStore(getSecurityManager().getActiveRoleService().getName());
+                roleStore =
+                        getRoleStore(getSecurityManager().getActiveRoleService().getName());
                 roleStore = new RoleStoreValidationWrapper(roleStore);
 
                 Set<GeoServerRole> orig = roleStore.getRolesForUser(user.getUsername());

@@ -17,13 +17,11 @@ import org.springframework.util.Assert;
 /**
  * Executes a <code>DescribeLayer</code> WMS request.
  *
- * <p>Receives a <code>DescribeLayerRequest</code> object holding the references to the requested
- * layers and utilizes a transformer based on the org.geotools.xml.transform framework to encode the
- * response.
+ * <p>Receives a <code>DescribeLayerRequest</code> object holding the references to the requested layers and utilizes a
+ * transformer based on the org.geotools.xml.transform framework to encode the response.
  *
  * @author Gabriel Roldan
  * @author Carlo Cancellieri
- * @version $Id$
  */
 public abstract class DescribeLayerResponse extends Response {
 
@@ -50,16 +48,12 @@ public abstract class DescribeLayerResponse extends Response {
         return type;
     }
 
-    /**
-     * @see org.geoserver.ows.Response#getMimeType(java.lang.Object,
-     *     org.geoserver.platform.Operation)
-     */
+    /** @see org.geoserver.ows.Response#getMimeType(java.lang.Object, org.geoserver.platform.Operation) */
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
 
         Object op = operation.getParameters()[0];
-        if (op instanceof DescribeLayerRequest) {
-            DescribeLayerRequest dlr = (DescribeLayerRequest) op;
+        if (op instanceof DescribeLayerRequest dlr) {
             return dlr.getOutputFormat();
         }
         throw new ServiceException("Unable to parse incoming operation");
@@ -69,13 +63,10 @@ public abstract class DescribeLayerResponse extends Response {
      * @param value {@link DescribeLayerTransformer}
      * @param output where to write the response
      * @param operation {@link DescribeLayer} operation that originated the {@code value} response
-     * @see org.geoserver.ows.Response#write(java.lang.Object, java.io.OutputStream,
-     *     org.geoserver.platform.Operation)
+     * @see org.geoserver.ows.Response#write(java.lang.Object, java.io.OutputStream, org.geoserver.platform.Operation)
      */
     @Override
-    @SuppressWarnings("PMD.UseTryWithResources") // the output is provided from outside
-    public void write(Object value, OutputStream output, Operation operation)
-            throws IOException, ServiceException {
+    public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
 
         Assert.notNull(operation.getParameters(), "parameters");
         Assert.isTrue(
@@ -97,7 +88,6 @@ public abstract class DescribeLayerResponse extends Response {
         }
     }
 
-    public abstract void write(
-            DescribeLayerModel description, DescribeLayerRequest output, OutputStream operation)
+    public abstract void write(DescribeLayerModel description, DescribeLayerRequest output, OutputStream operation)
             throws IOException, ServiceException;
 }

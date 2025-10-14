@@ -22,8 +22,8 @@ import org.geotools.api.util.InternationalString;
 import org.geotools.util.decorate.AbstractDecorator;
 
 /**
- * Delegates every method to the wrapped {@link LayerInfo}. Subclasses will override selected
- * methods to perform their "decoration" job
+ * Delegates every method to the wrapped {@link LayerInfo}. Subclasses will override selected methods to perform their
+ * "decoration" job
  *
  * @author Andrea Aime
  */
@@ -260,5 +260,15 @@ public class DecoratingLayerInfo extends AbstractDecorator<LayerInfo> implements
     @Override
     public void setInternationalAbstract(InternationalString internationalAbstract) {
         delegate.setInternationalAbstract(internationalAbstract);
+    }
+
+    @Override
+    public void setModifiedBy(String userName) {
+        delegate.setModifiedBy(userName);
+    }
+
+    @Override
+    public String getModifiedBy() {
+        return delegate.getModifiedBy();
     }
 }

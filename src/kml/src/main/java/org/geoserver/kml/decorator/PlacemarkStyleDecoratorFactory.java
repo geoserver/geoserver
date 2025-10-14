@@ -53,8 +53,7 @@ import org.locationtech.jts.geom.Polygon;
 public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
 
     @Override
-    public KmlDecorator getDecorator(
-            Class<? extends Feature> featureClass, KmlEncodingContext context) {
+    public KmlDecorator getDecorator(Class<? extends Feature> featureClass, KmlEncodingContext context) {
         // this decorator makes sense only for WMS
         if (!(context.getService() instanceof WMSInfo)) {
             return null;
@@ -92,9 +91,9 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
                         setDefaultIconStyle(style, sf, context);
                     }
                 } else {
-                    org.geotools.api.style.Style wholeStyle = context.getCurrentLayer().getStyle();
-                    IconProperties properties =
-                            IconPropertyExtractor.extractProperties(wholeStyle, sf);
+                    org.geotools.api.style.Style wholeStyle =
+                            context.getCurrentLayer().getStyle();
+                    IconProperties properties = IconPropertyExtractor.extractProperties(wholeStyle, sf);
                     setIconStyle(style, wholeStyle, properties, context);
                 }
 
@@ -107,8 +106,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
                 } else {
                     // the XML schema allows only one text style, follow painter's model
                     // and set the last one
-                    TextSymbolizer lastTextSymbolizer =
-                            (TextSymbolizer) texts.get(texts.size() - 1);
+                    TextSymbolizer lastTextSymbolizer = (TextSymbolizer) texts.get(texts.size() - 1);
                     setLabelStyle(style, sf, lastTextSymbolizer);
                 }
 
@@ -117,8 +115,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
                 // the XML schema allows only one line style, follow painter's model
                 // and set the last one
                 if (!lines.isEmpty()) {
-                    LineSymbolizer lastLineSymbolizer =
-                            (LineSymbolizer) lines.get(lines.size() - 1);
+                    LineSymbolizer lastLineSymbolizer = (LineSymbolizer) lines.get(lines.size() - 1);
                     setLineStyle(style, sf, lastLineSymbolizer.getStroke());
                 }
 
@@ -128,8 +125,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
                 if (!polygons.isEmpty()) {
                     // the XML schema allows only one polygon style, follow painter's model
                     // and set the last one
-                    PolygonSymbolizer lastPolygonSymbolizer =
-                            (PolygonSymbolizer) polygons.get(polygons.size() - 1);
+                    PolygonSymbolizer lastPolygonSymbolizer = (PolygonSymbolizer) polygons.get(polygons.size() - 1);
                     setPolygonStyle(style, sf, lastPolygonSymbolizer, forceOutline);
                 }
             }
@@ -161,17 +157,14 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
             return result;
         }
 
-        protected void setDefaultIconStyle(
-                Style style, SimpleFeature feature, KmlEncodingContext context) {
+        protected void setDefaultIconStyle(Style style, SimpleFeature feature, KmlEncodingContext context) {
             // figure out if line or polygon
-            boolean line =
-                    feature.getDefaultGeometry() != null
-                            && (feature.getDefaultGeometry() instanceof LineString
-                                    || feature.getDefaultGeometry() instanceof MultiLineString);
-            boolean poly =
-                    feature.getDefaultGeometry() != null
-                            && (feature.getDefaultGeometry() instanceof Polygon
-                                    || feature.getDefaultGeometry() instanceof MultiPolygon);
+            boolean line = feature.getDefaultGeometry() != null
+                    && (feature.getDefaultGeometry() instanceof LineString
+                            || feature.getDefaultGeometry() instanceof MultiLineString);
+            boolean poly = feature.getDefaultGeometry() != null
+                    && (feature.getDefaultGeometry() instanceof Polygon
+                            || feature.getDefaultGeometry() instanceof MultiPolygon);
 
             // Final pre-flight check
             if (!line && !poly) {
@@ -191,10 +184,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
             if (line || poly) {
                 is.setScale(0.4);
             }
-            String imageURL =
-                    "http://icons.opengeo.org/markers/icon-"
-                            + (poly ? "poly.1" : "line.1")
-                            + ".png";
+            String imageURL = "http://icons.opengeo.org/markers/icon-" + (poly ? "poly.1" : "line.1") + ".png";
             Icon icon = is.createAndSetIcon();
             icon.setHref(imageURL);
             icon.setViewBoundScale(1);
@@ -202,10 +192,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
 
         /** Encodes a KML IconStyle from a point style and symbolizer. */
         protected void setIconStyle(
-                Style style,
-                org.geotools.api.style.Style sld,
-                IconProperties properties,
-                KmlEncodingContext context) {
+                Style style, org.geotools.api.style.Style sld, IconProperties properties, KmlEncodingContext context) {
             if (context.isLiveIcons() || properties.isExternal()) {
                 setLiveIconStyle(style, sld, properties, context);
             } else {
@@ -214,10 +201,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
         }
 
         protected void setInlineIconStyle(
-                Style style,
-                org.geotools.api.style.Style sld,
-                IconProperties properties,
-                KmlEncodingContext context) {
+                Style style, org.geotools.api.style.Style sld, IconProperties properties, KmlEncodingContext context) {
             final String name = properties.getIconName(sld);
 
             Map<String, org.geotools.api.style.Style> iconStyles = context.getIconStyles();
@@ -243,10 +227,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
         }
 
         protected void setLiveIconStyle(
-                Style style,
-                org.geotools.api.style.Style sld,
-                IconProperties properties,
-                KmlEncodingContext context) {
+                Style style, org.geotools.api.style.Style sld, IconProperties properties, KmlEncodingContext context) {
             final Double opacity = properties.getOpacity();
             final Double scale = properties.getScale();
             final Double heading = properties.getHeading();
@@ -269,15 +250,9 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
 
             WorkspaceInfo ws =
                     context.getWms().getCatalog().getStyleByName(sld.getName()).getWorkspace();
-            String wsName = null;
-            if (ws != null) wsName = ws.getName();
 
             Icon icon = is.createAndSetIcon();
-            icon.setHref(
-                    properties.href(
-                            context.getMapContent().getRequest().getBaseUrl(),
-                            wsName,
-                            sld.getName()));
+            icon.setHref(properties.href(context.getMapContent().getRequest().getBaseUrl(), ws, sld.getName()));
         }
 
         /** Encodes a transparent KML LabelStyle */
@@ -286,8 +261,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
             ls.setColor("00ffffff");
         }
 
-        protected void setLabelStyle(
-                Style style, SimpleFeature feature, TextSymbolizer symbolizer) {
+        protected void setLabelStyle(Style style, SimpleFeature feature, TextSymbolizer symbolizer) {
             LabelStyle ls = style.createAndSetLabelStyle();
             double scale = 1.0;
             Font font = symbolizer.getFont();
@@ -310,10 +284,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
 
         /** Encodes a KML IconStyle + PolyStyle from a polygon style and symbolizer. */
         protected void setPolygonStyle(
-                Style style,
-                SimpleFeature feature,
-                PolygonSymbolizer symbolizer,
-                boolean forceOutline) {
+                Style style, SimpleFeature feature, PolygonSymbolizer symbolizer, boolean forceOutline) {
             // if stroke specified add line style as well (it has to be before the fill, otherwise
             // we'll get a white filling...)
             if (symbolizer.getStroke() != null) {
@@ -389,8 +360,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
                 ls.setColor(colorToHex(color, opacity));
 
                 // width
-                Double width =
-                        evaluate(stroke.getWidth(), feature, 1d); // from Stroke.DEFAULT.getWidth()
+                Double width = evaluate(stroke.getWidth(), feature, 1d); // from Stroke.DEFAULT.getWidth()
                 ls.setWidth(width);
             } else {
                 // default
@@ -418,10 +388,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
                 // ${cqlExpression}
                 // let's try and use the location as a literal
                 if (LOGGER.isLoggable(Level.SEVERE))
-                    LOGGER.log(
-                            Level.SEVERE,
-                            "Could not parse cql expressions out of " + strLocation,
-                            e);
+                    LOGGER.log(Level.SEVERE, "Could not parse cql expressions out of " + strLocation, e);
                 location = ff.literal(strLocation);
             }
 
@@ -448,8 +415,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
         }
 
         /**
-         * Utility method to convert an int into hex, padded to two characters. handy for generating
-         * colour strings.
+         * Utility method to convert an int into hex, padded to two characters. handy for generating colour strings.
          *
          * @param i Int to convert
          * @return String a two character hex representation of i

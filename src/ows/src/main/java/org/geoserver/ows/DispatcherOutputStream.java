@@ -8,12 +8,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * A wrapper for a Dispatcher destination output stream that signals {@link IOException}s thrown
- * while writing to the underlying destination as ignorable for OWS exception reporting, by throwing
- * a {@link ClientStreamAbortedException}.
+ * A wrapper for a Dispatcher destination output stream that signals {@link IOException}s thrown while writing to the
+ * underlying destination as ignorable for OWS exception reporting, by throwing a {@link ClientStreamAbortedException}.
  *
  * @author Gabriel Roldan (TOPP)
- * @version $Id$
  * @since 1.6.x
  */
 public final class DispatcherOutputStream extends OutputStream {

@@ -6,9 +6,9 @@
 
 package org.geoserver.flow.controller;
 
-import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.flow.FlowController;
@@ -27,7 +27,7 @@ public abstract class QueueController implements FlowController {
     int queueMaxSize;
 
     /** The per request queue collection */
-    Map<String, TimedBlockingQueue> queues = new ConcurrentHashMap<>();
+    ConcurrentMap<String, TimedBlockingQueue> queues = new ConcurrentHashMap<>();
 
     /** Last time we've performed a queue cleanup */
     long lastCleanup = System.currentTimeMillis();
@@ -51,8 +51,7 @@ public abstract class QueueController implements FlowController {
     protected void cleanUpQueues(long now) {
         // cleanup stale queues if necessary
         int queuesSize = queues.size();
-        if ((queuesSize > maxQueues && (now - lastCleanup) > (maxAge / 10))
-                || (now - lastCleanup) > maxAge) {
+        if ((queuesSize > maxQueues && (now - lastCleanup) > (maxAge / 10)) || (now - lastCleanup) > maxAge) {
             int cleanupCount = 0;
             synchronized (this) {
                 for (String key : queues.keySet()) {
@@ -64,14 +63,13 @@ public abstract class QueueController implements FlowController {
                 }
                 lastCleanup = now;
                 if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.fine(
-                            getClass().getSimpleName()
-                                    + "("
-                                    + queueMaxSize
-                                    + ") purged "
-                                    + cleanupCount
-                                    + " stale queues out of "
-                                    + queuesSize);
+                    LOGGER.fine(getClass().getSimpleName()
+                            + "("
+                            + queueMaxSize
+                            + ") purged "
+                            + cleanupCount
+                            + " stale queues out of "
+                            + queuesSize);
                 }
             }
         }

@@ -13,15 +13,13 @@ import java.text.ParseException;
 public class TokenSignatureValidator {
 
     /**
-     * * Given an publickey and a (parsed) token, verify that the signature is correct. Throws if
-     * the signature is bad.
+     * * Given an publickey and a (parsed) token, verify that the signature is correct. Throws if the signature is bad.
      *
      * @param rsaPublicKey Public key used to validate token signature
      * @param token three part token
      * @throws InvalidSignatureException
      */
-    public void validateSignature(RSAKey rsaPublicKey, JWSObject token)
-            throws InvalidSignatureException {
+    public void validateSignature(RSAKey rsaPublicKey, JWSObject token) throws InvalidSignatureException {
         try {
             JWSVerifier verifier = new RSASSAVerifier(rsaPublicKey);
 
@@ -32,8 +30,7 @@ public class TokenSignatureValidator {
             }
         } catch (JOSEException unableToValidate) {
             throw new InvalidSignatureException(
-                    "Could not verify signature of the JWT with the given RSA Public Key",
-                    unableToValidate);
+                    "Could not verify signature of the JWT with the given RSA Public Key", unableToValidate);
         }
     }
 
@@ -53,8 +50,7 @@ public class TokenSignatureValidator {
     /**
      * * Given a base64 token, parse it.
      *
-     * <p>NOTE: this should be a 3 part token (i.e. with three parts seperated by {@code "."} in the
-     * base64).
+     * <p>NOTE: this should be a 3 part token (i.e. with three parts seperated by {@code "."} in the base64).
      *
      * @param tokenBase64 JWS string encoded in base64
      * @return JWSObject with three parts seperated by {@code "."} in tokenBase64

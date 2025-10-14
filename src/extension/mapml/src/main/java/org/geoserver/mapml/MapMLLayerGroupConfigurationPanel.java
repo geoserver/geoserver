@@ -5,9 +5,11 @@
 
 package org.geoserver.mapml;
 
+import static org.geoserver.mapml.MapMLConstants.MAPML_USE_MULTIEXTENTS;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES;
 import static org.geoserver.mapml.MapMLLayerConfigurationPanel.getAvailableMimeTypes;
 
+import java.io.Serial;
 import java.util.logging.Logger;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
@@ -29,7 +31,9 @@ import org.geotools.util.logging.Logging;
 public class MapMLLayerGroupConfigurationPanel extends PublishedConfigurationPanel<LayerGroupInfo> {
     static final Logger LOGGER = Logging.getLogger(MapMLLayerGroupConfigurationPanel.class);
 
+    @Serial
     private static final long serialVersionUID = 1L;
+
     public static final String METADATA = "metadata";
 
     DropDownChoice<String> mime;
@@ -40,8 +44,7 @@ public class MapMLLayerGroupConfigurationPanel extends PublishedConfigurationPan
      * @param panelId
      * @param model
      */
-    public MapMLLayerGroupConfigurationPanel(
-            final String panelId, final IModel<LayerGroupInfo> model) {
+    public MapMLLayerGroupConfigurationPanel(final String panelId, final IModel<LayerGroupInfo> model) {
         super(panelId, model);
 
         MapModel<String> licenseTitleModel =
@@ -55,32 +58,51 @@ public class MapMLLayerGroupConfigurationPanel extends PublishedConfigurationPan
         add(licenseLink);
 
         // add the checkbox to select tiled or not
-        MapModel<Boolean> useTilesModel =
-                new MapModel<>(new PropertyModel<>(model, METADATA), "mapml.useTiles");
+        MapModel<Boolean> useTilesModel = new MapModel<>(new PropertyModel<>(model, METADATA), MAPML_USE_TILES);
         CheckBox useTiles = new CheckBox("useTiles", useTilesModel);
-        useTiles.add(
-                new OnChangeAjaxBehavior() {
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
-                        ajaxRequestTarget.add(mime);
-                        boolean useTilesChecked = useTiles.getConvertedInput();
-                        mime.setChoices(getAvailableMimeTypes(model.getObject(), useTilesChecked));
-                    }
-                });
+        useTiles.add(new OnChangeAjaxBehavior() {
+            @Override
+            protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
+                ajaxRequestTarget.add(mime);
+                boolean useTilesChecked = useTiles.getConvertedInput();
+                mime.setChoices(getAvailableMimeTypes(model.getObject(), useTilesChecked));
+            }
+        });
         add(useTiles);
 
-        MapModel<String> mimeModel =
-                new MapModel<>(new PropertyModel<>(model, METADATA), MapMLConstants.MAPML_MIME);
+        // add the checkbox to select features or not
+        MapModel<Boolean> useFeaturesModel =
+                new MapModel<>(new PropertyModel<>(model, METADATA), MapMLConstants.MAPML_USE_FEATURES);
+        CheckBox useFeatures = new CheckBox(MapMLConstants.USE_FEATURES, useFeaturesModel);
+        useFeatures.add(new OnChangeAjaxBehavior() {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                target.add(mime);
+                // if we are using features, we don't use a default mime type
+                mime.setEnabled(!useFeatures.getConvertedInput());
+            }
+        });
+        add(useFeatures);
+
+        // add the checkbox to expose sub-layers / set usemultiextents:true or :false
+        MapModel<Boolean> useMultiExtentsModel =
+                new MapModel<>(new PropertyModel<>(model, METADATA), MAPML_USE_MULTIEXTENTS);
+        CheckBox useMultiExtents = new CheckBox("useMultiExtents", useMultiExtentsModel);
+        add(useMultiExtents);
+
+        MapModel<String> mimeModel = new MapModel<>(new PropertyModel<>(model, METADATA), MapMLConstants.MAPML_MIME);
         boolean useTilesFromModel =
-                Boolean.TRUE.equals(
-                        model.getObject().getMetadata().get(MAPML_USE_TILES, Boolean.class));
-        mime =
-                new DropDownChoice<>(
-                        MapMLConstants.MIME,
-                        mimeModel,
-                        getAvailableMimeTypes(model.getObject(), useTilesFromModel));
+                Boolean.TRUE.equals(model.getObject().getMetadata().get(MAPML_USE_TILES, Boolean.class));
+        mime = new DropDownChoice<>(
+                MapMLConstants.MIME, mimeModel, getAvailableMimeTypes(model.getObject(), useTilesFromModel));
         mime.setOutputMarkupId(true);
         mime.setNullValid(false);
+        // if we are using features, we don't use a mime type
+        if (useFeaturesModel.getObject() != null) {
+            String useFeaturesString = String.valueOf(useFeaturesModel.getObject());
+            boolean useFeaturesBoolean = Boolean.parseBoolean(useFeaturesString);
+            mime.setEnabled(!useFeaturesBoolean);
+        }
         add(mime);
     }
 }

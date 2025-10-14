@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class provides utility function to split up generated sql files into individual statement to
- * be execute by JDBC. Currently oracle and postgres driver do not support execution of sql scripts.
+ * This class provides utility function to split up generated sql files into individual statement to be execute by JDBC.
+ * Currently oracle and postgres driver do not support execution of sql scripts.
  *
  * @author Victor Tey, CSIRO Earth Science and Resource Engineering
  */
@@ -27,19 +27,17 @@ public class DatabaseUtil {
     /**
      * Split input stream into a list of sql statements.
      *
-     * <p>there are a number of limitation when using this method. Firstly each separate query in a
-     * script must be on a new line so that ";" at the end of the string can be used as a delimiter.
-     * Secondly, escape character for $$ $_$ "'" have not been taken into consideration. This will
-     * cause an issue if any of the operators are used in string eg 'the $quick brown' We have
-     * catered to scenarios for multiple $ quoting on single/multi line.
+     * <p>there are a number of limitation when using this method. Firstly each separate query in a script must be on a
+     * new line so that ";" at the end of the string can be used as a delimiter. Secondly, escape character for $$ $_$
+     * "'" have not been taken into consideration. This will cause an issue if any of the operators are used in string
+     * eg 'the $quick brown' We have catered to scenarios for multiple $ quoting on single/multi line.
      *
      * @param inputStream sql statements
      * @return list of SQL statements
      */
     public List<String> splitPostgisSQLScript(InputStream inputStream) throws Exception {
         if (inputStream == null) {
-            throw new IllegalArgumentException(
-                    "PostGIS SQL Script is null, check resource reference");
+            throw new IllegalArgumentException("PostGIS SQL Script is null, check resource reference");
         }
         StringBuilder contents = new StringBuilder();
 
@@ -47,8 +45,7 @@ public class DatabaseUtil {
         try {
             // use buffering, reading one line at a time
             // FileReader always assumes default encoding is OK!
-            try (BufferedReader input =
-                    new BufferedReader(new InputStreamReader(new DataInputStream(inputStream)))) {
+            try (BufferedReader input = new BufferedReader(new InputStreamReader(new DataInputStream(inputStream)))) {
                 String line = null;
                 PostgisIgnoreOperator pio = new PostgisIgnoreOperator();
                 while ((line = input.readLine()) != null) {
@@ -112,10 +109,8 @@ public class DatabaseUtil {
         return sb.toString();
     }
 
-    /**
-     * sets up the rule such that all ";" between these operators will not be treated as a delimiter
-     */
-    private class PostgisIgnoreOperator {
+    /** sets up the rule such that all ";" between these operators will not be treated as a delimiter */
+    private static class PostgisIgnoreOperator {
 
         public final String[] operators = {"$$", "$_$", "'"};
 
@@ -129,8 +124,8 @@ public class DatabaseUtil {
         }
 
         /**
-         * Retrieve the operators. Operators are possible string that can be used to encapsulate a
-         * sql query in postgres.
+         * Retrieve the operators. Operators are possible string that can be used to encapsulate a sql query in
+         * postgres.
          *
          * @return - The list of operators
          */
@@ -142,8 +137,8 @@ public class DatabaseUtil {
          * Retrieve the current status of the operator
          *
          * @param key - the operator
-         * @return - the status whether the operator is currently open or closed. eg if we found $$
-         *     and no corresponding $$ to close it, the status is open
+         * @return - the status whether the operator is currently open or closed. eg if we found $$ and no corresponding
+         *     $$ to close it, the status is open
          */
         public boolean getOperatorStatus(String key) {
             return open.get(key).booleanValue();
@@ -160,8 +155,7 @@ public class DatabaseUtil {
         }
 
         /**
-         * Sets the reverse of status of the operator. If the current status of the operator is
-         * open, close it.
+         * Sets the reverse of status of the operator. If the current status of the operator is open, close it.
          *
          * @param key - the operator
          */
@@ -172,8 +166,8 @@ public class DatabaseUtil {
         /**
          * Checks if all operators are currently closed
          *
-         * @return - true only if the current status of all operators are closed. This determines
-         *     the end of the statements in the sql script.
+         * @return - true only if the current status of all operators are closed. This determines the end of the
+         *     statements in the sql script.
          */
         public boolean isAllClosed() {
             for (boolean opn : open.values()) {
@@ -206,8 +200,7 @@ public class DatabaseUtil {
         try {
             // use buffering, reading one line at a time
             // FileReader always assumes default encoding is OK!
-            try (BufferedReader input =
-                    new BufferedReader(new InputStreamReader(new DataInputStream(inputStream)))) {
+            try (BufferedReader input = new BufferedReader(new InputStreamReader(new DataInputStream(inputStream)))) {
                 String line = null, suffix = null; // not declared within while loop
                 boolean start = true;
 
@@ -225,12 +218,10 @@ public class DatabaseUtil {
                                 start = trimedLine.endsWith(suffix) ? true : false;
                                 contents.append(trimedLine + NEWLINE);
                                 if (start) {
-                                    statements.add(
-                                            (contents.toString().trim())
-                                                    .substring(
-                                                            0,
-                                                            contents.toString().trim().length()
-                                                                    - 1));
+                                    statements.add((contents.toString().trim())
+                                            .substring(
+                                                    0,
+                                                    contents.toString().trim().length() - 1));
                                     contents.setLength(0);
                                     suffix = null;
                                 }
@@ -261,9 +252,7 @@ public class DatabaseUtil {
         }
     }
 
-    /**
-     * Enum class that specify the rule to breaking up the oracle script into individual statements.
-     */
+    /** Enum class that specify the rule to breaking up the oracle script into individual statements. */
     private enum OracleScriptRule {
         INSERT("Insert", ");"),
         CREATE_OR_REPLACE_PROCEDURE("CREATE OR REPLACE PROCEDURE", "/"),

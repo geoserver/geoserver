@@ -17,10 +17,9 @@ import org.geoserver.security.jwtheaders.JwtConfiguration;
 import org.geoserver.security.jwtheaders.username.JwtHeaderUserNameExtractor;
 
 /**
- * Extracts roles from the header value (JWT and JSON). JSON -> use the rolesJsonPath to extract
- * either a string or list of strings from the json. JWT -> convert to a JSON claim-set, then use
- * the rolesJsonPath to extract either a string or list of strings from the json. Will also do
- * RoleConversion (cf RoleConverter).
+ * Extracts roles from the header value (JWT and JSON). JSON -> use the rolesJsonPath to extract either a string or list
+ * of strings from the json. JWT -> convert to a JSON claim-set, then use the rolesJsonPath to extract either a string
+ * or list of strings from the json. Will also do RoleConversion (cf RoleConverter).
  */
 public class JwtHeadersRolesExtractor {
 
@@ -48,9 +47,7 @@ public class JwtHeadersRolesExtractor {
         headerValue = headerValue.trim();
 
         // JWT - convert JWT to JSON, then extract
-        if (jwtHeadersConfig
-                .getJwtHeaderRoleSource()
-                .equals(JwtConfiguration.JWTHeaderRoleSource.JWT.toString())) {
+        if (jwtHeadersConfig.getJwtHeaderRoleSource().equals(JwtConfiguration.JWTHeaderRoleSource.JWT.toString())) {
             JWSObject jwsObject = null;
             try {
                 jwsObject = JWSObject.parse(headerValue);
@@ -59,21 +56,15 @@ public class JwtHeadersRolesExtractor {
             }
             Map<String, Object> claims = jwsObject.getPayload().toJSONObject();
             List<String> roleNames =
-                    asStringList(
-                            JwtHeaderUserNameExtractor.getClaim(
-                                    claims, jwtHeadersConfig.getRolesJsonPath()));
+                    asStringList(JwtHeaderUserNameExtractor.getClaim(claims, jwtHeadersConfig.getRolesJsonPath()));
             List<String> roles = this.roleConverter.convert(roleNames);
             return roles;
         }
 
         // Simple JSON (extract by path)
-        if (jwtHeadersConfig
-                .getJwtHeaderRoleSource()
-                .equals(JwtConfiguration.JWTHeaderRoleSource.JSON.toString())) {
-            List<String> roleNames =
-                    asStringList(
-                            JwtHeaderUserNameExtractor.extractFromJSON(
-                                    headerValue, jwtHeadersConfig.getRolesJsonPath()));
+        if (jwtHeadersConfig.getJwtHeaderRoleSource().equals(JwtConfiguration.JWTHeaderRoleSource.JSON.toString())) {
+            List<String> roleNames = asStringList(
+                    JwtHeaderUserNameExtractor.extractFromJSON(headerValue, jwtHeadersConfig.getRolesJsonPath()));
             List<String> roles = this.roleConverter.convert(roleNames);
             return roles;
         }
@@ -87,14 +78,14 @@ public class JwtHeadersRolesExtractor {
      * @return
      */
     public static List<String> asStringList(Object obj) {
-        if (obj instanceof String) {
-            return Arrays.asList((String) obj);
+        if (obj instanceof String string) {
+            return Arrays.asList(string);
         }
-        if (obj instanceof JSONArray) {
-            return ((JSONArray) obj).stream().map(x -> x.toString()).collect(Collectors.toList());
+        if (obj instanceof JSONArray array) {
+            return array.stream().map(x -> x.toString()).collect(Collectors.toList());
         }
-        if (obj instanceof List) {
-            List<Object> list = ((List) obj);
+        if (obj instanceof List list1) {
+            List<Object> list = list1;
             return list.stream().map(x -> x.toString()).collect(Collectors.toList());
         }
         return null;

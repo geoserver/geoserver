@@ -25,8 +25,7 @@ public abstract class AbstractPropertySelection implements PropertySelectionHand
         TemplateBuilderContext builderContext = null;
         if (context != null) builderContext = new TemplateBuilderContext(context);
         boolean result;
-        if (templateBuilder instanceof PropertySelectionWrapper) {
-            PropertySelectionWrapper selectionWrapper = (PropertySelectionWrapper) templateBuilder;
+        if (templateBuilder instanceof PropertySelectionWrapper selectionWrapper) {
             String fullPath = selectionWrapper.getFullKey(builderContext);
             fullPath = removeDynamicMergeKey(fullPath);
             result = isKeySelected(fullPath);
@@ -37,8 +36,7 @@ public abstract class AbstractPropertySelection implements PropertySelectionHand
     }
 
     @Override
-    public boolean isBuilderSelected(
-            AbstractTemplateBuilder templateBuilder, PropertySelectionContext extradata) {
+    public boolean isBuilderSelected(AbstractTemplateBuilder templateBuilder, PropertySelectionContext extradata) {
 
         String key;
         if (extradata != null) {
@@ -58,9 +56,7 @@ public abstract class AbstractPropertySelection implements PropertySelectionHand
      * @return true if it is selected, false otherwise.
      */
     protected boolean isKeySelected(AbstractTemplateBuilder abstractTb, String key) {
-        return (hasSelectableKey(abstractTb) && isKeySelected(key))
-                || key == null
-                || !hasSelectableKey(abstractTb);
+        return (hasSelectableKey(abstractTb) && isKeySelected(key)) || key == null || !hasSelectableKey(abstractTb);
     }
 
     /**

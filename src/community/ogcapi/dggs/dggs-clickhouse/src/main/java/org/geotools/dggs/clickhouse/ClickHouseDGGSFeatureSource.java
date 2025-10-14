@@ -16,6 +16,7 @@
  */
 package org.geotools.dggs.clickhouse;
 
+import static org.geotools.dggs.clickhouse.ClickHouseDGGSDataStore.DEFAULT_CRS;
 import static org.geotools.dggs.clickhouse.ClickHouseDGGSDataStore.DEFAULT_GEOMETRY;
 import static org.geotools.dggs.clickhouse.ClickHouseDGGSDataStore.GEOMETRY;
 
@@ -48,7 +49,6 @@ import org.geotools.feature.collection.FilteringSimpleFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.jdbc.JDBCDataStore;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
 
 public class ClickHouseDGGSFeatureSource implements DGGSFeatureSource {
 
@@ -58,14 +58,11 @@ public class ClickHouseDGGSFeatureSource implements DGGSFeatureSource {
     private final DGGSQuerySplitter splitter;
 
     public ClickHouseDGGSFeatureSource(
-            ClickHouseDGGSDataStore dataStore,
-            SimpleFeatureSource delegate,
-            SimpleFeatureType schema) {
+            ClickHouseDGGSDataStore dataStore, SimpleFeatureSource delegate, SimpleFeatureType schema) {
         this.delegate = delegate;
         this.dataStore = dataStore;
         this.schema = schema;
-        this.splitter =
-                new DGGSQuerySplitter(dataStore.getDggs(), dataStore.getResolutions(), schema);
+        this.splitter = new DGGSQuerySplitter(dataStore.getDggs(), dataStore.getResolutions(), schema);
     }
 
     @Override
@@ -206,8 +203,7 @@ public class ClickHouseDGGSFeatureSource implements DGGSFeatureSource {
         String[] propertyNames = query.getPropertyNames();
         // need to wrap only if the geometry property is requested
         if (propertyNames == null
-                || Arrays.stream(propertyNames)
-                        .anyMatch(n -> GEOMETRY.equals(n) || DEFAULT_GEOMETRY.equals(n))) {
+                || Arrays.stream(propertyNames).anyMatch(n -> GEOMETRY.equals(n) || DEFAULT_GEOMETRY.equals(n))) {
             SimpleFeatureType outputSchema = getSchema();
             if (propertyNames != null) {
                 outputSchema = SimpleFeatureTypeBuilder.retype(getSchema(), propertyNames);
@@ -217,42 +213,34 @@ public class ClickHouseDGGSFeatureSource implements DGGSFeatureSource {
         if (split.post != Filter.INCLUDE) {
             result = new FilteringSimpleFeatureCollection(result, split.post);
         } else if (delegate.getDataStore() instanceof JDBCDataStore) {
-            result =
-                    new ClickhouseAggregatorCollection(
-                            result,
-                            (JDBCDataStore) delegate.getDataStore(),
-                            new Query(split.pre),
-                            getSchema());
+            result = new ClickhouseAggregatorCollection(
+                    result, (JDBCDataStore) delegate.getDataStore(), new Query(split.pre), getSchema());
         }
         result = reprojectFeatureCollection(result, query);
         return result;
     }
 
     /**
-     * Handles default and target CRS in a similar way to {@link
-     * org.geotools.data.store.ContentFeatureSource}, but using {@link SimpleFeatureCollection} as
-     * the source.
+     * Handles default and target CRS in a similar way to {@link org.geotools.data.store.ContentFeatureSource}, but
+     * using {@link SimpleFeatureCollection} as the source.
      *
      * @return The collection reprojected according to the Query instructions
      */
-    private SimpleFeatureCollection reprojectFeatureCollection(
-            SimpleFeatureCollection result, Query query) throws IOException {
+    private SimpleFeatureCollection reprojectFeatureCollection(SimpleFeatureCollection result, Query query)
+            throws IOException {
         CoordinateReferenceSystem sourceCRS = query.getCoordinateSystem();
         CoordinateReferenceSystem targetCRS = query.getCoordinateSystemReproject();
 
-        if (sourceCRS != null && !sourceCRS.equals(DefaultGeographicCRS.WGS84)) {
+        if (sourceCRS != null && !sourceCRS.equals(DEFAULT_CRS)) {
             // override the nativeCRS
             try {
-                result =
-                        DataUtilities.simple(
-                                new ForceCoordinateSystemFeatureResults(result, sourceCRS));
+                result = DataUtilities.simple(new ForceCoordinateSystemFeatureResults(result, sourceCRS));
             } catch (SchemaException e) {
-                throw (IOException)
-                        new IOException("Error occurred trying to force CRS").initCause(e);
+                throw (IOException) new IOException("Error occurred trying to force CRS").initCause(e);
             }
         } else {
             // no override
-            sourceCRS = DefaultGeographicCRS.WGS84;
+            sourceCRS = DEFAULT_CRS;
         }
         if (targetCRS != null) {
             if (sourceCRS == null) {
@@ -261,8 +249,7 @@ public class ClickHouseDGGSFeatureSource implements DGGSFeatureSource {
                 try {
                     result = new ReprojectingFeatureCollection(result, targetCRS);
                 } catch (Exception e) {
-                    throw (IOException)
-                            new IOException("Error occurred trying to reproject data").initCause(e);
+                    throw (IOException) new IOException("Error occurred trying to reproject data").initCause(e);
                 }
             }
         }

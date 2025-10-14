@@ -6,8 +6,10 @@
 package org.geoserver.web.data.store;
 
 import static org.geoserver.catalog.Predicates.sortBy;
+import static org.geoserver.config.CatalogModificationUserUpdater.TRACK_USER;
 
 import com.google.common.collect.Lists;
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -25,9 +27,9 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
-import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geotools.api.coverage.grid.Format;
 import org.geotools.api.data.DataAccessFactory;
 import org.geotools.api.filter.Filter;
@@ -39,69 +41,64 @@ import org.geotools.factory.CommonFactoryFinder;
 @SuppressWarnings("serial")
 public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
 
-    static final Property<StoreInfo> DATA_TYPE =
-            new AbstractProperty<>("datatype") {
+    static final Property<StoreInfo> DATA_TYPE = new AbstractProperty<>("datatype") {
 
-                @Override
-                public IModel<String> getModel(final IModel<StoreInfo> itemModel) {
-                    return () -> {
-                        StoreInfo si = itemModel.getObject();
-                        return (String) getPropertyValue(si);
-                    };
-                }
-
-                @Override
-                public Object getPropertyValue(StoreInfo item) {
-                    if (item instanceof DataStoreInfo) return "vector";
-                    else return "raster";
-                }
+        @Override
+        public IModel<String> getModel(final IModel<StoreInfo> itemModel) {
+            return () -> {
+                StoreInfo si = itemModel.getObject();
+                return (String) getPropertyValue(si);
             };
+        }
+
+        @Override
+        public Object getPropertyValue(StoreInfo item) {
+            if (item instanceof DataStoreInfo) return "vector";
+            else return "raster";
+        }
+    };
 
     static final Property<StoreInfo> WORKSPACE = new BeanProperty<>("workspace", "workspace.name");
 
     static final Property<StoreInfo> NAME = new BeanProperty<>("name", "name");
 
-    static final Property<StoreInfo> TYPE =
-            new AbstractProperty<>("type") {
+    static final Property<StoreInfo> TYPE = new AbstractProperty<>("type") {
 
-                @Override
-                public Object getPropertyValue(StoreInfo item) {
-                    String type = item.getType();
-                    if (type != null) {
-                        return type;
+        @Override
+        public Object getPropertyValue(StoreInfo item) {
+            String type = item.getType();
+            if (type != null) {
+                return type;
+            }
+            try {
+                ResourcePool resourcePool = item.getCatalog().getResourcePool();
+                if (item instanceof DataStoreInfo dsInfo) {
+                    DataAccessFactory factory = resourcePool.getDataStoreFactory(dsInfo);
+                    if (factory != null) {
+                        return factory.getDisplayName();
                     }
-                    try {
-                        ResourcePool resourcePool = item.getCatalog().getResourcePool();
-                        if (item instanceof DataStoreInfo) {
-                            DataStoreInfo dsInfo = (DataStoreInfo) item;
-                            DataAccessFactory factory = resourcePool.getDataStoreFactory(dsInfo);
-                            if (factory != null) {
-                                return factory.getDisplayName();
-                            }
-                        } else if (item instanceof CoverageStoreInfo) {
-                            Format format =
-                                    resourcePool.getGridCoverageFormat((CoverageStoreInfo) item);
-                            if (format != null) {
-                                return format.getName();
-                            }
-                        }
-                    } catch (Exception e) {
-                        // fine, we tried
+                } else if (item instanceof CoverageStoreInfo info) {
+                    Format format = resourcePool.getGridCoverageFormat(info);
+                    if (format != null) {
+                        return format.getName();
                     }
-                    return "?";
                 }
-            };
+            } catch (Exception e) {
+                // fine, we tried
+            }
+            return "?";
+        }
+    };
 
     static final Property<StoreInfo> ENABLED = new BeanProperty<>("enabled", "enabled");
 
-    static final Property<StoreInfo> MODIFIED_TIMESTAMP =
-            new BeanProperty<>("datemodfied", "dateModified");
+    static final Property<StoreInfo> MODIFIED_TIMESTAMP = new BeanProperty<>("datemodfied", "dateModified");
 
-    static final Property<StoreInfo> CREATED_TIMESTAMP =
-            new BeanProperty<>("datecreated", "dateCreated");
+    static final Property<StoreInfo> CREATED_TIMESTAMP = new BeanProperty<>("datecreated", "dateCreated");
 
-    static final List<Property<StoreInfo>> PROPERTIES =
-            Arrays.asList(DATA_TYPE, WORKSPACE, NAME, TYPE, ENABLED);
+    static final Property<StoreInfo> MODIFIED_BY = new BeanProperty<>("modifiedby", "modifiedBy");
+
+    static final List<Property<StoreInfo>> PROPERTIES = Arrays.asList(DATA_TYPE, WORKSPACE, NAME, TYPE, ENABLED);
 
     WorkspaceInfo workspace;
 
@@ -124,16 +121,17 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
         List<Property<StoreInfo>> modifiedPropertiesList =
                 PROPERTIES.stream().map(c -> c).collect(Collectors.toList());
         // check geoserver properties
-        if (GeoServerApplication.get()
-                .getGeoServer()
-                .getSettings()
-                .isShowCreatedTimeColumnsInAdminList())
+        if (GeoServerApplication.get().getGeoServer().getSettings().isShowCreatedTimeColumnsInAdminList())
             modifiedPropertiesList.add(CREATED_TIMESTAMP);
-        if (GeoServerApplication.get()
-                .getGeoServer()
-                .getSettings()
-                .isShowModifiedTimeColumnsInAdminList())
+        if (GeoServerApplication.get().getGeoServer().getSettings().isShowModifiedTimeColumnsInAdminList())
             modifiedPropertiesList.add(MODIFIED_TIMESTAMP);
+        String trackUser = GeoServerExtensions.getProperty(TRACK_USER);
+        if (trackUser == null
+                        && GeoServerApplication.get()
+                                .getGeoServer()
+                                .getSettings()
+                                .isShowModifiedUserInAdminList()
+                || Boolean.parseBoolean(trackUser)) modifiedPropertiesList.add(MODIFIED_BY);
         return modifiedPropertiesList;
     }
 
@@ -147,12 +145,10 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
         return new StoreInfoDetachableModel(object);
     }
 
-    /**
-     * A StoreInfo detachable model that holds the store id to retrieve it on demand from the
-     * catalog
-     */
+    /** A StoreInfo detachable model that holds the store id to retrieve it on demand from the catalog */
     static class StoreInfoDetachableModel extends LoadableDetachableModel<StoreInfo> {
 
+        @Serial
         private static final long serialVersionUID = -6829878983583733186L;
 
         String id;
@@ -186,7 +182,6 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
     }
 
     @Override
-    @SuppressWarnings("PMD.UseTryWithResources") // iterator needs to be tested
     public Iterator<StoreInfo> iterator(final long first, final long count) {
         Iterator<StoreInfo> iterator = filteredItems(first, count);
         if (iterator instanceof CloseableIterator) {
@@ -202,10 +197,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
         }
     }
 
-    /**
-     * Returns the requested page of layer objects after applying any keyword filtering set on the
-     * page
-     */
+    /** Returns the requested page of layer objects after applying any keyword filtering set on the page */
     private Iterator<StoreInfo> filteredItems(long first, long count) {
         final Catalog catalog = getCatalog();
 
@@ -229,8 +221,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
 
         final Filter filter = getWorkspaceFilter(getFilter());
         // our already filtered and closeable iterator
-        Iterator<StoreInfo> items =
-                catalog.list(StoreInfo.class, filter, (int) first, (int) count, sortOrder);
+        Iterator<StoreInfo> items = catalog.list(StoreInfo.class, filter, (int) first, (int) count, sortOrder);
 
         return items;
     }
@@ -239,8 +230,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
         // Filter by workspace if present
         if (workspace != null) {
             FilterFactory ff = CommonFactoryFinder.getFilterFactory();
-            Filter workspaceFilter =
-                    ff.equal(ff.property("workspace.id"), ff.literal(workspace.getId()));
+            Filter workspaceFilter = ff.equal(ff.property("workspace.id"), ff.literal(workspace.getId()));
             filter = ff.and(filter, workspaceFilter);
         }
         return filter;

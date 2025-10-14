@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component;
 
 /**
  * Adds links to the OGC API documents, based on the {@link LinkInfo} objects attached to either the
- * {@link ResourceInfo}, the {@link PublishedInfo} object, or the {@link SettingsInfo} object.
- * Filters out links that are not applicable to the current service.
+ * {@link ResourceInfo}, the {@link PublishedInfo} object, or the {@link SettingsInfo} object. Filters out links that
+ * are not applicable to the current service.
  */
 @Component
 public class LinkInfoCallback implements DocumentCallback {
@@ -28,8 +28,8 @@ public class LinkInfoCallback implements DocumentCallback {
 
     @Override
     public void apply(Request dr, AbstractDocument document) {
-        if (document instanceof AbstractCollectionDocument) {
-            decorateCollection(dr, (AbstractCollectionDocument) document);
+        if (document instanceof AbstractCollectionDocument collectionDocument) {
+            decorateCollection(dr, collectionDocument);
         } else if (isCollectionsDocument(dr)) {
             decorateCollections(dr, document);
         }
@@ -48,11 +48,9 @@ public class LinkInfoCallback implements DocumentCallback {
     private void decorateCollection(Request dr, AbstractCollectionDocument document) {
         Object subject = document.getSubject();
         Class<?> serviceClass = getServiceClass(dr);
-        if (subject instanceof ResourceInfo) {
-            ResourceInfo resource = (ResourceInfo) subject;
+        if (subject instanceof ResourceInfo resource) {
             LinkInfoConverter.addLinksToDocument(document, resource, serviceClass);
-        } else if (subject instanceof PublishedInfo) {
-            PublishedInfo layer = (PublishedInfo) subject;
+        } else if (subject instanceof PublishedInfo layer) {
             LinkInfoConverter.addLinksToDocument(document, layer, serviceClass);
         }
     }

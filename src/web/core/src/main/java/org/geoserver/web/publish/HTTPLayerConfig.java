@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.publish;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
@@ -17,23 +18,19 @@ import org.geoserver.web.util.MapModel;
 /** Configures the HTTP caching parameters */
 public class HTTPLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
+    @Serial
     private static final long serialVersionUID = -907171664833447962L;
 
     public HTTPLayerConfig(String id, IModel<LayerInfo> model, String metadataPropertyName) {
         super(id, model);
-        add(
-                new CheckBox(
-                        ResourceInfo.CACHING_ENABLED,
-                        new MapModel<>(
-                                new PropertyModel<>(model, metadataPropertyName),
-                                "cachingEnabled")));
+        add(new CheckBox(
+                ResourceInfo.CACHING_ENABLED,
+                new MapModel<>(new PropertyModel<>(model, metadataPropertyName), "cachingEnabled")));
 
-        TextField<Long> maxAge =
-                new TextField<>(
-                        ResourceInfo.CACHE_AGE_MAX,
-                        new MapModel<>(
-                                new PropertyModel<>(model, metadataPropertyName), "cacheAgeMax"),
-                        Long.class);
+        TextField<Long> maxAge = new TextField<>(
+                ResourceInfo.CACHE_AGE_MAX,
+                new MapModel<>(new PropertyModel<>(model, metadataPropertyName), "cacheAgeMax"),
+                Long.class);
         maxAge.add(RangeValidator.range(0l, Long.MAX_VALUE));
         add(maxAge);
     }

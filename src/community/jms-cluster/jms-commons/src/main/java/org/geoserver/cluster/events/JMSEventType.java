@@ -5,18 +5,19 @@
  */
 package org.geoserver.cluster.events;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.EventObject;
 
 /**
- * Defining Event type example, each event points (source) to an object which represents the
- * incoming event.
+ * Defining Event type example, each event points (source) to an object which represents the incoming event.
  *
  * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
  */
 public abstract class JMSEventType<S extends Serializable> extends EventObject {
 
     /** */
+    @Serial
     private static final long serialVersionUID = 8413744049417938375L;
 
     /** {@link EventObject#EventObject(Object)} */

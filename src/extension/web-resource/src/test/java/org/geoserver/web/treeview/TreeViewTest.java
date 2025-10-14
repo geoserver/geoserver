@@ -27,7 +27,7 @@ import org.junit.Test;
 /** @author Niels Charlier */
 public class TreeViewTest extends GeoServerWicketTestSupport {
 
-    private class MockNode implements TreeNode<Integer> {
+    private static class MockNode implements TreeNode<Integer> {
         private static final long serialVersionUID = 1012858609071186910L;
 
         protected int data;
@@ -91,49 +91,41 @@ public class TreeViewTest extends GeoServerWicketTestSupport {
         treeView.setSelectedNode(four);
         assertArrayEquals(new Object[] {four}, treeView.getSelectedNodes().toArray());
         // automatic expand
-        assertEquals(true, two.getExpanded().getObject());
-        assertEquals(true, one.getExpanded().getObject());
+        assertTrue(two.getExpanded().getObject());
+        assertTrue(one.getExpanded().getObject());
         // view
         tester.startComponentInPage(treeView);
         assertEquals("4", treeView.getSelectedViews()[0].getId());
-        assertTrue(
-                tester.getComponentFromLastRenderedPage(
-                                "treeView:rootView:1:children:2:children:4:selectableLabel")
-                        .getBehaviors()
-                        .contains(TreeView.SELECTED_BEHAVIOR));
+        assertTrue(tester.getComponentFromLastRenderedPage("treeView:rootView:1:children:2:children:4:selectableLabel")
+                .getBehaviors()
+                .contains(TreeView.SELECTED_BEHAVIOR));
 
         // to test selection listening:
         final AtomicBoolean fired = new AtomicBoolean();
-        treeView.addSelectionListener(
-                target -> {
-                    fired.set(true);
-                });
+        treeView.addSelectionListener(target -> {
+            fired.set(true);
+        });
 
         // select programmatically, with ajax
-        treeView.add(
-                new AjaxEventBehavior("testSelectWithAjax") {
-                    private static final long serialVersionUID = 4422989219680841271L;
+        treeView.add(new AjaxEventBehavior("testSelectWithAjax") {
+            private static final long serialVersionUID = 4422989219680841271L;
 
-                    @Override
-                    protected void onEvent(AjaxRequestTarget target) {
-                        treeView.setSelectedNode(three, target);
-                    }
-                });
+            @Override
+            protected void onEvent(AjaxRequestTarget target) {
+                treeView.setSelectedNode(three, target);
+            }
+        });
         fired.set(false);
         tester.executeAjaxEvent(treeView, "testSelectWithAjax");
         assertTrue(fired.get());
         assertArrayEquals(new Object[] {three}, treeView.getSelectedNodes().toArray());
         assertEquals("3", treeView.getSelectedViews()[0].getId());
-        assertFalse(
-                tester.getComponentFromLastRenderedPage(
-                                "treeView:rootView:1:children:2:children:4:selectableLabel")
-                        .getBehaviors()
-                        .contains(TreeView.SELECTED_BEHAVIOR));
-        assertTrue(
-                tester.getComponentFromLastRenderedPage(
-                                "treeView:rootView:1:children:3:selectableLabel")
-                        .getBehaviors()
-                        .contains(TreeView.SELECTED_BEHAVIOR));
+        assertFalse(tester.getComponentFromLastRenderedPage("treeView:rootView:1:children:2:children:4:selectableLabel")
+                .getBehaviors()
+                .contains(TreeView.SELECTED_BEHAVIOR));
+        assertTrue(tester.getComponentFromLastRenderedPage("treeView:rootView:1:children:3:selectableLabel")
+                .getBehaviors()
+                .contains(TreeView.SELECTED_BEHAVIOR));
 
         // select with gui
         fired.set(false);
@@ -141,20 +133,16 @@ public class TreeViewTest extends GeoServerWicketTestSupport {
         assertTrue(fired.get());
         assertArrayEquals(new Object[] {two}, treeView.getSelectedNodes().toArray());
         assertEquals("2", treeView.getSelectedViews()[0].getId());
-        assertFalse(
-                tester.getComponentFromLastRenderedPage(
-                                "treeView:rootView:1:children:3:selectableLabel")
-                        .getBehaviors()
-                        .contains(TreeView.SELECTED_BEHAVIOR));
-        assertTrue(
-                tester.getComponentFromLastRenderedPage(
-                                "treeView:rootView:1:children:2:label:selectableLabel")
-                        .getBehaviors()
-                        .contains(TreeView.SELECTED_BEHAVIOR));
+        assertFalse(tester.getComponentFromLastRenderedPage("treeView:rootView:1:children:3:selectableLabel")
+                .getBehaviors()
+                .contains(TreeView.SELECTED_BEHAVIOR));
+        assertTrue(tester.getComponentFromLastRenderedPage("treeView:rootView:1:children:2:label:selectableLabel")
+                .getBehaviors()
+                .contains(TreeView.SELECTED_BEHAVIOR));
 
         // automatic unselect when unexpanding
         tester.executeAjaxEvent("treeView:rootView:1:cbExpand", "click");
-        assertEquals(false, one.getExpanded().getObject());
+        assertFalse(one.getExpanded().getObject());
         assertTrue(treeView.getSelectedNodes().isEmpty());
         assertEquals(0, treeView.getSelectedViews().length);
 
@@ -168,32 +156,24 @@ public class TreeViewTest extends GeoServerWicketTestSupport {
         assertTrue(treeView.getSelectedNodes().contains(two));
         assertTrue(treeView.getSelectedNodes().contains(three));
         assertEquals(2, treeView.getSelectedViews().length);
-        assertTrue(
-                tester.getComponentFromLastRenderedPage(
-                                "treeView:rootView:1:children:3:selectableLabel")
-                        .getBehaviors()
-                        .contains(TreeView.SELECTED_BEHAVIOR));
-        assertTrue(
-                tester.getComponentFromLastRenderedPage(
-                                "treeView:rootView:1:children:2:label:selectableLabel")
-                        .getBehaviors()
-                        .contains(TreeView.SELECTED_BEHAVIOR));
+        assertTrue(tester.getComponentFromLastRenderedPage("treeView:rootView:1:children:3:selectableLabel")
+                .getBehaviors()
+                .contains(TreeView.SELECTED_BEHAVIOR));
+        assertTrue(tester.getComponentFromLastRenderedPage("treeView:rootView:1:children:2:label:selectableLabel")
+                .getBehaviors()
+                .contains(TreeView.SELECTED_BEHAVIOR));
         fired.set(false);
         tester.getRequest().addParameter("ctrl", "true");
         tester.executeAjaxEvent("treeView:rootView:1:children:2:label:selectableLabel", "click");
         assertTrue(fired.get());
         assertArrayEquals(new Object[] {three}, treeView.getSelectedNodes().toArray());
         assertEquals("3", treeView.getSelectedViews()[0].getId());
-        assertFalse(
-                tester.getComponentFromLastRenderedPage(
-                                "treeView:rootView:1:children:2:children:4:selectableLabel")
-                        .getBehaviors()
-                        .contains(TreeView.SELECTED_BEHAVIOR));
-        assertTrue(
-                tester.getComponentFromLastRenderedPage(
-                                "treeView:rootView:1:children:3:selectableLabel")
-                        .getBehaviors()
-                        .contains(TreeView.SELECTED_BEHAVIOR));
+        assertFalse(tester.getComponentFromLastRenderedPage("treeView:rootView:1:children:2:children:4:selectableLabel")
+                .getBehaviors()
+                .contains(TreeView.SELECTED_BEHAVIOR));
+        assertTrue(tester.getComponentFromLastRenderedPage("treeView:rootView:1:children:3:selectableLabel")
+                .getBehaviors()
+                .contains(TreeView.SELECTED_BEHAVIOR));
 
         // multi-select with shift
         tester.executeAjaxEvent("treeView:rootView:1:children:2:label:selectableLabel", "click");
@@ -206,21 +186,15 @@ public class TreeViewTest extends GeoServerWicketTestSupport {
         assertTrue(treeView.getSelectedNodes().contains(three));
         assertTrue(treeView.getSelectedNodes().contains(five));
         assertEquals(3, treeView.getSelectedViews().length);
-        assertTrue(
-                tester.getComponentFromLastRenderedPage(
-                                "treeView:rootView:1:children:3:selectableLabel")
-                        .getBehaviors()
-                        .contains(TreeView.SELECTED_BEHAVIOR));
-        assertTrue(
-                tester.getComponentFromLastRenderedPage(
-                                "treeView:rootView:1:children:5:selectableLabel")
-                        .getBehaviors()
-                        .contains(TreeView.SELECTED_BEHAVIOR));
-        assertTrue(
-                tester.getComponentFromLastRenderedPage(
-                                "treeView:rootView:1:children:2:label:selectableLabel")
-                        .getBehaviors()
-                        .contains(TreeView.SELECTED_BEHAVIOR));
+        assertTrue(tester.getComponentFromLastRenderedPage("treeView:rootView:1:children:3:selectableLabel")
+                .getBehaviors()
+                .contains(TreeView.SELECTED_BEHAVIOR));
+        assertTrue(tester.getComponentFromLastRenderedPage("treeView:rootView:1:children:5:selectableLabel")
+                .getBehaviors()
+                .contains(TreeView.SELECTED_BEHAVIOR));
+        assertTrue(tester.getComponentFromLastRenderedPage("treeView:rootView:1:children:2:label:selectableLabel")
+                .getBehaviors()
+                .contains(TreeView.SELECTED_BEHAVIOR));
 
         // same but upside down
         tester.executeAjaxEvent("treeView:rootView:1:children:5:selectableLabel", "click");
@@ -233,21 +207,15 @@ public class TreeViewTest extends GeoServerWicketTestSupport {
         assertTrue(treeView.getSelectedNodes().contains(three));
         assertTrue(treeView.getSelectedNodes().contains(five));
         assertEquals(3, treeView.getSelectedViews().length);
-        assertTrue(
-                tester.getComponentFromLastRenderedPage(
-                                "treeView:rootView:1:children:3:selectableLabel")
-                        .getBehaviors()
-                        .contains(TreeView.SELECTED_BEHAVIOR));
-        assertTrue(
-                tester.getComponentFromLastRenderedPage(
-                                "treeView:rootView:1:children:5:selectableLabel")
-                        .getBehaviors()
-                        .contains(TreeView.SELECTED_BEHAVIOR));
-        assertTrue(
-                tester.getComponentFromLastRenderedPage(
-                                "treeView:rootView:1:children:2:label:selectableLabel")
-                        .getBehaviors()
-                        .contains(TreeView.SELECTED_BEHAVIOR));
+        assertTrue(tester.getComponentFromLastRenderedPage("treeView:rootView:1:children:3:selectableLabel")
+                .getBehaviors()
+                .contains(TreeView.SELECTED_BEHAVIOR));
+        assertTrue(tester.getComponentFromLastRenderedPage("treeView:rootView:1:children:5:selectableLabel")
+                .getBehaviors()
+                .contains(TreeView.SELECTED_BEHAVIOR));
+        assertTrue(tester.getComponentFromLastRenderedPage("treeView:rootView:1:children:2:label:selectableLabel")
+                .getBehaviors()
+                .contains(TreeView.SELECTED_BEHAVIOR));
     }
 
     @Test
@@ -278,31 +246,23 @@ public class TreeViewTest extends GeoServerWicketTestSupport {
         final AttributeAppender app = treeView.marks.get(TESTMARK).getBehaviour();
 
         tester.startComponentInPage(treeView);
-        assertTrue(
-                tester.getComponentFromLastRenderedPage(
-                                "treeView:rootView:1:children:2:label:selectableLabel")
-                        .getBehaviors()
-                        .contains(app));
-        assertTrue(
-                tester.getComponentFromLastRenderedPage(
-                                "treeView:rootView:1:children:3:selectableLabel")
-                        .getBehaviors()
-                        .contains(app));
+        assertTrue(tester.getComponentFromLastRenderedPage("treeView:rootView:1:children:2:label:selectableLabel")
+                .getBehaviors()
+                .contains(app));
+        assertTrue(tester.getComponentFromLastRenderedPage("treeView:rootView:1:children:3:selectableLabel")
+                .getBehaviors()
+                .contains(app));
 
         treeView.clearMarked("testMark");
         assertFalse(treeView.hasMark(TESTMARK, two));
         assertFalse(treeView.hasMark(TESTMARK, three));
 
         tester.startComponentInPage(treeView);
-        assertFalse(
-                tester.getComponentFromLastRenderedPage(
-                                "treeView:rootView:1:children:2:label:selectableLabel")
-                        .getBehaviors()
-                        .contains(app));
-        assertFalse(
-                tester.getComponentFromLastRenderedPage(
-                                "treeView:rootView:1:children:3:selectableLabel")
-                        .getBehaviors()
-                        .contains(app));
+        assertFalse(tester.getComponentFromLastRenderedPage("treeView:rootView:1:children:2:label:selectableLabel")
+                .getBehaviors()
+                .contains(app));
+        assertFalse(tester.getComponentFromLastRenderedPage("treeView:rootView:1:children:3:selectableLabel")
+                .getBehaviors()
+                .contains(app));
     }
 }

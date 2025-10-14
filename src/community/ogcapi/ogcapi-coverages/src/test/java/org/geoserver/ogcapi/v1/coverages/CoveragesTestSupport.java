@@ -17,8 +17,7 @@ public class CoveragesTestSupport extends OGCApiTestSupport {
 
     protected static final String TAZDEM_TITLE = "Down under digital elevation model";
     protected static final String TAZDEM_DESCRIPTION = "So that you know where up and down are";
-    protected static final QName TIMESERIES =
-            new QName(MockData.SF_URI, "timeseries", MockData.SF_PREFIX);
+    protected static final QName TIMESERIES = new QName(MockData.SF_URI, "timeseries", MockData.SF_PREFIX);
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {

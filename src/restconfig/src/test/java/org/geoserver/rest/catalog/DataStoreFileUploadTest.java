@@ -57,7 +57,8 @@ import org.w3c.dom.NodeList;
 
 public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
 
-    @ClassRule public static TemporaryFolder temp = new TemporaryFolder();
+    @ClassRule
+    public static TemporaryFolder temp = new TemporaryFolder();
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -156,10 +157,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         URL url = URLs.fileToUrl(file.getCanonicalFile());
         String body = url.toExternalForm();
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        ROOT_PATH + "/workspaces/gs/datastores/pds/external.shp",
-                        body,
-                        "text/plain");
+                putAsServletResponse(ROOT_PATH + "/workspaces/gs/datastores/pds/external.shp", body, "text/plain");
         assertEquals(400, response.getStatus());
     }
 
@@ -173,10 +171,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         assertNull(cat.getDataStoreByName("gs", "store with spaces"));
 
         byte[] bytes = shpZipAsBytes();
-        put(
-                ROOT_PATH + "/workspaces/gs/datastores/store%20with%20spaces/file.shp",
-                bytes,
-                "application/zip");
+        put(ROOT_PATH + "/workspaces/gs/datastores/store%20with%20spaces/file.shp", bytes, "application/zip");
 
         DataStoreInfo ds = cat.getDataStoreByName("gs", "store with spaces");
         assertNull(ds);
@@ -262,19 +257,14 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         loadAppSchemaTestData();
 
         // upload mapping file (datastore is created implicitly)
-        put(
-                ROOT_PATH + "/workspaces/gsml/datastores/mappedPolygons/file.appschema",
-                bytes,
-                "text/xml");
+        put(ROOT_PATH + "/workspaces/gsml/datastores/mappedPolygons/file.appschema", bytes, "text/xml");
         Document dom = getAsDOM("wfs?request=getfeature&typename=gsml:MappedFeature");
 
         // print(dom);
 
         assertEquals("wfs:FeatureCollection", dom.getDocumentElement().getNodeName());
-        NodeList mappedFeatureNodes =
-                dom.getDocumentElement()
-                        .getElementsByTagNameNS(
-                                "http://www.cgi-iugs.org/xml/GeoSciML/2", "MappedFeature");
+        NodeList mappedFeatureNodes = dom.getDocumentElement()
+                .getElementsByTagNameNS("http://www.cgi-iugs.org/xml/GeoSciML/2", "MappedFeature");
         assertNotNull(mappedFeatureNodes);
         assertEquals(2, mappedFeatureNodes.getLength());
 
@@ -283,20 +273,14 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
 
         // upload alternative mapping file
         bytes = appSchemaAlternativeMappingAsBytes();
-        put(
-                ROOT_PATH
-                        + "/workspaces/gsml/datastores/mappedPolygons/file.appschema?configure=none",
-                bytes,
-                "text/xml");
+        put(ROOT_PATH + "/workspaces/gsml/datastores/mappedPolygons/file.appschema?configure=none", bytes, "text/xml");
         dom = getAsDOM("wfs?request=getfeature&typename=gsml:MappedFeature");
 
         // print(dom);
 
         assertEquals("wfs:FeatureCollection", dom.getDocumentElement().getNodeName());
-        mappedFeatureNodes =
-                dom.getDocumentElement()
-                        .getElementsByTagNameNS(
-                                "http://www.cgi-iugs.org/xml/GeoSciML/2", "MappedFeature");
+        mappedFeatureNodes = dom.getDocumentElement()
+                .getElementsByTagNameNS("http://www.cgi-iugs.org/xml/GeoSciML/2", "MappedFeature");
         assertNotNull(mappedFeatureNodes);
         assertEquals(2, mappedFeatureNodes.getLength());
 
@@ -321,10 +305,8 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
     private void loadAppSchemaTestData() throws IOException {
         GeoServerResourceLoader loader =
                 new GeoServerResourceLoader(getTestData().getDataDirectoryRoot());
-        loader.copyFromClassPath(
-                "test-data/mappedPolygons.properties", "data/gsml/mappedPolygons.properties");
-        loader.copyFromClassPath(
-                "test-data/mappedPolygons.oasis.xml", "data/gsml/mappedPolygons.oasis.xml");
+        loader.copyFromClassPath("test-data/mappedPolygons.properties", "data/gsml/mappedPolygons.properties");
+        loader.copyFromClassPath("test-data/mappedPolygons.oasis.xml", "data/gsml/mappedPolygons.oasis.xml");
         loader.copyFromClassPath(
                 "test-data/commonSchemas_new/GeoSciML/CGI_basicTypes.xsd",
                 "data/gsml/commonSchemas_new/GeoSciML/CGI_basicTypes.xsd");
@@ -335,8 +317,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
                 "test-data/commonSchemas_new/GeoSciML/earthMaterial.xsd",
                 "data/gsml/commonSchemas_new/GeoSciML/earthMaterial.xsd");
         loader.copyFromClassPath(
-                "test-data/commonSchemas_new/GeoSciML/fossil.xsd",
-                "data/gsml/commonSchemas_new/GeoSciML/fossil.xsd");
+                "test-data/commonSchemas_new/GeoSciML/fossil.xsd", "data/gsml/commonSchemas_new/GeoSciML/fossil.xsd");
         loader.copyFromClassPath(
                 "test-data/commonSchemas_new/GeoSciML/geologicStructure.xsd",
                 "data/gsml/commonSchemas_new/GeoSciML/geologicStructure.xsd");
@@ -347,8 +328,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
                 "test-data/commonSchemas_new/GeoSciML/geosciml.xsd",
                 "data/gsml/commonSchemas_new/GeoSciML/geosciml.xsd");
         loader.copyFromClassPath(
-                "test-data/commonSchemas_new/GeoSciML/Gsml.xsd",
-                "data/gsml/commonSchemas_new/GeoSciML/Gsml.xsd");
+                "test-data/commonSchemas_new/GeoSciML/Gsml.xsd", "data/gsml/commonSchemas_new/GeoSciML/Gsml.xsd");
         loader.copyFromClassPath(
                 "test-data/commonSchemas_new/GeoSciML/metadata.xsd",
                 "data/gsml/commonSchemas_new/GeoSciML/metadata.xsd");
@@ -368,11 +348,10 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
 
             String originalAsString = new String(original, StandardCharsets.UTF_8);
             // modify paths in the original mapping file
-            String modifiedAsString =
-                    originalAsString
-                            .replace("file:./", "file:../")
-                            .replace("commonSchemas_new/", "../commonSchemas_new/")
-                            .replace("mappedPolygons.oasis", "../mappedPolygons.oasis");
+            String modifiedAsString = originalAsString
+                    .replace("file:./", "file:../")
+                    .replace("commonSchemas_new/", "../commonSchemas_new/")
+                    .replace("mappedPolygons.oasis", "../mappedPolygons.oasis");
 
             byte[] modified = modifiedAsString.getBytes(StandardCharsets.UTF_8);
 
@@ -388,8 +367,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
             Document mappingDom = dom(new ByteArrayInputStream(mapping));
 
             // remove mapping for MappedFeature/gml:name[2] attribute
-            NodeList attrMappingNodes =
-                    mappingDom.getDocumentElement().getElementsByTagName("AttributeMapping");
+            NodeList attrMappingNodes = mappingDom.getDocumentElement().getElementsByTagName("AttributeMapping");
             for (int i = 0; i < attrMappingNodes.getLength(); i++) {
                 Node attrMapping = attrMappingNodes.item(i);
                 NodeList children = attrMapping.getChildNodes();
@@ -416,11 +394,8 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         File file = temp.getRoot();
         String body = file.getAbsolutePath();
         // the request will fail since it won't attempt to copy a directory
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        ROOT_PATH + "/workspaces/foo/datastores/bar/external.shp",
-                        body,
-                        "application/zip");
+        MockHttpServletResponse response = putAsServletResponse(
+                ROOT_PATH + "/workspaces/foo/datastores/bar/external.shp", body, "application/zip");
         assertEquals(500, response.getStatus());
         assertThat(response.getContentAsString(), startsWith("Error renaming zip file from "));
         // verify that the external file was not deleted
@@ -435,11 +410,8 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         // create the file in the data directory
         File file2 = getResourceLoader().createDirectory("data/foo/bar1/test1.zip");
         // the request will fail since it won't overwrite an existing zip file
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        ROOT_PATH + "/workspaces/foo/datastores/bar1/external.shp",
-                        body,
-                        "application/zip");
+        MockHttpServletResponse response = putAsServletResponse(
+                ROOT_PATH + "/workspaces/foo/datastores/bar1/external.shp", body, "application/zip");
         assertEquals(500, response.getStatus());
         assertThat(response.getContentAsString(), startsWith("Error renaming zip file from "));
         // verify that the external file was not deleted
@@ -454,11 +426,8 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         File file = temp.newFile("test2.zip");
         String body = file.getAbsolutePath();
         // the request will fail unzipping since it is not a valid zip fail
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        ROOT_PATH + "/workspaces/foo/datastores/bar2/external.shp",
-                        body,
-                        "application/zip");
+        MockHttpServletResponse response = putAsServletResponse(
+                ROOT_PATH + "/workspaces/foo/datastores/bar2/external.shp", body, "application/zip");
         assertEquals(500, response.getStatus());
         assertEquals("Error occured unzipping file", response.getContentAsString());
         // verify that the external file was not deleted
@@ -480,10 +449,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         Catalog cat = getCatalog();
         assertNull(cat.getDataStoreByName("gs", "san_andres_y_providencia"));
         // the request should succeed
-        put(
-                ROOT_PATH + "/workspaces/gs/datastores/san_andres_y_providencia/external.shp",
-                body,
-                "application/zip");
+        put(ROOT_PATH + "/workspaces/gs/datastores/san_andres_y_providencia/external.shp", body, "application/zip");
         // verify that the datastore was created successfully
         DataStoreInfo ds = cat.getDataStoreByName("gs", "san_andres_y_providencia");
         assertNotNull(ds);
@@ -494,7 +460,9 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         assertEquals(
                 "The data directory file was not deleted",
                 Resource.Type.UNDEFINED,
-                getResourceLoader().get("data/gs/san_andres_y_providencia/test3.zip").getType());
+                getResourceLoader()
+                        .get("data/gs/san_andres_y_providencia/test3.zip")
+                        .getType());
     }
 
     @Test
@@ -502,21 +470,17 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         // set up a system sandbox
         File systemSandbox = new File("./target/systemSandbox").getCanonicalFile();
         System.setProperty(GEOSERVER_DATA_SANDBOX, systemSandbox.getAbsolutePath());
-        DefaultFileAccessManager fam =
-                (DefaultFileAccessManager) FileAccessManager.lookupFileAccessManager();
+        DefaultFileAccessManager fam = (DefaultFileAccessManager) FileAccessManager.lookupFileAccessManager();
         fam.reload();
 
         try {
             DataStoreInfo ds = uploadSanAndreas();
 
             // the files have been stored in the system sandbox (replace is for Windows)
-            String expected =
-                    new File(systemSandbox, "gs/san_andres_y_providencia")
-                            .getAbsolutePath()
-                            .replace("\\", "/");
-            assertThat(
-                    String.valueOf(ds.getConnectionParameters().get("url")),
-                    containsString(expected));
+            String expected = new File(systemSandbox, "gs/san_andres_y_providencia")
+                    .getAbsolutePath()
+                    .replace("\\", "/");
+            assertThat(String.valueOf(ds.getConnectionParameters().get("url")), containsString(expected));
         } finally {
             System.clearProperty(GEOSERVER_DATA_SANDBOX);
             fam.reload();

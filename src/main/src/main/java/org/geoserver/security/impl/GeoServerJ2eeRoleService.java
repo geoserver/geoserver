@@ -41,18 +41,16 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 /**
- * Implementation for {@link GeoServerRoleService} obtaining roles from <b>role-name</b> elements
- * contained in WEB-INF/web.xml
+ * Implementation for {@link GeoServerRoleService} obtaining roles from <b>role-name</b> elements contained in
+ * WEB-INF/web.xml
  *
- * <p>This implementation could be used in combination with {@link
- * GeoServerJ2eeAuthenticationFilter} objects.
+ * <p>This implementation could be used in combination with {@link GeoServerJ2eeAuthenticationFilter} objects.
  *
  * @author Christian
  */
-public class GeoServerJ2eeRoleService extends AbstractGeoServerSecurityService
-        implements GeoServerRoleService {
+public class GeoServerJ2eeRoleService extends AbstractGeoServerSecurityService implements GeoServerRoleService {
 
-    public class WebXMLContentHandler implements ContentHandler {
+    public static class WebXMLContentHandler implements ContentHandler {
 
         public static final String SECURITY_ROLE_REF = "security-role-ref";
         public static final String AUTH_CONSTRAINT = "auth-constraint";
@@ -99,8 +97,7 @@ public class GeoServerJ2eeRoleService extends AbstractGeoServerSecurityService
         }
 
         @Override
-        public void startElement(String uri, String localName, String qName, Attributes attrs)
-                throws SAXException {
+        public void startElement(String uri, String localName, String qName, Attributes attrs) throws SAXException {
             if (SECURITY_ROLE_REF.equals(localName)) {
                 inSecRoleRef = true;
             }
@@ -269,8 +266,7 @@ public class GeoServerJ2eeRoleService extends AbstractGeoServerSecurityService
 
             xmlReader.setContentHandler(handler);
             // suppress validation
-            xmlReader.setEntityResolver(
-                    (publicId, systemId) -> new InputSource(new StringReader("")));
+            xmlReader.setEntityResolver((publicId, systemId) -> new InputSource(new StringReader("")));
             xmlReader.parse(inputSource);
         } catch (Exception e) {
             throw new IOException(e);
@@ -366,14 +362,13 @@ public class GeoServerJ2eeRoleService extends AbstractGeoServerSecurityService
     /**
      * (non-Javadoc)
      *
-     * @see org.geoserver.security.GeoServerRoleService#personalizeRoleParams(java.lang.String,
-     *     java.util.Properties, java.lang.String, java.util.Properties)
+     * @see org.geoserver.security.GeoServerRoleService#personalizeRoleParams(java.lang.String, java.util.Properties,
+     *     java.lang.String, java.util.Properties)
      *     <p>Do nothing, J2EE roles have no role params
      */
     @Override
     public Properties personalizeRoleParams(
-            String roleName, Properties roleParams, String userName, Properties userProps)
-            throws IOException {
+            String roleName, Properties roleParams, String userName, Properties userProps) throws IOException {
         return null;
     }
 

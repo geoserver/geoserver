@@ -10,14 +10,16 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
+import com.github.tomakehurst.wiremock.matching.RequestPattern;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -70,90 +72,79 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
 
     @BeforeClass
     public static void beforeClass() throws Exception {
-        openIdService =
-                new WireMockServer(
-                        wireMockConfig()
-                                .dynamicPort()
-                                // uncomment the following to get wiremock logging
-                                .notifier(new ConsoleNotifier(true)));
+        openIdService = new WireMockServer(wireMockConfig()
+                .dynamicPort()
+                // uncomment the following to get wiremock logging
+                .notifier(new ConsoleNotifier(true)));
         openIdService.start();
 
-        openIdService.stubFor(
-                WireMock.get(urlEqualTo("/.well-known/jwks.json"))
-                        .willReturn(
-                                aResponse()
-                                        .withStatus(200)
-                                        .withHeader(
-                                                "Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                                        .withBodyFile("jwks.json")));
+        openIdService.stubFor(WireMock.get(urlEqualTo("/.well-known/jwks.json"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                        .withBodyFile("jwks.json")));
 
-        openIdService.stubFor(
-                WireMock.post(urlPathEqualTo("/token"))
-                        .withRequestBody(containing("grant_type=authorization_code"))
-                        .withRequestBody(containing("client_id=" + CLIENT_ID))
-                        //                        .withQueryParam("client_secret",
-                        // equalTo(CLIENT_SECRET))
-                        .withRequestBody(containing("code=" + CODE))
-                        .willReturn(
-                                aResponse()
-                                        .withStatus(200)
-                                        .withHeader(
-                                                "Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                                        .withBodyFile("token_response.json")));
-        openIdService.stubFor(
-                WireMock.post(urlPathEqualTo("/token"))
-                        .withRequestBody(containing("grant_type=authorization_code"))
-                        .withRequestBody(containing("client_id=" + CLIENT_ID))
-                        .withRequestBody(containing("client_secret=" + CLIENT_SECRET))
-                        .withRequestBody(containing("code=" + CODE))
-                        .willReturn(
-                                aResponse()
-                                        .withStatus(200)
-                                        .withHeader(
-                                                "Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                                        .withBodyFile("token_response_with_secret.json")));
+        openIdService.stubFor(WireMock.post(urlPathEqualTo("/token"))
+                .withRequestBody(containing("grant_type=authorization_code"))
+                .withRequestBody(containing("client_id=" + CLIENT_ID))
+                //                        .withQueryParam("client_secret",
+                // equalTo(CLIENT_SECRET))
+                .withRequestBody(containing("code=" + CODE))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                        .withBodyFile("token_response.json")));
+        openIdService.stubFor(WireMock.post(urlPathEqualTo("/token"))
+                .withRequestBody(containing("grant_type=authorization_code"))
+                .withRequestBody(containing("client_id=" + CLIENT_ID))
+                .withRequestBody(containing("client_secret=" + CLIENT_SECRET))
+                .withRequestBody(containing("code=" + CODE))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                        .withBodyFile("token_response_with_secret.json")));
 
-        openIdService.stubFor(
-                WireMock.get(WireMock.urlMatching(".*/userinfo")) // disallow query parameters
-                        .withHeader("Authorization", equalTo("Bearer " + TEST_OPAQUE_TOKEN))
-                        .willReturn(
-                                aResponse()
-                                        .withStatus(200)
-                                        .withHeader(
-                                                "Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                                        .withBodyFile("userinfo-opaque.json")));
+        openIdService.stubFor(WireMock.get(WireMock.urlMatching(".*/userinfo")) // disallow query parameters
+                .withHeader("Authorization", equalTo("Bearer " + TEST_OPAQUE_TOKEN))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                        .withBodyFile("userinfo-opaque.json")));
 
-        openIdService.stubFor(
-                WireMock.get(WireMock.urlMatching(".*/userinfo")) // disallow query parameters
-                        .withHeader(
-                                "Authorization",
-                                WireMock.or(
-                                        equalTo("Bearer CPURR33RUz-gGhjwODTd9zXo5JkQx4wS"),
-                                        equalTo("Bearer CPURR33RUz-secret")))
-                        .willReturn(
-                                aResponse()
-                                        .withStatus(200)
-                                        .withHeader(
-                                                "Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                                        .withBodyFile("userinfo.json")));
+        openIdService.stubFor(WireMock.get(WireMock.urlMatching(".*/userinfo")) // disallow query parameters
+                .withHeader(
+                        "Authorization",
+                        WireMock.or(
+                                equalTo("Bearer CPURR33RUz-gGhjwODTd9zXo5JkQx4wS"),
+                                equalTo("Bearer CPURR33RUz-secret")))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                        .withBodyFile("userinfo.json")));
 
-        openIdService.stubFor(
-                WireMock.post(urlPathEqualTo("/introspect"))
-                        .withHeader(
-                                "Authorization",
-                                equalTo(
-                                        "Basic "
-                                                + Base64.encodeBytes(
-                                                        (CLIENT_ID + ":" + CLIENT_SECRET)
-                                                                .getBytes())))
-                        .withRequestBody(containing("token=" + TEST_OPAQUE_TOKEN))
-                        .withRequestBody(containing("token_type_hint=access_token"))
-                        .willReturn(
-                                aResponse()
-                                        .withStatus(200)
-                                        .withHeader(
-                                                "Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                                        .withBody("{\"active\": true}")));
+        long now = Instant.now().getEpochSecond();
+        long expiration = now + 3600;
+        openIdService.stubFor(WireMock.post(urlPathEqualTo("/introspect"))
+                .withHeader(
+                        "Authorization",
+                        equalTo("Basic " + Base64.encodeBytes((CLIENT_ID + ":" + CLIENT_SECRET).getBytes())))
+                .withRequestBody(containing("token=" + TEST_OPAQUE_TOKEN))
+                .withRequestBody(containing("token_type_hint=access_token"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                        .withBody("{\"active\": true, \"exp\": " + expiration + "}")));
+    }
+
+    @Before
+    public void cleanupCounters() throws Exception {
+        openIdService.resetRequests();
+    }
+
+    @After
+    public void clear() {
+        SecurityContextHolder.clearContext();
+        RequestContextHolder.resetRequestAttributes();
     }
 
     @AfterClass
@@ -213,10 +204,7 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
         manager.saveFilter(filterConfig);
     }
 
-    /**
-     * Enable the Spring Security authentication filters, we want the test to be complete and
-     * realistic
-     */
+    /** Enable the Spring Security authentication filters, we want the test to be complete and realistic */
     @Override
     protected List<Filter> getFilters() {
 
@@ -256,25 +244,21 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
         MockHttpServletResponse codeResponse = executeOnSecurityFilters(codeRequest);
 
         // should have authenticated and given roles, and they have been saved in the session
-        SecurityContext context =
-                new HttpSessionSecurityContextRepository()
-                        .loadContext(new HttpRequestResponseHolder(codeRequest, codeResponse));
+        SecurityContext context = new HttpSessionSecurityContextRepository()
+                .loadContext(new HttpRequestResponseHolder(codeRequest, codeResponse));
         Authentication auth = context.getAuthentication();
         assertNotNull(auth);
         assertEquals("andrea.aime@gmail.com", auth.getPrincipal());
 
         assertThat(
-                auth.getAuthorities().stream()
-                        .map(a -> a.getAuthority())
-                        .collect(Collectors.toList()),
+                auth.getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.toList()),
                 CoreMatchers.hasItems("R1", "R2", "ROLE_AUTHENTICATED"));
     }
 
     @Test
     public void testClientConfidential() throws Exception {
         GeoServerSecurityManager manager = getSecurityManager();
-        OpenIdConnectFilterConfig config =
-                (OpenIdConnectFilterConfig) manager.loadFilterConfig("openidconnect", true);
+        OpenIdConnectFilterConfig config = (OpenIdConnectFilterConfig) manager.loadFilterConfig("openidconnect", true);
         config.setSendClientSecret(true);
         manager.saveFilter(config);
 
@@ -283,23 +267,35 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
         MockHttpServletResponse codeResponse = executeOnSecurityFilters(codeRequest);
 
         // should have authenticated and given roles, and they have been saved in the session
-        SecurityContext context =
-                new HttpSessionSecurityContextRepository()
-                        .loadContext(new HttpRequestResponseHolder(codeRequest, codeResponse));
+        SecurityContext context = new HttpSessionSecurityContextRepository()
+                .loadContext(new HttpRequestResponseHolder(codeRequest, codeResponse));
         Authentication auth = context.getAuthentication();
         OAuth2ClientContext oauth2Context =
-                GeoServerExtensions.bean(ValidatingOAuth2RestTemplate.class)
-                        .getOAuth2ClientContext();
+                GeoServerExtensions.bean(ValidatingOAuth2RestTemplate.class).getOAuth2ClientContext();
         assertEquals("CPURR33RUz-secret", oauth2Context.getAccessToken().getValue());
         assertNotNull(auth);
         assertEquals("andrea.aime@gmail.com", auth.getPrincipal());
     }
 
     @Test
+    public void testEmptyStateParameter() throws Exception {
+        // Simulate the OpenID Provider sending the user back with an empty &state parameter.
+        // This happens e.g. when using Dex IdP and not sending a state parameter in the request to the OpenID Provider.
+        MockHttpServletRequest codeRequest = createRequest("web/?code=" + CODE + "&state=");
+        MockHttpServletResponse codeResponse = executeOnSecurityFilters(codeRequest);
+
+        // should be authenticated
+        SecurityContext context = new HttpSessionSecurityContextRepository()
+                .loadContext(new HttpRequestResponseHolder(codeRequest, codeResponse));
+        Authentication auth = context.getAuthentication();
+        assertNotNull("Authentication should not be null", auth);
+        assertEquals("andrea.aime@gmail.com", auth.getPrincipal());
+    }
+
+    @Test
     public void testIdTokenHintInEndSessionURI() throws Exception {
         GeoServerSecurityManager manager = getSecurityManager();
-        OpenIdConnectFilterConfig config =
-                (OpenIdConnectFilterConfig) manager.loadFilterConfig("openidconnect", true);
+        OpenIdConnectFilterConfig config = (OpenIdConnectFilterConfig) manager.loadFilterConfig("openidconnect", true);
         config.setSendClientSecret(true);
         config.setPostLogoutRedirectUri(null);
         manager.saveFilter(config);
@@ -309,25 +305,22 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
         MockHttpServletResponse codeResponse = executeOnSecurityFilters(codeRequest);
 
         // should have authenticated and given roles, and they have been saved in the session
-        SecurityContext context =
-                new HttpSessionSecurityContextRepository()
-                        .loadContext(new HttpRequestResponseHolder(codeRequest, codeResponse));
+        SecurityContext context = new HttpSessionSecurityContextRepository()
+                .loadContext(new HttpRequestResponseHolder(codeRequest, codeResponse));
         Authentication auth = context.getAuthentication();
         OAuth2ClientContext oauth2Context =
-                GeoServerExtensions.bean(ValidatingOAuth2RestTemplate.class)
-                        .getOAuth2ClientContext();
+                GeoServerExtensions.bean(ValidatingOAuth2RestTemplate.class).getOAuth2ClientContext();
         assertEquals("CPURR33RUz-secret", oauth2Context.getAccessToken().getValue());
         assertNotNull(auth);
         assertEquals("andrea.aime@gmail.com", auth.getPrincipal());
         assertNotNull(oauth2Context.getAccessToken().getAdditionalInformation());
         assertNotNull(oauth2Context.getAccessToken().getAdditionalInformation().get("id_token"));
 
-        final String idToken =
-                (String) oauth2Context.getAccessToken().getAdditionalInformation().get("id_token");
+        final String idToken = (String)
+                oauth2Context.getAccessToken().getAdditionalInformation().get("id_token");
 
         assertEquals(
-                config.buildEndSessionUrl(idToken).toString(),
-                config.getLogoutUri() + "?id_token_hint=" + idToken);
+                config.buildEndSessionUrl(idToken).toString(), config.getLogoutUri() + "?id_token_hint=" + idToken);
     }
 
     @Test
@@ -340,34 +333,78 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
         manager.saveFilter(filterConfig);
 
         // set up a GetFeature request with a bearer token in the headers
-        MockHttpServletRequest request =
-                createRequest(
-                        "wfs?service=WFS&version=2.0.0&request=GetFeature&typeName="
-                                + getLayerId(MockData.BASIC_POLYGONS));
+        MockHttpServletRequest request = createRequest(
+                "wfs?service=WFS&version=2.0.0&request=GetFeature&typeName=" + getLayerId(MockData.BASIC_POLYGONS));
         request.addHeader("Authorization", "Bearer " + TEST_OPAQUE_TOKEN);
         MockHttpServletResponse response = executeOnSecurityFilters(request);
 
-        System.out.println(response.getStatus());
-        System.out.println(response.getContentAsString());
-
-        SecurityContext context =
-                new HttpSessionSecurityContextRepository()
-                        .loadContext(new HttpRequestResponseHolder(request, response));
+        SecurityContext context = new HttpSessionSecurityContextRepository()
+                .loadContext(new HttpRequestResponseHolder(request, response));
         Authentication auth = context.getAuthentication();
         assertNotNull(auth);
         assertEquals("claudius.ptolemy@gmail.com", auth.getPrincipal());
         assertThat(
-                auth.getAuthorities().stream()
-                        .map(a -> a.getAuthority())
-                        .collect(Collectors.toList()),
+                auth.getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.toList()),
                 CoreMatchers.hasItems("geography", "astronomy", "ROLE_AUTHENTICATED"));
+    }
+
+    @Test
+    public void testCacheAuthentication() throws Exception {
+        // make it pull the roles from the userinfo and enable authentication cache
+        GeoServerSecurityManager manager = getSecurityManager();
+        OpenIdConnectFilterConfig filterConfig =
+                (OpenIdConnectFilterConfig) manager.loadFilterConfig("openidconnect", true);
+        filterConfig.setRoleSource(OpenIdConnectFilterConfig.OpenIdRoleSource.UserInfo);
+        filterConfig.setCacheAuthentication(true);
+        manager.saveFilter(filterConfig);
+
+        // set up a GetFeature request with a bearer token in the headers
+        MockHttpServletRequest request = createRequest(
+                "wfs?service=WFS&version=2.0.0&request=GetFeature&typeName=" + getLayerId(MockData.BASIC_POLYGONS));
+        request.addHeader("Authorization", "Bearer " + TEST_OPAQUE_TOKEN);
+
+        // execute the request
+        MockHttpServletResponse response = executeOnSecurityFilters(request);
+        assertPtolemyUser(request, response);
+        clearAuthentication(request, response);
+
+        // as the first request with no cache around, it should have contacted the introspection and the user info
+        RequestPattern introspectPattern =
+                WireMock.postRequestedFor(urlPathEqualTo("/introspect")).build();
+        RequestPattern userInfoPattern =
+                WireMock.getRequestedFor(urlPathEqualTo("/userinfo")).build();
+        assertEquals(1, openIdService.countRequestsMatching(introspectPattern).getCount());
+        assertEquals(1, openIdService.countRequestsMatching(userInfoPattern).getCount());
+        openIdService.resetRequests();
+
+        // request again, it should be cached now, no new requests to the oidc server
+        response = executeOnSecurityFilters(request);
+        assertPtolemyUser(request, response);
+        assertEquals(0, openIdService.countRequestsMatching(introspectPattern).getCount());
+        assertEquals(0, openIdService.countRequestsMatching(userInfoPattern).getCount());
+    }
+
+    private static void assertPtolemyUser(MockHttpServletRequest request, MockHttpServletResponse response) {
+        SecurityContext context = new HttpSessionSecurityContextRepository()
+                .loadContext(new HttpRequestResponseHolder(request, response));
+        Authentication auth = context.getAuthentication();
+        assertNotNull(auth);
+        assertEquals("claudius.ptolemy@gmail.com", auth.getPrincipal());
+        assertThat(
+                auth.getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.toList()),
+                CoreMatchers.hasItems("geography", "astronomy", "ROLE_AUTHENTICATED"));
+    }
+
+    private static void clearAuthentication(MockHttpServletRequest request, MockHttpServletResponse response) {
+        SecurityContext context = new HttpSessionSecurityContextRepository()
+                .loadContext(new HttpRequestResponseHolder(request, response));
+        context.setAuthentication(null);
     }
 
     private MockHttpServletResponse executeOnSecurityFilters(MockHttpServletRequest request)
             throws IOException, javax.servlet.ServletException {
         // for session local support in Spring
-        new RequestContextListener()
-                .requestInitialized(new ServletRequestEvent(request.getServletContext(), request));
+        new RequestContextListener().requestInitialized(new ServletRequestEvent(request.getServletContext(), request));
 
         // run on the
         MockFilterChain chain = new MockFilterChain();
@@ -377,11 +414,5 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
         filterChainProxy.doFilter(request, response, chain);
 
         return response;
-    }
-
-    @After
-    public void clear() {
-        SecurityContextHolder.clearContext();
-        RequestContextHolder.resetRequestAttributes();
     }
 }

@@ -49,16 +49,17 @@ import org.junit.rules.TestName;
 public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
 
     /**
-     * On a local machine this would be long wait, but Github action VMs are slow and erratic, let's
-     * give them more time
+     * On a local machine this would be long wait, but Github action VMs are slow and erratic, let's give them more time
      */
     private static final int MAX_WAIT_SEC = 60;
 
     FileSystemResourceStore store;
 
-    @Rule public TemporaryFolder folder = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
-    @Rule public TestName testName = new TestName();
+    @Rule
+    public TestName testName = new TestName();
 
     @DataPoints
     public static String[] getTestPaths() {
@@ -135,11 +136,11 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
     }
 
     /**
-     * Changes the {@link File#lastModified() file.lastModified()} timestamp, making sure the result
-     * differs from its current timestamp; may delay long enough to match file system resolution.
+     * Changes the {@link File#lastModified() file.lastModified()} timestamp, making sure the result differs from its
+     * current timestamp; may delay long enough to match file system resolution.
      *
-     * <p>Just like with the default behavior of the Unix touch command, if the file does not exist,
-     * creates a new, empty file.
+     * <p>Just like with the default behavior of the Unix touch command, if the file does not exist, creates a new,
+     * empty file.
      *
      * <p>Example: Linux systems expect around 1 second resolution for file modification.
      *
@@ -166,8 +167,7 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
     public void eventNotification() throws InterruptedException {
         AwaitResourceListener listener = new AwaitResourceListener();
 
-        ResourceNotification notification =
-                new ResourceNotification(".", Kind.ENTRY_CREATE, 1_000_000L);
+        ResourceNotification notification = new ResourceNotification(".", Kind.ENTRY_CREATE, 1_000_000L);
         CompletableFuture.runAsync(() -> listener.changed(notification));
 
         ResourceNotification n = listener.await(MAX_WAIT_SEC, SECONDS);
@@ -175,11 +175,9 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
 
         listener.reset();
         // expect timeout as no events will be sent!
-        assertThrows(
-                ConditionTimeoutException.class,
-                () -> {
-                    listener.await(100, MILLISECONDS); // expect timeout as no events will be sent!
-                });
+        assertThrows(ConditionTimeoutException.class, () -> {
+            listener.await(100, MILLISECONDS); // expect timeout as no events will be sent!
+        });
     }
 
     @Test
@@ -284,27 +282,25 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
         watcher.addListener(dirName, notifications::add);
 
         int fileCount = 256;
-        final Set<String> files =
-                IntStream.range(0, fileCount)
-                        .mapToObj(i -> String.format("File%d", i))
-                        .collect(Collectors.toSet());
+        final Set<String> files = IntStream.range(0, fileCount)
+                .mapToObj(i -> "File%d".formatted(i))
+                .collect(Collectors.toSet());
         // async create files with delay
         final BlockingQueue<String> names = new ArrayBlockingQueue<>(files.size(), true, files);
-        final Callable<Void> asyncFileModifier =
-                () -> {
-                    String resource;
-                    while ((resource = names.poll()) != null) {
-                        try {
-                            Thread.sleep(10);
-                            File f = new File(watchedDir, resource);
-                            f.getParentFile().mkdir(); // create parent if doesn't yet exist
-                            touch(f);
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                    return null;
-                };
+        final Callable<Void> asyncFileModifier = () -> {
+            String resource;
+            while ((resource = names.poll()) != null) {
+                try {
+                    Thread.sleep(10);
+                    File f = new File(watchedDir, resource);
+                    f.getParentFile().mkdir(); // create parent if doesn't yet exist
+                    touch(f);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            return null;
+        };
 
         final int nthreads = 8;
         final ExecutorService executorService = Executors.newFixedThreadPool(nthreads);
@@ -320,25 +316,28 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
                 .until(() -> getEventCounts(notifications), CoreMatchers.equalTo(fileCount));
 
         assertEquals(
-                1, notifications.stream().filter(n -> n.getKind() == Kind.ENTRY_CREATE).count());
+                1,
+                notifications.stream()
+                        .filter(n -> n.getKind() == Kind.ENTRY_CREATE)
+                        .count());
         assertEquals(
                 notifications.size() - 1,
-                notifications.stream().filter(n -> n.getKind() == Kind.ENTRY_MODIFY).count());
-
-        List<Event> fileEvents =
                 notifications.stream()
-                        .map(ResourceNotification::events)
-                        .flatMap(List::stream)
-                        .collect(Collectors.toList());
+                        .filter(n -> n.getKind() == Kind.ENTRY_MODIFY)
+                        .count());
+
+        List<Event> fileEvents = notifications.stream()
+                .map(ResourceNotification::events)
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
         assertEquals(files.size(), fileEvents.size());
     }
 
     private int getEventCounts(List<ResourceNotification> notifications) {
-        return (int)
-                notifications.stream()
-                        .map(ResourceNotification::events)
-                        .flatMap(List::stream)
-                        .count();
+        return (int) notifications.stream()
+                .map(ResourceNotification::events)
+                .flatMap(List::stream)
+                .count();
     }
 
     /** ResourceListener that traps the next ResourceNotification for testing */

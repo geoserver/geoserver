@@ -10,7 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class AbstractWicketTaskManagerTest extends AbstractTaskManagerTest {
 
-    @Autowired protected GeoServerApplication app;
+    @Autowired
+    protected GeoServerApplication app;
 
     protected WicketTester tester;
 

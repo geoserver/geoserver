@@ -32,10 +32,7 @@ public class GeofenceRulesModelTest extends GeoServerWicketTestSupport {
                 System.clearProperty("IS_GEOFENCE_AVAILABLE");
             }
         } catch (Exception e) {
-            LOGGER.log(
-                    Level.WARNING,
-                    "Could not remove System ENV variable {IS_GEOFENCE_AVAILABLE}",
-                    e);
+            LOGGER.log(Level.WARNING, "Could not remove System ENV variable {IS_GEOFENCE_AVAILABLE}", e);
         }
     }
 

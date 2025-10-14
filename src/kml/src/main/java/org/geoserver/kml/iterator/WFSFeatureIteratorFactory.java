@@ -16,8 +16,8 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureIterator;
 
 /**
- * Creates an iterator of Placemark objects mapping the vector contents of a layer. This one is
- * geared towards WFS, as such it ignores styles
+ * Creates an iterator of Placemark objects mapping the vector contents of a layer. This one is geared towards WFS, as
+ * such it ignores styles
  *
  * @author Andrea Aime - GeoSolutions
  */

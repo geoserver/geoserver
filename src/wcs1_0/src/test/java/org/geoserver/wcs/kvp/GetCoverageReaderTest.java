@@ -105,8 +105,7 @@ public class GetCoverageReaderTest extends WCSTestSupport {
         raw.put("width", "150");
         raw.put("height", "150");
 
-        GetCoverageType getCoverage =
-                (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
+        GetCoverageType getCoverage = (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
         assertEquals(layerId, getCoverage.getSourceCoverage());
         assertEquals("image/tiff", getCoverage.getOutput().getFormat().getValue());
         assertEquals("EPSG:4326", getCoverage.getOutput().getCrs().getValue());
@@ -125,8 +124,7 @@ public class GetCoverageReaderTest extends WCSTestSupport {
         raw.put("height", "150");
         raw.put("interpolation", "nearest neighbor");
 
-        GetCoverageType getCoverage =
-                (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
+        GetCoverageType getCoverage = (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
         assertEquals(layerId, getCoverage.getSourceCoverage());
         assertEquals("image/tiff", getCoverage.getOutput().getFormat().getValue());
         assertEquals("nearest neighbor", getCoverage.getInterpolationMethod().toString());

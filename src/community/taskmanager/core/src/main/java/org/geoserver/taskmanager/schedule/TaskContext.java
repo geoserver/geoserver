@@ -24,9 +24,8 @@ public interface TaskContext {
     Map<String, Object> getParameterValues() throws TaskException;
 
     /**
-     * Tasks can call this function to check if the user wants to interrupt the batch and interrupt
-     * themselves. If they do, they should still return a TaskResult that implements a roll back of
-     * what was already done.
+     * Tasks can call this function to check if the user wants to interrupt the batch and interrupt themselves. If they
+     * do, they should still return a TaskResult that implements a roll back of what was already done.
      *
      * @return whether the batch run should be interrupted, false if this is a clean-up
      */

@@ -100,12 +100,10 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
         }
     }
 
-    public WCS20GetCapabilitiesTransformer(
-            GeoServer gs, CoverageResponseDelegateFinder responseFactory) {
+    public WCS20GetCapabilitiesTransformer(GeoServer gs, CoverageResponseDelegateFinder responseFactory) {
         this.wcs = gs.getService(WCSInfo.class);
-        this.skipMisconfigured =
-                ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS.equals(
-                        gs.getGlobal().getResourceErrorHandling());
+        this.skipMisconfigured = ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS.equals(
+                gs.getGlobal().getResourceErrorHandling());
         this.responseFactory = responseFactory;
         setNamespaceDeclarationEnabled(false);
     }
@@ -137,37 +135,35 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             // register namespaces provided by extended capabilities
             NamespaceSupport namespaces = getNamespaceSupport();
             namespaces.declarePrefix("wcs", "http://www.opengis.net/wcs/2.0");
-            namespaces.declarePrefix(
-                    "int", "http://www.opengis.net/WCS_service-extension_interpolation/1.0");
+            namespaces.declarePrefix("int", "https://www.opengis.net/wcs/interpolation/1.0");
 
             namespaces.declarePrefix("crs", "http://www.opengis.net/wcs/crs/1.0");
 
             for (WCSExtendedCapabilitiesProvider cp : extensions) {
                 cp.registerNamespaces(namespaces);
             }
-            this.translator =
-                    new ExtendedCapabilitiesProvider.Translator() {
+            this.translator = new ExtendedCapabilitiesProvider.Translator() {
 
-                        @Override
-                        public void start(String element, Attributes attributes) {
-                            WCS20GetCapabilitiesTranslator.this.start(element, attributes);
-                        }
+                @Override
+                public void start(String element, Attributes attributes) {
+                    WCS20GetCapabilitiesTranslator.this.start(element, attributes);
+                }
 
-                        @Override
-                        public void start(String element) {
-                            WCS20GetCapabilitiesTranslator.this.start(element);
-                        }
+                @Override
+                public void start(String element) {
+                    WCS20GetCapabilitiesTranslator.this.start(element);
+                }
 
-                        @Override
-                        public void end(String element) {
-                            WCS20GetCapabilitiesTranslator.this.end(element);
-                        }
+                @Override
+                public void end(String element) {
+                    WCS20GetCapabilitiesTranslator.this.end(element);
+                }
 
-                        @Override
-                        public void chars(String text) {
-                            WCS20GetCapabilitiesTranslator.this.chars(text);
-                        }
-                    };
+                @Override
+                public void chars(String text) {
+                    WCS20GetCapabilitiesTranslator.this.chars(text);
+                }
+            };
         }
 
         /**
@@ -179,15 +175,13 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
         @Override
         public void encode(Object o) throws IllegalArgumentException {
             if (!(o instanceof GetCapabilitiesType)) {
-                throw new IllegalArgumentException(
-                        "Not a GetCapabilitiesType: " + o != null ? o.toString() : "null");
+                throw new IllegalArgumentException("Not a GetCapabilitiesType: " + o != null ? o.toString() : "null");
             }
             this.request = (GetCapabilitiesType) o;
             Set<CoverageInfo> coverageInfos = getCoverages();
             this.i18nRequested = request.getAcceptLanguages() != null;
             this.internationalContentHelper =
-                    new InternationalContentHelper(
-                            request.getAcceptLanguages(), wcs, new ArrayList<>(coverageInfos));
+                    new InternationalContentHelper(request.getAcceptLanguages(), wcs, new ArrayList<>(coverageInfos));
             // check the update sequence
             final long updateSequence = wcs.getGeoServer().getGlobal().getUpdateSequence();
             long requestedUpdateSequence = -1;
@@ -202,9 +196,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
                 }
                 if (requestedUpdateSequence > updateSequence) {
                     throw new WcsException(
-                            "Invalid update sequence value, it's higher "
-                                    + "than the current value, "
-                                    + updateSequence,
+                            "Invalid update sequence value, it's higher " + "than the current value, " + updateSequence,
                             WcsException.WcsExceptionCode.InvalidUpdateSequence,
                             "updateSequence");
                 }
@@ -234,16 +226,12 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
 
             final AttributesImpl attributes = WCS20Const.getDefaultNamespaces();
             attributes.addAttribute("", "version", "version", "", CUR_VERSION);
-            attributes.addAttribute(
-                    "", "updateSequence", "updateSequence", "", String.valueOf(updateSequence));
+            attributes.addAttribute("", "updateSequence", "updateSequence", "", String.valueOf(updateSequence));
             helper.registerNamespaces(getNamespaceSupport(), attributes);
 
             // TODO: add a config to choose the canonical or local schema
-            String location =
-                    buildSchemaLocation(
-                            request.getBaseUrl(),
-                            WCS.NAMESPACE,
-                            "http://schemas.opengis.net/wcs/2.0/wcsGetCapabilities.xsd");
+            String location = buildSchemaLocation(
+                    request.getBaseUrl(), WCS.NAMESPACE, "http://schemas.opengis.net/wcs/2.0/wcsGetCapabilities.xsd");
 
             // final String locationDef = WCS.NAMESPACE + " " + buildSchemaURL(request.getBaseUrl(),
             // "wcs/2.0/wcsGetCapabilities.xsd");//
@@ -256,14 +244,10 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             if (requestedUpdateSequence < updateSequence) {
                 if (allSections || sections.contains(SECTIONS.ServiceIdentification.name()))
                     handleServiceIdentification();
-                if (allSections || sections.contains(SECTIONS.ServiceProvider.name()))
-                    handleServiceProvider();
-                if (allSections || sections.contains(SECTIONS.OperationsMetadata.name()))
-                    handleOperationsMetadata();
-                if (allSections || sections.contains(SECTIONS.ServiceMetadata.name()))
-                    handleServiceMetadata(request);
-                if (allSections || sections.contains(SECTIONS.Contents.name()))
-                    handleContents(coverageInfos);
+                if (allSections || sections.contains(SECTIONS.ServiceProvider.name())) handleServiceProvider();
+                if (allSections || sections.contains(SECTIONS.OperationsMetadata.name())) handleOperationsMetadata();
+                if (allSections || sections.contains(SECTIONS.ServiceMetadata.name())) handleServiceMetadata(request);
+                if (allSections || sections.contains(SECTIONS.Contents.name())) handleContents(coverageInfos);
                 if (allSections || sections.contains(SECTIONS.Languages.name())) handleLanguages();
             }
 
@@ -310,30 +294,23 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
                 CapabilitiesCRSProvider crsProvider = new CapabilitiesCRSProvider();
                 crsProvider.getAuthorityExclusions().add("CRS");
                 crsProvider.setCodeMapper(
-                        (authority, code) ->
-                                "http://www.opengis.net/def/crs/" + authority + "/0/" + code);
+                        (authority, code) -> "http://www.opengis.net/def/crs/" + authority + "/0/" + code);
                 codes = crsProvider.getCodes();
             } else {
-                codes =
-                        wcs.getSRS().stream()
-                                .map(code -> mapCode(code))
-                                .collect(Collectors.toList());
+                codes = wcs.getSRS().stream().map(code -> mapCode(code)).collect(Collectors.toList());
             }
             start("crs:CrsMetadata");
             for (String code : codes) {
                 element("crs:crsSupported", code);
             }
             end("crs:CrsMetadata");
+
             // add the supported interpolation methods
-            element(
-                    "int:interpolationSupported",
-                    "http://www.opengis.net/def/interpolation/OGC/1/nearest-neighbor");
-            element(
-                    "int:interpolationSupported",
-                    "http://www.opengis.net/def/interpolation/OGC/1/linear");
-            element(
-                    "int:interpolationSupported",
-                    "http://www.opengis.net/def/interpolation/OGC/1/cubic");
+            start("int:InterpolationMetadata");
+            element("int:InterpolationSupported", "http://www.opengis.net/def/interpolation/OGC/1/nearest-neighbor");
+            element("int:InterpolationSupported", "http://www.opengis.net/def/interpolation/OGC/1/linear");
+            element("int:InterpolationSupported", "http://www.opengis.net/def/interpolation/OGC/1/cubic");
+            end("int:InterpolationMetadata");
 
             end("wcs:Extension");
 
@@ -358,9 +335,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
 
             handleKeywords(wcs.getKeywords());
 
-            element(
-                    "ows:ServiceType",
-                    "urn:ogc:service:wcs"); // TODO: check this: some docs specify a "OGC WCS"
+            element("ows:ServiceType", "urn:ogc:service:wcs"); // TODO: check this: some docs specify a "OGC WCS"
             // string
             element("ows:ServiceTypeVersion", WCS20Const.V201);
             element("ows:ServiceTypeVersion", WCS20Const.V111);
@@ -379,12 +354,14 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
                     "ows:Profile",
                     "http://www.opengis.net/spec/WCS_service-extension_crs/1.0/conf/crs-gridded-coverage");
 
-            // element("ows:Profile","http://www.opengis.net/spec/WCS_coverage-encoding/1.0/conf/coverage-encoding"); // TODO: check specs and URL
+            // element("ows:Profile","http://www.opengis.net/spec/WCS_coverage-encoding/1.0/conf/coverage-encoding"); //
+            // TODO: check specs and URL
 
             // === GeoTiff encoding extension
             element(
                     "ows:Profile",
-                    " http://www.opengis.net/spec/WCS_geotiff-coverages/1.0/conf/geotiff-coverage"); // TODO: check specs and URL
+                    " http://www.opengis.net/spec/WCS_geotiff-coverages/1.0/conf/geotiff-coverage"); // TODO: check
+            // specs and URL
 
             // === GML encoding
             element("ows:Profile", "http://www.opengis.net/spec/GMLCOV/1.0/conf/gml-coverage");
@@ -392,14 +369,10 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             element("ows:Profile", "http://www.opengis.net/spec/GMLCOV/1.0/conf/multipart");
 
             // === Scaling Extension
-            element(
-                    "ows:Profile",
-                    "http://www.opengis.net/spec/WCS_service-extension_scaling/1.0/conf/scaling");
+            element("ows:Profile", "http://www.opengis.net/spec/WCS_service-extension_scaling/1.0/conf/scaling");
 
             // === CRS Extension
-            element(
-                    "ows:Profile",
-                    "http://www.opengis.net/spec/WCS_service-extension_crs/1.0/conf/crs");
+            element("ows:Profile", "http://www.opengis.net/spec/WCS_service-extension_crs/1.0/conf/crs");
 
             // === Interpolation
             element(
@@ -411,12 +384,8 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             element(
                     "ows:Profile",
                     "http://www.opengis.net/spec/WCS_service-extension_interpolation/1.0/conf/nearest-neighbor");
-            element(
-                    "ows:Profile",
-                    "http://www.opengis.net/spec/WCS_service-extension_interpolation/1.0/conf/linear");
-            element(
-                    "ows:Profile",
-                    "http://www.opengis.net/spec/WCS_service-extension_interpolation/1.0/conf/cubic");
+            element("ows:Profile", "http://www.opengis.net/spec/WCS_service-extension_interpolation/1.0/conf/linear");
+            element("ows:Profile", "http://www.opengis.net/spec/WCS_service-extension_interpolation/1.0/conf/cubic");
 
             // === Range Subsetting
             element(
@@ -480,8 +449,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
         }
 
         /**
-         * Handles the OperationMetadata portion of the document, printing out the operations and
-         * where to bind to them.
+         * Handles the OperationMetadata portion of the document, printing out the operations and where to bind to them.
          */
         private void handleOperationsMetadata() {
             start("ows:OperationsMetadata");
@@ -520,9 +488,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             start("ows:Operation", attributes);
 
             final String url =
-                    appendQueryString(
-                            buildURL(request.getBaseUrl(), "wcs", null, URLMangler.URLType.SERVICE),
-                            "");
+                    appendQueryString(buildURL(request.getBaseUrl(), "wcs", null, URLMangler.URLType.SERVICE), "");
 
             start("ows:DCP");
             start("ows:HTTP");
@@ -604,49 +570,37 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
         private void handleInternationalContact(ContactInfo contact, String onlineResource) {
             elementIfNotEmpty(
                     "ows:IndividualName",
-                    internationalContentHelper.getNullableString(
-                            contact.getInternationalContactPerson()));
+                    internationalContentHelper.getNullableString(contact.getInternationalContactPerson()));
             elementIfNotEmpty(
                     "ows:PositionName",
-                    internationalContentHelper.getNullableString(
-                            contact.getInternationalContactPosition()));
+                    internationalContentHelper.getNullableString(contact.getInternationalContactPosition()));
 
             start("ows:ContactInfo");
             start("ows:Phone");
             elementIfNotEmpty(
-                    "ows:Voice",
-                    internationalContentHelper.getNullableString(
-                            contact.getInternationalContactVoice()));
+                    "ows:Voice", internationalContentHelper.getNullableString(contact.getInternationalContactVoice()));
             elementIfNotEmpty(
                     "ows:Facsimile",
-                    internationalContentHelper.getNullableString(
-                            contact.getInternationalContactFacsimile()));
+                    internationalContentHelper.getNullableString(contact.getInternationalContactFacsimile()));
             end("ows:Phone");
             start("ows:Address");
             elementIfNotEmpty(
                     "ows:DeliveryPoint",
-                    internationalContentHelper.getNullableString(
-                            contact.getInternationalAddress()));
+                    internationalContentHelper.getNullableString(contact.getInternationalAddress()));
             elementIfNotEmpty(
-                    "ows:City",
-                    internationalContentHelper.getNullableString(
-                            contact.getInternationalAddressCity()));
+                    "ows:City", internationalContentHelper.getNullableString(contact.getInternationalAddressCity()));
             elementIfNotEmpty(
                     "ows:AdministrativeArea",
-                    internationalContentHelper.getNullableString(
-                            contact.getInternationalAddressState()));
+                    internationalContentHelper.getNullableString(contact.getInternationalAddressState()));
             elementIfNotEmpty(
                     "ows:PostalCode",
-                    internationalContentHelper.getNullableString(
-                            contact.getInternationalAddressPostalCode()));
+                    internationalContentHelper.getNullableString(contact.getInternationalAddressPostalCode()));
             elementIfNotEmpty(
                     "ows:Country",
-                    internationalContentHelper.getNullableString(
-                            contact.getInternationalAddressCountry()));
+                    internationalContentHelper.getNullableString(contact.getInternationalAddressCountry()));
             elementIfNotEmpty(
                     "ows:ElectronicMailAddress",
-                    internationalContentHelper.getNullableString(
-                            contact.getInternationalContactEmail()));
+                    internationalContentHelper.getNullableString(contact.getInternationalContactEmail()));
             end("ows:Address");
 
             handleSettingOnlineRes(onlineResource);
@@ -693,15 +647,11 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
                         reset();
                         LOGGER.log(
                                 Level.SEVERE,
-                                "Skipping coverage "
-                                        + cv.prefixedName()
-                                        + " as its capabilities generation failed",
+                                "Skipping coverage " + cv.prefixedName() + " as its capabilities generation failed",
                                 e);
                     } else {
                         throw new RuntimeException(
-                                "Capabilities document generation failed on coverage "
-                                        + cv.prefixedName(),
-                                e);
+                                "Capabilities document generation failed on coverage " + cv.prefixedName(), e);
                     }
                 }
             }
@@ -710,8 +660,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
                 start("wcs:Extension");
                 try {
                     for (WCSExtendedCapabilitiesProvider provider : extensions) {
-                        provider.encodeExtendedContents(
-                                translator, wcs, new ArrayList<>(coverages), request);
+                        provider.encodeExtendedContents(translator, wcs, new ArrayList<>(coverages), request);
                     }
                 } catch (Exception e) {
                     throw new ServiceException("Extended capabilities provider threw error", e);
@@ -744,8 +693,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             element("wcs:CoverageId", covId);
             element("wcs:CoverageSubtype", "RectifiedGridCoverage"); // TODO make this parametric
 
-            GridCoverage2DReader reader =
-                    (GridCoverage2DReader) cv.getGridCoverageReader(null, null);
+            GridCoverage2DReader reader = (GridCoverage2DReader) cv.getGridCoverageReader(null, null);
             ReferencedEnvelope envelope = WCSUtils.fitEnvelope(cv, reader);
             handleBoundingBox(envelope);
             // should we "fit" this one too?
@@ -766,19 +714,16 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
         }
 
         /**
-         * Spits out the boundingbox for the current coverage taking into account the reprojection
-         * policy.
+         * Spits out the boundingbox for the current coverage taking into account the reprojection policy.
          *
          * @param boundingBox an instance of reference
-         * @throws Exception in case we don't manage to retrieve the CRS EPSG code for this bbox (It
-         *     should not happen!)
+         * @throws Exception in case we don't manage to retrieve the CRS EPSG code for this bbox (It should not happen!)
          */
         private void handleBoundingBox(BoundingBox boundingBox) throws Exception {
             // CRS for this bbox
             final AttributesImpl attributes = new AttributesImpl();
             // full scan needed for property based CRS plugins (e.g. IAU)
-            String identifier =
-                    ResourcePool.lookupIdentifier(boundingBox.getCoordinateReferenceSystem(), true);
+            String identifier = ResourcePool.lookupIdentifier(boundingBox.getCoordinateReferenceSystem(), true);
             if (identifier != null) {
                 String srs = SrsSyntax.OGC_HTTP_URI.getSRS(identifier);
                 attributes.addAttribute("", "crs", "crs", "", srs);
@@ -787,14 +732,16 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             // LowerCorner
             element(
                     "ows:LowerCorner",
-                    new StringBuilder(Double.toString(boundingBox.getLowerCorner().getOrdinate(0)))
+                    new StringBuilder(
+                                    Double.toString(boundingBox.getLowerCorner().getOrdinate(0)))
                             .append(" ")
                             .append(boundingBox.getLowerCorner().getOrdinate(1))
                             .toString());
             // UpperCorner
             element(
                     "ows:UpperCorner",
-                    new StringBuilder(Double.toString(boundingBox.getUpperCorner().getOrdinate(0)))
+                    new StringBuilder(
+                                    Double.toString(boundingBox.getUpperCorner().getOrdinate(0)))
                             .append(" ")
                             .append(boundingBox.getUpperCorner().getOrdinate(1))
                             .toString());
@@ -817,10 +764,9 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
         private void handleLanguages() {
             if (i18nRequested) {
                 start("ows:Languages");
-                List<String> languages =
-                        internationalContentHelper.getSupportedLocales().stream()
-                                .map(l -> l.toLanguageTag())
-                                .collect(Collectors.toList());
+                List<String> languages = internationalContentHelper.getSupportedLocales().stream()
+                        .map(l -> l.toLanguageTag())
+                        .collect(Collectors.toList());
                 for (String lang : languages) {
                     element("ows:Language", lang);
                 }

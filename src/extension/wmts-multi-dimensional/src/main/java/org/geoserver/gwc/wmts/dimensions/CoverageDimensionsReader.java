@@ -41,10 +41,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 
-/**
- * This class allow us to abstract from the type of different raster readers (structured and non
- * structured ones).
- */
+/** This class allow us to abstract from the type of different raster readers (structured and non structured ones). */
 abstract class CoverageDimensionsReader {
 
     private static final FilterFactory FILTER_FACTORY = CommonFactoryFinder.getFilterFactory();
@@ -65,8 +62,7 @@ abstract class CoverageDimensionsReader {
     List<Comparable> readWithDuplicates(String dimensionName, Filter filter, DataType dataType) {
         // getting the feature collection with the values and the attribute name
         Query query = new Query(null, filter);
-        Tuple<String, FeatureCollection> values =
-                getValues(dimensionName, query, dataType, SortOrder.ASCENDING);
+        Tuple<String, FeatureCollection> values = getValues(dimensionName, query, dataType, SortOrder.ASCENDING);
         if (values == null) {
             return Collections.emptyList();
         }
@@ -77,8 +73,7 @@ abstract class CoverageDimensionsReader {
     Set<Comparable> readWithoutDuplicates(String dimensionName, Filter filter, DataType dataType) {
         // getting the feature collection with the values and the attribute name
         Query query = new Query(null, filter);
-        Tuple<String, FeatureCollection> values =
-                getValues(dimensionName, query, dataType, SortOrder.ASCENDING);
+        Tuple<String, FeatureCollection> values = getValues(dimensionName, query, dataType, SortOrder.ASCENDING);
         if (values == null) {
             return new TreeSet<>();
         }
@@ -87,8 +82,8 @@ abstract class CoverageDimensionsReader {
     }
 
     /**
-     * Instantiate a coverage reader from the provided read. If the reader is a structured one good
-     * we can use some optimizations otherwise we will have to really on the layer metadata.
+     * Instantiate a coverage reader from the provided read. If the reader is a structured one good we can use some
+     * optimizations otherwise we will have to really on the layer metadata.
      */
     static CoverageDimensionsReader instantiateFrom(CoverageInfo typeInfo) {
         // let's get this coverage reader
@@ -98,10 +93,9 @@ abstract class CoverageDimensionsReader {
         } catch (Exception exception) {
             throw new RuntimeException("Error getting coverage reader.", exception);
         }
-        if (reader instanceof StructuredGridCoverage2DReader) {
+        if (reader instanceof StructuredGridCoverage2DReader dReader) {
             // good we have a structured coverage reader
-            return new WrapStructuredGridCoverageDimensions2DReader(
-                    (StructuredGridCoverage2DReader) reader);
+            return new WrapStructuredGridCoverageDimensions2DReader(dReader);
         }
         // non structured reader let's do our best
         return new WrapNonStructuredReader(typeInfo, reader);
@@ -109,13 +103,11 @@ abstract class CoverageDimensionsReader {
 
     public abstract ReferencedEnvelope getBounds(Filter filter);
 
-    private static final class WrapStructuredGridCoverageDimensions2DReader
-            extends CoverageDimensionsReader {
+    private static final class WrapStructuredGridCoverageDimensions2DReader extends CoverageDimensionsReader {
 
         private final StructuredGridCoverage2DReader reader;
 
-        private WrapStructuredGridCoverageDimensions2DReader(
-                StructuredGridCoverage2DReader reader) {
+        private WrapStructuredGridCoverageDimensions2DReader(StructuredGridCoverage2DReader reader) {
             this.reader = reader;
         }
 
@@ -140,8 +132,7 @@ abstract class CoverageDimensionsReader {
                 }
                 return Tuple.tuple(startAttributeName, endAttributeName);
             } catch (IOException exception) {
-                throw new RuntimeException(
-                        "Error extracting dimensions descriptors from raster.", exception);
+                throw new RuntimeException("Error extracting dimensions descriptors from raster.", exception);
             }
         }
 
@@ -158,9 +149,9 @@ abstract class CoverageDimensionsReader {
         }
 
         /**
-         * Helper method that can be used to read the domain values of a dimension from a raster.
-         * The provided filter will be used to filter the domain values that should be returned, if
-         * the provided filter is NULL nothing will be filtered.
+         * Helper method that can be used to read the domain values of a dimension from a raster. The provided filter
+         * will be used to filter the domain values that should be returned, if the provided filter is NULL nothing will
+         * be filtered.
          */
         @Override
         public Tuple<String, FeatureCollection> getValues(
@@ -178,11 +169,8 @@ abstract class CoverageDimensionsReader {
                         // we found our dimension descriptor, creating a query
                         Query internalQuery = new Query(query);
                         internalQuery.setTypeName(source.getSchema().getName().getLocalPart());
-                        internalQuery
-                                .getHints()
-                                .put(StructuredCoverageViewReader.QUERY_FIRST_BAND, true);
-                        internalQuery.setSortBy(
-                                new SortBy[] {FILTER_FACTORY.sort(attributeName, sortOrder)});
+                        internalQuery.getHints().put(StructuredCoverageViewReader.QUERY_FIRST_BAND, true);
+                        internalQuery.setSortBy(new SortBy[] {FILTER_FACTORY.sort(attributeName, sortOrder)});
                         // reading the features using the build query
                         FeatureCollection featureCollection = source.getGranules(internalQuery);
 
@@ -224,46 +212,37 @@ abstract class CoverageDimensionsReader {
             this.reader = reader;
         }
 
-        private static final ThreadLocal<DateFormat> DATE_FORMATTER =
-                ThreadLocal.withInitial(
-                        () -> {
-                            SimpleDateFormat dateFormatter =
-                                    new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-                            dateFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-                            return dateFormatter;
-                        });
+        private static final ThreadLocal<DateFormat> DATE_FORMATTER = ThreadLocal.withInitial(() -> {
+            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            dateFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+            return dateFormatter;
+        });
 
         private static Date formatDate(String rawValue) {
             try {
                 return DATE_FORMATTER.get().parse(rawValue);
             } catch (Exception exception) {
-                throw new RuntimeException(
-                        String.format("Error parsing date '%s'.", rawValue), exception);
+                throw new RuntimeException("Error parsing date '%s'.".formatted(rawValue), exception);
             }
         }
 
-        private static final Function<String, Object> TEMPORAL_CONVERTER =
-                (rawValue) -> {
-                    if (rawValue.contains("/")) {
-                        String[] parts = rawValue.split("/");
-                        return new DateRange(formatDate(parts[0]), formatDate(parts[1]));
-                    } else {
-                        return formatDate(rawValue);
-                    }
-                };
+        private static final Function<String, Object> TEMPORAL_CONVERTER = (rawValue) -> {
+            if (rawValue.contains("/")) {
+                String[] parts = rawValue.split("/");
+                return new DateRange(formatDate(parts[0]), formatDate(parts[1]));
+            } else {
+                return formatDate(rawValue);
+            }
+        };
 
-        private static final Function<String, Object> NUMERICAL_CONVERTER =
-                (rawValue) -> {
-                    if (rawValue.contains("/")) {
-                        String[] parts = rawValue.split("/");
-                        return new NumberRange<>(
-                                Double.class,
-                                Double.parseDouble(parts[0]),
-                                Double.parseDouble(parts[1]));
-                    } else {
-                        return Double.parseDouble(rawValue);
-                    }
-                };
+        private static final Function<String, Object> NUMERICAL_CONVERTER = (rawValue) -> {
+            if (rawValue.contains("/")) {
+                String[] parts = rawValue.split("/");
+                return new NumberRange<>(Double.class, Double.parseDouble(parts[0]), Double.parseDouble(parts[1]));
+            } else {
+                return Double.parseDouble(rawValue);
+            }
+        };
 
         private static final Function<String, Object> STRING_CONVERTER = (rawValue) -> rawValue;
 
@@ -291,9 +270,8 @@ abstract class CoverageDimensionsReader {
                 metaDataValue = reader.getMetadataValue(dimensionName.toUpperCase() + "_DOMAIN");
             } catch (Exception exception) {
                 throw new RuntimeException(
-                        String.format(
-                                "Error extract dimension '%s' values from raster '%s'.",
-                                dimensionName, typeInfo.getName()),
+                        "Error extract dimension '%s' values from raster '%s'."
+                                .formatted(dimensionName, typeInfo.getName()),
                         exception);
             }
             if (metaDataValue == null || metaDataValue.isEmpty()) {
@@ -303,11 +281,9 @@ abstract class CoverageDimensionsReader {
             dataType = normalizeDataType(rawValues[0], dataType);
             Tuple<SimpleFeatureType, Function<String, Object>> featureTypeAndConverter =
                     getFeatureTypeAndConverter(dimensionName, rawValues[0], dataType);
-            MemoryFeatureCollection memoryCollection =
-                    new MemoryFeatureCollection(featureTypeAndConverter.first);
+            MemoryFeatureCollection memoryCollection = new MemoryFeatureCollection(featureTypeAndConverter.first);
             for (int i = 0; i < rawValues.length; i++) {
-                SimpleFeatureBuilder featureBuilder =
-                        new SimpleFeatureBuilder(featureTypeAndConverter.first);
+                SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(featureTypeAndConverter.first);
                 featureBuilder.add(featureTypeAndConverter.second.apply(rawValues[i]));
                 SimpleFeature feature = featureBuilder.buildFeature(String.valueOf(i));
                 if (query.getFilter() == null || query.getFilter().evaluate(feature)) {
@@ -316,16 +292,11 @@ abstract class CoverageDimensionsReader {
             }
             AttributeDescriptor dimensionAttribute =
                     featureTypeAndConverter.first.getAttributeDescriptors().get(0);
-            SimpleFeatureCollection features =
-                    new SortedSimpleFeatureCollection(
-                            memoryCollection,
-                            new SortBy[] {
-                                FILTER_FACTORY.sort(dimensionAttribute.getLocalName(), sortOrder)
-                            });
+            SimpleFeatureCollection features = new SortedSimpleFeatureCollection(
+                    memoryCollection, new SortBy[] {FILTER_FACTORY.sort(dimensionAttribute.getLocalName(), sortOrder)});
             if (query.getPropertyNames() != Query.ALL_NAMES) {
                 SimpleFeatureType target =
-                        SimpleFeatureTypeBuilder.retype(
-                                memoryCollection.getSchema(), query.getPropertyNames());
+                        SimpleFeatureTypeBuilder.retype(memoryCollection.getSchema(), query.getPropertyNames());
                 features = new RetypingFeatureCollection(memoryCollection, target);
             }
 
@@ -371,6 +342,8 @@ abstract class CoverageDimensionsReader {
                             getDimensionAttributesNames(dimensionName).first,
                             NUMERICAL_CONVERTER.apply(rawValue).getClass());
                     return Tuple.tuple(featureTypeBuilder.buildFeatureType(), NUMERICAL_CONVERTER);
+                case CUSTOM:
+                    break;
             }
             featureTypeBuilder.add(getDimensionAttributesNames(dimensionName).first, String.class);
             return Tuple.tuple(featureTypeBuilder.buildFeatureType(), STRING_CONVERTER);

@@ -6,6 +6,7 @@ package org.geoserver.backuprestore.web;
 
 import static org.geoserver.catalog.Predicates.equal;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -21,14 +22,14 @@ import org.geotools.api.filter.Filter;
 /** @author Alessio Fabiani, Geo-Solutions S.A.S. */
 public class BackupRestoreStoresIndexModel extends LoadableDetachableModel<List<StoreInfo>> {
 
+    @Serial
     private static final long serialVersionUID = -998149757898741087L;
 
     private WorkspaceModel<WorkspaceInfo> workspace;
 
     private ResourceFilePanel resourceFilePanel;
 
-    public BackupRestoreStoresIndexModel(
-            WorkspaceModel<WorkspaceInfo> workspace, ResourceFilePanel resourceFilePanel) {
+    public BackupRestoreStoresIndexModel(WorkspaceModel<WorkspaceInfo> workspace, ResourceFilePanel resourceFilePanel) {
         super();
         this.workspace = workspace;
         this.resourceFilePanel = resourceFilePanel;

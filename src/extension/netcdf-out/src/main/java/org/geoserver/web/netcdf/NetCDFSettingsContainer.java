@@ -11,9 +11,8 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.web.netcdf.layer.NetCDFLayerSettingsContainer;
 
 /**
- * NetCDF output settings. This class stores the global settings that are used to initialise newly
- * published layers. Once layers have been published, their settings are stored in the subclass
- * {@link NetCDFLayerSettingsContainer}.
+ * NetCDF output settings. This class stores the global settings that are used to initialise newly published layers.
+ * Once layers have been published, their settings are stored in the subclass {@link NetCDFLayerSettingsContainer}.
  */
 @SuppressWarnings("serial")
 public class NetCDFSettingsContainer implements Serializable {
@@ -176,9 +175,9 @@ public class NetCDFSettingsContainer implements Serializable {
         /** @see java.lang.Object#equals(java.lang.Object) */
         @Override
         public boolean equals(Object other) {
-            return other instanceof AbstractAttribute
-                    && getKey().equals(((AbstractAttribute) other).getKey())
-                    && getValue().equals(((AbstractAttribute) other).getValue());
+            return other instanceof AbstractAttribute aa
+                    && getKey().equals(aa.getKey())
+                    && getValue().equals(aa.getValue());
         }
 
         /** @see java.lang.Object#hashCode() */
@@ -228,10 +227,9 @@ public class NetCDFSettingsContainer implements Serializable {
         private String output;
 
         /**
-         * Whitespace-separated list of output variable dimension names. Empty string to copy a
-         * scalar, or a single dimension name like "time" to turn scalar ImageMosaic granules into a
-         * vector over that dimensions. More than one dimension not yet supported, but the naming is
-         * here as a future extension point.
+         * Whitespace-separated list of output variable dimension names. Empty string to copy a scalar, or a single
+         * dimension name like "time" to turn scalar ImageMosaic granules into a vector over that dimensions. More than
+         * one dimension not yet supported, but the naming is here as a future extension point.
          */
         private String dimensions;
 
@@ -249,8 +247,7 @@ public class NetCDFSettingsContainer implements Serializable {
         public String getSource() {
             if ((source == null || source.trim().isEmpty())
                     && (output == null || output.trim().isEmpty())) {
-                throw new IllegalArgumentException(
-                        "Neither source nor output supplied for extra variable");
+                throw new IllegalArgumentException("Neither source nor output supplied for extra variable");
             }
             return (source == null || source.trim().isEmpty()) ? output.trim() : source.trim();
         }
@@ -262,8 +259,7 @@ public class NetCDFSettingsContainer implements Serializable {
         public String getOutput() {
             if ((source == null || source.trim().isEmpty())
                     && (output == null || output.trim().isEmpty())) {
-                throw new IllegalArgumentException(
-                        "Neither source nor output supplied for extra variable");
+                throw new IllegalArgumentException("Neither source nor output supplied for extra variable");
             }
             return (output == null || output.trim().isEmpty()) ? source.trim() : output.trim();
         }
@@ -283,16 +279,18 @@ public class NetCDFSettingsContainer implements Serializable {
         /** @see java.lang.Object#equals(java.lang.Object) */
         @Override
         public boolean equals(Object other) {
-            return other instanceof ExtraVariable
-                    && getSource().equals(((ExtraVariable) other).getSource())
-                    && getOutput().equals(((ExtraVariable) other).getOutput())
-                    && getDimensions().equals(((ExtraVariable) other).getDimensions());
+            return other instanceof ExtraVariable ev
+                    && getSource().equals(ev.getSource())
+                    && getOutput().equals(ev.getOutput())
+                    && getDimensions().equals(ev.getDimensions());
         }
 
         /** @see java.lang.Object#hashCode() */
         @Override
         public int hashCode() {
-            return getSource().hashCode() + getOutput().hashCode() + getDimensions().hashCode();
+            return getSource().hashCode()
+                    + getOutput().hashCode()
+                    + getDimensions().hashCode();
         }
     }
 }

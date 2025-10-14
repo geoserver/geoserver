@@ -24,8 +24,7 @@ public interface GeoServerInfo extends Info {
     /**
      * The global settings.
      *
-     * <p>Generally client code shoudl not call this method directly, and rather call {@link
-     * GeoServer#getSettings()}.
+     * <p>Generally client code shoudl not call this method directly, and rather call {@link GeoServer#getSettings()}.
      */
     SettingsInfo getSettings();
 
@@ -33,24 +32,23 @@ public interface GeoServerInfo extends Info {
     void setSettings(SettingsInfo settings);
 
     /**
-     * The flag to use request headers for the proxy URL. Deprecated, use
-     * SettingsInfo.isUseHeadersProxyURL() instead.
+     * The flag to use request headers for the proxy URL. Deprecated, use SettingsInfo.isUseHeadersProxyURL() instead.
      */
     @Deprecated
     Boolean isUseHeadersProxyURL();
 
     /**
-     * Sets the flag to use request headers for the proxy URL. Deprecated, use
-     * SettingsInfo.setUseHeadersProxyURL instead
+     * Sets the flag to use request headers for the proxy URL. Deprecated, use SettingsInfo.setUseHeadersProxyURL
+     * instead
      */
     @Deprecated
     void setUseHeadersProxyURL(Boolean useHeadersProxyURL);
 
-    /** The Java Advanced Imaging configuration. */
-    JAIInfo getJAI();
+    /** The Image Processing configuration. */
+    ImageProcessingInfo getImageProcessing();
 
-    /** Sets the Java Advanced Imaging configuration. */
-    void setJAI(JAIInfo jai);
+    /** Sets the Image Processing configuration. */
+    void setImageProcessing(ImageProcessingInfo imagen);
 
     /** The Coverage Access configuration. */
     CoverageAccessInfo getCoverageAccess();
@@ -109,17 +107,21 @@ public interface GeoServerInfo extends Info {
     Integer getXmlPostRequestLogBufferSize();
 
     /**
-     * If true it enables unrestricted evaluation of XML entities contained in XML files received in
-     * a service (WMS, WFS, ...) request. Default is FALSE. Enabling this feature is a security
-     * risk.
+     * If true it enables unrestricted evaluation of XML entities contained in XML files received in a service (WMS,
+     * WFS, ...) request. Default is FALSE. Enabling this feature is a security risk.
+     *
+     * @deprecated use the {@code ENTITY_RESOLUTION_UNRESTRICTED} system property
      */
+    @Deprecated(since = "2.26.4, 2.27.2, 2.28.0")
     void setXmlExternalEntitiesEnabled(Boolean xmlExternalEntitiesEnabled);
 
     /**
-     * If true it enables unrestricted evaluation of XML entities contained in XML files received in
-     * a service (WMS, WFS, ...) request. Default is FALSE. Enabling this feature is a security
-     * risk.
+     * If true it enables unrestricted evaluation of XML entities contained in XML files received in a service (WMS,
+     * WFS, ...) request. Default is FALSE. Enabling this feature is a security risk.
+     *
+     * @deprecated use the {@code ENTITY_RESOLUTION_UNRESTRICTED} system property
      */
+    @Deprecated(since = "2.26.4, 2.27.2, 2.28.0")
     Boolean isXmlExternalEntitiesEnabled();
 
     /**
@@ -179,15 +181,9 @@ public interface GeoServerInfo extends Info {
     public enum WebUIMode {
         /** Let GeoServer determine the best mode. */
         DEFAULT,
-        /**
-         * Always redirect to persist page state (prevent double submit problem but doesn't support
-         * clustering)
-         */
+        /** Always redirect to persist page state (prevent double submit problem but doesn't support clustering) */
         REDIRECT,
-        /**
-         * Never redirect to persist page state (supports clustering but doesn't prevent double
-         * submit problem)
-         */
+        /** Never redirect to persist page state (supports clustering but doesn't prevent double submit problem) */
         DO_NOT_REDIRECT
     }
 

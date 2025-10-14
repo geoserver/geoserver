@@ -10,7 +10,7 @@ application directory.
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>2.27-SNAPSHOT</version>
+    <version>3.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
@@ -29,6 +29,7 @@ application directory.
       <groupId>org.geoserver</groupId>
       <artifactId>gs-wcs</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-wcs1_1</artifactId>
@@ -62,6 +63,12 @@ application directory.
       <artifactId>gt-iau-wkt</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wcs1_0</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -71,7 +78,23 @@ application directory.
       </testResource>
     </testResources>
 
-    <plugins></plugins>
+    <plugins>
+      <plugin>
+        <!--
+        Run tests with surefire-junit4 engine instead of junit jupiter's junit-vintage-engine
+        as configured in the root pom. The upgrade to junit-vintage-engine causes several
+        test failures and requires further investigation.
+        -->
+        <artifactId>maven-surefire-plugin</artifactId>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven.surefire</groupId>
+            <artifactId>surefire-junit4</artifactId>
+            <version>3.5.3</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
   </build>
 
 </project>

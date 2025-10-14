@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>gs-docs</artifactId>
   <groupId>org.geoserver.en</groupId>
-  <version>2.27-SNAPSHOT</version>
+  <version>3.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>GeoServer English Documentation</name>
   <description>GeoServer English documentation</description>
@@ -108,6 +108,16 @@
         </configuration>
         <executions>
           <!-- one execution per page -->
+          <execution>
+            <id>authProviders</id>
+            <phase>process-resources</phase>
+            <goals><goal>generate</goal></goals>
+            <configuration>
+              <inputSpec>${project.basedir}/api/1.0.0/authenticationproviders.yaml</inputSpec>
+              <output>${project.build.directory}/api/authenticationproviders</output>
+              <language/>
+            </configuration>
+          </execution>
           <execution>
             <id>coverages</id>
             <phase>process-resources</phase>

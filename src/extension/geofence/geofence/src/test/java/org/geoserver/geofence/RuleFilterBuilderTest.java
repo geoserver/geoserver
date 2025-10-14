@@ -87,13 +87,10 @@ public class RuleFilterBuilderTest {
     }
 
     private Authentication getAuthentication() {
-        Authentication authentication =
-                new UsernamePasswordAuthenticationToken(
-                        "username",
-                        "password",
-                        Arrays.asList(
-                                new SimpleGrantedAuthority("ROLE_ONE"),
-                                new SimpleGrantedAuthority("ROLE_TWO")));
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                "username",
+                "password",
+                Arrays.asList(new SimpleGrantedAuthority("ROLE_ONE"), new SimpleGrantedAuthority("ROLE_TWO")));
         return authentication;
     }
 }

@@ -19,7 +19,7 @@ import org.geotools.api.filter.sort.SortBy;
 public class APISearchQuery {
 
     private BigInteger limit;
-    private BigInteger startIndex;
+    private BigInteger startIndex = BigInteger.ZERO;
     private String crs;
     private String bbox;
 
@@ -70,8 +70,8 @@ public class APISearchQuery {
 
     // support passing bbox as array and as string
     public void setBbox(JsonNode node) {
-        if (node instanceof ArrayNode) {
-            this.bbox = arrayNodeToString((ArrayNode) node);
+        if (node instanceof ArrayNode arrayNode) {
+            this.bbox = arrayNodeToString(arrayNode);
         } else {
             this.bbox = node.textValue();
         }
@@ -98,8 +98,8 @@ public class APISearchQuery {
     }
 
     public void setIds(JsonNode node) {
-        if (node instanceof ArrayNode) {
-            this.ids = arrayNodeToStringList((ArrayNode) node);
+        if (node instanceof ArrayNode arrayNode) {
+            this.ids = arrayNodeToStringList(arrayNode);
             return;
         }
 
@@ -115,8 +115,8 @@ public class APISearchQuery {
     }
 
     public void setSortBy(JsonNode node) {
-        if (node instanceof ArrayNode) {
-            List<String> sortBy = arrayNodeToStringList((ArrayNode) node);
+        if (node instanceof ArrayNode arrayNode) {
+            List<String> sortBy = arrayNodeToStringList(arrayNode);
             this.sortBy = SortByConverter.convertList(sortBy);
             return;
         }
@@ -154,14 +154,13 @@ public class APISearchQuery {
 
     protected List<String> arrayNodeToStringList(ArrayNode node) {
         final List<String> values = new ArrayList<>(node.size());
-        node.forEach(
-                childNode -> {
-                    if (childNode.isTextual()) {
-                        values.add(childNode.textValue());
-                    } else {
-                        values.add(childNode.toString());
-                    }
-                });
+        node.forEach(childNode -> {
+            if (childNode.isTextual()) {
+                values.add(childNode.textValue());
+            } else {
+                values.add(childNode.toString());
+            }
+        });
         return values;
     }
 

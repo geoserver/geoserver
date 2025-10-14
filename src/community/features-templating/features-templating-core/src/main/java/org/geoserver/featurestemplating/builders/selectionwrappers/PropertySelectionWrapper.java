@@ -16,9 +16,8 @@ import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
 import org.geoserver.featurestemplating.builders.visitors.PropertySelectionHandler;
 
 /**
- * A generic PropertySelectionWrapper suitable for usage when a selectable TemplateBuilder has a
- * dynamic key. It uses a {@link PropertySelectionHandler} to determine if the builder should
- * participate in the output encoding or not.
+ * A generic PropertySelectionWrapper suitable for usage when a selectable TemplateBuilder has a dynamic key. It uses a
+ * {@link PropertySelectionHandler} to determine if the builder should participate in the output encoding or not.
  */
 public class PropertySelectionWrapper extends TemplateBuilderWrapper {
 
@@ -27,8 +26,7 @@ public class PropertySelectionWrapper extends TemplateBuilderWrapper {
     private String fullKey;
 
     public PropertySelectionWrapper(
-            AbstractTemplateBuilder templateBuilder,
-            PropertySelectionHandler propertySelectionHandler) {
+            AbstractTemplateBuilder templateBuilder, PropertySelectionHandler propertySelectionHandler) {
         super(templateBuilder);
         this.strategy = propertySelectionHandler;
     }
@@ -39,8 +37,7 @@ public class PropertySelectionWrapper extends TemplateBuilderWrapper {
     }
 
     /**
-     * Get the full key/path by concatenating the key of the wrapped builder with the one of the
-     * parent.
+     * Get the full key/path by concatenating the key of the wrapped builder with the one of the parent.
      *
      * @param context the TemplateBuilder context used for dynamic keys.
      * @return the full key/path
@@ -51,7 +48,8 @@ public class PropertySelectionWrapper extends TemplateBuilderWrapper {
         // the property selection visitor should have set it.
         if (fullKey != null) {
             String result = fullKey;
-            if (key != null && !fullKey.endsWith(key)) result = result.concat(".").concat(key);
+            if (key != null && !fullKey.endsWith(key))
+                result = result.concat(".").concat(key);
             return result;
         }
 
@@ -62,8 +60,7 @@ public class PropertySelectionWrapper extends TemplateBuilderWrapper {
         TemplateBuilder builder = this;
         TemplateBuilder currParent = builder.getParent();
         while (currParent != null) {
-            if (currParent instanceof AbstractTemplateBuilder && hasSelectableKey(currParent)) {
-                AbstractTemplateBuilder parent = (AbstractTemplateBuilder) currParent;
+            if (currParent instanceof AbstractTemplateBuilder parent && hasSelectableKey(currParent)) {
                 String pKey = parent.getKey(context);
                 if (pKey != null) linkedList.addFirst(pKey);
             }
@@ -78,12 +75,12 @@ public class PropertySelectionWrapper extends TemplateBuilderWrapper {
      *
      * @param context the TemplateBuilderContext.
      * @param value the value.
-     * @return the value. If the value is of type JsonNode the result will be a JsonNode pruned
-     *     accordingly to the chosen handler.
+     * @return the value. If the value is of type JsonNode the result will be a JsonNode pruned accordingly to the
+     *     chosen handler.
      */
     protected Object pruneJsonNodeIfNeeded(TemplateBuilderContext context, Object value) {
-        if (value instanceof JsonNode) {
-            value = strategy.pruneJsonAttributes((JsonNode) value, getFullKey(context));
+        if (value instanceof JsonNode node) {
+            value = strategy.pruneJsonAttributes(node, getFullKey(context));
         }
         return value;
     }

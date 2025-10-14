@@ -5,17 +5,20 @@
  */
 package org.geoserver.platform.exception;
 
+import java.io.Serial;
+
 /**
  * Base class for exceptions whose messages can be localized.
  *
- * <p>This class overrides the {{@link #getMessage()} function and uses {@link #getId()} to locate a
- * localized version of the message via a {@link GeoServerExceptions#localize(IGeoServerException)}.
+ * <p>This class overrides the {{@link #getMessage()} function and uses {@link #getId()} to locate a localized version
+ * of the message via a {@link GeoServerExceptions#localize(IGeoServerException)}.
  *
  * @author Justin Deoliveira, OpenGeo
  */
 public class GeoServerException extends Exception implements IGeoServerException {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /** id for the exception, used to locate localized message for the exception */

@@ -30,8 +30,7 @@ public class DummyTaskTypeImpl implements TaskType {
 
     public static final String PARAM2 = "param2";
 
-    private static final Map<String, ParameterInfo> PARAM_INFO =
-            new LinkedHashMap<String, ParameterInfo>();
+    private static final Map<String, ParameterInfo> PARAM_INFO = new LinkedHashMap<String, ParameterInfo>();
 
     static {
         PARAM_INFO.put(
@@ -75,8 +74,7 @@ public class DummyTaskTypeImpl implements TaskType {
                                     }
 
                                     @Override
-                                    public Object parse(
-                                            String value, List<String> dependsOnRawValues) {
+                                    public Object parse(String value, List<String> dependsOnRawValues) {
                                         if (getDomain(dependsOnRawValues).contains(value)) {
                                             return value;
                                         } else {

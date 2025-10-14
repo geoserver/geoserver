@@ -5,6 +5,7 @@
 
 package org.geoserver.solr;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.geotools.data.solr.SolrAttribute;
 /** Provide attributes from SOLR fields */
 public class SolrAttributeProvider extends GeoServerDataProvider<SolrAttribute> {
 
+    @Serial
     private static final long serialVersionUID = -1021780286733349153L;
 
     private List<SolrAttribute> attributes = new ArrayList<>();
@@ -26,19 +28,19 @@ public class SolrAttributeProvider extends GeoServerDataProvider<SolrAttribute> 
     protected static final Property<SolrAttribute> NAME = new BeanProperty<>("name", "name");
 
     /** Class type of field */
-    protected static final Property<SolrAttribute> TYPE =
-            new AbstractProperty<SolrAttribute>("type") {
+    protected static final Property<SolrAttribute> TYPE = new AbstractProperty<SolrAttribute>("type") {
 
-                private static final long serialVersionUID = 4454312983828267130L;
+        @Serial
+        private static final long serialVersionUID = 4454312983828267130L;
 
-                @Override
-                public Object getPropertyValue(SolrAttribute item) {
-                    if (item.getType() != null) {
-                        return item.getType().getSimpleName();
-                    }
-                    return null;
-                }
-            };
+        @Override
+        public Object getPropertyValue(SolrAttribute item) {
+            if (item.getType() != null) {
+                return item.getType().getSimpleName();
+            }
+            return null;
+        }
+    };
 
     /** SRID of geometric field */
     protected static final Property<SolrAttribute> SRID = new BeanProperty<>("srid", "srid");
@@ -66,19 +68,16 @@ public class SolrAttributeProvider extends GeoServerDataProvider<SolrAttribute> 
     }
 
     @Override
-    protected List<org.geoserver.web.wicket.GeoServerDataProvider.Property<SolrAttribute>>
-            getProperties() {
+    protected List<org.geoserver.web.wicket.GeoServerDataProvider.Property<SolrAttribute>> getProperties() {
         return Arrays.asList(EMPTY, USE, NAME, TYPE, SRID, DEFAULT_GEOMETRY, PK);
     }
 
     @Override
     protected List<SolrAttribute> getItems() {
         if (hideEmpty) {
-            BeanPropertyValueEqualsPredicate predicate =
-                    new BeanPropertyValueEqualsPredicate("empty", Boolean.FALSE);
+            BeanPropertyValueEqualsPredicate predicate = new BeanPropertyValueEqualsPredicate("empty", Boolean.FALSE);
             // filter the Collection
-            ArrayList<SolrAttribute> att =
-                    new ArrayList<SolrAttribute>(CollectionUtils.select(attributes, predicate));
+            ArrayList<SolrAttribute> att = new ArrayList<SolrAttribute>(CollectionUtils.select(attributes, predicate));
             return att;
         } else {
             return attributes;

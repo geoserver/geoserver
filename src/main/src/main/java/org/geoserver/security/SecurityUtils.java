@@ -23,23 +23,22 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class SecurityUtils {
 
     /**
-     * Spring Secruity 3.x drops the common base security exception class SpringSecurityException,
-     * now the test is based on the package name
+     * Spring Secruity 3.x drops the common base security exception class SpringSecurityException, now the test is based
+     * on the package name
      *
      * @param t the exception to check
      * @return true if the exception is caused by Spring Security
      */
     public static boolean isSecurityException(Throwable t) {
-        return t != null
-                && t.getClass().getPackage().getName().startsWith("org.springframework.security");
+        return t != null && t.getClass().getPackage().getName().startsWith("org.springframework.security");
     }
 
     /**
      * Converts a char array to a byte array.
      *
-     * <p>This method is unsafe since the charset is not specified, one of {@link #toBytes(char[],
-     * String)} or {@link #toBytes(char[], Charset)} should be used instead. When not specified
-     * {@link Charset#defaultCharset()} is used.
+     * <p>This method is unsafe since the charset is not specified, one of {@link #toBytes(char[], String)} or
+     * {@link #toBytes(char[], Charset)} should be used instead. When not specified {@link Charset#defaultCharset()} is
+     * used.
      */
     public static byte[] toBytes(char[] ch) {
         return toBytes(ch, Charset.defaultCharset());
@@ -61,9 +60,9 @@ public class SecurityUtils {
     /**
      * Converts byte array to char array.
      *
-     * <p>This method is unsafe since the charset is not specified, one of {@link #toChars(byte[],
-     * String)} or {@link #toChars(byte[], Charset)} should be used instead. When not specified
-     * {@link Charset#defaultCharset()} is used.
+     * <p>This method is unsafe since the charset is not specified, one of {@link #toChars(byte[], String)} or
+     * {@link #toChars(byte[], Charset)} should be used instead. When not specified {@link Charset#defaultCharset()} is
+     * used.
      */
     public static char[] toChars(byte[] b) {
         return toChars(b, Charset.defaultCharset());
@@ -92,8 +91,8 @@ public class SecurityUtils {
     //    }
 
     /**
-     * Scrambles a char array overwriting all characters with random characters, used for scrambling
-     * plain text passwords after usage to avoid keeping them around in memory.
+     * Scrambles a char array overwriting all characters with random characters, used for scrambling plain text
+     * passwords after usage to avoid keeping them around in memory.
      */
     public static void scramble(char[] ch) {
         if (ch == null) return;
@@ -102,8 +101,8 @@ public class SecurityUtils {
     }
 
     /**
-     * Scrambles a byte array overwriting all characters with random characters, used for scrambling
-     * plain text passwords after usage to avoid keeping them around in memory.
+     * Scrambles a byte array overwriting all characters with random characters, used for scrambling plain text
+     * passwords after usage to avoid keeping them around in memory.
      */
     public static void scramble(byte[] ch) {
         if (ch == null) return;
@@ -120,10 +119,9 @@ public class SecurityUtils {
             VectorAccessLimits val = (VectorAccessLimits) policy.getLimits();
             return val.getWriteQuery();
         } else {
-            throw new IllegalArgumentException(
-                    "SecureFeatureStore has been fed "
-                            + "with unexpected AccessLimits class "
-                            + policy.getLimits().getClass());
+            throw new IllegalArgumentException("SecureFeatureStore has been fed "
+                    + "with unexpected AccessLimits class "
+                    + policy.getLimits().getClass());
         }
     }
 
@@ -151,8 +149,7 @@ public class SecurityUtils {
         for (int j = 0; j < times; j++) {
             int source = j % 2;
             int target = (j + 1) % 2;
-            for (int i = 0; i < working[source].length; i++)
-                working[target][perm[i]] = working[source][i];
+            for (int i = 0; i < working[source].length; i++) working[target][perm[i]] = working[source][i];
         }
         char[] result = working[1].clone();
         Arrays.fill(working[0], '0');
@@ -161,19 +158,18 @@ public class SecurityUtils {
     }
 
     /**
-     * Extracts the username from auth principal or returns null. A static method that simply checks
-     * for concrete principal class, casts to it and invokes the correct method to extract the
-     * username.
+     * Extracts the username from auth principal or returns null. A static method that simply checks for concrete
+     * principal class, casts to it and invokes the correct method to extract the username.
      *
      * @param principal auth principal
      */
     public static String getUsername(Object principal) {
         String username = null;
         if (principal != null) {
-            if (principal instanceof UserDetails) {
-                username = ((UserDetails) principal).getUsername();
-            } else if (principal instanceof Principal) {
-                username = ((Principal) principal).getName();
+            if (principal instanceof UserDetails details) {
+                username = details.getUsername();
+            } else if (principal instanceof Principal principal1) {
+                username = principal1.getName();
             } else {
                 username = principal.toString();
             }

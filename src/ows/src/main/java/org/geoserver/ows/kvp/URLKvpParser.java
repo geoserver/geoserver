@@ -15,6 +15,7 @@ import org.geoserver.ows.KvpParser;
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  * @deprecated Use URIKvpParser
  */
+@Deprecated
 public class URLKvpParser extends KvpParser {
     /**
      * Creates the parser specifying the name of the key to latch to.
@@ -35,8 +36,8 @@ public class URLKvpParser extends KvpParser {
     }
 
     /**
-     * URLEncoder.encode does not respect the URI RFC 2396, so we rolled our own little encoder.
-     * It's not complete, but should work in most cases.
+     * URLEncoder.encode does not respect the URI RFC 2396, so we rolled our own little encoder. It's not complete, but
+     * should work in most cases.
      *
      * <p>Use of URIKvpParser recommended as a direct implementation of RFC 2396.
      *

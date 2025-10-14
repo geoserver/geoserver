@@ -14,7 +14,6 @@ import org.geoserver.wms.GetLegendGraphicRequest;
  * Producer of legend graphics in image/gif format.
  *
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class GIFLegendOutputFormat implements GetLegendGraphicOutputFormat {
 
@@ -26,8 +25,7 @@ public class GIFLegendOutputFormat implements GetLegendGraphicOutputFormat {
      * @see BufferedImageLegendGraphicBuilder
      */
     @Override
-    public LegendGraphic produceLegendGraphic(GetLegendGraphicRequest request)
-            throws ServiceException {
+    public LegendGraphic produceLegendGraphic(GetLegendGraphicRequest request) throws ServiceException {
         LegendGraphicBuilder builder = new BufferedImageLegendGraphicBuilder();
         BufferedImage legendGraphic = (BufferedImage) builder.buildLegendGraphic(request);
         LegendGraphic legend = new BufferedImageLegendGraphic(legendGraphic);

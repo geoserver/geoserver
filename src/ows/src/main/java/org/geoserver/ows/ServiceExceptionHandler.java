@@ -14,8 +14,8 @@ import org.geoserver.platform.ServiceException;
 /**
  * Handles an exception thrown by a service.
  *
- * <p>A service exception handler must declare the services in which it is capable of handling
- * exceptions for, see {@link #getServices()}.
+ * <p>A service exception handler must declare the services in which it is capable of handling exceptions for, see
+ * {@link #getServices()}.
  *
  * <p>Instances must be declared in a spring context as follows:
  *
@@ -36,8 +36,7 @@ public abstract class ServiceExceptionHandler {
     protected static final String DEFAULT_XML_MIME_TYPE = "application/xml";
 
     /** Logger */
-    protected static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.ows");
+    protected static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.ows");
 
     /** The services this handler handles exceptions for. */
     List<Service> services;
@@ -72,4 +71,17 @@ public abstract class ServiceExceptionHandler {
      * @param request The informations collected by the dispatcher about the request
      */
     public abstract void handleServiceException(ServiceException exception, Request request);
+
+    /**
+     * Determines if the handler can handle the exception. The default implementation checks if the service is not null,
+     * and in the list of services returned by {@link #getServices()}. Subclasses can override this method to provide
+     * more complex logic.
+     *
+     * @param service
+     * @param request
+     * @return
+     */
+    public boolean canHandle(Service service, Request request) {
+        return service != null && getServices().contains(service);
+    }
 }

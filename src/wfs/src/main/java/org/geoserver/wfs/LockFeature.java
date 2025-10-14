@@ -78,8 +78,8 @@ public class LockFeature {
      * Locks features according to the request.
      *
      * @return the WFS 1.1 required response
-     * @throws WFSException if a lock failed and the lock specified all locks, or if an another
-     *     error occurred processing the lock operation
+     * @throws WFSException if a lock failed and the lock specified all locks, or if an another error occurred
+     *     processing the lock operation
      */
     public LockFeatureResponse lockFeature(LockFeatureRequest request) throws WFSException {
         FeatureLock fLock = null;
@@ -126,17 +126,12 @@ public class LockFeature {
                 FeatureCollection<? extends FeatureType, ? extends Feature> features;
 
                 try {
-                    meta =
-                            catalog.getFeatureTypeByName(
-                                    typeName.getNamespaceURI(), typeName.getLocalPart());
+                    meta = catalog.getFeatureTypeByName(typeName.getNamespaceURI(), typeName.getLocalPart());
 
                     if (meta == null) {
                         throw new WFSException(
                                 request,
-                                "Unknown feature type "
-                                        + typeName.getPrefix()
-                                        + ":"
-                                        + typeName.getLocalPart());
+                                "Unknown feature type " + typeName.getPrefix() + ":" + typeName.getLocalPart());
                     }
 
                     source = meta.getFeatureSource(null, null);
@@ -145,17 +140,14 @@ public class LockFeature {
                     // filter
                     // is reprojected to store's native crs as well
                     CoordinateReferenceSystem declaredCRS =
-                            WFSReprojectionUtil.getDeclaredCrs(
-                                    source.getSchema(), request.getVersion());
-                    filter =
-                            WFSReprojectionUtil.normalizeFilterCRS(
-                                    filter, source.getSchema(), declaredCRS);
+                            WFSReprojectionUtil.getDeclaredCrs(source.getSchema(), request.getVersion());
+                    filter = WFSReprojectionUtil.normalizeFilterCRS(filter, source.getSchema(), declaredCRS);
 
                     // now gather the features
                     features = source.getFeatures(filter);
 
-                    if (source instanceof FeatureLocking) {
-                        ((FeatureLocking) source).setFeatureLock(fLock);
+                    if (source instanceof FeatureLocking locking) {
+                        locking.setFeatureLock(fLock);
                     }
                 } catch (IOException e) {
                     throw new WFSException(request, e);
@@ -170,12 +162,11 @@ public class LockFeature {
                         Id fidFilter = fidFilter(fid);
 
                         if (!(source instanceof FeatureLocking)) {
-                            LOGGER.fine(
-                                    "Lock "
-                                            + fid
-                                            + " not supported by data store (authID:"
-                                            + fLock.getAuthorization()
-                                            + ")");
+                            LOGGER.fine("Lock "
+                                    + fid
+                                    + " not supported by data store (authID:"
+                                    + fLock.getAuthorization()
+                                    + ")");
 
                             response.addNotLockedFeature(fid);
                             // lockFailedFids.add(fid);
@@ -187,45 +178,29 @@ public class LockFeature {
                             // HACK: Query.NO_NAMES isn't working in postgis
                             // right now,
                             // so we'll just use all.
-                            Query query =
-                                    new Query(
-                                            meta.getName(),
-                                            fidFilter,
-                                            Query.DEFAULT_MAX,
-                                            Query.ALL_NAMES,
-                                            lock.getHandle());
+                            Query query = new Query(
+                                    meta.getName(), fidFilter, Query.DEFAULT_MAX, Query.ALL_NAMES, lock.getHandle());
 
                             numberLocked = ((FeatureLocking) source).lockFeatures(query);
 
                             if (numberLocked == 1) {
-                                LOGGER.fine(
-                                        "Lock "
-                                                + fid
-                                                + " (authID:"
-                                                + fLock.getAuthorization()
-                                                + ")");
+                                LOGGER.fine("Lock " + fid + " (authID:" + fLock.getAuthorization() + ")");
                                 response.addLockedFeature(fid);
 
                                 // lockedFids.add(fid);
                             } else if (numberLocked == 0) {
-                                LOGGER.fine(
-                                        "Lock "
-                                                + fid
-                                                + " conflict (authID:"
-                                                + fLock.getAuthorization()
-                                                + ")");
+                                LOGGER.fine("Lock " + fid + " conflict (authID:" + fLock.getAuthorization() + ")");
                                 response.addNotLockedFeature(fid);
 
                                 // lockFailedFids.add(fid);
                             } else {
-                                LOGGER.warning(
-                                        "Lock "
-                                                + numberLocked
-                                                + " "
-                                                + fid
-                                                + " (authID:"
-                                                + fLock.getAuthorization()
-                                                + ") duplicated FeatureID!");
+                                LOGGER.warning("Lock "
+                                        + numberLocked
+                                        + " "
+                                        + fid
+                                        + " (authID:"
+                                        + fLock.getAuthorization()
+                                        + ") duplicated FeatureID!");
                                 response.addLockedFeature(fid);
 
                                 // lockedFids.add(fid);
@@ -266,9 +241,7 @@ public class LockFeature {
                 //
                 // abort will release the locks
                 throw new WFSException(
-                        request,
-                        "Could not acquire locks for:" + notLocked,
-                        WFSException.CANNOT_LOCK_ALL_FEATURES);
+                        request, "Could not acquire locks for:" + notLocked, WFSException.CANNOT_LOCK_ALL_FEATURES);
             }
 
             return response;
@@ -299,8 +272,8 @@ public class LockFeature {
                 // TODO: support locking for DataAccess
                 if (meta.isEnabled()) {
                     DataAccess da = meta.getDataStore(null);
-                    if (da instanceof DataStore) {
-                        dataStore = (DataStore) da;
+                    if (da instanceof DataStore dataStore1) {
+                        dataStore = dataStore1;
                     }
                 }
 
@@ -331,8 +304,7 @@ public class LockFeature {
     /**
      * Release all feature locks currently held.
      *
-     * <p>This is the implementation for the Admin "free lock" action, transaction locks are not
-     * released.
+     * <p>This is the implementation for the Admin "free lock" action, transaction locks are not released.
      */
     public void releaseAll() throws WFSException {
         try {
@@ -345,8 +317,8 @@ public class LockFeature {
                 // TODO: support locking for DataAccess
                 if (meta.isEnabled()) {
                     DataAccess da = meta.getDataStore(null);
-                    if (da instanceof DataStore) {
-                        dataStore = (DataStore) da;
+                    if (da instanceof DataStore dataStore1) {
+                        dataStore = dataStore1;
                     }
                 }
 
@@ -379,8 +351,8 @@ public class LockFeature {
                 // TODO: support locking for DataAccess
                 if (meta.isEnabled()) {
                     DataAccess da = meta.getDataStore(null);
-                    if (da instanceof DataStore) {
-                        dataStore = (DataStore) da;
+                    if (da instanceof DataStore dataStore1) {
+                        dataStore = dataStore1;
                     }
                 }
 
@@ -420,8 +392,8 @@ public class LockFeature {
                 // TODO: support locking for DataAccess
                 if (meta.isEnabled()) {
                     DataAccess da = meta.getDataStore(null);
-                    if (da instanceof DataStore) {
-                        dataStore = (DataStore) da;
+                    if (da instanceof DataStore dataStore1) {
+                        dataStore = dataStore1;
                     }
                 }
 
@@ -438,8 +410,7 @@ public class LockFeature {
                 // calling "exists" clears an expired lock, do this instead to verify existence
                 // since for the past 10+ years InProcessLockingManager has been the only game in
                 // town
-                if (lockingManager instanceof InProcessLockingManager) {
-                    InProcessLockingManager ip = (InProcessLockingManager) lockingManager;
+                if (lockingManager instanceof InProcessLockingManager ip) {
                     Set<InProcessLockingManager.Lock> locks = ip.allLocks();
                     if (locks != null) {
                         lockFound |= locks.stream().anyMatch(l -> l.isMatch(lockId));
@@ -465,11 +436,9 @@ public class LockFeature {
         // requires to send back a different response... we'll make a guess
         if (!refresh && throwOnRefreshFail) {
             if (!lockFound) {
-                throw new ServiceException(
-                        "Unknown lock id", WFSException.INVALID_LOCK_ID, "lockId");
+                throw new ServiceException("Unknown lock id", WFSException.INVALID_LOCK_ID, "lockId");
             } else {
-                throw new ServiceException(
-                        "Lock has expired", WFSException.LOCK_HAS_EXPIRED, "lockId");
+                throw new ServiceException("Lock has expired", WFSException.LOCK_HAS_EXPIRED, "lockId");
             }
         }
     }

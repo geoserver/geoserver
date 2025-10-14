@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.web.panel;
 
+import java.io.Serial;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -14,24 +15,22 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 
 public class LinkedLayersPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = 4556549618384659724L;
 
     public LinkedLayersPanel(String id, IModel<MetadataTemplate> metadataTemplateModel) {
         super(id);
 
-        add(
-                new GeoServerTablePanel<>(
-                        "layersTable", new LinkedLayersDataProvider(metadataTemplateModel)) {
+        add(new GeoServerTablePanel<>("layersTable", new LinkedLayersDataProvider(metadataTemplateModel)) {
 
-                    private static final long serialVersionUID = -6805672124565219769L;
+            @Serial
+            private static final long serialVersionUID = -6805672124565219769L;
 
-                    @Override
-                    protected Component getComponentForProperty(
-                            String id,
-                            IModel<ResourceInfo> itemModel,
-                            Property<ResourceInfo> property) {
-                        return null;
-                    }
-                });
+            @Override
+            protected Component getComponentForProperty(
+                    String id, IModel<ResourceInfo> itemModel, Property<ResourceInfo> property) {
+                return null;
+            }
+        });
     }
 }

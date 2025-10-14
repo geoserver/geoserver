@@ -16,8 +16,7 @@ import org.geoserver.security.web.SecurityNamedServiceProvider;
  *
  * @author Justin Deoliveira, OpenGeo
  */
-public class UserGroupServiceProvider
-        extends SecurityNamedServiceProvider<SecurityUserGroupServiceConfig> {
+public class UserGroupServiceProvider extends SecurityNamedServiceProvider<SecurityUserGroupServiceConfig> {
 
     public static final Property<SecurityUserGroupServiceConfig> PWD_ENCODER =
             new ResourceBeanProperty<>("passwordEncoderName", "passwordEncoderName");
@@ -40,8 +39,7 @@ public class UserGroupServiceProvider
 
     @Override
     protected List<Property<SecurityUserGroupServiceConfig>> getProperties() {
-        List<Property<SecurityUserGroupServiceConfig>> props =
-                new ArrayList<>(super.getProperties());
+        List<Property<SecurityUserGroupServiceConfig>> props = new ArrayList<>(super.getProperties());
         props.add(PWD_ENCODER);
         props.add(PWD_POLICY);
         return props;

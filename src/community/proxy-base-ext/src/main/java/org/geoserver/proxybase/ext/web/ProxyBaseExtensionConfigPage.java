@@ -41,15 +41,13 @@ public class ProxyBaseExtensionConfigPage extends GeoServerSecuredPage {
         setHeaderPanel(headerPanel());
         add(
                 rulesPanel =
-                        new GeoServerTablePanel<ProxyBaseExtensionRule>(
-                                "rulesPanel", new RulesDataProvider(), true) {
+                        new GeoServerTablePanel<ProxyBaseExtensionRule>("rulesPanel", new RulesDataProvider(), true) {
 
                             @Override
                             protected Component getComponentForProperty(
                                     String id,
                                     IModel<ProxyBaseExtensionRule> itemModel,
-                                    GeoServerDataProvider.Property<ProxyBaseExtensionRule>
-                                            property) {
+                                    GeoServerDataProvider.Property<ProxyBaseExtensionRule> property) {
                                 if (property == RulesDataProvider.EDIT_BUTTON) {
                                     return createEditLink(id, itemModel.getObject());
                                 }
@@ -67,85 +65,70 @@ public class ProxyBaseExtensionConfigPage extends GeoServerSecuredPage {
         RuleTestModel ruleTestModel = new RuleTestModel();
         Form<RuleTestModel> form = new Form<>("form", new CompoundPropertyModel<>(ruleTestModel));
         add(form);
-        TextArea<String> headersArea =
-                new TextArea<>("headers", new PropertyModel<>(ruleTestModel, "headers"));
+        TextArea<String> headersArea = new TextArea<>("headers", new PropertyModel<>(ruleTestModel, "headers"));
         form.add(headersArea);
-        TextArea<String> input =
-                new TextArea<>("input", new PropertyModel<>(ruleTestModel, "input"));
+        TextArea<String> input = new TextArea<>("input", new PropertyModel<>(ruleTestModel, "input"));
         form.add(input);
         input.setDefaultModelObject("http://localhost:8080/geoserver/wfs");
-        TextArea<String> output =
-                new TextArea<>("output", new PropertyModel<>(ruleTestModel, "output"));
+        TextArea<String> output = new TextArea<>("output", new PropertyModel<>(ruleTestModel, "output"));
         output.setEnabled(false);
         form.add(output);
-        form.add(
-                new SubmitLink("test") {
-                    @Override
-                    public void onSubmit() {
-                        String outputText;
-                        try {
-                            RuleTestModel ruleTestModel =
-                                    (RuleTestModel) getForm().getModelObject();
-                            Iterator<ProxyBaseExtensionRule> iterator =
-                                    rulesPanel
-                                            .getDataProvider()
-                                            .iterator(0, rulesPanel.getDataProvider().size());
-                            List<ProxyBaseExtensionRule> rules = new ArrayList<>();
-                            while (iterator.hasNext()) {
-                                rules.add(iterator.next());
-                            }
-                            ProxyBaseExtUrlMangler mangler = new ProxyBaseExtUrlMangler(rules);
-
-                            outputText =
-                                    mangler.transformURL(
-                                            ruleTestModel.getInput(), ruleTestModel.getHeaders());
-
-                        } catch (Exception exception) {
-                            outputText = "Exception: " + exception.getMessage();
-                        }
-                        output.setModelObject(outputText);
+        form.add(new SubmitLink("test") {
+            @Override
+            public void onSubmit() {
+                String outputText;
+                try {
+                    RuleTestModel ruleTestModel = (RuleTestModel) getForm().getModelObject();
+                    Iterator<ProxyBaseExtensionRule> iterator = rulesPanel
+                            .getDataProvider()
+                            .iterator(0, rulesPanel.getDataProvider().size());
+                    List<ProxyBaseExtensionRule> rules = new ArrayList<>();
+                    while (iterator.hasNext()) {
+                        rules.add(iterator.next());
                     }
-                });
+                    ProxyBaseExtUrlMangler mangler = new ProxyBaseExtUrlMangler(rules);
+
+                    outputText = mangler.transformURL(ruleTestModel.getInput(), ruleTestModel.getHeaders());
+
+                } catch (Exception exception) {
+                    outputText = "Exception: " + exception.getMessage();
+                }
+                output.setModelObject(outputText);
+            }
+        });
     }
 
     private Component headerPanel() {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
-        header.add(
-                new AjaxLink<Object>("addNew") {
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        setResponsePage(new ProxyBaseExtensionRulePage(Optional.empty()));
-                    }
-                });
-        header.add(
-                new AjaxLink<Object>("removeSelected") {
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        RulesDataProvider.delete(
-                                rulesPanel.getSelection().stream()
-                                        .map(ProxyBaseExtensionRule::getId)
-                                        .toArray(String[]::new));
-                        target.add(rulesPanel);
-                    }
-                });
+        header.add(new AjaxLink<Object>("addNew") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                setResponsePage(new ProxyBaseExtensionRulePage(Optional.empty()));
+            }
+        });
+        header.add(new AjaxLink<Object>("removeSelected") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                RulesDataProvider.delete(rulesPanel.getSelection().stream()
+                        .map(ProxyBaseExtensionRule::getId)
+                        .toArray(String[]::new));
+                target.add(rulesPanel);
+            }
+        });
         return header;
     }
 
     Component createEditLink(String id, final ProxyBaseExtensionRule ruleModel) {
         ImageAjaxLink<Object> editLink =
-                new ImageAjaxLink<Object>(
-                        id, new PackageResourceReference(getClass(), "img/edit.png")) {
+                new ImageAjaxLink<Object>(id, new PackageResourceReference(getClass(), "img/edit.png")) {
                     @Override
                     protected void onClick(AjaxRequestTarget target) {
                         setResponsePage(new ProxyBaseExtensionRulePage(Optional.of(ruleModel)));
                     }
                 };
         editLink.getImage()
-                .add(
-                        new AttributeModifier(
-                                "alt",
-                                new ParamResourceModel(
-                                        "ProxyBaseExtensionConfigPage.edit", editLink)));
+                .add(new AttributeModifier(
+                        "alt", new ParamResourceModel("ProxyBaseExtensionConfigPage.edit", editLink)));
         editLink.setOutputMarkupId(true);
         return editLink;
     }
@@ -155,15 +138,13 @@ public class ProxyBaseExtensionConfigPage extends GeoServerSecuredPage {
         public ActivateButtonPanel(String id, final ProxyBaseExtensionRule ruleModel) {
             super(id);
             this.setOutputMarkupId(true);
-            CheckBox activateButton =
-                    new CheckBox("activated", new PropertyModel<>(ruleModel, "activated"));
-            activateButton.add(
-                    new FormComponentUpdatingBehavior() {
-                        @Override
-                        protected void onUpdate() {
-                            RulesDataProvider.saveOrUpdate(ruleModel);
-                        }
-                    });
+            CheckBox activateButton = new CheckBox("activated", new PropertyModel<>(ruleModel, "activated"));
+            activateButton.add(new FormComponentUpdatingBehavior() {
+                @Override
+                protected void onUpdate() {
+                    RulesDataProvider.saveOrUpdate(ruleModel);
+                }
+            });
             add(activateButton);
         }
     }

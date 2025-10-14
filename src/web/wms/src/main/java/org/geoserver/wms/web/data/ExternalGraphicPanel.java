@@ -13,6 +13,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serial;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -61,6 +62,7 @@ import org.geotools.util.logging.Logging;
 // TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
 public class ExternalGraphicPanel extends Panel {
+    @Serial
     private static final long serialVersionUID = 5098470683723890874L;
 
     static final Logger LOGGER = Logging.getLogger(ExternalGraphicPanel.class);
@@ -106,33 +108,32 @@ public class ExternalGraphicPanel extends Panel {
         table.add(chooseImage);
 
         // add the autofill button
-        autoFill =
-                new GeoServerAjaxFormLink("autoFill", styleForm) {
-                    @Override
-                    public void onClick(AjaxRequestTarget target, Form<?> form) {
+        autoFill = new GeoServerAjaxFormLink("autoFill", styleForm) {
+            @Override
+            public void onClick(AjaxRequestTarget target, Form<?> form) {
 
-                        URLConnection conn = getExternalGraphic(target, form);
-                        if (conn == null) {
-                            ValidationError error = new ValidationError();
-                            error.setMessage("Unable to access image");
-                            error.addKey("imageUnavailable");
-                            onlineResource.error(error);
-                        } else {
-                            format.setModelValue(new String[] {conn.getContentType()});
-                            BufferedImage image;
-                            try {
-                                image = ImageIO.read(conn.getInputStream());
-                                width.setModelValue(new String[] {"" + image.getWidth()});
-                                height.setModelValue(new String[] {"" + image.getHeight()});
-                            } catch (IOException e) {
-                                LOGGER.log(Level.WARNING, "", e);
-                            }
-                            target.add(format);
-                            target.add(width);
-                            target.add(height);
-                        }
+                URLConnection conn = getExternalGraphic(target, form);
+                if (conn == null) {
+                    ValidationError error = new ValidationError();
+                    error.setMessage("Unable to access image");
+                    error.addKey("imageUnavailable");
+                    onlineResource.error(error);
+                } else {
+                    format.setModelValue(new String[] {conn.getContentType()});
+                    BufferedImage image;
+                    try {
+                        image = ImageIO.read(conn.getInputStream());
+                        width.setModelValue(new String[] {"" + image.getWidth()});
+                        height.setModelValue(new String[] {"" + image.getHeight()});
+                    } catch (IOException e) {
+                        LOGGER.log(Level.WARNING, "", e);
                     }
-                };
+                    target.add(format);
+                    target.add(width);
+                    target.add(height);
+                }
+            }
+        };
 
         table.add(autoFill);
 
@@ -156,57 +157,55 @@ public class ExternalGraphicPanel extends Panel {
 
         container.add(table);
 
-        showhideForm =
-                new Form<>("showhide") {
-                    @Override
-                    protected void onSubmit() {
-                        super.onSubmit();
-                    }
-                };
+        showhideForm = new Form<>("showhide") {
+            @Override
+            protected void onSubmit() {
+                super.onSubmit();
+            }
+        };
         showhideForm.setMarkupId("showhideForm");
         container.add(showhideForm);
         showhideForm.setMultiPart(true);
 
-        show =
-                new AjaxButton("show") {
-                    private static final long serialVersionUID = 1L;
+        show = new AjaxButton("show") {
+            @Serial
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        updateVisibility(true);
-                        target.add(ExternalGraphicPanel.this);
-                    }
-                };
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                updateVisibility(true);
+                target.add(ExternalGraphicPanel.this);
+            }
+        };
         container.add(show);
         showhideForm.add(show);
 
-        hide =
-                new AjaxButton("hide") {
-                    private static final long serialVersionUID = 1L;
+        hide = new AjaxButton("hide") {
+            @Serial
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        onlineResource.setModelObject("");
-                        onlineResource.clearInput();
-                        format.setModelObject("");
-                        format.clearInput();
-                        width.setModelObject(0);
-                        width.clearInput();
-                        height.setModelObject(0);
-                        height.clearInput();
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                onlineResource.setModelObject("");
+                onlineResource.clearInput();
+                format.setModelObject("");
+                format.clearInput();
+                width.setModelObject(0);
+                width.clearInput();
+                height.setModelObject(0);
+                height.clearInput();
 
-                        updateVisibility(false);
-                        target.add(ExternalGraphicPanel.this);
-                    }
-                };
+                updateVisibility(false);
+                target.add(ExternalGraphicPanel.this);
+            }
+        };
         container.add(hide);
         showhideForm.add(hide);
 
         LegendInfo legend = styleModel.getObject().getLegend();
-        boolean visible =
-                legend != null
-                        && legend.getOnlineResource() != null
-                        && !legend.getOnlineResource().isEmpty();
+        boolean visible = legend != null
+                && legend.getOnlineResource() != null
+                && !legend.getOnlineResource().isEmpty();
         updateVisibility(visible);
     }
 
@@ -231,8 +230,8 @@ public class ExternalGraphicPanel extends Panel {
     }
 
     /**
-     * Validates the external graphic and returns a connection to the graphic. If validation fails,
-     * error messages will be added to the passed form
+     * Validates the external graphic and returns a connection to the graphic. If validation fails, error messages will
+     * be added to the passed form
      *
      * @return URLConnection to the External Graphic file
      */
@@ -289,8 +288,7 @@ public class ExternalGraphicPanel extends Panel {
         return uri.startsWith("http");
     }
 
-    private Resource getIconFromStyleDirectory(WorkspaceInfo wsInfo, String value)
-            throws Exception {
+    private Resource getIconFromStyleDirectory(WorkspaceInfo wsInfo, String value) throws Exception {
         GeoServerResourceLoader resources = GeoServerApplication.get().getResourceLoader();
         GeoServerDataDirectory gsDataDir = new GeoServerDataDirectory(resources);
         Resource icon = null;
@@ -300,8 +298,7 @@ public class ExternalGraphicPanel extends Panel {
         if (icon == null) {
             icon = gsDataDir.getStyles(value);
             if (icon == null) throw new FileNotFoundException("file not found");
-            else if (icon.getType() != Resource.Type.RESOURCE)
-                throw new Exception("given path is a directory");
+            else if (icon.getType() != Resource.Type.RESOURCE) throw new Exception("given path is a directory");
         }
         return icon;
     }
@@ -312,9 +309,7 @@ public class ExternalGraphicPanel extends Panel {
         private final CompoundPropertyModel<StyleInfo> styleModel;
 
         public ChooseImageLink(
-                Form<?> styleForm,
-                AbstractStylePage stylePage,
-                CompoundPropertyModel<StyleInfo> styleModel) {
+                Form<?> styleForm, AbstractStylePage stylePage, CompoundPropertyModel<StyleInfo> styleModel) {
             super("chooseImage", styleForm);
             this.stylePage = stylePage;
             this.styleModel = styleModel;
@@ -326,66 +321,57 @@ public class ExternalGraphicPanel extends Panel {
             stylePage.getDialog().setInitialWidth(385);
             stylePage.getDialog().setInitialHeight(175);
 
-            GeoServerDialog.DialogDelegate delegate =
-                    new GeoServerDialog.DialogDelegate() {
+            GeoServerDialog.DialogDelegate delegate = new GeoServerDialog.DialogDelegate() {
 
-                        private ChooseImagePanel imagePanel;
+                private ChooseImagePanel imagePanel;
 
-                        @Override
-                        protected Component getContents(String id) {
-                            return imagePanel =
-                                    new ChooseImagePanel(
-                                            id, styleModel.getObject().getWorkspace(), EXTENSIONS);
+                @Override
+                protected Component getContents(String id) {
+                    return imagePanel =
+                            new ChooseImagePanel(id, styleModel.getObject().getWorkspace(), EXTENSIONS);
+                }
+
+                @Override
+                protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                    String imageFileName = imagePanel.getChoice();
+                    if (Strings.isEmpty(imageFileName)) {
+                        FileUpload fu = imagePanel.getFileUpload();
+                        imageFileName = fu.getClientFileName();
+                        int teller = 0;
+                        GeoServerDataDirectory dd =
+                                GeoServerApplication.get().getBeanOfType(GeoServerDataDirectory.class);
+                        Resource res = dd.getStyles(styleModel.getObject().getWorkspace(), imageFileName);
+                        while (Resources.exists(res)) {
+                            imageFileName = getImageFileName(fu, teller++);
+                            res = dd.getStyles(styleModel.getObject().getWorkspace(), imageFileName);
                         }
-
-                        @Override
-                        protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
-                            String imageFileName = imagePanel.getChoice();
-                            if (Strings.isEmpty(imageFileName)) {
-                                FileUpload fu = imagePanel.getFileUpload();
-                                imageFileName = fu.getClientFileName();
-                                int teller = 0;
-                                GeoServerDataDirectory dd =
-                                        GeoServerApplication.get()
-                                                .getBeanOfType(GeoServerDataDirectory.class);
-                                Resource res =
-                                        dd.getStyles(
-                                                styleModel.getObject().getWorkspace(),
-                                                imageFileName);
-                                while (Resources.exists(res)) {
-                                    imageFileName = getImageFileName(fu, teller++);
-                                    res =
-                                            dd.getStyles(
-                                                    styleModel.getObject().getWorkspace(),
-                                                    imageFileName);
-                                }
-                                try (InputStream is = fu.getInputStream()) {
-                                    try (OutputStream os = res.out()) {
-                                        IOUtils.copy(is, os);
-                                    }
-                                } catch (IOException e) {
-                                    error(e.getMessage());
-                                    target.add(imagePanel.getFeedback());
-                                    return false;
-                                }
+                        try (InputStream is = fu.getInputStream()) {
+                            try (OutputStream os = res.out()) {
+                                IOUtils.copy(is, os);
                             }
-
-                            onlineResource.setModelObject(imageFileName);
-                            target.add(onlineResource);
-
-                            return true;
-                        }
-
-                        private String getImageFileName(FileUpload fu, int teller) {
-                            String name = fu.getClientFileName();
-                            return getBaseName(name) + "." + teller + "." + getExtension(name);
-                        }
-
-                        @Override
-                        public void onError(AjaxRequestTarget target, Form<?> form) {
+                        } catch (IOException e) {
+                            error(e.getMessage());
                             target.add(imagePanel.getFeedback());
+                            return false;
                         }
-                    };
+                    }
+
+                    onlineResource.setModelObject(imageFileName);
+                    target.add(onlineResource);
+
+                    return true;
+                }
+
+                private String getImageFileName(FileUpload fu, int teller) {
+                    String name = fu.getClientFileName();
+                    return getBaseName(name) + "." + teller + "." + getExtension(name);
+                }
+
+                @Override
+                public void onError(AjaxRequestTarget target, Form<?> form) {
+                    target.add(imagePanel.getFeedback());
+                }
+            };
             stylePage.getDialog().showOkCancel(target, delegate);
         }
     }

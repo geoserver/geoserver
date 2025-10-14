@@ -4,6 +4,7 @@
  */
 package org.geoserver.gwc.web.blob;
 
+import java.io.Serial;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Radio;
@@ -25,27 +26,20 @@ import org.geowebcache.s3.S3BlobStoreInfo;
  */
 public class S3BlobStorePanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -8237328668463257329L;
 
     public S3BlobStorePanel(String id, final IModel<S3BlobStoreInfo> configModel) {
         super(id, configModel);
 
         add(new TextField<>("bucket").setRequired(true).add(titleModifier("bucket.title")));
-        add(
-                new TextField<>("awsAccessKey")
-                        .setRequired(false)
-                        .add(titleModifier("awsAccessKey.title")));
-        add(
-                new PasswordTextFieldWriteOnlyModel(
-                                "awsSecretKey", new PropertyModel<>(configModel, "awsSecretKey"))
-                        .setRequired(false)
-                        .add(titleModifier("awsSecretKey.title")));
+        add(new TextField<>("awsAccessKey").setRequired(false).add(titleModifier("awsAccessKey.title")));
+        add(new PasswordTextFieldWriteOnlyModel("awsSecretKey", new PropertyModel<>(configModel, "awsSecretKey"))
+                .setRequired(false)
+                .add(titleModifier("awsSecretKey.title")));
         add(new TextField<>("prefix").add(titleModifier("prefix.title")));
         add(new TextField<>("endpoint").add(titleModifier("endpoint.title")));
-        add(
-                new TextField<>("maxConnections")
-                        .setRequired(true)
-                        .add(titleModifier("maxConnections.title")));
+        add(new TextField<>("maxConnections").setRequired(true).add(titleModifier("maxConnections.title")));
         add(new CheckBox("useHTTPS").add(titleModifier("useHTTPS.title")));
         add(new TextField<>("proxyDomain").add(titleModifier("proxyDomain.title")));
         add(new TextField<>("proxyWorkstation").add(titleModifier("proxyWorkstation.title")));

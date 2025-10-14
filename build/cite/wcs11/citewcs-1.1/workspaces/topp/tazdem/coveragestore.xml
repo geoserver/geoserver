@@ -1,0 +1,12 @@
+<coverageStore>
+  <id>CoverageStoreInfoImpl--14e58cab:19359ba45ca:-7ff8</id>
+  <name>tazdem</name>
+  <type>GeoTIFF</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl--14e58cab:19359ba45ca:-7ffd</id>
+  </workspace>
+  <__default>false</__default>
+  <disableOnConnFailure>false</disableOnConnFailure>
+  <url>file:coverages/tazdem.tiff</url>
+</coverageStore>

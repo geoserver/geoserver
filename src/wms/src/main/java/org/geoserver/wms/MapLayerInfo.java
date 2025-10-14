@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -134,11 +135,8 @@ public final class MapLayerInfo {
     private String getLabel(Locale locale, ResourceInfo resourceInfo) {
         String label = resourceInfo.getTitle();
         if (resourceInfo.getInternationalTitle() != null && locale != null) {
-            InternationalContentHelper internationalContentHelper =
-                    new InternationalContentHelper(locale);
-            String localized =
-                    internationalContentHelper.getString(
-                            resourceInfo.getInternationalTitle(), true);
+            InternationalContentHelper internationalContentHelper = new InternationalContentHelper(locale);
+            String localized = internationalContentHelper.getString(resourceInfo.getInternationalTitle(), true);
             if (localized != null) label = localized;
         }
         return label;
@@ -147,8 +145,7 @@ public final class MapLayerInfo {
     private String getDescription(Locale locale, ResourceInfo resourceInfo) {
         String desc = resourceInfo.getAbstract();
         if (resourceInfo.getInternationalAbstract() != null && locale != null) {
-            InternationalContentHelper internationalContentHelper =
-                    new InternationalContentHelper(locale);
+            InternationalContentHelper internationalContentHelper = new InternationalContentHelper(locale);
             String localized = internationalContentHelper.getAbstract(resourceInfo);
             if (localized != null) desc = localized;
         }
@@ -164,8 +161,8 @@ public final class MapLayerInfo {
     }
 
     /**
-     * The feature source bounds. Mind, it might be null, in that case, grab the lat/lon bounding
-     * box and reproject to the native bounds.
+     * The feature source bounds. Mind, it might be null, in that case, grab the lat/lon bounding box and reproject to
+     * the native bounds.
      *
      * @return Envelope the feature source bounds.
      */
@@ -195,8 +192,7 @@ public final class MapLayerInfo {
             return resource.getLatLonBoundingBox();
         }
 
-        throw new UnsupportedOperationException(
-                "getLatLongBoundingBox not " + "implemented for remote sources");
+        throw new UnsupportedOperationException("getLatLongBoundingBox not " + "implemented for remote sources");
     }
 
     /** @uml.property name="coverage" */
@@ -254,10 +250,7 @@ public final class MapLayerInfo {
         return remoteFeatureSource;
     }
 
-    /**
-     * @return the resource SRS name or {@code null} if the underlying resource is not a registered
-     *     one
-     */
+    /** @return the resource SRS name or {@code null} if the underlying resource is not a registered one */
     public String getSRS() {
         if (layerInfo != null) {
             return layerInfo.getResource().getSRS();
@@ -310,12 +303,10 @@ public final class MapLayerInfo {
     }
 
     /**
-     * This value is added the headers of generated maps, marking them as being both "cache-able"
-     * and designating the time for which they are to remain valid. The specific header added is
-     * "Cache-Control: max-age="
+     * This value is added the headers of generated maps, marking them as being both "cache-able" and designating the
+     * time for which they are to remain valid. The specific header added is "Cache-Control: max-age="
      *
-     * @return the number of seconds to be added to the "Cache-Control: max-age=" header, or {@code
-     *     0} if not set
+     * @return the number of seconds to be added to the "Cache-Control: max-age=" header, or {@code 0} if not set
      */
     public int getCacheMaxAge() {
         // maxAge may be defined in layer group metadata, but caching
@@ -339,10 +330,9 @@ public final class MapLayerInfo {
     }
 
     /**
-     * If this layers has been setup to reproject data, skipReproject = true will disable
-     * reprojection. This method is build especially for the rendering subsystem that should be able
-     * to perform a full reprojection on its own, and do generalization before reprojection (thus
-     * avoid to reproject all of the original coordinates)
+     * If this layers has been setup to reproject data, skipReproject = true will disable reprojection. This method is
+     * build especially for the rendering subsystem that should be able to perform a full reprojection on its own, and
+     * do generalization before reprojection (thus avoid to reproject all of the original coordinates)
      */
     public FeatureSource<? extends FeatureType, ? extends Feature> getFeatureSource(
             boolean skipReproject, CoordinateReferenceSystem requestedCRS) throws IOException {
@@ -352,21 +342,13 @@ public final class MapLayerInfo {
 
         // ask for enabled() instead of isEnabled() to account for disabled resource/store
         if (!layerInfo.enabled()) {
-            throw new IOException(
-                    "featureType: "
-                            + getName()
-                            + " does not have a properly configured "
-                            + "datastore");
+            throw new IOException("featureType: " + getName() + " does not have a properly configured " + "datastore");
         }
 
         FeatureTypeInfo resource = (FeatureTypeInfo) layerInfo.getResource();
 
         if (resource.getStore() == null || resource.getStore().getDataStore(null) == null) {
-            throw new IOException(
-                    "featureType: "
-                            + getName()
-                            + " does not have a properly configured "
-                            + "datastore");
+            throw new IOException("featureType: " + getName() + " does not have a properly configured " + "datastore");
         }
 
         Hints hints = new Hints(ResourcePool.REPROJECT, Boolean.valueOf(!skipReproject));
@@ -430,22 +412,19 @@ public final class MapLayerInfo {
         return result;
     }
 
-    private boolean userMapCRSForWFSNG(
-            FeatureTypeInfo resource, CoordinateReferenceSystem coordinateReferenceSystem)
+    private boolean userMapCRSForWFSNG(FeatureTypeInfo resource, CoordinateReferenceSystem coordinateReferenceSystem)
             throws IOException {
         // check if map crs is part of other srs, if yes send put it sindie hend
         String otherSRSListStr = (String) resource.getMetadata().get(FeatureTypeInfo.OTHER_SRS);
         // verify the resource is WFS-NG and contains Other SRS in feature metadata
-        if (resource.getStore().getConnectionParameters().get(WFSDataStoreFactory.USEDEFAULTSRS.key)
-                        == null
+        if (resource.getStore().getConnectionParameters().get(WFSDataStoreFactory.USEDEFAULTSRS.key) == null
                 || otherSRSListStr == null
                 || otherSRSListStr.isEmpty()) return false;
         // do nothing if datastore is configure to stay with native remote srs
-        if (Boolean.valueOf(
-                resource.getStore()
-                        .getConnectionParameters()
-                        .get(WFSDataStoreFactory.USEDEFAULTSRS.key)
-                        .toString())) return false;
+        if (Boolean.valueOf(resource.getStore()
+                .getConnectionParameters()
+                .get(WFSDataStoreFactory.USEDEFAULTSRS.key)
+                .toString())) return false;
 
         // create list of other srs
         List<String> otherSRSList = Arrays.asList(otherSRSListStr.split(","));
@@ -453,8 +432,7 @@ public final class MapLayerInfo {
         for (String otherSRS : otherSRSList) {
             try {
                 // if no transformation is required, we have a match
-                if (!CRS.isTransformationRequired(
-                        CRS.decode(otherSRS), coordinateReferenceSystem)) {
+                if (!CRS.isTransformationRequired(CRS.decode(otherSRS), coordinateReferenceSystem)) {
                     LOGGER.fine(otherSRS + " SRS found in Other SRS");
                     return true;
                 }
@@ -476,5 +454,10 @@ public final class MapLayerInfo {
         } else if (!name.equals(other.name)) return false;
         if (type != other.type) return false;
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

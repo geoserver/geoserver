@@ -35,29 +35,19 @@ public class Observation_2_0_WfsTest extends AbstractAppSchemaTestSupport {
         String id = "ID1";
         assertXpathEvaluatesTo(id, "(//om:OM_Observation)[1]/@gml:id", doc);
         assertXpathEvaluatesTo(
-                "TP." + id,
-                "//om:OM_Observation[@gml:id='"
-                        + id
-                        + "']/om:phenomenonTime/gml:TimePeriod/@gml:id",
-                doc);
+                "TP." + id, "//om:OM_Observation[@gml:id='" + id + "']/om:phenomenonTime/gml:TimePeriod/@gml:id", doc);
         assertXpathEvaluatesTo(
                 "1948-01-01T00:00:00Z",
-                "//om:OM_Observation[@gml:id='"
-                        + id
-                        + "']/om:phenomenonTime/gml:TimePeriod/gml:beginPosition",
+                "//om:OM_Observation[@gml:id='" + id + "']/om:phenomenonTime/gml:TimePeriod/gml:beginPosition",
                 doc);
         assertXpathEvaluatesTo(
                 "1949-04-01T00:00:00Z",
-                "//om:OM_Observation[@gml:id='"
-                        + id
-                        + "']/om:phenomenonTime/gml:TimePeriod/gml:endPosition",
+                "//om:OM_Observation[@gml:id='" + id + "']/om:phenomenonTime/gml:TimePeriod/gml:endPosition",
                 doc);
 
         assertXpathEvaluatesTo(
                 "measurement." + id,
-                "//om:OM_Observation[@gml:id='"
-                        + id
-                        + "']/om:result/wml2dr:MeasurementTimeseriesDomainRange/@gml:id",
+                "//om:OM_Observation[@gml:id='" + id + "']/om:result/wml2dr:MeasurementTimeseriesDomainRange/@gml:id",
                 doc);
         assertXpathEvaluatesTo(
                 "tpl." + id,
@@ -102,28 +92,18 @@ public class Observation_2_0_WfsTest extends AbstractAppSchemaTestSupport {
         id = "ID2";
         assertXpathEvaluatesTo(id, "(//om:OM_Observation)[2]/@gml:id", doc);
         assertXpathEvaluatesTo(
-                "TP." + id,
-                "//om:OM_Observation[@gml:id='"
-                        + id
-                        + "']/om:phenomenonTime/gml:TimePeriod/@gml:id",
-                doc);
+                "TP." + id, "//om:OM_Observation[@gml:id='" + id + "']/om:phenomenonTime/gml:TimePeriod/@gml:id", doc);
         assertXpathEvaluatesTo(
                 "1949-05-01T00:00:00Z",
-                "//om:OM_Observation[@gml:id='"
-                        + id
-                        + "']/om:phenomenonTime/gml:TimePeriod/gml:beginPosition",
+                "//om:OM_Observation[@gml:id='" + id + "']/om:phenomenonTime/gml:TimePeriod/gml:beginPosition",
                 doc);
         assertXpathEvaluatesTo(
                 "1950-12-01T00:00:00Z",
-                "//om:OM_Observation[@gml:id='"
-                        + id
-                        + "']/om:phenomenonTime/gml:TimePeriod/gml:endPosition",
+                "//om:OM_Observation[@gml:id='" + id + "']/om:phenomenonTime/gml:TimePeriod/gml:endPosition",
                 doc);
         assertXpathEvaluatesTo(
                 "measurement." + id,
-                "//om:OM_Observation[@gml:id='"
-                        + id
-                        + "']/om:result/wml2dr:MeasurementTimeseriesDomainRange/@gml:id",
+                "//om:OM_Observation[@gml:id='" + id + "']/om:result/wml2dr:MeasurementTimeseriesDomainRange/@gml:id",
                 doc);
         assertXpathEvaluatesTo(
                 "tpl." + id,
@@ -171,37 +151,36 @@ public class Observation_2_0_WfsTest extends AbstractAppSchemaTestSupport {
     public void testTimePositionSubset() {
         String beginPosition = "1950-03-01T00:00:00Z";
         String endPosition = "1950-06-01T00:00:00Z";
-        String xml =
-                "<wfs:GetFeature "
-                        + "service=\"WFS\" " //
-                        + "version=\"1.1.0\" " //
-                        + "outputFormat=\"gml32\" " //
-                        + "xmlns:om=\"http://www.opengis.net/om/2.0\" " //
-                        + "xmlns:ogc=\"http://www.opengis.net/ogc\" " //
-                        + "xmlns:wfs=\"http://www.opengis.net/wfs\" " //
-                        + "xmlns:gml=\"http://www.opengis.net/gml/3.2\" " //
-                        + "xmlns:wml2dr=\"http://www.opengis.net/waterml/DR/2.0\" " //
-                        + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " //
-                        + "xsi:schemaLocation=\"" //
-                        + "http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" //
-                        + "\"" //
-                        + ">" //
-                        + "<wfs:Query typeName=\"om:OM_Observation\">"
-                        + "    <ogc:Filter>"
-                        + "        <ogc:PropertyIsBetween>"
-                        + "             <ogc:PropertyName>"
-                        + " om:OM_Observation/om:result/wml2dr:MeasurementTimeseriesDomainRange/gml:domainSet/wml2dr:TimePositionList/wml2dr:timePositionList"
-                        + "</ogc:PropertyName>" //
-                        + "             <ogc:LowerBoundary><ogc:Literal>"
-                        + beginPosition
-                        + "</ogc:Literal></ogc:LowerBoundary>" //
-                        + "             <ogc:UpperBoundary><ogc:Literal>"
-                        + endPosition
-                        + "</ogc:Literal></ogc:UpperBoundary>" //
-                        + "        </ogc:PropertyIsBetween>"
-                        + "    </ogc:Filter>"
-                        + "</wfs:Query> "
-                        + "</wfs:GetFeature>";
+        String xml = "<wfs:GetFeature "
+                + "service=\"WFS\" " //
+                + "version=\"1.1.0\" " //
+                + "outputFormat=\"gml32\" " //
+                + "xmlns:om=\"http://www.opengis.net/om/2.0\" " //
+                + "xmlns:ogc=\"http://www.opengis.net/ogc\" " //
+                + "xmlns:wfs=\"http://www.opengis.net/wfs\" " //
+                + "xmlns:gml=\"http://www.opengis.net/gml/3.2\" " //
+                + "xmlns:wml2dr=\"http://www.opengis.net/waterml/DR/2.0\" " //
+                + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " //
+                + "xsi:schemaLocation=\"" //
+                + "http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" //
+                + "\"" //
+                + ">" //
+                + "<wfs:Query typeName=\"om:OM_Observation\">"
+                + "    <ogc:Filter>"
+                + "        <ogc:PropertyIsBetween>"
+                + "             <ogc:PropertyName>"
+                + " om:OM_Observation/om:result/wml2dr:MeasurementTimeseriesDomainRange/gml:domainSet/wml2dr:TimePositionList/wml2dr:timePositionList"
+                + "</ogc:PropertyName>" //
+                + "             <ogc:LowerBoundary><ogc:Literal>"
+                + beginPosition
+                + "</ogc:Literal></ogc:LowerBoundary>" //
+                + "             <ogc:UpperBoundary><ogc:Literal>"
+                + endPosition
+                + "</ogc:Literal></ogc:UpperBoundary>" //
+                + "        </ogc:PropertyIsBetween>"
+                + "    </ogc:Filter>"
+                + "</wfs:Query> "
+                + "</wfs:GetFeature>";
         // Cannot validate because the type name contains underscore and invalid!
         // validate(xml);
         Document doc = postAsDOM("wfs", xml);
@@ -209,17 +188,12 @@ public class Observation_2_0_WfsTest extends AbstractAppSchemaTestSupport {
         assertXpathCount(1, "//om:OM_Observation", doc);
         String id = "ID2";
         assertXpathEvaluatesTo(id, "//om:OM_Observation/@gml:id", doc);
-        assertXpathEvaluatesTo(
-                "TP." + id, "//om:OM_Observation/om:phenomenonTime/gml:TimePeriod/@gml:id", doc);
+        assertXpathEvaluatesTo("TP." + id, "//om:OM_Observation/om:phenomenonTime/gml:TimePeriod/@gml:id", doc);
         // timePeriod should match filter range using index(LAST) in the mapping file
         assertXpathEvaluatesTo(
-                beginPosition,
-                "//om:OM_Observation/om:phenomenonTime/gml:TimePeriod/gml:beginPosition",
-                doc);
+                beginPosition, "//om:OM_Observation/om:phenomenonTime/gml:TimePeriod/gml:beginPosition", doc);
         assertXpathEvaluatesTo(
-                endPosition,
-                "//om:OM_Observation/om:phenomenonTime/gml:TimePeriod/gml:endPosition",
-                doc);
+                endPosition, "//om:OM_Observation/om:phenomenonTime/gml:TimePeriod/gml:endPosition", doc);
         assertXpathEvaluatesTo(
                 "measurement." + id,
                 "//om:OM_Observation/om:result/wml2dr:MeasurementTimeseriesDomainRange/@gml:id",

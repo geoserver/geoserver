@@ -5,13 +5,13 @@
  */
 package org.geoserver.wfs.xml;
 
+import static java.util.Collections.emptyList;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 import static org.geoserver.ows.util.ResponseUtils.params;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -53,6 +53,7 @@ import org.geotools.xsd.SchemaIndex;
 import org.geotools.xsd.Schemas;
 import org.geotools.xsd.XSD;
 import org.geotools.xsd.impl.SchemaIndexImpl;
+import org.xml.sax.EntityResolver;
 
 /**
  * XSD for an application schema of a geoserver feature type.
@@ -81,15 +82,11 @@ public class ApplicationSchemaXSD extends XSD {
     TypeMappingProfile typeMappingProfile;
 
     public ApplicationSchemaXSD(NamespaceInfo ns, Catalog catalog, String baseURL, WFS wfs) {
-        this(ns, catalog, baseURL, wfs, Collections.emptyList());
+        this(ns, catalog, baseURL, wfs, emptyList());
     }
 
     public ApplicationSchemaXSD(
-            NamespaceInfo ns,
-            Catalog catalog,
-            String baseURL,
-            WFS wfs,
-            Collection<FeatureTypeInfo> types) {
+            NamespaceInfo ns, Catalog catalog, String baseURL, WFS wfs, Collection<FeatureTypeInfo> types) {
         this.ns = ns;
         this.catalog = catalog;
         this.baseURL = baseURL;
@@ -97,7 +94,7 @@ public class ApplicationSchemaXSD extends XSD {
         this.types = types;
 
         if (this.types == null) {
-            types = Collections.emptyList();
+            types = emptyList();
         }
 
         if (this.ns == null) {
@@ -144,14 +141,12 @@ public class ApplicationSchemaXSD extends XSD {
 
     @Override
     public String getSchemaLocation() {
-        String schemaLocation =
-                ResponseUtils.appendQueryString(
-                        ResponseUtils.appendPath(baseURL, "wfs"),
-                        "request=DescribeFeatureType&service=WFS&version=" + wfs.getVersion());
+        String schemaLocation = ResponseUtils.appendQueryString(
+                ResponseUtils.appendPath(baseURL, "wfs"),
+                "request=DescribeFeatureType&service=WFS&version=" + wfs.getVersion());
 
         if (types.isEmpty()) {
-            schemaLocation =
-                    ResponseUtils.appendQueryString(schemaLocation, "namespace=" + ns.getURI());
+            schemaLocation = ResponseUtils.appendQueryString(schemaLocation, "namespace=" + ns.getURI());
         } else {
             StringBuffer sb = new StringBuffer("typeName=");
             for (FeatureTypeInfo type : types) {
@@ -226,17 +221,10 @@ public class ApplicationSchemaXSD extends XSD {
         return schema;
     }
 
-    void buildSchemaImports(
-            Collection<NamespaceInfo> namespaces, XSDSchema schema, XSDFactory factory) {
+    void buildSchemaImports(Collection<NamespaceInfo> namespaces, XSDSchema schema, XSDFactory factory) {
 
         Map<String, String> params =
-                params(
-                        "service",
-                        "wfs",
-                        "request",
-                        "DescribeFeatureType",
-                        "version",
-                        wfs.getVersion());
+                params("service", "wfs", "request", "DescribeFeatureType", "version", wfs.getVersion());
 
         //        String schemaLocation = ResponseUtils.appendQueryString(ResponseUtils.appendPath(
         // baseURL, "wfs"),
@@ -255,11 +243,7 @@ public class ApplicationSchemaXSD extends XSD {
         }
     }
 
-    void buildSchemaContent(
-            FeatureTypeInfo featureTypeInfo,
-            XSDSchema schema,
-            XSDFactory factory,
-            SchemaIndex index)
+    void buildSchemaContent(FeatureTypeInfo featureTypeInfo, XSDSchema schema, XSDFactory factory, SchemaIndex index)
             throws IOException {
 
         // look if the schema for the type is already defined
@@ -268,16 +252,7 @@ public class ApplicationSchemaXSD extends XSD {
         String name = featureTypeInfo.getName();
 
         Resource schemaFile =
-                catalog.getResourceLoader()
-                        .get(
-                                "workspaces"
-                                        + "/"
-                                        + prefix
-                                        + "/"
-                                        + store
-                                        + "/"
-                                        + name
-                                        + "/schema.xsd");
+                catalog.getResourceLoader().get("workspaces" + "/" + prefix + "/" + store + "/" + name + "/schema.xsd");
 
         if (schemaFile.getType() == Type.RESOURCE) {
             // schema file found, parse it and lookup the complex type
@@ -288,7 +263,9 @@ public class ApplicationSchemaXSD extends XSD {
             XSDSchema ftSchema = null;
 
             try {
-                ftSchema = Schemas.parse(schemaFile.file().getAbsolutePath(), locators, null);
+                EntityResolver entityResolver = catalog.getResourcePool().getEntityResolver();
+                ftSchema = Schemas.parse(
+                        schemaFile.file().getAbsolutePath(), locators, emptyList(), emptyList(), entityResolver);
             } catch (IOException e) {
                 LOGGER.log(
                         Level.WARNING,
@@ -319,8 +296,7 @@ public class ApplicationSchemaXSD extends XSD {
         complexType.setName(name + "Type");
 
         complexType.setDerivationMethod(XSDDerivationMethod.EXTENSION_LITERAL);
-        complexType.setBaseTypeDefinition(
-                schema.resolveComplexTypeDefinition(GML.NAMESPACE, "AbstractFeatureType"));
+        complexType.setBaseTypeDefinition(schema.resolveComplexTypeDefinition(GML.NAMESPACE, "AbstractFeatureType"));
 
         XSDModelGroup group = factory.createXSDModelGroup();
         group.setCompositor(XSDCompositor.SEQUENCE_LITERAL);
@@ -341,16 +317,14 @@ public class ApplicationSchemaXSD extends XSD {
             Name typeName = findTypeName(binding);
 
             if (typeName == null) {
-                throw new NullPointerException(
-                        "Could not find a type for property: "
-                                + attribute.getName()
-                                + " of type: "
-                                + binding.getName());
+                throw new NullPointerException("Could not find a type for property: "
+                        + attribute.getName()
+                        + " of type: "
+                        + binding.getName());
             }
 
             XSDTypeDefinition type =
-                    index.getTypeDefinition(
-                            new QName(typeName.getNamespaceURI(), typeName.getLocalPart()));
+                    index.getTypeDefinition(new QName(typeName.getNamespaceURI(), typeName.getLocalPart()));
             if (type == null) {
                 throw new IllegalStateException("Could not find type: " + typeName);
             }
@@ -375,8 +349,7 @@ public class ApplicationSchemaXSD extends XSD {
         XSDElementDeclaration element = factory.createXSDElementDeclaration();
         element.setName(name);
 
-        element.setSubstitutionGroupAffiliation(
-                schema.resolveElementDeclaration(GML.NAMESPACE, "_Feature"));
+        element.setSubstitutionGroupAffiliation(schema.resolveElementDeclaration(GML.NAMESPACE, "_Feature"));
         element.setTypeDefinition(complexType);
 
         schema.getContents().add(element);

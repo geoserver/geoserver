@@ -33,9 +33,20 @@ public class GetCapabilitiesTest extends CSWInternalTestSupport {
     }
 
     @Test
+    public void testAcceptVersions() throws Exception {
+        Document dom = getAsDOM(BASEPATH + "?service=csw&version=1.0.0,2.0.2&request=GetCapabilities");
+        // print(dom);
+        checkValidationErrors(dom);
+    }
+
+    @Test
     public void testGetBasic() throws Exception {
         Document dom = getAsDOM(BASEPATH + "?service=csw&version=2.0.2&request=GetCapabilities");
         // print(dom);
+        checkCapabilitiesDocument(dom);
+    }
+
+    private void checkCapabilitiesDocument(Document dom) throws Exception {
         checkValidationErrors(dom);
 
         // basic check on local name
@@ -45,9 +56,9 @@ public class GetCapabilitiesTest extends CSWInternalTestSupport {
         // basic check on xpath node
         assertXpathEvaluatesTo("1", "count(/csw:Capabilities)", dom);
 
-        assertTrue(
-                xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom).getLength()
-                        > 0);
+        assertTrue(xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom)
+                        .getLength()
+                > 0);
         assertEquals("5", xpath.evaluate("count(//ows:Operation)", dom));
 
         // basic check on GetCapabilities operation constraint
@@ -71,6 +82,13 @@ public class GetCapabilitiesTest extends CSWInternalTestSupport {
     }
 
     @Test
+    public void testAcceptVersionsInvalid() throws Exception {
+        // two versions that are not supported, should result in an exception
+        Document dom = getAsDOM(BASEPATH + "?service=csw&acceptVersions=1.0.0,10.0.0&request=GetCapabilities");
+        checkOws11Exception(dom, "VersionNegotiationFailed", "acceptVersions");
+    }
+
+    @Test
     public void testPostBasic() throws Exception {
         Document dom = postAsDOM(BASEPATH + "?service=csw&version=2.0.2&request=GetCapabilities");
         // print(dom);
@@ -83,9 +101,9 @@ public class GetCapabilitiesTest extends CSWInternalTestSupport {
         // basic check on xpath node
         assertXpathEvaluatesTo("1", "count(/csw:Capabilities)", dom);
 
-        assertTrue(
-                xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom).getLength()
-                        > 0);
+        assertTrue(xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom)
+                        .getLength()
+                > 0);
         assertEquals("5", xpath.evaluate("count(//ows:Operation)", dom));
 
         // basic check on GetCapabilities operation constraint
@@ -98,10 +116,8 @@ public class GetCapabilitiesTest extends CSWInternalTestSupport {
 
     @Test
     public void testSections() throws Exception {
-        Document dom =
-                getAsDOM(
-                        BASEPATH
-                                + "?service=csw&version=2.0.2&request=GetCapabilities&sections=ServiceIdentification,ServiceProvider");
+        Document dom = getAsDOM(BASEPATH
+                + "?service=csw&version=2.0.2&request=GetCapabilities&sections=ServiceIdentification,ServiceProvider");
         // print(dom);
         checkValidationErrors(dom);
 
@@ -119,7 +135,8 @@ public class GetCapabilitiesTest extends CSWInternalTestSupport {
 
         assertEquals(
                 0,
-                xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom).getLength());
+                xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom)
+                        .getLength());
         assertEquals("0", xpath.evaluate("count(//ows:Operation)", dom));
     }
 }

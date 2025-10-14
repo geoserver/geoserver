@@ -34,31 +34,27 @@ import org.junit.rules.TestRule;
  *
  * <h2>Test Setup Lifecycle</h2>
  *
- * <p>This class provides a number of hooks for subclasses that are called throughout the life cycle
- * of the test. These include:
+ * <p>This class provides a number of hooks for subclasses that are called throughout the life cycle of the test. These
+ * include:
  *
  * <ul>
- *   <li>{@link #createTestData()} - The first subclass hook called to created the {@link TestData}
- *       for the test
- *   <li>{@link #setUp(TestData)} - Called after the test data setup has been completed and provides
- *       subclass with a chance to any setup it requires
- *   <li>{@link #tearDown(TestData)} - Called after the test has run and before the test setup tear
- *       down.
+ *   <li>{@link #createTestData()} - The first subclass hook called to created the {@link TestData} for the test
+ *   <li>{@link #setUp(TestData)} - Called after the test data setup has been completed and provides subclass with a
+ *       chance to any setup it requires
+ *   <li>{@link #tearDown(TestData)} - Called after the test has run and before the test setup tear down.
  * </ul>
  *
- * <p>Additionally a test class may use the standard JUnit annotations such as {@link Before},
- * {@link BeforeClass}, {@link After}, {@link AfterClass} to define additional life cycle setup and
- * tear down methods. Generally these methods will execute after methods of the super class with the
- * same annotation.
+ * <p>Additionally a test class may use the standard JUnit annotations such as {@link Before}, {@link BeforeClass},
+ * {@link After}, {@link AfterClass} to define additional life cycle setup and tear down methods. Generally these
+ * methods will execute after methods of the super class with the same annotation.
  *
  * <h2>Test Setup Frequency</h2>
  *
- * <p>The {@link TestSetup} annotation is used to control the frequency at which the test setup will
- * occur over the life of the test class. It controls whether the test setup is run repeatedly for
- * each test method or once for the all the test methods of the class.
+ * <p>The {@link TestSetup} annotation is used to control the frequency at which the test setup will occur over the life
+ * of the test class. It controls whether the test setup is run repeatedly for each test method or once for the all the
+ * test methods of the class.
  *
- * <p>The annotation is defined at the class level. For example, to define a single (one-time)
- * setup: <code>
+ * <p>The annotation is defined at the class level. For example, to define a single (one-time) setup: <code>
  * <pre>
  * {@literal @}TestSetup(run=TestSetupFrequency.ONCE)
  * public class MyTest extends GeoServerBaseTestSupport {
@@ -69,15 +65,10 @@ import org.junit.rules.TestRule;
  * @author Justin Deoliveira, OpenGeo
  * @param <T>
  */
-@SuppressWarnings({
-    "PMD.JUnit4TestShouldUseBeforeAnnotation",
-    "PMD.JUnit4TestShouldUseAfterAnnotation"
-})
 public abstract class GeoServerBaseTestSupport<T extends TestData> {
 
     /** Common logger for test cases */
-    protected static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.test");
+    protected static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.test");
 
     /** test data */
     protected static TestData testData;
@@ -96,17 +87,16 @@ public abstract class GeoServerBaseTestSupport<T extends TestData> {
     //  };
 
     @Rule
-    public TestRule runSetup =
-            (base, description) -> {
-                if (description.getAnnotation(RunTestSetup.class) != null) {
-                    try {
-                        doTearDownClass();
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                return base;
-            };
+    public TestRule runSetup = (base, description) -> {
+        if (description.getAnnotation(RunTestSetup.class) != null) {
+            try {
+                doTearDownClass();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return base;
+    };
 
     /** Checks for existence of a system property named "quietTests". */
     public static boolean isQuietTests() {
@@ -161,17 +151,15 @@ public abstract class GeoServerBaseTestSupport<T extends TestData> {
     /**
      * Creates the {@link TestData} implementation for this test.
      *
-     * <p>If the concrete {@link TestData} class provides any configurable options that control how
-     * its setup will operate they should be set/unset in this method before turning the new
-     * instance.
+     * <p>If the concrete {@link TestData} class provides any configurable options that control how its setup will
+     * operate they should be set/unset in this method before turning the new instance.
      */
     protected abstract T createTestData() throws Exception;
 
     /**
      * Subclass hook for set up before the test run.
      *
-     * <p>This methods should be used for setup that occurs after the {@link TestData} instance has
-     * been setup.
+     * <p>This methods should be used for setup that occurs after the {@link TestData} instance has been setup.
      */
     protected void setUp(T testData) throws Exception {}
 
@@ -210,20 +198,14 @@ public abstract class GeoServerBaseTestSupport<T extends TestData> {
                 }
                 // reset log4j2 to default, to drop any open files
                 LogManager.shutdown();
-                @SuppressWarnings({
-                    "resource",
-                    "PMD.CloseResource"
-                }) // current context, no need to enforce AutoClosable
+                @SuppressWarnings({"PMD.CloseResource"}) // current context, no need to enforce AutoClosable
                 LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
                 loggerContext.reconfigure(new DefaultConfiguration());
 
                 try {
                     testData.tearDown();
                 } catch (Throwable t) {
-                    LOGGER.log(
-                            Logging.FATAL,
-                            "Failure to remove contents of the temporary data directory: " + t,
-                            t);
+                    LOGGER.log(Logging.FATAL, "Failure to remove contents of the temporary data directory: " + t, t);
                     throw t;
                 }
             } finally {
@@ -243,8 +225,7 @@ public abstract class GeoServerBaseTestSupport<T extends TestData> {
     /**
      * Subclass hook for set up before the test run.
      *
-     * <p>This methods should be used for setup that occurs after the {@link TestData} instance has
-     * been setup.
+     * <p>This methods should be used for setup that occurs after the {@link TestData} instance has been setup.
      */
     protected void tearDown(T testData) throws Exception {}
 
@@ -286,20 +267,18 @@ public abstract class GeoServerBaseTestSupport<T extends TestData> {
     }
 
     /**
-     * Returns the {@link Service} matching the given service id and version, null if not found, an
-     * exception if multiple are found (should not happen)
+     * Returns the {@link Service} matching the given service id and version, null if not found, an exception if
+     * multiple are found (should not happen)
      */
     protected Service getService(String id, Version version) {
-        List<Service> services =
-                GeoServerExtensions.extensions(Service.class).stream()
-                        .filter(s -> id.equals(s.getId()) && version.equals(s.getVersion()))
-                        .collect(Collectors.toList());
+        List<Service> services = GeoServerExtensions.extensions(Service.class).stream()
+                .filter(s -> id.equals(s.getId()) && version.equals(s.getVersion()))
+                .collect(Collectors.toList());
         if (services.isEmpty()) {
             return null;
         }
         if (services.size() > 1) {
-            throw new RuntimeException(
-                    "Found more than one service with the required id and version: " + services);
+            throw new RuntimeException("Found more than one service with the required id and version: " + services);
         }
         return services.get(0);
     }

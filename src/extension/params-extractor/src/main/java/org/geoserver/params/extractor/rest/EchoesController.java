@@ -54,8 +54,7 @@ public class EchoesController extends RestBaseController {
 
     @GetMapping
     public RestListWrapper<EchoParameter> getEchoParameters() {
-        return new RestListWrapper<>(
-                EchoParametersDao.getEchoParameters(), EchoParameter.class, this, "id", null);
+        return new RestListWrapper<>(EchoParametersDao.getEchoParameters(), EchoParameter.class, this, "id", null);
     }
 
     @PostMapping(
@@ -65,14 +64,12 @@ public class EchoesController extends RestBaseController {
                 MediaType.APPLICATION_XML_VALUE,
                 MediaType.TEXT_XML_VALUE
             })
-    public ResponseEntity<String> postEchoParameter(@RequestBody EchoParameter newValue)
-            throws URISyntaxException {
+    public ResponseEntity<String> postEchoParameter(@RequestBody EchoParameter newValue) throws URISyntaxException {
         // force a new id like the UI would, using a random UUID
-        newValue =
-                new EchoParameterBuilder()
-                        .copy(newValue)
-                        .withId(UUID.randomUUID().toString())
-                        .build();
+        newValue = new EchoParameterBuilder()
+                .copy(newValue)
+                .withId(UUID.randomUUID().toString())
+                .build();
         EchoParametersDao.saveOrUpdateEchoParameter(newValue);
 
         // return the location of the created echo parameter
@@ -84,15 +81,10 @@ public class EchoesController extends RestBaseController {
 
     @GetMapping(path = "{id}")
     public RestWrapper<EchoParameter> getEchoParameter(@PathVariable String id) {
-        EchoParameter result =
-                EchoParametersDao.getEchoParameters().stream()
-                        .filter(ep -> id.equals(ep.getId()))
-                        .findFirst()
-                        .orElseThrow(
-                                () ->
-                                        new RestException(
-                                                "Parameter with id " + id + " not found",
-                                                HttpStatus.NOT_FOUND));
+        EchoParameter result = EchoParametersDao.getEchoParameters().stream()
+                .filter(ep -> id.equals(ep.getId()))
+                .findFirst()
+                .orElseThrow(() -> new RestException("Parameter with id " + id + " not found", HttpStatus.NOT_FOUND));
         return new RestWrapperAdapter<>(result, EchoParameter.class, this);
     }
 
@@ -120,10 +112,7 @@ public class EchoesController extends RestBaseController {
             newValue = new EchoParameterBuilder().copy(newValue).withId(id).build();
         } else if (!newValue.getId().equals(id)) {
             throw new RestException(
-                    "Incosistent identifier, body uses "
-                            + newValue.getId()
-                            + " but REST API path has "
-                            + id,
+                    "Incosistent identifier, body uses " + newValue.getId() + " but REST API path has " + id,
                     HttpStatus.BAD_REQUEST);
         }
         // overwrite
@@ -145,9 +134,7 @@ public class EchoesController extends RestBaseController {
 
     @Override
     public boolean supports(
-            MethodParameter methodParameter,
-            Type targetType,
-            Class<? extends HttpMessageConverter<?>> converterType) {
+            MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return EchoParameter.class.isAssignableFrom(methodParameter.getParameterType());
     }
 }

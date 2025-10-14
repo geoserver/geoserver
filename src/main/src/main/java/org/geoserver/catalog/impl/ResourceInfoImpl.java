@@ -248,9 +248,7 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
                 if (declaredCRS != null) {
                     nativeBox = getLatLonBoundingBox().transform(declaredCRS, true);
                 } else {
-                    LOGGER.log(
-                            Level.WARNING,
-                            "Failed to derive native bbox, there is no declared CRS provided");
+                    LOGGER.log(Level.WARNING, "Failed to derive native bbox, there is no declared CRS provided");
                     return null;
                 }
             } catch (Exception e) {
@@ -269,8 +267,7 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
 
         //
         if (php == ProjectionPolicy.REPROJECT_TO_DECLARED
-                && (!CRS.equalsIgnoreMetadata(declaredCRS, nativeCRS)
-                        || !nativeCRSHasIdentifiers(nativeCRS))) {
+                && (!CRS.equalsIgnoreMetadata(declaredCRS, nativeCRS) || !nativeCRSHasIdentifiers(nativeCRS))) {
             if (nativeBox.getCoordinateReferenceSystem() == null) {
                 LOGGER.log(
                         Level.WARNING,
@@ -357,24 +354,28 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
         return store;
     }
 
+    /**
+     * Allows access to the raw store property without the casting performed by subclasses. This is convenient during
+     * the catalog load process to avoid class cast exceptions when the store is a resolving proxy
+     */
+    StoreInfo rawStore() {
+        return store;
+    }
+
     @Override
     public void setStore(StoreInfo store) {
         this.store = store;
     }
 
     @Override
-    public <T extends Object> T getAdapter(Class<T> adapterClass, Map<?, ?> hints) {
+    public <T> T getAdapter(Class<T> adapterClass, Map<?, ?> hints) {
         // subclasses should override
         return null;
     }
 
     @Override
     public String toString() {
-        return new StringBuilder(getClass().getSimpleName())
-                .append('[')
-                .append(name)
-                .append(']')
-                .toString();
+        return getClass().getSimpleName() + '[' + name + ']';
     }
 
     @Override
@@ -396,8 +397,7 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
         try {
             return CRS.decode(getSRS());
         } catch (Exception e) {
-            throw new RuntimeException(
-                    "This is unexpected, the layer srs seems to be mis-configured", e);
+            throw new RuntimeException("This is unexpected, the layer srs seems to be mis-configured", e);
         }
     }
 

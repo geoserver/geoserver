@@ -14,48 +14,43 @@ import org.apache.commons.lang3.SystemUtils;
 /**
  * Utility class for handling File paths in a consistent fashion.
  *
- * <p>File paths differ from resource paths because they refer to a file in the file system rather
- * than a resource in the resource store, and therefore they are not OS independent. Absolute paths
- * are supported, with Linux systems using a leading {@code /}, and windows using {@code L:}.
+ * <p>File paths differ from resource paths because they refer to a file in the file system rather than a resource in
+ * the resource store, and therefore they are not OS independent. Absolute paths are supported, with Linux systems using
+ * a leading {@code /}, and windows using {@code L:}.
  *
  * @author Jody Garnett
  */
 public class FilePaths {
 
     /**
-     * Pattern used to recognize absolute path in Windows, as indicated by driver letter reference
-     * (included {@code :}), followed by as slash character.
+     * Pattern used to recognize absolute path in Windows, as indicated by driver letter reference (included {@code :}),
+     * followed by as slash character.
      *
-     * <p>Aside: A drive letter reference on its own results in a relative path (relative to the
-     * current directory for that drive).
+     * <p>Aside: A drive letter reference on its own results in a relative path (relative to the current directory for
+     * that drive).
      */
     static final Pattern WINDOWS_DRIVE_LETTER = Pattern.compile("^\\w\\:/.*$");
 
     /**
-     * File Path components listed into absolute prefix, directory names, and final file name or
-     * directory name.
+     * File Path components listed into absolute prefix, directory names, and final file name or directory name.
      *
-     * <p><b>Relative</b>: Relative paths are represented in a straight forward fashion with: {@code
-     * Paths.names("data/tasmania/roads.shp"} --> {"data","tasmania","roads.shp"}}.
+     * <p><b>Relative</b>: Relative paths are represented in a straight forward fashion with:
+     * {@code Paths.names("data/tasmania/roads.shp"} --> {"data","tasmania","roads.shp"}}.
      *
-     * <p><b>Absolute path</b>: When working with an absolute path the list starts with a special
-     * marker.
+     * <p><b>Absolute path</b>: When working with an absolute path the list starts with a special marker.
      *
      * <p>Linux absolute paths are start with leading slash character ({@code / } ). <br>
-     * {@code convert("/srv/gis/cadaster/district.geopkg") --> "/srv/gis/cadaster/district.geopkg" <br>
-     * {@code names("/srv/gis/cadaster/district.geopkg) --> {"/", "srv","gis", "cadaster",
-     * "district.geopkg"}}. <br>
-     * This agrees with URL representation of
-     * {@code file:///srv/gis/cadaster/district.geopkg}.
+     * {@code convert("/srv/gis/cadaster/district.geopkg") --> "/srv/gis/cadaster/district.geopkg"} <br>
+     * {@code names("/srv/gis/cadaster/district.geopkg) --> {"/", "srv","gis", "cadaster", "district.geopkg"}}. <br>
+     * This agrees with URL representation of {@code file:///srv/gis/cadaster/district.geopkg}.
      *
      * <p>Windows absolute drive letter and slash ( {@code C:\ } ). <br>
-     * {@code names("D:\\gis\cadaster\district.geopkg") --> {"D:", "gis", "cadaster",
-     * "district.geopkg"}}. This agrees with URL representation of
-     * {@code file:///D:/gis/cadaster/district.geopkg}.
+     * {@code names("D:\\gis\cadaster\district.geopkg") --> {"D:", "gis", "cadaster", "district.geopkg"}}. This agrees
+     * with URL representation of {@code file:///D:/gis/cadaster/district.geopkg}.
      *
      * @param path Path used for reference lookup
-     * @return List of path components divided into absolute prefix, directory names, and final file
-     *     name or directory name.
+     * @return List of path components divided into absolute prefix, directory names, and final file name or directory
+     *     name.
      */
     public static List<String> names(String path) {
         if (path == null || path.isEmpty()) {
@@ -92,27 +87,25 @@ public class FilePaths {
     }
 
     /**
-     * While paths are primarily intended as paths relative to the GeoServer data directory, there
-     * is some support for absolute paths.
+     * While paths are primarily intended as paths relative to the GeoServer data directory, there is some support for
+     * absolute paths.
      *
-     * <p><b>Linux</b>: Linux absolute paths start with a leading {@code /} character. As this slash
-     * character is also used as the path separator special handling is required. Notably {@link
-     * #names(String)} will represent an absolute path as: {@code { "/", "srv" "gis", "cadaster",
-     * "district.geopkg"}}
+     * <p><b>Linux</b>: Linux absolute paths start with a leading {@code /} character. As this slash character is also
+     * used as the path separator special handling is required. Notably {@link #names(String)} will represent an
+     * absolute path as: {@code { "/", "srv" "gis", "cadaster", "district.geopkg"}}
      *
      * <p><b>Windows</b>: Windows absolute paths start with a drive letter, colon, and slash
-     * characters.{@link #names(String)} will represent an absolute path on windows as: {@code {
-     * "D:/, "gis", "cadaster", "district.geopkg"}}
+     * characters.{@link #names(String)} will represent an absolute path on windows as: {@code { "D:/, "gis",
+     * "cadaster", "district.geopkg"}}
      *
-     * <p>Aside: A drive letter reference on its own results in a relative path (relative to the
-     * current directory for that drive).
+     * <p>Aside: A drive letter reference on its own results in a relative path (relative to the current directory for
+     * that drive).
      *
-     * <p><b>Guidance</b>: On both platforms an absolute path should agree with the file URL
-     * representation while dropping the {@code file:/} prefix
+     * <p><b>Guidance</b>: On both platforms an absolute path should agree with the file URL representation while
+     * dropping the {@code file:/} prefix
      *
      * @param path Resource path reference
-     * @return {@code true} if path forms an absolute reference to a location outside the data
-     *     directory.
+     * @return {@code true} if path forms an absolute reference to a location outside the data directory.
      */
     public static boolean isAbsolute(String path) {
         return isAbsolute(path, SystemUtils.IS_OS_WINDOWS);
@@ -125,8 +118,7 @@ public class FilePaths {
     }
 
     /**
-     * Carefully look up a filesystem root directory (matching {@code /} or {@code C:\} as
-     * appropriate).
+     * Carefully look up a filesystem root directory (matching {@code /} or {@code C:\} as appropriate).
      *
      * @param name
      * @return filesystem root directory matching name, or {@code null} if not found.
@@ -143,11 +135,11 @@ public class FilePaths {
     /**
      * Convert a file path to file reference for provided base directory.
      *
-     * <p>This method requires the base directory of the ResourceStore. Note ResourceStore
-     * implementations may not create the file until needed.
+     * <p>This method requires the base directory of the ResourceStore. Note ResourceStore implementations may not
+     * create the file until needed.
      *
-     * <p>In the case of an absolute path, base should be null. Both linux {@code /} and windows
-     * {@code Z:/} absolute resource paths are supported.
+     * <p>In the case of an absolute path, base should be null. Both linux {@code /} and windows {@code Z:/} absolute
+     * resource paths are supported.
      *
      * <p>Relative paths when base is {@code null}, are not supported.
      *

@@ -15,19 +15,17 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 
 /**
- * Tests that isolated workspaces \ namespaces allow the publishing of the same complex feature type
- * multiple times.
+ * Tests that isolated workspaces \ namespaces allow the publishing of the same complex feature type multiple times.
  *
- * <p>The tests use three three different types of mappings which allow us to test three particular
- * situations, note that stations contain measurements:
+ * <p>The tests use three three different types of mappings which allow us to test three particular situations, note
+ * that stations contain measurements:
  *
  * <ul>
- *   <li>both stations and measurements feature types are mapped and published in the same isolated
- *       workspace
- *   <li>stations feature type is published in the isolated workspace and measurement type is an
- *       included type (i.e. it is not published)
- *   <li>only stations feature type is published in the isolated workspace and the global (non
- *       isolated) measurements feature type is used for feature chaining
+ *   <li>both stations and measurements feature types are mapped and published in the same isolated workspace
+ *   <li>stations feature type is published in the isolated workspace and measurement type is an included type (i.e. it
+ *       is not published)
+ *   <li>only stations feature type is published in the isolated workspace and the global (non isolated) measurements
+ *       feature type is used for feature chaining
  * </ul>
  *
  * All mappings can be used for GML 3.1 and GML 3.2 with the correct parameterization.
@@ -57,23 +55,21 @@ public final class IsolatedNamespacesWfsTest extends AbstractAppSchemaTestSuppor
     @Before
     public void beforeTest() {
         // instantiate WFS 1.1 xpath engine
-        WFS11_XPATH_ENGINE =
-                StationsMockData.buildXpathEngine(
-                        getTestData().getNamespaces(),
-                        "wfs",
-                        "http://www.opengis.net/wfs",
-                        "gml",
-                        "http://www.opengis.net/gml");
+        WFS11_XPATH_ENGINE = StationsMockData.buildXpathEngine(
+                getTestData().getNamespaces(),
+                "wfs",
+                "http://www.opengis.net/wfs",
+                "gml",
+                "http://www.opengis.net/gml");
         // instantiate WFS 2.0 xpath engine
-        WFS20_XPATH_ENGINE =
-                StationsMockData.buildXpathEngine(
-                        getTestData().getNamespaces(),
-                        "ows",
-                        "http://www.opengis.net/ows/1.1",
-                        "wfs",
-                        "http://www.opengis.net/wfs/2.0",
-                        "gml",
-                        "http://www.opengis.net/gml/3.2");
+        WFS20_XPATH_ENGINE = StationsMockData.buildXpathEngine(
+                getTestData().getNamespaces(),
+                "ows",
+                "http://www.opengis.net/ows/1.1",
+                "wfs",
+                "http://www.opengis.net/wfs/2.0",
+                "gml",
+                "http://www.opengis.net/gml/3.2");
     }
 
     @Override
@@ -92,8 +88,7 @@ public final class IsolatedNamespacesWfsTest extends AbstractAppSchemaTestSuppor
             Map<String, String> gml31Parameters = new HashMap<>();
             gml31Parameters.put("GML_PREFIX", "gml31");
             gml31Parameters.put("GML_NAMESPACE", "http://www.opengis.net/gml");
-            gml31Parameters.put(
-                    "GML_LOCATION", "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd");
+            gml31Parameters.put("GML_LOCATION", "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd");
             // GML 3.2 parameters for files parameterization
             Map<String, String> gml32Parameters = new HashMap<>();
             gml32Parameters.put("GML_PREFIX", "gml32");
@@ -115,11 +110,7 @@ public final class IsolatedNamespacesWfsTest extends AbstractAppSchemaTestSuppor
                     "isolatedNamespaces/measurements1.xml",
                     gml31Parameters);
             addStationFeatureType(
-                    STATIONS_1_PREFIX_GML31,
-                    "gml31",
-                    "stations1",
-                    "isolatedNamespaces/stations1.xml",
-                    gml31Parameters);
+                    STATIONS_1_PREFIX_GML31, "gml31", "stations1", "isolatedNamespaces/stations1.xml", gml31Parameters);
             addMeasurementFeatureType(
                     MEASUREMENTS_1_PREFIX_GML32,
                     "gml32",
@@ -127,11 +118,7 @@ public final class IsolatedNamespacesWfsTest extends AbstractAppSchemaTestSuppor
                     "isolatedNamespaces/measurements1.xml",
                     gml32Parameters);
             addStationFeatureType(
-                    STATIONS_1_PREFIX_GML32,
-                    "gml32",
-                    "stations1",
-                    "isolatedNamespaces/stations1.xml",
-                    gml32Parameters);
+                    STATIONS_1_PREFIX_GML32, "gml32", "stations1", "isolatedNamespaces/stations1.xml", gml32Parameters);
 
             // add second use case namespaces
             putIsolatedNamespace(STATIONS_2_PREFIX_GML31, STATIONS_URI_GML31);
@@ -163,8 +150,7 @@ public final class IsolatedNamespacesWfsTest extends AbstractAppSchemaTestSuppor
     @Test
     public void testIsolatedWorkspacesWithFirstUseCaseWfs11() {
         Document document =
-                getAsDOM(
-                        "st_1_gml31/wfs?request=GetFeature&version=1.1.0&typename=st_1_gml31:Station_gml31");
+                getAsDOM("st_1_gml31/wfs?request=GetFeature&version=1.1.0&typename=st_1_gml31:Station_gml31");
         checkCount(
                 WFS11_XPATH_ENGINE,
                 document,
@@ -190,8 +176,7 @@ public final class IsolatedNamespacesWfsTest extends AbstractAppSchemaTestSuppor
                 "/wfs:FeatureCollection/gml:featureMember/"
                         + "st_1_gml31:Station_gml31[@gml:id='st.1']/st_1_gml31:location/gml:Point[gml:pos='1 -1']");
         // request isolated feature type using global service should fail with feature type unknown
-        document =
-                getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=st_1_gml31:Station_gml31");
+        document = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=st_1_gml31:Station_gml31");
         checkCount(
                 WFS11_XPATH_ENGINE,
                 document,
@@ -201,9 +186,7 @@ public final class IsolatedNamespacesWfsTest extends AbstractAppSchemaTestSuppor
 
     @Test
     public void testIsolatedWorkspacesWithFirstUseCaseWfs20() {
-        Document document =
-                getAsDOM(
-                        "st_1_gml32/wfs?request=GetFeature&version=2.0&typename=st_1_gml32:Station_gml32");
+        Document document = getAsDOM("st_1_gml32/wfs?request=GetFeature&version=2.0&typename=st_1_gml32:Station_gml32");
         checkCount(
                 WFS20_XPATH_ENGINE,
                 document,
@@ -240,8 +223,7 @@ public final class IsolatedNamespacesWfsTest extends AbstractAppSchemaTestSuppor
     @Test
     public void testIsolatedWorkspacesWithSecondUseCaseWfs11() {
         Document document =
-                getAsDOM(
-                        "st_2_gml31/wfs?request=GetFeature&version=1.1.0&typename=st_2_gml31:Station_gml31");
+                getAsDOM("st_2_gml31/wfs?request=GetFeature&version=1.1.0&typename=st_2_gml31:Station_gml31");
         checkCount(
                 WFS11_XPATH_ENGINE,
                 document,
@@ -267,8 +249,7 @@ public final class IsolatedNamespacesWfsTest extends AbstractAppSchemaTestSuppor
                 "/wfs:FeatureCollection/gml:featureMember/"
                         + "st_2_gml31:Station_gml31[@gml:id='st.1']/st_2_gml31:location/gml:Point[gml:pos='1 -1']");
         // request isolated feature type using global service should fail with feature type unknown
-        document =
-                getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=st_2_gml31:Station_gml31");
+        document = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=st_2_gml31:Station_gml31");
         checkCount(
                 WFS11_XPATH_ENGINE,
                 document,
@@ -278,9 +259,7 @@ public final class IsolatedNamespacesWfsTest extends AbstractAppSchemaTestSuppor
 
     @Test
     public void testIsolatedWorkspacesWithSecondUseCaseWfs20() {
-        Document document =
-                getAsDOM(
-                        "st_2_gml32/wfs?request=GetFeature&version=2.0&typename=st_2_gml32:Station_gml32");
+        Document document = getAsDOM("st_2_gml32/wfs?request=GetFeature&version=2.0&typename=st_2_gml32:Station_gml32");
         checkCount(
                 WFS20_XPATH_ENGINE,
                 document,
@@ -315,15 +294,12 @@ public final class IsolatedNamespacesWfsTest extends AbstractAppSchemaTestSuppor
     }
 
     /**
-     * Helper method that evaluates a xpath and checks if the number of nodes found correspond to
-     * the expected number,
+     * Helper method that evaluates a xpath and checks if the number of nodes found correspond to the expected number,
      */
-    private void checkCount(
-            XpathEngine xpathEngine, Document document, int expectedCount, String xpath) {
+    private void checkCount(XpathEngine xpathEngine, Document document, int expectedCount, String xpath) {
         try {
             // evaluate the xpath and compare the number of nodes found
-            assertThat(
-                    xpathEngine.getMatchingNodes(xpath, document).getLength(), is(expectedCount));
+            assertThat(xpathEngine.getMatchingNodes(xpath, document).getLength(), is(expectedCount));
         } catch (Exception exception) {
             throw new RuntimeException("Error evaluating xpath.", exception);
         }

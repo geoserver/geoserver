@@ -71,13 +71,12 @@ public class LocalWorkspaceSecureCatalogTest extends AbstractAuthorizationTest {
     public void testAccessToStyle() throws Exception {
         CatalogFilterAccessManager mgr = setupAccessManager();
 
-        SecureCatalogImpl sc =
-                new SecureCatalogImpl(catalog, mgr) {
-                    @Override
-                    protected boolean isAdmin(Authentication authentication) {
-                        return false;
-                    }
-                };
+        SecureCatalogImpl sc = new SecureCatalogImpl(catalog, mgr) {
+            @Override
+            protected boolean isAdmin(Authentication authentication) {
+                return false;
+            }
+        };
         assertEquals(2, sc.getStyles().size());
 
         WorkspaceInfo ws = sc.getWorkspaceByName("topp");
@@ -94,34 +93,33 @@ public class LocalWorkspaceSecureCatalogTest extends AbstractAuthorizationTest {
     public void testAccessToLayerGroup() throws Exception {
         CatalogFilterAccessManager mgr = setupAccessManager();
 
-        SecureCatalogImpl sc =
-                new SecureCatalogImpl(catalog, mgr) {
-                    @Override
-                    protected boolean isAdmin(Authentication authentication) {
-                        return false;
-                    }
-                };
+        SecureCatalogImpl sc = new SecureCatalogImpl(catalog, mgr) {
+            @Override
+            protected boolean isAdmin(Authentication authentication) {
+                return false;
+            }
+        };
         assertEquals(catalog.getLayerGroups().size(), sc.getLayerGroups().size());
 
         // all groups in this one or global
         WorkspaceInfo ws = sc.getWorkspaceByName("topp");
         LocalWorkspace.set(ws);
-        assertEquals(getWorkspaceAccessibleGroupSize("topp"), sc.getLayerGroups().size());
+        assertEquals(
+                getWorkspaceAccessibleGroupSize("topp"), sc.getLayerGroups().size());
         LocalWorkspace.remove();
 
         ws = sc.getWorkspaceByName("nurc");
         LocalWorkspace.set(ws);
-        assertEquals(getWorkspaceAccessibleGroupSize("nurc"), sc.getLayerGroups().size());
+        assertEquals(
+                getWorkspaceAccessibleGroupSize("nurc"), sc.getLayerGroups().size());
         assertEquals("layerGroup", sc.getLayerGroups().get(0).getName());
         LocalWorkspace.remove();
     }
 
     private long getWorkspaceAccessibleGroupSize(String workspaceName) {
         return catalog.getLayerGroups().stream()
-                .filter(
-                        lg ->
-                                lg.getWorkspace() == null
-                                        || workspaceName.equals(lg.getWorkspace().getName()))
+                .filter(lg -> lg.getWorkspace() == null
+                        || workspaceName.equals(lg.getWorkspace().getName()))
                 .count();
     }
 
@@ -130,13 +128,12 @@ public class LocalWorkspaceSecureCatalogTest extends AbstractAuthorizationTest {
         CatalogFilterAccessManager mgr = setupAccessManager();
         inheritance.setValue("false");
 
-        SecureCatalogImpl sc =
-                new SecureCatalogImpl(catalog, mgr) {
-                    @Override
-                    protected boolean isAdmin(Authentication authentication) {
-                        return false;
-                    }
-                };
+        SecureCatalogImpl sc = new SecureCatalogImpl(catalog, mgr) {
+            @Override
+            protected boolean isAdmin(Authentication authentication) {
+                return false;
+            }
+        };
         assertThat(sc.getLayerGroups(), hasItem(equalTo(layerGroupGlobal)));
         assertThat(sc.getLayerGroups(), hasItem(equalTo(layerGroupTopp)));
         WorkspaceInfo ws = sc.getWorkspaceByName("topp");
@@ -158,13 +155,12 @@ public class LocalWorkspaceSecureCatalogTest extends AbstractAuthorizationTest {
         CatalogFilterAccessManager mgr = setupAccessManager();
 
         // Defining a SecureCatalog with a user which is not admin
-        SecureCatalogImpl sc =
-                new SecureCatalogImpl(catalog, mgr) {
-                    @Override
-                    protected boolean isAdmin(Authentication authentication) {
-                        return false;
-                    }
-                };
+        SecureCatalogImpl sc = new SecureCatalogImpl(catalog, mgr) {
+            @Override
+            protected boolean isAdmin(Authentication authentication) {
+                return false;
+            }
+        };
         GeoServerExtensionsHelper.singleton("secureCatalog", sc, SecureCatalogImpl.class);
 
         // Get the iterator on the styles

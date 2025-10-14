@@ -7,10 +7,10 @@ package org.geoserver.wfs;
 import org.geoserver.config.SettingsInfo;
 
 /**
- * Factory for creating WFS_T application specific exception instances, including cause details in
- * exception messages based on the global verbose exceptions setting. This enables e.g. trigger
- * exception messages to bubble up to end-users in a controlled internal environment, where root
- * cause aids the user in entering correct data and is of no security concern.
+ * Factory for creating WFS_T application specific exception instances, including cause details in exception messages
+ * based on the global verbose exceptions setting. This enables e.g. trigger exception messages to bubble up to
+ * end-users in a controlled internal environment, where root cause aids the user in entering correct data and is of no
+ * security concern.
  *
  * @author Martin Kalén
  */
@@ -27,8 +27,7 @@ class WFSTransactionExceptionFactory {
         this.settings = settings;
     }
 
-    public WFSTransactionException newWFSTransactionException(
-            final String errorMessage, final Throwable cause) {
+    public WFSTransactionException newWFSTransactionException(final String errorMessage, final Throwable cause) {
         return new WFSTransactionException(getFinalMessage(errorMessage, cause), cause);
     }
 
@@ -43,8 +42,7 @@ class WFSTransactionExceptionFactory {
             final String code,
             final String locator,
             final String handle) {
-        return new WFSTransactionException(
-                getFinalMessage(errorMessage, cause), cause, code, locator, handle);
+        return new WFSTransactionException(getFinalMessage(errorMessage, cause), cause, code, locator, handle);
     }
 
     private String getFinalMessage(final String errorMessage, final Throwable cause) {
@@ -57,8 +55,7 @@ class WFSTransactionExceptionFactory {
         return finalMessage;
     }
 
-    private String decorateMessageWithUnderlyingCause(
-            final String errorMessage, final Throwable cause) {
+    private String decorateMessageWithUnderlyingCause(final String errorMessage, final Throwable cause) {
         if (errorMessage == null || cause == null) {
             return errorMessage;
         }

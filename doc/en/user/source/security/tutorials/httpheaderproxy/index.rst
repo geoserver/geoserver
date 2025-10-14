@@ -16,7 +16,7 @@ passed by HTTP header attribute(s). In this scenario GeoServer will do no actual
 Prerequisites
 -------------
 
-This tutorial uses the `curl <http://curl.haxx.se/>`_ utility to issue HTTP 
+This tutorial uses the `curl <https://curl.haxx.se/>`_ utility to issue HTTP 
 request that test authentication. Install curl before proceeding.
 
 .. note::
@@ -47,7 +47,7 @@ Configure the HTTP header filter
 #. Fill in the fields of the settings form as follows:
 
    * Set ``Name`` to "proxy"
-   * Set ``Request header attribute to`` to "sdf09rt2s"
+   * Set ``Request header attribute`` to "sdf09rt2s"
    * Set ``Role source`` to "User group service"
    * Set the name of the user group service to "default"
 
@@ -74,13 +74,16 @@ Additional information about role services is here :ref:`security_rolesystem_rol
 
 #. Save.
 #. Back on the authentication page scroll down to the ``Filter Chains`` panel. 
-#. Select "Default" from the ``Request type`` drop down.
-#. Unselect the ``basic`` filter and select the ``proxy`` filter. Position the
+#. Select "Default" from the list of filter chains.
+
+   .. figure:: images/digest8.jpg
+      :align: center
+#. Scroll down to the ``Chain filters`` section and unselect the ``basic`` filter and select the ``proxy`` filter. Position the
    the ``proxy`` filter before the ``anonymous`` filter. 
 
    .. figure:: images/digest5.jpg
       :align: center
-#. Save.
+#. Click close at the bottom of the page and then click Save back on the Authentication page to save your filter chain changes.
 
 Secure OGC service requests
 ---------------------------
@@ -140,3 +143,11 @@ Test a proxy login
     
    The result should be a successful authentication and contain the normal WFS capabilities response.
 
+   .. note::
+      When setting the header ``name: value`` pair, the header ``name`` should match the ``Request Header Attribute`` 
+      that was set when creating the new Authentication Filter, and the ``value`` must match the username for a user
+      who has the correct Role set. The username value is case sensitive. 
+      
+      In the above example, the ``admin`` user is assigned to the ``ADMIN`` role which is the role that was selected in 
+      the service rule we created. If you had a diferent user that was assigned to the ``ADMIN`` role, you could instead
+      use the username for that user as the ``value`` in the header and you should get the correct capabilities response.

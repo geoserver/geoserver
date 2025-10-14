@@ -94,11 +94,28 @@ The following outlines the steps to be taken in order to add a new community mod
 
           <dependencies>
             <!-- add any dependencies your module has here -->
+
+            <!-- Spring Framework dependencies - DO NOT specify version (managed by BOM) -->
+            <dependency>
+              <groupId>org.springframework</groupId>
+              <artifactId>spring-context</artifactId>
+            </dependency>
+            <!-- Spring Security dependencies - DO NOT specify version (managed by BOM) -->
+            <dependency>
+              <groupId>org.springframework.security</groupId>
+              <artifactId>spring-security-core</artifactId>
+            </dependency>
           </dependencies>
         </project>
      
    Add the file to the root of the new community module, 
    ``myCommunityModule/pom.xml``
+
+   .. note::
+
+      When adding Spring Framework or Spring Security dependencies, **never specify the version**. 
+      GeoServer uses Bill of Materials (BOM) to manage these versions centrally. 
+      See the :ref:`maven_guide` for more details on dependency management.
 
 #. **Add a build profile**
 
@@ -139,15 +156,15 @@ The following outlines the steps to be taken in order to add a new community mod
              </profile>
            </profiles>
 
-        .. warning::
+   .. warning::
 
-           If the community module depends on any other community modules, 
-           they too should be included in the profile definition.
+      If the community module depends on any other community modules,
+      they too should be included in the profile definition.
 
-        .. warning::
+   .. warning::
 
-           Ensure that the name of the profile matches the name of the 
-           community module
+      Ensure that the name of the profile matches the name of the
+      community module
 
 Promoting a community module
 ----------------------------
@@ -270,8 +287,9 @@ Process
 
    *Extensions*
 
-   #. Create a new directory under ``release/extensions`` which matches the
+   #. Create a new directory under ``release/src/extensions`` which matches the
       name of the extension
+      
    #. Add the following to the new directory:
   
       #. A license called :file:`<module>-LICENSE.md` which contains the license notice
@@ -298,7 +316,7 @@ Process
          
          An example would be data files or a proprietary driver not available for download via maven.
 
-   #. Create a release assembly called :file:`ext-<module>.xml` under the release directory.
+   #. Create a release assembly called :file:`ext-<module>.xml` under the release `src/assembly` directory.
       
       Follow the example of :download:`ext-h2-xml </../../../../src/release/ext-h2.xml>`:
       
@@ -348,13 +366,40 @@ Process
            </configuration>
          </plugin>
 
-    #. Update the documentation
+    #. Update the `/doc/en/user/source/community` documentation:
 
-       Add a page to the user manual for the new module. 
-
-       .. todo:: 
+       * Add a section  to the user manual for the new module:
+       
+         Create a folder: 
+         
+         * `community/%module%`
+         * `community/%module%/files` - example files
+         * `community/%module%/img` - screen snaps
+         * `community/%module%/index.rst`
+         * `community/%module%/installing.rst` 
+         * `community/%module%/usage.rst`
+       
+       * Include module in `community/index.rst` toctree:
+       
+          .. code-block:: rst
+             
+             .. toctree::
+                :maxdepth: 1
+             
+                backuprestore/index
+                cog/index
+                ...
+                %module%/index.rst
  
-          Finish this by linking somewhere...
+       * When writing `installing.rst` use the sphinx external link `download_community` to generate a download link for the current release.
+         
+         .. code-block:: rst
+         
+            To install the JDBCConfig module:
+
+            #. Visit the :website:`website download <download>` page and download :download_community:`jdbcconfig`.
+ 
+       For more information see :docguide:`documentaion guide <>`.
 
     #. Download and a contributor license agreement as pdf for txt file:
 

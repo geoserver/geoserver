@@ -16,8 +16,7 @@ import org.geotools.xsd.Node;
 /**
  * Binding object for the type http://www.opengis.net/gml:CircleType.
  *
- * <p>We include this here, and not part of gml because its job is to fail, its a cite compliance
- * thing :).
+ * <p>We include this here, and not part of gml because its job is to fail, its a cite compliance thing :).
  *
  * <p>
  *

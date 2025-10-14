@@ -25,8 +25,7 @@ import org.junit.After;
 
 public class BaseLegendTest<T extends LegendGraphicBuilder> extends WMSTestSupport {
 
-    protected static final Logger LOGGER =
-            Logging.getLogger(BufferedImageLegendGraphicOutputFormatTest.class);
+    protected static final Logger LOGGER = Logging.getLogger(BufferedImageLegendGraphicOutputFormatTest.class);
 
     protected T legendProducer;
 
@@ -49,6 +48,7 @@ public class BaseLegendTest<T extends LegendGraphicBuilder> extends WMSTestSuppo
         testData.addStyle("rainfall_classes_nolabels", MockData.class, catalog);
         testData.addStyle("styleWithLegendSelection", this.getClass(), catalog);
         testData.addStyle("styleWithLegendSelectionOnSymbolizer", this.getClass(), catalog);
+        testData.addStyle("recode", "transformation/recode.sld", TransformationFunctionTranslatorTest.class, catalog);
         // add raster layer for rendering transform test
         testData.addRasterLayer(
                 new QName("http://www.opengis.net/wcs/1.1.1", "DEM", "wcs"),
@@ -59,9 +59,7 @@ public class BaseLegendTest<T extends LegendGraphicBuilder> extends WMSTestSuppo
                 catalog);
 
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        ge.registerFont(
-                Font.createFont(
-                        Font.TRUETYPE_FONT, WMSTestSupport.class.getResourceAsStream("Vera.ttf")));
+        ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, WMSTestSupport.class.getResourceAsStream("Vera.ttf")));
     }
 
     @After
@@ -70,24 +68,20 @@ public class BaseLegendTest<T extends LegendGraphicBuilder> extends WMSTestSuppo
     }
 
     protected int getTitleHeight(GetLegendGraphicRequest req) {
-        final BufferedImage image =
-                ImageUtils.createImage(req.getWidth(), req.getHeight(), null, req.isTransparent());
+        final BufferedImage image = ImageUtils.createImage(req.getWidth(), req.getHeight(), null, req.isTransparent());
         return getRenderedLabel(image, "TESTTITLE", req).getHeight();
     }
 
-    private BufferedImage getRenderedLabel(
-            BufferedImage image, String label, GetLegendGraphicRequest request) {
+    private BufferedImage getRenderedLabel(BufferedImage image, String label, GetLegendGraphicRequest request) {
         Font labelFont = LegendUtils.getLabelFont(request);
         boolean useAA = LegendUtils.isFontAntiAliasing(request);
 
         final Graphics2D graphics = image.createGraphics();
         graphics.setFont(labelFont);
         if (useAA) {
-            graphics.setRenderingHint(
-                    RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         } else {
-            graphics.setRenderingHint(
-                    RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+            graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         }
         return LegendUtils.renderLabel(label, graphics, request);
     }

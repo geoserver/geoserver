@@ -28,7 +28,7 @@ The top-level XML files contain information about the services and various globa
    * - File
      - Description
    * - :file:`global.xml`
-     - Contains settings common to all services, such as contact information, JAI settings, character sets and verbosity.
+     - Contains settings common to all services, such as contact information, image processing settings, character sets and verbosity.
    * - :file:`logging.xml`
      - Specifies logging parameters, such as logging level, logfile location, and whether to log to stdout.  
    * - :file:`wcs.xml` 

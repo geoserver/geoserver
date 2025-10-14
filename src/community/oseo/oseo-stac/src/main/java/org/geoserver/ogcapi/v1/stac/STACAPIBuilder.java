@@ -42,8 +42,7 @@ public class STACAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<OSEOInfo
     }
 
     /**
-     * Build the document based on request, current WFS configuration, and list of available
-     * extensions
+     * Build the document based on request, current WFS configuration, and list of available extensions
      *
      * @param service The Opensearch for EO configuration
      */
@@ -53,10 +52,9 @@ public class STACAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<OSEOInfo
         OpenAPI api = super.build(service);
 
         // the external documentation
-        api.externalDocs(
-                new ExternalDocumentation()
-                        .description("STAC API specification")
-                        .url("https://github.com/radiantearth/stac-api-spec"));
+        api.externalDocs(new ExternalDocumentation()
+                .description("STAC API specification")
+                .url("https://github.com/radiantearth/stac-api-spec"));
 
         // adjust path output formats
         declareGetResponseFormats(api, "/", OpenAPI.class);
@@ -64,10 +62,8 @@ public class STACAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<OSEOInfo
         // TODO: these needs to be adjusted once we have
         declareGetResponseFormats(api, "/collections", CollectionsResponse.class);
         declareGetResponseFormats(api, "/collections/{collectionId}", CollectionResponse.class);
-        declareGetResponseFormats(
-                api, "/collections/{collectionId}/items", FeatureCollectionType.class);
-        declareGetResponseFormats(
-                api, "/collections/{collectionId}/items/{featureId}", FeatureCollectionType.class);
+        declareGetResponseFormats(api, "/collections/{collectionId}/items", FeatureCollectionType.class);
+        declareGetResponseFormats(api, "/collections/{collectionId}/items/{featureId}", FeatureCollectionType.class);
 
         // provide a list of valid values for collectionId
         Map<String, Parameter> parameters = api.getComponents().getParameters();
@@ -95,26 +91,23 @@ public class STACAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<OSEOInfo
     private List<String> getCollectionIds() throws IOException {
         FeatureSource<FeatureType, Feature> fs =
                 accessProvider.getOpenSearchAccess().getCollectionSource();
-        PropertyName name =
-                CommonFactoryFinder.getFilterFactory()
-                        .property(new NameImpl(fs.getSchema().getName().getNamespaceURI(), "name"));
+        PropertyName name = CommonFactoryFinder.getFilterFactory()
+                .property(new NameImpl(fs.getSchema().getName().getNamespaceURI(), "name"));
         // remove disabled collections
         Query q = new Query();
         q.setFilter(FF.equals(FF.property(OpenSearchAccess.ENABLED), FF.literal(true)));
         UniqueVisitor visitor = new UniqueVisitor(name);
         fs.getFeatures(q).accepts(visitor, null);
         Set uniqueValues = visitor.getUnique();
-        return (List<String>)
-                uniqueValues.stream()
-                        .map(
-                                a -> {
-                                    if (a instanceof Attribute) {
-                                        return ((Attribute) a).getValue();
-                                    } else {
-                                        return a.toString();
-                                    }
-                                })
-                        .sorted()
-                        .collect(Collectors.toList());
+        return (List<String>) uniqueValues.stream()
+                .map(a -> {
+                    if (a instanceof Attribute attribute) {
+                        return attribute.getValue();
+                    } else {
+                        return a.toString();
+                    }
+                })
+                .sorted()
+                .collect(Collectors.toList());
     }
 }

@@ -59,8 +59,7 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         assertNotNull(layer);
         ResourceConfigurationPage page = new ResourceConfigurationPage(layer, false);
         tester.startPage(page);
-        ((TabbedPanel<?>) tester.getComponentFromLastRenderedPage("publishedinfo:tabs"))
-                .setSelectedTab(4);
+        ((TabbedPanel<?>) tester.getComponentFromLastRenderedPage("publishedinfo:tabs")).setSelectedTab(4);
         tester.submitForm("publishedinfo");
         tester.assertComponent("publishedinfo:tabs:panel:metadataPanel", MetadataPanel.class);
     }
@@ -78,15 +77,11 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
     public void testMetadataTab() {
         // check we are on the correct page
         tester.assertComponent("publishedinfo:tabs:panel:metadataPanel", MetadataPanel.class);
-        tester.assertComponent(
-                "publishedinfo:tabs:panel:importTemplatePanel", ImportTemplatePanel.class);
-        tester.assertComponent(
-                "publishedinfo:tabs:panel:geonetworkPanel", ImportGeonetworkPanel.class);
+        tester.assertComponent("publishedinfo:tabs:panel:importTemplatePanel", ImportTemplatePanel.class);
+        tester.assertComponent("publishedinfo:tabs:panel:geonetworkPanel", ImportGeonetworkPanel.class);
 
-        GeoServerTablePanel<?> panel =
-                (GeoServerTablePanel<?>)
-                        tester.getComponentFromLastRenderedPage(
-                                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel");
+        GeoServerTablePanel<?> panel = (GeoServerTablePanel<?>) tester.getComponentFromLastRenderedPage(
+                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel");
         // derived field hidden
         assertEquals(15, panel.getDataProvider().size());
 
@@ -96,12 +91,8 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         // has at least metadata map with timestamp
         layer = geoServer.getCatalog().getLayerByName("mylayer");
         assertNotNull(layer.getResource().getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY));
-        assertNotNull(
-                ((Map<?, ?>)
-                                layer.getResource()
-                                        .getMetadata()
-                                        .get(MetadataConstants.CUSTOM_METADATA_KEY))
-                        .get(MetadataConstants.TIMESTAMP_KEY));
+        assertNotNull(((Map<?, ?>) layer.getResource().getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY))
+                .get(MetadataConstants.TIMESTAMP_KEY));
     }
 
     /** The layer is linked to the 'simple field' template. */
@@ -114,12 +105,9 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
                 "f7de06ca-f93c-457b-b0ae-9c52f5b1ca5e");
         tester.clickLink(
                 "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:1:itemProperties:1:component:generateUUID");
-        Component metadataTextField =
-                tester.getComponentFromLastRenderedPage(
-                        "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:1:itemProperties:1:component:textfield");
-        Assert.assertNotEquals(
-                metadataTextField.getDefaultModel().getObject(),
-                "f7de06ca-f93c-457b-b0ae-9c52f5b1ca5e");
+        Component metadataTextField = tester.getComponentFromLastRenderedPage(
+                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:1:itemProperties:1:component:textfield");
+        Assert.assertNotEquals(metadataTextField.getDefaultModel().getObject(), "f7de06ca-f93c-457b-b0ae-9c52f5b1ca5e");
 
         tester.assertModelValue(
                 "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:3:itemProperties:1:component:textfield",
@@ -169,26 +157,23 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         tester.assertModelValue(
                 "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:2:itemProperties:1:component:textfield",
                 "template-identifier");
-        Assert.assertFalse(
-                tester.getComponentFromLastRenderedPage(
-                                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:2:itemProperties:1:component")
-                        .isEnabled());
+        Assert.assertFalse(tester.getComponentFromLastRenderedPage(
+                        "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:2:itemProperties:1:component")
+                .isEnabled());
 
         tester.assertModelValue(
                 "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:3:itemProperties:1:component:textfield",
                 77);
-        Assert.assertFalse(
-                tester.getComponentFromLastRenderedPage(
-                                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:3:itemProperties:1:component")
-                        .isEnabled());
+        Assert.assertFalse(tester.getComponentFromLastRenderedPage(
+                        "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:3:itemProperties:1:component")
+                .isEnabled());
 
         tester.assertModelValue(
                 "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:4:itemProperties:1:component:dropdown",
                 "Or select this row");
-        Assert.assertFalse(
-                tester.getComponentFromLastRenderedPage(
-                                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:4:itemProperties:1:component")
-                        .isEnabled());
+        Assert.assertFalse(tester.getComponentFromLastRenderedPage(
+                        "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:4:itemProperties:1:component")
+                .isEnabled());
     }
 
     /** test special types * */
@@ -240,8 +225,8 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
     }
 
     /**
-     * Test if we can add complex field from a list, and that the underlying model creates empty
-     * spaces to keep all attribute lengths the same for the complex field.
+     * Test if we can add complex field from a list, and that the underlying model creates empty spaces to keep all
+     * attribute lengths the same for the complex field.
      */
     @Test
     public void testRepeatComplexFields() {
@@ -255,15 +240,11 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
                 GeoServerTablePanel.class);
 
         @SuppressWarnings("unchecked")
-        HashMap<String, Serializable> underlying =
-                (HashMap<String, Serializable>)
-                        layer.getResource()
-                                .getMetadata()
-                                .get(MetadataConstants.CUSTOM_METADATA_KEY);
+        HashMap<String, Serializable> underlying = (HashMap<String, Serializable>)
+                layer.getResource().getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY);
 
         ArrayList<?> list1 = (ArrayList<?>) underlying.get("referencesystem-object-list/code");
-        ArrayList<?> list2 =
-                (ArrayList<?>) underlying.get("referencesystem-object-list/code-space");
+        ArrayList<?> list2 = (ArrayList<?>) underlying.get("referencesystem-object-list/code-space");
         assertEquals(2, list1.size());
         assertEquals(2, list2.size());
 
@@ -289,17 +270,16 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
     @Test
     public void testLinkWithSimpleAndListTemplates() {
         // link template-list-simple
-        DropDownChoice<?> selectTemplate =
-                (DropDownChoice<?>)
-                        tester.getComponentFromLastRenderedPage(
-                                "publishedinfo:tabs:panel:importTemplatePanel:metadataTemplate");
+        DropDownChoice<?> selectTemplate = (DropDownChoice<?>) tester.getComponentFromLastRenderedPage(
+                "publishedinfo:tabs:panel:importTemplatePanel:metadataTemplate");
         assertEquals(6, selectTemplate.getChoices().size());
-        MetadataTemplateImpl template = (MetadataTemplateImpl) selectTemplate.getChoices().get(0);
+        MetadataTemplateImpl template =
+                (MetadataTemplateImpl) selectTemplate.getChoices().get(0);
         assertEquals("template-list-simple", template.getName());
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
         tester.clickLink(
-                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:content:form:submit");
+                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:overlay:dialog:content:content:form:submit");
         // test list of linked templates
         tester.assertLabel(
                 "publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:3:itemProperties:0:component",
@@ -321,35 +301,29 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
         tester.assertModelValue(
                 "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:4:itemProperties:0:component:textfield",
                 "reflist-second");
-        Assert.assertFalse(
-                tester.getComponentFromLastRenderedPage(
-                                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:1:itemProperties:0:component")
-                        .isEnabled());
-        Assert.assertFalse(
-                tester.getComponentFromLastRenderedPage(
-                                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component")
-                        .isEnabled());
-        assertTrue(
-                tester.getComponentFromLastRenderedPage(
-                                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:3:itemProperties:0:component")
-                        .isEnabled());
-        assertTrue(
-                tester.getComponentFromLastRenderedPage(
-                                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:4:itemProperties:0:component")
-                        .isEnabled());
+        Assert.assertFalse(tester.getComponentFromLastRenderedPage(
+                        "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:1:itemProperties:0:component")
+                .isEnabled());
+        Assert.assertFalse(tester.getComponentFromLastRenderedPage(
+                        "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component")
+                .isEnabled());
+        assertTrue(tester.getComponentFromLastRenderedPage(
+                        "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:3:itemProperties:0:component")
+                .isEnabled());
+        assertTrue(tester.getComponentFromLastRenderedPage(
+                        "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:4:itemProperties:0:component")
+                .isEnabled());
 
         // link template-object list
-        selectTemplate =
-                (DropDownChoice<?>)
-                        tester.getComponentFromLastRenderedPage(
-                                "publishedinfo:tabs:panel:importTemplatePanel:metadataTemplate");
+        selectTemplate = (DropDownChoice<?>) tester.getComponentFromLastRenderedPage(
+                "publishedinfo:tabs:panel:importTemplatePanel:metadataTemplate");
         assertEquals(5, selectTemplate.getChoices().size());
         template = (MetadataTemplateImpl) selectTemplate.getChoices().get(0);
         assertEquals("template-object list", template.getName());
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
         tester.clickLink(
-                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:content:form:submit");
+                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:overlay:dialog:content:content:form:submit");
 
         tester.assertLabel(
                 "publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:7:itemProperties:0:component",
@@ -395,20 +369,19 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
     @Test
     public void testUnlinkFromSimpleAndListTemplates() {
         // link 2 more templates
-        DropDownChoice<?> selectTemplate =
-                (DropDownChoice<?>)
-                        tester.getComponentFromLastRenderedPage(
-                                "publishedinfo:tabs:panel:importTemplatePanel:metadataTemplate");
-        MetadataTemplateImpl template = (MetadataTemplateImpl) selectTemplate.getChoices().get(0);
+        DropDownChoice<?> selectTemplate = (DropDownChoice<?>) tester.getComponentFromLastRenderedPage(
+                "publishedinfo:tabs:panel:importTemplatePanel:metadataTemplate");
+        MetadataTemplateImpl template =
+                (MetadataTemplateImpl) selectTemplate.getChoices().get(0);
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
         tester.clickLink(
-                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:content:form:submit");
+                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:overlay:dialog:content:content:form:submit");
         template = (MetadataTemplateImpl) selectTemplate.getChoices().get(0);
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
         tester.clickLink(
-                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:content:form:submit");
+                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:overlay:dialog:content:content:form:submit");
 
         // print(tester.getLastRenderedPage(), true, true);
         // check the link
@@ -423,21 +396,17 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
                 "template-object list");
 
         // first check the checkboxes
-        Component checkbox01 =
-                tester.getComponentFromLastRenderedPage(
-                        "publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:7:selectItemContainer:selectItem");
+        Component checkbox01 = tester.getComponentFromLastRenderedPage(
+                "publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:7:selectItemContainer:selectItem");
         ((IModel<Boolean>) checkbox01.getDefaultModel()).setObject(true);
-        Component checkbox02 =
-                tester.getComponentFromLastRenderedPage(
-                        "publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:8:selectItemContainer:selectItem");
+        Component checkbox02 = tester.getComponentFromLastRenderedPage(
+                "publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:8:selectItemContainer:selectItem");
         ((IModel<Boolean>) checkbox02.getDefaultModel()).setObject(true);
-        Component checkbox03 =
-                tester.getComponentFromLastRenderedPage(
-                        "publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:9:selectItemContainer:selectItem");
+        Component checkbox03 = tester.getComponentFromLastRenderedPage(
+                "publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:9:selectItemContainer:selectItem");
         ((IModel<Boolean>) checkbox03.getDefaultModel()).setObject(true);
         // click remove links
-        tester.getComponentFromLastRenderedPage(
-                        "publishedinfo:tabs:panel:importTemplatePanel:removeSelected")
+        tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:removeSelected")
                 .setEnabled(true);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:removeSelected");
         // linked list should be empty
@@ -451,33 +420,27 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
                 "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component:textfield",
                 "reflist-second");
 
-        assertTrue(
-                tester.getComponentFromLastRenderedPage(
-                                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:1:itemProperties:0:component")
-                        .isEnabled());
-        assertTrue(
-                tester.getComponentFromLastRenderedPage(
-                                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component")
-                        .isEnabled());
+        assertTrue(tester.getComponentFromLastRenderedPage(
+                        "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:1:itemProperties:0:component")
+                .isEnabled());
+        assertTrue(tester.getComponentFromLastRenderedPage(
+                        "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:5:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component")
+                .isEnabled());
     }
 
-    /**
-     * Adding and deleting a template multiple times deletes the wrong row (selection model out of
-     * sync).
-     */
+    /** Adding and deleting a template multiple times deletes the wrong row (selection model out of sync). */
     @SuppressWarnings("unchecked")
     @Test
     public void testLinkAndUnlinkDeleteRowTemplatesBug() {
         // add link
-        DropDownChoice<?> selectTemplate =
-                (DropDownChoice<?>)
-                        tester.getComponentFromLastRenderedPage(
-                                "publishedinfo:tabs:panel:importTemplatePanel:metadataTemplate");
-        MetadataTemplateImpl template = (MetadataTemplateImpl) selectTemplate.getChoices().get(0);
+        DropDownChoice<?> selectTemplate = (DropDownChoice<?>) tester.getComponentFromLastRenderedPage(
+                "publishedinfo:tabs:panel:importTemplatePanel:metadataTemplate");
+        MetadataTemplateImpl template =
+                (MetadataTemplateImpl) selectTemplate.getChoices().get(0);
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
         tester.clickLink(
-                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:content:form:submit");
+                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:overlay:dialog:content:content:form:submit");
 
         tester.assertLabel(
                 "publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:3:itemProperties:0:component",
@@ -487,14 +450,12 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
                 "template-list-simple");
 
         // delete first link
-        Component checkbox01 =
-                tester.getComponentFromLastRenderedPage(
-                        "publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:3:selectItemContainer:selectItem");
+        Component checkbox01 = tester.getComponentFromLastRenderedPage(
+                "publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:3:selectItemContainer:selectItem");
         ((IModel<Boolean>) checkbox01.getDefaultModel()).setObject(true);
 
         // click remove links
-        tester.getComponentFromLastRenderedPage(
-                        "publishedinfo:tabs:panel:importTemplatePanel:removeSelected")
+        tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:removeSelected")
                 .setEnabled(true);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:removeSelected");
 
@@ -506,15 +467,13 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
                 "template-list-simple");
 
         // add link
-        selectTemplate =
-                (DropDownChoice<?>)
-                        tester.getComponentFromLastRenderedPage(
-                                "publishedinfo:tabs:panel:importTemplatePanel:metadataTemplate");
+        selectTemplate = (DropDownChoice<?>) tester.getComponentFromLastRenderedPage(
+                "publishedinfo:tabs:panel:importTemplatePanel:metadataTemplate");
         template = (MetadataTemplateImpl) selectTemplate.getChoices().get(1);
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
         tester.clickLink(
-                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:content:form:submit");
+                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:overlay:dialog:content:content:form:submit");
 
         // print(tester.getLastRenderedPage(), true, true);
         tester.assertLabel(
@@ -525,9 +484,8 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
                 "template-object list");
 
         // delete first link
-        Component checkbox02 =
-                tester.getComponentFromLastRenderedPage(
-                        "publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:7:selectItemContainer:selectItem");
+        Component checkbox02 = tester.getComponentFromLastRenderedPage(
+                "publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:7:selectItemContainer:selectItem");
         ((IModel<Boolean>) checkbox02.getDefaultModel()).setObject(true);
 
         // click remove links
@@ -540,51 +498,43 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
     }
 
     /**
-     * When there are no links 'No data to display.' is shown. Adding a template does not show the
-     * table with linked templates.
+     * When there are no links 'No data to display.' is shown. Adding a template does not show the table with linked
+     * templates.
      */
     @SuppressWarnings("unchecked")
     @Test
     public void testLinkRowTemplatesBug() {
         Assert.assertNull(
-                tester.getComponentFromLastRenderedPage(
-                        "publishedinfo:tabs:panel:importTemplatePanel:noData"));
+                tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:noData"));
         // remove the current links
-        Component checkbox01 =
-                tester.getComponentFromLastRenderedPage(
-                        "publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:1:selectItemContainer:selectItem");
+        Component checkbox01 = tester.getComponentFromLastRenderedPage(
+                "publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:1:selectItemContainer:selectItem");
         ((IModel<Boolean>) checkbox01.getDefaultModel()).setObject(true);
-        tester.getComponentFromLastRenderedPage(
-                        "publishedinfo:tabs:panel:importTemplatePanel:removeSelected")
+        tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:removeSelected")
                 .setEnabled(true);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:removeSelected");
 
         // assert no data to display
-        assertNotNull(
-                tester.getComponentFromLastRenderedPage(
-                        "publishedinfo:tabs:panel:importTemplatePanel:noData"));
+        assertNotNull(tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:noData"));
         Assert.assertNull(
                 tester.getComponentFromLastRenderedPage(
                         "publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:1:itemProperties:0:component"));
-        tester.assertLabel(
-                "publishedinfo:tabs:panel:importTemplatePanel:noData", "No data to display.");
+        tester.assertLabel("publishedinfo:tabs:panel:importTemplatePanel:noData", "No data to display.");
         tester.assertContainsNot("'simple fields'");
 
         // add template
-        DropDownChoice<?> selectTemplate =
-                (DropDownChoice<?>)
-                        tester.getComponentFromLastRenderedPage(
-                                "publishedinfo:tabs:panel:importTemplatePanel:metadataTemplate");
-        MetadataTemplateImpl template = (MetadataTemplateImpl) selectTemplate.getChoices().get(0);
+        DropDownChoice<?> selectTemplate = (DropDownChoice<?>) tester.getComponentFromLastRenderedPage(
+                "publishedinfo:tabs:panel:importTemplatePanel:metadataTemplate");
+        MetadataTemplateImpl template =
+                (MetadataTemplateImpl) selectTemplate.getChoices().get(0);
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
         tester.clickLink(
-                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:content:form:submit");
+                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:overlay:dialog:content:content:form:submit");
 
         // check table is visible
         Assert.assertNull(
-                tester.getComponentFromLastRenderedPage(
-                        "publishedinfo:tabs:panel:importTemplatePanel:noData"));
+                tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:noData"));
         tester.assertLabel(
                 "publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:2:itemProperties:0:component",
                 "simple fields");
@@ -594,25 +544,22 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
     @Test
     public void testTemplatesRemainInPriorityOrder() {
         // add link
-        DropDownChoice<?> selectTemplate =
-                (DropDownChoice<?>)
-                        tester.getComponentFromLastRenderedPage(
-                                "publishedinfo:tabs:panel:importTemplatePanel:metadataTemplate");
-        MetadataTemplateImpl template = (MetadataTemplateImpl) selectTemplate.getChoices().get(4);
+        DropDownChoice<?> selectTemplate = (DropDownChoice<?>) tester.getComponentFromLastRenderedPage(
+                "publishedinfo:tabs:panel:importTemplatePanel:metadataTemplate");
+        MetadataTemplateImpl template =
+                (MetadataTemplateImpl) selectTemplate.getChoices().get(4);
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
         tester.clickLink(
-                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:content:form:submit");
+                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:overlay:dialog:content:content:form:submit");
 
-        selectTemplate =
-                (DropDownChoice<?>)
-                        tester.getComponentFromLastRenderedPage(
-                                "publishedinfo:tabs:panel:importTemplatePanel:metadataTemplate");
+        selectTemplate = (DropDownChoice<?>) tester.getComponentFromLastRenderedPage(
+                "publishedinfo:tabs:panel:importTemplatePanel:metadataTemplate");
         template = (MetadataTemplateImpl) selectTemplate.getChoices().get(1);
         ((IModel<MetadataTemplateImpl>) selectTemplate.getDefaultModel()).setObject(template);
         tester.clickLink("publishedinfo:tabs:panel:importTemplatePanel:link");
         tester.clickLink(
-                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:content:form:submit");
+                "publishedinfo:tabs:panel:importTemplatePanel:importDialog:dialog:modal:overlay:dialog:content:content:form:submit");
 
         tester.assertLabel(
                 "publishedinfo:tabs:panel:importTemplatePanel:templatesPanel:listContainer:items:7:itemProperties:0:component",
@@ -630,25 +577,20 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
     public void testImportFromGeonetwork() {
         // check the layer is linked
         Assert.assertNull(
-                tester.getComponentFromLastRenderedPage(
-                        "publishedinfo:tabs:panel:importTemplatePanel:noData"));
+                tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:importTemplatePanel:noData"));
 
         // Import from geonetwork
-        DropDownChoice<?> geonetwork =
-                (DropDownChoice<?>)
-                        tester.getComponentFromLastRenderedPage(
-                                "publishedinfo:tabs:panel:geonetworkPanel:geonetworkName");
+        DropDownChoice<?> geonetwork = (DropDownChoice<?>)
+                tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:geonetworkPanel:geonetworkName");
         String geonetworkName = (String) geonetwork.getChoices().get(0);
         ((IModel<String>) geonetwork.getDefaultModel()).setObject(geonetworkName);
-        TextField<String> uuid =
-                (TextField<String>)
-                        tester.getComponentFromLastRenderedPage(
-                                "publishedinfo:tabs:panel:geonetworkPanel:textfield");
+        TextField<String> uuid = (TextField<String>)
+                tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:geonetworkPanel:textfield");
         ((IModel<String>) uuid.getDefaultModel()).setObject("1a2c6739-3c62-432b-b2a0-aaa589a9e3a1");
 
         tester.clickLink("publishedinfo:tabs:panel:geonetworkPanel:link");
         tester.clickLink(
-                "publishedinfo:tabs:panel:geonetworkPanel:importDialog:dialog:modal:content:form:submit");
+                "publishedinfo:tabs:panel:geonetworkPanel:importDialog:dialog:modal:overlay:dialog:content:content:form:submit");
 
         // print(tester.getLastRenderedPage(), true, true);
 
@@ -683,7 +625,8 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
 
         assertEquals(2, tester.getMessages(FeedbackMessage.ERROR).size());
         assertEquals(
-                "Select a geonetwork", tester.getMessages(FeedbackMessage.ERROR).get(0).toString());
+                "Select a geonetwork",
+                tester.getMessages(FeedbackMessage.ERROR).get(0).toString());
         assertEquals(
                 "A metadata UUID is required",
                 tester.getMessages(FeedbackMessage.ERROR).get(1).toString());
@@ -697,10 +640,8 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
 
     @Test
     public void testGenerateFeatureCatalogueAndDomain() {
-        MarkupContainer c =
-                (MarkupContainer)
-                        tester.getComponentFromLastRenderedPage(
-                                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items");
+        MarkupContainer c = (MarkupContainer) tester.getComponentFromLastRenderedPage(
+                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items");
         assertEquals(15, c.size());
 
         tester.assertComponent(
@@ -715,13 +656,12 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
                 GeoServerDialog.class);
 
         tester.clickLink(
-                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:13:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:1:component:dialog:dialog:modal:content:form:submit");
+                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:13:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:1:component:dialog:dialog:modal:overlay:dialog:content:content:form:submit");
 
         @SuppressWarnings("unchecked")
-        GeoServerTablePanel<ComplexMetadataMap> panel =
-                (GeoServerTablePanel<ComplexMetadataMap>)
-                        tester.getComponentFromLastRenderedPage(
-                                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:13:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:1:component:attributesTablePanel");
+        GeoServerTablePanel<ComplexMetadataMap> panel = (GeoServerTablePanel<ComplexMetadataMap>)
+                tester.getComponentFromLastRenderedPage(
+                        "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:13:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:1:component:attributesTablePanel");
 
         assertEquals(23, panel.getDataProvider().size());
 
@@ -741,13 +681,12 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
                 GeoServerDialog.class);
 
         tester.clickLink(
-                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:13:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component:attributesTablePanel:listContainer:items:7:itemProperties:1:component:dialog:dialog:modal:content:form:submit");
+                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:13:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component:attributesTablePanel:listContainer:items:7:itemProperties:1:component:dialog:dialog:modal:overlay:dialog:content:content:form:submit");
 
         @SuppressWarnings("unchecked")
-        GeoServerTablePanel<ComplexMetadataMap> panel2 =
-                (GeoServerTablePanel<ComplexMetadataMap>)
-                        tester.getComponentFromLastRenderedPage(
-                                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:13:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component:attributesTablePanel:listContainer:items:7:itemProperties:1:component:attributesTablePanel");
+        GeoServerTablePanel<ComplexMetadataMap> panel2 = (GeoServerTablePanel<ComplexMetadataMap>)
+                tester.getComponentFromLastRenderedPage(
+                        "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:13:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:1:component:attributesTablePanel:listContainer:items:2:itemProperties:0:component:attributesTablePanel:listContainer:items:7:itemProperties:1:component:attributesTablePanel");
 
         assertEquals(49, panel2.getDataProvider().size());
 
@@ -760,23 +699,13 @@ public class LayerMetadataTabTest extends AbstractWicketMetadataTest {
     @Test
     public void testDatePickerIsPresent() {
         String lastPage = tester.getLastResponseAsString();
-        DateField dField =
-                (DateField)
-                        tester.getComponentFromLastRenderedPage(
-                                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:8:itemProperties:1:component:dateTimeField");
-        DateField dField2 =
-                (DateField)
-                        tester.getComponentFromLastRenderedPage(
-                                "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:9:itemProperties:1:component:dateTimeField");
-        assertTrue(
-                lastPage.contains(
-                        "initJQDatepicker('"
-                                + dField.getMarkupId()
-                                + "',false,'yyyy-MM-dd',' ');"));
-        assertTrue(
-                lastPage.contains(
-                        "initJQDatepicker('"
-                                + dField2.getMarkupId()
-                                + "',true,'yyyy-MM-dd HH:mm',' ');"));
+        DateField dField = (DateField)
+                tester.getComponentFromLastRenderedPage(
+                        "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:8:itemProperties:1:component:dateTimeField");
+        DateField dField2 = (DateField)
+                tester.getComponentFromLastRenderedPage(
+                        "publishedinfo:tabs:panel:metadataPanel:attributesPanel:attributesTablePanel:listContainer:items:9:itemProperties:1:component:dateTimeField");
+        assertTrue(lastPage.contains("initJQDatepicker('" + dField.getMarkupId() + "',false,'yyyy-MM-dd',' ');"));
+        assertTrue(lastPage.contains("initJQDatepicker('" + dField2.getMarkupId() + "',true,'yyyy-MM-dd HH:mm',' ');"));
     }
 }

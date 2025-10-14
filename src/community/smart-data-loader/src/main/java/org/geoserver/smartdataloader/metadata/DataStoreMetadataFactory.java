@@ -7,10 +7,7 @@ package org.geoserver.smartdataloader.metadata;
 import org.geoserver.smartdataloader.metadata.jdbc.JdbcDataStoreMetadata;
 import org.geoserver.smartdataloader.metadata.jdbc.JdbcDataStoreMetadataConfig;
 
-/**
- * Factory class that builds a DataStoreMetadata based on the DataStoreMetadataConfig passed as
- * argument.
- */
+/** Factory class that builds a DataStoreMetadata based on the DataStoreMetadataConfig passed as argument. */
 public class DataStoreMetadataFactory {
 
     public DataStoreMetadata getDataStoreMetadata(DataStoreMetadataConfig config) throws Exception {

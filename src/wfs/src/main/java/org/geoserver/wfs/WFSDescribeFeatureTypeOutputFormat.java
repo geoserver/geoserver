@@ -18,20 +18,18 @@ import org.geoserver.wfs.response.WFSResponse;
 /**
  * Base class for a response to a WFS DescribeFeatureType operation.
  *
- * <p>The result of a DescribeFeatureType operation is an array of {@link FeatureTypeInfo}.
- * Subclasses are responsible for serializing these instances. See {@link #write(Object,
- * OutputStream, Operation)}.
+ * <p>The result of a DescribeFeatureType operation is an array of {@link FeatureTypeInfo}. Subclasses are responsible
+ * for serializing these instances. See {@link #write(Object, OutputStream, Operation)}.
  *
  * <p>Subclasses also need declare the mime-type in which the format is encoded.
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
-public abstract class WFSDescribeFeatureTypeOutputFormat extends WFSResponse
-        implements SOAPAwareResponse {
+public abstract class WFSDescribeFeatureTypeOutputFormat extends WFSResponse implements SOAPAwareResponse {
     /**
      * Constructor which sets the outputFormat.
      *
-     * @param outputFormat The well-known name of the format, not <code>null</code>
+     * @param outputFormat The well-known name of the format, not {@code null}
      */
     public WFSDescribeFeatureTypeOutputFormat(GeoServer gs, String outputFormat) {
         super(gs, FeatureTypeInfo[].class, outputFormat);
@@ -40,7 +38,7 @@ public abstract class WFSDescribeFeatureTypeOutputFormat extends WFSResponse
     /**
      * Constructor which sets multiple outputFormats.
      *
-     * @param outputFormats The well-known name of the format, not <code>null</code>
+     * @param outputFormats The well-known name of the format, not {@code null}
      */
     public WFSDescribeFeatureTypeOutputFormat(GeoServer gs, Set<String> outputFormats) {
         super(gs, FeatureTypeInfo[].class, outputFormats);
@@ -81,8 +79,7 @@ public abstract class WFSDescribeFeatureTypeOutputFormat extends WFSResponse
      * @param describeFeatureType The DescribeFeatureType operation descriptor.
      */
     protected abstract void write(
-            FeatureTypeInfo[] featureTypeInfos, OutputStream output, Operation describeFeatureType)
-            throws IOException;
+            FeatureTypeInfo[] featureTypeInfos, OutputStream output, Operation describeFeatureType) throws IOException;
 
     @Override
     public String getAttachmentFileName(Object value, Operation operation) {

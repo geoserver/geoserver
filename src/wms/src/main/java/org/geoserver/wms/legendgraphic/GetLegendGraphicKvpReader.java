@@ -70,33 +70,26 @@ import org.geotools.xml.styling.SLDParser;
 import org.xml.sax.EntityResolver;
 
 /**
- * Key/Value pair set parsed for a GetLegendGraphic request. When calling <code>getRequest</code>
- * produces a {@linkPlain org.vfny.geoserver.requests.wms.GetLegendGraphicRequest}
+ * Key/Value pair set parsed for a GetLegendGraphic request. When calling <code>getRequest</code> produces a
+ * {@linkPlain GetLegendGraphicRequest}
  *
- * <p>See {@linkplain org.org.geoserver.wms.GetLegendGraphicRequest} for a complete list of expected
- * request parameters.
+ * <p>See {@linkplain GetLegendGraphicRequest} for a complete list of expected request parameters.
  *
- * <p>This class is responsible for looking up all the required information for {@link
- * BufferedImageLegendGraphicBuilder} (titles, styles and legend graphics used). If requested
- * information (such as a legend graphic) is unavailable as described a warning will be issued
- * rather than outright failure. ALl parsed/gathered information is recorded in {@link
- * GetLegendGraphicRequest} for use by BufferedImageLegendGraphicBuilder, RasterLayerLegendHelper
- * and similar.
+ * <p>This class is responsible for looking up all the required information for
+ * {@link BufferedImageLegendGraphicBuilder} (titles, styles and legend graphics used). If requested information (such
+ * as a legend graphic) is unavailable as described a warning will be issued rather than outright failure. ALl
+ * parsed/gathered information is recorded in {@link GetLegendGraphicRequest} for use by
+ * BufferedImageLegendGraphicBuilder, RasterLayerLegendHelper and similar.
  *
  * @author Gabriel Roldan
- * @version $Id$
- * @see org.org.geoserver.wms.GetLegendGraphicRequest
+ * @see GetLegendGraphicRequest
  */
 public class GetLegendGraphicKvpReader extends KvpRequestReader {
 
     private static final Logger LOGGER = Logging.getLogger(GetLegendGraphicKvpReader.class);
 
-    /**
-     * Factory to create styles from inline or remote SLD documents (aka, from SLD_BODY or SLD
-     * parameters).
-     */
-    private static final StyleFactory styleFactory =
-            CommonFactoryFinder.getStyleFactory(GeoTools.getDefaultHints());
+    /** Factory to create styles from inline or remote SLD documents (aka, from SLD_BODY or SLD parameters). */
+    private static final StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory(GeoTools.getDefaultHints());
 
     private WMS wms;
 
@@ -143,17 +136,13 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
         // }
         final String layer = (String) rawKvp.get("LAYER");
         final boolean strict =
-                rawKvp.containsKey("STRICT")
-                        ? Boolean.valueOf((String) rawKvp.get("STRICT"))
-                        : request.isStrict();
+                rawKvp.containsKey("STRICT") ? Boolean.valueOf((String) rawKvp.get("STRICT")) : request.isStrict();
         request.setStrict(strict);
         if (strict && layer == null) {
-            throw new ServiceException(
-                    "LAYER parameter not present for GetLegendGraphic", "LayerNotDefined");
+            throw new ServiceException("LAYER parameter not present for GetLegendGraphic", "LayerNotDefined");
         }
         if (strict && request.getFormat() == null) {
-            throw new ServiceException(
-                    "Missing FORMAT parameter for GetLegendGraphic", "MissingFormat");
+            throw new ServiceException("Missing FORMAT parameter for GetLegendGraphic", "MissingFormat");
         }
 
         // object representing the layer or layer group requested
@@ -183,8 +172,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                     if (layerGroupInfo != null) {
                         // add all single layers of the group
                         String lgStyleName = (String) rawKvp.get("STYLE");
-                        List<LayerInfo> groupLayers =
-                                getLayerGroupLayers(lgStyleName, layerGroupInfo);
+                        List<LayerInfo> groupLayers = getLayerGroupLayers(lgStyleName, layerGroupInfo);
                         for (LayerInfo singleLayer : groupLayers) {
                             LegendRequest legend = null;
                             // for WMS cascaded layer
@@ -204,7 +192,10 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                 throw new ServiceException(e);
             } catch (NoSuchElementException ne) {
                 throw new ServiceException(
-                        new StringBuffer(layer).append(" layer does not exists.").toString(), ne);
+                        new StringBuffer(layer)
+                                .append(" layer does not exists.")
+                                .toString(),
+                        ne);
             } catch (ServiceException se) {
                 throw se;
             } catch (Exception te) {
@@ -263,8 +254,8 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
      * @param request should be instance of GetLegendGraphicRequest
      * @return GetCascadedLegendGraphicRequest
      */
-    private LegendRequest getCascadeLegendRequest(
-            LayerInfo layerInfo, GetLegendGraphicRequest request) throws IOException {
+    private LegendRequest getCascadeLegendRequest(LayerInfo layerInfo, GetLegendGraphicRequest request)
+            throws IOException {
         WMSLayerInfo wmsLayerInfo = (WMSLayerInfo) layerInfo.getResource();
         WMSStoreInfo wmsStoreInfo = wmsLayerInfo.getStore();
         WebMapServer wmsServer = wmsStoreInfo.getWebMapServer(null);
@@ -276,9 +267,8 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
             // since the XML tag <GetLegendGraphic> is not present under the <Capability>
             // HACK HACK HACK
             // taking a 1.3.0 GetMap request and forcefully turning it into a GetLegend Request
-            remoteLegendGraphicRequest =
-                    new CascadedLegendRequest.GetLegendGraphicRequestV1_3_0(
-                            wmsServer.createGetMapRequest().getFinalURL(), "1.3.0");
+            remoteLegendGraphicRequest = new CascadedLegendRequest.GetLegendGraphicRequestV1_3_0(
+                    wmsServer.createGetMapRequest().getFinalURL(), "1.3.0");
         } else {
             // other than 1.3.0
             remoteLegendGraphicRequest = wmsServer.createGetLegendGraphicRequest();
@@ -330,15 +320,14 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
     }
 
     /**
-     * Ensures the online resource is stored on the GetLegendGraphicRequest and native dimensions
-     * are configured if not specified on the original request.
+     * Ensures the online resource is stored on the GetLegendGraphicRequest and native dimensions are configured if not
+     * specified on the original request.
      *
      * @param request GetLegendGraphicRequest original KWP Request
      * @param legend LegendRequest internal Class containing references to Resources
      * @param legendInfo LegendInfo used to document use external graphic
      */
-    private void configureLegendInfo(
-            GetLegendGraphicRequest request, LegendRequest legend, LegendInfo legendInfo) {
+    private void configureLegendInfo(GetLegendGraphicRequest request, LegendRequest legend, LegendInfo legendInfo) {
         legend.setLegendInfo(legendInfo);
         if (legendInfo.getHeight() > 0 && !request.getKvp().containsKey("HEIGHT")) {
             request.setHeight(legendInfo.getHeight());
@@ -348,16 +337,14 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
         }
     }
     /**
-     * Makes a copy of the provided LegendInfo resolving ExternalGraphics reference to local file
-     * system.
+     * Makes a copy of the provided LegendInfo resolving ExternalGraphics reference to local file system.
      *
      * <p>If external graphic reference cannot be resolved locally null is returned.
      *
      * @param legendInfo LegendInfo used to document use external graphic
      * @return Copy of provided legend info resolved to local file references.
      */
-    public LegendInfo resolveLegendInfo(
-            LegendInfo legendInfo, GetLegendGraphicRequest request, StyleInfo context) {
+    public LegendInfo resolveLegendInfo(LegendInfo legendInfo, GetLegendGraphicRequest request, StyleInfo context) {
         if (legendInfo == null) {
             return null; // not available
         }
@@ -383,8 +370,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                 if (context != null) {
                     GeoServerDataDirectory dd = new GeoServerDataDirectory(resources);
                     Resource styleParentResource = dd.get(context);
-                    if (styleParentResource != null
-                            && styleParentResource.getType() == Resource.Type.DIRECTORY) {
+                    if (styleParentResource != null && styleParentResource.getType() == Resource.Type.DIRECTORY) {
                         url = URLs.fileToUrl(new File(styleParentResource.dir(), onlineResource));
                     }
                 }
@@ -424,12 +410,9 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
             CoverageInfo coverageInfo = mli.getCoverage();
             // it much safer to wrap a reader rather than a coverage in most cases, OOM can
             // occur otherwise
-            final GridCoverage2DReader reader =
-                    (GridCoverage2DReader)
-                            coverageInfo.getGridCoverageReader(
-                                    new NullProgressListener(), GeoTools.getDefaultHints());
-            final SimpleFeatureCollection feature =
-                    FeatureUtilities.wrapGridCoverageReader(reader, null);
+            final GridCoverage2DReader reader = (GridCoverage2DReader)
+                    coverageInfo.getGridCoverageReader(new NullProgressListener(), GeoTools.getDefaultHints());
+            final SimpleFeatureCollection feature = FeatureUtilities.wrapGridCoverageReader(reader, null);
             return feature.getSchema();
         }
         return null;
@@ -441,41 +424,36 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
      * <p>The parameters parsed by this method are:
      *
      * <ul>
-     *   <li>FEATURETYPE for the {@link GetLegendGraphicRequest#getFeatureType() featureType}
-     *       property.
+     *   <li>FEATURETYPE for the {@link GetLegendGraphicRequest#getFeatureType() featureType} property.
      *   <li>SCALE for the {@link GetLegendGraphicRequest#getScale() scale} property.
      *   <li>WIDTH for the {@link GetLegendGraphicRequest#getWidth() width} property.
      *   <li>HEIGHT for the {@link GetLegendGraphicRequest#getHeight() height} property.
      *   <li>EXCEPTIONS for the {@link GetLegendGraphicRequest#getExceptions() exceptions} property.
-     *   <li>TRANSPARENT for the {@link GetLegendGraphicRequest#isTransparent() transparent}
-     *       property.
-     *   <li>LEGEND_OPTIONS for the {@link GetLegendGraphicRequest#getLegendOptions() legendOptions}
-     *       property.
+     *   <li>TRANSPARENT for the {@link GetLegendGraphicRequest#isTransparent() transparent} property.
+     *   <li>LEGEND_OPTIONS for the {@link GetLegendGraphicRequest#getLegendOptions() legendOptions} property.
      * </ul>
      *
      * @param req The request to set the properties to.
-     * @param infoObj a {@link LayerInfo layer} or a {@link LayerGroupInfo layerGroup} for which the
-     *     legend graphic is to be produced, from where to extract the style information.
-     * @task TODO: validate EXCEPTIONS parameter
+     * @param infoObj a {@link LayerInfo layer} or a {@link LayerGroupInfo layerGroup} for which the legend graphic is
+     *     to be produced, from where to extract the style information.
+     * @todo validate EXCEPTIONS parameter
      */
-    private void parseOptionalParameters(GetLegendGraphicRequest req, Object infoObj, Map rawKvp)
-            throws IOException {
+    private void parseOptionalParameters(GetLegendGraphicRequest req, Object infoObj, Map rawKvp) throws IOException {
         parseStyleAndRule(req, infoObj, rawKvp);
     }
 
     /**
      * Parses the STYLE, SLD and SLD_BODY parameters, as well as RULE.
      *
-     * <p>STYLE, SLD and SLD_BODY are mutually exclusive. STYLE refers to a named style known by the
-     * server and applicable to the requested layer (i.e., it is exposed as one of the layer's
-     * styles in the Capabilities document). SLD is a URL to an externally available SLD document,
-     * and SLD_BODY is a string containing the SLD document itself.
+     * <p>STYLE, SLD and SLD_BODY are mutually exclusive. STYLE refers to a named style known by the server and
+     * applicable to the requested layer (i.e., it is exposed as one of the layer's styles in the Capabilities
+     * document). SLD is a URL to an externally available SLD document, and SLD_BODY is a string containing the SLD
+     * document itself.
      *
-     * <p>As I don't completely understand which takes priority over which from the spec, I assume
-     * the precedence order as follow: SLD, SLD_BODY, STYLE, in decrecent order of precedence.
+     * <p>As I don't completely understand which takes priority over which from the spec, I assume the precedence order
+     * as follow: SLD, SLD_BODY, STYLE, in decrecent order of precedence.
      */
-    private void parseStyleAndRule(GetLegendGraphicRequest req, Object infoObj, Map rawKvp)
-            throws IOException {
+    private void parseStyleAndRule(GetLegendGraphicRequest req, Object infoObj, Map rawKvp) throws IOException {
         // gets the list of styles requested
         String listOfStyles = (String) rawKvp.get("STYLE");
         if (listOfStyles == null) {
@@ -491,7 +469,8 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
         }
 
         if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine(new StringBuffer("looking for styles ").append(listOfStyles).toString());
+            LOGGER.fine(
+                    new StringBuffer("looking for styles ").append(listOfStyles).toString());
         }
 
         List<Style> sldStyles = new ArrayList<>();
@@ -515,8 +494,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
             for (String styleName : styleNames) {
                 // if we have a layer group and no style is specified
                 // use the default one for the layer in the current position
-                if (infoObj instanceof LayerGroupInfo) {
-                    LayerGroupInfo layerGroupInfo = (LayerGroupInfo) infoObj;
+                if (infoObj instanceof LayerGroupInfo layerGroupInfo) {
                     boolean groupDefaultStyle = isGroupDefaultStyle(styleName, layerGroupInfo);
                     LayerGroupStyle lgStyle = null;
                     if (!groupDefaultStyle && isSingleOrOpaque(layerGroupInfo)) {
@@ -529,13 +507,11 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                     if (style == null) throwNoSuchStyle(styleName);
 
                     sldStyles.add(style);
-                    if (infoObj instanceof LayerInfo) {
+                    if (infoObj instanceof LayerInfo layerInfo) {
                         StyleInfo styleInfo = wms.getCatalog().getStyleByName(styleName);
                         if (styleInfo != null) {
-                            LegendInfo legend =
-                                    resolveLegendInfo(styleInfo.getLegend(), req, styleInfo);
+                            LegendInfo legend = resolveLegendInfo(styleInfo.getLegend(), req, styleInfo);
                             if (legend != null) {
-                                LayerInfo layerInfo = (LayerInfo) infoObj;
                                 Name name = layerInfo.getResource().getQualifiedName();
                                 LegendRequest legendRequest = req.getLegend(name);
                                 if (legendRequest != null) {
@@ -550,8 +526,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
             }
 
         } else {
-            if (infoObj instanceof LayerInfo) {
-                LayerInfo layerInfo = (LayerInfo) infoObj;
+            if (infoObj instanceof LayerInfo layerInfo) {
                 sldStyles.add(getStyleFromLayer(layerInfo));
 
                 StyleInfo defaultStyle = layerInfo.getDefaultStyle();
@@ -565,8 +540,8 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                         LOGGER.log(Level.FINE, "Unable to set LegendInfo for " + name);
                     }
                 }
-            } else if (infoObj instanceof LayerGroupInfo) {
-                addLayerGroupStyles(req, (LayerGroupInfo) infoObj, sldStyles, null);
+            } else if (infoObj instanceof LayerGroupInfo info) {
+                addLayerGroupStyles(req, info, sldStyles, null);
             }
         }
 
@@ -593,20 +568,15 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
     }
 
     private void addLayerGroupStyles(
-            GetLegendGraphicRequest req,
-            LayerGroupInfo infoObj,
-            List<Style> sldStyles,
-            LayerGroupStyle lgStyle)
+            GetLegendGraphicRequest req, LayerGroupInfo infoObj, List<Style> sldStyles, LayerGroupStyle lgStyle)
             throws IOException {
         LayerGroupInfo layerGroupInfo = infoObj;
-        List<LayerInfo> groupLayers =
-                lgStyle == null
-                        ? layerGroupInfo.layers()
-                        : layerGroupInfo.layers(lgStyle.getName().getName());
-        List<StyleInfo> groupStyles =
-                lgStyle == null
-                        ? layerGroupInfo.styles()
-                        : layerGroupInfo.styles(lgStyle.getName().getName());
+        List<LayerInfo> groupLayers = lgStyle == null
+                ? layerGroupInfo.layers()
+                : layerGroupInfo.layers(lgStyle.getName().getName());
+        List<StyleInfo> groupStyles = lgStyle == null
+                ? layerGroupInfo.styles()
+                : layerGroupInfo.styles(lgStyle.getName().getName());
         for (int count = 0; count < groupLayers.size(); count++) {
             LayerInfo layerInfo = groupLayers.get(count);
             StyleInfo styleInfo = null;
@@ -638,8 +608,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
     private boolean isGroupDefaultStyle(String styleName, LayerGroupInfo layerGroupInfo) {
         return styleName.equals("")
                 || (CapabilityUtil.encodeGroupDefaultStyle(wms, layerGroupInfo)
-                        && styleName.equals(
-                                CapabilityUtil.getGroupDefaultStyleName(layerGroupInfo)));
+                        && styleName.equals(CapabilityUtil.getGroupDefaultStyleName(layerGroupInfo)));
     }
 
     /**
@@ -673,17 +642,15 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
     /**
      * Finds the Style named <code>styleName</code> in <code>styles</code>.
      *
-     * @param styleName name of style to search for in the list of styles. If <code>null</code>, it
-     *     is assumed the request is made in literal mode and the user has requested the first
-     *     style.
+     * @param styleName name of style to search for in the list of styles. If {@code null}, it is assumed the request is
+     *     made in literal mode and the user has requested the first style.
      * @param styles non null, non empty, list of styles
      * @throws NoSuchElementException if no style named <code>styleName</code> is found in <code>
      *     styles</code>
      */
     private Style findStyle(String styleName, Style[] styles) throws NoSuchElementException {
         if ((styles == null) || (styles.length == 0)) {
-            throw new NoSuchElementException(
-                    "No styles have been provided to search for " + styleName);
+            throw new NoSuchElementException("No styles have been provided to search for " + styleName);
         }
 
         if (styleName == null) {
@@ -695,10 +662,9 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
         }
 
         if (LOGGER.isLoggable(Level.FINER)) {
-            LOGGER.finer(
-                    new StringBuffer("request in library mode, looking for style ")
-                            .append(styleName)
-                            .toString());
+            LOGGER.finer(new StringBuffer("request in library mode, looking for style ")
+                    .append(styleName)
+                    .toString());
         }
 
         StringBuffer noMatchNames = new StringBuffer();
@@ -715,8 +681,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
             }
         }
 
-        throw new NoSuchElementException(
-                styleName + " not found. Provided style names: " + noMatchNames);
+        throw new NoSuchElementException(styleName + " not found. Provided style names: " + noMatchNames);
     }
 
     /**
@@ -724,8 +689,8 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
      *
      * @param sldUrl an URL to a SLD document
      * @return the document parsed to a Style object
-     * @throws WmsException if <code>sldUrl</code> is not a valid URL, a stream can't be opened or a
-     *     parsing error occurs
+     * @throws WmsException if <code>sldUrl</code> is not a valid URL, a stream can't be opened or a parsing error
+     *     occurs
      */
     private Style[] loadRemoteStyle(String sldUrl) throws ServiceException {
         try {
@@ -735,8 +700,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                 return parseSld(new InputStreamReader(in));
             }
         } catch (MalformedURLException e) {
-            throw new ServiceException(
-                    e, "Not a valid URL to an SLD document " + sldUrl, "loadRemoteStyle");
+            throw new ServiceException(e, "Not a valid URL to an SLD document " + sldUrl, "loadRemoteStyle");
         } catch (URLCheckerException e) {
             throw new ServiceException(e, "Invalid SLD URL: " + sldUrl, "loadRemoteStyle");
         } catch (IOException e) {
@@ -757,8 +721,8 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
     }
 
     /**
-     * Parses the content of the given input stream to an SLD Style, provided that a valid SLD
-     * document can be read from <code>xmlIn</code>.
+     * Parses the content of the given input stream to an SLD Style, provided that a valid SLD document can be read from
+     * <code>xmlIn</code>.
      *
      * @param xmlIn where to read the SLD document from.
      * @return the parsed Style

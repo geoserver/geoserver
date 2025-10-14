@@ -59,8 +59,7 @@ public abstract class JDBCUserDetailsServiceTest extends AbstractUserDetailsServ
     }
 
     @Override
-    public GeoServerUserGroupStore createStore(GeoServerUserGroupService service)
-            throws IOException {
+    public GeoServerUserGroupStore createStore(GeoServerUserGroupService service) throws IOException {
         JDBCUserGroupStore store = (JDBCUserGroupStore) super.createStore(service);
         try {
             JDBCTestSupport.dropExistingTables(store, store.getConnection());
@@ -89,8 +88,7 @@ public abstract class JDBCUserDetailsServiceTest extends AbstractUserDetailsServ
 
     @Override
     protected void setServices(String serviceName) throws Exception {
-        if (getSecurityManager().loadRoleService(getFixtureId()) == null)
-            super.setServices(getFixtureId());
+        if (getSecurityManager().loadRoleService(getFixtureId()) == null) super.setServices(getFixtureId());
         else {
             roleService = getSecurityManager().loadRoleService(getFixtureId());
             roleStore = createStore(roleService);

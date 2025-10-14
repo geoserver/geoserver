@@ -60,11 +60,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 @RequestMapping(
         path = RestBaseController.ROOT_PATH + "/workspaces",
-        produces = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_HTML_VALUE
-        })
+        produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
 public class WorkspaceController extends AbstractCatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(WorkspaceController.class);
@@ -109,8 +105,7 @@ public class WorkspaceController extends AbstractCatalogController {
             UriComponentsBuilder builder) {
 
         if (catalog.getWorkspaceByName(workspace.getName()) != null) {
-            throw new RestException(
-                    "Workspace '" + workspace.getName() + "' already exists", HttpStatus.CONFLICT);
+            throw new RestException("Workspace '" + workspace.getName() + "' already exists", HttpStatus.CONFLICT);
         }
         catalog.add(workspace);
         String name = workspace.getName();
@@ -151,9 +146,7 @@ public class WorkspaceController extends AbstractCatalogController {
                 MediaType.APPLICATION_JSON_VALUE
             })
     public void workspacePut(
-            @RequestBody WorkspaceInfo workspace,
-            @PathVariable String workspaceName,
-            UriComponentsBuilder builder) {
+            @RequestBody WorkspaceInfo workspace, @PathVariable String workspaceName, UriComponentsBuilder builder) {
 
         if ("default".equals(workspaceName)) {
             catalog.setDefaultWorkspace(workspace);
@@ -162,8 +155,7 @@ public class WorkspaceController extends AbstractCatalogController {
             WorkspaceInfo wks = catalog.getWorkspaceByName(workspaceName);
             if (wks == null) {
                 throw new RestException(
-                        "Can't change a non existant workspace (" + workspaceName + ")",
-                        HttpStatus.NOT_FOUND);
+                        "Can't change a non existant workspace (" + workspaceName + ")", HttpStatus.NOT_FOUND);
             }
 
             String infoName = workspace.getName();
@@ -183,8 +175,7 @@ public class WorkspaceController extends AbstractCatalogController {
 
         WorkspaceInfo ws = catalog.getWorkspaceByName(workspaceName);
         if (ws == null) {
-            throw new RestException(
-                    "Workspace '" + workspaceName + "' not found", HttpStatus.NOT_FOUND);
+            throw new RestException("Workspace '" + workspaceName + "' not found", HttpStatus.NOT_FOUND);
         }
         if (!recurse) {
             if (!catalog.getStoresByWorkspace(ws, StoreInfo.class).isEmpty()) {
@@ -195,8 +186,7 @@ public class WorkspaceController extends AbstractCatalogController {
             NamespaceInfo ns = catalog.getNamespaceByPrefix(ws.getName());
             if (ns != null) {
                 if (!catalog.getFeatureTypesByNamespace(ns).isEmpty()) {
-                    throw new RestException(
-                            "Namespace for workspace not empty.", HttpStatus.FORBIDDEN);
+                    throw new RestException("Namespace for workspace not empty.", HttpStatus.FORBIDDEN);
                 }
                 catalog.remove(ns);
             }
@@ -222,8 +212,7 @@ public class WorkspaceController extends AbstractCatalogController {
     protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
         return new ObjectToMapWrapper<WorkspaceInfo>(WorkspaceInfo.class) {
             @Override
-            protected void wrapInternal(
-                    Map<String, Object> properties, SimpleHash model, WorkspaceInfo wkspace) {
+            protected void wrapInternal(Map<String, Object> properties, SimpleHash model, WorkspaceInfo wkspace) {
                 if (properties == null) {
                     properties = hashToProperties(model);
                 }
@@ -242,10 +231,7 @@ public class WorkspaceController extends AbstractCatalogController {
             }
 
             protected <T extends StoreInfo> void collectSources(
-                    Class<T> clazz,
-                    String propsName,
-                    Map<String, Object> properties,
-                    WorkspaceInfo wkspace) {
+                    Class<T> clazz, String propsName, Map<String, Object> properties, WorkspaceInfo wkspace) {
 
                 List<Map<String, Map<String, String>>> dsProps = new ArrayList<>();
 
@@ -270,68 +256,63 @@ public class WorkspaceController extends AbstractCatalogController {
 
     @Override
     public boolean supports(
-            MethodParameter methodParameter,
-            Type targetType,
-            Class<? extends HttpMessageConverter<?>> converterType) {
+            MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return WorkspaceInfo.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
     @Override
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
-        persister.setCallback(
-                new XStreamPersister.Callback() {
-                    @Override
-                    protected Class<WorkspaceInfo> getObjectClass() {
-                        return WorkspaceInfo.class;
-                    }
+        persister.setCallback(new XStreamPersister.Callback() {
+            @Override
+            protected Class<WorkspaceInfo> getObjectClass() {
+                return WorkspaceInfo.class;
+            }
 
-                    @Override
-                    protected CatalogInfo getCatalogObject() {
-                        Map<String, String> uriTemplateVars = getURITemplateVariables();
-                        String workspace = uriTemplateVars.get("workspaceName");
+            @Override
+            protected CatalogInfo getCatalogObject() {
+                Map<String, String> uriTemplateVars = getURITemplateVariables();
+                String workspace = uriTemplateVars.get("workspaceName");
 
-                        if (workspace == null) {
-                            return null;
-                        }
-                        return catalog.getWorkspaceByName(workspace);
-                    }
+                if (workspace == null) {
+                    return null;
+                }
+                return catalog.getWorkspaceByName(workspace);
+            }
 
-                    @Override
-                    protected void postEncodeWorkspace(
-                            WorkspaceInfo cs,
-                            HierarchicalStreamWriter writer,
-                            MarshallingContext context) {
+            @Override
+            protected void postEncodeWorkspace(
+                    WorkspaceInfo cs, HierarchicalStreamWriter writer, MarshallingContext context) {
 
-                        // add a link to the datastores
-                        writer.startNode("dataStores");
-                        converter.encodeCollectionLink("datastores", writer);
-                        writer.endNode();
+                // add a link to the datastores
+                writer.startNode("dataStores");
+                converter.encodeCollectionLink("datastores", writer);
+                writer.endNode();
 
-                        writer.startNode("coverageStores");
-                        converter.encodeCollectionLink("coveragestores", writer);
-                        writer.endNode();
+                writer.startNode("coverageStores");
+                converter.encodeCollectionLink("coveragestores", writer);
+                writer.endNode();
 
-                        writer.startNode("wmsStores");
-                        converter.encodeCollectionLink("wmsstores", writer);
-                        writer.endNode();
+                writer.startNode("wmsStores");
+                converter.encodeCollectionLink("wmsstores", writer);
+                writer.endNode();
 
-                        writer.startNode("wmtsStores");
-                        converter.encodeCollectionLink("wmtsstores", writer);
-                        writer.endNode();
-                    }
+                writer.startNode("wmtsStores");
+                converter.encodeCollectionLink("wmtsstores", writer);
+                writer.endNode();
+            }
 
-                    @Override
-                    protected void postEncodeReference(
-                            Object obj,
-                            String ref,
-                            String prefix,
-                            HierarchicalStreamWriter writer,
-                            MarshallingContext context) {
-                        if (obj instanceof WorkspaceInfo) {
-                            converter.encodeLink("/workspaces/" + converter.encode(ref), writer);
-                        }
-                    }
-                });
+            @Override
+            protected void postEncodeReference(
+                    Object obj,
+                    String ref,
+                    String prefix,
+                    HierarchicalStreamWriter writer,
+                    MarshallingContext context) {
+                if (obj instanceof WorkspaceInfo) {
+                    converter.encodeLink("/workspaces/" + converter.encode(ref), writer);
+                }
+            }
+        });
     }
 
     @Override

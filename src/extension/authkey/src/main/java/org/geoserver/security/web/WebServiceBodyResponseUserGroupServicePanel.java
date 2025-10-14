@@ -4,6 +4,9 @@
  */
 package org.geoserver.security.web;
 
+import java.io.Serial;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.geoserver.security.WebServiceBodyResponseUserGroupServiceConfig;
@@ -16,6 +19,7 @@ public class WebServiceBodyResponseUserGroupServicePanel
         extends UserGroupServicePanel<WebServiceBodyResponseUserGroupServiceConfig> {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = -5204330095571014979L;
 
     public WebServiceBodyResponseUserGroupServicePanel(
@@ -26,5 +30,13 @@ public class WebServiceBodyResponseUserGroupServicePanel
         add(new TextField<String>("availableGroups").setRequired(false));
 
         add(new RoleServiceChoice("roleServiceName"));
+    }
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        String css = " ul.horizontal div {\n" + "    display:inline;\n" + "  }";
+        response.render(
+                CssHeaderItem.forCSS(css, "org-geoserver-security-web-WebServiceBodyResponseUserGroupServicePanel"));
     }
 }

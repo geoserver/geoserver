@@ -32,14 +32,12 @@ public class GetCoverageRequestReader extends EMFKvpRequestReader {
     }
 
     @Override
-    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
-            throws Exception {
+    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp) throws Exception {
         GetCoverageType getCoverage = (GetCoverageType) super.read(request, kvp, rawKvp);
 
         // grab coverage info to perform further checks
         if (getCoverage.getIdentifier() == null)
-            throw new WcsException(
-                    "identifier parameter is mandatory", MissingParameterValue, "identifier");
+            throw new WcsException("identifier parameter is mandatory", MissingParameterValue, "identifier");
 
         // build the domain subset
         getCoverage.setDomainSubset(parseDomainSubset(kvp));
@@ -52,9 +50,7 @@ public class GetCoverageRequestReader extends EMFKvpRequestReader {
             if (!store.equalsIgnoreCase("TRUE") && !store.equalsIgnoreCase("FALSE")) {
                 // OGC Specification says that STORE must be either True or False
                 throw new WcsException(
-                        "store parameter has an invalid value - must be True or False",
-                        InvalidParameterValue,
-                        "store");
+                        "store parameter has an invalid value - must be True or False", InvalidParameterValue, "store");
             }
         }
 
@@ -89,9 +85,7 @@ public class GetCoverageRequestReader extends EMFKvpRequestReader {
 
         // check and set format
         String format = (String) kvp.get("format");
-        if (format == null)
-            throw new WcsException(
-                    "format parameter is mandatory", MissingParameterValue, "format");
+        if (format == null) throw new WcsException("format parameter is mandatory", MissingParameterValue, "format");
         output.setFormat(format);
 
         // set the other gridcrs properties

@@ -12,8 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * This can be mapped to every URL we don't want to serve even if located in public folder of the
- * web application
+ * This can be mapped to every URL we don't want to serve even if located in public folder of the web application
  *
  * @author aaime
  */

@@ -8,6 +8,10 @@ import java.io.IOException;
 import java.sql.DatabaseMetaData;
 import java.util.Properties;
 import javax.sql.DataSource;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.geoserver.smartdataloader.metadata.DataStoreMetadata;
 import org.geoserver.smartdataloader.metadata.DataStoreMetadataConfig;
 import org.geoserver.smartdataloader.metadata.DataStoreMetadataFactory;
@@ -42,12 +46,13 @@ public abstract class AbstractJDBCSmartDataLoaderTestSupport extends GeoServerSy
         testSetup.setFixture(fixture);
         testSetup.setUp();
         this.dataSource = testSetup.getDataSource();
+        this.afterSetup();
     }
 
+    protected void afterSetup() {}
+
     protected Properties getFixture() {
-        File fixtureFile =
-                FixtureUtilities.getFixtureFile(
-                        getFixtureDirectory(), fixtureHelper.getFixtureId());
+        File fixtureFile = FixtureUtilities.getFixtureFile(getFixtureDirectory(), fixtureHelper.getFixtureId());
         if (fixtureFile.exists()) {
             return FixtureUtilities.loadProperties(fixtureFile);
         } else {
@@ -97,17 +102,15 @@ public abstract class AbstractJDBCSmartDataLoaderTestSupport extends GeoServerSy
 
     protected DataStoreMetadata getDataStoreMetadata(DatabaseMetaData metaData) throws Exception {
         DataStoreMetadataConfig config =
-                new JdbcDataStoreMetadataConfig(
-                        ONLINE_DB_SCHEMA, metaData.getConnection(), null, ONLINE_DB_SCHEMA);
+                new JdbcDataStoreMetadataConfig(ONLINE_DB_SCHEMA, metaData.getConnection(), null, ONLINE_DB_SCHEMA);
         DataStoreMetadata dsm = (new DataStoreMetadataFactory()).getDataStoreMetadata(config);
         return dsm;
     }
 
     /**
-     * Helper method that allows to remove sourceDataStore node from AppSchema xml doc. Useful to
-     * clean xml docs when required to compare assertXML (since those sections of documents contains
-     * specific information from dataStores based on JDBC Connection, it's required to avoid the
-     * comparision.
+     * Helper method that allows to remove sourceDataStore node from AppSchema xml doc. Useful to clean xml docs when
+     * required to compare assertXML (since those sections of documents contains specific information from dataStores
+     * based on JDBC Connection, it's required to avoid the comparision.
      *
      * @param appSchemaDoc
      */
@@ -115,6 +118,20 @@ public abstract class AbstractJDBCSmartDataLoaderTestSupport extends GeoServerSy
         NodeList sds = appSchemaDoc.getElementsByTagName("sourceDataStores");
         if (sds != null && sds.getLength() > 0) {
             sds.item(0).getParentNode().removeChild(sds.item(0));
+        }
+    }
+
+    protected void saveDocument(Document doc, String filepath) {
+        try (FileOutputStream output = new FileOutputStream(filepath)) {
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty(javax.xml.transform.OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(output);
+            transformer.transform(source, result);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

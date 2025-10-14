@@ -17,9 +17,7 @@ public enum ProcessState {
     /** Execution completed successfully, (full output encoding included) */
     SUCCEEDED(true, RUNNING),
 
-    /**
-     * The process is being cancelled by the original user that requested the process, or the admin
-     */
+    /** The process is being cancelled by the original user that requested the process, or the admin */
     DISMISSING(false, QUEUED, RUNNING),
 
     /** The process failed during execution/output encoding */
@@ -34,10 +32,7 @@ public enum ProcessState {
         this.predecessors = new HashSet<>(Arrays.asList(predecessors));
     }
 
-    /**
-     * True if this state represents a process whose execution is completed (either succesfully, or
-     * not)
-     */
+    /** True if this state represents a process whose execution is completed (either succesfully, or not) */
     public boolean isExecutionCompleted() {
         return executionCompleted;
     }

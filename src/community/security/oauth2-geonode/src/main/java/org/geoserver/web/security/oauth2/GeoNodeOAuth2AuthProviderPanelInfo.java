@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.security.oauth2;
 
+import java.io.Serial;
 import org.geoserver.security.oauth2.GeoNodeOAuth2FilterConfig;
 import org.geoserver.security.oauth2.GeoNodeOAuthAuthenticationFilter;
 import org.geoserver.security.oauth2.GeoServerOAuthAuthenticationFilter;
@@ -15,10 +16,10 @@ import org.geoserver.security.web.auth.AuthenticationFilterPanelInfo;
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
 public class GeoNodeOAuth2AuthProviderPanelInfo
-        extends AuthenticationFilterPanelInfo<
-                GeoNodeOAuth2FilterConfig, GeoNodeOAuth2AuthProviderPanel> {
+        extends AuthenticationFilterPanelInfo<GeoNodeOAuth2FilterConfig, GeoNodeOAuth2AuthProviderPanel> {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 4587996462800153425L;
 
     public GeoNodeOAuth2AuthProviderPanelInfo() {

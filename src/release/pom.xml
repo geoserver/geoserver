@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>2.27-SNAPSHOT</version>
+    <version>3.0-SNAPSHOT</version>
   </parent>
   <groupId>org.geoserver</groupId>
   <artifactId>gs-release</artifactId>
@@ -55,9 +55,13 @@
       <version>3.1.M0</version>
     </dependency>
     <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-slf4j-impl</artifactId>
+      <version>${jetty.version}</version>
+    </dependency>
+    <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
-      <version>${jetty.servlet-api.version}</version>
     </dependency>
     <dependency>
       <groupId>commons-el</groupId>
@@ -180,7 +184,12 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver.extension</groupId>
-      <artifactId>gs-excel</artifactId>
+      <artifactId>gs-excel-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.extension</groupId>
+      <artifactId>gs-excel-wfs</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -406,6 +415,11 @@
     <dependency>
       <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-wps-kml-ppio</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.extension</groupId>
+      <artifactId>gs-excel-wps</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

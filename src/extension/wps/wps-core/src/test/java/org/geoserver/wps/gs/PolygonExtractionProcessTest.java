@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import org.eclipse.imagen.media.range.RangeFactory;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -16,7 +17,6 @@ import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.util.NullProgressListener;
 import org.geotools.process.raster.PolygonExtractionProcess;
 import org.geotools.util.factory.GeoTools;
-import org.jaitools.numeric.Range;
 import org.junit.Test;
 
 /**
@@ -27,30 +27,24 @@ import org.junit.Test;
 public class PolygonExtractionProcessTest extends BaseRasterToVectorTest {
 
     /**
-     * Test basic capabilities for the contour process. It works on the DEM tiff and produces a
-     * shapefile. Nothing more nothing less.
+     * Test basic capabilities for the contour process. It works on the DEM tiff and produces a shapefile. Nothing more
+     * nothing less.
      */
     @Test
     public void testProcessStandaloneBasic() throws Exception {
-        final GridCoverage2D gc =
-                (GridCoverage2D)
-                        getCatalog()
-                                .getCoverageByName(DEM.getLocalPart())
-                                .getGridCoverage(null, GeoTools.getDefaultHints());
+        final GridCoverage2D gc = (GridCoverage2D)
+                getCatalog().getCoverageByName(DEM.getLocalPart()).getGridCoverage(null, GeoTools.getDefaultHints());
         scheduleForDisposal(gc);
 
         final PolygonExtractionProcess process = new PolygonExtractionProcess();
-        final SimpleFeatureCollection fc =
-                process.execute(
-                        gc,
-                        0,
-                        true,
-                        null,
-                        null,
-                        List.of(
-                                new Range<>(0d, true, 1000d, false),
-                                new Range<>(1000d, true, 2000d, false)),
-                        new NullProgressListener());
+        final SimpleFeatureCollection fc = process.execute(
+                gc,
+                0,
+                true,
+                null,
+                null,
+                List.of(RangeFactory.create(0d, true, 1000d, false), RangeFactory.create(1000d, true, 2000d, false)),
+                new NullProgressListener());
 
         assertNotNull(fc);
         assertTrue(fc.size() > 0);

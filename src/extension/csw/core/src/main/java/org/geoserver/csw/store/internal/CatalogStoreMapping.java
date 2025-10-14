@@ -6,17 +6,17 @@ package org.geoserver.csw.store.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.geoserver.csw.records.RecordDescriptor;
+import org.geoserver.csw.util.PropertyPath;
 import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.filter.expression.Expression;
 import org.geotools.api.filter.expression.PropertyName;
@@ -27,8 +27,8 @@ import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.util.logging.Logging;
 
 /**
- * Catalog Store Mapping An instance from this class provides a mapping from the data in the
- * Internal Geoserver Catalog to a particular CSW Record Type
+ * Catalog Store Mapping An instance from this class provides a mapping from the data in the Internal Geoserver Catalog
+ * to a particular CSW Record Type
  *
  * @author Niels Charlier
  */
@@ -40,7 +40,7 @@ public class CatalogStoreMapping {
      * @author Niels Charlier
      */
     public static class CatalogStoreMappingElement {
-        protected String key;
+        protected PropertyPath key;
 
         protected Expression content = null;
 
@@ -53,7 +53,7 @@ public class CatalogStoreMapping {
          *
          * @param key The Key to be mapped
          */
-        protected CatalogStoreMappingElement(String key) {
+        protected CatalogStoreMappingElement(PropertyPath key) {
             this.key = key;
         }
 
@@ -62,7 +62,7 @@ public class CatalogStoreMapping {
          *
          * @return Mapped Key
          */
-        public String getKey() {
+        public PropertyPath getKey() {
             return key;
         }
 
@@ -100,7 +100,7 @@ public class CatalogStoreMapping {
 
     protected static final FilterFactory ff = CommonFactoryFinder.getFilterFactory();
 
-    protected Map<String, CatalogStoreMappingElement> mappingElements = new HashMap<>();
+    protected List<CatalogStoreMappingElement> mappingElements = new ArrayList<>();
 
     protected CatalogStoreMappingElement identifier = null;
 
@@ -115,17 +115,19 @@ public class CatalogStoreMapping {
      * @return a Collection with all Mapping Elements
      */
     public final Collection<CatalogStoreMappingElement> elements() {
-        return mappingElements.values();
+        return mappingElements;
     }
 
     /**
      * Return a mapping element from a mapped key
      *
-     * @param key the mapped key
+     * @param pattern property path pattern
      * @return the element, null if key doesn't exist
      */
-    public CatalogStoreMappingElement getElement(String key) {
-        return mappingElements.get(key);
+    public Collection<CatalogStoreMappingElement> elements(PropertyPath pattern) {
+        return mappingElements.stream()
+                .filter(el -> el.getKey().matches(pattern))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -144,30 +146,27 @@ public class CatalogStoreMapping {
      * @param rd Record Descriptor
      */
     public CatalogStoreMapping subMapping(List<PropertyName> properties, RecordDescriptor rd) {
-        Set<String> paths = new HashSet<>();
+        Set<PropertyPath> patterns = new HashSet<>();
         for (PropertyName prop : properties) {
-            paths.add(
-                    toDotPath(
-                            XPathUtil.steps(
-                                    rd.getFeatureDescriptor(),
-                                    prop.toString(),
-                                    rd.getNamespaceSupport())));
+            patterns.add(PropertyPath.fromXPath(
+                    XPathUtil.steps(rd.getFeatureDescriptor(), prop.toString(), rd.getNamespaceSupport())));
         }
 
         CatalogStoreMapping mapping = new CatalogStoreMapping();
 
-        for (Entry<String, CatalogStoreMappingElement> element : mappingElements.entrySet()) {
-            if (element.getValue().isRequired() || paths.contains(element.getKey())) {
-                mapping.mappingElements.put(element.getKey(), element.getValue());
+        for (CatalogStoreMappingElement element : mappingElements) {
+            if (element.isRequired()
+                    || patterns.stream().anyMatch(pattern -> element.getKey().matches(pattern))) {
+                mapping.mappingElements.add(element);
             }
         }
 
         mapping.identifier = identifier;
-
-        mapping.includeEnvelope =
-                includeEnvelope
-                        && paths.contains(
-                                rd.getQueryablesMapping(mappingName).getBoundingBoxPropertyName());
+        PropertyPath bboxPropName =
+                PropertyPath.fromDotPath(rd.getQueryablesMapping(mappingName).getBoundingBoxPropertyName());
+        mapping.includeEnvelope = includeEnvelope
+                && bboxPropName != null
+                && patterns.stream().anyMatch(pattern -> bboxPropName.matches(pattern));
 
         mapping.mappingName = mappingName;
 
@@ -185,10 +184,9 @@ public class CatalogStoreMapping {
     /**
      * Parse a Textual representation of the mapping to create a CatalogStoreMapping
      *
-     * <p>The textual representation is a set of key-value pairs, where the key represents the
-     * mapped key and the value is an OGC expression representing the mapped content. Furthermore,
-     * if the key starts with @ it also defines the ID element and if the key starts with $ it is a
-     * required property.
+     * <p>The textual representation is a set of key-value pairs, where the key represents the mapped key and the value
+     * is an OGC expression representing the mapped content. Furthermore, if the key starts with @ it also defines the
+     * ID element and if the key starts with $ it is a required property.
      */
     public static CatalogStoreMapping parse(Map<String, String> mappingSource, String mappingName) {
 
@@ -213,16 +211,12 @@ public class CatalogStoreMapping {
             }
             List<Integer> splitIndexes = new ArrayList<>();
             while (key.contains("%.")) {
-                splitIndexes.add(
-                        StringUtils.countMatches(key.substring(0, key.indexOf("%.")), "."));
+                splitIndexes.add(StringUtils.countMatches(key.substring(0, key.indexOf("%.")), "."));
                 key = key.replaceFirst(Pattern.quote("%."), ".");
             }
 
-            CatalogStoreMappingElement element = mapping.mappingElements.get(key);
-            if (element == null) {
-                element = new CatalogStoreMappingElement(key);
-                mapping.mappingElements.put(key, element);
-            }
+            CatalogStoreMappingElement element = new CatalogStoreMappingElement(PropertyPath.fromDotPath(key));
+            mapping.mappingElements.add(element);
 
             element.content = parseOgcCqlExpression(mappingEntry.getValue());
             element.required = required;
@@ -260,10 +254,7 @@ public class CatalogStoreMapping {
                 String formattedErrorMessage = e.getMessage();
                 LOGGER.log(Level.SEVERE, formattedErrorMessage, e);
                 throw new IllegalArgumentException(
-                        "Error parsing CQL expression "
-                                + sourceExpr
-                                + ":\n"
-                                + formattedErrorMessage);
+                        "Error parsing CQL expression " + sourceExpr + ":\n" + formattedErrorMessage);
             } catch (Exception e) {
                 String msg = "parsing expression " + sourceExpr;
                 LOGGER.log(Level.SEVERE, msg, e);
@@ -271,24 +262,6 @@ public class CatalogStoreMapping {
             }
         }
         return expression;
-    }
-
-    /**
-     * Helper method to convert StepList path to Dot path (separated by dots and no namespace
-     * prefixes, used for mapping)
-     *
-     * @param steps XPath steplist
-     * @return String with dot path
-     */
-    public static String toDotPath(XPathUtil.StepList steps) {
-
-        StringBuilder sb = new StringBuilder();
-        for (XPathUtil.Step step : steps) {
-            sb.append(step.getName().getLocalPart());
-            sb.append(".");
-        }
-        sb.deleteCharAt(sb.length() - 1);
-        return sb.toString();
     }
 
     public String getMappingName() {

@@ -61,8 +61,7 @@ import org.locationtech.jts.geom.Geometry;
 public class FeatureDAO {
     protected static final FilterFactory FILTERS = CommonFactoryFinder.getFilterFactory();
 
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(FeatureDAO.class);
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(FeatureDAO.class);
 
     /**
      * Create new features
@@ -76,8 +75,7 @@ public class FeatureDAO {
             boolean returnEditMoment,
             boolean rollbackOnFailure)
             throws ServiceException {
-        return editFeatures(
-                featureType, sourceFeatures, null, null, returnEditMoment, rollbackOnFailure);
+        return editFeatures(featureType, sourceFeatures, null, null, returnEditMoment, rollbackOnFailure);
     }
 
     /**
@@ -92,8 +90,7 @@ public class FeatureDAO {
             boolean returnEditMoment,
             boolean rollbackOnFailure)
             throws ServiceException {
-        return editFeatures(
-                featureType, null, sourceFeatures, null, returnEditMoment, rollbackOnFailure);
+        return editFeatures(featureType, null, sourceFeatures, null, returnEditMoment, rollbackOnFailure);
     }
 
     /**
@@ -103,17 +100,14 @@ public class FeatureDAO {
      * @see #deleteFeature(FeatureTypeInfo, FeatureStore, Long)
      */
     public static EditResults deleteFeatures(
-            FeatureTypeInfo featureType,
-            List<Long> ids,
-            boolean returnEditMoment,
-            boolean rollbackOnFailure)
+            FeatureTypeInfo featureType, List<Long> ids, boolean returnEditMoment, boolean rollbackOnFailure)
             throws ServiceException {
         return editFeatures(featureType, null, null, ids, returnEditMoment, rollbackOnFailure);
     }
 
     /**
-     * Add, Update, and/or Delete features within a single FeatureType Handles acquiring a
-     * connection to the store, and (optionally) rolling back upon failure.
+     * Add, Update, and/or Delete features within a single FeatureType Handles acquiring a connection to the store, and
+     * (optionally) rolling back upon failure.
      *
      * <p>TODO: Consolidate rollback logic to support multiple featureTypes for Apply Edits endpoint
      *
@@ -142,13 +136,9 @@ public class FeatureDAO {
         } catch (IOException e) {
             LOGGER.log(
                     Level.INFO,
-                    "Error reading feature: "
-                            + featureType.getNamespace().getPrefix()
-                            + ":"
-                            + featureType.getName(),
+                    "Error reading feature: " + featureType.getNamespace().getPrefix() + ":" + featureType.getName(),
                     e);
-            throw new ServiceException(
-                    e, FeatureServiceErrors.nonSpecific(Collections.singletonList(e.getMessage())));
+            throw new ServiceException(e, FeatureServiceErrors.nonSpecific(Collections.singletonList(e.getMessage())));
         }
         // Default is Transaction.AUTOCOMMIT
         Transaction transaction = featureStore.getTransaction();
@@ -158,14 +148,8 @@ public class FeatureDAO {
         }
 
         try {
-            results =
-                    editFeatures(
-                            featureType,
-                            featureStore,
-                            createFeatures,
-                            updateFeatures,
-                            deleteIds,
-                            rollbackOnFailure);
+            results = editFeatures(
+                    featureType, featureStore, createFeatures, updateFeatures, deleteIds, rollbackOnFailure);
 
             if (rollbackOnFailure) {
                 transaction.commit();
@@ -180,28 +164,22 @@ public class FeatureDAO {
                 try {
                     transaction.rollback();
                     throw new ServiceException(
-                            e,
-                            FeatureServiceErrors.rolledBack1(
-                                    Collections.singletonList(e.getMessage())));
+                            e, FeatureServiceErrors.rolledBack1(Collections.singletonList(e.getMessage())));
                 } catch (IOException e1) {
                     LOGGER.log(Level.WARNING, "", e1);
                     throw new ServiceException(
                             e1,
                             FeatureServiceErrors.nonSpecific(
-                                    Arrays.asList(
-                                            "Error rolling back after " + e.getMessage(),
-                                            e1.getMessage())));
+                                    Arrays.asList("Error rolling back after " + e.getMessage(), e1.getMessage())));
                 }
             }
-            if (e instanceof ServiceException) {
-                throw (ServiceException) e;
+            if (e instanceof ServiceException exception) {
+                throw exception;
             } else {
                 // We should only get a ServiceException if rollbackOnFailure is true, so this
                 // should never happen...
                 throw new ServiceException(
-                        e,
-                        FeatureServiceErrors.nonSpecific(
-                                Collections.singletonList(e.getMessage())));
+                        e, FeatureServiceErrors.nonSpecific(Collections.singletonList(e.getMessage())));
             }
         } finally {
             try {
@@ -214,12 +192,12 @@ public class FeatureDAO {
     }
 
     /**
-     * Add, Update, and/or Delete features within a single FeatureType. Wraps create, update, and
-     * delete features methods, and aggregates the results into a {@link EditResults}
+     * Add, Update, and/or Delete features within a single FeatureType. Wraps create, update, and delete features
+     * methods, and aggregates the results into a {@link EditResults}
      *
      * @param exceptionOnFailure Whether to throw a {@link ServiceException} when an edit fails
-     * @return Results of the edits; if any of createFeatures, updateFeatures, or deleteIds are
-     *     null, the corresponding results list will also be null.
+     * @return Results of the edits; if any of createFeatures, updateFeatures, or deleteIds are null, the corresponding
+     *     results list will also be null.
      */
     private static EditResults editFeatures(
             FeatureTypeInfo featureType,
@@ -232,20 +210,17 @@ public class FeatureDAO {
 
         List<EditResult> createResults = null;
         if (createFeatures != null) {
-            createResults =
-                    createFeatures(featureType, featureStore, createFeatures, exceptionOnFailure);
+            createResults = createFeatures(featureType, featureStore, createFeatures, exceptionOnFailure);
         }
 
         List<EditResult> updateResults = null;
         if (updateFeatures != null) {
-            updateResults =
-                    updateFeatures(featureType, featureStore, updateFeatures, exceptionOnFailure);
+            updateResults = updateFeatures(featureType, featureStore, updateFeatures, exceptionOnFailure);
         }
 
         List<EditResult> deleteResults = null;
         if (deleteIds != null) {
-            deleteResults =
-                    deleteFeatures(featureType, featureStore, deleteIds, exceptionOnFailure);
+            deleteResults = deleteFeatures(featureType, featureStore, deleteIds, exceptionOnFailure);
         }
 
         return new EditResults(createResults, updateResults, deleteResults);
@@ -264,10 +239,7 @@ public class FeatureDAO {
             throws ServiceException {
         List<EditResult> results = new ArrayList<>();
         for (org.geoserver.gsr.model.feature.Feature sourceFeature : sourceFeatures) {
-            results.add(
-                    validateResult(
-                            createFeature(featureType, featureStore, sourceFeature),
-                            exceptionOnFailure));
+            results.add(validateResult(createFeature(featureType, featureStore, sourceFeature), exceptionOnFailure));
         }
         return results;
     }
@@ -285,10 +257,7 @@ public class FeatureDAO {
             throws ServiceException {
         List<EditResult> results = new ArrayList<>();
         for (org.geoserver.gsr.model.feature.Feature sourceFeature : sourceFeatures) {
-            results.add(
-                    validateResult(
-                            updateFeature(featureType, featureStore, sourceFeature),
-                            exceptionOnFailure));
+            results.add(validateResult(updateFeature(featureType, featureStore, sourceFeature), exceptionOnFailure));
         }
         return results;
     }
@@ -299,22 +268,16 @@ public class FeatureDAO {
      * @see #deleteFeature(FeatureTypeInfo, FeatureStore, Long)
      */
     private static List<EditResult> deleteFeatures(
-            FeatureTypeInfo featureType,
-            FeatureStore featureStore,
-            List<Long> ids,
-            boolean exceptionOnFailure)
+            FeatureTypeInfo featureType, FeatureStore featureStore, List<Long> ids, boolean exceptionOnFailure)
             throws ServiceException {
         List<EditResult> results = new ArrayList<>();
         for (Long id : ids) {
-            results.add(
-                    validateResult(
-                            deleteFeature(featureType, featureStore, id), exceptionOnFailure));
+            results.add(validateResult(deleteFeature(featureType, featureStore, id), exceptionOnFailure));
         }
         return results;
     }
 
-    private static EditResult validateResult(EditResult result, boolean exceptionOnFailure)
-            throws ServiceException {
+    private static EditResult validateResult(EditResult result, boolean exceptionOnFailure) throws ServiceException {
         if (!result.getSuccess() && exceptionOnFailure) {
             throw new ServiceException(result.getError());
         }
@@ -337,8 +300,7 @@ public class FeatureDAO {
                 return new EditResult(
                         null,
                         false,
-                        FeatureServiceErrors.nonSpecific(
-                                Collections.singletonList("Error parsing feature")));
+                        FeatureServiceErrors.nonSpecific(Collections.singletonList("Error parsing feature")));
             }
 
             SimpleFeatureType schema = (SimpleFeatureType) featureStore.getSchema();
@@ -355,11 +317,10 @@ public class FeatureDAO {
             for (AttributeDescriptor descriptor : schema.getAttributeDescriptors()) {
                 if (descriptor.equals(geometryDescriptor)) {
 
-                    Geometry geom =
-                            transformGeometry(
-                                    geometryDescriptor.getCoordinateReferenceSystem(),
-                                    sourceFeature.getGeometry().getSpatialReference(),
-                                    GeometryEncoder.toJts(sourceFeature.getGeometry()));
+                    Geometry geom = transformGeometry(
+                            geometryDescriptor.getCoordinateReferenceSystem(),
+                            sourceFeature.getGeometry().getSpatialReference(),
+                            GeometryEncoder.toJts(sourceFeature.getGeometry()));
                     builder.add(geom);
                 } else if (attributeNames.contains(descriptor.getLocalName())) {
                     builder.add(sourceFeature.getAttributes().get(descriptor.getLocalName()));
@@ -369,38 +330,28 @@ public class FeatureDAO {
             }
             SimpleFeature destFeature = builder.buildFeature(null);
             List<FeatureId> fid =
-                    featureStore.addFeatures(
-                            new ListFeatureCollection(
-                                    schema, Collections.singletonList(destFeature)));
+                    featureStore.addFeatures(new ListFeatureCollection(schema, Collections.singletonList(destFeature)));
             if (fid.size() < 1) {
                 return new EditResult(
                         null,
                         false,
                         FeatureServiceErrors.insertError(
-                                Collections.singletonList(
-                                        "Could not create feature: " + sourceFeature.toString())));
+                                Collections.singletonList("Could not create feature: " + sourceFeature.toString())));
             } else if (fid.size() > 1) {
                 return new EditResult(
                         null,
                         false,
-                        FeatureServiceErrors.insertError(
-                                Collections.singletonList(
-                                        "Multiple features created for: "
-                                                + sourceFeature.toString())));
+                        FeatureServiceErrors.insertError(Collections.singletonList(
+                                "Multiple features created for: " + sourceFeature.toString())));
             }
             return new EditResult(FeatureEncoder.toGSRObjectId(fid.get(0).getID()));
         } catch (Exception e) {
             LOGGER.log(
                     Level.INFO,
-                    "Error creating object in "
-                            + featureType.getNamespace().getPrefix()
-                            + ":"
-                            + featureType.getName(),
+                    "Error creating object in " + featureType.getNamespace().getPrefix() + ":" + featureType.getName(),
                     e);
             return new EditResult(
-                    null,
-                    false,
-                    FeatureServiceErrors.nonSpecific(Collections.singletonList(e.getMessage())));
+                    null, false, FeatureServiceErrors.nonSpecific(Collections.singletonList(e.getMessage())));
         }
     }
 
@@ -421,29 +372,21 @@ public class FeatureDAO {
                 return new EditResult(
                         null,
                         false,
-                        FeatureServiceErrors.nonSpecific(
-                                Collections.singletonList("Error parsing feature")));
+                        FeatureServiceErrors.nonSpecific(Collections.singletonList("Error parsing feature")));
             }
 
-            Object objectIdObject =
-                    sourceFeature.getAttributes().get(FeatureEncoder.OBJECTID_FIELD_NAME);
+            Object objectIdObject = sourceFeature.getAttributes().get(FeatureEncoder.OBJECTID_FIELD_NAME);
             if (objectIdObject == null) {
                 return new EditResult(
-                        null,
-                        false,
-                        FeatureServiceErrors.updateError(
-                                Collections.singletonList("Missing id field")));
+                        null, false, FeatureServiceErrors.updateError(Collections.singletonList("Missing id field")));
             }
-            if (objectIdObject instanceof Long) {
-                objectId = (Long) objectIdObject;
+            if (objectIdObject instanceof Long long1) {
+                objectId = long1;
             } else {
                 objectId = Long.parseLong(objectIdObject.toString());
             }
 
-            Filter idFilter =
-                    FILTERS.id(
-                            FILTERS.featureId(
-                                    FeatureEncoder.toGeotoolsFeatureId(objectId, featureType)));
+            Filter idFilter = FILTERS.id(FILTERS.featureId(FeatureEncoder.toGeotoolsFeatureId(objectId, featureType)));
             SimpleFeatureType schema = (SimpleFeatureType) featureStore.getSchema();
 
             int featureCount = featureStore.getFeatures(idFilter).size();
@@ -454,8 +397,7 @@ public class FeatureDAO {
                         objectId,
                         false,
                         FeatureServiceErrors.updateError(
-                                Collections.singletonList(
-                                        "Multiple features found for id " + objectId)));
+                                Collections.singletonList("Multiple features found for id " + objectId)));
             }
 
             List<Name> names = new ArrayList<>();
@@ -473,11 +415,10 @@ public class FeatureDAO {
             for (AttributeDescriptor descriptor : schema.getAttributeDescriptors()) {
                 if (descriptor.equals(geometryDescriptor)) {
                     names.add(descriptor.getName());
-                    Geometry geom =
-                            transformGeometry(
-                                    geometryDescriptor.getCoordinateReferenceSystem(),
-                                    sourceFeature.getGeometry().getSpatialReference(),
-                                    GeometryEncoder.toJts(sourceFeature.getGeometry()));
+                    Geometry geom = transformGeometry(
+                            geometryDescriptor.getCoordinateReferenceSystem(),
+                            sourceFeature.getGeometry().getSpatialReference(),
+                            GeometryEncoder.toJts(sourceFeature.getGeometry()));
                     values.add(geom);
                 } else if (attributeNames.contains(descriptor.getLocalName())) {
                     names.add(descriptor.getName());
@@ -485,8 +426,7 @@ public class FeatureDAO {
                 }
             }
 
-            featureStore.modifyFeatures(
-                    names.toArray(new Name[names.size()]), values.toArray(), idFilter);
+            featureStore.modifyFeatures(names.toArray(new Name[names.size()]), values.toArray(), idFilter);
             return new EditResult(objectId);
         } catch (Exception e) {
             LOGGER.log(
@@ -499,9 +439,7 @@ public class FeatureDAO {
                             + featureType.getName(),
                     e);
             return new EditResult(
-                    objectId,
-                    false,
-                    FeatureServiceErrors.nonSpecific(Collections.singletonList(e.getMessage())));
+                    objectId, false, FeatureServiceErrors.nonSpecific(Collections.singletonList(e.getMessage())));
         }
     }
 
@@ -512,13 +450,9 @@ public class FeatureDAO {
      * @param objectId The id of the feature to delete
      * @return the result of the delete
      */
-    public static EditResult deleteFeature(
-            FeatureTypeInfo featureType, FeatureStore featureStore, Long objectId) {
+    public static EditResult deleteFeature(FeatureTypeInfo featureType, FeatureStore featureStore, Long objectId) {
         try {
-            Filter idFilter =
-                    FILTERS.id(
-                            FILTERS.featureId(
-                                    FeatureEncoder.toGeotoolsFeatureId(objectId, featureType)));
+            Filter idFilter = FILTERS.id(FILTERS.featureId(FeatureEncoder.toGeotoolsFeatureId(objectId, featureType)));
 
             int featureCount = featureStore.getFeatures(idFilter).size();
             if (featureCount < 1) {
@@ -528,8 +462,7 @@ public class FeatureDAO {
                         objectId,
                         false,
                         FeatureServiceErrors.deleteError(
-                                Collections.singletonList(
-                                        "Multiple features found for id " + objectId)));
+                                Collections.singletonList("Multiple features found for id " + objectId)));
             }
 
             featureStore.removeFeatures(idFilter);
@@ -545,9 +478,7 @@ public class FeatureDAO {
                             + featureType.getName(),
                     e);
             return new EditResult(
-                    objectId,
-                    false,
-                    FeatureServiceErrors.nonSpecific(Collections.singletonList(e.getMessage())));
+                    objectId, false, FeatureServiceErrors.nonSpecific(Collections.singletonList(e.getMessage())));
         }
     }
 
@@ -558,12 +489,10 @@ public class FeatureDAO {
 
         // Verify geometry is consistent
         if (feature.getGeometry() == null && geometryDescriptor != null) {
-            return FeatureServiceErrors.nonSpecific(
-                    Collections.singletonList("No geometry provided"));
+            return FeatureServiceErrors.nonSpecific(Collections.singletonList("No geometry provided"));
         }
         if (feature.getGeometry() != null && geometryDescriptor == null) {
-            return FeatureServiceErrors.geometryNotSet(
-                    Collections.singletonList("No geometry descriptor in schema"));
+            return FeatureServiceErrors.geometryNotSet(Collections.singletonList("No geometry descriptor in schema"));
         }
         // ignore objectid
         if (objectNames.contains(FeatureEncoder.OBJECTID_FIELD_NAME)) {
@@ -593,8 +522,7 @@ public class FeatureDAO {
     private static Geometry transformGeometry(
             CoordinateReferenceSystem nativeCrs, SpatialReference inSr, Geometry geometry)
             throws FactoryException, TransformException {
-        CoordinateReferenceSystem inCrs =
-                SpatialReferenceEncoder.coordinateReferenceSystemFromSpatialReference(inSr);
+        CoordinateReferenceSystem inCrs = SpatialReferenceEncoder.coordinateReferenceSystemFromSpatialReference(inSr);
         if (inCrs != null) {
             MathTransform mathTx = CRS.findMathTransform(inCrs, nativeCrs, true);
             return JTS.transform(geometry, mathTx);
@@ -602,54 +530,50 @@ public class FeatureDAO {
         return geometry;
     }
 
-    protected static FeatureStore featureStore(FeatureTypeInfo featureType)
-            throws IOException, ServiceException {
+    protected static FeatureStore featureStore(FeatureTypeInfo featureType) throws IOException, ServiceException {
         FeatureSource featureSource = featureType.getFeatureSource(null, null);
 
         if (!(featureSource instanceof FeatureStore)) {
             throw new ServiceException(
-                    FeatureServiceErrors.permissionDenied(
-                            Collections.singletonList(
-                                    "Error creating object in "
-                                            + featureType.getNamespace().getPrefix()
-                                            + ":"
-                                            + featureType.getName())));
+                    FeatureServiceErrors.permissionDenied(Collections.singletonList("Error creating object in "
+                            + featureType.getNamespace().getPrefix()
+                            + ":"
+                            + featureType.getName())));
         }
 
         return (FeatureStore) featureSource;
     }
 
     /**
-     * Searches the provided list of layersAndTables for layerId, then returns the result of {@link
-     * #getFeatureCollectionForLayer(String, Integer, String, String, String, String, String,
-     * String, String, String, String, String, String, Boolean, String, LayerInfo)}
+     * Searches the provided list of layersAndTables for layerId, then returns the result of
+     * {@link #getFeatureCollectionForLayer(String, Integer, String, String, String, String, String, String, String,
+     * String, String, String, String, Boolean, String, LayerInfo)}
      *
      * <p>If no matching layer is found, throws a {@link NoSuchElementException}
      *
-     * @see #getFeatureCollectionForLayer(String, Integer, String, String, String, String, String,
-     *     String, String, String, String, String, String, Boolean, String, LayerInfo)
+     * @see #getFeatureCollectionForLayer(String, Integer, String, String, String, String, String, String, String,
+     *     String, String, String, String, Boolean, String, LayerInfo)
      * @return The features in the layer that match the provided parameters
      * @throws IOException, NoSuchElementException
      */
-    public static FeatureCollection<? extends FeatureType, ? extends Feature>
-            getFeatureCollectionForLayerWithId(
-                    String workspaceName,
-                    Integer layerId,
-                    String geometryTypeName,
-                    String geometryText,
-                    String inSRText,
-                    String outSRText,
-                    String spatialRelText,
-                    String objectIdsText,
-                    String relatePattern,
-                    String time,
-                    String text,
-                    String maxAllowableOffsets,
-                    String whereClause,
-                    Boolean returnGeometry,
-                    String outFieldsText,
-                    LayersAndTables layersAndTables)
-                    throws IOException {
+    public static FeatureCollection<? extends FeatureType, ? extends Feature> getFeatureCollectionForLayerWithId(
+            String workspaceName,
+            Integer layerId,
+            String geometryTypeName,
+            String geometryText,
+            String inSRText,
+            String outSRText,
+            String spatialRelText,
+            String objectIdsText,
+            String relatePattern,
+            String time,
+            String text,
+            String maxAllowableOffsets,
+            String whereClause,
+            Boolean returnGeometry,
+            String outFieldsText,
+            LayersAndTables layersAndTables)
+            throws IOException {
 
         LayerInfo l = null;
         for (LayerOrTable layerOrTable : layersAndTables.layers) {
@@ -697,91 +621,80 @@ public class FeatureDAO {
      *
      * @param workspaceName The name of the workspace that contains the layer
      * @param layerId The integer {@link LayerOrTable#getId() id} of the layer within GSR
-     * @param geometryTypeName The type of geometry specified by the geometry parameter. Values:
-     *     esriGeometryPoint | esriGeometryMultipoint | esriGeometryPolyline | esriGeometryPolygon |
-     *     esriGeometryEnvelope
+     * @param geometryTypeName The type of geometry specified by the geometry parameter. Values: esriGeometryPoint |
+     *     esriGeometryMultipoint | esriGeometryPolyline | esriGeometryPolygon | esriGeometryEnvelope
      * @param geometryText A geometry representing a spatial filter to filter the features by
-     * @param inSRText The spatial reference of the input geometry. If the inSR is not specified,
-     *     the geometry is assumed to be in the spatial reference of the map. TODO Currently
-     *     defaults to 4326
-     * @param outSRText The spatial reference of the returned geometry (If the returnGeometry
-     *     parameter is true). TODO Currently defaults to 4326
-     * @param spatialRelText The spatial relationship to be applied on the input geometry while
-     *     performing the query. Values: esriSpatialRelIntersects | esriSpatialRelContains |
-     *     esriSpatialRelCrosses | esriSpatialRelEnvelopeIntersects | esriSpatialRelIndexIntersects
-     *     | esriSpatialRelOverlaps | esriSpatialRelTouches | esriSpatialRelWithin
+     * @param inSRText The spatial reference of the input geometry. If the inSR is not specified, the geometry is
+     *     assumed to be in the spatial reference of the map. TODO Currently defaults to 4326
+     * @param outSRText The spatial reference of the returned geometry (If the returnGeometry parameter is true). TODO
+     *     Currently defaults to 4326
+     * @param spatialRelText The spatial relationship to be applied on the input geometry while performing the query.
+     *     Values: esriSpatialRelIntersects | esriSpatialRelContains | esriSpatialRelCrosses |
+     *     esriSpatialRelEnvelopeIntersects | esriSpatialRelIndexIntersects | esriSpatialRelOverlaps |
+     *     esriSpatialRelTouches | esriSpatialRelWithin
      * @param objectIdsText A comma-separated list of feature ids used to filter the features
-     * @param relatePattern The spatial relate function that can be applied while performing the
-     *     query operation. An example for this spatial relate function is "FFFTTT***"
+     * @param relatePattern The spatial relate function that can be applied while performing the query operation. An
+     *     example for this spatial relate function is "FFFTTT***"
      * @param time The time instant or the time extent to query (In UNIX Epoch time).
      * @param text Text to filter the features by. TODO: Not implemented
-     * @param maxAllowableOffsets This option can be used to specify the maxAllowableOffset (In the
-     *     units of outSR) to be used for generalizing geometries returned by the query operation.
-     *     TODO: Not implemented
-     * @param whereClause A where clause used to filter the features, using CQL where syntax. TODO:
-     *     Should use SQL-92 instead of CQL
-     * @param returnGeometry If true, the result includes the geometry associated with each feature
-     *     returned.
-     * @param outFieldsText The list of fields to be included in the returned result set. This list
-     *     is a comma delimited list of field names.
+     * @param maxAllowableOffsets This option can be used to specify the maxAllowableOffset (In the units of outSR) to
+     *     be used for generalizing geometries returned by the query operation. TODO: Not implemented
+     * @param whereClause A where clause used to filter the features, using CQL where syntax. TODO: Should use SQL-92
+     *     instead of CQL
+     * @param returnGeometry If true, the result includes the geometry associated with each feature returned.
+     * @param outFieldsText The list of fields to be included in the returned result set. This list is a comma delimited
+     *     list of field names.
      * @param l The {@link LayerInfo} that corresponds to the layer
      * @return List of features for the layer, filtered by the provided pararameters.
      * @throws IOException
      */
-    public static FeatureCollection<? extends FeatureType, ? extends Feature>
-            getFeatureCollectionForLayer(
-                    String workspaceName,
-                    Integer layerId,
-                    String geometryTypeName,
-                    String geometryText,
-                    String inSRText,
-                    String outSRText,
-                    String spatialRelText,
-                    String objectIdsText,
-                    String relatePattern,
-                    String time,
-                    String text,
-                    String maxAllowableOffsets,
-                    String whereClause,
-                    Boolean returnGeometry,
-                    String outFieldsText,
-                    LayerInfo l)
-                    throws IOException {
+    public static FeatureCollection<? extends FeatureType, ? extends Feature> getFeatureCollectionForLayer(
+            String workspaceName,
+            Integer layerId,
+            String geometryTypeName,
+            String geometryText,
+            String inSRText,
+            String outSRText,
+            String spatialRelText,
+            String objectIdsText,
+            String relatePattern,
+            String time,
+            String text,
+            String maxAllowableOffsets,
+            String whereClause,
+            Boolean returnGeometry,
+            String outFieldsText,
+            LayerInfo l)
+            throws IOException {
         FeatureTypeInfo featureType = (FeatureTypeInfo) l.getResource();
         if (null == featureType) {
             throw new NoSuchElementException(
                     "No table or layer in workspace \"" + workspaceName + " for id " + layerId);
         }
 
-        Filter filter =
-                filter(
-                        featureType,
-                        geometryTypeName,
-                        geometryText,
-                        inSRText,
-                        spatialRelText,
-                        objectIdsText,
-                        relatePattern,
-                        time,
-                        text,
-                        maxAllowableOffsets,
-                        whereClause);
+        Filter filter = filter(
+                featureType,
+                geometryTypeName,
+                geometryText,
+                inSRText,
+                spatialRelText,
+                objectIdsText,
+                relatePattern,
+                time,
+                text,
+                maxAllowableOffsets,
+                whereClause);
 
         // TODO update this to match outSR spec
         // "If outSR is not specified, the geometry is returned in the spatial reference of the
         // map."
-        final CoordinateReferenceSystem outSR =
-                Utils.parseSpatialReference(
-                        StringUtils.isNotEmpty(outSRText)
-                                ? outSRText
-                                : String.valueOf(SpatialReferences.DEFAULT_WKID));
+        final CoordinateReferenceSystem outSR = Utils.parseSpatialReference(
+                StringUtils.isNotEmpty(outSRText) ? outSRText : String.valueOf(SpatialReferences.DEFAULT_WKID));
 
         String[] properties = parseOutFields(outFieldsText);
 
-        FeatureSource<? extends FeatureType, ? extends Feature> source =
-                featureType.getFeatureSource(null, null);
-        final String[] effectiveProperties =
-                adjustProperties(returnGeometry, properties, source.getSchema());
+        FeatureSource<? extends FeatureType, ? extends Feature> source = featureType.getFeatureSource(null, null);
+        final String[] effectiveProperties = adjustProperties(returnGeometry, properties, source.getSchema());
 
         final Query query;
         if (effectiveProperties == null) {
@@ -797,9 +710,8 @@ public class FeatureDAO {
     /**
      * Converts a set of GSR query parameters into a {@link Filter}
      *
-     * @see #getFeatureCollectionForLayerWithId(String, Integer, String, String, String, String,
-     *     String, String, String, String, String, String, String, Boolean, String, LayersAndTables)
-     *     for a description of all the parameters
+     * @see #getFeatureCollectionForLayerWithId(String, Integer, String, String, String, String, String, String, String,
+     *     String, String, String, String, Boolean, String, LayersAndTables) for a description of all the parameters
      */
     public static Filter filter(
             FeatureTypeInfo featureType,
@@ -821,20 +733,17 @@ public class FeatureDAO {
         final String temporalProperty;
         final CoordinateReferenceSystem nativeCRS;
         try {
-            GeometryDescriptor geometryDescriptor =
-                    featureType.getFeatureType().getGeometryDescriptor();
+            GeometryDescriptor geometryDescriptor = featureType.getFeatureType().getGeometryDescriptor();
             nativeCRS = geometryDescriptor.getCoordinateReferenceSystem();
             geometryProperty = geometryDescriptor.getName().getLocalPart();
-            DimensionInfo timeInfo =
-                    featureType.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
+            DimensionInfo timeInfo = featureType.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
             if (timeInfo == null || !timeInfo.isEnabled()) {
                 temporalProperty = null;
             } else {
                 temporalProperty = timeInfo.getAttribute();
             }
         } catch (IOException e) {
-            throw new IllegalArgumentException(
-                    "Unable to determine geometry type for query request");
+            throw new IllegalArgumentException("Unable to determine geometry type for query request");
         }
 
         // Try to reverse-mask objectIds into featureIds
@@ -848,22 +757,12 @@ public class FeatureDAO {
             spatialRel = SpatialRelationship.fromRequestString(spatialRelText);
         }
 
-        String inSRCode =
-                StringUtils.isNotEmpty(inSRText)
-                        ? inSRText
-                        : String.valueOf(SpatialReferences.DEFAULT_WKID);
+        String inSRCode = StringUtils.isNotEmpty(inSRText) ? inSRText : String.valueOf(SpatialReferences.DEFAULT_WKID);
         final CoordinateReferenceSystem inSR = Utils.parseSpatialReference(inSRCode, geometryText);
 
         if (StringUtils.isNotEmpty(geometryText)) {
-            filter =
-                    Utils.buildGeometryFilter(
-                            geometryTypeName,
-                            geometryProperty,
-                            geometryText,
-                            spatialRel,
-                            relatePattern,
-                            inSR,
-                            nativeCRS);
+            filter = Utils.buildGeometryFilter(
+                    geometryTypeName, geometryProperty, geometryText, spatialRel, relatePattern, inSR, nativeCRS);
         }
 
         if (time != null) {
@@ -880,18 +779,12 @@ public class FeatureDAO {
             Filter whereFilter;
             try {
                 whereFilter = ECQL.toFilter(whereClause);
-                whereFilter =
-                        (Filter)
-                                whereFilter.accept(
-                                        new ObjectIdRemappingFilterVisitor(
-                                                FeatureEncoder.OBJECTID_FIELD_NAME,
-                                                featureIdPrefix),
-                                        null);
+                whereFilter = (Filter) whereFilter.accept(
+                        new ObjectIdRemappingFilterVisitor(FeatureEncoder.OBJECTID_FIELD_NAME, featureIdPrefix), null);
             } catch (CQLException e) {
                 // TODO Ignore for now. Some clients send basic queries that we can't handle right
                 // now
-                throw new IllegalArgumentException(
-                        "'where' parameter must be valid CQL; was " + whereClause, e);
+                throw new IllegalArgumentException("'where' parameter must be valid CQL; was " + whereClause, e);
             }
             List<Filter> children = Arrays.asList(filter, whereFilter, objectIdFilter);
             filter = FILTERS.and(children);
@@ -950,9 +843,8 @@ public class FeatureDAO {
     }
 
     /**
-     * Constructs an array of property names to return, based on the provided property names. Fixes
-     * case to match the case used in the feature schema If addGeometry is true, adds the geometry
-     * field.
+     * Constructs an array of property names to return, based on the provided property names. Fixes case to match the
+     * case used in the feature schema If addGeometry is true, adds the geometry field.
      *
      * @see #adjustOneProperty(String, FeatureType)
      * @param addGeometry Whether to add the geometry property to the list of properties
@@ -960,14 +852,12 @@ public class FeatureDAO {
      * @param schema schema with the actual property names
      * @return array of ammended proprty names
      */
-    public static String[] adjustProperties(
-            boolean addGeometry, String[] originalProperties, FeatureType schema) {
+    public static String[] adjustProperties(boolean addGeometry, String[] originalProperties, FeatureType schema) {
         if (originalProperties == null) {
             return null;
         }
 
-        String[] effectiveProperties =
-                new String[originalProperties.length + (addGeometry ? 1 : 0)];
+        String[] effectiveProperties = new String[originalProperties.length + (addGeometry ? 1 : 0)];
         for (int i = 0; i < originalProperties.length; i++) {
             // todo skip synthetic id for now
             if (!originalProperties[i].equals(FeatureEncoder.OBJECTID_FIELD_NAME)) {
@@ -983,9 +873,8 @@ public class FeatureDAO {
     }
 
     /**
-     * Searches for a matching property name in the provided schema, and returns the actual property
-     * name from the schema, with the correct case. Throws an error if the name is ambiguous
-     * properties
+     * Searches for a matching property name in the provided schema, and returns the actual property name from the
+     * schema, with the correct case. Throws an error if the name is ambiguous properties
      *
      * @param name The name of the property to find
      * @param schema The schema containing the property
@@ -1002,9 +891,7 @@ public class FeatureDAO {
             }
         }
         if (candidates.size() == 1) return candidates.get(0);
-        if (candidates.size() == 0)
-            throw new NoSuchElementException("No property " + name + " in " + schema);
-        throw new NoSuchElementException(
-                "Ambiguous request: " + name + " corresponds to " + candidates);
+        if (candidates.size() == 0) throw new NoSuchElementException("No property " + name + " in " + schema);
+        throw new NoSuchElementException("Ambiguous request: " + name + " corresponds to " + candidates);
     }
 }

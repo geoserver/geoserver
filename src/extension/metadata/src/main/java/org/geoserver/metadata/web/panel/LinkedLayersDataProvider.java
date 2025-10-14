@@ -5,6 +5,7 @@
 
 package org.geoserver.metadata.web.panel;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,6 +18,7 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 
 public class LinkedLayersDataProvider extends GeoServerDataProvider<ResourceInfo> {
 
+    @Serial
     private static final long serialVersionUID = 9052136450762857446L;
 
     static final Property<ResourceInfo> NAME = new BeanProperty<>("name", "prefixedName");

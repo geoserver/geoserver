@@ -25,8 +25,8 @@ import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 
 /**
- * Supports handling Feature properties backed by JSON columns. Currently supports native JSON and
- * JSONB fields from PostgresSQL, as well as usage of the <code>jsonPointer</code> function
+ * Supports handling Feature properties backed by JSON columns. Currently supports native JSON and JSONB fields from
+ * PostgresSQL, as well as usage of the <code>jsonPointer</code> function
  */
 public class JSONFieldSupport {
 
@@ -37,55 +37,47 @@ public class JSONFieldSupport {
     public static final String JDBC_NATIVE_TYPENAME = "org.geotools.jdbc.nativeTypeName";
 
     /**
-     * Used to parse JSON strings into JSON trees. Single instance as creation is expensive, and the
-     * object is shareable and thread safe
+     * Used to parse JSON strings into JSON trees. Single instance as creation is expensive, and the object is shareable
+     * and thread safe
      */
-    private static ObjectMapper MAPPER =
-            new ObjectMapper(new JsonFactory().enable(JsonParser.Feature.ALLOW_COMMENTS));
+    private static ObjectMapper MAPPER = new ObjectMapper(new JsonFactory().enable(JsonParser.Feature.ALLOW_COMMENTS));
+
+    /** Used to parse JSON strings into JSON trees where the attributes are sorted by key alphanumerically. */
+    public static ObjectMapper SORT_BY_KEY_MAPPER = JsonMapper.builder()
+            .enable(JsonParser.Feature.ALLOW_COMMENTS)
+            .nodeFactory(new SortingNodeFactory())
+            .build();
 
     /**
-     * Used to parse JSON strings into JSON trees where the attributes are sorted by key
-     * alphanumerically.
-     */
-    public static ObjectMapper SORT_BY_KEY_MAPPER =
-            JsonMapper.builder()
-                    .enable(JsonParser.Feature.ALLOW_COMMENTS)
-                    .nodeFactory(new SortingNodeFactory())
-                    .build();
-
-    /**
-     * Checks if the current result can be evaluated into a JSONNode, based on type information
-     * coming from JDBC data stores, and if so, turns it into a JSONNode for encoding "as-is"
+     * Checks if the current result can be evaluated into a JSONNode, based on type information coming from JDBC data
+     * stores, and if so, turns it into a JSONNode for encoding "as-is"
      */
     public static Object parseWhenJSON(Expression expression, Object contextObject, Object result) {
         try {
-            if (contextObject instanceof ComplexAttribute) {
+            if (contextObject instanceof ComplexAttribute attribute1) {
                 // see if there is an indication it was a JSON field
                 if (expression instanceof JsonPointerFunction
-                        || isJSONField(
-                                Optional.ofNullable(((ComplexAttribute) contextObject).getType())
-                                        .map(ct -> expression.evaluate(ct))
-                                        .filter(d -> d instanceof PropertyDescriptor)
-                                        .map(d -> (PropertyDescriptor) d))) {
+                        || isJSONField(Optional.ofNullable(attribute1.getType())
+                                .map(ct -> expression.evaluate(ct))
+                                .filter(d -> d instanceof PropertyDescriptor)
+                                .map(d -> (PropertyDescriptor) d))) {
                     return parseJSON(result);
                 }
-            } else if (result instanceof Attribute) {
-                if (isJSONField(Optional.of(((Attribute) result).getDescriptor()))) {
+            } else if (result instanceof Attribute attribute) {
+                if (isJSONField(Optional.of(attribute.getDescriptor()))) {
                     return parseJSON(result);
                 }
             }
         } catch (JsonProcessingException ex) {
-            LOGGER.log(
-                    Level.FINE,
-                    "Failed to parse JSON from attribute that was supposed to be a JSON field");
+            LOGGER.log(Level.FINE, "Failed to parse JSON from attribute that was supposed to be a JSON field");
         }
         // fall back on the original value otherwise
         return result;
     }
 
     /**
-     * Checks if the given PropertyDescriptor is backed by a JSON field. For the time being, the
-     * code supports recognition of JSON/B columns in PostgreSQL, could be expanded later.
+     * Checks if the given PropertyDescriptor is backed by a JSON field. For the time being, the code supports
+     * recognition of JSON/B columns in PostgreSQL, could be expanded later.
      */
     public static boolean isJSONField(PropertyDescriptor opd) {
         return isJSONField(Optional.ofNullable(opd));
@@ -126,8 +118,8 @@ public class JSONFieldSupport {
     }
 
     /**
-     * Tries to parse the object into a JSONNode. Supported inputs are a String, or an {@link
-     * Attribute} wrapping a string.
+     * Tries to parse the object into a JSONNode. Supported inputs are a String, or an {@link Attribute} wrapping a
+     * string.
      */
     public static Object parseJSON(Object value) throws JsonProcessingException {
         String json = getJSON(value);
@@ -138,8 +130,8 @@ public class JSONFieldSupport {
 
     /** Extracts the JSON string from the value, if possible */
     private static String getJSON(Object value) {
-        if (value instanceof Attribute) {
-            return Converters.convert(((Attribute) value).getValue(), String.class);
+        if (value instanceof Attribute attribute) {
+            return Converters.convert(attribute.getValue(), String.class);
         }
         return Converters.convert(value, String.class);
     }

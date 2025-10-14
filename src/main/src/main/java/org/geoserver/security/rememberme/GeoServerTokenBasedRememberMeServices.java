@@ -5,10 +5,15 @@
  */
 package org.geoserver.security.rememberme;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.StringUtils;
 import org.geoserver.security.filter.GeoServerWebAuthenticationDetails;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.rememberme.RememberMeUserDetailsService.RememberMeUserDetails;
@@ -17,21 +22,68 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.rememberme.InvalidCookieException;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 
 /**
  * Token based remember me services that appends a user group service name to generated tokens.
  *
- * <p>The user group service name is used by {@link RememberMeUserDetailsService} in order to
- * delegate to the proper user group service.
+ * <p>The user group service name is used by {@link RememberMeUserDetailsService} in order to delegate to the proper
+ * user group service.
+ *
+ * <p>During logout, the cookie is remembered so it cannot be re-used. The prevents an accidental auto-login.
  *
  * @author Justin Deoliveira, OpenGeo
  */
 public class GeoServerTokenBasedRememberMeServices extends TokenBasedRememberMeServices {
 
-    public GeoServerTokenBasedRememberMeServices(
-            String key, UserDetailsService userDetailsService) {
+    // remember-me tokens are valid for 2 weeks, so we expire after 2 weeks
+    static Cache<String, String> unauthorizedRememberMeCookieCache =
+            CacheBuilder.newBuilder().expireAfterWrite(14 * 24, TimeUnit.HOURS).build();
+
+    public GeoServerTokenBasedRememberMeServices(String key, UserDetailsService userDetailsService) {
         super(key, userDetailsService);
+    }
+
+    /**
+     * We mark the token as invalid - see {link #decodeCookie()}
+     *
+     * @param request the HTTP request
+     * @param response the HTTP response
+     * @param authentication the current principal details
+     */
+    @Override
+    public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+        String rememberMeCookie = extractRememberMeCookie(request);
+
+        // this will make the response send an empty remember-me cookie back
+        super.logout(request, response, authentication);
+
+        // mark that cookie as "do not allow"
+        if (StringUtils.isNotBlank(rememberMeCookie)) {
+            unauthorizedRememberMeCookieCache.put(rememberMeCookie, "");
+        }
+    }
+
+    /**
+     * Expired-token enabled decodeCookie().
+     *
+     * <p>If the cookie is no longer valid (i.e. user logged out), then this will return `new String[0]` and not let the
+     * user login. See {link #logout()}
+     *
+     * @param cookieValue the value obtained from the submitted cookie
+     * @return the array of tokens.
+     * @throws InvalidCookieException see super.decodeCookie()
+     */
+    @Override
+    protected String[] decodeCookie(String cookieValue) throws InvalidCookieException {
+        if (StringUtils.isEmpty(cookieValue)) {
+            return new String[0];
+        }
+        if (unauthorizedRememberMeCookieCache.getIfPresent(cookieValue) != null) {
+            return new String[0];
+        }
+        return super.decodeCookie(cookieValue);
     }
 
     /** Create the signature by removing the user group service name suffix from the user name */
@@ -54,8 +106,7 @@ public class GeoServerTokenBasedRememberMeServices extends TokenBasedRememberMeS
     protected String retrieveUserName(Authentication authentication) {
         if (authentication.getDetails() instanceof GeoServerWebAuthenticationDetails) {
             String userGroupServiceName =
-                    ((GeoServerWebAuthenticationDetails) authentication.getDetails())
-                            .getUserGroupServiceName();
+                    ((GeoServerWebAuthenticationDetails) authentication.getDetails()).getUserGroupServiceName();
             if (userGroupServiceName == null || userGroupServiceName.trim().isEmpty())
                 return ""; // no service specified --> no remember me
             return encode(super.retrieveUserName(authentication), userGroupServiceName);
@@ -75,10 +126,8 @@ public class GeoServerTokenBasedRememberMeServices extends TokenBasedRememberMeS
     }
 
     @Override
-    protected Authentication createSuccessfulAuthentication(
-            HttpServletRequest request, UserDetails user) {
-        if (user instanceof RememberMeUserDetails)
-            user = ((RememberMeUserDetails) user).getWrappedObject();
+    protected Authentication createSuccessfulAuthentication(HttpServletRequest request, UserDetails user) {
+        if (user instanceof RememberMeUserDetails details) user = details.getWrappedObject();
 
         Collection<GrantedAuthority> roles = new HashSet<>();
         if (user.getAuthorities().contains(GeoServerRole.AUTHENTICATED_ROLE)) {
@@ -88,8 +137,7 @@ public class GeoServerTokenBasedRememberMeServices extends TokenBasedRememberMeS
             roles.addAll(user.getAuthorities());
             roles.add(GeoServerRole.AUTHENTICATED_ROLE);
         }
-        RememberMeAuthenticationToken auth =
-                new RememberMeAuthenticationToken(getKey(), user, roles);
+        RememberMeAuthenticationToken auth = new RememberMeAuthenticationToken(getKey(), user, roles);
         auth.setDetails(getAuthenticationDetailsSource().buildDetails(request));
         return auth;
     }

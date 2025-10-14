@@ -7,6 +7,7 @@ package org.geoserver.wms.web.data;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import java.io.Serial;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.apache.wicket.model.LoadableDetachableModel;
@@ -16,19 +17,18 @@ import org.geoserver.web.GeoServerApplication;
 /** Model for collection of available style formats. */
 public class StyleFormatsModel extends LoadableDetachableModel<List<String>> {
 
+    @Serial
     private static final long serialVersionUID = -5591450369784953326L;
 
     @Override
     protected List<String> load() {
         List<StyleHandler> handlers = GeoServerApplication.get().getBeansOfType(StyleHandler.class);
-        return Lists.transform(
-                handlers,
-                new Function<>() {
-                    @Nullable
-                    @Override
-                    public String apply(@Nullable StyleHandler styleHandler) {
-                        return styleHandler.getFormat();
-                    }
-                });
+        return Lists.transform(handlers, new Function<>() {
+            @Nullable
+            @Override
+            public String apply(@Nullable StyleHandler styleHandler) {
+                return styleHandler.getFormat();
+            }
+        });
     }
 }

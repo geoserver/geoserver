@@ -38,8 +38,7 @@ import org.geotools.util.factory.GeoTools;
  */
 public abstract class AbstractJDBCService extends AbstractGeoServerSecurityService {
     /** logger */
-    static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.security.jdbc");
+    static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.security.jdbc");
 
     protected Properties ddlProps, dmlProps;
     protected DataSource datasource;
@@ -49,7 +48,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
 
     protected AbstractJDBCService() {}
 
-    /** initialize a {@link DataSource} form a {@link JdbcSecurityServiceConfig} object */
+    /** initialize a {@link DataSource} form a {@link JDBCSecurityServiceConfig} object */
     public void initializeDSFromConfig(SecurityNamedServiceConfig namedConfig) throws IOException {
         JDBCSecurityServiceConfig config = (JDBCSecurityServiceConfig) namedConfig;
         if (config.isJndi()) {
@@ -78,8 +77,8 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
     }
 
     /**
-     * Get a new connection from the datasource, check/set autocommit == false and isolation level
-     * according to {@link #DEFAULT_ISOLATION_LEVEL}
+     * Get a new connection from the datasource, check/set autocommit == false and isolation level according to
+     * {@link #DEFAULT_ISOLATION_LEVEL}
      */
     protected Connection getConnection() throws SQLException {
         Connection con = getDataSource().getConnection();
@@ -96,8 +95,8 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
     }
 
     /**
-     * helper method, if any of the parametres is not null, try to close it and throw away a
-     * possible {@link SQLException}
+     * helper method, if any of the parametres is not null, try to close it and throw away a possible
+     * {@link SQLException}
      */
     protected void closeFinally(Connection con, PreparedStatement ps, ResultSet rs) {
         try {
@@ -115,8 +114,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
     }
 
     /** get a prepared DML statement for a property key */
-    protected PreparedStatement getDMLStatement(String key, Connection con)
-            throws IOException, SQLException {
+    protected PreparedStatement getDMLStatement(String key, Connection con) throws IOException, SQLException {
         return getJDBCStatement(key, dmlProps, con);
     }
 
@@ -134,8 +132,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
     }
 
     /** get a prepared DDL statement for a property key */
-    protected PreparedStatement getDDLStatement(String key, Connection con)
-            throws IOException, SQLException {
+    protected PreparedStatement getDDLStatement(String key, Connection con) throws IOException, SQLException {
         return getJDBCStatement(key, ddlProps, con);
     }
 
@@ -219,7 +216,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
         }
     }
 
-    /** drops tables, ignore SQLExceptions */
+    // /** drops tables, ignore SQLExceptions */
     //    public void dropExistingTables() throws IOException {
     //        Connection con = null;
     //        PreparedStatement ps = null;
@@ -254,7 +251,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
     /** Checks if the tables are already created */
     public boolean tablesAlreadyCreated() throws IOException {
         Connection con = null;
-        try { // NOPMD - connection closing must be delegated to the closeConnection method
+        try {
             con = getConnection();
             DatabaseMetaData md = con.getMetaData();
             String schemaName = null;
@@ -298,8 +295,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
     /**
      * Checks if the sql statements contained in props can be prepared against the db
      *
-     * @return return error protocol containing key,statement and {@link SQLException}. The key is
-     *     created as follows:
+     * @return return error protocol containing key,statement and {@link SQLException}. The key is created as follows:
      *     <p>property key + "|" + statement string
      */
     protected Map<String, SQLException> checkSQLStatements(Properties props) throws IOException {
@@ -332,8 +328,8 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
     /**
      * Check for the existence of the file, if the file exists do nothing.
      *
-     * <p>If the file does not exist, check for a template file contained in the jar with the same
-     * name, if found, use it.
+     * <p>If the file does not exist, check for a template file contained in the jar with the same name, if found, use
+     * it.
      *
      * <p>If no template was found, use the default template
      *
@@ -342,8 +338,8 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
      * @param defaultResource the standard template
      * @return the file to use
      */
-    protected Resource checkORCreateJDBCPropertyFile(
-            String fileName, Resource namedRoot, String defaultResource) throws IOException {
+    protected Resource checkORCreateJDBCPropertyFile(String fileName, Resource namedRoot, String defaultResource)
+            throws IOException {
 
         Resource resource;
         fileName = fileName != null ? fileName : defaultResource;

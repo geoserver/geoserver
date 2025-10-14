@@ -12,9 +12,8 @@ import org.geotools.api.feature.Property;
 import org.geotools.feature.NameImpl;
 
 /**
- * Abstraction for an Aggregate Operation. An aggregate operation might have params and that are
- * stored if present in a string attribute. It is the implementation that needs to convert it as
- * needed.
+ * Abstraction for an Aggregate Operation. An aggregate operation might have params and that are stored if present in a
+ * string attribute. It is the implementation that needs to convert it as needed.
  */
 abstract class AggregationOp {
 
@@ -34,7 +33,7 @@ abstract class AggregationOp {
     static List<Object> toListObj(Object object) {
         List<Object> objectList;
         if (object instanceof Collection) objectList = new ArrayList<>((Collection<Object>) object);
-        else if (object instanceof Object[]) objectList = Arrays.asList((Object[]) object);
+        else if (object instanceof Object[] object1s) objectList = Arrays.asList(object1s);
         else objectList = Arrays.asList(object);
         return objectList;
     }
@@ -42,10 +41,8 @@ abstract class AggregationOp {
     /** Unpacks value from attribute container */
     static Object unpack(Object value) {
 
-        if (value instanceof org.geotools.api.feature.ComplexAttribute) {
-            Property simpleContent =
-                    ((org.geotools.api.feature.ComplexAttribute) value)
-                            .getProperty(new NameImpl("simpleContent"));
+        if (value instanceof org.geotools.api.feature.ComplexAttribute attribute) {
+            Property simpleContent = attribute.getProperty(new NameImpl("simpleContent"));
             if (simpleContent == null) {
                 return null;
             } else {
@@ -53,8 +50,8 @@ abstract class AggregationOp {
             }
         }
 
-        if (value instanceof org.geotools.api.feature.Attribute) {
-            return ((org.geotools.api.feature.Attribute) value).getValue();
+        if (value instanceof org.geotools.api.feature.Attribute attribute) {
+            return attribute.getValue();
         }
 
         return value;

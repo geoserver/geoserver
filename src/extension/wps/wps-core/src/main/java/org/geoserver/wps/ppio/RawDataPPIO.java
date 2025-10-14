@@ -30,14 +30,12 @@ public class RawDataPPIO extends ComplexPPIO {
 
     @Override
     public Object decode(final InputStream input) throws Exception {
-        LOGGER.warning(
-                "Creating raw data out of a plain input stream, "
-                        + "this won't work with asynch requests and won't provide the mime type provided");
+        LOGGER.warning("Creating raw data out of a plain input stream, "
+                + "this won't work with asynch requests and won't provide the mime type provided");
         return new StreamRawData(AbstractRawData.BINARY_MIME, input);
     }
 
-    public Object decode(InputStream input, String mimeType, boolean asynchronous)
-            throws Exception {
+    public Object decode(InputStream input, String mimeType, boolean asynchronous) throws Exception {
         if (asynchronous) {
             Resource tmp = resourceManager.getTemporaryResource(".bin");
             IOUtils.copy(input, tmp.out(), WPSResourceManager.getCopyBufferSize());
@@ -59,8 +57,8 @@ public class RawDataPPIO extends ComplexPPIO {
     @Override
     public String getFileExtension(Object value) {
         RawData rd;
-        if (value instanceof RawDataEncoderDelegate) {
-            rd = ((RawDataEncoderDelegate) value).getRawData();
+        if (value instanceof RawDataEncoderDelegate delegate) {
+            rd = delegate.getRawData();
         } else {
             rd = (RawData) value;
         }

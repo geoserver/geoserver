@@ -60,9 +60,8 @@ public class RATViewTest extends GeoServerSystemTestSupport {
         final CatalogBuilder builder = new CatalogBuilder(cat);
         builder.setStore(storeInfo);
 
-        final CoverageInfo coverageInfo =
-                coverageView.createCoverageInfo(RGB_IR_VIEW, storeInfo, builder);
-        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        final CoverageInfo coverageInfo = coverageView.createCoverageInfo(RGB_IR_VIEW, storeInfo, builder);
+        coverageInfo.getParameters().put("USE_IMAGEN_IMAGEREAD", "false");
         coverageInfo.getDimensions().get(0).setName("Red");
         coverageInfo.getDimensions().get(1).setName("Green");
         coverageInfo.getDimensions().get(2).setName("Blue");
@@ -71,32 +70,27 @@ public class RATViewTest extends GeoServerSystemTestSupport {
     }
 
     private CoverageView buildRgbIRView() {
-        final CoverageView.CoverageBand rBand =
-                new CoverageView.CoverageBand(
-                        Arrays.asList(new CoverageView.InputCoverageBand("rgb", "0")),
-                        "rband",
-                        0,
-                        CoverageView.CompositionType.BAND_SELECT);
-        final CoverageView.CoverageBand gBand =
-                new CoverageView.CoverageBand(
-                        Arrays.asList(new CoverageView.InputCoverageBand("rgb", "1")),
-                        "gband",
-                        1,
-                        CoverageView.CompositionType.BAND_SELECT);
-        final CoverageView.CoverageBand bBand =
-                new CoverageView.CoverageBand(
-                        Arrays.asList(new CoverageView.InputCoverageBand("rgb", "2")),
-                        "bband",
-                        2,
-                        CoverageView.CompositionType.BAND_SELECT);
-        final CoverageView.CoverageBand irBand =
-                new CoverageView.CoverageBand(
-                        Collections.singletonList(new CoverageView.InputCoverageBand("ir", "0")),
-                        "irband",
-                        3,
-                        CoverageView.CompositionType.BAND_SELECT);
-        final CoverageView coverageView =
-                new CoverageView(RGB_IR_VIEW, Arrays.asList(rBand, gBand, bBand, irBand));
+        final CoverageView.CoverageBand rBand = new CoverageView.CoverageBand(
+                Arrays.asList(new CoverageView.InputCoverageBand("rgb", "0")),
+                "rband",
+                0,
+                CoverageView.CompositionType.BAND_SELECT);
+        final CoverageView.CoverageBand gBand = new CoverageView.CoverageBand(
+                Arrays.asList(new CoverageView.InputCoverageBand("rgb", "1")),
+                "gband",
+                1,
+                CoverageView.CompositionType.BAND_SELECT);
+        final CoverageView.CoverageBand bBand = new CoverageView.CoverageBand(
+                Arrays.asList(new CoverageView.InputCoverageBand("rgb", "2")),
+                "bband",
+                2,
+                CoverageView.CompositionType.BAND_SELECT);
+        final CoverageView.CoverageBand irBand = new CoverageView.CoverageBand(
+                Collections.singletonList(new CoverageView.InputCoverageBand("ir", "0")),
+                "irband",
+                3,
+                CoverageView.CompositionType.BAND_SELECT);
+        final CoverageView coverageView = new CoverageView(RGB_IR_VIEW, Arrays.asList(rBand, gBand, bBand, irBand));
         // old coverage views deserialize with null in these fields, force it to test backwards
         // compatibility
         coverageView.setEnvelopeCompositionType(null);
@@ -112,8 +106,7 @@ public class RATViewTest extends GeoServerSystemTestSupport {
         final CatalogBuilder builder = new CatalogBuilder(cat);
         builder.setStore(storeInfo);
 
-        final CoverageInfo coverageInfo =
-                coverageView.createCoverageInfo(RGB_IR_VIEW, storeInfo, builder);
+        final CoverageInfo coverageInfo = coverageView.createCoverageInfo(RGB_IR_VIEW, storeInfo, builder);
         CoverageRATs coverageRATs = new CoverageRATs(cat, coverageInfo);
         PAMDataset pamDataset = coverageRATs.getPAMDataset();
         assertNotNull(pamDataset);

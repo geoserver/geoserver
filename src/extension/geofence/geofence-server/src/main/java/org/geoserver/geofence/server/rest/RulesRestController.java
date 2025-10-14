@@ -51,8 +51,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/geofence")
-public class RulesRestController extends RestBaseController
-        implements SequentialExecutionController {
+public class RulesRestController extends RestBaseController implements SequentialExecutionController {
 
     private RuleAdminService adminService;
 
@@ -72,40 +71,31 @@ public class RulesRestController extends RestBaseController
 
     @Override
     public boolean supports(
-            MethodParameter methodParameter,
-            Type targetType,
-            Class<? extends HttpMessageConverter<?>> converterType) {
+            MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return JaxbRule.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
     @ExceptionHandler(NotFoundServiceEx.class)
-    public void ruleNotFound(
-            NotFoundServiceEx exception, HttpServletRequest request, HttpServletResponse response)
+    public void ruleNotFound(NotFoundServiceEx exception, HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         response.sendError(404, exception.getMessage());
     }
 
     @ExceptionHandler(DuplicateKeyException.class)
-    public void rule(
-            DuplicateKeyException exception,
-            HttpServletRequest request,
-            HttpServletResponse response)
+    public void rule(DuplicateKeyException exception, HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         response.sendError(409, exception.getMessage());
     }
 
     @ExceptionHandler(BadRequestServiceEx.class)
-    public void badRequest(
-            BadRequestServiceEx exception, HttpServletRequest request, HttpServletResponse response)
+    public void badRequest(BadRequestServiceEx exception, HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         response.sendError(400, exception.getMessage());
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public void messageNotReadableException(
-            HttpMessageNotReadableException exception,
-            HttpServletRequest request,
-            HttpServletResponse response)
+            HttpMessageNotReadableException exception, HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         response.sendError(400, exception.getMessage());
     }
@@ -125,6 +115,10 @@ public class RulesRestController extends RestBaseController
             @RequestParam(value = "instanceId", required = false) Long instanceId,
             @RequestParam(value = "instanceName", required = false) String instanceName,
             @RequestParam(value = "instanceAny", required = false) Boolean instanceDefault,
+            @RequestParam(value = "ipAddress", required = false) String ipAddress,
+            @RequestParam(value = "ipAddressAny", required = false) Boolean ipAddressDefault,
+            @RequestParam(value = "date", required = false) String date,
+            @RequestParam(value = "dateAny", required = false) Boolean dateDefault,
             @RequestParam(value = "service", required = false) String serviceName,
             @RequestParam(value = "serviceAny", required = false) Boolean serviceDefault,
             @RequestParam(value = "request", required = false) String requestName,
@@ -135,25 +129,28 @@ public class RulesRestController extends RestBaseController
             @RequestParam(value = "workspaceAny", required = false) Boolean workspaceDefault,
             @RequestParam(value = "layer", required = false) String layer,
             @RequestParam(value = "layerAny", required = false) Boolean layerDefault) {
-        RuleFilter filter =
-                buildFilter(
-                        userName,
-                        userDefault,
-                        roleName,
-                        roleDefault,
-                        instanceId,
-                        instanceName,
-                        instanceDefault,
-                        serviceName,
-                        serviceDefault,
-                        requestName,
-                        requestDefault,
-                        subfield,
-                        subfieldDefault,
-                        workspace,
-                        workspaceDefault,
-                        layer,
-                        layerDefault);
+        RuleFilter filter = buildFilter(
+                userName,
+                userDefault,
+                roleName,
+                roleDefault,
+                instanceId,
+                instanceName,
+                instanceDefault,
+                ipAddress,
+                ipAddressDefault,
+                date,
+                dateDefault,
+                serviceName,
+                serviceDefault,
+                requestName,
+                requestDefault,
+                subfield,
+                subfieldDefault,
+                workspace,
+                workspaceDefault,
+                layer,
+                layerDefault);
 
         return new JaxbRuleList(adminService.getListFull(filter, page, entries));
     }
@@ -178,6 +175,10 @@ public class RulesRestController extends RestBaseController
             @RequestParam(value = "instanceId", required = false) Long instanceId,
             @RequestParam(value = "instanceName", required = false) String instanceName,
             @RequestParam(value = "instanceAny", required = false) Boolean instanceDefault,
+            @RequestParam(value = "ipAddress", required = false) String ipAddress,
+            @RequestParam(value = "ipAddressAny", required = false) Boolean ipAddressDefault,
+            @RequestParam(value = "date", required = false) String date,
+            @RequestParam(value = "dateAny", required = false) Boolean dateDefault,
             @RequestParam(value = "service", required = false) String serviceName,
             @RequestParam(value = "serviceAny", required = false) Boolean serviceDefault,
             @RequestParam(value = "request", required = false) String requestName,
@@ -188,25 +189,28 @@ public class RulesRestController extends RestBaseController
             @RequestParam(value = "workspaceAny", required = false) Boolean workspaceDefault,
             @RequestParam(value = "layer", required = false) String layer,
             @RequestParam(value = "layerAny", required = false) Boolean layerDefault) {
-        RuleFilter filter =
-                buildFilter(
-                        userName,
-                        userDefault,
-                        roleName,
-                        roleDefault,
-                        instanceId,
-                        instanceName,
-                        instanceDefault,
-                        serviceName,
-                        serviceDefault,
-                        requestName,
-                        requestDefault,
-                        subfield,
-                        subfieldDefault,
-                        workspace,
-                        workspaceDefault,
-                        layer,
-                        layerDefault);
+        RuleFilter filter = buildFilter(
+                userName,
+                userDefault,
+                roleName,
+                roleDefault,
+                instanceId,
+                instanceName,
+                instanceDefault,
+                ipAddress,
+                ipAddressDefault,
+                date,
+                dateDefault,
+                serviceName,
+                serviceDefault,
+                requestName,
+                requestDefault,
+                subfield,
+                subfieldDefault,
+                workspace,
+                workspaceDefault,
+                layer,
+                layerDefault);
 
         return new JaxbRuleList(adminService.count(filter));
     }
@@ -223,7 +227,7 @@ public class RulesRestController extends RestBaseController
             produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public String insert(@RequestBody(required = true) JaxbRule rule) {
-        long priority = rule.getPriority() == null ? 0 : rule.getPriority().longValue();
+        long priority = rule.getPriority() == null ? 0 : rule.getPriority();
         if (adminService.getRuleByPriority(priority) != null) {
             adminService.shift(priority, 1);
         }
@@ -241,12 +245,11 @@ public class RulesRestController extends RestBaseController
     }
 
     @RequestMapping(value = "/rules/id/{id}", method = RequestMethod.POST)
-    public @ResponseStatus(HttpStatus.OK) void update(
-            @PathVariable("id") Long id, @RequestBody JaxbRule rule) {
+    public @ResponseStatus(HttpStatus.OK) void update(@PathVariable("id") Long id, @RequestBody JaxbRule rule) {
         if (rule.getPriority() != null) {
-            ShortRule priorityRule = adminService.getRuleByPriority(rule.getPriority().longValue());
+            ShortRule priorityRule = adminService.getRuleByPriority(rule.getPriority());
             if (priorityRule != null && !Objects.equals(priorityRule.getId(), id)) {
-                adminService.shift(rule.getPriority().longValue(), 1);
+                adminService.shift(rule.getPriority(), 1);
             }
         }
         Rule theRule = adminService.get(id);
@@ -255,18 +258,16 @@ public class RulesRestController extends RestBaseController
             adminService.setLimits(id, rule.getLimits().toRuleLimits(theRule.getRuleLimits()));
         }
         if (rule.getLayerDetails() != null) {
-            adminService.setDetails(
-                    id, rule.getLayerDetails().toLayerDetails(theRule.getLayerDetails()));
+            adminService.setDetails(id, rule.getLayerDetails().toLayerDetails(theRule.getLayerDetails()));
         }
     }
 
     @RequestMapping(value = "/rules/id/{id}", method = RequestMethod.PUT)
-    public @ResponseStatus(HttpStatus.OK) void clearAndUpdate(
-            @PathVariable("id") Long id, @RequestBody JaxbRule rule) {
+    public @ResponseStatus(HttpStatus.OK) void clearAndUpdate(@PathVariable("id") Long id, @RequestBody JaxbRule rule) {
         if (rule.getPriority() != null) {
-            ShortRule priorityRule = adminService.getRuleByPriority(rule.getPriority().longValue());
+            ShortRule priorityRule = adminService.getRuleByPriority(rule.getPriority());
             if (priorityRule != null && !Objects.equals(priorityRule.getId(), id)) {
-                adminService.shift(rule.getPriority().longValue(), 1);
+                adminService.shift(rule.getPriority(), 1);
             }
         }
         Rule theRule = new Rule();
@@ -297,6 +298,10 @@ public class RulesRestController extends RestBaseController
             Long instanceId,
             String instanceName,
             Boolean instanceDefault,
+            String ipAddress,
+            Boolean ipAddressDefault,
+            String date,
+            Boolean dateDefault,
             String serviceName,
             Boolean serviceDefault,
             String requestName,
@@ -313,6 +318,8 @@ public class RulesRestController extends RestBaseController
         setFilter(filter.getUser(), userName, userDefault);
         setFilter(filter.getRole(), roleName, groupDefault);
         setFilter(filter.getInstance(), instanceId, instanceName, instanceDefault);
+        setFilter(filter.getSourceAddress(), ipAddress, ipAddressDefault);
+        setFilter(filter.getDate(), date, dateDefault);
         setFilter(filter.getService(), serviceName, serviceDefault);
         setFilter(filter.getRequest(), requestName, requestDefault);
         setFilter(filter.getSubfield(), subfield, subfieldDefault);
@@ -324,8 +331,7 @@ public class RulesRestController extends RestBaseController
     private void setFilter(IdNameFilter filter, Long id, String name, Boolean includeDefault) {
 
         if (id != null && name != null) {
-            throw new IllegalArgumentException(
-                    "Id and name can't be both defined (id:" + id + " name:" + name + ")");
+            throw new IllegalArgumentException("Id and name can't be both defined (id:" + id + " name:" + name + ")");
         }
 
         if (id != null) {
@@ -364,9 +370,8 @@ public class RulesRestController extends RestBaseController
     }
 
     /**
-     * Move the provided rules to the target priority. Rules will be sorted by their priority, first
-     * rule will be updated with a priority equal to the target priority and the next ones will get
-     * an incremented priority value.
+     * Move the provided rules to the target priority. Rules will be sorted by their priority, first rule will be
+     * updated with a priority equal to the target priority and the next ones will get an incremented priority value.
      */
     @RequestMapping(
             value = "/rules/move",
@@ -397,28 +402,26 @@ public class RulesRestController extends RestBaseController
     /** Helper method that will parse and retrieve the provided rules sorted by their priority. */
     private List<Rule> findRules(String rulesIds) {
         return Arrays.stream(rulesIds.split(","))
-                .map(
-                        ruleId -> {
-                            try {
-                                // parsing the rule id
-                                return Long.parseLong(ruleId);
-                            } catch (NumberFormatException exception) {
-                                // error parsing the rule id
-                                throw new InvalidRulesIds();
-                            }
-                        })
-                .map(
-                        ruleId -> {
-                            // search the rule by id
-                            return adminService.get(ruleId);
-                        })
+                .map(ruleId -> {
+                    try {
+                        // parsing the rule id
+                        return Long.parseLong(ruleId);
+                    } catch (NumberFormatException exception) {
+                        // error parsing the rule id
+                        throw new InvalidRulesIds();
+                    }
+                })
+                .map(ruleId -> {
+                    // search the rule by id
+                    return adminService.get(ruleId);
+                })
                 .filter(rule -> rule != null)
                 .sorted((ruleA, ruleB) -> Long.compare(ruleA.getPriority(), ruleB.getPriority()))
                 .collect(Collectors.toList());
     }
 
     @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Invalid rules ids")
-    private class InvalidRulesIds extends RuntimeException {
+    private static class InvalidRulesIds extends RuntimeException {
         private static final long serialVersionUID = -5682676569555830473L;
     }
 }

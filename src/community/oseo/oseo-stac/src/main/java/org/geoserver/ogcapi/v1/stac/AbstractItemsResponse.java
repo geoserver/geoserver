@@ -10,9 +10,9 @@ import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geotools.feature.FeatureCollection;
 
 /**
- * Wrapper for the returned FeatureCollection containing the STAC Items definitions. Base class for
- * both "items" and "search" resources result. Adds navigation and self links on top of what {@link
- * AbstractQueryResult} already provides.
+ * Wrapper for the returned FeatureCollection containing the STAC Items definitions. Base class for both "items" and
+ * "search" resources result. Adds navigation and self links on top of what {@link AbstractQueryResult} already
+ * provides.
  */
 public abstract class AbstractItemsResponse extends AbstractQueryResult {
 
@@ -24,8 +24,8 @@ public abstract class AbstractItemsResponse extends AbstractQueryResult {
     boolean post;
     private Map<String, RootBuilder> templateMap;
 
-    public AbstractItemsResponse(FeatureCollection items, BigInteger numberMatched, int returned) {
-        super(items, numberMatched, returned);
+    public AbstractItemsResponse(FeatureCollection items, BigInteger numberMatched, int returned, boolean nextPage) {
+        super(items, numberMatched, returned, nextPage);
     }
 
     public String getNext() {

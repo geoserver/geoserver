@@ -16,8 +16,8 @@ import org.geotools.util.logging.Logging;
 import org.springframework.context.ApplicationContext;
 
 /**
- * A provider that always returns the same set of flow control rules, regardless of the current
- * request, based on the list provided by a ControlFlowConfigurator
+ * A provider that always returns the same set of flow control rules, regardless of the current request, based on the
+ * list provided by a ControlFlowConfigurator
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -80,8 +80,7 @@ public class DefaultFlowControllerProvider implements FlowControllerProvider {
     /** Reloads the flow controller list and replaces the existing ones */
     void reloadConfiguration() {
         try {
-            List<FlowController> newControllers =
-                    new ArrayList<>(configurator.buildFlowControllers());
+            List<FlowController> newControllers = new ArrayList<>(configurator.buildFlowControllers());
             Collections.sort(newControllers, new ControllerPriorityComparator());
             controllers = newControllers;
             int controllersCount = controllers.size();

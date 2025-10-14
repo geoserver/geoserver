@@ -186,8 +186,7 @@ public class WCSDimensionsValueParser {
     }
 
     /** Set the slice value as proper object depending on the datatype */
-    public void setRangeValues(
-            String low, String high, List<Object> selectedValues, String domainDatatype) {
+    public void setRangeValues(String low, String high, List<Object> selectedValues, String domainDatatype) {
         if (domainDatatype.endsWith("Timestamp") || domainDatatype.endsWith("Date")) {
             setAsDateRange(low, high, selectedValues);
         } else if (domainDatatype.endsWith("Integer")) {
@@ -207,8 +206,7 @@ public class WCSDimensionsValueParser {
             if (item instanceof Number) {
                 Double number = (Double) item;
                 results.add(number);
-            } else if (item instanceof NumberRange) {
-                NumberRange range = (NumberRange) item;
+            } else if (item instanceof NumberRange range) {
                 results.add(range.getMinimum());
                 results.add(range.getMaximum());
             } else {

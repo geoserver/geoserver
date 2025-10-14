@@ -13,27 +13,23 @@ import org.geotools.renderer.crs.ProjectionHandler;
 import org.geotools.renderer.crs.ProjectionHandlerFinder;
 
 /**
- * Extends ProjectionHandler in order to allow transforming a bbox into a target CRS when generating
- * the Capabilities, therefore dealing with potential transformation exceptions due to domains out
- * of validity.
+ * Extends ProjectionHandler in order to allow transforming a bbox into a target CRS when generating the Capabilities,
+ * therefore dealing with potential transformation exceptions due to domains out of validity.
  */
 class CapabilitiesTransformerProjectionHandler extends ProjectionHandler {
 
-    public CapabilitiesTransformerProjectionHandler(ProjectionHandler handler)
-            throws FactoryException {
+    public CapabilitiesTransformerProjectionHandler(ProjectionHandler handler) throws FactoryException {
         super(handler.getSourceCRS(), handler.getValidAreaBounds(), handler.getRenderingEnvelope());
     }
 
     @Override
-    protected ReferencedEnvelope transformEnvelope(
-            ReferencedEnvelope envelope, CoordinateReferenceSystem targetCRS)
+    protected ReferencedEnvelope transformEnvelope(ReferencedEnvelope envelope, CoordinateReferenceSystem targetCRS)
             throws TransformException, FactoryException {
         return super.transformEnvelope(envelope, targetCRS);
     }
 
     /**
-     * Create a CapabilitiesTransformerProjectionHandler for transformations from sourceCrs to
-     * targetCrs.
+     * Create a CapabilitiesTransformerProjectionHandler for transformations from sourceCrs to targetCrs.
      *
      * @param sourceCrs the source CoordinateReferenceSystem
      * @param targetCrs the target CoordinateReferenceSystem
@@ -43,8 +39,7 @@ class CapabilitiesTransformerProjectionHandler extends ProjectionHandler {
             CoordinateReferenceSystem sourceCrs, CoordinateReferenceSystem targetCrs)
             throws MismatchedDimensionException, FactoryException {
         ProjectionHandler handler =
-                ProjectionHandlerFinder.getHandler(
-                        new ReferencedEnvelope(targetCrs), sourceCrs, false);
+                ProjectionHandlerFinder.getHandler(new ReferencedEnvelope(targetCrs), sourceCrs, false);
         if (handler != null) {
             return new CapabilitiesTransformerProjectionHandler(handler);
         }

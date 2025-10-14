@@ -48,11 +48,8 @@ public class SubsetKvpTest extends WCSKVPTestSupport {
         XMLAssert.assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport)", dom);
         XMLAssert.assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport//ows:Exception)", dom);
         XMLAssert.assertXpathEvaluatesTo(
-                "1",
-                "count(//ows:ExceptionReport//ows:Exception[@exceptionCode='InvalidParameterValue'])",
-                dom);
-        XMLAssert.assertXpathEvaluatesTo(
-                "1", "count(//ows:ExceptionReport//ows:Exception[@locator='wCS'])", dom);
+                "1", "count(//ows:ExceptionReport//ows:Exception[@exceptionCode='InvalidParameterValue'])", dom);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport//ows:Exception[@locator='wCS'])", dom);
     }
 
     @Test
@@ -64,80 +61,69 @@ public class SubsetKvpTest extends WCSKVPTestSupport {
         try {
 
             // source
-            sourceCoverage =
-                    (GridCoverage2D)
-                            this.getCatalog()
-                                    .getCoverageByName("BlueMarble")
-                                    .getGridCoverageReader(null, null)
-                                    .read(null);
+            sourceCoverage = (GridCoverage2D) this.getCatalog()
+                    .getCoverageByName("BlueMarble")
+                    .getGridCoverageReader(null, null)
+                    .read();
             final ReferencedEnvelope sourceEnvelope = sourceCoverage.getEnvelope2D();
 
             // subsample using the original extension
-            MockHttpServletResponse response =
-                    getAsServletResponse(
-                            "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                    + "&coverageId=wcs__BlueMarble&&Format=image/tiff"
-                                    + "&subset=http://www.opengis.net/def/axis/OGC/0/Long("
-                                    + sourceEnvelope.getMinX()
-                                    + ","
-                                    + (sourceEnvelope.getMinX() + sourceEnvelope.getWidth() / 2)
-                                    + ")"
-                                    + "&subset=http://www.opengis.net/def/axis/OGC/0/Lat("
-                                    + sourceEnvelope.getMinY()
-                                    + ","
-                                    + (sourceEnvelope.getMinY() + sourceEnvelope.getHeight() / 2)
-                                    + ")");
+            MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                    + "&coverageId=wcs__BlueMarble&&Format=image/tiff"
+                    + "&subset=http://www.opengis.net/def/axis/OGC/0/Long("
+                    + sourceEnvelope.getMinX()
+                    + ","
+                    + (sourceEnvelope.getMinX() + sourceEnvelope.getWidth() / 2)
+                    + ")"
+                    + "&subset=http://www.opengis.net/def/axis/OGC/0/Lat("
+                    + sourceEnvelope.getMinY()
+                    + ","
+                    + (sourceEnvelope.getMinY() + sourceEnvelope.getHeight() / 2)
+                    + ")");
 
             assertEquals("image/tiff", response.getContentType());
             byte[] tiffContents = getBinary(response);
             File file = File.createTempFile("bm_gtiff", "bm_gtiff.tiff", new File("./target"));
             FileUtils.writeByteArrayToFile(file, tiffContents);
             readerTarget = new GeoTiffReader(file);
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
 
             // checks
-            assertEquals(
-                    sourceCoverage.getCoordinateReferenceSystem(),
-                    targetCoverage.getCoordinateReferenceSystem());
+            assertEquals(sourceCoverage.getCoordinateReferenceSystem(), targetCoverage.getCoordinateReferenceSystem());
             assertEquals(180, targetCoverage.getGridGeometry().getGridRange().getSpan(0));
             assertEquals(180, targetCoverage.getGridGeometry().getGridRange().getSpan(1));
             assertEquals(0, targetCoverage.getGridGeometry().getGridRange().getLow(0));
             assertEquals(0, targetCoverage.getGridGeometry().getGridRange().getLow(1));
 
             // === request does not intersect
-            response =
-                    getAsServletResponse(
-                            "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                    + "&coverageId=wcs__BlueMarble&&Format=image/tiff"
-                                    + "&subset=http://www.opengis.net/def/axis/OGC/0/Long("
-                                    + (sourceEnvelope.getMinX() + 1.1 * sourceEnvelope.getWidth())
-                                    + ","
-                                    + (sourceEnvelope.getMinX() + 1.2 * sourceEnvelope.getWidth())
-                                    + ")"
-                                    + "&subset=http://www.opengis.net/def/axis/OGC/0/Lat("
-                                    + (sourceEnvelope.getMinY() + 1.1 * sourceEnvelope.getHeight())
-                                    + ","
-                                    + (sourceEnvelope.getMinY() + 1.2 * sourceEnvelope.getHeight())
-                                    + ")");
+            response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                    + "&coverageId=wcs__BlueMarble&&Format=image/tiff"
+                    + "&subset=http://www.opengis.net/def/axis/OGC/0/Long("
+                    + (sourceEnvelope.getMinX() + 1.1 * sourceEnvelope.getWidth())
+                    + ","
+                    + (sourceEnvelope.getMinX() + 1.2 * sourceEnvelope.getWidth())
+                    + ")"
+                    + "&subset=http://www.opengis.net/def/axis/OGC/0/Lat("
+                    + (sourceEnvelope.getMinY() + 1.1 * sourceEnvelope.getHeight())
+                    + ","
+                    + (sourceEnvelope.getMinY() + 1.2 * sourceEnvelope.getHeight())
+                    + ")");
             assertEquals("application/xml", response.getContentType());
-            checkOws20Exception(
-                    response, 404, WCS20ExceptionCode.InvalidSubsetting.getExceptionCode(), "");
+            checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidSubsetting.getExceptionCode(), "");
 
             // === trim low > high Lat
-            response =
-                    getAsServletResponse(
-                            "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                    + "&coverageId=wcs__BlueMarble&&Format=image/tiff"
-                                    + "&subset=http://www.opengis.net/def/axis/OGC/0/Long("
-                                    + (sourceEnvelope.getMinX())
-                                    + ","
-                                    + (sourceEnvelope.getMinX() + sourceEnvelope.getWidth())
-                                    + ")"
-                                    + "&subset=http://www.opengis.net/def/axis/OGC/0/Lat("
-                                    + (sourceEnvelope.getMinY() + sourceEnvelope.getHeight())
-                                    + ","
-                                    + (sourceEnvelope.getMinY())
-                                    + ")");
+            response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                    + "&coverageId=wcs__BlueMarble&&Format=image/tiff"
+                    + "&subset=http://www.opengis.net/def/axis/OGC/0/Long("
+                    + (sourceEnvelope.getMinX())
+                    + ","
+                    + (sourceEnvelope.getMinX() + sourceEnvelope.getWidth())
+                    + ")"
+                    + "&subset=http://www.opengis.net/def/axis/OGC/0/Lat("
+                    + (sourceEnvelope.getMinY() + sourceEnvelope.getHeight())
+                    + ","
+                    + (sourceEnvelope.getMinY())
+                    + ")");
             assertEquals("application/xml", response.getContentType());
             checkOws20Exception(
                     response,
@@ -175,27 +161,23 @@ public class SubsetKvpTest extends WCSKVPTestSupport {
 
             // === slicing on LONG
             // source
-            sourceCoverage =
-                    (GridCoverage2D)
-                            this.getCatalog()
-                                    .getCoverageByName("BlueMarble")
-                                    .getGridCoverageReader(null, null)
-                                    .read(null);
+            sourceCoverage = (GridCoverage2D) this.getCatalog()
+                    .getCoverageByName("BlueMarble")
+                    .getGridCoverageReader(null, null)
+                    .read();
             final ReferencedEnvelope sourceEnvelope = sourceCoverage.getEnvelope2D();
 
             // === error slice point outside coverage
-            MockHttpServletResponse response =
-                    getAsServletResponse(
-                            "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                    + "&coverageId=wcs__BlueMarble&&Format=image/tiff"
-                                    + "&subset=http://www.opengis.net/def/axis/OGC/0/Long("
-                                    + sourceEnvelope.getMinX()
-                                    + ","
-                                    + (sourceEnvelope.getMinX() + sourceEnvelope.getWidth())
-                                    + ")"
-                                    + "&subset=http://www.opengis.net/def/axis/OGC/0/Lat("
-                                    + sourceEnvelope.getMinY() * 0.9
-                                    + ")");
+            MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                    + "&coverageId=wcs__BlueMarble&&Format=image/tiff"
+                    + "&subset=http://www.opengis.net/def/axis/OGC/0/Long("
+                    + sourceEnvelope.getMinX()
+                    + ","
+                    + (sourceEnvelope.getMinX() + sourceEnvelope.getWidth())
+                    + ")"
+                    + "&subset=http://www.opengis.net/def/axis/OGC/0/Lat("
+                    + sourceEnvelope.getMinY() * 0.9
+                    + ")");
             assertEquals("application/xml", response.getContentType());
             checkOws20Exception(
                     response,
@@ -204,18 +186,16 @@ public class SubsetKvpTest extends WCSKVPTestSupport {
                     Double.toString(sourceEnvelope.getMinY() * 0.9));
 
             // === error slice point outside coverage
-            response =
-                    getAsServletResponse(
-                            "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                    + "&coverageId=wcs__BlueMarble&&Format=image/tiff"
-                                    + "&subset=http://www.opengis.net/def/axis/OGC/0/Long("
-                                    + sourceEnvelope.getMinX() * 0.9
-                                    + ")"
-                                    + "&subset=http://www.opengis.net/def/axis/OGC/0/Lat("
-                                    + sourceEnvelope.getMinY()
-                                    + ","
-                                    + (sourceEnvelope.getMinY() + sourceEnvelope.getHeight() / 2)
-                                    + ")");
+            response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                    + "&coverageId=wcs__BlueMarble&&Format=image/tiff"
+                    + "&subset=http://www.opengis.net/def/axis/OGC/0/Long("
+                    + sourceEnvelope.getMinX() * 0.9
+                    + ")"
+                    + "&subset=http://www.opengis.net/def/axis/OGC/0/Lat("
+                    + sourceEnvelope.getMinY()
+                    + ","
+                    + (sourceEnvelope.getMinY() + sourceEnvelope.getHeight() / 2)
+                    + ")");
             assertEquals("application/xml", response.getContentType());
             checkOws20Exception(
                     response,
@@ -253,39 +233,33 @@ public class SubsetKvpTest extends WCSKVPTestSupport {
 
             // === slicing on LONG
             // source
-            sourceCoverage =
-                    (GridCoverage2D)
-                            this.getCatalog()
-                                    .getCoverageByName("BlueMarble")
-                                    .getGridCoverageReader(null, null)
-                                    .read(null);
+            sourceCoverage = (GridCoverage2D) this.getCatalog()
+                    .getCoverageByName("BlueMarble")
+                    .getGridCoverageReader(null, null)
+                    .read();
             final ReferencedEnvelope sourceEnvelope = sourceCoverage.getEnvelope2D();
 
             // subsample using the original extension
-            MockHttpServletResponse response =
-                    getAsServletResponse(
-                            "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                    + "&coverageId=wcs__BlueMarble&&Format=image/tiff"
-                                    + "&subset=http://www.opengis.net/def/axis/OGC/0/Long("
-                                    + sourceEnvelope.getMinX()
-                                    + ")"
-                                    + "&subset=http://www.opengis.net/def/axis/OGC/0/Lat("
-                                    + sourceEnvelope.getMinY()
-                                    + ","
-                                    + (sourceEnvelope.getMinY() + sourceEnvelope.getHeight() / 2)
-                                    + ")");
+            MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                    + "&coverageId=wcs__BlueMarble&&Format=image/tiff"
+                    + "&subset=http://www.opengis.net/def/axis/OGC/0/Long("
+                    + sourceEnvelope.getMinX()
+                    + ")"
+                    + "&subset=http://www.opengis.net/def/axis/OGC/0/Lat("
+                    + sourceEnvelope.getMinY()
+                    + ","
+                    + (sourceEnvelope.getMinY() + sourceEnvelope.getHeight() / 2)
+                    + ")");
 
             assertEquals("image/tiff", response.getContentType());
             byte[] tiffContents = getBinary(response);
             File file = File.createTempFile("bm_gtiff", "bm_gtiff.tiff", new File("./target"));
             FileUtils.writeByteArrayToFile(file, tiffContents);
             readerTarget = new GeoTiffReader(file);
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
 
             // checks
-            assertEquals(
-                    sourceCoverage.getCoordinateReferenceSystem(),
-                    targetCoverage.getCoordinateReferenceSystem());
+            assertEquals(sourceCoverage.getCoordinateReferenceSystem(), targetCoverage.getCoordinateReferenceSystem());
             assertEquals(1, targetCoverage.getGridGeometry().getGridRange().getSpan(0));
             assertEquals(180, targetCoverage.getGridGeometry().getGridRange().getSpan(1));
             assertEquals(0, targetCoverage.getGridGeometry().getGridRange().getLow(0));

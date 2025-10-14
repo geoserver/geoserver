@@ -63,8 +63,7 @@ public class SecuredGetFeatureInfoRequest implements GetFeatureInfoRequest {
     public URL getFinalURL() {
         // scan and check the layers
         for (Layer layer : queryLayers) {
-            if (layer instanceof SecuredWMSLayer) {
-                SecuredWMSLayer secured = (SecuredWMSLayer) layer;
+            if (layer instanceof SecuredWMSLayer secured) {
                 final WrapperPolicy policy = secured.getPolicy();
                 // check if we can cascade GetFeatureInfo
                 if (policy.getLimits() instanceof WMSAccessLimits) {
@@ -73,8 +72,7 @@ public class SecuredGetFeatureInfoRequest implements GetFeatureInfoRequest {
                         if (policy.getResponse() == org.geoserver.security.Response.CHALLENGE) {
                             SecureCatalogImpl.unauthorizedAccess(layer.getName());
                         } else {
-                            throw new IllegalArgumentException(
-                                    "Layer " + layer.getName() + " is not queriable");
+                            throw new IllegalArgumentException("Layer " + layer.getName() + " is not queriable");
                         }
                     }
                 }
@@ -85,8 +83,7 @@ public class SecuredGetFeatureInfoRequest implements GetFeatureInfoRequest {
         }
 
         // add the cql filters
-        if (getMap instanceof SecuredGetMapRequest) {
-            SecuredGetMapRequest sgm = (SecuredGetMapRequest) getMap;
+        if (getMap instanceof SecuredGetMapRequest sgm) {
             String encodedFilter = sgm.buildCQLFilter();
             if (encodedFilter != null) {
                 delegate.setProperty("CQL_FILTER", encodedFilter);

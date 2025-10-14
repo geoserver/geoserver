@@ -6,6 +6,7 @@
 
 package org.geoserver.security.validation;
 
+import java.io.Serial;
 import org.geoserver.security.GeoServerUserGroupService;
 
 /**
@@ -14,6 +15,7 @@ import org.geoserver.security.GeoServerUserGroupService;
  * @author christian
  */
 public class UserGroupServiceException extends AbstractSecurityException {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public static final String USERNAME_REQUIRED = "USERNAME_REQUIRED";
@@ -34,8 +36,7 @@ public class UserGroupServiceException extends AbstractSecurityException {
     public static final String GROUP_ALREADY_EXISTS_$1 = "GROUP_ALREADY_EXISTS";
     // return MessageFormat.format("Group {0} already exists",args);
 
-    public static final String USER_IN_OTHER_GROUP_NOT_MODIFIABLE_$1 =
-            "USER_IN_OTHER_GROUP_NOT_MODIFIABLE";
+    public static final String USER_IN_OTHER_GROUP_NOT_MODIFIABLE_$1 = "USER_IN_OTHER_GROUP_NOT_MODIFIABLE";
 
     public UserGroupServiceException(String errorId, Object[] args) {
         super(errorId, args);

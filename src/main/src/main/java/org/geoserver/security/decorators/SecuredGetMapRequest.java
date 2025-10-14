@@ -103,8 +103,7 @@ public class SecuredGetMapRequest implements GetMapRequest {
         boolean layerFiltersFound = false;
         for (int i = 0; i < layers.size(); i++) {
             Layer layer = layers.get(i);
-            if (layer instanceof SecuredWMSLayer) {
-                SecuredWMSLayer secured = (SecuredWMSLayer) layer;
+            if (layer instanceof SecuredWMSLayer secured) {
                 final WrapperPolicy policy = secured.getPolicy();
                 if (policy.getResponse() == org.geoserver.security.Response.CHALLENGE) {
                     SecureCatalogImpl.unauthorizedAccess(layer.getName());
@@ -125,8 +124,7 @@ public class SecuredGetMapRequest implements GetMapRequest {
                          * supports transparency, crop, merge them back
                          */
                         LOGGER.severe(
-                                "Sorry, raster filters for cascaded wms layers "
-                                        + "have not been implemented yet");
+                                "Sorry, raster filters for cascaded wms layers " + "have not been implemented yet");
                     }
                 }
 

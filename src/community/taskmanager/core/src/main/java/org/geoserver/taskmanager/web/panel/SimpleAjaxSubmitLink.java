@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.web.panel;
 
+import java.io.Serial;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.attributes.IAjaxCallListener;
@@ -14,6 +15,7 @@ import org.apache.wicket.model.IModel;
 
 public abstract class SimpleAjaxSubmitLink extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -8153202504953573164L;
 
     private AjaxSubmitLink link;
@@ -28,6 +30,7 @@ public abstract class SimpleAjaxSubmitLink extends Panel {
     protected AjaxSubmitLink buildAjaxLink() {
         return new AjaxSubmitLink("link") {
 
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

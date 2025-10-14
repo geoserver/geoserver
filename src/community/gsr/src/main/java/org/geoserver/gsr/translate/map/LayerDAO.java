@@ -21,8 +21,7 @@ import org.geoserver.gsr.model.map.LayerOrTable;
 import org.geoserver.gsr.model.map.LayersAndTables;
 
 public class LayerDAO {
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(LayerDAO.class);
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(LayerDAO.class);
 
     /**
      * Look up a single GSR layer (with at least one geometry column) or table.
@@ -33,8 +32,7 @@ public class LayerDAO {
      * @return LayerOrTable from workspaceName identified by layerId
      * @throws IOException
      */
-    public static LayerOrTable find(Catalog catalog, String workspaceName, Integer id)
-            throws IOException {
+    public static LayerOrTable find(Catalog catalog, String workspaceName, Integer id) throws IOException {
         // short list all layers
         List<LayerInfo> layersInWorkspace = new ArrayList<>();
         for (LayerInfo l : catalog.getLayers()) {
@@ -78,8 +76,7 @@ public class LayerDAO {
      *
      * @param catalog
      * @param workspaceName
-     * @return GeoServer Layers gathered into GSR layers (with at least one geometry column) or
-     *     tables.
+     * @return GeoServer Layers gathered into GSR layers (with at least one geometry column) or tables.
      */
     public static LayersAndTables find(Catalog catalog, String workspaceName) {
         List<LayerOrTable> layers = new ArrayList<>();

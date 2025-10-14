@@ -43,20 +43,15 @@ public class CatalogSecurityManagerTasklet extends AbstractCatalogBackupRestoreT
     @Override
     protected void initialize(StepExecution stepExecution) {
         boolean skipSettings =
-                Boolean.parseBoolean(
-                        stepExecution.getJobParameters().getString(Backup.PARAM_SKIP_SETTINGS));
+                Boolean.parseBoolean(stepExecution.getJobParameters().getString(Backup.PARAM_SKIP_SETTINGS));
         boolean skipSecurity =
-                Boolean.parseBoolean(
-                        stepExecution
-                                .getJobParameters()
-                                .getString(Backup.PARAM_SKIP_SECURITY_SETTINGS));
+                Boolean.parseBoolean(stepExecution.getJobParameters().getString(Backup.PARAM_SKIP_SECURITY_SETTINGS));
 
         this.skipSecuritySettings = skipSettings || skipSecurity || filterIsValid();
     }
 
     @Override
-    RepeatStatus doExecute(
-            StepContribution contribution, ChunkContext chunkContext, JobExecution jobExecution)
+    RepeatStatus doExecute(StepContribution contribution, ChunkContext chunkContext, JobExecution jobExecution)
             throws Exception {
         final GeoServerDataDirectory dd = backupFacade.getGeoServerDataDirectory();
 
@@ -68,11 +63,9 @@ public class CatalogSecurityManagerTasklet extends AbstractCatalogBackupRestoreT
             /*
              * BACKUP Security Resources
              */
-            final String outputFolderURL =
-                    jobExecution.getJobParameters().getString(Backup.PARAM_OUTPUT_FILE_PATH);
+            final String outputFolderURL = jobExecution.getJobParameters().getString(Backup.PARAM_OUTPUT_FILE_PATH);
             final Resource targetBackupFolder = Resources.fromURL(outputFolderURL);
-            final Resource securityTargetResource =
-                    BackupUtils.dir(targetBackupFolder, SECURITY_RESOURCE_NAME);
+            final Resource securityTargetResource = BackupUtils.dir(targetBackupFolder, SECURITY_RESOURCE_NAME);
 
             // Copy the Security files into the destination resource
             try {
@@ -81,16 +74,13 @@ public class CatalogSecurityManagerTasklet extends AbstractCatalogBackupRestoreT
                 logValidationExceptions(
                         (ValidationResult) null,
                         new UnexpectedJobExecutionException(
-                                "Exception occurred while storing GeoServer security and services settings!",
-                                e));
+                                "Exception occurred while storing GeoServer security and services settings!", e));
             }
 
             // Test that the security folder has been correctly saved
             GeoServerSecurityManager testGssm = null;
             try {
-                testGssm =
-                        new GeoServerSecurityManager(
-                                new GeoServerDataDirectory(targetBackupFolder.dir()));
+                testGssm = new GeoServerSecurityManager(new GeoServerDataDirectory(targetBackupFolder.dir()));
                 testGssm.setApplicationContext(Backup.getContext());
                 testGssm.reload();
 
@@ -101,8 +91,7 @@ public class CatalogSecurityManagerTasklet extends AbstractCatalogBackupRestoreT
                 logValidationExceptions(
                         (ValidationResult) null,
                         new UnexpectedJobExecutionException(
-                                "Exception occurred while storing GeoServer security and services settings!",
-                                e));
+                                "Exception occurred while storing GeoServer security and services settings!", e));
             } finally {
                 if (testGssm != null) {
                     try {
@@ -120,23 +109,19 @@ public class CatalogSecurityManagerTasklet extends AbstractCatalogBackupRestoreT
             /**
              * Create a new GeoServerSecurityManager instance using the INPUT DATA DIR.
              *
-             * <p>Try to load the configuration from there and if everything is ok: 1. Replace the
-             * security folders 2. Destroy and reload the appContext GeoServerSecurityManager 3.
-             * Issue SecurityManagerListener extensions handlePostChanged(...)
+             * <p>Try to load the configuration from there and if everything is ok: 1. Replace the security folders 2.
+             * Destroy and reload the appContext GeoServerSecurityManager 3. Issue SecurityManagerListener extensions
+             * handlePostChanged(...)
              */
-            final String inputFolderURL =
-                    jobExecution.getJobParameters().getString(Backup.PARAM_INPUT_FILE_PATH);
+            final String inputFolderURL = jobExecution.getJobParameters().getString(Backup.PARAM_INPUT_FILE_PATH);
             final Resource sourceRestoreFolder = Resources.fromURL(inputFolderURL);
-            final Resource sourceSecurityResource =
-                    BackupUtils.dir(sourceRestoreFolder, SECURITY_RESOURCE_NAME);
+            final Resource sourceSecurityResource = BackupUtils.dir(sourceRestoreFolder, SECURITY_RESOURCE_NAME);
 
             // Test that the security folder has been correctly saved
             GeoServerSecurityManager testGssm = null;
             try {
-                testGssm =
-                        new GeoServerSecurityManager(
-                                new GeoServerDataDirectory(
-                                        new GeoServerResourceLoader(sourceRestoreFolder.dir())));
+                testGssm = new GeoServerSecurityManager(
+                        new GeoServerDataDirectory(new GeoServerResourceLoader(sourceRestoreFolder.dir())));
                 testGssm.setApplicationContext(Backup.getContext());
                 testGssm.reload();
 
@@ -147,8 +132,7 @@ public class CatalogSecurityManagerTasklet extends AbstractCatalogBackupRestoreT
                 logValidationExceptions(
                         (ValidationResult) null,
                         new UnexpectedJobExecutionException(
-                                "Exception occurred while storing GeoServer security and services settings!",
-                                e));
+                                "Exception occurred while storing GeoServer security and services settings!", e));
             } finally {
                 if (testGssm != null) {
                     try {
@@ -170,9 +154,7 @@ public class CatalogSecurityManagerTasklet extends AbstractCatalogBackupRestoreT
                         (ValidationResult) null,
                         new UnexpectedJobExecutionException(
                                 "Exception occurred while storing GeoServer security and services settings!",
-                                new IOException(
-                                        "It was not possible to backup the original Security folder!",
-                                        e)));
+                                new IOException("It was not possible to backup the original Security folder!", e)));
             }
 
             if (Resources.exists(security) && !security.delete()) {
@@ -185,16 +167,14 @@ public class CatalogSecurityManagerTasklet extends AbstractCatalogBackupRestoreT
                             new UnexpectedJobExecutionException(
                                     "Exception occurred while storing GeoServer security and services settings!",
                                     new IOException(
-                                            "It was not possible to fully restore the original Security folder!",
-                                            e)));
+                                            "It was not possible to fully restore the original Security folder!", e)));
                 }
 
                 logValidationExceptions(
                         (ValidationResult) null,
                         new UnexpectedJobExecutionException(
                                 "Exception occurred while storing GeoServer security and services settings!",
-                                new IOException(
-                                        "It was not possible to cleanup the target security folder!")));
+                                new IOException("It was not possible to cleanup the target security folder!")));
             }
 
             // Do this *ONLY* when DRY-RUN-MODE == OFF
@@ -218,17 +198,14 @@ public class CatalogSecurityManagerTasklet extends AbstractCatalogBackupRestoreT
                     logValidationExceptions(
                             (ValidationResult) null,
                             new UnexpectedJobExecutionException(
-                                    "Exception occurred while storing GeoServer security and services settings!",
-                                    e));
+                                    "Exception occurred while storing GeoServer security and services settings!", e));
                 }
 
                 // Reload Security Context
-                GeoServerSecurityManager securityContext =
-                        GeoServerExtensions.bean(GeoServerSecurityManager.class);
+                GeoServerSecurityManager securityContext = GeoServerExtensions.bean(GeoServerSecurityManager.class);
                 securityContext.reload();
 
-                for (SecurityManagerListener listener :
-                        GeoServerExtensions.extensions(SecurityManagerListener.class)) {
+                for (SecurityManagerListener listener : GeoServerExtensions.extensions(SecurityManagerListener.class)) {
                     listener.handlePostChanged(securityContext);
                 }
             } else {
@@ -238,8 +215,7 @@ public class CatalogSecurityManagerTasklet extends AbstractCatalogBackupRestoreT
                             (ValidationResult) null,
                             new UnexpectedJobExecutionException(
                                     "Exception occurred while storing GeoServer security and services settings!",
-                                    new IOException(
-                                            "It was not possible to cleanup the target security folder!")));
+                                    new IOException("It was not possible to cleanup the target security folder!")));
                 }
 
                 try {
@@ -250,8 +226,7 @@ public class CatalogSecurityManagerTasklet extends AbstractCatalogBackupRestoreT
                             new UnexpectedJobExecutionException(
                                     "Exception occurred while storing GeoServer security and services settings!",
                                     new IOException(
-                                            "It was not possible to fully restore the original Security folder!",
-                                            e)));
+                                            "It was not possible to fully restore the original Security folder!", e)));
                 }
             }
         }

@@ -15,8 +15,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * A servlet filter making sure we cannot end up calling flush() on the response output stream after
- * close() has been called (https://osgeo-org.atlassian.net/browse/GEOS-5985)
+ * A servlet filter making sure we cannot end up calling flush() on the response output stream after close() has been
+ * called (https://osgeo-org.atlassian.net/browse/GEOS-5985)
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -34,8 +34,7 @@ public class FlushSafeFilter implements Filter {
         // if we are dealing with an HTTP response, wrap it so that flush cannot
         // be called after close, which makes Tomcat APR runtime crash the JVM
         // (https://osgeo-org.atlassian.net/browse/GEOS-5985)
-        if (response instanceof HttpServletResponse) {
-            HttpServletResponse hr = (HttpServletResponse) response;
+        if (response instanceof HttpServletResponse hr) {
             response = new FlushSafeResponse(hr);
         }
 

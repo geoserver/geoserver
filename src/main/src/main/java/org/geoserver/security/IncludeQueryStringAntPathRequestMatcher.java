@@ -16,17 +16,16 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * Improved version of Spring Security AntPathRequestMatcher with optional query string regular
- * expression matching in addition to path matching.
+ * Improved version of Spring Security AntPathRequestMatcher with optional query string regular expression matching in
+ * addition to path matching.
  *
- * <p>The original AntPathRequestMatcher was declared final and not easily extendable by
- * composition, so we have wrote our own enhanced version.
+ * <p>The original AntPathRequestMatcher was declared final and not easily extendable by composition, so we have wrote
+ * our own enhanced version.
  *
  * @author Mauro Bartolomeoli
  */
 public final class IncludeQueryStringAntPathRequestMatcher implements RequestMatcher {
-    private static final Logger logger =
-            Logging.getLogger(IncludeQueryStringAntPathRequestMatcher.class);
+    private static final Logger logger = Logging.getLogger(IncludeQueryStringAntPathRequestMatcher.class);
     private static final String MATCH_ALL = "/**";
     private static final String QUERYSTRING_SEPARATOR = "|";
 
@@ -48,8 +47,8 @@ public final class IncludeQueryStringAntPathRequestMatcher implements RequestMat
      * Creates a matcher with the supplied pattern which will match all HTTP methods.
      *
      * @param pattern the ant pattern to use for matching
-     * @param httpMethod the HTTP method. The {@code matches} method will return false if the
-     *     incoming request doesn't have the same method.
+     * @param httpMethod the HTTP method. The {@code matches} method will return false if the incoming request doesn't
+     *     have the same method.
      */
     public IncludeQueryStringAntPathRequestMatcher(String pattern, String httpMethod) {
         Assert.hasText(pattern, "Pattern cannot be null or empty");
@@ -88,26 +87,24 @@ public final class IncludeQueryStringAntPathRequestMatcher implements RequestMat
     }
 
     /**
-     * Returns true if the configured pattern(s) (and HTTP-Method) match those of the supplied
-     * request.
+     * Returns true if the configured pattern(s) (and HTTP-Method) match those of the supplied request.
      *
-     * @param request the request to match against. The ant pattern will be matched against the
-     *     {@code servletPath} + {@code pathInfo} of the request.
+     * @param request the request to match against. The ant pattern will be matched against the {@code servletPath} +
+     *     {@code pathInfo} of the request.
      */
     @Override
     public boolean matches(HttpServletRequest request) {
         if (httpMethod != null && httpMethod != HttpMethod.valueOf(request.getMethod())) {
             if (logger.isLoggable(Level.FINE)) {
-                logger.fine(
-                        "Request '"
-                                + request.getMethod()
-                                + " "
-                                + getRequestPath(request)
-                                + "'"
-                                + " doesn't match '"
-                                + httpMethod
-                                + " "
-                                + pattern);
+                logger.fine("Request '"
+                        + request.getMethod()
+                        + " "
+                        + getRequestPath(request)
+                        + "'"
+                        + " doesn't match '"
+                        + httpMethod
+                        + " "
+                        + pattern);
             }
 
             return false;
@@ -166,8 +163,7 @@ public final class IncludeQueryStringAntPathRequestMatcher implements RequestMat
         if (!(obj instanceof IncludeQueryStringAntPathRequestMatcher)) {
             return false;
         }
-        IncludeQueryStringAntPathRequestMatcher other =
-                (IncludeQueryStringAntPathRequestMatcher) obj;
+        IncludeQueryStringAntPathRequestMatcher other = (IncludeQueryStringAntPathRequestMatcher) obj;
         return this.pattern.equals(other.pattern) && this.httpMethod == other.httpMethod;
     }
 
@@ -257,8 +253,7 @@ public final class IncludeQueryStringAntPathRequestMatcher implements RequestMat
 
         @Override
         public boolean matches(String path) {
-            return path.startsWith(subpath)
-                    && (path.length() == length || path.charAt(length) == '/');
+            return path.startsWith(subpath) && (path.length() == length || path.charAt(length) == '/');
         }
     }
 

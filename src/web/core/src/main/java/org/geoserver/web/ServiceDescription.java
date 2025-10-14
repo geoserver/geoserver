@@ -4,6 +4,7 @@
  */
 package org.geoserver.web;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,6 +17,7 @@ import org.geotools.text.Text;
 
 /** Description of a service acting as a model object to this panel's ListView. */
 public class ServiceDescription implements Serializable, Comparable<ServiceDescription> {
+    @Serial
     private static final long serialVersionUID = -7406652617944177247L;
 
     /**
@@ -44,31 +46,19 @@ public class ServiceDescription implements Serializable, Comparable<ServiceDescr
     private final boolean admin;
 
     /**
-     * if there are multiple ServiceDescriptions for a Category, then use this to determine the
-     * title of the category. see getDescriptionPriority() *
+     * if there are multiple ServiceDescriptions for a Category, then use this to determine the title of the category.
+     * see getDescriptionPriority() *
      */
     private double descriptionPriority = 100.0;
 
     /**
-     * User interface order to present common web services to highlight visual services such as WMS
-     * and WMTS ahead of data access and processing.
+     * User interface order to present common web services to highlight visual services such as WMS and WMTS ahead of
+     * data access and processing.
      *
-     * <p>Order has no real significance it is for display, see {@link
-     * #compareTo(ServiceDescription)}.
+     * <p>Order has no real significance it is for display, see {@link #compareTo(ServiceDescription)}.
      */
-    private static List<String> OGC_SERVICE_ORDER =
-            Collections.unmodifiableList(
-                    Arrays.asList(
-                            "CSW",
-                            "WMS",
-                            "WMTS",
-                            "WMS-C",
-                            "WFS",
-                            "WCS",
-                            "WPS",
-                            "Styles",
-                            "DGGS",
-                            "Experimental"));
+    private static List<String> OGC_SERVICE_ORDER = Collections.unmodifiableList(
+            Arrays.asList("CSW", "WMS", "WMTS", "WMS-C", "WFS", "WCS", "WPS", "Styles", "DGGS", "Experimental"));
 
     /** Service links. */
     Set<ServiceLinkDescription> links = new HashSet<>();
@@ -89,8 +79,7 @@ public class ServiceDescription implements Serializable, Comparable<ServiceDescr
      * @param title Service title
      * @param description Service description
      */
-    public ServiceDescription(
-            String serviceType, InternationalString title, InternationalString description) {
+    public ServiceDescription(String serviceType, InternationalString title, InternationalString description) {
         this(serviceType, title, description, true, false, null, null);
     }
 
@@ -103,10 +92,7 @@ public class ServiceDescription implements Serializable, Comparable<ServiceDescr
      * @param workspace Workspace prefix, or {@code null} for global service
      */
     public ServiceDescription(
-            String serviceType,
-            InternationalString title,
-            InternationalString description,
-            String workspace) {
+            String serviceType, InternationalString title, InternationalString description, String workspace) {
         this(serviceType, title, description, true, false, workspace, null);
     }
 
@@ -115,11 +101,9 @@ public class ServiceDescription implements Serializable, Comparable<ServiceDescr
      *
      * @param serviceType Service type, example {@code WPS}
      * @param title Service title, will default to serviceType if not provided
-     * @param description Service description, will default to empty InternationalString if not
-     *     provided
+     * @param description Service description, will default to empty InternationalString if not provided
      * @param available {@code true} if service is available, {@code false} if service is disabled
-     * @param admin {@code true} if service requires admin access (example REST services for
-     *     configuration)
+     * @param admin {@code true} if service requires admin access (example REST services for configuration)
      * @param workspace Workspace prefix, or {@code null} for global service
      * @param layer Layer name, or LayerGroup name, or {@code null} for workspace or global service
      */
@@ -151,15 +135,13 @@ public class ServiceDescription implements Serializable, Comparable<ServiceDescr
     }
 
     /**
-     * If there are multiple ServiceDescriptions (i.e. WMS & OGCAPI-Features) for a Category, then
-     * we use the descriptionPriority to determine which title to use.
+     * If there are multiple ServiceDescriptions (i.e. WMS &amp; OGCAPI-Features) for a Category, then we use the
+     * descriptionPriority to determine which title to use.
      *
-     * <p>In general, the WMS/WCS (etc) services should be high priority. Others, like OGCAPI should
-     * be lower.
+     * <p>In general, the WMS/WCS (etc) services should be high priority. Others, like OGCAPI should be lower.
      *
-     * <p>The lower priority description is only used when the higher priority description isn't
-     * available. For example, if OGCAPI-Features is turned on, but the main services (WFS) is
-     * turned off.
+     * <p>The lower priority description is only used when the higher priority description isn't available. For example,
+     * if OGCAPI-Features is turned on, but the main services (WFS) is turned off.
      *
      * <p>larger number = higher priority
      */
@@ -183,8 +165,7 @@ public class ServiceDescription implements Serializable, Comparable<ServiceDescr
     /**
      * Service title as localized text.
      *
-     * <p>If not provided service type is filled-in as a default, example {@code WMS}, {@code WFS},
-     * {@code Features}.
+     * <p>If not provided service type is filled-in as a default, example {@code WMS}, {@code WFS}, {@code Features}.
      *
      * @return service title
      */
@@ -262,16 +243,15 @@ public class ServiceDescription implements Serializable, Comparable<ServiceDescr
     }
 
     /**
-     * Compare common services based on {@link #OGC_SERVICE_ORDER} to highlight visual web services
-     * ahead of data access and processing.
+     * Compare common services based on {@link #OGC_SERVICE_ORDER} to highlight visual web services ahead of data access
+     * and processing.
      *
      * <p>Comparison falls back string comparison to compare other services.
      *
      * <p>Order has no real significance it is for display.
      *
      * @param other the object to be compared.
-     * @return service description order highlight visual web services ahead of data access and
-     *     processing
+     * @return service description order highlight visual web services ahead of data access and processing
      */
     @Override
     public int compareTo(ServiceDescription other) {

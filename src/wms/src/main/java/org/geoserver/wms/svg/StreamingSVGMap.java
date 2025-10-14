@@ -32,7 +32,6 @@ import org.locationtech.jts.geom.Point;
  * Streaming SVG encoder (does not support styling)
  *
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class StreamingSVGMap extends WebMap {
 
@@ -41,8 +40,20 @@ public class StreamingSVGMap extends WebMap {
 
     /** the XML and SVG header */
     private static final String SVG_HEADER =
-            "<?xml version=\"1.0\" standalone=\"no\"?>\n\t"
-                    + "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" \n\tstroke=\"green\" \n\tfill=\"none\" \n\tstroke-width=\"0.1%\"\n\tstroke-linecap=\"round\"\n\tstroke-linejoin=\"round\"\n\twidth=\"_width_\" \n\theight=\"_height_\" \n\tviewBox=\"_viewBox_\" \n\tpreserveAspectRatio=\"xMidYMid meet\">\n";
+            """
+            <?xml version="1.0" standalone="no"?>
+            	\
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"\s
+            	stroke="green"\s
+            	fill="none"\s
+            	stroke-width="0.1%"
+            	stroke-linecap="round"
+            	stroke-linejoin="round"
+            	width="_width_"\s
+            	height="_height_"\s
+            	viewBox="_viewBox_"\s
+            	preserveAspectRatio="xMidYMid meet">
+            """;
 
     /** the SVG closing element */
     private static final String SVG_FOOTER = "</svg>\n";
@@ -74,14 +85,13 @@ public class StreamingSVGMap extends WebMap {
 
     public String createViewBox() {
         Envelope referenceSpace = mapContent.getRenderingArea();
-        String viewBox =
-                writer.getX(referenceSpace.getMinX())
-                        + " "
-                        + (writer.getY(referenceSpace.getMinY()) - referenceSpace.getHeight())
-                        + " "
-                        + referenceSpace.getWidth()
-                        + " "
-                        + referenceSpace.getHeight();
+        String viewBox = writer.getX(referenceSpace.getMinX())
+                + " "
+                + (writer.getY(referenceSpace.getMinY()) - referenceSpace.getHeight())
+                + " "
+                + referenceSpace.getWidth()
+                + " "
+                + referenceSpace.getHeight();
 
         return viewBox;
     }
@@ -106,11 +116,10 @@ public class StreamingSVGMap extends WebMap {
     }
 
     private void writePointDefs() throws IOException {
-        writer.write(
-                "<defs>\n\t<circle id='point' cx='0' cy='0' r='0.25%' fill='blue'/>\n</defs>\n");
+        writer.write("<defs>\n\t<circle id='point' cx='0' cy='0' r='0.25%' fill='blue'/>\n</defs>\n");
     }
 
-    /** @task TODO: respect layer filtering given by their Styles */
+    /** @todo respect layer filtering given by their Styles */
     private void writeLayers() throws IOException {
         List<Layer> layers = mapContent.layers();
         FilterFactory ff = CommonFactoryFinder.getFilterFactory();
@@ -120,15 +129,14 @@ public class StreamingSVGMap extends WebMap {
             SimpleFeatureType schema = fSource.getSchema();
 
             try {
-                String defaultGeometry = schema.getGeometryDescriptor().getName().getLocalPart();
+                String defaultGeometry =
+                        schema.getGeometryDescriptor().getName().getLocalPart();
                 ReferencedEnvelope renderingArea = mapContent.getRenderingArea();
                 BBOX bboxFilter = ff.bbox(ff.property(defaultGeometry), renderingArea);
 
                 Query bboxQuery = new Query(schema.getTypeName(), bboxFilter);
                 Query definitionQuery = layer.getQuery();
-                Query finalQuery =
-                        new Query(
-                                DataUtilities.mixQueries(definitionQuery, bboxQuery, "svgEncoder"));
+                Query finalQuery = new Query(DataUtilities.mixQueries(definitionQuery, bboxQuery, "svgEncoder"));
                 finalQuery.setHints(definitionQuery.getHints());
                 finalQuery.setSortBy(definitionQuery.getSortBy());
                 finalQuery.setStartIndex(definitionQuery.getStartIndex());

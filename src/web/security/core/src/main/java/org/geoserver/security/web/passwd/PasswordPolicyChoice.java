@@ -15,7 +15,7 @@ import org.apache.wicket.model.IModel;
 import org.geoserver.web.GeoServerApplication;
 
 /**
- * Drop down choice widget for {@link PasswordPolicy} configurations.
+ * Drop down choice widget for {@link org.geoserver.security.config.PasswordPolicyConfig} configurations.
  *
  * @author Justin Deoliveira, OpenGeo
  */
@@ -31,11 +31,8 @@ public class PasswordPolicyChoice extends DropDownChoice<String> {
 
         PasswordPolicyNamesModel() {
             try {
-                policyNames =
-                        new ArrayList<>(
-                                GeoServerApplication.get()
-                                        .getSecurityManager()
-                                        .listPasswordValidators());
+                policyNames = new ArrayList<>(
+                        GeoServerApplication.get().getSecurityManager().listPasswordValidators());
             } catch (IOException e) {
                 throw new WicketRuntimeException(e);
             }

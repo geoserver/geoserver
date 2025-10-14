@@ -36,8 +36,8 @@ import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 
 /**
- * Base class for {@link org.springframework.http.converter.HttpMessageConverter} that encode a HTML
- * document based on a Freemarker template
+ * Base class for {@link org.springframework.http.converter.HttpMessageConverter} that encode a HTML document based on a
+ * Freemarker template
  *
  * @param <T>
  */
@@ -52,8 +52,7 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
      * @param templateSupport A loader used to locate templates
      * @param geoServer The
      */
-    public AbstractHTMLMessageConverter(
-            FreemarkerTemplateSupport templateSupport, GeoServer geoServer) {
+    public AbstractHTMLMessageConverter(FreemarkerTemplateSupport templateSupport, GeoServer geoServer) {
         super(MediaType.TEXT_HTML);
         this.geoServer = geoServer;
         this.templateSupport = templateSupport;
@@ -95,29 +94,22 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
     protected abstract Class<? extends ServiceInfo> getServiceConfigurationClass();
 
     /**
-     * Adds the <code>serviceLink</code>, <code>serviceLink</code> and <code>externalLinks</code>
-     * functions to the model, for usage in the tempalte
+     * Adds the <code>serviceLink</code>, <code>serviceLink</code> and <code>externalLinks</code> functions to the
+     * model, for usage in the tempalte
      */
     @SuppressWarnings("unchecked") // TemplateMethodModelEx is not generified
     protected void addLinkFunctions(String baseURL, Map<String, Object> model) {
         model.put("serviceLink", (TemplateMethodModelEx) arguments -> serviceLink(arguments));
+        model.put("genericServiceLink", (TemplateMethodModelEx) arguments -> genericServiceLink(arguments));
         model.put(
-                "genericServiceLink",
-                (TemplateMethodModelEx) arguments -> genericServiceLink(arguments));
-        model.put(
-                "resourceLink",
-                (TemplateMethodModelEx)
-                        arguments -> simpleLinkFunction(baseURL, arguments, RESOURCE));
-        model.put(
-                "htmlExtensions",
-                (TemplateMethodModelEx)
-                        arguments -> processHtmlExtensions(model, unwrapArguments(arguments)));
+                "resourceLink", (TemplateMethodModelEx) arguments -> simpleLinkFunction(baseURL, arguments, RESOURCE));
+        model.put("htmlExtensions", (TemplateMethodModelEx)
+                arguments -> processHtmlExtensions(model, unwrapArguments(arguments)));
         model.put("loadJSON", parseJSON());
     }
 
     private String simpleLinkFunction(String baseURL, List arguments, URLMangler.URLType urlType) {
-        return ResponseUtils.buildURL(
-                baseURL, (String) unwrapArgument(arguments.get(0)), null, urlType);
+        return ResponseUtils.buildURL(baseURL, (String) unwrapArgument(arguments.get(0)), null, urlType);
     }
 
     /** Builds a service link back to the same service. Used for backlinks. */
@@ -126,11 +118,8 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
         return ResponseUtils.buildURL(
                 requestInfo.getBaseURL(),
                 ResponseUtils.appendPath(
-                        requestInfo.getServiceLandingPage(),
-                        (String) unwrapArgument(arguments.get(0))),
-                arguments.size() > 1
-                        ? Collections.singletonMap("f", (String) unwrapArgument(arguments.get(1)))
-                        : null,
+                        requestInfo.getServiceLandingPage(), (String) unwrapArgument(arguments.get(0))),
+                arguments.size() > 1 ? Collections.singletonMap("f", (String) unwrapArgument(arguments.get(1))) : null,
                 URLMangler.URLType.SERVICE);
     }
 
@@ -140,9 +129,7 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
         return ResponseUtils.buildURL(
                 requestInfo.getBaseURL(),
                 (String) unwrapArgument(arguments.get(0)),
-                arguments.size() > 1
-                        ? argumentsToKVP(arguments.subList(1, arguments.size()))
-                        : null,
+                arguments.size() > 1 ? argumentsToKVP(arguments.subList(1, arguments.size())) : null,
                 URLMangler.URLType.SERVICE);
     }
 
@@ -150,8 +137,7 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
     @SuppressWarnings("unchecked")
     private Map<String, String> argumentsToKVP(List kvp) {
         if (kvp.size() % 2 != 0)
-            throw new IllegalArgumentException(
-                    "Arguments beyond the first must be a list of key value pairs");
+            throw new IllegalArgumentException("Arguments beyond the first must be a list of key value pairs");
 
         List<Object> unwrapped = unwrapArguments(kvp);
         Map<String, String> map = new HashMap<>();
@@ -170,14 +156,12 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
 
     private String loadJSON(String filePath) {
         try {
-            GeoServerDataDirectory geoServerDataDirectory =
-                    GeoServerExtensions.bean(GeoServerDataDirectory.class);
+            GeoServerDataDirectory geoServerDataDirectory = GeoServerExtensions.bean(GeoServerDataDirectory.class);
 
             File file = geoServerDataDirectory.findFile(filePath);
             if (file == null) {
                 LOGGER.warning("File is outside of data directory");
-                throw new RuntimeException(
-                        "File " + filePath + " is outside of the data directory");
+                throw new RuntimeException("File " + filePath + " is outside of the data directory");
             }
 
             ObjectMapper mapper = new ObjectMapper();
@@ -195,9 +179,9 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
     }
 
     private Object unwrapArgument(Object v) {
-        if (v instanceof TemplateModel) {
+        if (v instanceof TemplateModel model) {
             try {
-                return DeepUnwrap.permissiveUnwrap((TemplateModel) v);
+                return DeepUnwrap.permissiveUnwrap(model);
             } catch (TemplateModelException e) {
                 LOGGER.log(Level.WARNING, "", e);
             }
@@ -216,8 +200,7 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
 
     private String processHtmlExtensions(Map<String, Object> model, List arguments) {
         try {
-            List<HTMLExtensionCallback> callbacks =
-                    GeoServerExtensions.extensions(HTMLExtensionCallback.class);
+            List<HTMLExtensionCallback> callbacks = GeoServerExtensions.extensions(HTMLExtensionCallback.class);
             StringBuilder sb = new StringBuilder();
             Request dr = Dispatcher.REQUEST.get();
             for (HTMLExtensionCallback callback : callbacks) {
@@ -240,8 +223,7 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
     protected String getBaseURL() {
         APIRequestInfo requestInfo = APIRequestInfo.get();
         if (requestInfo == null) {
-            throw new IllegalArgumentException(
-                    "Cannot extract base URL, APIRequestInfo is not set");
+            throw new IllegalArgumentException("Cannot extract base URL, APIRequestInfo is not set");
         }
         return requestInfo.getBaseURL();
     }

@@ -23,7 +23,8 @@ public class Coverage extends CoverageJson {
     @JsonProperty(required = true)
     private Domain domain;
 
-    @JsonProperty private Map<String, Parameter> parameters;
+    @JsonProperty
+    private Map<String, Parameter> parameters;
 
     private GridCoverage2D coverage;
 
@@ -36,8 +37,7 @@ public class Coverage extends CoverageJson {
         super(TYPE);
         this.coverage = coverage;
         List<GridCoverage2D> coverages;
-        if (coverage instanceof GranuleStack) {
-            GranuleStack granuleStack = (GranuleStack) coverage;
+        if (coverage instanceof GranuleStack granuleStack) {
             coverages = granuleStack.getGranules();
             referenceCoverage = coverages.get(0);
         } else {
@@ -60,10 +60,7 @@ public class Coverage extends CoverageJson {
     }
 
     private NdArray buildRange(Parameter parameter, Domain domain, List<GridCoverage2D> coverages) {
-        return new NdArray(
-                referenceCoverage.getRenderedImage().getSampleModel().getDataType(),
-                domain,
-                coverages);
+        return new NdArray(referenceCoverage.getRenderedImage().getSampleModel().getDataType(), domain, coverages);
     }
 
     private Map<String, Parameter> buildParameters(GridCoverage2D coverage) {
@@ -85,8 +82,8 @@ public class Coverage extends CoverageJson {
         List<DimensionBean> dimensions = null;
         GranuleStack granuleStack = null;
 
-        if (coverage instanceof GranuleStack) {
-            granuleStack = (GranuleStack) coverage;
+        if (coverage instanceof GranuleStack stack) {
+            granuleStack = stack;
             dimensions = granuleStack.getDimensions();
         } else {
             dimensions = Collections.emptyList();

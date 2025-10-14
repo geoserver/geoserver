@@ -27,26 +27,22 @@ import org.springframework.stereotype.Component;
 public class CollectionsCache implements GeoServerLifecycleHandler, OseoEventListener {
 
     private final OpenSearchAccessProvider accessProvider;
-    private final LoadingCache<Object, Feature> collections =
-            CacheBuilder.newBuilder()
-                    .build(
-                            new CacheLoader<Object, Feature>() {
-                                @Override
-                                public Feature load(Object o) throws Exception {
-                                    FeatureSource<FeatureType, Feature> ps =
-                                            accessProvider
-                                                    .getOpenSearchAccess()
-                                                    .getCollectionSource();
-                                    Filter filter = Filter.INCLUDE;
-                                    if (o instanceof String) {
-                                        filter = STACService.getCollectionFilter((String) o);
-                                    }
-                                    Query q = new Query();
-                                    q.setMaxFeatures(1);
-                                    q.setFilter(filter);
-                                    return DataUtilities.first(ps.getFeatures(q));
-                                }
-                            });
+    private final LoadingCache<Object, Feature> collections = CacheBuilder.newBuilder()
+            .build(new CacheLoader<Object, Feature>() {
+                @Override
+                public Feature load(Object o) throws Exception {
+                    FeatureSource<FeatureType, Feature> ps =
+                            accessProvider.getOpenSearchAccess().getCollectionSource();
+                    Filter filter = Filter.INCLUDE;
+                    if (o instanceof String string) {
+                        filter = STACService.getCollectionFilter(string);
+                    }
+                    Query q = new Query();
+                    q.setMaxFeatures(1);
+                    q.setFilter(filter);
+                    return DataUtilities.first(ps.getFeatures(q));
+                }
+            });
 
     /**
      * Creates a new cache
@@ -73,7 +69,7 @@ public class CollectionsCache implements GeoServerLifecycleHandler, OseoEventLis
             return collections.get(collectionId);
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
-            if (cause instanceof IOException) throw (IOException) cause;
+            if (cause instanceof IOException exception) throw exception;
             throw new IOException(e);
         }
     }

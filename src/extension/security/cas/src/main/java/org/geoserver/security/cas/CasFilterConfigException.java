@@ -6,6 +6,7 @@
 
 package org.geoserver.security.cas;
 
+import java.io.Serial;
 import org.geoserver.security.validation.FilterConfigException;
 
 /**
@@ -15,6 +16,7 @@ import org.geoserver.security.validation.FilterConfigException;
  */
 public class CasFilterConfigException extends FilterConfigException {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public CasFilterConfigException(String errorId, Object... args) {
@@ -27,8 +29,7 @@ public class CasFilterConfigException extends FilterConfigException {
 
     public static final String CAS_SERVER_URL_REQUIRED = "CAS_SERVER_URL_REQUIRED";
     public static final String CAS_SERVER_URL_MALFORMED = "CAS_SERVER_URL_MALFORMED";
-    public static final String CAS_URL_IN_LOGOUT_PAGE_MALFORMED =
-            "CAS_URL_IN_LOGOUT_PAGE_MALFORMED";
+    public static final String CAS_URL_IN_LOGOUT_PAGE_MALFORMED = "CAS_URL_IN_LOGOUT_PAGE_MALFORMED";
     public static final String CAS_PROXYCALLBACK_MALFORMED = "CAS_PROXYCALLBACK_MALFORMED";
     public static final String CAS_PROXYCALLBACK_NOT_HTTPS = "CAS_PROXYCALLBACK_NOT_HTTPS";
 }

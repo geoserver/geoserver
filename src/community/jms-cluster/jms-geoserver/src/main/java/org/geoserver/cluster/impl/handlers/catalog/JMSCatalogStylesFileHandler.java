@@ -23,8 +23,7 @@ public class JMSCatalogStylesFileHandler extends DocumentFileHandler {
     private final GeoServerResourceLoader loader;
 
     @SuppressWarnings("rawtypes")
-    public JMSCatalogStylesFileHandler(
-            Catalog catalog, XStream xstream, Class clazz, GeoServerResourceLoader loader) {
+    public JMSCatalogStylesFileHandler(Catalog catalog, XStream xstream, Class clazz, GeoServerResourceLoader loader) {
         super(xstream, clazz);
         this.catalog = catalog;
         this.loader = loader;
@@ -48,10 +47,7 @@ public class JMSCatalogStylesFileHandler extends DocumentFileHandler {
                 if (!Resources.exists(file)) {
                     final String styleAbsolutePath = event.getResourcePath();
                     if (styleAbsolutePath.contains("workspaces")) {
-                        file =
-                                loader.get(
-                                        styleAbsolutePath.substring(
-                                                styleAbsolutePath.indexOf("workspaces")));
+                        file = loader.get(styleAbsolutePath.substring(styleAbsolutePath.indexOf("workspaces")));
                     }
                 }
 
@@ -59,10 +55,7 @@ public class JMSCatalogStylesFileHandler extends DocumentFileHandler {
                 return true;
             } catch (Exception e) {
                 if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
-                    LOGGER.severe(
-                            this.getClass()
-                                    + " is unable to synchronize the incoming event: "
-                                    + event);
+                    LOGGER.severe(this.getClass() + " is unable to synchronize the incoming event: " + event);
                 throw e;
             }
         }

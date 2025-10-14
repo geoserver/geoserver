@@ -4,8 +4,6 @@
  */
 package org.geoserver.tiles;
 
-import static java.lang.String.format;
-
 import com.google.common.base.Preconditions;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -66,9 +64,8 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
     protected interface TilesFile {
 
         /**
-         * This is called before tiles are added to the file so the underlying DB (i.e.
-         * geopkg/mbtiles) can be setup (i.e. create tables). Also, allows the file to add any
-         * metadata info.
+         * This is called before tiles are added to the file so the underlying DB (i.e. geopkg/mbtiles) can be setup
+         * (i.e. create tables). Also, allows the file to add any metadata info.
          *
          * <p>Typically, this is the main work of the subclasses.
          *
@@ -138,12 +135,7 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
     protected String extension;
 
     public AbstractTilesGetMapOutputFormat(
-            String mimeType,
-            String extension,
-            Set<String> names,
-            WebMapService webMapService,
-            WMS wms,
-            GWC gwc) {
+            String mimeType, String extension, Set<String> names, WebMapService webMapService, WMS wms, GWC gwc) {
         super(mimeType, names);
         this.webMapService = webMapService;
         this.wms = wms;
@@ -178,8 +170,8 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
     }
 
     /**
-     * Returns a listener throwing a timeout error on isCancel, if the rendering too exceeded the
-     * allowed time, or a {@link NullProgressListener} in case there is no timeout.
+     * Returns a listener throwing a timeout error on isCancel, if the rendering too exceeded the allowed time, or a
+     * {@link NullProgressListener} in case there is no timeout.
      */
     private ProgressListener getListener(WMSMapContent map) {
         int maxRenderingTime = wms.getMaxRenderingTime(map.getRequest());
@@ -203,8 +195,8 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
     }
 
     /**
-     * Factory method for Tiles File. Implement this method to create the underlying TilesFile (i.e.
-     * geopkg). Later, setMetdata() will be called to allow the TilesFile to be fully setup.
+     * Factory method for Tiles File. Implement this method to create the underlying TilesFile (i.e. geopkg). Later,
+     * setMetdata() will be called to allow the TilesFile to be fully setup.
      */
     protected abstract TilesFile createTilesFile() throws IOException;
 
@@ -216,14 +208,12 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         List<MapLayerInfo> mapLayers = req.getLayers();
 
         Preconditions.checkState(
-                layers.size() == mapLayers.size(),
-                "Number of map layers not same as number of rendered layers");
+                layers.size() == mapLayers.size(), "Number of map layers not same as number of rendered layers");
 
         addTiles(tiles, req, map.getTitle(), listener);
     }
 
-    protected void addTiles(
-            TilesFile tiles, GetMapRequest req, String name, ProgressListener listener)
+    protected void addTiles(TilesFile tiles, GetMapRequest req, String name, ProgressListener listener)
             throws ServiceException, IOException {
         List<MapLayerInfo> mapLayers = req.getLayers();
 
@@ -237,8 +227,8 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
     }
 
     /**
-     * Add the tiles. The listener is currently checked only for cancellation, in order to support
-     * WPS process cancellation
+     * Add the tiles. The listener is currently checked only for cancellation, in order to support WPS process
+     * cancellation
      */
     protected void addTiles(
             TilesFile tiles,
@@ -286,9 +276,7 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         req.setLayers(mapLayers);
 
         String imageFormat =
-                formatOpts.containsKey("format")
-                        ? parseFormatFromOpts(formatOpts)
-                        : findBestFormat(request);
+                formatOpts.containsKey("format") ? parseFormatFromOpts(formatOpts) : findBestFormat(request);
 
         req.setFormat(imageFormat);
         req.setWidth(gridSubset.getTileWidth());
@@ -296,14 +284,7 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         req.setCrs(getCoordinateReferenceSystem(request));
 
         // store metadata
-        tiles.setMetadata(
-                tileEntryName,
-                bounds(request),
-                imageFormat,
-                srid(request),
-                mapLayers,
-                minmax,
-                gridSubset);
+        tiles.setMetadata(tileEntryName, bounds(request), imageFormat, srid(request), mapLayers, minmax, gridSubset);
 
         // column and row bounds
         Integer minColumn = null, maxColumn = null, minRow = null, maxRow = null;
@@ -331,21 +312,15 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
             for (long x = minX; x <= maxX; x++) {
                 for (long y = minY; y <= maxY; y++) {
                     BoundingBox box = gridSubset.boundsFromIndex(new long[] {x, y, z});
-                    req.setBbox(
-                            new Envelope(
-                                    box.getMinX(), box.getMaxX(), box.getMinY(), box.getMaxY()));
+                    req.setBbox(new Envelope(box.getMinX(), box.getMaxX(), box.getMinY(), box.getMaxY()));
                     WebMap result = webMapService.getMap(req);
                     tiles.addTile(
-                            z,
-                            (int) x,
-                            (int) (flipy ? gridSubset.getNumTilesHigh(z) - (y + 1) : y),
-                            toBytes(result));
+                            z, (int) x, (int) (flipy ? gridSubset.getNumTilesHigh(z) - (y + 1) : y), toBytes(result));
                     // Cleanup
                     cleaner.finished(null);
 
                     if (listener.isCanceled()) {
-                        LOGGER.log(
-                                Level.FINE, "Stopping tile generation, request has been canceled");
+                        LOGGER.log(Level.FINE, "Stopping tile generation, request has been canceled");
                         return;
                     }
                 }
@@ -388,9 +363,8 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
     }
 
     /**
-     * Creates a GridSubset (GridSet + a coverage area) based on the WMS request (i.e. SRID in the
-     * request) &format_options=gridset:<name> can get used in the WMS request to explicitly use a
-     * particular GWC gridset
+     * Creates a GridSubset (GridSet + a coverage area) based on the WMS request (i.e. SRID in the request)
+     * &format_options=gridset:<name> can get used in the WMS request to explicitly use a particular GWC gridset
      */
     protected GridSubset findBestGridSubset(GetMapRequest req) {
         Map formatOpts = req.getFormatOptions();
@@ -443,8 +417,7 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
             }
 
             if (gridSubsets.isEmpty()) {
-                throw new ServiceException(
-                        "No suitable " + epsgCode + " grid subset for " + req.getLayers());
+                throw new ServiceException("No suitable " + epsgCode + " grid subset for " + req.getLayers());
             }
         }
 
@@ -503,16 +476,13 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         }
 
         if (maxZoom < minZoom) {
-            throw new ServiceException(
-                    format("maxZoom (%d) can not be less than minZoom (%d)", maxZoom, minZoom));
+            throw new ServiceException("maxZoom (%d) can not be less than minZoom (%d)".formatted(maxZoom, minZoom));
         }
 
         // end index
         if (maxZoom > gridSet.getNumLevels()) {
-            LOGGER.warning(
-                    format(
-                            "Max zoom (%d) can't be greater than number of zoom levels (%d)",
-                            maxZoom, gridSet.getNumLevels()));
+            LOGGER.warning("Max zoom (%d) can't be greater than number of zoom levels (%d)"
+                    .formatted(maxZoom, gridSet.getNumLevels()));
             maxZoom = gridSet.getNumLevels();
         }
 
@@ -526,8 +496,7 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         // not
         // affect
         //  this calculation).
-        double reqScale =
-                RendererUtilities.calculateOGCScale(bounds(req), gridSet.getTileWidth(), null);
+        double reqScale = RendererUtilities.calculateOGCScale(bounds(req), gridSet.getTileWidth(), null);
 
         int i = 0;
         double error = Math.abs(gridSet.getGrid(i).getScaleDenominator() - reqScale);
@@ -578,19 +547,18 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         return PNG_MIME_TYPE;
     }
 
+    @SuppressWarnings("PMD.CloseResource") // FileBackedRawMap rawMap
     protected byte[] toBytes(WebMap map) throws IOException {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
 
         if (map instanceof RenderedImageMap) {
             RenderedImageMapResponse response =
-                    JPEG_MIME_TYPE.equals(map.getMimeType())
-                            ? new JPEGMapResponse(wms)
-                            : new PNGMapResponse(wms);
+                    JPEG_MIME_TYPE.equals(map.getMimeType()) ? new JPEGMapResponse(wms) : new PNGMapResponse(wms);
             response.write(map, bout, null);
-        } else if (map instanceof RawMap) {
-            ((RawMap) map).writeTo(bout);
-        } else if (map instanceof FileBackedRawMap) {
-            ((FileBackedRawMap) map).writeTo(bout);
+        } else if (map instanceof RawMap rawMap) {
+            rawMap.writeTo(bout);
+        } else if (map instanceof FileBackedRawMap rawMap) {
+            rawMap.writeTo(bout);
         }
         bout.flush();
         return bout.toByteArray();

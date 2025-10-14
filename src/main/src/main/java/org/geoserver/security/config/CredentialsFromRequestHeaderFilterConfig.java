@@ -4,15 +4,17 @@
  */
 package org.geoserver.security.config;
 
+import java.io.Serial;
+
 /**
- * {@link GeoServerCredentialsFromRequestHeaderAuthenticationFilter} configuration object.
+ * GeoServerCredentialsFromRequestHeaderAuthenticationFilter configuration object.
  *
  * @author Lorenzo Natali, GeoSolutions
  * @author Mauro Bartolomeoli, GeoSolutions
  */
-public class CredentialsFromRequestHeaderFilterConfig extends SecurityFilterConfig
-        implements SecurityAuthFilterConfig {
+public class CredentialsFromRequestHeaderFilterConfig extends SecurityFilterConfig implements SecurityAuthFilterConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /** The header that contains the username */

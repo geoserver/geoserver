@@ -5,7 +5,8 @@
  */
 package org.geoserver.web.demo;
 
-import com.google.common.base.Charsets;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import com.google.common.io.CharStreams;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -49,7 +50,6 @@ import org.geotools.util.logging.Logging;
 /**
  * @author Gabriel Roldan
  * @since 1.8.x
- * @version $Id$
  */
 // TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
@@ -58,8 +58,8 @@ public class DemoRequestsPage extends GeoServerBasePage {
     private static final Logger LOGGER = Logging.getLogger("org.geoserver.web.demo");
 
     /**
-     * Javascript required by the Demo Request page to do the client-side requests. This is shared
-     * among other modules (cf WCS Request Builder, and WPS Request Builder).
+     * Javascript required by the Demo Request page to do the client-side requests. This is shared among other modules
+     * (cf WCS Request Builder, and WPS Request Builder).
      *
      * <p>See static block, below.
      */
@@ -74,27 +74,15 @@ public class DemoRequestsPage extends GeoServerBasePage {
 
     static {
         try {
-            var demo_request_js =
-                    CharStreams.toString(
-                            new InputStreamReader(
-                                    DemoRequestsPage.class.getResourceAsStream(
-                                            "/org/geoserver/web/demo/demo-requests.js"),
-                                    Charsets.UTF_8));
-            var xml_pretty_print_js =
-                    CharStreams.toString(
-                            new InputStreamReader(
-                                    DemoRequestsPage.class.getResourceAsStream(
-                                            "/org/geoserver/web/demo/xml-pretty-print.js"),
-                                    Charsets.UTF_8));
-            var js = demo_request_js + "\n" + xml_pretty_print_js;
+            String demo_request_js = CharStreams.toString(new InputStreamReader(
+                    DemoRequestsPage.class.getResourceAsStream("/org/geoserver/web/demo/demo-requests.js"), UTF_8));
+            String xml_pretty_print_js = CharStreams.toString(new InputStreamReader(
+                    DemoRequestsPage.class.getResourceAsStream("/org/geoserver/web/demo/xml-pretty-print.js"), UTF_8));
+            String js = demo_request_js + "\n" + xml_pretty_print_js;
             demoRequestsJavascript = js;
 
-            demoRequestsCSS =
-                    CharStreams.toString(
-                            new InputStreamReader(
-                                    DemoRequestsPage.class.getResourceAsStream(
-                                            "/org/geoserver/web/demo/demo-requests.css"),
-                                    Charsets.UTF_8));
+            demoRequestsCSS = CharStreams.toString(new InputStreamReader(
+                    DemoRequestsPage.class.getResourceAsStream("/org/geoserver/web/demo/demo-requests.css"), UTF_8));
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "error occurred reading demoRequestsJavascript", e);
@@ -152,8 +140,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
             GeoServerResourceLoader loader = this.getGeoServer().getCatalog().getResourceLoader();
             demoDir = Resources.serializable(loader.get("demo"));
         } catch (Exception e) {
-            throw new WicketRuntimeException(
-                    "Can't access demo requests directory: " + e.getMessage());
+            throw new WicketRuntimeException("Can't access demo requests directory: " + e.getMessage());
         }
         DemoRequest request = new DemoRequest(demoDir.path());
         setDefaultModel(new Model<>(request));
@@ -188,8 +175,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
     }
 
     /**
-     * Loads the contents of the demo request file named {@code reqFileName} and located in the demo
-     * directory.
+     * Loads the contents of the demo request file named {@code reqFileName} and located in the demo directory.
      *
      * @param reqFileName the file name to load the contents for
      * @return the file contents
@@ -218,24 +204,19 @@ public class DemoRequestsPage extends GeoServerBasePage {
         add(demoRequestsForm);
 
         final List<String> demoList = getDemoList(demoDir);
-        final IModel<String> reqFileNameModel =
-                new PropertyModel<>(requestModel, "requestFileName");
+        final IModel<String> reqFileNameModel = new PropertyModel<>(requestModel, "requestFileName");
         final DropDownChoice<String> demoRequestsList =
-                new Select2DropDownChoice<>(
-                        "demoRequestsList",
-                        reqFileNameModel,
-                        demoList,
-                        new ChoiceRenderer<>() {
-                            @Override
-                            public String getIdValue(String obj, int index) {
-                                return obj;
-                            }
+                new Select2DropDownChoice<>("demoRequestsList", reqFileNameModel, demoList, new ChoiceRenderer<>() {
+                    @Override
+                    public String getIdValue(String obj, int index) {
+                        return obj;
+                    }
 
-                            @Override
-                            public Object getDisplayValue(String obj) {
-                                return obj;
-                            }
-                        });
+                    @Override
+                    public Object getDisplayValue(String obj) {
+                        return obj;
+                    }
+                });
         demoRequestsForm.add(demoRequestsList);
 
         /*
@@ -243,67 +224,64 @@ public class DemoRequestsPage extends GeoServerBasePage {
          * the EditAreaBehavior to update the body contents inside it, but instead puts the plain
          * TextArea contents above the empty xml editor
          */
-        demoRequestsList.add(
-                new AjaxFormSubmitBehavior(demoRequestsForm, "change") {
+        demoRequestsList.add(new AjaxFormSubmitBehavior(demoRequestsForm, "change") {
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        final String reqFileName = demoRequestsList.getModelValue();
-                        final String contents;
-                        String proxyBaseUrl;
-                        final String baseUrl;
-                        {
-                            HttpServletRequest httpServletRequest =
-                                    getGeoServerApplication()
-                                            .servletRequest(DemoRequestsPage.this.getRequest());
-                            proxyBaseUrl = GeoServerExtensions.getProperty("PROXY_BASE_URL");
-                            if (StringUtils.isEmpty(proxyBaseUrl)) {
-                                GeoServer gs = getGeoServer();
-                                proxyBaseUrl = gs.getGlobal().getSettings().getProxyBaseUrl();
-                                if (StringUtils.isEmpty(proxyBaseUrl)) {
-                                    baseUrl = ResponseUtils.baseURL(httpServletRequest);
-                                } else {
-                                    baseUrl = proxyBaseUrl;
-                                }
-                            } else {
-                                baseUrl = proxyBaseUrl;
-                            }
-                        }
-                        try {
-                            contents = getFileContents(reqFileName);
-                        } catch (IOException e) {
-                            LOGGER.log(Level.WARNING, "Can't load demo file " + reqFileName, e);
-                            throw new WicketRuntimeException(
-                                    "Can't load demo file " + reqFileName, e);
-                        }
-
-                        boolean demoRequestIsHttpGet = reqFileName.endsWith(".url");
-                        final String service =
-                                reqFileName.substring(0, reqFileName.indexOf('_')).toLowerCase();
-                        if (demoRequestIsHttpGet) {
-                            String url = ResponseUtils.appendPath(baseUrl, contents);
-                            urlTextField.setModelObject(url);
-                            body.setModelObject("");
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                final String reqFileName = demoRequestsList.getModelValue();
+                final String contents;
+                String proxyBaseUrl;
+                final String baseUrl;
+                {
+                    HttpServletRequest httpServletRequest =
+                            getGeoServerApplication().servletRequest(DemoRequestsPage.this.getRequest());
+                    proxyBaseUrl = GeoServerExtensions.getProperty("PROXY_BASE_URL");
+                    if (StringUtils.isEmpty(proxyBaseUrl)) {
+                        GeoServer gs = getGeoServer();
+                        proxyBaseUrl = gs.getGlobal().getSettings().getProxyBaseUrl();
+                        if (StringUtils.isEmpty(proxyBaseUrl)) {
+                            baseUrl = ResponseUtils.baseURL(httpServletRequest);
                         } else {
-                            String serviceUrl = ResponseUtils.appendPath(baseUrl, service);
-                            urlTextField.setModelObject(serviceUrl);
-                            body.setModelObject(contents);
+                            baseUrl = proxyBaseUrl;
                         }
-
-                        // target.add(urlTextField);
-                        // target.add(body);
-                        /*
-                         * Need to setResponsePage, addComponent causes the EditAreaBehavior to sometimes
-                         * not updating properly
-                         */
-                        setResponsePage(DemoRequestsPage.this);
+                    } else {
+                        baseUrl = proxyBaseUrl;
                     }
+                }
+                try {
+                    contents = getFileContents(reqFileName);
+                } catch (IOException e) {
+                    LOGGER.log(Level.WARNING, "Can't load demo file " + reqFileName, e);
+                    throw new WicketRuntimeException("Can't load demo file " + reqFileName, e);
+                }
 
-                    @Override
-                    protected void onError(AjaxRequestTarget target) {
-                        // nothing to do
-                    }
-                });
+                boolean demoRequestIsHttpGet = reqFileName.endsWith(".url");
+                final String service =
+                        reqFileName.substring(0, reqFileName.indexOf('_')).toLowerCase();
+                if (demoRequestIsHttpGet) {
+                    String url = ResponseUtils.appendPath(baseUrl, contents);
+                    urlTextField.setModelObject(url);
+                    body.setModelObject("");
+                } else {
+                    String serviceUrl = ResponseUtils.appendPath(baseUrl, service);
+                    urlTextField.setModelObject(serviceUrl);
+                    body.setModelObject(contents);
+                }
+
+                // target.add(urlTextField);
+                // target.add(body);
+                /*
+                 * Need to setResponsePage, addComponent causes the EditAreaBehavior to sometimes
+                 * not updating properly
+                 */
+                setResponsePage(DemoRequestsPage.this);
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target) {
+                // nothing to do
+            }
+        });
 
         urlTextField = new TextField<>("url", new PropertyModel<>(requestModel, "requestUrl"));
         urlTextField.setMarkupId("requestUrl");
@@ -329,8 +307,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
         prettyXML = new CheckBox("prettyXML", new PropertyModel<>(requestModel, "prettyXML"));
         demoRequestsForm.add(prettyXML);
 
-        openNewPage =
-                new CheckBox("openNewWindow", new PropertyModel<>(requestModel, "openNewWindow"));
+        openNewPage = new CheckBox("openNewWindow", new PropertyModel<>(requestModel, "openNewWindow"));
         demoRequestsForm.add(openNewPage);
     }
 
@@ -343,9 +320,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
                     demoList.add(name);
                 } else {
                     LOGGER.warning(
-                            "Ignoring file "
-                                    + name
-                                    + " in demo requests directory, only .url and .xml files allowed");
+                            "Ignoring file " + name + " in demo requests directory, only .url and .xml files allowed");
                 }
             }
         }

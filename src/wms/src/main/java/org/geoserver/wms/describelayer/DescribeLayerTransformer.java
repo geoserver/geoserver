@@ -23,11 +23,9 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
 /**
- * <code>org.geotools.xml.transform.TransformerBase</code> specialized in producing a WMS
- * DescribeLayer responses.
+ * <code>org.geotools.xml.transform.TransformerBase</code> specialized in producing a WMS DescribeLayer responses.
  *
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class DescribeLayerTransformer extends TransformerBase {
     /** The base url upon URLs which point to 'me' should be based. */
@@ -58,11 +56,11 @@ public class DescribeLayerTransformer extends TransformerBase {
     }
 
     /**
-     * Gets the <code>Transformer</code> created by the overriden method in the superclass and adds
-     * it the DOCTYPE token pointing to the DescribeLayer DTD on this server instance.
+     * Gets the <code>Transformer</code> created by the overriden method in the superclass and adds it the DOCTYPE token
+     * pointing to the DescribeLayer DTD on this server instance.
      *
-     * <p>The DTD is set at the fixed location given by the <code>schemaBaseUrl</code> passed to the
-     * constructor <code>+ "wms/1.1.1/WMS_DescribeLayerResponse.dtd</code>.
+     * <p>The DTD is set at the fixed location given by the <code>schemaBaseUrl</code> passed to the constructor <code>
+     * + "wms/1.1.1/WMS_DescribeLayerResponse.dtd</code>.
      *
      * @return a Transformer propoerly configured to produce DescribeLayer responses.
      * @throws TransformerException if it is thrown by <code>super.createTransformer()</code>
@@ -80,7 +78,6 @@ public class DescribeLayerTransformer extends TransformerBase {
      * Sends SAX events to produce a DescribeLayer response document.
      *
      * @author Gabriel Roldan
-     * @version $Id$
      */
     private class DescribeLayerTranslator extends TranslatorSupport {
         /** Creates a new DescribeLayerTranslator object. */
@@ -118,8 +115,8 @@ public class DescribeLayerTransformer extends TransformerBase {
         }
 
         /**
-         * As currently GeoServer does not have support for nested layers, this method declares a
-         * <code>LayerDescription</code> element for each featuretype requested.
+         * As currently GeoServer does not have support for nested layers, this method declares a <code>LayerDescription
+         * </code> element for each featuretype requested.
          */
         private void handleLayers(DescribeLayerRequest req) {
             final List<MapLayerInfo> layers = req.getLayers();

@@ -44,8 +44,7 @@ class LegendEntry {
         Graphics2D canvas = image.createGraphics();
 
         try {
-            if (symbol instanceof SimpleMarkerSymbol) {
-                SimpleMarkerSymbol simpleMarkerSymbol = (SimpleMarkerSymbol) symbol;
+            if (symbol instanceof SimpleMarkerSymbol simpleMarkerSymbol) {
                 Shape shape = shapeForStyle(simpleMarkerSymbol.getStyle());
                 Color fillColor = colorForRGBA(simpleMarkerSymbol.getColor());
                 Color strokeColor = colorForRGBA(simpleMarkerSymbol.getOutline().getColor());
@@ -59,12 +58,12 @@ class LegendEntry {
                 canvas.draw(shape);
                 // TODO: Implement image preview
                 // TODO: Implement font preview
-            } else if (symbol instanceof SimpleFillSymbol) {
-                SimpleFillSymbol simpleFillSymbol = (SimpleFillSymbol) symbol;
+            } else if (symbol instanceof SimpleFillSymbol simpleFillSymbol) {
                 final Shape sample = samplePolygon();
                 final Color fillColor = colorForRGBA(simpleFillSymbol.getColor());
                 final Stroke stroke = strokeForLineSymbol(simpleFillSymbol.getOutline());
-                final Color strokeColor = colorForRGBA(simpleFillSymbol.getOutline().getColor());
+                final Color strokeColor =
+                        colorForRGBA(simpleFillSymbol.getOutline().getColor());
 
                 canvas.setColor(fillColor);
                 canvas.fill(sample);
@@ -72,8 +71,7 @@ class LegendEntry {
                 canvas.setStroke(stroke);
                 canvas.setColor(strokeColor);
                 canvas.draw(sample);
-            } else if (symbol instanceof SimpleLineSymbol) {
-                SimpleLineSymbol simpleLineSymbol = (SimpleLineSymbol) symbol;
+            } else if (symbol instanceof SimpleLineSymbol simpleLineSymbol) {
                 final Shape sample = sampleLine();
                 final Stroke stroke = strokeForLineSymbol(simpleLineSymbol);
                 final Color color = colorForRGBA(simpleLineSymbol.getColor());
@@ -87,8 +85,7 @@ class LegendEntry {
         }
         byte[] buff = toPNGBytes(image);
         return Base64.encodeBytes(
-                buff,
-                Base64.DONT_BREAK_LINES); // ArcGIS doesn't break at 76 columns, so neither do we.
+                buff, Base64.DONT_BREAK_LINES); // ArcGIS doesn't break at 76 columns, so neither do we.
     }
 
     private static Stroke strokeForLineSymbol(SimpleLineSymbol outline) {
@@ -187,8 +184,7 @@ class LegendEntry {
         try {
             ImageIO.write(image, "PNG", bytes);
         } catch (IOException e) {
-            throw new RuntimeException(
-                    "Writing to ByteArrayOutputStream should not throw IOException", e);
+            throw new RuntimeException("Writing to ByteArrayOutputStream should not throw IOException", e);
         }
 
         return bytes.toByteArray();

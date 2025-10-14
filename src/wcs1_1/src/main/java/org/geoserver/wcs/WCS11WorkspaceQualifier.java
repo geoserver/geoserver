@@ -24,12 +24,10 @@ public class WCS11WorkspaceQualifier extends WorkspaceQualifyingCallback {
     }
 
     @Override
-    protected void qualifyRequest(
-            WorkspaceInfo ws, PublishedInfo l, Service service, Request request) {}
+    protected void qualifyRequest(WorkspaceInfo ws, PublishedInfo l, Service service, Request request) {}
 
     @Override
-    protected void qualifyRequest(
-            WorkspaceInfo ws, PublishedInfo l, Operation operation, Request request) {
+    protected void qualifyRequest(WorkspaceInfo ws, PublishedInfo l, Operation operation, Request request) {
 
         GetCapabilitiesType caps = parameter(operation, GetCapabilitiesType.class);
         if (caps != null) {

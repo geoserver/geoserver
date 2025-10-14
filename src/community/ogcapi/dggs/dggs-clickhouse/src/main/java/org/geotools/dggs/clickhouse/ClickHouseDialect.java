@@ -20,6 +20,17 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+import org.geotools.api.feature.FeatureVisitor;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.AttributeDescriptor;
 import org.geotools.api.feature.type.GeometryDescriptor;
 import org.geotools.data.jdbc.FilterToSQL;
 import org.geotools.jdbc.BasicSQLDialect;
@@ -39,8 +50,7 @@ class ClickHouseDialect extends BasicSQLDialect {
     }
 
     @Override
-    public void encodeGeometryValue(Geometry value, int dimension, int srid, StringBuffer sql)
-            throws IOException {
+    public void encodeGeometryValue(Geometry value, int dimension, int srid, StringBuffer sql) throws IOException {
         throw new UnsupportedOperationException(GEOMETRY_NOT_SUPPORTED);
     }
 
@@ -50,8 +60,7 @@ class ClickHouseDialect extends BasicSQLDialect {
     }
 
     @Override
-    public Envelope decodeGeometryEnvelope(ResultSet rs, int column, Connection cx)
-            throws SQLException, IOException {
+    public Envelope decodeGeometryEnvelope(ResultSet rs, int column, Connection cx) throws SQLException, IOException {
         throw new UnsupportedOperationException(GEOMETRY_NOT_SUPPORTED);
     }
 
@@ -89,5 +98,44 @@ class ClickHouseDialect extends BasicSQLDialect {
         } else if (offset > 0) {
             sql.append(" OFFSET " + offset);
         }
+    }
+
+    @Override
+    public Object convertValue(Object value, AttributeDescriptor ad) {
+        Class<?> binding = ad.getType().getBinding();
+        Date c = convertValue(value, binding);
+        if (c != null) return c;
+        return super.convertValue(value, ad);
+    }
+
+    private static Date convertValue(Object value, Class<?> binding) {
+        if (value instanceof LocalDate d && binding.equals(java.sql.Date.class)) {
+            Calendar c = Calendar.getInstance();
+            c.clear();
+            c.set(d.getYear(), d.getMonthValue() - 1, d.getDayOfMonth(), 0, 0, 0);
+            return new java.sql.Date(c.getTimeInMillis());
+        } else if (value instanceof LocalDateTime time && binding.equals(java.sql.Timestamp.class)) {
+            return java.sql.Timestamp.from(time.atZone(ZoneId.systemDefault()).toInstant());
+        }
+        return null;
+    }
+
+    /** SQLite dates are just strings, they don't get converted to Date in case of aggregation, do it here instead */
+    @Override
+    public Function<Object, Object> getAggregateConverter(FeatureVisitor visitor, SimpleFeatureType featureType) {
+        Optional<List<Class>> maybeResultTypes = getResultTypes(visitor, featureType);
+        if (maybeResultTypes.isPresent()) {
+            List<Class> resultTypes = maybeResultTypes.get();
+            if (resultTypes.size() == 1) {
+                Class<?> targetType = resultTypes.get(0);
+                if (java.util.Date.class.isAssignableFrom(targetType)) {
+                    return v -> {
+                        return convertValue(v, targetType);
+                    };
+                }
+            }
+        }
+        // otherwise no conversion needed
+        return Function.identity();
     }
 }

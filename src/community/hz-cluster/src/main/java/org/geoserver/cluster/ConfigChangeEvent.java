@@ -8,6 +8,7 @@ package org.geoserver.cluster;
 import static com.google.common.base.Objects.equal;
 
 import com.google.common.base.Objects;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -92,6 +93,7 @@ public class ConfigChangeEvent extends Event {
     }
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public enum Type {
@@ -155,10 +157,9 @@ public class ConfigChangeEvent extends Event {
     }
 
     /**
-     * Equals is based on {@link #getObjectId() id}, {@link #getObjectName() name}, and {@link
-     * #getChangeType() changeType}. {@link #getObjectClass() class} is left off because it can be a
-     * proxy class and id/name/type are good enough anyways (given ids are unique, no two objects of
-     * different class can have the same id).
+     * Equals is based on {@link #getObjectId() id}, {@link #getObjectName() name}, and {@link #getChangeType()
+     * changeType}. {@link #getObjectClass() class} is left off because it can be a proxy class and id/name/type are
+     * good enough anyways (given ids are unique, no two objects of different class can have the same id).
      */
     @Override
     public boolean equals(Object o) {
@@ -170,10 +171,9 @@ public class ConfigChangeEvent extends Event {
     }
 
     /**
-     * Hash code is based on {@link #getObjectId() id}, {@link #getObjectName() name}, and {@link
-     * #getChangeType() changeType}. {@link #getObjectClass() class} is left off because it can be a
-     * proxy class and id/name/type are good enough anyways (given ids are unique, no two objects of
-     * different class can have the same id).
+     * Hash code is based on {@link #getObjectId() id}, {@link #getObjectName() name}, and {@link #getChangeType()
+     * changeType}. {@link #getObjectClass() class} is left off because it can be a proxy class and id/name/type are
+     * good enough anyways (given ids are unique, no two objects of different class can have the same id).
      */
     @Override
     public int hashCode() {

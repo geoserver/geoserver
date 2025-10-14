@@ -19,8 +19,8 @@ import org.geotools.data.util.SubProgressListener;
 import org.geotools.util.SimpleInternationalString;
 
 /**
- * A map using input providers internally, allows for deferred execution of the input parsing (it
- * happens in a single shot when the first input is fetched)
+ * A map using input providers internally, allows for deferred execution of the input parsing (it happens in a single
+ * shot when the first input is fetched)
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -69,18 +69,14 @@ class LazyInputMap extends AbstractMap<String, Object> {
         float stepsSoFar = 0;
         for (InputProvider provider : providers.values()) {
             listener.setTask(
-                    new SimpleInternationalString(
-                            "Retrieving/parsing process input: " + provider.getInputId()));
+                    new SimpleInternationalString("Retrieving/parsing process input: " + provider.getInputId()));
             try {
                 // force parsing
                 float providerLongSteps = provider.longStepCount();
                 ProgressListener subListener;
                 if (providerLongSteps > 0) {
-                    subListener =
-                            new SubProgressListener(
-                                    listener,
-                                    (stepsSoFar / totalSteps) * 100,
-                                    (providerLongSteps / totalSteps) * 100);
+                    subListener = new SubProgressListener(
+                            listener, (stepsSoFar / totalSteps) * 100, (providerLongSteps / totalSteps) * 100);
                 } else {
                     subListener = new NullProgressListener();
                 }
@@ -91,11 +87,10 @@ class LazyInputMap extends AbstractMap<String, Object> {
                 values.put(provider.getInputId(), value);
             } catch (Exception e) {
                 listener.exceptionOccurred(e);
-                if (e instanceof WPSException) {
-                    throw (WPSException) e;
+                if (e instanceof WPSException exception) {
+                    throw exception;
                 }
-                throw new WPSException(
-                        "Failed to retrieve value for input " + provider.getInputId(), e);
+                throw new WPSException("Failed to retrieve value for input " + provider.getInputId(), e);
             }
         }
     }

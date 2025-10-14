@@ -28,8 +28,7 @@ public class MasterPasswordProviderPanelTest extends AbstractSecurityNamedServic
     public void clearSecurityStuff() throws Exception {
         Set<String> mpProviders = getSecurityManager().listMasterPasswordProviders();
         if (mpProviders.contains("default2")) {
-            MasterPasswordProviderConfig default2 =
-                    getSecurityManager().loadMasterPassswordProviderConfig("default2");
+            MasterPasswordProviderConfig default2 = getSecurityManager().loadMasterPassswordProviderConfig("default2");
             getSecurityManager().removeMasterPasswordProvder(default2);
         }
     }

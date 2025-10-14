@@ -22,12 +22,10 @@ import org.geotools.util.SimpleInternationalString;
  *
  * @author Andrea Aime - GeoSolutions
  */
-@DescribeProcess(
-        title = "MultiRaw",
-        description = "Process used to test processes with multiple raw outputs")
+@DescribeProcess(title = "MultiRaw", description = "Process used to test processes with multiple raw outputs")
 public class MultiRawProcess {
 
-    static final ProcessFactory getFactory() {
+    public static final ProcessFactory getFactory() {
         return new MultiRawProcessFactory();
     }
 

@@ -265,7 +265,7 @@ test class. For instance, consider the following:
 
 Since this is a one time setup, the onSetUp method is only executed once, before the test1 
 method. When the test2 method is executed it is actually a new instance of the test class, 
-but the onTestSetup is not re-executed. The proper way to this initialization would be:
+but the ``onTestSetup`` is not re-executed. The proper way to this initialization would be:
 
 .. code-block:: java
 
@@ -511,6 +511,329 @@ Once the set up code has run you can request the layer as a WMS or WFS request u
 
   Document dom = getAsDOM("wfs?request=GetFeature&typenames=gs:tasmania_roads&version=2.0.0&service=wfs");
 
+
+Other Support Classes
+---------------------
+
+GeoServer also has several other test support classes the support specific parts of the project
+such as ``GeoServerSecurityTestSupport`` and ``GeoServerWicketTestSupport.java``. These classes extend the
+``GeoServerTestSupport`` class to provide additional set or methods related the thing they are testing.
+For example, the wicket class (which is used to test GUI elements) provides a ``login`` and ``logout`` method,
+and methods for interacting with web page components (``ComponentContentFinder``). 
+
+If you are writing a new module you may want to consider creating a new support class for your module that
+extends one of the extended support classes. In general it is worth looking for a test that does something
+similar to the thing you want to test and using that as a template for your work.
+
+GeoServerMockTestSupport
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+A request that needs a catalog item is provided via a mock class.
+
+.. code:: java
+
+  public class WMSValidatorTest extends GeoServerMockTestSupport {
+
+    @Override
+    protected MockTestData createTestData() throws Exception {
+        MockTestData td = new MockTestData();
+        td.setMockCreator(new MockCreator() {
+
+            @Override
+            public void onResource(String name, ResourceInfo r, StoreInfo s, MockCatalogBuilder b) {
+                if (name.equals("Buildings")) {
+                    FeatureTypeInfo info = (FeatureTypeInfo) r;
+                    AttributeTypeInfoImpl geom1 = new AttributeTypeInfoImpl();
+                    geom1.setName("geom");
+                    EasyMock.expect(info.getAttributes())
+                            .andReturn(Arrays.asList(geom1))
+                            .anyTimes();
+                    AttributeTypeInfoImpl geom2 = new AttributeTypeInfoImpl();
+                    geom2.setName("geom");
+                    geom2.setBinding(Polygon.class);
+                    try {
+                        EasyMock.expect(info.attributes())
+                                .andReturn(Arrays.asList(geom2))
+                                .anyTimes();
+                    } catch (IOException e) {
+                        // will not happen
+                    }
+                }
+                super.onResource(name, r, s, b);
+            }
+        });
+
+        return td;
+    }
+
+    @Test
+    public void testGeometryCheckLegacyDataDir() {
+        // used to NPE
+        LayerInfo layer = getCatalog().getLayerByName("Buildings");
+        new WMSValidator().validate(layer, false);
+    }
+  }
+
+GeoServerWicketTestSupport
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Requesting a simple panel, confirming output using component id
+
+.. code:: java
+
+  public class GraticuleStoreEditPanelTest extends GeoServerWicketTestSupport {
+
+    @Override
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        // no data needed
+    }
+
+    @Before
+    public void loginBefore() {
+        super.login();
+    }
+
+    @Test
+    public void testCreateModify() throws Exception {
+        tester.startPage(new DataAccessNewPage(GraticuleDataStoreFactory.DISPLAY_NAME));
+        tester.assertNoErrorMessage();
+
+        tester.executeAjaxEvent(
+                "dataStoreForm:parametersPanel:configsContainer:gratpanel:generateBoundsFromCRS", "click");
+        FormTester ft = tester.newFormTester("dataStoreForm");
+        ft.setValue("parametersPanel:configsContainer:gratpanel:steps:border:border_body:paramValue", "10");
+        ft.setValue("dataStoreNamePanel:border:border_body:paramValue", "graticule10");
+        ft.submit("save");
+
+        tester.assertNoErrorMessage();
+
+        // check the store has been created
+        DataStoreInfo graticule10 = getCatalog().getDataStoreByName("graticule10");
+        assertNotNull(graticule10);
+        Map<String, Serializable> parameters = graticule10.getConnectionParameters();
+        assertEquals("10", parameters.get(STEPS.key));
+        ReferencedEnvelope world = new ReferencedEnvelope(-180, 180, -90, 90, CRS.decode("EPSG:4326", true));
+        assertEquals(world, Converters.convert(parameters.get(BOUNDS.key), ReferencedEnvelope.class));
+
+        // open again, and save (used to fail due to empty bounds forced during panel construction)
+        tester.startPage(new DataAccessEditPage(graticule10.getId()));
+        tester.assertNoErrorMessage();
+        ft = tester.newFormTester("dataStoreForm");
+        ft.submit("save");
+        tester.assertNoErrorMessage();
+    }
+  }
+
+
+Requesting a page, confirming the output using component name:
+
+.. code:: java
+
+   public class GeoServerAboutPageTest extends GeoServerWicketTestSupport {
+
+    @Test
+    public void testLoginFormAction() throws Exception {
+        logout();
+        tester.executeUrl("./wicket/bookmarkable/org.geoserver.web.AboutGeoServerPage");
+        assertThat(tester.getLastRenderedPage(), instanceOf(AboutGeoServerPage.class));
+
+        String responseTxt = tester.getLastResponse().getDocument();
+        TagTester tagTester = TagTester.createTagByName(responseTxt, "form");
+        assertEquals("http://localhost/context/j_spring_security_check", tagTester.getAttribute("action"));
+    }
+    ...
+
+Requesting a page, pressing a button, confirming the output using component name:
+
+.. code:: java
+
+      public void testBasicActions() {
+        login();
+
+        // test that we can load the page
+        tester.startPage(new LayerPage());
+        tester.assertRenderedPage(LayerPage.class);
+        tester.assertNoErrorMessage();
+
+        // check it has two layers
+        GeoServerTablePanel table = (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
+        assertEquals(2, table.getDataProvider().size());
+        List<String> workspaces = getWorkspaces(table);
+        assertTrue(workspaces.contains("cite"));
+        assertTrue(workspaces.contains("gs"));
+
+        // sort on workspace once (top to bottom)
+        String wsSortPath = "table:listContainer:sortableLinks:3:header:link";
+        tester.clickLink(wsSortPath, true);
+        workspaces = getWorkspaces(table);
+        assertEquals("cite", workspaces.get(0));
+        assertEquals("gs", workspaces.get(1));
+
+        // sort on workspace twice (bottom to top)
+        tester.clickLink(wsSortPath, true);
+        workspaces = getWorkspaces(table);
+        assertEquals("gs", workspaces.get(0));
+        assertEquals("cite", workspaces.get(1));
+
+        // select second layer
+
+        table.selectIndex(1);
+        assertEquals(1, table.getSelection().size());
+        LayerInfo li = (LayerInfo) table.getSelection().get(0);
+        assertEquals("cite", li.getResource().getStore().getWorkspace().getName());
+    }
+ 
+WFSTestSupport
+^^^^^^^^^^^^^^
+
+Making a WFS request to a test data set:
+
+  .. code:: java
+
+      public class GetFeatureBboxTest extends WFSTestSupport {
+
+      @Test
+      public void testFeatureBoudingOn() throws Exception {
+          WFSInfo wfs = getWFS();
+          wfs.setFeatureBounding(true);
+          getGeoServer().save(wfs);
+
+          Document doc = getAsDOM("wfs?request=GetFeature&typeName="
+                  + getLayerId(SystemTestData.BUILDINGS)
+                  + "&version=1.0.0&service=wfs&propertyName=ADDRESS");
+
+          // check it's a feature collection
+          assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection)", doc);
+          // check the collection has non null bounds
+          assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection/gml:boundedBy/gml:Box)", doc);
+          // check that each feature has non null bounds
+          XpathEngine xpath = XMLUnit.newXpathEngine();
+          assertTrue(xpath.getMatchingNodes("//cite:Buildings/gml:boundedBy/gml:Box", doc)
+                          .getLength()
+                  > 0);
+      }
+
+WMSTestSupport
+^^^^^^^^^^^^^^
+
+making a request and checking output against reference image
+
+  .. code:: java
+
+    public class GetMapIntegrationTest extends WMSTestSupport {
+      ...
+      @Override
+      protected void setUpTestData(SystemTestData testData) throws Exception {
+          super.setUpTestData(testData);
+          testData.setUpWcs11RasterLayers();
+      }
+
+      @Override
+      protected void onSetUp(SystemTestData testData) throws Exception {
+          super.onSetUp(testData);
+          Catalog catalog = getCatalog();
+          testData.addStyle("Population", "Population.sld", GetMapIntegrationTest.class, catalog);
+          testData.addStyle("jiffleBandSelect", "jiffleBandSelect.sld", GetMapIntegrationTest.class, catalog);
+          testData.addVectorLayer(
+                  new QName(MockData.SF_URI, "states", MockData.SF_PREFIX),
+                  Collections.emptyMap(),
+                  "states.properties",
+                  getClass(),
+                  catalog);
+            ...
+
+      }
+      ...
+      @Test
+      public void testGetMapOpaqueGroup() throws Exception {
+          String url = "wms?LAYERS="
+                  + OPAQUE_GROUP
+                  + "&STYLES=&FORMAT=image%2Fpng"
+                  + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=-0.0043,-0.0025,0.0043,0.0025";
+          BufferedImage imageGroup = getAsImage(url, "image/png");
+
+          ImageAssert.assertEquals(
+                  new File("./src/test/resources/org/geoserver/wms/wms_1_1_1/opaqueGroup.png"), imageGroup, 300);
+      }
+
+   
+
+Handling Logging
+----------------
+
+GeoServer has a lot of log handling built in but in a default system much of the logging is surpressed. The
+following code shows how to initialise GeoServer's logging system. In general this should only be done
+during testing of your code as excessive logging slows down the build for everyone.
+
+.. code:: java
+
+    GeoServerResourceLoader loader = getDataDirectory().getResourceLoader();
+    LoggingUtils.initLogging(loader, "DEFAULT_LOGGING.xml", false, true, "logs/geoserver.log");
+    String path = getDataDirectory().getResourceLoader().getBaseDirectory().getPath();
+    LoggingInfo logging = getGeoServer().getLogging();
+    final File logFile = new File(path, "logging.xml");
+    logging.setLocation("logs/geoserver.log");
+    logging.setStdOutLogging(true);
+    logging.setLevel("VERBOSE_LOGGING.xml");
+    getGeoServer().save(logging);
+
+TEST_LOGGING
+^^^^^^^^^^^^
+
+Tests are run with their own logging profile: ``TEST_LOGGING``:
+
+* logs to standard out only
+* org.geotools: error
+* org.geotools.factory: error
+* org.geoserver: error
+* org.vfny.geoserver: error
+* org.springframework: error
+* org.apache.wicket.util.tester: info
+
+This is used by GeoServerAbstractTestSupport ``getLogConfiguration()`` to initLogging.
+
+You can override this value to make use of your own logging profile, here is an example from OpenLayersMapOutputFormatTest.
+
+.. code-block:: java
+
+    @Override
+    protected String getLogConfiguration() {
+        // needed for a test on logging capabilities
+        GeoServerResourceLoader loader = new GeoServerResourceLoader(testData.getDataDirectoryRoot());
+
+        Resource resource = loader.get("logs/OL_LOGGING.properties");
+        if (resource.getType() == Resource.Type.UNDEFINED) {
+            try {
+                loader.copyFromClassPath("/OL_LOGGING.properties", "logs/OL_LOGGING.properties");
+            } catch (IOException e) {
+                LOGGER.fine("Unable to configure with OL_LOGGING");
+                return "TEST_LOGGING";
+            }
+        }
+        return "OL_LOGGING";
+    }
+
+
+GeoServerBaseTestSupport setUpLogging and quietTests
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The GeoServerBaseTestSupport method ``setUpLogging()`` is marked with ``@BeforeClass`` to configure logging.
+
+This method uses isQuietTests() to check system property ``quietTests``, and changes `org.geoserver`, `org.vfny.geoserver` and `org.geotools` logging level to SEVERE to further suppress logging information.
+
+* logs to standard out only
+* org.geotools: severe
+* org.geotools.factory: error
+* org.geoserver: severe
+* org.vfny.geoserver: severe
+* org.springframework: error
+* org.apache.wicket.util.tester: info
+
+To run a test with normal logging output ``-DquietTests=false``.
+
+
+At the end of testing and GeoServerBaseTestSupport ``doTearDownClass()`` method calls LogManager.shutdown() to return log4j2 to defaults.
+
 Writing Mock Tests
 ------------------
 
@@ -643,3 +966,37 @@ common case of connecting to a database:
 
 In the above example the ``assumeNotNull`` method will throw back an exception telling JUnit 
 to skip execution of the test.
+
+TestContainers
+^^^^^^^^^^^^^^
+
+Use of Docker `Test Containers <https://testcontainers.com/>`__ should be considered online tests, as the developer may not have docker available locally for use.
+
+.. code-block:: java
+
+   assumeTrue(DockerClientFactory.instance().isDockerAvailable());
+
+Using Docker Test Containers can be done by extending an existing test support base class, and managing the test container as shown in KeyCloakIntegrationTestSupport:
+
+.. code-block:: java
+
+    /** keycloak container setup. We bring in 2 realms - master-realm and gs-realm. */
+    static KeycloakContainer keycloakContainer = new KeycloakContainer("quay.io/keycloak/keycloak:26.1")
+            .withCopyToContainer(
+                    MountableFile.forClasspathResource(
+                            "org/geoserver/web/security/oauth2/login/keycloak/master-realm.json"),
+                    "/opt/keycloak//data/import/master-realm.json")
+            .withCopyToContainer(
+                    MountableFile.forClasspathResource(
+                            "org/geoserver/web/security/oauth2/login/keycloak/gs-realm-realm.json"),
+                    "/opt/keycloak//data/import/gs-realm-realm.json")
+            .withVerboseOutput()
+            .withCustomCommand("--log-level=DEBUG"); // useful to see what's going on.  use `docker logs <container>`
+
+    @BeforeClass
+    public static void beforeAll() throws IOException, InterruptedException {
+        assumeTrue(DockerClientFactory.instance().isDockerAvailable());
+        keycloakContainer.start();
+        authServerUrl = keycloakContainer.getAuthServerUrl();
+    } 
+

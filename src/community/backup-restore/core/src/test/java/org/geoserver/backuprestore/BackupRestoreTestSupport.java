@@ -62,16 +62,15 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
         return dd;
     }
 
-    public static final Set<String> DEFAULT_STYLEs =
-            new HashSet<String>() {
-                {
-                    add(StyleInfo.DEFAULT_POINT);
-                    add(StyleInfo.DEFAULT_LINE);
-                    add(StyleInfo.DEFAULT_GENERIC);
-                    add(StyleInfo.DEFAULT_POLYGON);
-                    add(StyleInfo.DEFAULT_RASTER);
-                }
-            };
+    public static final Set<String> DEFAULT_STYLEs = new HashSet<String>() {
+        {
+            add(StyleInfo.DEFAULT_POINT);
+            add(StyleInfo.DEFAULT_LINE);
+            add(StyleInfo.DEFAULT_GENERIC);
+            add(StyleInfo.DEFAULT_POLYGON);
+            add(StyleInfo.DEFAULT_RASTER);
+        }
+    };
 
     @Before
     public void beforeTest() throws InterruptedException {
@@ -274,8 +273,7 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
 
         // add three joinable types with same code, but different type names
         SimpleFeatureType ft1 =
-                DataUtilities.createType(
-                        SystemTestData.CITE_URI, "t1", "g1:Point:srid=4326,code1:int,name1:String");
+                DataUtilities.createType(SystemTestData.CITE_URI, "t1", "g1:Point:srid=4326,code1:int,name1:String");
         store.createSchema(ft1);
         fs = (FeatureStore) store.getFeatureSource("t1");
         addFeature(fs, "POINT(1 1)", Integer.valueOf(1), "First");
@@ -283,8 +281,7 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
         catalog.add(ft);
 
         SimpleFeatureType ft2 =
-                DataUtilities.createType(
-                        SystemTestData.CITE_URI, "t2", "g2:Point:srid=4326,code2:int,name2:String");
+                DataUtilities.createType(SystemTestData.CITE_URI, "t2", "g2:Point:srid=4326,code2:int,name2:String");
         store.createSchema(ft2);
         fs = (FeatureStore) store.getFeatureSource("t2");
         addFeature(fs, "POINT(2 2)", Integer.valueOf(1), "Second");
@@ -292,8 +289,7 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
         catalog.add(ft);
 
         SimpleFeatureType ft3 =
-                DataUtilities.createType(
-                        SystemTestData.CITE_URI, "t3", "g3:Point:srid=4326,code3:int,name3:String");
+                DataUtilities.createType(SystemTestData.CITE_URI, "t3", "g3:Point:srid=4326,code3:int,name3:String");
         store.createSchema(ft3);
         fs = (FeatureStore) store.getFeatureSource("t3");
         addFeature(fs, "POINT(3 3)", Integer.valueOf(1), "Third");
@@ -306,8 +302,7 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
 
         Map pedsParams = peDatastore.getConnectionParameters();
         pedsParams.put("dbtype", "h2");
-        pedsParams.put(
-                "database", getTestData().getDataDirectoryRoot().getAbsolutePath() + "/foo_pe");
+        pedsParams.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath() + "/foo_pe");
         pedsParams.put("passwd", "foo");
         catalog.add(peDatastore);
 
@@ -439,10 +434,7 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
                 }
             } while (root.exists() && cnt < 30);
         } catch (Exception e) {
-            LOGGER.log(
-                    Level.WARNING,
-                    "Please, ensure the temp folder have been correctly cleaned out!",
-                    e);
+            LOGGER.log(Level.WARNING, "Please, ensure the temp folder have been correctly cleaned out!", e);
         }
 
         catalog.dispose();

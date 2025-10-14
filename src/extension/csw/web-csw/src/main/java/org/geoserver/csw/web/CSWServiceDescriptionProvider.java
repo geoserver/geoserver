@@ -32,6 +32,7 @@ public class CSWServiceDescriptionProvider extends ServiceDescriptionProvider {
     Catalog catalog;
 
     public CSWServiceDescriptionProvider(GeoServer gs) {
+        super(SERVICE_TYPE);
         this.geoserver = gs;
         catalog = gs.getCatalog();
     }
@@ -55,21 +56,19 @@ public class CSWServiceDescriptionProvider extends ServiceDescriptionProvider {
     }
 
     @Override
-    public List<ServiceDescription> getServices(
-            WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
+    public List<ServiceDescription> getServices(WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
 
         List<ServiceDescription> descriptions = new ArrayList<>();
         CSWInfo info = info(workspaceInfo, layerInfo);
 
         if (workspaceInfo != null || geoserver.getGlobal().isGlobalServices()) {
-            descriptions.add(description(SERVICE_TYPE, info, workspaceInfo, layerInfo));
+            descriptions.add(description(serviceType, info, workspaceInfo, layerInfo));
         }
         return descriptions;
     }
 
     @Override
-    public List<ServiceLinkDescription> getServiceLinks(
-            WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
+    public List<ServiceLinkDescription> getServiceLinks(WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
         List<ServiceLinkDescription> links = new ArrayList<>();
 
         if (workspaceInfo == null && !geoserver.getGlobal().isGlobalServices()) {
@@ -80,21 +79,22 @@ public class CSWServiceDescriptionProvider extends ServiceDescriptionProvider {
 
         for (Service service : extensions) {
             if (service.getService() instanceof WebCatalogService) {
-                String link = null;
+                String link;
                 if (service.getOperations().contains("GetCapabilities")) {
                     link = getCapabilitiesURL(workspaceInfo, layerInfo, service);
                 } else if (service.getCustomCapabilitiesLink() != null) {
                     link = service.getCustomCapabilitiesLink();
+                } else {
+                    link = null;
                 }
 
                 if (link != null) {
-                    links.add(
-                            new ServiceLinkDescription(
-                                    SERVICE_TYPE,
-                                    service.getVersion(),
-                                    link,
-                                    workspaceInfo != null ? workspaceInfo.getName() : null,
-                                    layerInfo != null ? layerInfo.getName() : null));
+                    links.add(new ServiceLinkDescription(
+                            serviceType,
+                            service.getVersion(),
+                            link,
+                            workspaceInfo != null ? workspaceInfo.getName() : null,
+                            layerInfo != null ? layerInfo.getName() : null));
                 }
             }
         }

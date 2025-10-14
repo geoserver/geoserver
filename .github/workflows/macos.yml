@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  MAVEN_OPTS: -Xmx1024m -Daether.connector.basic.threads=8 -Daether.metadataResolver.threads=8 -Daether.syncContext.named.time=120 -Daether.syncContext.named.factory=file-lock -Daether.syncContext.named.nameMapper=file-gav -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3 -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dspotless.apply.skip=true
+  MAVEN_OPTS: -Xmx1024m -Daether.connector.basic.threads=8 -Daether.metadataResolver.threads=8 -Daether.syncContext.named.time=120 -Daether.syncContext.named.factory=file-lock -Daether.syncContext.named.nameMapper=file-gav -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3 -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dspotless.apply.skip=true -Daether.syncContext.named.time=120 -Daether.syncContext.named.time.unit=SECONDS  -Daether.syncContext.named.factory=noop
 
 jobs:
   build:
@@ -20,10 +20,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up JDK 11
+    - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
-        java-version: 11
+        java-version: 17
         distribution: 'temurin'
     - name: Set up Maven
       uses: stCarolas/setup-maven@v5
@@ -38,7 +38,8 @@ jobs:
           gs-${{ runner.os }}-maven-
     - name: Build with Maven
       run: |
-        mvn -B -ntp -U -T2 -Prelease,macos-github-build -f src/pom.xml clean install 
+        mvn -B -ntp -U -T2 -Prelease,macos-github-build -f src/pom.xml clean install
     - name: Remove SNAPSHOT jars from repository
+      if: always()
       run: |
         find .m2/repository -name "*SNAPSHOT*" -type d | xargs rm -rf {}

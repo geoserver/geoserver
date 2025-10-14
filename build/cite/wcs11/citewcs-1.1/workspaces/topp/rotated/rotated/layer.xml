@@ -1,0 +1,17 @@
+<layer>
+  <name>rotated</name>
+  <id>LayerInfoImpl--14e58cab:19359ba45ca:-7ff2</id>
+  <path>/</path>
+  <type>RASTER</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--14e58cab:19359ba45ca:-7ffa</id>
+  </defaultStyle>
+  <resource class="coverage">
+    <id>CoverageInfoImpl--14e58cab:19359ba45ca:-7ff3</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateModified>2024-11-23 16:02:18.726 UTC</dateModified>
+</layer>

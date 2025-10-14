@@ -19,15 +19,14 @@ import java.util.stream.Collectors;
 /**
  * Utility class for handling Resource paths in a consistent fashion.
  *
- * <p>This utility class is primarily aimed at implementations of ResourceStore and may be helpful
- * when writing test cases. These methods are suitable for static import.
+ * <p>This utility class is primarily aimed at implementations of ResourceStore and may be helpful when writing test
+ * cases. These methods are suitable for static import.
  *
- * <p>Resource paths are consistent with file URLs. The base location is represented with "", paths
- * with . and .. are not supported.
+ * <p>Resource paths are consistent with file URLs. The base location is represented with "", paths with . and .. are
+ * not supported.
  *
- * <p>Resource paths are OS independent and refer to resources that are internal to the
- * ResourceStore. Note that resources obtained with Files.asResource contain a file path rather than
- * a resource path.
+ * <p>Resource paths are OS independent and refer to resources that are internal to the ResourceStore. Note that
+ * resources obtained with Files.asResource contain a file path rather than a resource path.
  *
  * @author Jody Garnett
  */
@@ -38,12 +37,10 @@ public class Paths {
     /**
      * Parent dir of this resource, or {@link #BASE} dir for top-level resources.
      *
-     * <p>A special case is {@code null} as parent of {@link #BASE} dir to indicate no parent is
-     * available.
+     * <p>A special case is {@code null} as parent of {@link #BASE} dir to indicate no parent is available.
      *
      * @param path resource path
-     * @return path of parent dir, this {@link #BASE} for top-level resources, or {@code null} for
-     *     {@link #BASE} dir.
+     * @return path of parent dir, this {@link #BASE} for top-level resources, or {@code null} for {@link #BASE} dir.
      */
     public static String parent(String path) {
         if (path == null) {
@@ -148,6 +145,7 @@ public class Paths {
      * @return path Path used to identify a Resource
      * @deprecated Please use {@link #path(String...)} as strictPath no longer supported
      */
+    @Deprecated
     public static String path(boolean strictPath, String... path) {
         return path(path);
     }
@@ -159,8 +157,7 @@ public class Paths {
      *   <li>backslash
      * </ul>
      *
-     * Paths agree with file URL representation of a relative file path, which uses forward slashes
-     * as a path seperator.
+     * Paths agree with file URL representation of a relative file path, which uses forward slashes as a path seperator.
      */
     static final Pattern VALID = Pattern.compile("^[^\\\\]*$");
 
@@ -226,17 +223,14 @@ public class Paths {
      */
     private static String reportInvalidPath(List<String> names, String item) {
         throw new IllegalArgumentException(
-                "Contains invalid '"
-                        + item
-                        + "' path: "
-                        + names.stream().collect(Collectors.joining("/")));
+                "Contains invalid '" + item + "' path: " + names.stream().collect(Collectors.joining("/")));
     }
 
     /**
      * True if path is valid.
      *
-     * <p>For details see {@link #valid(boolean, String)} which will provide an IllegalArgument
-     * describing validation problem detected.
+     * <p>For details see {@link #valid(String)} which will provide an IllegalArgument describing validation problem
+     * detected.
      *
      * @param path Resource path
      * @return True if path is valid
@@ -282,19 +276,17 @@ public class Paths {
     }
 
     /**
-     * Resource Path components listed into absolute prefix, directory names, and final file name or
-     * directory name.
+     * Resource Path components listed into absolute prefix, directory names, and final file name or directory name.
      *
-     * <p><b>Relative</b>: Relative paths are represented in a straight forward fashion with: {@code
-     * Paths.names("data/tasmania/roads.shp"} --> {"data","tasmania","roads.shp"}}.
+     * <p><b>Relative</b>: Relative paths are represented in a straight forward fashion with:
+     * {@code Paths.names("data/tasmania/roads.shp"} --> {"data","tasmania","roads.shp"}}.
      *
-     * <p><b>Absolute path</b>: When working with an absolute path the list starts with the base of
-     * the resource store: {@code Paths.names("/data/tasmania/roads.shp"} --> {"",
-     * "data","tasmania","roads.shp"}}.
+     * <p><b>Absolute path</b>: When working with an absolute path the list starts with the base of the resource store:
+     * {@code Paths.names("/data/tasmania/roads.shp"} --> {"", "data","tasmania","roads.shp"}}.
      *
      * @param path Path used for reference lookup
-     * @return List of path components divided into absolute prefix, directory names, and final file
-     *     name or directory name.
+     * @return List of path components divided into absolute prefix, directory names, and final file name or directory
+     *     name.
      */
     public static List<String> names(String path) {
         if (path == null || path.isEmpty()) {
@@ -336,8 +328,7 @@ public class Paths {
     public static String convert(File base, File file) {
         if (base == null) {
             if (file.isAbsolute()) {
-                throw new IllegalArgumentException(
-                        "Unable to determine relative path as file was absolute");
+                throw new IllegalArgumentException("Unable to determine relative path as file was absolute");
             } else {
                 return convert(file.getPath());
             }
@@ -361,8 +352,8 @@ public class Paths {
     }
 
     /**
-     * Convert to file to resource path, allows for relative references (but is limited to content
-     * within the provided base directory).
+     * Convert to file to resource path, allows for relative references (but is limited to content within the provided
+     * base directory).
      *
      * @param base directory location
      * @param folder context for relative path (may be "." or null for base directory)
@@ -387,8 +378,7 @@ public class Paths {
                     resolvedPath.remove(resolvedPath.size() - 1);
                     continue;
                 } else {
-                    throw new IllegalStateException(
-                            "File location " + fileLocation + " outside of " + base.getPath());
+                    throw new IllegalStateException("File location " + fileLocation + " outside of " + base.getPath());
                 }
             }
             resolvedPath.add(item);
@@ -397,8 +387,8 @@ public class Paths {
     }
 
     /**
-     * Convert to file to resource path, allows for relative references (but is limited to content
-     * within the provided base directory).
+     * Convert to file to resource path, allows for relative references (but is limited to content within the provided
+     * base directory).
      *
      * @param base directory location
      * @param folder context for relative path (may be "." or null for base directory)
@@ -423,8 +413,7 @@ public class Paths {
                     resolvedPath.remove(resolvedPath.size() - 1);
                     continue;
                 } else {
-                    throw new IllegalStateException(
-                            "File location " + filePath + " outside of " + base.getPath());
+                    throw new IllegalStateException("File location " + filePath + " outside of " + base.getPath());
                 }
             }
             resolvedPath.add(item);
@@ -435,12 +424,11 @@ public class Paths {
     /**
      * Convert a filePath to resource path (supports absolute paths).
      *
-     * <p>This method converts file paths (using {@link File#separator}) to the URL style paths used
-     * for {@link ResourceStore#get(String)}.
+     * <p>This method converts file paths (using {@link File#separator}) to the URL style paths used for
+     * {@link ResourceStore#get(String)}.
      *
      * @param filePath File path using {@link File#separator}
-     * @return Resource path suitable for use with {@link ResourceStore#get(String)} or null for
-     *     absolute path
+     * @return Resource path suitable for use with {@link ResourceStore#get(String)} or null for absolute path
      */
     public static String convert(String filePath) {
         if (filePath == null) {
@@ -457,16 +445,15 @@ public class Paths {
     }
 
     /**
-     * Convert a filePath to resource path (starting from the provided path). Absolute file paths
-     * are not supported, and the final resource must still be within the data directory.
+     * Convert a filePath to resource path (starting from the provided path). Absolute file paths are not supported, and
+     * the final resource must still be within the data directory.
      *
-     * <p>This method converts file paths (using {@link File#separator}) to the URL style paths used
-     * for {@link ResourceStore#get(String)}.
+     * <p>This method converts file paths (using {@link File#separator}) to the URL style paths used for
+     * {@link ResourceStore#get(String)}.
      *
      * @param path Initial path used resolve relative reference lookup
      * @param filename File path (using {@link File#separator})
-     * @return Resource path suitable for use with {@link ResourceStore#get(String)} or null for
-     *     absolute path
+     * @return Resource path suitable for use with {@link ResourceStore#get(String)} or null for absolute path
      */
     public static String convert(String path, String filename) {
         if (path == null) {
@@ -474,8 +461,7 @@ public class Paths {
         }
         String filePath = convert(filename);
         if (FilePaths.isAbsolute(filePath)) {
-            throw new IllegalArgumentException(
-                    "File location " + filename + " absolute, must be relative to " + path);
+            throw new IllegalArgumentException("File location " + filename + " absolute, must be relative to " + path);
         }
         List<String> folderPathNames = names(path);
         List<String> filePathNames = names(filePath);
@@ -491,8 +477,7 @@ public class Paths {
                     resolvedPath.remove(resolvedPath.size() - 1);
                     continue;
                 } else {
-                    throw new IllegalStateException(
-                            "File location " + filename + " outside of " + path);
+                    throw new IllegalStateException("File location " + filename + " outside of " + path);
                 }
             }
             resolvedPath.add(item);

@@ -28,10 +28,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.decorate.Wrapper;
 
-/**
- * Renaming wrapper for a {@link FeatureSource} instance, to be used along with {@link
- * RetypingDataStore}
- */
+/** Renaming wrapper for a {@link FeatureSource} instance, to be used along with {@link RetypingDataStore} */
 public class RetypingFeatureSource implements SimpleFeatureSource, Wrapper {
 
     SimpleFeatureSource wrapped;
@@ -45,80 +42,74 @@ public class RetypingFeatureSource implements SimpleFeatureSource, Wrapper {
     /**
      * Builds a retyping wrapper
      *
-     * @param targetSchema The target schema can have a different name and less attributes than the
-     *     original one
+     * @param targetSchema The target schema can have a different name and less attributes than the original one
      */
-    public static SimpleFeatureSource getRetypingSource(
-            SimpleFeatureSource wrapped, SimpleFeatureType targetSchema) throws IOException {
+    public static SimpleFeatureSource getRetypingSource(SimpleFeatureSource wrapped, SimpleFeatureType targetSchema)
+            throws IOException {
         FeatureTypeMap map = new FeatureTypeMap(wrapped.getSchema(), targetSchema);
 
-        if (wrapped instanceof SimpleFeatureLocking) {
-            return new RetypingFeatureLocking((SimpleFeatureLocking) wrapped, map);
-        } else if (wrapped instanceof SimpleFeatureStore) {
-            return new RetypingFeatureStore((SimpleFeatureStore) wrapped, map);
+        if (wrapped instanceof SimpleFeatureLocking locking) {
+            return new RetypingFeatureLocking(locking, map);
+        } else if (wrapped instanceof SimpleFeatureStore featureStore) {
+            return new RetypingFeatureStore(featureStore, map);
         } else {
             return new RetypingFeatureSource(wrapped, map);
         }
     }
 
-    RetypingFeatureSource(
-            RetypingDataStore ds, SimpleFeatureSource wrapped, FeatureTypeMap typeMap) {
+    RetypingFeatureSource(RetypingDataStore ds, SimpleFeatureSource wrapped, FeatureTypeMap typeMap) {
         this.store = ds;
         this.wrapped = wrapped;
         this.typeMap = typeMap;
     }
 
-    RetypingFeatureSource(SimpleFeatureSource wrapped, final FeatureTypeMap typeMap)
-            throws IOException {
+    RetypingFeatureSource(SimpleFeatureSource wrapped, final FeatureTypeMap typeMap) throws IOException {
         this.wrapped = wrapped;
         this.typeMap = typeMap;
-        this.store =
-                new RetypingDataStore((DataStore) wrapped.getDataStore()) {
-                    @Override
-                    protected String transformFeatureTypeName(String originalName) {
-                        if (typeMap.getOriginalName().equals(originalName)) {
-                            // rename
-                            return typeMap.getName();
-                        } else if (typeMap.getName().equals(originalName)) {
-                            // hide
-                            return null;
-                        } else {
-                            return originalName;
-                        }
-                    }
+        this.store = new RetypingDataStore((DataStore) wrapped.getDataStore()) {
+            @Override
+            protected String transformFeatureTypeName(String originalName) {
+                if (typeMap.getOriginalName().equals(originalName)) {
+                    // rename
+                    return typeMap.getName();
+                } else if (typeMap.getName().equals(originalName)) {
+                    // hide
+                    return null;
+                } else {
+                    return originalName;
+                }
+            }
 
-                    @Override
-                    protected SimpleFeatureType transformFeatureType(SimpleFeatureType original)
-                            throws IOException {
-                        if (typeMap.getOriginalName().equals(original.getTypeName())) {
-                            return typeMap.featureType;
-                        } else {
-                            return super.transformFeatureType(original);
-                        }
-                    }
+            @Override
+            protected SimpleFeatureType transformFeatureType(SimpleFeatureType original) throws IOException {
+                if (typeMap.getOriginalName().equals(original.getTypeName())) {
+                    return typeMap.featureType;
+                } else {
+                    return super.transformFeatureType(original);
+                }
+            }
 
-                    @Override
-                    public String[] getTypeNames() throws IOException {
-                        // Populate local hashmaps with new values.
-                        Map<String, FeatureTypeMap> forwardMapLocal = new ConcurrentHashMap<>();
-                        Map<String, FeatureTypeMap> backwardsMapLocal = new ConcurrentHashMap<>();
+            @Override
+            public String[] getTypeNames() throws IOException {
+                // Populate local hashmaps with new values.
+                Map<String, FeatureTypeMap> forwardMapLocal = new ConcurrentHashMap<>();
+                Map<String, FeatureTypeMap> backwardsMapLocal = new ConcurrentHashMap<>();
 
-                        forwardMapLocal.put(typeMap.getOriginalName(), typeMap);
-                        backwardsMapLocal.put(typeMap.getName(), typeMap);
+                forwardMapLocal.put(typeMap.getOriginalName(), typeMap);
+                backwardsMapLocal.put(typeMap.getName(), typeMap);
 
-                        // Replace the member variables.
-                        forwardMap = forwardMapLocal;
-                        backwardsMap = backwardsMapLocal;
+                // Replace the member variables.
+                forwardMap = forwardMapLocal;
+                backwardsMap = backwardsMapLocal;
 
-                        return new String[] {typeMap.getName()};
-                    }
-                };
+                return new String[] {typeMap.getName()};
+            }
+        };
     }
 
     /**
-     * Returns the same name than the feature type (ie, {@code getSchema().getName()} to honor the
-     * simple feature land common practice of calling the same both the Features produces and their
-     * types
+     * Returns the same name than the feature type (ie, {@code getSchema().getName()} to honor the simple feature land
+     * common practice of calling the same both the Features produces and their types
      *
      * @since 1.7
      * @see FeatureSource#getName()
@@ -179,18 +170,16 @@ public class RetypingFeatureSource implements SimpleFeatureSource, Wrapper {
             query = new Query(query);
             query.setTypeName(typeMap.getName());
         } else if (!typeMap.getName().equals(query.getTypeName())) {
-            throw new IOException(
-                    "Cannot query this feature source with "
-                            + query.getTypeName()
-                            + " since it serves only "
-                            + typeMap.getName());
+            throw new IOException("Cannot query this feature source with "
+                    + query.getTypeName()
+                    + " since it serves only "
+                    + typeMap.getName());
         }
 
         // GEOS-3210, if the query specifies a subset of property names we need to take that into
         // account
         SimpleFeatureType target = typeMap.getFeatureType(query);
-        return new RetypingFeatureCollection(
-                wrapped.getFeatures(store.retypeQuery(query, typeMap)), target);
+        return new RetypingFeatureCollection(wrapped.getFeatures(store.retypeQuery(query, typeMap)), target);
     }
 
     @Override
@@ -222,7 +211,7 @@ public class RetypingFeatureSource implements SimpleFeatureSource, Wrapper {
     public boolean isWrapperFor(Class<?> iface) {
         // first drill down to the latest wrapper, then check if the last delegate actually
         // implements the required interface
-        if (wrapped instanceof Wrapper) return ((Wrapper) wrapped).isWrapperFor(iface);
+        if (wrapped instanceof Wrapper wrapper) return wrapper.isWrapperFor(iface);
         else if (iface.isInstance(wrapped)) return true;
         else return false;
     }
@@ -232,9 +221,8 @@ public class RetypingFeatureSource implements SimpleFeatureSource, Wrapper {
     public <T> T unwrap(Class<T> iface) throws IllegalArgumentException {
         // first drill down to the latest wrapper, then check if the last delegate actually
         // implements the required interface and return it
-        if (wrapped instanceof Wrapper) return ((Wrapper) wrapped).unwrap(iface);
+        if (wrapped instanceof Wrapper wrapper) return wrapper.unwrap(iface);
         else if (iface.isInstance(wrapped)) return (T) wrapped;
-        else
-            throw new IllegalArgumentException("Cannot unwrap to the requested interface " + iface);
+        else throw new IllegalArgumentException("Cannot unwrap to the requested interface " + iface);
     }
 }

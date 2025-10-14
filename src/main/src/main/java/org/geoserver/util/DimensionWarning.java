@@ -11,9 +11,7 @@ import java.util.TimeZone;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.ResourceInfo;
 
-/**
- * Collects all details of WMS dimension warning, can be translated to the expected header message
- */
+/** Collects all details of WMS dimension warning, can be translated to the expected header message */
 public class DimensionWarning {
 
     static final TimeZone UTC_TZ = TimeZone.getTimeZone("UTC");
@@ -34,8 +32,7 @@ public class DimensionWarning {
         return new DimensionWarning(r, dimensionName, value, WarningType.Nearest);
     }
 
-    public static DimensionWarning defaultValue(
-            ResourceInfo r, String dimensionName, Object value) {
+    public static DimensionWarning defaultValue(ResourceInfo r, String dimensionName, Object value) {
         return new DimensionWarning(r, dimensionName, value, WarningType.Default);
     }
 
@@ -43,8 +40,7 @@ public class DimensionWarning {
         return new DimensionWarning(r, dimensionName, null, WarningType.FailedNearest);
     }
 
-    protected DimensionWarning(
-            ResourceInfo resource, String dimensionName, Object value, WarningType warningType) {
+    protected DimensionWarning(ResourceInfo resource, String dimensionName, Object value, WarningType warningType) {
         this.layerName = resource.prefixedName();
         this.dimensionName = dimensionName;
         this.value = value;
@@ -74,17 +70,7 @@ public class DimensionWarning {
             String type = (warningType == WarningType.Nearest) ? "Nearest value" : "Default value";
             String unitSpec = unit == null ? "" : unit;
             String valueSpec = formatValue(value);
-            return "99 "
-                    + type
-                    + " used: "
-                    + dimensionName
-                    + "="
-                    + valueSpec
-                    + " "
-                    + unitSpec
-                    + " ("
-                    + layerName
-                    + ")";
+            return "99 " + type + " used: " + dimensionName + "=" + valueSpec + " " + unitSpec + " (" + layerName + ")";
         }
     }
 

@@ -33,10 +33,7 @@ public class StylesDocument extends AbstractDocument {
     public StylesDocument(PublishedInfo published) {
         this.published = published;
 
-        addSelfLinks(
-                "ogc/maps/v1/collections/"
-                        + ResponseUtils.urlEncode(published.prefixedName())
-                        + "/styles");
+        addSelfLinks("ogc/maps/v1/collections/" + ResponseUtils.urlEncode(published.prefixedName()) + "/styles");
     }
 
     public List<StyleDocument> getStyles() {
@@ -48,28 +45,20 @@ public class StylesDocument extends AbstractDocument {
         if (s != null) result = new StyleDocument(s);
         else
             // layer group case
-            result =
-                    new StyleDocument(
-                            StyleDocument.DEFAULT_STYLE_NAME,
-                            "Default style for " + published.prefixedName());
+            result = new StyleDocument(
+                    StyleDocument.DEFAULT_STYLE_NAME, "Default style for " + published.prefixedName());
 
         // links to map producers
-        Collection<MediaType> formats =
-                APIRequestInfo.get().getProducibleMediaTypes(WebMap.class, true);
+        Collection<MediaType> formats = APIRequestInfo.get().getProducibleMediaTypes(WebMap.class, true);
         String baseUrl = APIRequestInfo.get().getBaseURL();
         String collectionId = ResponseUtils.urlEncode(published.prefixedName());
         String styleId = s == null ? StyleDocument.DEFAULT_STYLE_NAME : s.prefixedName();
         for (MediaType format : formats) {
-            String apiUrl =
-                    ResponseUtils.buildURL(
-                            baseUrl,
-                            "ogc/maps/v1/collections/"
-                                    + collectionId
-                                    + "/styles/"
-                                    + ResponseUtils.urlEncode(styleId)
-                                    + "/map",
-                            Collections.singletonMap("f", format.toString()),
-                            URLMangler.URLType.SERVICE);
+            String apiUrl = ResponseUtils.buildURL(
+                    baseUrl,
+                    "ogc/maps/v1/collections/" + collectionId + "/styles/" + ResponseUtils.urlEncode(styleId) + "/map",
+                    Collections.singletonMap("f", format.toString()),
+                    URLMangler.URLType.SERVICE);
             String title = getTitle(s, format);
             result.addLink(new Link(apiUrl, REL_MAP, format.toString(), title, "items"));
         }
@@ -86,8 +75,7 @@ public class StylesDocument extends AbstractDocument {
 
     private List<StyleInfo> getStyleInfos() {
         List<StyleInfo> result = new ArrayList<>();
-        if (published instanceof LayerInfo) {
-            LayerInfo layer = (LayerInfo) this.published;
+        if (published instanceof LayerInfo layer) {
             result.addAll(layer.getStyles());
             StyleInfo defaultStyle = layer.getDefaultStyle();
             if (!result.contains(defaultStyle)) result.add(defaultStyle);

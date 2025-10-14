@@ -57,8 +57,7 @@ public class GridFormat extends RasterFormat {
     }
 
     @Override
-    public CoverageStoreInfo createStore(ImportData data, WorkspaceInfo workspace, Catalog catalog)
-            throws IOException {
+    public CoverageStoreInfo createStore(ImportData data, WorkspaceInfo workspace, Catalog catalog) throws IOException {
         File f = file(data);
         if (f == null) {
             return null;
@@ -75,8 +74,7 @@ public class GridFormat extends RasterFormat {
     }
 
     @Override
-    public List<ImportTask> list(ImportData data, Catalog catalog, ProgressMonitor monitor)
-            throws IOException {
+    public List<ImportTask> list(ImportData data, Catalog catalog, ProgressMonitor monitor) throws IOException {
         AbstractGridCoverage2DReader reader = null;
         try {
             reader = gridReader(data);
@@ -124,11 +122,11 @@ public class GridFormat extends RasterFormat {
     public AbstractGridCoverage2DReader gridReader(ImportData data) throws IOException {
         // try file based
         File f = null;
-        if (data instanceof SpatialFile) {
-            f = ((SpatialFile) data).getFile();
+        if (data instanceof SpatialFile file) {
+            f = file.getFile();
         }
-        if (data instanceof Directory) {
-            f = ((Directory) data).getFile();
+        if (data instanceof Directory directory) {
+            f = directory.getFile();
         }
         if (f != null) {
             AbstractGridFormat gridFormat = gridFormat();
@@ -140,11 +138,11 @@ public class GridFormat extends RasterFormat {
     File file(ImportData data) {
         // try file based
         File f = null;
-        if (data instanceof SpatialFile) {
-            f = ((SpatialFile) data).getFile();
+        if (data instanceof SpatialFile file) {
+            f = file.getFile();
         }
-        if (data instanceof Directory) {
-            f = ((Directory) data).getFile();
+        if (data instanceof Directory directory) {
+            f = directory.getFile();
         }
         return f;
     }
@@ -157,8 +155,7 @@ public class GridFormat extends RasterFormat {
                         gridFormat = gridFormatClass.getDeclaredConstructor().newInstance();
                     } catch (Exception e) {
                         throw new RuntimeException(
-                                "Unable to create instance of: " + gridFormatClass.getSimpleName(),
-                                e);
+                                "Unable to create instance of: " + gridFormatClass.getSimpleName(), e);
                     }
                 }
             }

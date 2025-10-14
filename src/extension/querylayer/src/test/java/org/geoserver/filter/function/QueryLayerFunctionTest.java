@@ -23,12 +23,11 @@ public class QueryLayerFunctionTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testQuerySingle() {
-        Function function =
-                ff.function(
-                        "querySingle", //
-                        ff.literal(getLayerId(MockData.BUILDINGS)), //
-                        ff.literal("ADDRESS"), //
-                        ff.literal("FID = '113'"));
+        Function function = ff.function(
+                "querySingle", //
+                ff.literal(getLayerId(MockData.BUILDINGS)), //
+                ff.literal("ADDRESS"), //
+                ff.literal("FID = '113'"));
 
         assertTrue(function instanceof QueryFunction);
         String result = (String) function.evaluate(null);
@@ -37,12 +36,11 @@ public class QueryLayerFunctionTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testQueryCollection() {
-        Function function =
-                ff.function(
-                        "queryCollection", //
-                        ff.literal(getLayerId(MockData.BUILDINGS)), //
-                        ff.literal("ADDRESS"), //
-                        ff.literal("INCLUDE"));
+        Function function = ff.function(
+                "queryCollection", //
+                ff.literal(getLayerId(MockData.BUILDINGS)), //
+                ff.literal("ADDRESS"), //
+                ff.literal("INCLUDE"));
 
         assertTrue(function instanceof QueryFunction);
         Collection result = (Collection) function.evaluate(null);
@@ -58,12 +56,11 @@ public class QueryLayerFunctionTest extends GeoServerSystemTestSupport {
             System.setProperty("QUERY_LAYER_MAX_FEATURES", "3");
             getGeoServer().reload();
 
-            Function function =
-                    ff.function(
-                            "queryCollection", //
-                            ff.literal(getLayerId(MockData.ROAD_SEGMENTS)), //
-                            ff.literal("the_geom"), //
-                            ff.literal("INCLUDE"));
+            Function function = ff.function(
+                    "queryCollection", //
+                    ff.literal(getLayerId(MockData.ROAD_SEGMENTS)), //
+                    ff.literal("the_geom"), //
+                    ff.literal("INCLUDE"));
 
             assertTrue(function instanceof QueryFunction);
             try {

@@ -32,24 +32,19 @@ public class ChangeSetLinkCallback implements DocumentCallback {
 
     @Override
     public void apply(Request dr, AbstractDocument document) {
-        if (document instanceof TilesDocument) {
-            TilesDocument tiles = (TilesDocument) document;
+        if (document instanceof TilesDocument tiles) {
             try {
-                CoverageInfo coverage =
-                        changesetService.getStructuredCoverageInfo(tiles.getId(), false);
+                CoverageInfo coverage = changesetService.getStructuredCoverageInfo(tiles.getId(), false);
                 if (coverage != null) {
-                    List<Link> links =
-                            APIRequestInfo.get()
-                                    .getLinksFor(
-                                            "ogc/tiles/collections/"
-                                                    + tiles.getId()
-                                                    + "/map/{styleId}/{tileMatrixSetId}",
-                                            ChangeSet.class,
-                                            "Changeset as ",
-                                            "multitile",
-                                            false,
-                                            null,
-                                            null);
+                    List<Link> links = APIRequestInfo.get()
+                            .getLinksFor(
+                                    "ogc/tiles/collections/" + tiles.getId() + "/map/{styleId}/{tileMatrixSetId}",
+                                    ChangeSet.class,
+                                    "Changeset as ",
+                                    "multitile",
+                                    false,
+                                    null,
+                                    null);
                     tiles.getLinks().addAll(links);
                 }
             } catch (IOException e) {

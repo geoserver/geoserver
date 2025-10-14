@@ -28,8 +28,8 @@ public final class LayerIdentifierUtils {
     private LayerIdentifierUtils() {}
 
     /**
-     * Helper method that tries to reproject each feature collection to the target CRS. Complex
-     * features collections will not be reprojected.
+     * Helper method that tries to reproject each feature collection to the target CRS. Complex features collections
+     * will not be reprojected.
      *
      * @param featureCollections feature collections to reprojected, should NOT be NULL
      * @param targetCrs reprojection target CRS, can be NULL
@@ -48,9 +48,8 @@ public final class LayerIdentifierUtils {
     }
 
     /**
-     * Helper method that reprojects a feature collection to the target CRS. If the provided feature
-     * collection doesn't contain simple features or if the source CRS is equal to the target CRS
-     * nothing will be done.
+     * Helper method that reprojects a feature collection to the target CRS. If the provided feature collection doesn't
+     * contain simple features or if the source CRS is equal to the target CRS nothing will be done.
      *
      * @param featureCollection feature collection to be reprojected, should NOT be NULL
      * @param targetCrs reprojection target CRS, can be NULL
@@ -69,8 +68,7 @@ public final class LayerIdentifierUtils {
             return featureCollection;
         }
         // get feature collection CRS
-        CoordinateReferenceSystem sourceCrs =
-                featureCollection.getSchema().getCoordinateReferenceSystem();
+        CoordinateReferenceSystem sourceCrs = featureCollection.getSchema().getCoordinateReferenceSystem();
         if (sourceCrs == null) {
             // reprojector requires the source CRS to be defined
             return featureCollection;
@@ -81,9 +79,8 @@ public final class LayerIdentifierUtils {
                 return new ReprojectFeatureResults(featureCollection, targetCrs);
             } catch (Exception exception) {
                 throw new RuntimeException(
-                        String.format(
-                                "Error reproject feature collection from SRS '%s' to SRS '%s'.",
-                                CRS.toSRS(sourceCrs), CRS.toSRS(targetCrs)),
+                        "Error reproject feature collection from SRS '%s' to SRS '%s'."
+                                .formatted(CRS.toSRS(sourceCrs), CRS.toSRS(targetCrs)),
                         exception);
             }
         }
@@ -92,24 +89,21 @@ public final class LayerIdentifierUtils {
     }
 
     /**
-     * Helper method that tries to find feature collection CRS. First we try to use schema defined
-     * CRS then we try to find a common CRS among simple features default geometries. If this is not
-     * a simple feature collection or if no common CRS can be found (i.e. we have geometries with
-     * different CRS) NULL will be returned.
+     * Helper method that tries to find feature collection CRS. First we try to use schema defined CRS then we try to
+     * find a common CRS among simple features default geometries. If this is not a simple feature collection or if no
+     * common CRS can be found (i.e. we have geometries with different CRS) NULL will be returned.
      *
      * @param featureCollection feature collection, should NOT be NULL
      * @return the found CRS, may be NULL
      */
     public static CoordinateReferenceSystem getCrs(FeatureCollection featureCollection) {
-        CoordinateReferenceSystem crs =
-                featureCollection.getSchema().getCoordinateReferenceSystem();
+        CoordinateReferenceSystem crs = featureCollection.getSchema().getCoordinateReferenceSystem();
         if (crs != null || featureCollection.isEmpty()) {
             // the feature collection has a defined CRS or the feature collection is empty
             return crs;
         }
         // try to extract the CRS from the geometry descriptor (normally it should be NULL too)
-        GeometryDescriptor geometryDescriptor =
-                featureCollection.getSchema().getGeometryDescriptor();
+        GeometryDescriptor geometryDescriptor = featureCollection.getSchema().getGeometryDescriptor();
         crs = geometryDescriptor == null ? null : geometryDescriptor.getCoordinateReferenceSystem();
         if (crs != null) {
             // the geometry descriptor has a defined CRS

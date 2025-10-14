@@ -12,9 +12,8 @@ import org.geoserver.ows.util.KvpUtils;
 import org.geotools.xsd.EMFUtils;
 
 /**
- * Parses a kvp of the form "acceptLanguages=lang1 lang2 langN" into an instance of OWS
- * AcceptVersionsType. This class is version independent, the subclasses bind it to a specific OWS
- * version.
+ * Parses a kvp of the form "acceptLanguages=lang1 lang2 langN" into an instance of OWS AcceptVersionsType. This class
+ * is version independent, the subclasses bind it to a specific OWS version.
  */
 public abstract class AcceptLanguagesKvpParser extends KvpParser {
 

@@ -8,6 +8,7 @@ import static com.google.common.base.MoreObjects.firstNonNull;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ import org.geotools.util.logging.Logging;
 /** Contains the rules to determine the value for each Content Security Policy header. */
 public class CSPPolicy implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -6131742124949554000L;
 
     /** The CSPPolicy class logger. */
@@ -116,11 +118,10 @@ public class CSPPolicy implements Serializable {
     }
 
     /**
-     * Tests the rules for this policy against the request until the first matching rule is found.
-     * If the matching rules does not contain any directives, checks the previous rules until one is
-     * found with directives. Returns null if this policy is disabled, no rule matches the request,
-     * the matching rule and all previous rules do not contain directives, or the special directives
-     * keyword NONE is found.
+     * Tests the rules for this policy against the request until the first matching rule is found. If the matching rules
+     * does not contain any directives, checks the previous rules until one is found with directives. Returns null if
+     * this policy is disabled, no rule matches the request, the matching rule and all previous rules do not contain
+     * directives, or the special directives keyword NONE is found.
      *
      * @param request the HTTP request
      * @return the Content-Security-Policy directives or null
@@ -155,13 +156,15 @@ public class CSPPolicy implements Serializable {
      * @return the rule of null
      */
     public CSPRule getRuleByName(String name) {
-        return this.rules.stream().filter(p -> name.equals(p.getName())).findFirst().orElse(null);
+        return this.rules.stream()
+                .filter(p -> name.equals(p.getName()))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof CSPPolicy) {
-            CSPPolicy other = (CSPPolicy) obj;
+        if (obj instanceof CSPPolicy other) {
             return Objects.equals(this.name, other.name)
                     && Objects.equals(this.description, other.description)
                     && Objects.equals(this.enabled, other.enabled)

@@ -40,27 +40,9 @@
         <label for="pngEncoderType"><wicket:message key="pngEncoderType">pngEncoderType</wicket:message></label>
         <select id="pngEncoderType" class="field checkbox" wicket:id="pngEncoderType" ></select>
       </li>
-      <li class="choiceItem">
-         <input id="jpegAcceleration" type="checkbox" wicket:id="jpegAcceleration" />
-        <label for="jpegAcceleration"><wicket:message key="jpegAcceleration">jpegAcceleration</wicket:message></label>
-      </li>
     </ul>
   </fieldset>
   <fieldset>
-    <legend><span><wicket:message key="imageProcessing">Image Processing</wicket:message></span></legend>
-    <ul>
-      <li class="choiceItem">
-        <input id="allowNativeMosaic" type="checkbox" wicket:id="allowNativeMosaic" />
-        <label for="allowNativeMosaic"><wicket:message key="allowNativeMosaic">allowNativeMosaic</wicket:message></label>
-      </li>
-      <li class="choiceItem">
-        <input id="allowNativeWarp"type="checkbox" wicket:id="allowNativeWarp" />
-        <label for="allowNativeWarp"><wicket:message key="allowNativeWarp">allowNativeWarp</wicket:message></label>
-      </li>
-      <li>
-     <div wicket:id="jaiext"></div>
-      </li>
-    </ul>
     <div class="button-group toolbar-sticky selfclear">
       <button type="submit" class="form-button-save" wicket:id="submit"><wicket:message key="save">save</wicket:message></button>
       <a href="#a" class="form-button-apply" wicket:id="apply"><wicket:message key="apply">Apply</wicket:message></a>

@@ -64,8 +64,7 @@ public class GeoHashCalculatorTest {
 
     @Test
     public void testLargePolygon() throws ParseException, TransformException {
-        String hash =
-                calculator.compute(wkt.read("POLYGON((-180 -90, 180 90, 0 90, 0 -90, -180 -90))"));
+        String hash = calculator.compute(wkt.read("POLYGON((-180 -90, 180 90, 0 90, 0 -90, -180 -90))"));
         assertEquals("s", hash);
     }
 

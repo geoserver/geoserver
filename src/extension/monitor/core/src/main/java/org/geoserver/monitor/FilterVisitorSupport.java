@@ -8,8 +8,8 @@ package org.geoserver.monitor;
 /**
  * Base class for filter visitors.
  *
- * <p>Subclasses should override the {@link #handleFilter(Filter)} and {@link
- * #handleComposite(CompositeFilter, String)} methods.
+ * <p>Subclasses should override the {@link #handleFilter(Filter)} and {@link #handleComposite(CompositeFilter, String)}
+ * methods.
  *
  * @author Justin Deoliveira, OpenGeo
  */
@@ -17,10 +17,10 @@ public class FilterVisitorSupport implements FilterVisitor {
 
     @Override
     public void visit(Filter f) {
-        if (f instanceof And) {
-            handleComposite((And) f, "AND");
-        } else if (f instanceof Or) {
-            handleComposite((Or) f, "OR");
+        if (f instanceof And and) {
+            handleComposite(and, "AND");
+        } else if (f instanceof Or or) {
+            handleComposite(or, "OR");
         } else {
             handleFilter(f);
         }

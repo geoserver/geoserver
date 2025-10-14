@@ -16,7 +16,6 @@ import org.geoserver.ows.Dispatcher;
  * @author Gabriel Roldan
  * @author $Author: Alessio Fabiani (alessio.fabiani@gmail.com) $ (last modification)
  * @author $Author: Simone Giannecchini (simboss1@gmail.com) $ (last modification)
- * @version $Id$
  */
 public abstract class WMSRequest {
 
@@ -43,12 +42,10 @@ public abstract class WMSRequest {
     }
 
     /**
-     * Tells whether the originating request used HTTP GET method or not; may be useful, for
-     * example, to determine if client can do HTTP caching and then set the corresponding response
-     * headers.
+     * Tells whether the originating request used HTTP GET method or not; may be useful, for example, to determine if
+     * client can do HTTP caching and then set the corresponding response headers.
      *
-     * @return {@code true} if the originating HTTP request used HTTP GET method, {@code false}
-     *     otherwise
+     * @return {@code true} if the originating HTTP request used HTTP GET method, {@code false} otherwise
      */
     public boolean isGet() {
         return get;

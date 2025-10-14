@@ -14,13 +14,11 @@ import org.springframework.context.ApplicationContext;
  * Utility class uses to process GeoServer WFS extension points.
  *
  * @author Jesse Eichar
- * @version $Id$
  */
 public class WFSExtensions {
     /** Looks up {@link ExtendedCapabilitiesProvider} extensions. */
     public static List<WFSExtendedCapabilitiesProvider> findExtendedCapabilitiesProviders(
             final ApplicationContext applicationContext) {
-        return GeoServerExtensions.extensions(
-                WFSExtendedCapabilitiesProvider.class, applicationContext);
+        return GeoServerExtensions.extensions(WFSExtendedCapabilitiesProvider.class, applicationContext);
     }
 }

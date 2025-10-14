@@ -25,8 +25,7 @@ public class FileBackedRawMap extends WebMap implements Closeable {
 
     File underlyingFile;
 
-    public FileBackedRawMap(
-            final WMSMapContent context, final File underlyingFile, final String mimeType) {
+    public FileBackedRawMap(final WMSMapContent context, final File underlyingFile, final String mimeType) {
         super(context);
         this.underlyingFile = underlyingFile;
         setMimeType(mimeType);
@@ -42,8 +41,7 @@ public class FileBackedRawMap extends WebMap implements Closeable {
         if (underlyingFile == null) {
             throw new IOException("underlying file is not present!");
         }
-        try (final BufferedInputStream bin =
-                new BufferedInputStream(new FileInputStream(underlyingFile))) {
+        try (final BufferedInputStream bin = new BufferedInputStream(new FileInputStream(underlyingFile))) {
             IOUtils.copy(bin, out);
             out.flush();
             close();

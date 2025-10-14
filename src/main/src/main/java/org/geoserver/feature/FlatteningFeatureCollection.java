@@ -19,28 +19,25 @@ import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 
 /**
- * A DecoratingSimpleFeatureCollection that is used for "flattening" SimpleFeatures that may contain
- * other SimpleFeatures as attributes (used in WFS 2.0 joins to store the tuple as a simple
- * feature). This allows to generate outputs for formats do not support nested structures (e.g,
- * CSV).-
+ * A DecoratingSimpleFeatureCollection that is used for "flattening" SimpleFeatures that may contain other
+ * SimpleFeatures as attributes (used in WFS 2.0 joins to store the tuple as a simple feature). This allows to generate
+ * outputs for formats do not support nested structures (e.g, CSV).-
  */
 public class FlatteningFeatureCollection extends DecoratingSimpleFeatureCollection {
 
     private SimpleFeatureType flattenedType;
 
-    private FlatteningFeatureCollection(
-            SimpleFeatureCollection delegate, SimpleFeatureType flattenedType) {
+    private FlatteningFeatureCollection(SimpleFeatureCollection delegate, SimpleFeatureType flattenedType) {
         super(delegate);
         this.flattenedType = flattenedType;
     }
 
     /**
-     * Flattens a SimpleFeatureCollection that may contain SimpleFeatures as attributes of other
-     * features.
+     * Flattens a SimpleFeatureCollection that may contain SimpleFeatures as attributes of other features.
      *
      * @param collection The input SimpleFeatureCollection
-     * @return A SimpleFeatureCollection whose features have no SimpleFeature attributes, or the
-     *     original one, if no SimpleFeature attributes were found
+     * @return A SimpleFeatureCollection whose features have no SimpleFeature attributes, or the original one, if no
+     *     SimpleFeature attributes were found
      */
     public static SimpleFeatureCollection flatten(SimpleFeatureCollection collection) {
         SimpleFeatureType schema = collection.getSchema();
@@ -64,17 +61,14 @@ public class FlatteningFeatureCollection extends DecoratingSimpleFeatureCollecti
     }
 
     /**
-     * Recursively scans a SimpleFeature for SimpleFeature attributes in order to build a
-     * "flattened" list of attributes
+     * Recursively scans a SimpleFeature for SimpleFeature attributes in order to build a "flattened" list of attributes
      *
      * @param attributeDescriptors A List of attribute descriptors, populated recursively
      * @param featureType The feature type to scan
      * @param attrAlias An alias for adding as a prefix to the simple attribute names
      */
     private static void scanAttributeDescriptors(
-            List<AttributeDescriptor> attributeDescriptors,
-            SimpleFeatureType featureType,
-            String attrAlias) {
+            List<AttributeDescriptor> attributeDescriptors, SimpleFeatureType featureType, String attrAlias) {
         List<AttributeDescriptor> descriptors = featureType.getAttributeDescriptors();
         for (AttributeDescriptor ad : descriptors) {
             SimpleFeatureType joinedSchema =
@@ -104,14 +98,13 @@ public class FlatteningFeatureCollection extends DecoratingSimpleFeatureCollecti
     }
 
     /** Flattens the features in a streaming fashion */
-    class FlatteningFeatureIterator implements SimpleFeatureIterator {
+    static class FlatteningFeatureIterator implements SimpleFeatureIterator {
 
         private SimpleFeatureIterator delegate;
 
         private SimpleFeatureBuilder builder;
 
-        public FlatteningFeatureIterator(
-                SimpleFeatureIterator delegate, SimpleFeatureType flattenedType) {
+        public FlatteningFeatureIterator(SimpleFeatureIterator delegate, SimpleFeatureType flattenedType) {
             this.delegate = delegate;
             this.builder = new SimpleFeatureBuilder(flattenedType);
         }
@@ -135,17 +128,17 @@ public class FlatteningFeatureCollection extends DecoratingSimpleFeatureCollecti
         }
 
         /**
-         * Recursively breaks down SimpleFeatures that may contain other features as attributes to
-         * accumulate simple attribute values to a List
+         * Recursively breaks down SimpleFeatures that may contain other features as attributes to accumulate simple
+         * attribute values to a List
          *
          * @param feature A SimpleFeature to harvest attributes
          */
         private void accumulateAttributes(SimpleFeature feature) {
             for (int i = 0; i < feature.getAttributes().size(); i++) {
                 Object attr = feature.getAttribute(i);
-                if (attr instanceof SimpleFeature) {
+                if (attr instanceof SimpleFeature simpleFeature) {
                     // go forth and harvest attrubutes
-                    accumulateAttributes((SimpleFeature) attr);
+                    accumulateAttributes(simpleFeature);
                 } else {
                     builder.add(attr);
                 }

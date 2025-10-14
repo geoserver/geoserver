@@ -20,15 +20,13 @@ import org.locationtech.jts.geom.Polygon;
 /**
  * XMLSchemaTranslator purpose.
  *
- * <p>This instance of the NameSpaceTranslator should be used with http://www.opengis.net/gml
- * namespace.
+ * <p>This instance of the NameSpaceTranslator should be used with http://www.opengis.net/gml namespace.
  *
  * <p>Instances of this object should always be retrieved through the NameSpaceTranslatorFactory.
  *
  * @see NameSpaceTranslatorFactory
  * @author dzwiers, Refractions Research, Inc.
  * @author $Author: dmzwiers $ (last modification)
- * @version $Id$
  */
 public class GMLSchemaTranslator extends NameSpaceTranslator {
     private Set<NameSpaceElement> elements;

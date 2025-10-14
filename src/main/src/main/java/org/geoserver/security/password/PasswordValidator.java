@@ -13,15 +13,12 @@ import org.geoserver.security.validation.PasswordValidatorImpl;
 /**
  * Validates a password based on {@link PasswordPolicyConfig} object
  *
- * <p>At a bare minimum, <code>null</code> passwords should not be allowed.
+ * <p>At a bare minimum, {@code null} passwords should not be allowed.
  *
- * <p>Additionally, password must not start with prefixes used by the {@link
- * GeoServerPasswordEncoder} objects To get the prefixes use <code>
- * for (GeoserverPasswordEncoder enc : GeoServerExtensions.extensions(
- *           GeoserverPasswordEncoder.class)) {
- *     System.out.println(enc.getPrefix()+GeoserverPasswordEncoder.PREFIX_DELIMTER);
- *         }
- * </code> A concrete example can be found in {@link PasswordValidatorImpl#PasswordValidatorImpl()}
+ * <p>Additionally, password must not start with prefixes used by the {@link GeoServerPasswordEncoder} objects To get
+ * the prefixes use {@code for (GeoserverPasswordEncoder enc : GeoServerExtensions.extensions(
+ * GeoserverPasswordEncoder.class)) { System.out.println(enc.getPrefix()+GeoserverPasswordEncoder.PREFIX_DELIMTER); } }
+ * A concrete example can be found in {@link PasswordValidatorImpl}
  *
  * @author christian
  */

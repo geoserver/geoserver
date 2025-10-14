@@ -14,8 +14,8 @@ import org.geotools.api.style.StyledLayerDescriptor;
 /**
  * Web Map Service implementation.
  *
- * <p>Each of the methods on this class corresponds to an operation as defined by the Web Map
- * Specification. See {@link "http://www.opengeospatial.org/standards/wms"} for more details.
+ * <p>Each of the methods on this class corresponds to an operation as defined by the Web Map Specification. See
+ * {@see "http://www.opengeospatial.org/standards/wms"} for more details.
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
@@ -43,8 +43,7 @@ public interface WebMapService {
     /**
      * GetLegendGraphic operation.
      *
-     * @return the representation of the legend graphic to be encoded by a {@link Response} object
-     *     that can handle it
+     * @return the representation of the legend graphic to be encoded by a {@link Response} object that can handle it
      */
     Object getLegendGraphic(GetLegendGraphicRequest request);
 

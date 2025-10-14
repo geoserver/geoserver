@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.web.panel.bulk;
 
+import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -26,6 +27,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 // TODO WICKET8 - Verify this page works OK
 public class BulkRunPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -7787191736336649903L;
 
     private IModel<String> workspaceModel = new Model<>("%");
@@ -57,8 +59,7 @@ public class BulkRunPanel extends Panel {
         TextField<String> name = new TextField<>("name", nameModel);
         add(name.setRequired(true));
 
-        NumberTextField<Integer> startDelay =
-                new NumberTextField<>("startDelay", new Model<Integer>(0), Integer.class);
+        NumberTextField<Integer> startDelay = new NumberTextField<>("startDelay", new Model<Integer>(0), Integer.class);
         startDelay.setMinimum(0);
         add(startDelay);
 
@@ -68,138 +69,113 @@ public class BulkRunPanel extends Panel {
         add(betweenDelay);
 
         Label batchesFound =
-                new Label(
-                        "batchesFound",
-                        new ParamResourceModel(
-                                "batchesFound",
-                                this,
-                                new IModel<String>() {
-                                    private static final long serialVersionUID =
-                                            -6328441242635771092L;
+                new Label("batchesFound", new ParamResourceModel("batchesFound", this, new IModel<String>() {
+                    @Serial
+                    private static final long serialVersionUID = -6328441242635771092L;
 
-                                    @Override
-                                    public String getObject() {
-                                        return Integer.toString(batches.size());
-                                    }
+                    @Override
+                    public String getObject() {
+                        return Integer.toString(batches.size());
+                    }
 
-                                    @Override
-                                    public void setObject(String object) {}
+                    @Override
+                    public void setObject(String object) {}
 
-                                    @Override
-                                    public void detach() {}
-                                }));
+                    @Override
+                    public void detach() {}
+                }));
         add(batchesFound.setOutputMarkupId(true));
 
-        AjaxSubmitLink run =
-                new AjaxSubmitLink("run") {
-                    private static final long serialVersionUID = -3288982013478650146L;
+        AjaxSubmitLink run = new AjaxSubmitLink("run") {
+            @Serial
+            private static final long serialVersionUID = -3288982013478650146L;
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        if (batches.size() == 0) {
-                            error(
-                                    new StringResourceModel("noBatches", BulkRunPanel.this)
-                                            .getString());
-                            ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
-                        } else {
-                            dialog.showOkCancel(
-                                    target,
-                                    new DialogDelegate() {
-                                        private static final long serialVersionUID =
-                                                -8203963847815744909L;
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                if (batches.size() == 0) {
+                    error(new StringResourceModel("noBatches", BulkRunPanel.this).getString());
+                    ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
+                } else {
+                    dialog.showOkCancel(target, new DialogDelegate() {
+                        @Serial
+                        private static final long serialVersionUID = -8203963847815744909L;
 
-                                        @Override
-                                        protected Component getContents(String id) {
-                                            int time =
-                                                    ((batches.size() - 1)
-                                                                            * betweenDelay
-                                                                                    .getModelObject()
-                                                                    + startDelay.getModelObject())
-                                                            / 60;
-                                            return new Label(
-                                                    id,
-                                                    new ParamResourceModel(
-                                                            "runBatches",
-                                                            BulkRunPanel.this,
-                                                            Integer.toString(batches.size()),
-                                                            Integer.toString(time)));
-                                        }
-
-                                        @Override
-                                        protected boolean onSubmit(
-                                                AjaxRequestTarget target, Component contents) {
-                                            TaskManagerBeans.get()
-                                                    .getBjService()
-                                                    .scheduleNow(
-                                                            batches,
-                                                            startDelay.getModelObject(),
-                                                            betweenDelay.getModelObject());
-                                            info(
-                                                    new ParamResourceModel(
-                                                                    "runningBatches",
-                                                                    BulkRunPanel.this,
-                                                                    Integer.toString(
-                                                                            batches.size()))
-                                                            .getString());
-                                            ((GeoServerBasePage) getPage())
-                                                    .addFeedbackPanels(target);
-                                            return true;
-                                        }
-                                    });
+                        @Override
+                        protected Component getContents(String id) {
+                            int time =
+                                    ((batches.size() - 1) * betweenDelay.getModelObject() + startDelay.getModelObject())
+                                            / 60;
+                            return new Label(
+                                    id,
+                                    new ParamResourceModel(
+                                            "runBatches",
+                                            BulkRunPanel.this,
+                                            Integer.toString(batches.size()),
+                                            Integer.toString(time)));
                         }
-                    }
 
-                    @Override
-                    protected void onError(AjaxRequestTarget target) {
-                        ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
-                    }
-                };
+                        @Override
+                        protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                            TaskManagerBeans.get()
+                                    .getBjService()
+                                    .scheduleNow(batches, startDelay.getModelObject(), betweenDelay.getModelObject());
+                            info(new ParamResourceModel(
+                                            "runningBatches", BulkRunPanel.this, Integer.toString(batches.size()))
+                                    .getString());
+                            ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
+                            return true;
+                        }
+                    });
+                }
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target) {
+                ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
+            }
+        };
         add(run);
 
-        workspace.add(
-                new AjaxFormSubmitBehavior("change") {
-                    private static final long serialVersionUID = 3397757222203749030L;
+        workspace.add(new AjaxFormSubmitBehavior("change") {
+            @Serial
+            private static final long serialVersionUID = 3397757222203749030L;
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        updateBatches();
-                        target.add(batchesFound);
-                        target.add(run);
-                    }
-                });
-        configuration.add(
-                new AjaxFormSubmitBehavior("change") {
-                    private static final long serialVersionUID = 3397757222203749030L;
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                updateBatches();
+                target.add(batchesFound);
+                target.add(run);
+            }
+        });
+        configuration.add(new AjaxFormSubmitBehavior("change") {
+            @Serial
+            private static final long serialVersionUID = 3397757222203749030L;
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        updateBatches();
-                        target.add(batchesFound);
-                        target.add(run);
-                    }
-                });
-        name.add(
-                new AjaxFormSubmitBehavior("change") {
-                    private static final long serialVersionUID = 3397757222203749030L;
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                updateBatches();
+                target.add(batchesFound);
+                target.add(run);
+            }
+        });
+        name.add(new AjaxFormSubmitBehavior("change") {
+            @Serial
+            private static final long serialVersionUID = 3397757222203749030L;
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        updateBatches();
-                        target.add(batchesFound);
-                        target.add(run);
-                    }
-                });
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                updateBatches();
+                target.add(batchesFound);
+                target.add(run);
+            }
+        });
 
         updateBatches();
     }
 
     private void updateBatches() {
-        batches =
-                TaskManagerBeans.get()
-                        .getDao()
-                        .findBatches(
-                                workspaceModel.getObject(),
-                                configurationModel.getObject(),
-                                nameModel.getObject());
+        batches = TaskManagerBeans.get()
+                .getDao()
+                .findBatches(workspaceModel.getObject(), configurationModel.getObject(), nameModel.getObject());
     }
 }

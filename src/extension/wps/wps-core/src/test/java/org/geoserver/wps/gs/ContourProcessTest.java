@@ -30,8 +30,8 @@ import org.junit.Test;
 public class ContourProcessTest extends BaseRasterToVectorTest {
 
     /**
-     * Test basic capabilities for the contour process. It works on the DEM tiff and produces a
-     * shapefile. Nothing more nothing less.
+     * Test basic capabilities for the contour process. It works on the DEM tiff and produces a shapefile. Nothing more
+     * nothing less.
      */
     @Test
     public void testProcessStandaloneBasicValues() throws Exception {
@@ -43,8 +43,7 @@ public class ContourProcessTest extends BaseRasterToVectorTest {
         levels[1] = 1700;
         final ContourProcess process = new ContourProcess();
         final SimpleFeatureCollection fc =
-                process.execute(
-                        gc, 0, levels, null, false, false, null, new NullProgressListener());
+                process.execute(gc, 0, levels, null, false, false, null, new NullProgressListener());
 
         assertNotNull(fc);
         assertTrue(fc.size() > 0);
@@ -79,8 +78,8 @@ public class ContourProcessTest extends BaseRasterToVectorTest {
     }
 
     /**
-     * Test basic capabilities for the contour process. It works on the DEM tiff and produces a
-     * shapefile. Nothing more nothing less.
+     * Test basic capabilities for the contour process. It works on the DEM tiff and produces a shapefile. Nothing more
+     * nothing less.
      */
     @Test
     public void testProcessStandaloneBasicInterval() throws Exception {
@@ -89,15 +88,7 @@ public class ContourProcessTest extends BaseRasterToVectorTest {
         final double step = 100;
         final ContourProcess process = new ContourProcess();
         final SimpleFeatureCollection fc =
-                process.execute(
-                        gc,
-                        0,
-                        null,
-                        Double.valueOf(step),
-                        false,
-                        false,
-                        null,
-                        new NullProgressListener());
+                process.execute(gc, 0, null, Double.valueOf(step), false, false, null, new NullProgressListener());
 
         assertNotNull(fc);
         assertTrue(fc.size() > 0);

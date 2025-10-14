@@ -23,8 +23,8 @@ public interface GeoServerFactory {
     /** Creates a new contact. */
     ContactInfo createContact();
 
-    /** Creates a new jai. */
-    JAIInfo createJAI();
+    /** Creates a new imagen. */
+    ImageProcessingInfo createJAI();
 
     /** Creates a new metadata link. */
     MetadataLinkInfo createMetadataLink();
@@ -44,13 +44,13 @@ public interface GeoServerFactory {
     /**
      * Extensible factory method.
      *
-     * <p>This method should lookup the appropritae instance of {@link Extension} to create the
-     * object. The lookup mechanism is specific to the runtime environement.
+     * <p>This method should lookup the appropritae instance of {@link Extension} to create the object. The lookup
+     * mechanism is specific to the runtime environement.
      *
      * @param clazz The class of object to create.
      * @return The new object.
      */
-    <T extends Object> T create(Class<T> clazz);
+    <T> T create(Class<T> clazz);
 
     /** Factory extension. */
     interface Extension {
@@ -60,7 +60,7 @@ public interface GeoServerFactory {
          *
          * @param clazz The class of object to create.
          */
-        <T extends Object> boolean canCreate(Class<T> clazz);
+        <T> boolean canCreate(Class<T> clazz);
 
         /**
          * Creates an instance of the specified class.
@@ -70,6 +70,6 @@ public interface GeoServerFactory {
          * @param clazz The class of object to create.
          * @return The new object.
          */
-        <T extends Object> T create(Class<T> clazz);
+        <T> T create(Class<T> clazz);
     }
 }

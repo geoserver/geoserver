@@ -24,7 +24,8 @@ public class InitConfigUtil {
 
     public static final String INIT_BATCH = "@Initialize";
 
-    @Autowired private TaskManagerDao dao;
+    @Autowired
+    private TaskManagerDao dao;
 
     public boolean isInitConfig(Configuration config) {
         if (config.isTemplate()) {
@@ -57,8 +58,8 @@ public class InitConfigUtil {
     }
 
     public static Configuration unwrap(Configuration config) {
-        if (config instanceof ConfigurationWrapper) {
-            return ((ConfigurationWrapper) config).getDelegate();
+        if (config instanceof ConfigurationWrapper wrapper) {
+            return wrapper.getDelegate();
         } else {
             return config;
         }
@@ -78,7 +79,8 @@ public class InitConfigUtil {
 
         private Configuration delegate;
 
-        private Map<String, Task> tasks = new HashMap<String, Task>();;
+        private Map<String, Task> tasks = new HashMap<String, Task>();
+        ;
 
         private Map<String, Batch> batches;
 

@@ -48,8 +48,8 @@ public interface WebCatalogService {
     CloseableIterator<String> getDomain(GetDomainType request) throws ServiceException;
 
     /**
-     * The optional GetRepositoryItem request, used for ebRIM but could be useful for a general
-     * catalog that wants the data to be made available for download as well
+     * The optional GetRepositoryItem request, used for ebRIM but could be useful for a general catalog that wants the
+     * data to be made available for download as well
      */
     RepositoryItem getRepositoryItem(GetRepositoryItemType request) throws ServiceException;
 

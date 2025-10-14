@@ -19,18 +19,15 @@ import org.xml.sax.SAXException;
 /**
  * Creates a request bean from xml.
  *
- * <p>A request bean is an object which captures the parameters of an operation being requested to a
- * service.
+ * <p>A request bean is an object which captures the parameters of an operation being requested to a service.
  *
- * <p>An xml request reader must declare the root element of xml documents that it is capable of
- * reading. This is accomplished with {@link #getElement()} and {@link QName#getNamespaceURI()}.
+ * <p>An xml request reader must declare the root element of xml documents that it is capable of reading. This is
+ * accomplished with {@link #getElement()} and {@link QName#getNamespaceURI()}.
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
 public abstract class XmlRequestReader {
-    /**
-     * Logger for XmlRequestReader subclass established in constructor for logging of parse errors.
-     */
+    /** Logger for XmlRequestReader subclass established in constructor for logging of parse errors. */
     final Logger LOGGER;
 
     /** the qualified name of the element this reader can read. */
@@ -93,21 +90,18 @@ public abstract class XmlRequestReader {
     /**
      * Reads the xml and initializes the request object.
      *
-     * <p>The <tt>request</tt> parameter may be <code>null</code>, so in this case the request
-     * reader would be responsible for creating the request object, or throwing an exception if this
-     * is not supported.
+     * <p>The <tt>request</tt> parameter may be {@code null}, so in this case the request reader would be responsible
+     * for creating the request object, or throwing an exception if this is not supported.
      *
-     * <p>In the case of the <tt>request</tt> being non <code>null</code>, the request reader may
-     * chose to modify and return <tt>request</tt>, or create a new request object and return it.
+     * <p>In the case of the <tt>request</tt> being non {@code null}, the request reader may chose to modify and return
+     * <tt>request</tt>, or create a new request object and return it.
      *
-     * <p>The <tt>kvp</tt> is used to support mixed style reading of the request object from xml and
-     * from a set of key value pairs. This map is often empty.
+     * <p>The <tt>kvp</tt> is used to support mixed style reading of the request object from xml and from a set of key
+     * value pairs. This map is often empty.
      */
     public abstract Object read(Object request, Reader reader, Map kvp) throws Exception;
 
-    /**
-     * Two XmlReaders considered equal if namespace,element, and version properties are the same.
-     */
+    /** Two XmlReaders considered equal if namespace,element, and version properties are the same. */
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof XmlRequestReader)) {
@@ -131,7 +125,11 @@ public abstract class XmlRequestReader {
     /** Implementation of hashcode. */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(element).append(version).append(serviceId).toHashCode();
+        return new HashCodeBuilder()
+                .append(element)
+                .append(version)
+                .append(serviceId)
+                .toHashCode();
     }
 
     public String getServiceId() {
@@ -139,14 +137,13 @@ public abstract class XmlRequestReader {
     }
 
     /**
-     * Wrap a request parsing failure in a SAXException to prevent generic FileNotFound and
-     * ConnectionRefused messages.
+     * Wrap a request parsing failure in a SAXException to prevent generic FileNotFound and ConnectionRefused messages.
      *
-     * <p>This communicates that there is a problem with the XML Document while avoiding providing
-     * internal details that are not useful to web service users.
+     * <p>This communicates that there is a problem with the XML Document while avoiding providing internal details that
+     * are not useful to web service users.
      *
-     * <p>The full stack trace is preserved to support development and debugging; so the line number
-     * can be used by developers.
+     * <p>The full stack trace is preserved to support development and debugging; so the line number can be used by
+     * developers.
      *
      * @param t Failure during parsing (such as SAXException or IOException)
      * @return Clean SAXException for common parsing failures, or initial throwable
@@ -155,16 +152,15 @@ public abstract class XmlRequestReader {
         if (t instanceof IOException) {
             return createParseException(t);
         }
-        if (t instanceof SAXException) {
+        if (t instanceof SAXException exception) {
             // Double check SAXException does not echo caused by message
-            return cleanSaxException((SAXException) t);
+            return cleanSaxException(exception);
         }
         return t;
     }
 
     /**
-     * Clean the localized message, in the case where it is reproduced by SAXException default
-     * constructor.
+     * Clean the localized message, in the case where it is reproduced by SAXException default constructor.
      *
      * @param saxException
      * @return saxException with nested localized message removed.
@@ -173,9 +169,7 @@ public abstract class XmlRequestReader {
         Throwable cause = saxException.getCause();
         // We only wish to check SAXException which echos internal caused by message
         // Subclasses such as SAXParserException provide a useful message
-        if (saxException != null
-                && saxException.getCause() != null
-                && saxException.getClass() == SAXException.class) {
+        if (saxException != null && saxException.getCause() != null && saxException.getClass() == SAXException.class) {
             String saxMessage = saxException.getMessage();
             String causeMessage = cause.getLocalizedMessage();
             if (causeMessage != null && saxMessage.contains(causeMessage)) {
@@ -188,8 +182,8 @@ public abstract class XmlRequestReader {
     /**
      * Log the cause, and return a SAXException indicaitng a parse failure.
      *
-     * <p>This is a replacement for the provided cause, and includes the same stack trace to assist
-     * with troubleshooting and debugging.
+     * <p>This is a replacement for the provided cause, and includes the same stack trace to assist with troubleshooting
+     * and debugging.
      *
      * @param cause
      * @return SAXException indicating parse failure
@@ -201,10 +195,9 @@ public abstract class XmlRequestReader {
 
         // Provide clean SAXException message, keep stacktrace history (for verbose service
         // exception document)
-        String cleanMessage =
-                "Parsing failed, the xml request is most probably not compliant to "
-                        + getElement().getLocalPart()
-                        + " element";
+        String cleanMessage = "Parsing failed, the xml request is most probably not compliant to "
+                + getElement().getLocalPart()
+                + " element";
         SAXException saxException = new SAXException(cleanMessage);
         saxException.setStackTrace(cause.getStackTrace());
         return saxException;

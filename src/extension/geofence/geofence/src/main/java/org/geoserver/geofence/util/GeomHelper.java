@@ -23,8 +23,8 @@ import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
 /**
- * Class grouping methods to handle geometry union and intersection needed to merge limit together
- * when dealing with layer groups.
+ * Class grouping methods to handle geometry union and intersection needed to merge limit together when dealing with
+ * layer groups.
  */
 public class GeomHelper {
 
@@ -62,12 +62,11 @@ public class GeomHelper {
      *
      * @param first the first geometry to merge.
      * @param second the other geometry as a WKT.
-     * @param lessRestrictive if true when one of the geometry is null, null will be returned.
-     *     Otherwise the other geometry will be returned.
+     * @param lessRestrictive if true when one of the geometry is null, null will be returned. Otherwise the other
+     *     geometry will be returned.
      * @return the result of intersection.
      */
-    public static Geometry reprojectAndUnion(
-            Geometry first, Geometry second, boolean lessRestrictive) {
+    public static Geometry reprojectAndUnion(Geometry first, Geometry second, boolean lessRestrictive) {
         BiFunction<Geometry, Geometry, Geometry> union = (g1, g2) -> g1.union(g2);
         if (lessRestrictive) return reprojectAndApplyOpFavourNull(first, second, union);
         else return reprojectAndApplyOperation(first, second, union);
@@ -78,20 +77,18 @@ public class GeomHelper {
      *
      * @param first the first geometry to merge.
      * @param second the other geometry as a WKT.
-     * @param favourNull if true when one of the geometry is null, null will be returned. Otherwise
-     *     the other geometry will be returned.
+     * @param favourNull if true when one of the geometry is null, null will be returned. Otherwise the other geometry
+     *     will be returned.
      * @return the result of intersection.
      */
-    public static Geometry reprojectAndIntersect(
-            Geometry first, Geometry second, boolean favourNull) {
+    public static Geometry reprojectAndIntersect(Geometry first, Geometry second, boolean favourNull) {
         BiFunction<Geometry, Geometry, Geometry> intersection = (g1, g2) -> g1.intersection(g2);
         if (favourNull) return reprojectAndApplyOpFavourNull(first, second, intersection);
         else return reprojectAndApplyOperation(first, second, intersection);
     }
 
     /**
-     * Reproject and intersects two geometries. If one of the geoms is null, the other will be
-     * returned.
+     * Reproject and intersects two geometries. If one of the geoms is null, the other will be returned.
      *
      * @return the result of intersection.
      */
@@ -133,11 +130,10 @@ public class GeomHelper {
                 second = JTS.transform(second, transformation);
                 second.setSRID(first.getSRID());
             } catch (FactoryException | TransformException e) {
-                throw new RuntimeException(
-                        "Unable to intersect allowed areas: error during transformation from "
-                                + second.getSRID()
-                                + " to "
-                                + first.getSRID());
+                throw new RuntimeException("Unable to intersect allowed areas: error during transformation from "
+                        + second.getSRID()
+                        + " to "
+                        + first.getSRID());
             }
         }
         Geometry result = operation.apply(first, second);
@@ -152,8 +148,7 @@ public class GeomHelper {
      * @param targetCRS the target CRS.
      * @return the reprojected geometry.
      */
-    public static Geometry reprojectGeometry(
-            Geometry geometry, CoordinateReferenceSystem targetCRS) {
+    public static Geometry reprojectGeometry(Geometry geometry, CoordinateReferenceSystem targetCRS) {
         if (geometry == null) return null;
 
         try {
@@ -179,12 +174,12 @@ public class GeomHelper {
      */
     public static CoordinateReferenceSystem getCRSFromInfo(CatalogInfo info) {
         CoordinateReferenceSystem crs = null;
-        if (info instanceof LayerInfo) {
-            crs = ((LayerInfo) info).getResource().getCRS();
-        } else if (info instanceof ResourceInfo) {
-            crs = ((ResourceInfo) info).getCRS();
-        } else if (info instanceof LayerGroupInfo) {
-            crs = ((LayerGroupInfo) info).getBounds().getCoordinateReferenceSystem();
+        if (info instanceof LayerInfo layerInfo) {
+            crs = layerInfo.getResource().getCRS();
+        } else if (info instanceof ResourceInfo resourceInfo) {
+            crs = resourceInfo.getCRS();
+        } else if (info instanceof LayerGroupInfo groupInfo) {
+            crs = groupInfo.getBounds().getCoordinateReferenceSystem();
         } else {
             throw new RuntimeException(
                     "Cannot retrieve CRS from info " + info.getClass().getSimpleName());

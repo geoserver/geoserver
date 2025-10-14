@@ -56,10 +56,7 @@ public class DataStoresClient {
         this.api().createDatastore(workspace, new DataStoreInfoWrapper().dataStore(info));
         return this.findByWorkspaceAndName(workspace, info.getName())
                 .orElseThrow(
-                        () ->
-                                new IllegalStateException(
-                                        "DataStore not found after being created: "
-                                                + info.getName()));
+                        () -> new IllegalStateException("DataStore not found after being created: " + info.getName()));
     }
 
     public DataStoreResponse createShapefileDataStore(
@@ -71,15 +68,10 @@ public class DataStoresClient {
     }
 
     public DataStoreResponse update(@NonNull String workspace, @NonNull DataStoreInfo info) {
-        this.api()
-                .modifyDataStore(
-                        workspace, info.getName(), new DataStoreInfoWrapper().dataStore(info));
+        this.api().modifyDataStore(workspace, info.getName(), new DataStoreInfoWrapper().dataStore(info));
         return this.findByWorkspaceAndName(workspace, info.getName())
                 .orElseThrow(
-                        () ->
-                                new IllegalStateException(
-                                        "DataStore not found after being updated: "
-                                                + info.getName()));
+                        () -> new IllegalStateException("DataStore not found after being updated: " + info.getName()));
     }
 
     public void delete(@NonNull String ws, @NonNull String name) {
@@ -117,18 +109,14 @@ public class DataStoresClient {
 
     public Map<String, String> toConnectionParameters(@NonNull ConnectionParameters params) {
         return params.getEntry().stream()
-                .collect(
-                        Collectors.toMap(
-                                ConnectionParameterEntry::getAtKey,
-                                ConnectionParameterEntry::getValue));
+                .collect(Collectors.toMap(ConnectionParameterEntry::getAtKey, ConnectionParameterEntry::getValue));
     }
 
     public ConnectionParameters toConnectionParameters(@NonNull Map<String, String> params) {
         return new ConnectionParameters()
-                .entry(
-                        params.entrySet().stream()
-                                .map(this::connectionParameterEntry)
-                                .collect(Collectors.toList()));
+                .entry(params.entrySet().stream()
+                        .map(this::connectionParameterEntry)
+                        .collect(Collectors.toList()));
     }
 
     private ConnectionParameterEntry connectionParameterEntry(Map.Entry<String, String> e) {

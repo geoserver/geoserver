@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.admin;
 
+import java.io.Serial;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
@@ -12,13 +13,14 @@ import org.geoserver.config.ContactInfo;
 import org.geoserver.config.CoverageAccessInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
-import org.geoserver.config.JAIInfo;
+import org.geoserver.config.ImageProcessingInfo;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.web.GeoServerSecuredPage;
 
 /** @author Arne Kepp, The Open Planning Project */
 @SuppressWarnings("serial")
 public abstract class ServerAdminPage extends GeoServerSecuredPage {
+    @Serial
     private static final long serialVersionUID = 4712657652337914993L;
 
     public IModel<GeoServer> getGeoServerModel() {
@@ -34,20 +36,24 @@ public abstract class ServerAdminPage extends GeoServerSecuredPage {
         return new Model<>(getGeoServerApplication().getGeoServer().getGlobal());
     }
 
-    public IModel<JAIInfo> getJAIModel() {
+    public IModel<ImageProcessingInfo> getJAIModel() {
         // Notes setup on top of an explanation provided by Gabriel Roldan for
         // his patch which fixes the modificationProxy unable to detect changes
         // --------------------------------------------------------------------
-        // with this change, we will edit a clone of the original JAIInfo.
+        // with this change, we will edit a clone of the original ImageProcessingInfo.
         // By this way, the modification proxy will count it as a change.
         // The previous code wasn't working as expected.
-        // the reason is that the model used to edit JAIInfo is a
+        // the reason is that the model used to edit ImageProcessingInfo is a
         // LoadableDetachableModel, so when the edit page does gobal.setJAI, it
         // is actually setting the same object reference, and hence the
         // modificationproxy does not count it as a change.
 
-        JAIInfo currJaiInfo = getGeoServerApplication().getGeoServer().getGlobal().getJAI().clone();
-        return new Model<>(currJaiInfo);
+        ImageProcessingInfo currImageProcessingInfo = getGeoServerApplication()
+                .getGeoServer()
+                .getGlobal()
+                .getImageProcessing()
+                .clone();
+        return new Model<>(currImageProcessingInfo);
     }
 
     public IModel<CoverageAccessInfo> getCoverageAccessModel() {
@@ -62,8 +68,11 @@ public abstract class ServerAdminPage extends GeoServerSecuredPage {
         // is actually setting the same object reference, and hence the
         // modificationProxy does not count it as a change.
 
-        CoverageAccessInfo currCoverageAccessInfo =
-                getGeoServerApplication().getGeoServer().getGlobal().getCoverageAccess().clone();
+        CoverageAccessInfo currCoverageAccessInfo = getGeoServerApplication()
+                .getGeoServer()
+                .getGlobal()
+                .getCoverageAccess()
+                .clone();
         return new Model<>(currCoverageAccessInfo);
     }
 

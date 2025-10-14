@@ -13,23 +13,21 @@ import java.util.stream.Collectors;
 import org.geotools.referencing.CRS;
 
 /**
- * Capabilities documents provider for CRS objects. Has some smarts to exclude specific authorities
- * that are not meant to be used in such context, like the alias ones for URN, HTTP and the like. It
- * also allows to customize how each code is formatted into the capabilities document, through a
- * mapper {@link BiFunction} receiving authority and code, and returning the code to be published.
- * Codes can also be filtered by setting a {@link BiFunction} that receives authority and code, and
- * returns whether that particular code should be included in the list, or not.
+ * Capabilities documents provider for CRS objects. Has some smarts to exclude specific authorities that are not meant
+ * to be used in such context, like the alias ones for URN, HTTP and the like. It also allows to customize how each code
+ * is formatted into the capabilities document, through a mapper {@link BiFunction} receiving authority and code, and
+ * returning the code to be published. Codes can also be filtered by setting a {@link BiFunction} that receives
+ * authority and code, and returns whether that particular code should be included in the list, or not.
  */
 public class CapabilitiesCRSProvider {
 
-    private static Set<String> DEFAULT_AUTHORITY_EXCLUSIONS =
-            Set.of(
-                    "http://www.opengis.net/gml",
-                    "http://www.opengis.net/def",
-                    "AUTO", // only suitable in WMS service
-                    "AUTO2", // only suitable in WMS service
-                    "urn:ogc:def",
-                    "urn:x-ogc:def");
+    private static Set<String> DEFAULT_AUTHORITY_EXCLUSIONS = Set.of(
+            "http://www.opengis.net/gml",
+            "http://www.opengis.net/def",
+            "AUTO", // only suitable in WMS service
+            "AUTO2", // only suitable in WMS service
+            "urn:ogc:def",
+            "urn:x-ogc:def");
 
     private BiFunction<String, String, String> codeMapper = CapabilitiesCRSProvider::mapCode;
 
@@ -38,27 +36,24 @@ public class CapabilitiesCRSProvider {
     private BiFunction<String, String, Boolean> codeFilter = CapabilitiesCRSProvider::filterCode;
 
     /**
-     * Returns the set of authorities exclusions for this CRS provider. Can be manipulated to
-     * add/remote authorities from the exclusion set.
+     * Returns the set of authorities exclusions for this CRS provider. Can be manipulated to add/remote authorities
+     * from the exclusion set.
      */
     public Set<String> getAuthorityExclusions() {
         return authorityExclusions;
     }
 
     public Set<String> getCodes() {
-        List<String> authorities =
-                CRS.getSupportedAuthorities(true).stream()
-                        .filter(a -> !authorityExclusions.contains(a))
-                        .sorted()
-                        .collect(Collectors.toList());
+        List<String> authorities = CRS.getSupportedAuthorities(true).stream()
+                .filter(a -> !authorityExclusions.contains(a))
+                .sorted()
+                .collect(Collectors.toList());
 
         return authorities.stream()
-                .flatMap(
-                        authority ->
-                                CRS.getSupportedCodes(authority).stream()
-                                        .filter(code -> codeFilter.apply(authority, code))
-                                        .sorted((a, b) -> compareCodes(a, b))
-                                        .map(code -> codeMapper.apply(authority, code)))
+                .flatMap(authority -> CRS.getSupportedCodes(authority).stream()
+                        .filter(code -> codeFilter.apply(authority, code))
+                        .sorted((a, b) -> compareCodes(a, b))
+                        .map(code -> codeMapper.apply(authority, code)))
                 .collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
     }
 
@@ -71,8 +66,8 @@ public class CapabilitiesCRSProvider {
     }
 
     /**
-     * Sets a bi-function that the provider uses to go from authority and code to the CRS identifier
-     * published in the capabilities document.
+     * Sets a bi-function that the provider uses to go from authority and code to the CRS identifier published in the
+     * capabilities document.
      *
      * @param codeMapper
      */
@@ -81,9 +76,9 @@ public class CapabilitiesCRSProvider {
     }
 
     /**
-     * Sets a bi-function that the provider uses to filter codes from the capabilities document. The
-     * function receives authority and code, and will return true if the code should be included in
-     * the output. By default, the provider will filter out the WGS84(DD) code.
+     * Sets a bi-function that the provider uses to filter codes from the capabilities document. The function receives
+     * authority and code, and will return true if the code should be included in the output. By default, the provider
+     * will filter out the WGS84(DD) code.
      *
      * @param codeFilter
      */

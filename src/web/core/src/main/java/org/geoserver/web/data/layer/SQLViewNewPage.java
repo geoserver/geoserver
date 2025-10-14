@@ -6,6 +6,7 @@
 package org.geoserver.web.data.layer;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.logging.Level;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.CatalogBuilder;
@@ -20,6 +21,7 @@ import org.geotools.jdbc.VirtualTable;
 public class SQLViewNewPage extends SQLViewAbstractPage {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 3670565306101168775L;
 
     public SQLViewNewPage(PageParameters params) throws IOException {
@@ -42,9 +44,7 @@ public class SQLViewNewPage extends SQLViewAbstractPage {
             setResponsePage(new ResourceConfigurationPage(layerInfo, true));
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Failed to create feature type", e);
-            error(
-                    new ParamResourceModel("creationFailure", this, getFirstErrorMessage(e))
-                            .getString());
+            error(new ParamResourceModel("creationFailure", this, getFirstErrorMessage(e)).getString());
         }
     }
 

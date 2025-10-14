@@ -7,6 +7,7 @@ package org.geoserver.web.data.layer;
 
 import static org.geoserver.web.data.layer.LayerProvider.CREATED_TIMESTAMP;
 import static org.geoserver.web.data.layer.LayerProvider.ENABLED;
+import static org.geoserver.web.data.layer.LayerProvider.MODIFIED_BY;
 import static org.geoserver.web.data.layer.LayerProvider.MODIFIED_TIMESTAMP;
 import static org.geoserver.web.data.layer.LayerProvider.NAME;
 import static org.geoserver.web.data.layer.LayerProvider.SRS;
@@ -18,7 +19,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
@@ -38,6 +38,7 @@ import org.geoserver.web.data.store.CoverageStoreEditPage;
 import org.geoserver.web.data.store.DataAccessEditPage;
 import org.geoserver.web.data.store.WMSStoreEditPage;
 import org.geoserver.web.data.store.WMTSStoreEditPage;
+import org.geoserver.web.wicket.CachingImage;
 import org.geoserver.web.wicket.DateTimeLabel;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
@@ -45,8 +46,8 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
 
 /**
- * Page listing all the available layers. Follows the usual filter/sort/page approach, provides ways
- * to bulk delete layers and to add new ones
+ * Page listing all the available layers. Follows the usual filter/sort/page approach, provides ways to bulk delete
+ * layers and to add new ones
  */
 public class LayerPage extends GeoServerSecuredPage {
     LayerProvider provider = new LayerProvider();
@@ -56,52 +57,48 @@ public class LayerPage extends GeoServerSecuredPage {
 
     public LayerPage() {
         final CatalogIconFactory icons = CatalogIconFactory.get();
-        table =
-                new GeoServerTablePanel<>("table", provider, true) {
+        table = new GeoServerTablePanel<>("table", provider, true) {
 
-                    @Override
-                    protected Component getComponentForProperty(
-                            String id, IModel<LayerInfo> itemModel, Property<LayerInfo> property) {
-                        if (property == TYPE) {
-                            Fragment f = new Fragment(id, "iconFragment", LayerPage.this);
-                            f.add(
-                                    new Image(
-                                            "layerIcon",
-                                            icons.getSpecificLayerIcon(itemModel.getObject())));
-                            return f;
-                        } else if (property == STORE) {
-                            return storeLink(id, itemModel);
-                        } else if (property == NAME) {
-                            return layerLink(id, itemModel);
-                        } else if (property == ENABLED) {
-                            LayerInfo layerInfo = itemModel.getObject();
-                            // ask for enabled() instead of isEnabled() to account for disabled
-                            // resource/store
-                            boolean enabled = layerInfo.enabled();
-                            PackageResourceReference icon =
-                                    enabled ? icons.getEnabledIcon() : icons.getDisabledIcon();
-                            Fragment f = new Fragment(id, "iconFragment", LayerPage.this);
-                            f.add(new Image("layerIcon", icon));
-                            return f;
-                        } else if (property == SRS) {
-                            return new Label(id, SRS.getModel(itemModel));
-                        } else if (property == TITLE) {
-                            return titleLink(id, itemModel);
-                        } else if (property == MODIFIED_TIMESTAMP) {
-                            return new DateTimeLabel(id, MODIFIED_TIMESTAMP.getModel(itemModel));
-                        } else if (property == CREATED_TIMESTAMP) {
-                            return new DateTimeLabel(id, CREATED_TIMESTAMP.getModel(itemModel));
-                        }
-                        throw new IllegalArgumentException(
-                                "Don't know a property named " + property.getName());
-                    }
+            @Override
+            protected Component getComponentForProperty(
+                    String id, IModel<LayerInfo> itemModel, Property<LayerInfo> property) {
+                if (property == TYPE) {
+                    Fragment f = new Fragment(id, "iconFragment", LayerPage.this);
+                    f.add(new CachingImage("layerIcon", icons.getSpecificLayerIcon(itemModel.getObject())));
+                    return f;
+                } else if (property == STORE) {
+                    return storeLink(id, itemModel);
+                } else if (property == NAME) {
+                    return layerLink(id, itemModel);
+                } else if (property == ENABLED) {
+                    LayerInfo layerInfo = itemModel.getObject();
+                    // ask for enabled() instead of isEnabled() to account for disabled
+                    // resource/store
+                    boolean enabled = layerInfo.enabled();
+                    PackageResourceReference icon = enabled ? icons.getEnabledIcon() : icons.getDisabledIcon();
+                    Fragment f = new Fragment(id, "iconFragment", LayerPage.this);
+                    f.add(new CachingImage("layerIcon", icon));
+                    return f;
+                } else if (property == SRS) {
+                    return new Label(id, SRS.getModel(itemModel));
+                } else if (property == TITLE) {
+                    return titleLink(id, itemModel);
+                } else if (property == MODIFIED_TIMESTAMP) {
+                    return new DateTimeLabel(id, MODIFIED_TIMESTAMP.getModel(itemModel));
+                } else if (property == CREATED_TIMESTAMP) {
+                    return new DateTimeLabel(id, CREATED_TIMESTAMP.getModel(itemModel));
+                } else if (property == MODIFIED_BY) {
+                    return new Label(id, MODIFIED_BY.getModel(itemModel));
+                }
+                throw new IllegalArgumentException("Don't know a property named " + property.getName());
+            }
 
-                    @Override
-                    protected void onSelectionUpdate(AjaxRequestTarget target) {
-                        removal.setEnabled(!table.getSelection().isEmpty());
-                        target.add(removal);
-                    }
-                };
+            @Override
+            protected void onSelectionUpdate(AjaxRequestTarget target) {
+                removal.setEnabled(!table.getSelection().isEmpty());
+                target.add(removal);
+            }
+        };
         table.setOutputMarkupId(true);
         add(table);
 

@@ -66,9 +66,7 @@ public class MBTilesGetMapOutputFormatTest extends WMSTestSupport {
     @Test
     public void testTileEntries() throws Exception {
         WMSMapContent mapContent = createMapContent(WORLD, LAKES);
-        mapContent
-                .getRequest()
-                .setBbox(new Envelope(-0.17578125, -0.087890625, 0.17578125, 0.087890625));
+        mapContent.getRequest().setBbox(new Envelope(-0.17578125, -0.087890625, 0.17578125, 0.087890625));
         mapContent.getRequest().getFormatOptions().put("min_zoom", "10");
         mapContent.getRequest().getFormatOptions().put("max_zoom", "11");
 
@@ -105,9 +103,7 @@ public class MBTilesGetMapOutputFormatTest extends WMSTestSupport {
     public void testTileEntriesWithAddTiles() throws Exception {
         // Create a getMap request
         WMSMapContent mapContent = createMapContent(WORLD, LAKES);
-        mapContent
-                .getRequest()
-                .setBbox(new Envelope(-0.17578125, -0.087890625, 0.17578125, 0.087890625));
+        mapContent.getRequest().setBbox(new Envelope(-0.17578125, -0.087890625, 0.17578125, 0.087890625));
         mapContent.getRequest().getFormatOptions().put("min_zoom", "10");
         mapContent.getRequest().getFormatOptions().put("max_zoom", "11");
         // Create a temporary file for the mbtiles
@@ -177,9 +173,7 @@ public class MBTilesGetMapOutputFormatTest extends WMSTestSupport {
 
         // a set of zooms so large, it can only go in timeout
         WMSMapContent mapContent = createMapContent(WORLD, LAKES);
-        mapContent
-                .getRequest()
-                .setBbox(new Envelope(-0.17578125, -0.087890625, 0.17578125, 0.087890625));
+        mapContent.getRequest().setBbox(new Envelope(-0.17578125, -0.087890625, 0.17578125, 0.087890625));
         mapContent.getRequest().getFormatOptions().put("min_zoom", "10");
         mapContent.getRequest().getFormatOptions().put("max_zoom", "30");
 
@@ -212,7 +206,8 @@ public class MBTilesGetMapOutputFormatTest extends WMSTestSupport {
         GetMapRequest request = super.createGetMapRequest(layerNames);
         request.setBbox(new Envelope(-180, 180, -90, 90));
         return request;
-    };
+    }
+    ;
 
     WMSMapContent createMapContent(QName... layers) throws IOException {
         GetMapRequest mapRequest = createGetMapRequest(layers);

@@ -13,28 +13,34 @@ import org.geoserver.platform.GeoServerExtensions;
 public final class CSPUtils {
 
     /**
-     * The default value of the Content-Security-Policy header when there is a misconfiguration or
-     * some other error that prevents determining the proper header value
+     * The default value of the Content-Security-Policy header when there is a misconfiguration or some other error that
+     * prevents determining the proper header value
      */
     public static final String DEFAULT_FALLBACK =
-            "base-uri 'none'; form-action 'none'; default-src 'none'; frame-ancestors 'none';";
+            "base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none';";
 
     /**
-     * The system property for the value of the Content-Security-Policy header when there is a
-     * misconfiguration or some other error that prevents determining the proper header value
+     * The system property for the value of the Content-Security-Policy header when there is a misconfiguration or some
+     * other error that prevents determining the proper header value
      */
     public static final String GEOSERVER_CSP_FALLBACK = "geoserver.csp.fallbackDirectives";
 
     /**
-     * The system property that allows adding remote hosts to fetch directives in the
-     * Content-Security-Policy header for static web files without having to modify the
-     * configuration (e.g., if OpenLayers is loaded from a CDN rather than GeoServer)
+     * The system property that allows adding remote hosts to fetch directives in the Content-Security-Policy header for
+     * static web files without having to modify the configuration (e.g., if OpenLayers is loaded from a CDN rather than
+     * GeoServer)
      */
     public static final String GEOSERVER_CSP_REMOTE_RESOURCES = "geoserver.csp.remoteResources";
 
     /**
-     * The system property to set that allows controlling what to set the frame-ancestors directive
-     * to in the Content-Security-Policy header without having to modify the configuration
+     * The system property to set that allows controlling what to set the form-action directive to in the
+     * Content-Security-Policy header without having to modify the configuration
+     */
+    public static final String GEOSERVER_CSP_FORM_ACTION = "geoserver.csp.formAction";
+
+    /**
+     * The system property to set that allows controlling what to set the frame-ancestors directive to in the
+     * Content-Security-Policy header without having to modify the configuration
      */
     public static final String GEOSERVER_CSP_FRAME_ANCESTORS = "geoserver.csp.frameAncestors";
 
@@ -46,8 +52,7 @@ public final class CSPUtils {
      * The regular expression for valid property values to allow injecting into directives of the
      * Content-Security-Policy header
      */
-    public static final Pattern PROPERTY_VALUE_REGEX =
-            Pattern.compile("(?i)^[a-z0-9'\\*][a-z0-9_\\-':/\\.\\* ]{4,}$");
+    public static final Pattern PROPERTY_VALUE_REGEX = Pattern.compile("(?i)^[a-z0-9'\\*][a-z0-9_\\-':/\\.\\* ]*$");
 
     /** The regular expression to match one or more whitespace characters */
     private static final Pattern WHITESPACE_REGEX = Pattern.compile("\\s+");
@@ -55,8 +60,8 @@ public final class CSPUtils {
     private CSPUtils() {}
 
     /**
-     * Removes unnecessary whitespace characters from the CSP directives and ensures that the string
-     * ends with a semicolon.
+     * Removes unnecessary whitespace characters from the CSP directives and ensures that the string ends with a
+     * semicolon.
      *
      * @param directives the original directives
      * @return the cleaned up directives
@@ -81,8 +86,8 @@ public final class CSPUtils {
     }
 
     /**
-     * Trims leading and trailing whitespace characters from a non-empty string or converts a null
-     * string to an empty string.
+     * Trims leading and trailing whitespace characters from a non-empty string or converts a null string to an empty
+     * string.
      *
      * @param value the original value
      * @return the trimmed value or an empty string

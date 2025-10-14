@@ -37,7 +37,7 @@ public final class RulesDao {
     }
 
     public static String getTempRulesPath() {
-        return String.format("params-extractor/%s-extraction-rules.xml", UUID.randomUUID());
+        return "params-extractor/%s-extraction-rules.xml".formatted(UUID.randomUUID());
     }
 
     public static List<Rule> getRules() {
@@ -109,10 +109,9 @@ public final class RulesDao {
     }
 
     public static void deleteRules(Resource input, Resource output, String... ruleIds) {
-        List<Rule> rules =
-                getRules(input).stream()
-                        .filter(rule -> !matchesAnyRuleId(rule, ruleIds))
-                        .collect(Collectors.toList());
+        List<Rule> rules = getRules(input).stream()
+                .filter(rule -> !matchesAnyRuleId(rule, ruleIds))
+                .collect(Collectors.toList());
         writeRules(rules, output);
         Utils.info(LOGGER, "Deleted one or more parameters extractor rules.");
     }

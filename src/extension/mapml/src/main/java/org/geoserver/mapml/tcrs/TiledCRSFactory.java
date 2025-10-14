@@ -41,9 +41,9 @@ import org.geotools.referencing.factory.AuthorityFactoryAdapter;
 import org.geotools.util.factory.Hints;
 
 /**
- * Exposes available {@link TiledCRS} to GeoServer as valid Coordinate Reference Systems. The
- * current implementation loads a database of TiledCRS from TiledCRSConstant, will use the TCRS
- * database in the future, if those are made to be configurable
+ * Exposes available {@link TiledCRS} to GeoServer as valid Coordinate Reference Systems. The current implementation
+ * loads a database of TiledCRS from TiledCRSConstant, will use the TCRS database in the future, if those are made to be
+ * configurable
  */
 public class TiledCRSFactory extends AuthorityFactoryAdapter implements CRSAuthorityFactory {
     /** The authority prefix */
@@ -75,8 +75,7 @@ public class TiledCRSFactory extends AuthorityFactoryAdapter implements CRSAutho
     }
 
     @Override
-    public Set<String> getAuthorityCodes(Class<? extends IdentifiedObject> type)
-            throws FactoryException {
+    public Set<String> getAuthorityCodes(Class<? extends IdentifiedObject> type) throws FactoryException {
         return TiledCRSConstants.tiledCRSDefinitions.values().stream()
                 .map(TiledCRSParams::getName)
                 .collect(Collectors.toSet());
@@ -86,8 +85,7 @@ public class TiledCRSFactory extends AuthorityFactoryAdapter implements CRSAutho
     public CoordinateReferenceSystem createCoordinateReferenceSystem(String code)
             throws FactoryException, NoSuchAuthorityCodeException {
         final CRSAuthorityFactory factory = getCRSAuthorityFactory(code);
-        CoordinateReferenceSystem crs =
-                factory.createCoordinateReferenceSystem(toBackingFactoryCode(code));
+        CoordinateReferenceSystem crs = factory.createCoordinateReferenceSystem(toBackingFactoryCode(code));
         final CoordinateReferenceSystem replaced = replace(crs, code);
         notifySuccess("createCoordinateReferenceSystem", code, factory, replaced);
 
@@ -125,32 +123,30 @@ public class TiledCRSFactory extends AuthorityFactoryAdapter implements CRSAutho
     }
 
     /**
-     * Replaces the CRS with one that has the MapML identifiers. Avoids going throught the CRS
-     * factory to avoid axis flipping issues.
+     * Replaces the CRS with one that has the MapML identifiers. Avoids going throught the CRS factory to avoid axis
+     * flipping issues.
      *
      * @throws FactoryException if the CRS is not supported
      */
-    protected CoordinateReferenceSystem replace(CoordinateReferenceSystem crs, String code)
-            throws FactoryException {
+    protected CoordinateReferenceSystem replace(CoordinateReferenceSystem crs, String code) throws FactoryException {
 
         final Datum datum;
-        if (crs instanceof SingleCRS) {
-            datum = ((SingleCRS) crs).getDatum();
+        if (crs instanceof SingleCRS rS) {
+            datum = rS.getDatum();
         } else {
             datum = null;
         }
         CoordinateSystem cs = crs.getCoordinateSystem();
         final Map<String, ?> properties = getProperties(crs, code);
 
-        if (crs instanceof ProjectedCRS) {
-            final ProjectedCRS projectedCRS = (ProjectedCRS) crs;
+        if (crs instanceof ProjectedCRS projectedCRS) {
             final CoordinateReferenceSystem baseCRS = projectedCRS.getBaseCRS();
             Conversion fromBase = projectedCRS.getConversionFromBase();
             return new DefaultProjectedCRS(
                     properties,
                     fromBase,
                     (GeographicCRS) baseCRS,
-                    ((ProjectedCRS) crs).getConversionFromBase().getMathTransform(),
+                    projectedCRS.getConversionFromBase().getMathTransform(),
                     (CartesianCS) cs);
         } else if (crs instanceof GeographicCRS) {
             return new DefaultGeographicCRS(properties, (GeodeticDatum) datum, (EllipsoidalCS) cs);
@@ -161,10 +157,9 @@ public class TiledCRSFactory extends AuthorityFactoryAdapter implements CRSAutho
     }
 
     /**
-     * Returns the properties to be given to an object replacing an original one. If the new object
-     * keep the same authority, then all metadata are preserved. Otherwise (i.e. if a new authority
-     * is given to the new object), then the old identifiers will be removed from the new object
-     * metadata.
+     * Returns the properties to be given to an object replacing an original one. If the new object keep the same
+     * authority, then all metadata are preserved. Otherwise (i.e. if a new authority is given to the new object), then
+     * the old identifiers will be removed from the new object metadata.
      *
      * @param object The original object.
      * @return The properties to be given to the object created as a substitute of {@code object}.
@@ -179,12 +174,8 @@ public class TiledCRSFactory extends AuthorityFactoryAdapter implements CRSAutho
         List<ReferenceIdentifier> aliases = new ArrayList<>(object.getIdentifiers());
         List<ReferenceIdentifier> identifiers = new ArrayList<>();
         aliases.add(0, new NamedIdentifier(authority, identifier));
-        properties.put(
-                IdentifiedObject.IDENTIFIERS_KEY,
-                aliases.toArray(new ReferenceIdentifier[identifiers.size()]));
-        properties.put(
-                IdentifiedObject.ALIAS_KEY,
-                aliases.toArray(new ReferenceIdentifier[aliases.size()]));
+        properties.put(IdentifiedObject.IDENTIFIERS_KEY, aliases.toArray(new ReferenceIdentifier[identifiers.size()]));
+        properties.put(IdentifiedObject.ALIAS_KEY, aliases.toArray(new ReferenceIdentifier[aliases.size()]));
 
         return properties;
     }

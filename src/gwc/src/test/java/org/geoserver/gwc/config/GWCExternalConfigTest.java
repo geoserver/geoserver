@@ -23,12 +23,10 @@ import org.junit.Test;
 public final class GWCExternalConfigTest extends GeoServerSystemTestSupport {
 
     @Rule
-    public PropertyRule configProp =
-            PropertyRule.system(GeoserverXMLResourceProvider.GEOWEBCACHE_CONFIG_DIR_PROPERTY);
+    public PropertyRule configProp = PropertyRule.system(GeoserverXMLResourceProvider.GEOWEBCACHE_CONFIG_DIR_PROPERTY);
 
     @Rule
-    public PropertyRule cacheProp =
-            PropertyRule.system(GeoserverXMLResourceProvider.GEOWEBCACHE_CACHE_DIR_PROPERTY);
+    public PropertyRule cacheProp = PropertyRule.system(GeoserverXMLResourceProvider.GEOWEBCACHE_CACHE_DIR_PROPERTY);
 
     private static final File rootTempDirectory;
 
@@ -58,11 +56,10 @@ public final class GWCExternalConfigTest extends GeoServerSystemTestSupport {
     }
 
     /**
-     * Helper method that setup the correct configuration variables, force Spring beans to be
-     * reloaded and checks GWC configuration beans.
+     * Helper method that setup the correct configuration variables, force Spring beans to be reloaded and checks GWC
+     * configuration beans.
      */
-    private void testUseCase(
-            String configDirPath, String cacheDirPath, String expectedConfigFirPath) {
+    private void testUseCase(String configDirPath, String cacheDirPath, String expectedConfigFirPath) {
         // set or clear the gwc configuration directory property
         if (configDirPath == null) {
             configProp.clearValue();
@@ -81,27 +78,20 @@ public final class GWCExternalConfigTest extends GeoServerSystemTestSupport {
         applicationContext
                 .getBeansOfType(GeoserverXMLResourceProvider.class)
                 .values()
-                .forEach(
-                        bean -> {
-                            try {
-                                // check that configuration files are located in our custom
-                                // directory
-                                assertThat(bean.getConfigDirectory(), notNullValue());
-                                assertThat(
-                                        bean.getConfigDirectory().dir().getCanonicalPath(),
-                                        is(expectedConfigFirPath));
-                                // rely on canonical path for comparisons
-                                assertThat(
-                                        new File(bean.getLocation()).getCanonicalPath(),
-                                        is(
-                                                new File(
-                                                                expectedConfigFirPath,
-                                                                bean.getConfigFileName())
-                                                        .getCanonicalPath()));
-                            } catch (Exception exception) {
-                                throw new RuntimeException(exception);
-                            }
-                        });
+                .forEach(bean -> {
+                    try {
+                        // check that configuration files are located in our custom
+                        // directory
+                        assertThat(bean.getConfigDirectory(), notNullValue());
+                        assertThat(bean.getConfigDirectory().dir().getCanonicalPath(), is(expectedConfigFirPath));
+                        // rely on canonical path for comparisons
+                        assertThat(
+                                new File(bean.getLocation()).getCanonicalPath(),
+                                is(new File(expectedConfigFirPath, bean.getConfigFileName()).getCanonicalPath()));
+                    } catch (Exception exception) {
+                        throw new RuntimeException(exception);
+                    }
+                });
     }
 
     @AfterClass

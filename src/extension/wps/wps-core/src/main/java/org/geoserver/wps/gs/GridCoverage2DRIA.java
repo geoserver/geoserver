@@ -5,7 +5,6 @@
  */
 package org.geoserver.wps.gs;
 
-import com.sun.media.jai.util.ImageUtil;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
@@ -17,18 +16,19 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.media.jai.BorderExtender;
-import javax.media.jai.BorderExtenderConstant;
-import javax.media.jai.GeometricOpImage;
-import javax.media.jai.ImageLayout;
-import javax.media.jai.Interpolation;
-import javax.media.jai.InterpolationNearest;
-import javax.media.jai.JAI;
-import javax.media.jai.PlanarImage;
-import javax.media.jai.RasterAccessor;
-import javax.media.jai.RasterFormatTag;
-import javax.media.jai.iterator.RandomIter;
-import javax.media.jai.iterator.RandomIterFactory;
+import org.eclipse.imagen.BorderExtender;
+import org.eclipse.imagen.BorderExtenderConstant;
+import org.eclipse.imagen.GeometricOpImage;
+import org.eclipse.imagen.ImageLayout;
+import org.eclipse.imagen.ImageN;
+import org.eclipse.imagen.Interpolation;
+import org.eclipse.imagen.InterpolationNearest;
+import org.eclipse.imagen.PlanarImage;
+import org.eclipse.imagen.RasterAccessor;
+import org.eclipse.imagen.RasterFormatTag;
+import org.eclipse.imagen.iterator.RandomIter;
+import org.eclipse.imagen.iterator.RandomIterFactory;
+import org.eclipse.imagen.media.util.ImageUtil;
 import org.geotools.api.metadata.spatial.PixelOrientation;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.operation.MathTransform;
@@ -41,11 +41,11 @@ import org.geotools.referencing.operation.matrix.XAffineTransform;
 import org.geotools.util.Utilities;
 
 /**
- * A RenderedImage that provides values coming from a source GridCoverage2D, with a backing grid
- * addressable as the target GridCoverage2D.
+ * A RenderedImage that provides values coming from a source GridCoverage2D, with a backing grid addressable as the
+ * target GridCoverage2D.
  *
- * <p>The exposed Layout will be the same as the target, and each Point in the target grid can be
- * used in the resulting RenderedImage,
+ * <p>The exposed Layout will be the same as the target, and each Point in the target grid can be used in the resulting
+ * RenderedImage,
  *
  * @author ETj <etj at geo-solutions.it>
  */
@@ -105,17 +105,15 @@ public class GridCoverage2DRIA extends GeometricOpImage {
 
     /**
      * Wrap the src coverage in the dst layout. <br>
-     * The resulting RenderedImage will contain the data in src, and will be accessible via the grid
-     * specs of dst,
+     * The resulting RenderedImage will contain the data in src, and will be accessible via the grid specs of dst,
      *
      * @param src the data coverage to be remapped on dst grid
      * @param dst the provider of the final grid
-     * @param nodata the nodata value to set for cells not covered by src but included in dst. All
-     *     bands will share the same nodata value.
+     * @param nodata the nodata value to set for cells not covered by src but included in dst. All bands will share the
+     *     same nodata value.
      * @return an instance of Coverage2RenderedImageAdapter
      */
-    public static GridCoverage2DRIA create(
-            final GridCoverage2D src, final GridCoverage2D dst, final double nodata) {
+    public static GridCoverage2DRIA create(final GridCoverage2D src, final GridCoverage2D dst, final double nodata) {
 
         Utilities.ensureNonNull("dst", dst);
         return GridCoverage2DRIA.create(src, dst.getGridGeometry(), nodata);
@@ -123,13 +121,12 @@ public class GridCoverage2DRIA extends GeometricOpImage {
 
     /**
      * Wrap the src coverage in the dst {@link GridGeometry2D}. <br>
-     * The resulting RenderedImage will contain the data in src, and will be accessible via the grid
-     * specs of dst,
+     * The resulting RenderedImage will contain the data in src, and will be accessible via the grid specs of dst,
      *
      * @param src the data coverage to be remapped on dst grid
      * @param dstGridGeometry the final {@link GridGeometry2D}
-     * @param nodata the nodata value to set for cells not covered by src but included in dst. All
-     *     bands will share the same nodata value.
+     * @param nodata the nodata value to set for cells not covered by src but included in dst. All bands will share the
+     *     same nodata value.
      * @return an instance of Coverage2RenderedImageAdapter
      */
     public static GridCoverage2DRIA create(
@@ -143,9 +140,7 @@ public class GridCoverage2DRIA extends GeometricOpImage {
         final GridEnvelope2D destinationRasterDimension = dstGridGeometry.getGridRange2D();
         final ImageLayout imageLayout = new ImageLayout();
         imageLayout.setMinX(destinationRasterDimension.x).setMinY(destinationRasterDimension.y);
-        imageLayout
-                .setWidth(destinationRasterDimension.width)
-                .setHeight(destinationRasterDimension.height);
+        imageLayout.setWidth(destinationRasterDimension.width).setHeight(destinationRasterDimension.height);
         imageLayout
                 .setTileHeight(src.getRenderedImage().getSampleModel().getHeight())
                 .setTileWidth(src.getRenderedImage().getSampleModel().getWidth());
@@ -165,8 +160,8 @@ public class GridCoverage2DRIA extends GeometricOpImage {
         BorderExtender extender = new BorderExtenderConstant(new double[] {nodata});
 
         // add tile caching to the mix
-        final RenderingHints hints =
-                new RenderingHints(JAI.KEY_TILE_CACHE, JAI.getDefaultInstance().getTileCache());
+        final RenderingHints hints = new RenderingHints(
+                ImageN.KEY_TILE_CACHE, ImageN.getDefaultInstance().getTileCache());
         return new GridCoverage2DRIA(
                 src,
                 dstGridGeometry,
@@ -224,20 +219,16 @@ public class GridCoverage2DRIA extends GeometricOpImage {
             extender = GridCoverage2DRIA.DEFAULT_BORDEREXTENDER;
         }
         PlanarImage srcImage = PlanarImage.wrapRenderedImage(src.getRenderedImage());
-        if (!(lpad == rpad
-                && rpad == tpad
-                && tpad == bpad
-                && bpad == 0)) { // there is need to extend
+        if (!(lpad == rpad && rpad == tpad && tpad == bpad && bpad == 0)) { // there is need to extend
             minX = srcImage.getMinX();
             maxX = srcImage.getMaxX() - 1;
             minY = srcImage.getMinY();
             maxY = srcImage.getMaxY() - 1;
-            Rectangle bounds =
-                    new Rectangle(
-                            srcImage.getMinX() - lpad,
-                            srcImage.getMinY() - tpad,
-                            srcImage.getWidth() + lpad + rpad,
-                            srcImage.getHeight() + tpad + bpad);
+            Rectangle bounds = new Rectangle(
+                    srcImage.getMinX() - lpad,
+                    srcImage.getMinY() - tpad,
+                    srcImage.getWidth() + lpad + rpad,
+                    srcImage.getHeight() + tpad + bpad);
             iter = RandomIterFactory.create(srcImage.getExtendedData(bounds, extender), bounds);
         } else {
             minX = srcImage.getMinX();
@@ -285,8 +276,7 @@ public class GridCoverage2DRIA extends GeometricOpImage {
             concatenatedForwardTransform = (AffineTransform) w2gd.clone();
             concatenatedForwardTransform.concatenate(g2ws);
             concatenatedBackwardTransform = concatenatedForwardTransform.createInverse();
-            if (XAffineTransform.isIdentity(
-                    concatenatedForwardTransform, 1E-6)) { // TODO improve this check
+            if (XAffineTransform.isIdentity(concatenatedForwardTransform, 1E-6)) { // TODO improve this check
                 concatenatedForwardTransform = new AffineTransform(); // identity
                 concatenatedBackwardTransform = new AffineTransform(); // identity
             }
@@ -320,31 +310,27 @@ public class GridCoverage2DRIA extends GeometricOpImage {
         ret.setLocation(coords[0], coords[1]);
         if (dstGridGeometry.getGridRange2D().contains(ret)) return ret;
         else {
-            LOGGER.log(
-                    Level.WARNING,
-                    "{0} mapped to {1} lies outside {2},{3}+{4}x{5}",
-                    new Object[] {
-                        srcPt,
-                        ret,
-                        dstGridGeometry.getGridRange2D().x,
-                        dstGridGeometry.getGridRange2D().y,
-                        dstGridGeometry.getGridRange2D().width + dstGridGeometry.getGridRange2D().x,
-                        dstGridGeometry.getGridRange2D().height + dstGridGeometry.getGridRange2D().y
-                    });
+            LOGGER.log(Level.WARNING, "{0} mapped to {1} lies outside {2},{3}+{4}x{5}", new Object[] {
+                srcPt,
+                ret,
+                dstGridGeometry.getGridRange2D().x,
+                dstGridGeometry.getGridRange2D().y,
+                dstGridGeometry.getGridRange2D().width + dstGridGeometry.getGridRange2D().x,
+                dstGridGeometry.getGridRange2D().height + dstGridGeometry.getGridRange2D().y
+            });
             return null;
         }
     }
 
     /**
-     * Returns the minimum bounding box of the region of the destination to which a particular
-     * <code>Rectangle</code> of the specified source will be mapped.
+     * Returns the minimum bounding box of the region of the destination to which a particular <code>Rectangle</code> of
+     * the specified source will be mapped.
      *
-     * <p>The integral source rectangle coordinates should be considered pixel indices. The "energy"
-     * of each pixel is defined to be concentrated in the continuous plane of pixels at an offset of
-     * (0.5,&nbsp;0.5) from the index of the pixel. Forward mappings must take this (0.5,&nbsp;0.5)
-     * pixel center into account. Thus given integral source pixel indices as input, the fractional
-     * destination location, as calculated by functions Xf(xSrc,&nbsp;ySrc), Yf(xSrc,&nbsp;ySrc), is
-     * given by:
+     * <p>The integral source rectangle coordinates should be considered pixel indices. The "energy" of each pixel is
+     * defined to be concentrated in the continuous plane of pixels at an offset of (0.5,&nbsp;0.5) from the index of
+     * the pixel. Forward mappings must take this (0.5,&nbsp;0.5) pixel center into account. Thus given integral source
+     * pixel indices as input, the fractional destination location, as calculated by functions Xf(xSrc,&nbsp;ySrc),
+     * Yf(xSrc,&nbsp;ySrc), is given by:
      *
      * <pre>
      *
@@ -357,9 +343,9 @@ public class GridCoverage2DRIA extends GeometricOpImage {
      * @param i the index of the source image.
      * @return a <code>Rectangle</code> indicating the destination bounding box, or <code>null
      *     </code> if the bounding box is unknown.
-     * @throws IllegalArgumentException if <code>sourceIndex</code> is negative or greater than the
-     *     index of the last source.
-     * @throws IllegalArgumentException if <code>sourceRect</code> is <code>null</code>.
+     * @throws IllegalArgumentException if <code>sourceIndex</code> is negative or greater than the index of the last
+     *     source.
+     * @throws IllegalArgumentException if <code>sourceRect</code> is {@code null}.
      */
     @Override
     protected Rectangle forwardMapRect(Rectangle pxRect, int i) {
@@ -453,15 +439,14 @@ public class GridCoverage2DRIA extends GeometricOpImage {
     }
 
     /**
-     * Returns the minimum bounding box of the region of the specified source to which a particular
-     * <code>Rectangle</code> of the destination will be mapped.
+     * Returns the minimum bounding box of the region of the specified source to which a particular <code>Rectangle
+     * </code> of the destination will be mapped.
      *
-     * <p>The integral destination rectangle coordinates should be considered pixel indices. The
-     * "energy" of each pixel is defined to be concentrated in the continuous plane of pixels at an
-     * offset of (0.5,&nbsp;0.5) from the index of the pixel. Backward mappings must take this
-     * (0.5,&nbsp;0.5) pixel center into account. Thus given integral destination pixel indices as
-     * input, the fractional source location, as calculated by functions Xb(xDst,&nbsp;yDst),
-     * Yb(xDst,&nbsp;yDst), is given by:
+     * <p>The integral destination rectangle coordinates should be considered pixel indices. The "energy" of each pixel
+     * is defined to be concentrated in the continuous plane of pixels at an offset of (0.5,&nbsp;0.5) from the index of
+     * the pixel. Backward mappings must take this (0.5,&nbsp;0.5) pixel center into account. Thus given integral
+     * destination pixel indices as input, the fractional source location, as calculated by functions
+     * Xb(xDst,&nbsp;yDst), Yb(xDst,&nbsp;yDst), is given by:
      *
      * <pre>
      *
@@ -472,11 +457,11 @@ public class GridCoverage2DRIA extends GeometricOpImage {
      *
      * @param destRect the <code>Rectangle</code> in destination coordinates.
      * @param sourceIndex the index of the source image.
-     * @return a <code>Rectangle</code> indicating the source bounding box, or <code>null</code> if
-     *     the bounding box is unknown.
-     * @throws IllegalArgumentException if <code>sourceIndex</code> is negative or greater than the
-     *     index of the last source.
-     * @throws IllegalArgumentException if <code>destRect</code> is <code>null</code>.
+     * @return a <code>Rectangle</code> indicating the source bounding box, or {@code null} if the bounding box is
+     *     unknown.
+     * @throws IllegalArgumentException if <code>sourceIndex</code> is negative or greater than the index of the last
+     *     source.
+     * @throws IllegalArgumentException if <code>destRect</code> is {@code null}.
      */
     @Override
     protected Rectangle backwardMapRect(Rectangle destRect, int sourceIndex) {
@@ -660,14 +645,12 @@ public class GridCoverage2DRIA extends GeometricOpImage {
                             for (int b = 0; b < dstBands; b++) {
                                 for (int j = 0; j < kheight; j++) {
                                     for (int i = 0; i < kwidth; i++) {
-                                        samples[j][i] =
-                                                iter.getSample(xint + i, yint + j, b) & 0xFF;
+                                        samples[j][i] = iter.getSample(xint + i, yint + j, b) & 0xFF;
                                     }
                                 }
 
                                 data[b][pixelOffset + bandOffsets[b]] =
-                                        ImageUtil.clampByte(
-                                                interp.interpolate(samples, xfrac, yfrac));
+                                        ImageUtil.clampByte(interp.interpolate(samples, xfrac, yfrac));
                             }
                         }
                     }
@@ -722,8 +705,7 @@ public class GridCoverage2DRIA extends GeometricOpImage {
 
                             for (int j = 0; j < kheight; j++) {
                                 for (int i = 0; i < kwidth; i++) {
-                                    samples[j][i] =
-                                            t[iter.getSample(xint + i, yint + j, 0) & 0xFF] & 0xFF;
+                                    samples[j][i] = t[iter.getSample(xint + i, yint + j, 0) & 0xFF] & 0xFF;
                                 }
                             }
 
@@ -817,8 +799,7 @@ public class GridCoverage2DRIA extends GeometricOpImage {
                             }
 
                             data[b][pixelOffset + bandOffsets[b]] =
-                                    ImageUtil.clampUShort(
-                                            interp.interpolate(samples, xfrac, yfrac));
+                                    ImageUtil.clampUShort(interp.interpolate(samples, xfrac, yfrac));
                         }
                     }
                 }
@@ -892,8 +873,7 @@ public class GridCoverage2DRIA extends GeometricOpImage {
                     // --- optimize nearest interpolation
                     if (interp instanceof InterpolationNearest) {
                         for (int b = 0; b < dstBands; b++) {
-                            data[b][pixelOffset + bandOffsets[b]] =
-                                    ImageUtil.clampShort(iter.getSample(xint, yint, b));
+                            data[b][pixelOffset + bandOffsets[b]] = ImageUtil.clampShort(iter.getSample(xint, yint, b));
                         }
 
                     } else {
@@ -996,8 +976,7 @@ public class GridCoverage2DRIA extends GeometricOpImage {
                                 }
                             }
 
-                            data[b][pixelOffset + bandOffsets[b]] =
-                                    interp.interpolate(samples, xfrac, yfrac);
+                            data[b][pixelOffset + bandOffsets[b]] = interp.interpolate(samples, xfrac, yfrac);
                         }
                     }
                 }
@@ -1055,8 +1034,7 @@ public class GridCoverage2DRIA extends GeometricOpImage {
                     /* Fill with a background color. */
                     if (setBackground) {
                         for (int b = 0; b < dstBands; b++) {
-                            dstData[b][pixelOffset + dstBandOffsets[b]] =
-                                    (float) backgroundValues[b];
+                            dstData[b][pixelOffset + dstBandOffsets[b]] = (float) backgroundValues[b];
                         }
                     }
                 } else {
@@ -1064,8 +1042,7 @@ public class GridCoverage2DRIA extends GeometricOpImage {
                     // --- optimize nearest interpolation
                     if (interp instanceof InterpolationNearest) {
                         for (int b = 0; b < dstBands; b++) {
-                            dstData[b][pixelOffset + dstBandOffsets[b]] =
-                                    iter.getSampleFloat(xint, yint, b);
+                            dstData[b][pixelOffset + dstBandOffsets[b]] = iter.getSampleFloat(xint, yint, b);
                         }
 
                     } else {
@@ -1080,8 +1057,7 @@ public class GridCoverage2DRIA extends GeometricOpImage {
                                 }
                             }
 
-                            dstData[b][pixelOffset + dstBandOffsets[b]] =
-                                    interp.interpolate(samples, xfrac, yfrac);
+                            dstData[b][pixelOffset + dstBandOffsets[b]] = interp.interpolate(samples, xfrac, yfrac);
                         }
                     }
                 }
@@ -1144,8 +1120,7 @@ public class GridCoverage2DRIA extends GeometricOpImage {
                     // --- optimize nearest interpolation
                     if (interp instanceof InterpolationNearest) {
                         for (int b = 0; b < dstBands; b++) {
-                            data[b][pixelOffset + bandOffsets[b]] =
-                                    iter.getSampleDouble(xint, yint, b);
+                            data[b][pixelOffset + bandOffsets[b]] = iter.getSampleDouble(xint, yint, b);
                         }
 
                     } else {
@@ -1159,8 +1134,7 @@ public class GridCoverage2DRIA extends GeometricOpImage {
                                 }
                             }
 
-                            data[b][pixelOffset + bandOffsets[b]] =
-                                    interp.interpolate(samples, xfrac, yfrac);
+                            data[b][pixelOffset + bandOffsets[b]] = interp.interpolate(samples, xfrac, yfrac);
                         }
                     }
                 }
@@ -1183,21 +1157,16 @@ public class GridCoverage2DRIA extends GeometricOpImage {
      * @param periodY The vertical sampling period.
      * @param destRect A <code>float</code> array containing at least <code>
      *     2*((width+periodX-1)/periodX)*
-     *                ((height+periodY-1)/periodY)</code> elements, or <code>null</code>. If <code>
+     *                ((height+periodY-1)/periodY)</code> elements, or {@code null}. If <code>
      *     null</code>, a new array will be constructed.
-     * @return A reference to the <code>destRect</code> parameter if it is non-<code>null</code>, or
-     *     a new <code>float</code> array otherwise.
+     * @return A reference to the <code>destRect</code> parameter if it is non-{@code null}, or a new <code>float
+     *     </code> array otherwise.
      */
-    public float[] warpSparseRect(
-            int x0, int y0, int width, int height, int periodX, int periodY, float[] destRect) {
+    public float[] warpSparseRect(int x0, int y0, int width, int height, int periodX, int periodY, float[] destRect) {
 
         // XXX: This method should do its calculations in doubles
         if (destRect == null) {
-            destRect =
-                    new float
-                            [((width + periodX - 1) / periodX)
-                                    * ((height + periodY - 1) / periodY)
-                                    * 2];
+            destRect = new float[((width + periodX - 1) / periodX) * ((height + periodY - 1) / periodY) * 2];
         }
 
         width += x0;
@@ -1236,6 +1205,6 @@ public class GridCoverage2DRIA extends GeometricOpImage {
 
         // remove from cache
         // TODO improve cache management
-        JAI.getDefaultInstance().getTileCache().removeTiles(this);
+        ImageN.getDefaultInstance().getTileCache().removeTiles(this);
     }
 }

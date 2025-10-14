@@ -23,8 +23,7 @@ public class DataAccessNewPageDatabaseTest extends GeoServerWicketTestSupport {
     private AbstractDataAccessPage startPage() {
         AdminRequest.start(new Object());
         login();
-        final AbstractDataAccessPage page =
-                new DataAccessNewPage(dataStoreFactory.getDisplayName());
+        final AbstractDataAccessPage page = new DataAccessNewPage(dataStoreFactory.getDisplayName());
         tester.startPage(page);
 
         return page;
@@ -51,9 +50,7 @@ public class DataAccessNewPageDatabaseTest extends GeoServerWicketTestSupport {
 
         // check the dbtype field is not visible
         MarkupContainer container =
-                (MarkupContainer)
-                        tester.getComponentFromLastRenderedPage(
-                                "dataStoreForm:parametersPanel:parameters:0");
+                (MarkupContainer) tester.getComponentFromLastRenderedPage("dataStoreForm:parametersPanel:parameters:0");
         assertEquals("dbtype", container.getDefaultModelObject());
         assertFalse(container.get("parameterPanel").isVisible());
     }

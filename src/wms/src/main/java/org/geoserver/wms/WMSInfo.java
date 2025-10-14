@@ -23,8 +23,7 @@ import org.geotools.util.GrowableInternationalString;
  */
 public interface WMSInfo extends ServiceInfo {
 
-    public static final String EXCEPTION_ON_INVALID_DIMENSION_KEY =
-            "org.geoserver.wms.exceptionOnInvalidDimension";
+    public static final String EXCEPTION_ON_INVALID_DIMENSION_KEY = "org.geoserver.wms.exceptionOnInvalidDimension";
 
     /** Default value for the exceptionOnInvalidDimension */
     public static final boolean EXCEPTION_ON_INVALID_DIMENSION_DEFAULT =
@@ -50,8 +49,8 @@ public interface WMSInfo extends ServiceInfo {
     List<String> getSRS();
 
     /**
-     * A set of mime types allowed for a getMap request. Active if {@link
-     * #isGetMapMimeTypeCheckingEnabled()} returns <code>true</code>
+     * A set of mime types allowed for a getMap request. Active if {@link #isGetMapMimeTypeCheckingEnabled()} returns
+     * <code>true</code>
      */
     Set<String> getGetMapMimeTypes();
 
@@ -60,8 +59,8 @@ public interface WMSInfo extends ServiceInfo {
     void setGetMapMimeTypeCheckingEnabled(boolean getMapMimeTypeCheckingEnabled);
 
     /**
-     * A set of mime types allowed for a getFeatureInfo request. Active if {@link
-     * #isGetFeatureInfoMimeTypeCheckingEnabled()} returns <code>true</code>
+     * A set of mime types allowed for a getFeatureInfo request. Active if
+     * {@link #isGetFeatureInfoMimeTypeCheckingEnabled()} returns <code>true</code>
      */
     Set<String> getGetFeatureInfoMimeTypes();
 
@@ -70,17 +69,17 @@ public interface WMSInfo extends ServiceInfo {
     void setGetFeatureInfoMimeTypeCheckingEnabled(boolean getFeatureInfoMimeTypeCheckingEnabled);
 
     /**
-     * Flag controlling whether the WMS service, for each layer, should declare a bounding box for
-     * every CRS supported, in it's capabilities document.
+     * Flag controlling whether the WMS service, for each layer, should declare a bounding box for every CRS supported,
+     * in it's capabilities document.
      *
-     * <p>By default the number of CRS's supported is huge which does not make this option
-     * practical. This flag is only respected in cases there {@link #getSRS()} is non empty.
+     * <p>By default the number of CRS's supported is huge which does not make this option practical. This flag is only
+     * respected in cases there {@link #getSRS()} is non empty.
      */
     Boolean isBBOXForEachCRS();
 
     /**
-     * Sets flag controlling whether the WMS service, for each layer, should declare a bounding box
-     * for every CRS supported.
+     * Sets flag controlling whether the WMS service, for each layer, should declare a bounding box for every CRS
+     * supported.
      *
      * @see #isBBOXForEachCRS()
      */
@@ -89,29 +88,27 @@ public interface WMSInfo extends ServiceInfo {
     /** The maximum search radius for GetFeatureInfo */
     int getMaxBuffer();
 
-    /**
-     * Sets the maximum search radius for GetFeatureInfo (if 0 or negative no maximum is enforced)
-     */
+    /** Sets the maximum search radius for GetFeatureInfo (if 0 or negative no maximum is enforced) */
     void setMaxBuffer(int buffer);
 
     /**
-     * Returns the max amount of memory, in kilobytes, that each WMS request can allocate (each
-     * output format will make a best effort attempt to respect it, but there are no guarantees)
+     * Returns the max amount of memory, in kilobytes, that each WMS request can allocate (each output format will make
+     * a best effort attempt to respect it, but there are no guarantees)
      *
      * @return the limit, or 0 if no limit
      */
     int getMaxRequestMemory();
 
     /**
-     * Sets the max amount of memory, in kilobytes, that each WMS request can allocate. Set it to 0
-     * if no limit is desired.
+     * Sets the max amount of memory, in kilobytes, that each WMS request can allocate. Set it to 0 if no limit is
+     * desired.
      */
     void setMaxRequestMemory(int max);
 
     /**
-     * The max time, in seconds, a WMS request is allowed to spend rendering the map. Various output
-     * formats will do a best effort to respect it (raster formats, for example, will account just
-     * rendering time, but not image encoding time)
+     * The max time, in seconds, a WMS request is allowed to spend rendering the map. Various output formats will do a
+     * best effort to respect it (raster formats, for example, will account just rendering time, but not image encoding
+     * time)
      */
     int getMaxRenderingTime();
 
@@ -119,8 +116,8 @@ public interface WMSInfo extends ServiceInfo {
     void setMaxRenderingTime(int maxRenderingTime);
 
     /**
-     * The max number of rendering errors that will be tolerated before stating the rendering
-     * operation failed by throwing a service exception back to the client
+     * The max number of rendering errors that will be tolerated before stating the rendering operation failed by
+     * throwing a service exception back to the client
      */
     int getMaxRenderingErrors();
 
@@ -165,8 +162,7 @@ public interface WMSInfo extends ServiceInfo {
     }
 
     /**
-     * Flag that controls if GetFeatureInfo results should NOT be reprojected to the map coordinate
-     * reference system.
+     * Flag that controls if GetFeatureInfo results should NOT be reprojected to the map coordinate reference system.
      *
      * @return GetFeatureInfo features reprojection allowance
      */
@@ -176,17 +172,16 @@ public interface WMSInfo extends ServiceInfo {
     }
 
     /**
-     * Returns the maximum number of dimension items that can be requested by a client without
-     * getting a service exception. The default is
-     * {DimensionInfo#DEFAULT_MAX_REQUESTED_DIMENSION_VALUES} that is, no limit.
+     * Returns the maximum number of dimension items that can be requested by a client without getting a service
+     * exception. The default is {DimensionInfo#DEFAULT_MAX_REQUESTED_DIMENSION_VALUES} that is, no limit.
      */
     default int getMaxRequestedDimensionValues() {
         return DimensionInfo.DEFAULT_MAX_REQUESTED_DIMENSION_VALUES;
     }
 
     /**
-     * Sets the maximum number of dimension items that can be requested by a client without. Zero or
-     * negative will disable the limit.
+     * Sets the maximum number of dimension items that can be requested by a client without. Zero or negative will
+     * disable the limit.
      *
      * @param maxRequestedDimensionValues Any integer number
      */
@@ -250,21 +245,19 @@ public interface WMSInfo extends ServiceInfo {
     void setAutoEscapeTemplateValues(boolean autoEscapeTemplateValues);
 
     /**
-     * Same as {@link #isExceptionOnInvalidDimension()}, but in case of null, uses the default value
-     * for the field which can be overrideen using EXCEPTION_ON_INVALID_DIMENSION_DEFAULT
+     * Same as {@link #isExceptionOnInvalidDimension()}, but in case of null, uses the default value for the field which
+     * can be overrideen using EXCEPTION_ON_INVALID_DIMENSION_DEFAULT
      *
      * @return
      */
     public default boolean exceptionOnInvalidDimension() {
-        return Optional.ofNullable(isExceptionOnInvalidDimension())
-                .orElse(EXCEPTION_ON_INVALID_DIMENSION_DEFAULT);
+        return Optional.ofNullable(isExceptionOnInvalidDimension()).orElse(EXCEPTION_ON_INVALID_DIMENSION_DEFAULT);
     }
 
     /**
-     * This property controls the behavior when an invalid dimension is encountered. If set to
-     * <code>true</code>, an <code>InvalidDimensionException</code> will be thrown. If set to <code>
-     * false</code>, an empty response will be used. The standard compliant behavior is obtained
-     * with <code>true</code>.
+     * This property controls the behavior when an invalid dimension is encountered. If set to <code>true</code>, an
+     * <code>InvalidDimensionException</code> will be thrown. If set to <code>
+     * false</code>, an empty response will be used. The standard compliant behavior is obtained with <code>true</code>.
      *
      * @return true if an exception should be thrown on invalid dimension, false otherwise
      */
@@ -273,8 +266,8 @@ public interface WMSInfo extends ServiceInfo {
     /**
      * Sets the behavior when an invalid dimension is encountered.
      *
-     * @param exceptionOnInvalidDimension true if an exception should be thrown on invalid dimension
-     *     value, false otherwise
+     * @param exceptionOnInvalidDimension true if an exception should be thrown on invalid dimension value, false
+     *     otherwise
      */
     void setExceptionOnInvalidDimension(Boolean exceptionOnInvalidDimension);
 }

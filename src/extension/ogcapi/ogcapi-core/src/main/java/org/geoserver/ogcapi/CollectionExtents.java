@@ -32,11 +32,7 @@ public class CollectionExtents {
         public List<double[]> getBbox() {
             if (spatial != null) {
                 return spatial.stream()
-                        .map(
-                                re ->
-                                        new double[] {
-                                            re.getMinX(), re.getMinY(), re.getMaxX(), re.getMaxY()
-                                        })
+                        .map(re -> new double[] {re.getMinX(), re.getMinY(), re.getMaxX(), re.getMaxY()})
                         .collect(Collectors.toList());
             } else {
                 return null;
@@ -55,17 +51,14 @@ public class CollectionExtents {
             if (temporal != null) {
                 java.util.Date minValue = temporal.getMinValue();
                 java.util.Date maxValue = temporal.getMaxValue();
-                if (minValue instanceof java.sql.Date) {
-                    return Collections.singletonList(
-                            new String[] {
-                                ISO_INSTANT.format(sqlDateToInstant((java.sql.Date) minValue)),
-                                ISO_INSTANT.format(sqlDateToInstant((java.sql.Date) maxValue))
-                            });
+                if (minValue instanceof java.sql.Date date) {
+                    return Collections.singletonList(new String[] {
+                        ISO_INSTANT.format(sqlDateToInstant(date)),
+                        ISO_INSTANT.format(sqlDateToInstant((java.sql.Date) maxValue))
+                    });
                 }
                 return Collections.singletonList(
-                        new String[] {
-                            ISO_INSTANT.format(minValue.toInstant()),
-                            ISO_INSTANT.format(maxValue.toInstant())
+                        new String[] {ISO_INSTANT.format(minValue.toInstant()), ISO_INSTANT.format(maxValue.toInstant())
                         });
             } else {
                 return null;

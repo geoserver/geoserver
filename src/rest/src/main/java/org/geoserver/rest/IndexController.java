@@ -4,14 +4,15 @@
  */
 package org.geoserver.rest;
 
-import static org.geoserver.template.TemplateUtils.FM_VERSION;
+import static org.geoserver.template.GeoServerMemberAccessPolicy.FULL_ACCESS;
 
-import freemarker.template.DefaultObjectWrapper;
+import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.SimpleHash;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import org.geoserver.rest.wrapper.RestWrapper;
+import org.geoserver.template.TemplateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,28 +25,26 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 /**
- * The IndexController lists the paths available for the Spring MVC RequestMappingHandler
- * Specifically, it auto-generates an index page containing all non-templated paths relative to the
- * router root.
+ * The IndexController lists the paths available for the Spring MVC RequestMappingHandler Specifically, it
+ * auto-generates an index page containing all non-templated paths relative to the router root.
  */
 @RestController
 @RequestMapping(
         path = RestBaseController.ROOT_PATH,
-        produces = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_HTML_VALUE
-        })
+        produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
 public class IndexController extends RestBaseController {
 
-    @Autowired private RequestMappingHandlerMapping requestMappingHandlerMapping;
+    private final BeansWrapper wrapper = TemplateUtils.getSafeWrapper(null, FULL_ACCESS, null);
+
+    @Autowired
+    private RequestMappingHandlerMapping requestMappingHandlerMapping;
 
     @GetMapping(
             value = {"", "index"},
             produces = {MediaType.TEXT_HTML_VALUE})
     public RestWrapper get() {
 
-        SimpleHash model = new SimpleHash(new DefaultObjectWrapper(FM_VERSION));
+        SimpleHash model = new SimpleHash(this.wrapper);
         model.put("links", getLinks());
         model.put("page", RequestInfo.get());
 
@@ -57,8 +56,7 @@ public class IndexController extends RestBaseController {
         // Ensure sorted, unique keys
         Set<String> s = new TreeSet<>();
 
-        Map<RequestMappingInfo, HandlerMethod> handlerMethods =
-                this.requestMappingHandlerMapping.getHandlerMethods();
+        Map<RequestMappingInfo, HandlerMethod> handlerMethods = this.requestMappingHandlerMapping.getHandlerMethods();
 
         for (Map.Entry<RequestMappingInfo, HandlerMethod> item : handlerMethods.entrySet()) {
             RequestMappingInfo mapping = item.getKey();
@@ -66,15 +64,13 @@ public class IndexController extends RestBaseController {
             // Only list "get" endpoints
             if (mapping.getMethodsCondition().getMethods().contains(RequestMethod.GET)) {
                 PatternsRequestCondition patternsRequestCondition = mapping.getPatternsCondition();
-                if (patternsRequestCondition != null
-                        && patternsRequestCondition.getPatterns() != null) {
+                if (patternsRequestCondition != null && patternsRequestCondition.getPatterns() != null) {
                     for (String pattern : patternsRequestCondition.getPatterns()) {
                         if (!pattern.contains("{")) {
                             String path = pattern;
                             // exclude other rest apis, like gwc/rest
                             final int rootSize = RestBaseController.ROOT_PATH.length() + 1;
-                            if (path.startsWith(RestBaseController.ROOT_PATH)
-                                    && path.length() > rootSize) {
+                            if (path.startsWith(RestBaseController.ROOT_PATH) && path.length() > rootSize) {
                                 // trim root path
                                 path = path.substring(rootSize);
 

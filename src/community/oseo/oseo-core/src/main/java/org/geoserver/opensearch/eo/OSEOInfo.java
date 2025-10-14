@@ -55,8 +55,8 @@ public interface OSEOInfo extends ServiceInfo {
     void setAggregatesCacheTTLUnit(String aggregatesCacheTTLUnit);
 
     /**
-     * Live list of configured product classes. If none is configured, then a clone of {@link
-     * ProductClass#DEFAULT_PRODUCT_CLASSES} is returned instead
+     * Live list of configured product classes. If none is configured, then a clone of
+     * {@link ProductClass#DEFAULT_PRODUCT_CLASSES} is returned instead
      */
     List<ProductClass> getProductClasses();
 
@@ -66,4 +66,10 @@ public interface OSEOInfo extends ServiceInfo {
     void setAttribution(String attribution);
 
     List<String> getGlobalQueryables();
+
+    /** True if this feature type info is overriding the counting of numberMatched. */
+    boolean isSkipNumberMatched();
+
+    /** Set to true if this feature type info is overriding the default counting of numberMatched. */
+    void setSkipNumberMatched(boolean skipNumberMatched);
 }

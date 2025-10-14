@@ -6,6 +6,7 @@
 package org.geoserver.monitor.web;
 
 import java.awt.Color;
+import java.io.Serial;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,6 +38,7 @@ import org.jfree.data.xy.XYDataset;
 
 public abstract class ActivityChartBasePanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -2436197080363116473L;
 
     Date from;
@@ -61,22 +63,20 @@ public abstract class ActivityChartBasePanel extends Panel {
         form.add(new DateField("from", new PropertyModel<>(this, "from"), true));
         form.add(new DateField("to", new PropertyModel<>(this, "to"), true));
 
-        form.add(
-                new AjaxButton("refresh") {
-                    private static final long serialVersionUID = -6954067333262732996L;
+        form.add(new AjaxButton("refresh") {
+            @Serial
+            private static final long serialVersionUID = -6954067333262732996L;
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        Monitor monitor =
-                                ((GeoServerApplication) getApplication())
-                                        .getBeanOfType(Monitor.class);
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                Monitor monitor = ((GeoServerApplication) getApplication()).getBeanOfType(Monitor.class);
 
-                        Date[] range = {from, to};
+                Date[] range = {from, to};
 
-                        chartImage.setImageResource(queryAndRenderChart(monitor, range));
-                        target.add(chartImage);
-                    }
-                });
+                chartImage.setImageResource(queryAndRenderChart(monitor, range));
+                target.add(chartImage);
+            }
+        });
     }
 
     BufferedDynamicImageResource queryAndRenderChart(Monitor monitor, Date[] range) {
@@ -96,20 +96,15 @@ public abstract class ActivityChartBasePanel extends Panel {
 
         TimeSeriesCollection dataset = new TimeSeriesCollection(series);
 
-        final JFreeChart chart =
-                createTimeSeriesChart(
-                        getChartTitle(range),
-                        "Time (" + timeUnitClass.getSimpleName() + ")",
-                        "Requests",
-                        dataset);
+        final JFreeChart chart = createTimeSeriesChart(
+                getChartTitle(range), "Time (" + timeUnitClass.getSimpleName() + ")", "Requests", dataset);
 
         BufferedDynamicImageResource resource = new BufferedDynamicImageResource();
         resource.setImage(chart.createBufferedImage(700, 500));
         return resource;
     }
 
-    JFreeChart createTimeSeriesChart(
-            String title, String timeAxisLabel, String valueAxisLabel, XYDataset dataset) {
+    JFreeChart createTimeSeriesChart(String title, String timeAxisLabel, String valueAxisLabel, XYDataset dataset) {
 
         ValueAxis timeAxis = new DateAxis(timeAxisLabel);
         timeAxis.setLowerMargin(0.02); // reduce the default margins

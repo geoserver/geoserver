@@ -1,0 +1,133 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+
+
+div.wicket-modal {
+    position: absolute;
+    z-index: 20001;
+    visibility: visible;
+    background-color: white;
+}
+
+.modal-dialog .modal-dialog-content {
+    min-width: auto !important;
+    min-height: auto !important;
+    max-width: max-content;
+    max-height: max-content;
+    overflow: visible;
+}
+
+div.wicket-modal div.w_content_1 {
+    margin-right: 10px;
+    cursor: auto;
+}
+
+div.wicket-modal div.w_caption {
+    height: 1.4em;
+    display: flex;
+    background-color: white;
+    cursor: grab;
+    border: 2px solid rgb(26, 123, 226);
+    border-bottom: 1px solid rgb(26, 123, 226);
+    box-shadow: 0px 0px 10px 0px #666;
+}
+
+.flex-grow {
+    flex-grow: 1;
+}
+
+div.wicket-modal .close {
+    padding-right:3px;
+    width: 13px;
+}
+
+div.wicket-modal .close svg {
+    height: 16px;
+    fill: darkgrey;
+}
+
+div.wicket-modal .close svg:hover {
+    fill: red;
+}
+div.wicket-modal .close-div {
+    margin-top:1px;
+}
+
+div.wicket-modal .titleTextDiv {
+    overflow: hidden;
+}
+
+div.wicket-modal h3.w_captionText {
+    height: 1.4em;
+    margin-top: 3px !important;
+    margin-left: 3px !important;
+    overflow: hidden;
+    white-space: nowrap;
+    font-weight: bold;
+    user-select: none;
+}
+
+div.wicket-modal div.w_content_2 {
+    background-color: white;
+    cursor: default;
+    padding: 5px;
+    display:flex;
+    overflow:auto;
+    height: 100%;
+    border: 2px solid  rgb(26, 123, 226);
+    border-top: 0px;
+    box-shadow: 0px 4px 10px 0px #666;
+}
+
+div.wicket-modal div.w_content_3 {
+    padding: 2px;
+    flex-grow: 100;
+}
+
+div.wicket-modal div.w_content {
+    background-color: white;
+    padding: 2px;
+    position: relative;
+    height: 100%;
+}
+
+div.modal-dialog .resize-icon {
+    position:absolute;
+    right: 1px;
+    bottom: -30px;
+    cursor: nwse-resize;
+    visibility: visible;
+    z-index: 10;
+}
+
+div.wicket-modal div.w_content_container {
+    height: max-content;
+    position: absolute;
+    width: 100%;
+}
+
+
+
+
+
+
+
+
+
+

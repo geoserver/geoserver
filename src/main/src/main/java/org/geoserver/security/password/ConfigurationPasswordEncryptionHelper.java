@@ -26,8 +26,7 @@ import org.geotools.util.logging.Logging;
 /**
  * Helper class for encryption of passwords in connection parameters for {@link StoreInfo} objects.
  *
- * <p>This class will encrypt any password parameter from {@link
- * StoreInfo#getConnectionParameters()}.
+ * <p>This class will encrypt any password parameter from {@link StoreInfo#getConnectionParameters()}.
  *
  * @author christian
  */
@@ -36,14 +35,12 @@ public class ConfigurationPasswordEncryptionHelper {
     protected static Logger LOGGER = Logging.getLogger("org.geoserver.security");
 
     /** cache of datastore factory class to fields to encrypt */
-    protected static ConcurrentMap<Class<? extends DataAccessFactory>, Set<String>> CACHE =
-            new ConcurrentHashMap<>();
+    protected static ConcurrentMap<Class<? extends DataAccessFactory>, Set<String>> CACHE = new ConcurrentHashMap<>();
     /**
-     * cache of {@link StoreInfo#getType()} to fields to encrypt, if key not found defer to full
-     * DataAccessFactory lookup
+     * cache of {@link StoreInfo#getType()} to fields to encrypt, if key not found defer to full DataAccessFactory
+     * lookup
      */
-    protected static ConcurrentMap<String, Set<String>> STORE_INFO_TYPE_CACHE =
-            new ConcurrentHashMap<>();
+    protected static ConcurrentMap<String, Set<String>> STORE_INFO_TYPE_CACHE = new ConcurrentHashMap<>();
 
     GeoServerSecurityManager securityManager;
 
@@ -62,8 +59,8 @@ public class ConfigurationPasswordEncryptionHelper {
     }
 
     /**
-     * Determines the fields in {@link StoreInfo#getConnectionParameters()} that require encryption
-     * for this type of store object.
+     * Determines the fields in {@link StoreInfo#getConnectionParameters()} that require encryption for this type of
+     * store object.
      */
     public Set<String> getEncryptedFields(StoreInfo info) {
         if (!(info instanceof DataStoreInfo)) {
@@ -105,20 +102,14 @@ public class ConfigurationPasswordEncryptionHelper {
         } catch (IOException e) {
             LOGGER.log(
                     Level.WARNING,
-                    "Error looking up factory for store : "
-                            + info
-                            + ". Unable to "
-                            + "encrypt connection parameters.",
+                    "Error looking up factory for store : " + info + ". Unable to " + "encrypt connection parameters.",
                     e);
             return Collections.emptySet();
         }
 
         if (factory == null) {
             LOGGER.warning(
-                    "Could not find factory for store : "
-                            + info
-                            + ". Unable to encrypt "
-                            + "connection parameters.");
+                    "Could not find factory for store : " + info + ". Unable to encrypt " + "connection parameters.");
             return Collections.emptySet();
         }
 
@@ -129,6 +120,9 @@ public class ConfigurationPasswordEncryptionHelper {
 
         toEncrypt = CACHE.get(factory.getClass());
         if (toEncrypt != null) {
+            if (storeType != null && null == STORE_INFO_TYPE_CACHE.putIfAbsent(storeType, toEncrypt)) {
+                LOGGER.fine("Cached encryption fields for storeType " + storeType);
+            }
             return toEncrypt;
         }
 
@@ -138,7 +132,7 @@ public class ConfigurationPasswordEncryptionHelper {
         }
 
         toEncrypt = Collections.emptySet();
-        if (info != null && info.getConnectionParameters() != null) {
+        if (info.getConnectionParameters() != null) {
             toEncrypt = new HashSet<>(3);
             for (Param p : factory.getParametersInfo()) {
                 if (p.isPassword()) {
@@ -165,10 +159,9 @@ public class ConfigurationPasswordEncryptionHelper {
             if (pwEncoder != null) {
                 String prefix = pwEncoder.getPrefix();
                 if (value.startsWith(prefix + GeoServerPasswordEncoder.PREFIX_DELIMTER)) {
-                    throw new RuntimeException(
-                            "Cannot encode a password with prefix: "
-                                    + prefix
-                                    + GeoServerPasswordEncoder.PREFIX_DELIMTER);
+                    throw new RuntimeException("Cannot encode a password with prefix: "
+                            + prefix
+                            + GeoServerPasswordEncoder.PREFIX_DELIMTER);
                 }
                 value = pwEncoder.encodePassword(value, null);
             }
@@ -180,11 +173,9 @@ public class ConfigurationPasswordEncryptionHelper {
 
     /** Decrypts previously encrypted store connection parameters. */
     public void decode(StoreInfo info) {
-        List<GeoServerPasswordEncoder> encoders =
-                securityManager.loadPasswordEncoders(null, true, null);
-
         Set<String> encryptedFields = getEncryptedFields(info);
-        if (info.getConnectionParameters() != null) {
+        if (!encryptedFields.isEmpty() && info.getConnectionParameters() != null) {
+            List<GeoServerPasswordEncoder> encoders = securityManager.loadPasswordEncoders(null, true, null);
             for (String key : info.getConnectionParameters().keySet()) {
                 if (encryptedFields.contains(key)) {
                     String value = (String) info.getConnectionParameters().get(key);

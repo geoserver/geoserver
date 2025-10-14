@@ -5,6 +5,7 @@
 package org.geoserver.security.web.url;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -61,8 +62,7 @@ public class RegexCheckPage extends GeoServerSecuredPage {
     private void initUI(IModel<RegexURLCheck> bean) {
         form = new Form<>("form", new CompoundPropertyModel<>(bean));
 
-        FormComponent<String> nameField =
-                new TextField<>("name", new PropertyModel<>(bean, "name"));
+        FormComponent<String> nameField = new TextField<>("name", new PropertyModel<>(bean, "name"));
         nameField.setEnabled(isNew);
         nameField.setRequired(true);
         // to make sure url entry with same name is not entered again
@@ -71,16 +71,14 @@ public class RegexCheckPage extends GeoServerSecuredPage {
         FormComponent<String> descriptionField =
                 new TextField<>("description", new PropertyModel<>(bean, "description"));
 
-        FormComponent<String> regexField =
-                new TextField<>("regex", new PropertyModel<>(bean, "regex"));
+        FormComponent<String> regexField = new TextField<>("regex", new PropertyModel<>(bean, "regex"));
         regexField.add(new RegexValidator());
         if (regexField.getModelObject() == null) {
             regexField.setModelObject(getDefaultRegex());
         }
         regexField.setRequired(true);
 
-        FormComponent<Boolean> enabledCheckBox =
-                new CheckBox("enabled", new PropertyModel<>(bean, "enabled"));
+        FormComponent<Boolean> enabledCheckBox = new CheckBox("enabled", new PropertyModel<>(bean, "enabled"));
         form.add(nameField);
         form.add(descriptionField);
         form.add(regexField);
@@ -117,8 +115,7 @@ public class RegexCheckPage extends GeoServerSecuredPage {
     private String getOWSURL() {
         String proxyBase = getGeoServer().getSettings().getProxyBaseUrl();
         if (proxyBase != null) {
-            ProxifyingURLMangler mangler =
-                    getGeoServerApplication().getBeanOfType(ProxifyingURLMangler.class);
+            ProxifyingURLMangler mangler = getGeoServerApplication().getBeanOfType(ProxifyingURLMangler.class);
             String baseURL =
                     ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
             StringBuilder base = new StringBuilder(baseURL);
@@ -132,6 +129,7 @@ public class RegexCheckPage extends GeoServerSecuredPage {
     private SubmitLink submitLink() {
         return new SubmitLink("submit") {
 
+            @Serial
             private static final long serialVersionUID = -3462848930497720229L;
 
             @Override
@@ -158,9 +156,7 @@ public class RegexCheckPage extends GeoServerSecuredPage {
             try {
                 Pattern.compile(regex);
             } catch (Exception e) {
-                String message =
-                        new ParamResourceModel("invalidRegex", RegexCheckPage.this, regex)
-                                .getString();
+                String message = new ParamResourceModel("invalidRegex", RegexCheckPage.this, regex).getString();
                 validatable.error(new ValidationError(message));
             }
         }
@@ -174,9 +170,7 @@ public class RegexCheckPage extends GeoServerSecuredPage {
             URLCheckDAO dao = getUrlCheckDAO();
             try {
                 if (dao.getCheckByName(name) != null) {
-                    String message =
-                            new ParamResourceModel("duplicateRule", RegexCheckPage.this, name)
-                                    .getString();
+                    String message = new ParamResourceModel("duplicateRule", RegexCheckPage.this, name).getString();
                     validatable.error(new ValidationError(message));
                 }
             } catch (IOException e) {

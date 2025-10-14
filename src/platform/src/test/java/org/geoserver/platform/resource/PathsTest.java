@@ -117,8 +117,7 @@ public class PathsTest {
     @Test
     public void isValidTest() {
         // test paths with . and .. are not valid
-        for (String name :
-                new String[] {"directory/./bar", "directory/../bar", "../bar", "./bar"}) {
+        for (String name : new String[] {"directory/./bar", "directory/../bar", "../bar", "./bar"}) {
             assertFalse(name, Paths.isValid(name));
         }
     }

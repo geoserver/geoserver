@@ -21,10 +21,17 @@ import org.w3c.dom.Document;
 /** Tests related to SmartAppSchemaDomainModelVisitor */
 public abstract class JDBCAppSchemaVisitorTest extends AbstractJDBCSmartDataLoaderTestSupport {
 
+    protected final String entityPrefix;
+
     public JDBCAppSchemaVisitorTest(JDBCFixtureHelper fixtureHelper) {
+        this(fixtureHelper, null);
+    }
+
+    public JDBCAppSchemaVisitorTest(JDBCFixtureHelper fixtureHelper, String entityPrefix) {
         super(fixtureHelper);
         NAMESPACE_PREFIX = "mt";
         TARGET_NAMESPACE = "http://www.geo-solutions.it/smartappschema/1.0";
+        this.entityPrefix = entityPrefix == null ? "" : entityPrefix.trim();
     }
 
     @Test
@@ -33,16 +40,15 @@ public abstract class JDBCAppSchemaVisitorTest extends AbstractJDBCSmartDataLoad
         DataStoreMetadata dsm = getDataStoreMetadata(metaData);
         DomainModelConfig dmc = new DomainModelConfig();
         dmc.setRootEntityName("meteo_observations");
+        dmc.setEntitiesPrefix(entityPrefix);
         DomainModelBuilder dmb = new DomainModelBuilder(dsm, dmc);
         DomainModel dm = dmb.buildDomainModel();
         AppSchemaVisitor dmv =
-                new AppSchemaVisitor(
-                        NAMESPACE_PREFIX, TARGET_NAMESPACE, "meteo-observations-gml.xsd");
+                new AppSchemaVisitor(NAMESPACE_PREFIX, TARGET_NAMESPACE, entityPrefix + "meteo-observations-gml.xsd");
         dm.accept(dmv);
 
         try (InputStream is =
-                JDBCAppSchemaVisitorTest.class.getResourceAsStream(
-                        "meteo-observations-appschema.xml")) {
+                JDBCAppSchemaVisitorTest.class.getResourceAsStream(entityPrefix + "meteo-observations-appschema.xml")) {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document control = dBuilder.parse(is);
@@ -67,15 +73,15 @@ public abstract class JDBCAppSchemaVisitorTest extends AbstractJDBCSmartDataLoad
         DataStoreMetadata dsm = this.getDataStoreMetadata(metaData);
         DomainModelConfig dmc = new DomainModelConfig();
         dmc.setRootEntityName("meteo_stations");
+        dmc.setEntitiesPrefix(entityPrefix);
         DomainModelBuilder dmb = new DomainModelBuilder(dsm, dmc);
         DomainModel dm = dmb.buildDomainModel();
         AppSchemaVisitor dmv =
-                new AppSchemaVisitor(NAMESPACE_PREFIX, TARGET_NAMESPACE, "meteo-stations-gml.xsd");
+                new AppSchemaVisitor(NAMESPACE_PREFIX, TARGET_NAMESPACE, entityPrefix + "meteo-stations-gml.xsd");
         dm.accept(dmv);
 
         try (InputStream is =
-                JDBCAppSchemaVisitorTest.class.getResourceAsStream(
-                        "meteo-stations-appschema.xml")) {
+                JDBCAppSchemaVisitorTest.class.getResourceAsStream(entityPrefix + "meteo-stations-appschema.xml")) {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document control = dBuilder.parse(is);
@@ -99,16 +105,15 @@ public abstract class JDBCAppSchemaVisitorTest extends AbstractJDBCSmartDataLoad
         DataStoreMetadata dsm = this.getDataStoreMetadata(metaData);
         DomainModelConfig dmc = new DomainModelConfig();
         dmc.setRootEntityName("meteo_parameters");
+        dmc.setEntitiesPrefix(entityPrefix);
         DomainModelBuilder dmb = new DomainModelBuilder(dsm, dmc);
         DomainModel dm = dmb.buildDomainModel();
         AppSchemaVisitor dmv =
-                new AppSchemaVisitor(
-                        NAMESPACE_PREFIX, TARGET_NAMESPACE, "meteo-parameters-gml.xsd");
+                new AppSchemaVisitor(NAMESPACE_PREFIX, TARGET_NAMESPACE, entityPrefix + "meteo-parameters-gml.xsd");
         dm.accept(dmv);
 
         try (InputStream is =
-                JDBCAppSchemaVisitorTest.class.getResourceAsStream(
-                        "meteo-parameters-appschema.xml")) {
+                JDBCAppSchemaVisitorTest.class.getResourceAsStream(entityPrefix + "meteo-parameters-appschema.xml")) {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document control = dBuilder.parse(is);
@@ -133,16 +138,15 @@ public abstract class JDBCAppSchemaVisitorTest extends AbstractJDBCSmartDataLoad
         DataStoreMetadata dsm = this.getDataStoreMetadata(metaData);
         DomainModelConfig dmc = new DomainModelConfig();
         dmc.setRootEntityName("meteo_maintainers");
+        dmc.setEntitiesPrefix(entityPrefix);
         DomainModelBuilder dmb = new DomainModelBuilder(dsm, dmc);
         DomainModel dm = dmb.buildDomainModel();
         AppSchemaVisitor dmv =
-                new AppSchemaVisitor(
-                        NAMESPACE_PREFIX, TARGET_NAMESPACE, "meteo-maintainers-gml.xsd");
+                new AppSchemaVisitor(NAMESPACE_PREFIX, TARGET_NAMESPACE, entityPrefix + "meteo-maintainers-gml.xsd");
         dm.accept(dmv);
 
         try (InputStream is =
-                JDBCAppSchemaVisitorTest.class.getResourceAsStream(
-                        "meteo-maintainers-appschema.xml")) {
+                JDBCAppSchemaVisitorTest.class.getResourceAsStream(entityPrefix + "meteo-maintainers-appschema.xml")) {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document control = dBuilder.parse(is);

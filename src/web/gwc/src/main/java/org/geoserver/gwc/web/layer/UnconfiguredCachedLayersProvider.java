@@ -6,6 +6,7 @@
 package org.geoserver.gwc.web.layer;
 
 import com.google.common.collect.Streams;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,29 +39,30 @@ import org.geowebcache.layer.TileLayer;
 /** @author groldan */
 class UnconfiguredCachedLayersProvider extends GeoServerDataProvider<TileLayer> {
 
+    @Serial
     private static final long serialVersionUID = -8599398086587516574L;
 
     private static final Logger LOGGER = Logging.getLogger(UnconfiguredCachedLayersProvider.class);
 
-    static final Property<TileLayer> TYPE =
-            new AbstractProperty<>("type") {
+    static final Property<TileLayer> TYPE = new AbstractProperty<>("type") {
 
-                private static final long serialVersionUID = 3215255763580377079L;
+        @Serial
+        private static final long serialVersionUID = 3215255763580377079L;
 
-                @Override
-                public GWCIconFactory.CachedLayerType getPropertyValue(TileLayer item) {
-                    return GWCIconFactory.getCachedLayerType(item);
-                }
+        @Override
+        public GWCIconFactory.CachedLayerType getPropertyValue(TileLayer item) {
+            return GWCIconFactory.getCachedLayerType(item);
+        }
 
-                @Override
-                public Comparator<TileLayer> getComparator() {
-                    return (o1, o2) -> {
-                        GWCIconFactory.CachedLayerType r1 = getPropertyValue(o1);
-                        GWCIconFactory.CachedLayerType r2 = getPropertyValue(o2);
-                        return r1.compareTo(r2);
-                    };
-                }
+        @Override
+        public Comparator<TileLayer> getComparator() {
+            return (o1, o2) -> {
+                GWCIconFactory.CachedLayerType r1 = getPropertyValue(o1);
+                GWCIconFactory.CachedLayerType r2 = getPropertyValue(o2);
+                return r1.compareTo(r2);
             };
+        }
+    };
 
     static final Property<TileLayer> NAME = new BeanProperty<>("name", "name");
 
@@ -72,11 +74,13 @@ class UnconfiguredCachedLayersProvider extends GeoServerDataProvider<TileLayer> 
     private GWCConfig defaults;
 
     /**
-     * Simple cache for the last computed size based on the keywords, which in turn are the sole
-     * input for the filter (at the moment, at least)
+     * Simple cache for the last computed size based on the keywords, which in turn are the sole input for the filter
+     * (at the moment, at least)
      */
     private class CachedSize implements Serializable {
+        @Serial
         private static final long serialVersionUID = 1L;
+
         private static final long NOT_CACHED = Long.MIN_VALUE;
         private String[] cachedSizeKeywords;
         private long cachedSize = NOT_CACHED;
@@ -85,8 +89,7 @@ class UnconfiguredCachedLayersProvider extends GeoServerDataProvider<TileLayer> 
             if (cachedSize == NOT_CACHED || !Arrays.equals(keywords, cachedSizeKeywords)) {
                 long size = size(getFilter());
                 cachedSize = size;
-                cachedSizeKeywords =
-                        keywords == null ? null : Arrays.copyOf(keywords, keywords.length);
+                cachedSizeKeywords = keywords == null ? null : Arrays.copyOf(keywords, keywords.length);
                 return size;
             } else {
                 return cachedSize;
@@ -106,9 +109,9 @@ class UnconfiguredCachedLayersProvider extends GeoServerDataProvider<TileLayer> 
     /**
      * {@inheritDoc}
      *
-     * <p>Provides a page of transient TileLayers for the LayerInfo and LayerGroupInfo objects in
-     * Catalog that don't already have a configured TileLayer on their metadata map and that match
-     * the page {@link #getFilter() filter}, in the specified {@link #getSort() sort order}.
+     * <p>Provides a page of transient TileLayers for the LayerInfo and LayerGroupInfo objects in Catalog that don't
+     * already have a configured TileLayer on their metadata map and that match the page {@link #getFilter() filter}, in
+     * the specified {@link #getSort() sort order}.
      */
     @Override
     public Iterator<TileLayer> iterator(long first, long count) {
@@ -121,19 +124,14 @@ class UnconfiguredCachedLayersProvider extends GeoServerDataProvider<TileLayer> 
         final Filter filter = getFilter();
         final Stream<TileLayer> stream;
         if (sort == null) {
-            stream =
-                    unconfiguredLayers(filter)
-                            .skip(first)
-                            .limit(count)
-                            .map(this::createUnconfiguredTileLayer);
+            stream = unconfiguredLayers(filter).skip(first).limit(count).map(this::createUnconfiguredTileLayer);
         } else {
             Comparator<TileLayer> comparator = getComparator(sort);
-            stream =
-                    unconfiguredLayers(filter)
-                            .map(this::createUnconfiguredTileLayer)
-                            .sorted(comparator)
-                            .skip(first)
-                            .limit(count);
+            stream = unconfiguredLayers(filter)
+                    .map(this::createUnconfiguredTileLayer)
+                    .sorted(comparator)
+                    .skip(first)
+                    .limit(count);
         }
         return stream;
     }
@@ -163,8 +161,8 @@ class UnconfiguredCachedLayersProvider extends GeoServerDataProvider<TileLayer> 
     }
 
     /**
-     * Provides a list of transient TileLayers for the LayerInfo and LayerGroupInfo objects in
-     * Catalog that don't already have a configured TileLayer on their metadata map.
+     * Provides a list of transient TileLayers for the LayerInfo and LayerGroupInfo objects in Catalog that don't
+     * already have a configured TileLayer on their metadata map.
      *
      * @see org.geoserver.web.wicket.GeoServerDataProvider#getItems()
      */
@@ -187,13 +185,10 @@ class UnconfiguredCachedLayersProvider extends GeoServerDataProvider<TileLayer> 
         final CloseableIterator<LayerGroupInfo> groups = catalog.list(LayerGroupInfo.class, filter);
 
         Stream<PublishedInfo> all = Stream.concat(Streams.stream(layers), Streams.stream(groups));
-        all =
-                all.filter(this::isUnconfigured)
-                        .onClose(
-                                () -> {
-                                    layers.close();
-                                    groups.close();
-                                });
+        all = all.filter(this::isUnconfigured).onClose(() -> {
+            layers.close();
+            groups.close();
+        });
         return all;
     }
 
@@ -221,6 +216,7 @@ class UnconfiguredCachedLayersProvider extends GeoServerDataProvider<TileLayer> 
 
     private class UnconfiguredTileLayerDetachableModel extends LoadableDetachableModel<TileLayer> {
 
+        @Serial
         private static final long serialVersionUID = -8920290470035166218L;
 
         private String name;

@@ -23,8 +23,8 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 
 /**
- * Wraps a generic feature collection and returns a collection whose feature geometries are the
- * centroids of the original features
+ * Wraps a generic feature collection and returns a collection whose feature geometries are the centroids of the
+ * original features
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -34,16 +34,14 @@ class KMLCentroidFeatureCollection extends DecoratingSimpleFeatureCollection {
     private KmlEncodingContext context;
 
     protected KMLCentroidFeatureCollection(
-            FeatureCollection<SimpleFeatureType, SimpleFeature> delegate,
-            KmlEncodingContext context) {
+            FeatureCollection<SimpleFeatureType, SimpleFeature> delegate, KmlEncodingContext context) {
         super(delegate);
         this.context = context;
 
         // build the centroid collection schema
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         for (AttributeDescriptor ad : delegate.getSchema().getAttributeDescriptors()) {
-            if (ad instanceof GeometryDescriptor) {
-                GeometryDescriptor gd = (GeometryDescriptor) ad;
+            if (ad instanceof GeometryDescriptor gd) {
                 Class<?> binding = ad.getType().getBinding();
                 if (Point.class.isAssignableFrom(binding)) {
                     tb.add(ad);
@@ -75,9 +73,7 @@ class KMLCentroidFeatureCollection extends DecoratingSimpleFeatureCollection {
         private KmlCentroidOptions centroidOpts;
 
         public KMLCentroidFeatureIterator(
-                SimpleFeatureIterator features,
-                SimpleFeatureType schema,
-                KmlEncodingContext context) {
+                SimpleFeatureIterator features, SimpleFeatureType schema, KmlEncodingContext context) {
             this.delegate = features;
             this.builder = new SimpleFeatureBuilder(schema);
             this.centroids = new KmlCentroidBuilder();
@@ -94,11 +90,9 @@ class KMLCentroidFeatureCollection extends DecoratingSimpleFeatureCollection {
         public SimpleFeature next() throws NoSuchElementException {
             SimpleFeature f = delegate.next();
             for (Object attribute : f.getAttributes()) {
-                if ((attribute instanceof Geometry) && !(attribute instanceof Point)) {
-                    Geometry geom = (Geometry) attribute;
-                    Coordinate point =
-                            centroids.geometryCentroid(
-                                    geom, context.getRequest().getBbox(), centroidOpts);
+                if ((attribute instanceof Geometry geom) && !(attribute instanceof Point)) {
+                    Coordinate point = centroids.geometryCentroid(
+                            geom, context.getRequest().getBbox(), centroidOpts);
                     attribute = geom.getFactory().createPoint(point);
                 }
                 builder.add(attribute);

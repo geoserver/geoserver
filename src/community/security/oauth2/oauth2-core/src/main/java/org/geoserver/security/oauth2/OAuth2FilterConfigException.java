@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.oauth2;
 
+import java.io.Serial;
 import org.geoserver.security.validation.FilterConfigException;
 
 /**
@@ -13,6 +14,7 @@ import org.geoserver.security.validation.FilterConfigException;
  */
 public class OAuth2FilterConfigException extends FilterConfigException {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public OAuth2FilterConfigException(String errorId, Object... args) {
@@ -23,17 +25,14 @@ public class OAuth2FilterConfigException extends FilterConfigException {
         super(errorId, message, args);
     }
 
-    public static final String OAUTH2_CHECKTOKENENDPOINT_URL_REQUIRED =
-            "OAUTH2_CHECKTOKENENDPOINT_URL_REQUIRED";
+    public static final String OAUTH2_CHECKTOKENENDPOINT_URL_REQUIRED = "OAUTH2_CHECKTOKENENDPOINT_URL_REQUIRED";
 
-    public static final String OAUTH2_CHECKTOKENENDPOINT_URL_MALFORMED =
-            "OAUTH2_CHECKTOKENENDPOINT_URL_MALFORMED";
+    public static final String OAUTH2_CHECKTOKENENDPOINT_URL_MALFORMED = "OAUTH2_CHECKTOKENENDPOINT_URL_MALFORMED";
 
     public static final String OAUTH2_INTROSPECTIONENDPOINT_URL_MALFORMED =
             "OAUTH2_INTROSPECTIONENDPOINT_URL_MALFORMED";
 
-    public static final String OAUTH2_URL_IN_LOGOUT_URI_MALFORMED =
-            "OAUTH2_URL_IN_LOGOUT_URI_MALFORMED";
+    public static final String OAUTH2_URL_IN_LOGOUT_URI_MALFORMED = "OAUTH2_URL_IN_LOGOUT_URI_MALFORMED";
 
     public static final String OAUTH2_ACCESSTOKENURI_MALFORMED = "OAUTH2_ACCESSTOKENURI_MALFORMED";
 

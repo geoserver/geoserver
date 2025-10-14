@@ -25,8 +25,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
-import javax.media.jai.PlanarImage;
-import javax.media.jai.TiledImage;
+import org.eclipse.imagen.PlanarImage;
+import org.eclipse.imagen.TiledImage;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geotools.image.ImageWorker;
@@ -35,33 +35,28 @@ import org.geotools.image.palette.InverseColorMapOp;
 import org.geotools.renderer.lite.gridcoverage2d.GridCoverageRenderer;
 
 /**
- * Provides utility methods for the shared handling of images by the raster map and legend
- * producers.
+ * Provides utility methods for the shared handling of images by the raster map and legend producers.
  *
  * @author Gabriel Roldan
  * @author Simone Giannecchini, GeoSolutions S.A.S.
- * @version $Id$
  */
 public class ImageUtils {
     private static final Logger LOGGER =
             org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.responses.wms.map");
     /**
-     * This variable is use for testing purposes in order to force this {@link GridCoverageRenderer}
-     * to dump images at various steps on the disk.
+     * This variable is use for testing purposes in order to force this {@link GridCoverageRenderer} to dump images at
+     * various steps on the disk.
      */
     private static boolean DEBUG =
-            Boolean.valueOf(
-                    GeoServerExtensions.getProperty("org.geoserver.wms.map.ImageUtils.debug"));
+            Boolean.valueOf(GeoServerExtensions.getProperty("org.geoserver.wms.map.ImageUtilities.debug"));
 
     private static String DEBUG_DIR;
 
     static {
         if (DEBUG) {
-            final File tempDir =
-                    new File(GeoServerExtensions.getProperty("user.home"), ".geoserver");
+            final File tempDir = new File(GeoServerExtensions.getProperty("user.home"), ".geoserver");
             if (!tempDir.exists()) {
-                if (!tempDir.mkdir())
-                    LOGGER.severe("Unable to create debug dir, exiting application!!!");
+                if (!tempDir.mkdir()) LOGGER.severe("Unable to create debug dir, exiting application!!!");
                 DEBUG = false;
                 DEBUG_DIR = null;
             } else {
@@ -71,25 +66,21 @@ public class ImageUtils {
         }
     }
 
-    /**
-     * Forces the use of the class as a pure utility methods one by declaring a private default
-     * constructor.
-     */
+    /** Forces the use of the class as a pure utility methods one by declaring a private default constructor. */
     private ImageUtils() {
         // do nothing
     }
 
     /**
-     * Sets up a {@link BufferedImage#TYPE_4BYTE_ABGR} if the paletteInverter is not provided, or a
-     * indexed image otherwise. Subclasses may override this method should they need a special kind
-     * of image
+     * Sets up a {@link BufferedImage#TYPE_4BYTE_ABGR} if the paletteInverter is not provided, or a indexed image
+     * otherwise. Subclasses may override this method should they need a special kind of image
      *
      * @param width the width of the image to create.
      * @param height the height of the image to create.
      * @param palette A {@link IndexColorModel} if the image is to be indexed, or <code>
      *     null</code> otherwise.
-     * @return an image of size <code>width x height</code> appropriate for the given color model,
-     *     if any, and to be used as a transparent image or not depending on the <code>transparent
+     * @return an image of size <code>width x height</code> appropriate for the given color model, if any, and to be
+     *     used as a transparent image or not depending on the <code>transparent
      *     </code> parameter.
      */
     public static BufferedImage createImage(
@@ -108,8 +99,7 @@ public class ImageUtils {
             // final WritableRaster raster =
             // palette.createCompatibleWritableRaster(width, height);
             final WritableRaster raster =
-                    Raster.createInterleavedRaster(
-                            palette.getTransferType(), width, height, 1, null);
+                    Raster.createInterleavedRaster(palette.getTransferType(), width, height, 1, null);
             return new BufferedImage(palette, raster, false, null);
         }
 
@@ -124,10 +114,7 @@ public class ImageUtils {
 
     /** Computes the memory usage of the buffered image used as the drawing surface. */
     public static long getDrawingSurfaceMemoryUse(
-            final int width,
-            final int height,
-            final IndexColorModel palette,
-            final boolean transparent) {
+            final int width, final int height, final IndexColorModel palette, final boolean transparent) {
         long memory = width * height;
         if (palette != null) {
             return memory;
@@ -139,17 +126,16 @@ public class ImageUtils {
     }
 
     /**
-     * Sets up and returns a {@link Graphics2D} for the given <code>preparedImage</code>, which is
-     * already prepared with a transparent background or the given background color.
+     * Sets up and returns a {@link Graphics2D} for the given <code>preparedImage</code>, which is already prepared with
+     * a transparent background or the given background color.
      *
      * @param transparent whether the graphics is transparent or not.
      * @param bgColor the background color to fill the graphics with if its not transparent.
      * @param preparedImage the image for which to create the graphics.
-     * @param extraHints an optional map of extra rendering hints to apply to the {@link
-     *     Graphics2D}, other than {@link RenderingHints#KEY_ANTIALIASING}.
-     * @return a {@link Graphics2D} for <code>preparedImage</code> with transparent background if
-     *     <code>transparent == true</code> or with the background painted with <code>bgColor</code>
-     *     otherwise.
+     * @param extraHints an optional map of extra rendering hints to apply to the {@link Graphics2D}, other than
+     *     {@link RenderingHints#KEY_ANTIALIASING}.
+     * @return a {@link Graphics2D} for <code>preparedImage</code> with transparent background if <code>
+     *     transparent == true</code> or with the background painted with <code>bgColor</code> otherwise.
      */
     public static Graphics2D prepareTransparency(
             final boolean transparent,
@@ -158,12 +144,12 @@ public class ImageUtils {
             final Map<RenderingHints.Key, Object> extraHints) {
         final Graphics2D graphic;
 
-        if (preparedImage instanceof BufferedImage) {
-            graphic = ((BufferedImage) preparedImage).createGraphics();
-        } else if (preparedImage instanceof TiledImage) {
-            graphic = ((TiledImage) preparedImage).createGraphics();
-        } else if (preparedImage instanceof VolatileImage) {
-            graphic = ((VolatileImage) preparedImage).createGraphics();
+        if (preparedImage instanceof BufferedImage image2) {
+            graphic = image2.createGraphics();
+        } else if (preparedImage instanceof TiledImage image1) {
+            graphic = image1.createGraphics();
+        } else if (preparedImage instanceof VolatileImage image) {
+            graphic = image.createGraphics();
         } else {
             throw new ServiceException("Unrecognized back-end image type");
         }
@@ -199,8 +185,7 @@ public class ImageUtils {
     }
 
     /** @param invColorMap may be {@code null} */
-    public static RenderedImage forceIndexed8Bitmask(
-            RenderedImage originalImage, final InverseColorMapOp invColorMap) {
+    public static RenderedImage forceIndexed8Bitmask(RenderedImage originalImage, final InverseColorMapOp invColorMap) {
         if (LOGGER.isLoggable(Level.FINER)) {
             LOGGER.finer("Method forceIndexed8Bitmask called ");
             LOGGER.finer("invColorMap is null? " + (invColorMap == null));
@@ -223,8 +208,7 @@ public class ImageUtils {
         //
         // /////////////////////////////////////////////////////////////////
         final ColorModel cm = originalImage.getColorModel();
-        final boolean dataTypeByte =
-                originalImage.getSampleModel().getDataType() == DataBuffer.TYPE_BYTE;
+        final boolean dataTypeByte = originalImage.getSampleModel().getDataType() == DataBuffer.TYPE_BYTE;
         RenderedImage image;
 
         // /////////////////////////////////////////////////////////////////
@@ -237,11 +221,10 @@ public class ImageUtils {
         // we have to check if it is bitmask or not.
         //
         // /////////////////////////////////////////////////////////////////
-        if ((cm instanceof IndexColorModel) && dataTypeByte) {
+        if ((cm instanceof IndexColorModel icm) && dataTypeByte) {
             if (LOGGER.isLoggable(Level.FINER)) {
                 LOGGER.finer("Image has IndexColorModel and type byte!");
             }
-            final IndexColorModel icm = (IndexColorModel) cm;
 
             if (icm.getTransparency() != Transparency.TRANSLUCENT) {
                 // //
@@ -265,10 +248,9 @@ public class ImageUtils {
                 // order to convert it to bitmask.
                 //
                 // //
-                image =
-                        new ImageWorker(originalImage)
-                                .forceBitmaskIndexColorModel()
-                                .getRenderedImage();
+                image = new ImageWorker(originalImage)
+                        .forceBitmaskIndexColorModel()
+                        .getRenderedImage();
                 if (DEBUG) {
                     writeRenderedImage(image, "indexed8translucent");
                 }
@@ -327,12 +309,10 @@ public class ImageUtils {
                     LOGGER.finer("CustomPaletteBuilder[subsx=" + subsx + ",subsy=" + subsy + "]");
                     LOGGER.finer("InputImage is:" + image.toString());
                 }
-                CustomPaletteBuilder cpb =
-                        new CustomPaletteBuilder(image, 256, subsx, subsy, 1).buildPalette();
+                CustomPaletteBuilder cpb = new CustomPaletteBuilder(image, 256, subsx, subsy, 1).buildPalette();
                 image = cpb.getIndexedImage();
                 if (LOGGER.isLoggable(Level.FINER)) {
-                    LOGGER.finer(
-                            "Computed Palette:" + paletteRepresentation(cpb.getIndexColorModel()));
+                    LOGGER.finer("Computed Palette:" + paletteRepresentation(cpb.getIndexColorModel()));
                 }
                 if (DEBUG) {
                     writeRenderedImage(image, "buildPalette");
@@ -347,7 +327,9 @@ public class ImageUtils {
         final StringBuilder builder = new StringBuilder();
         final int mapSize = indexColorModel.getMapSize();
         builder.append("PaletteSize:").append(mapSize).append("\n");
-        builder.append("Transparency:").append(indexColorModel.getTransparency()).append("\n");
+        builder.append("Transparency:")
+                .append(indexColorModel.getTransparency())
+                .append("\n");
         builder.append("TransparentPixel:")
                 .append(indexColorModel.getTransparentPixel())
                 .append("\n");
@@ -367,11 +349,9 @@ public class ImageUtils {
      */
     static void writeRenderedImage(final RenderedImage raster, final String fileName) {
         if (DEBUG_DIR == null)
-            throw new NullPointerException(
-                    "Unable to write the provided coverage in the debug directory");
+            throw new NullPointerException("Unable to write the provided coverage in the debug directory");
         if (DEBUG == false)
-            throw new IllegalStateException(
-                    "Unable to write the provided coverage since we are not in debug mode");
+            throw new IllegalStateException("Unable to write the provided coverage since we are not in debug mode");
         try {
             ImageIO.write(raster, "tiff", new File(DEBUG_DIR, fileName + ".tiff"));
         } catch (IOException e) {

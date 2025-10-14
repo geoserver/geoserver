@@ -64,7 +64,7 @@ public class PropertyEditorFormComponentTest extends GeoServerWicketTestSupport 
     }
 
     @Test
-    @SuppressWarnings({"TryFailThrowable", "PMD.ForLoopCanBeForEach"})
+    @SuppressWarnings("TryFailThrowable")
     public void testRemove() {
         foo.getProps().put("foo", "bar");
         foo.getProps().put("bar", "baz");
@@ -81,8 +81,7 @@ public class PropertyEditorFormComponentTest extends GeoServerWicketTestSupport 
         }
 
         @SuppressWarnings("unchecked")
-        ListView<String> list =
-                (ListView) tester.getComponentFromLastRenderedPage("form:props:container:list");
+        ListView<String> list = (ListView) tester.getComponentFromLastRenderedPage("form:props:container:list");
         assertNotNull(list);
 
         int i = 0;

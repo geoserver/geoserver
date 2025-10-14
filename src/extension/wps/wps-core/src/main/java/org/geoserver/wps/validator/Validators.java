@@ -17,11 +17,10 @@ import org.springframework.validation.Validator;
 public class Validators {
 
     /**
-     * Returns a clone of the validators collection where none of the validators implementing one of
-     * the specified filter classes is available
+     * Returns a clone of the validators collection where none of the validators implementing one of the specified
+     * filter classes is available
      */
-    public static List<Validator> filterOutClasses(
-            Collection<Validator> validators, Class<?>... filteredClasses) {
+    public static List<Validator> filterOutClasses(Collection<Validator> validators, Class<?>... filteredClasses) {
         if (validators == null) {
             return null;
         }
@@ -46,15 +45,14 @@ public class Validators {
     }
 
     /**
-     * Returning the most restrictive size limit in the {@link MaxSizeValidator} contained in the
-     * validators collection, or -1 if there is no limit
+     * Returning the most restrictive size limit in the {@link MaxSizeValidator} contained in the validators collection,
+     * or -1 if there is no limit
      */
     public static int getMaxSizeMB(Collection<Validator> validators) {
         int maxSize = Integer.MAX_VALUE;
         if (validators != null) {
             for (Validator v : validators) {
-                if (v instanceof MaxSizeValidator) {
-                    MaxSizeValidator ms = (MaxSizeValidator) v;
+                if (v instanceof MaxSizeValidator ms) {
                     int msSize = ms.getMaxSizeMB();
                     maxSize = Math.min(maxSize, msSize);
                 }

@@ -12,10 +12,10 @@ import java.awt.image.renderable.ParameterBlock;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import javax.media.jai.*;
-import javax.media.jai.iterator.RectIterFactory;
-import javax.media.jai.iterator.WritableRectIter;
-import javax.media.jai.registry.RenderedRegistryMode;
+import org.eclipse.imagen.*;
+import org.eclipse.imagen.iterator.RectIterFactory;
+import org.eclipse.imagen.iterator.WritableRectIter;
+import org.eclipse.imagen.registry.RenderedRegistryMode;
 import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.image.TransfertRectIter;
 import org.geotools.metadata.i18n.LoggingKeys;
@@ -23,9 +23,9 @@ import org.geotools.metadata.i18n.Loggings;
 import org.geotools.util.logging.Logging;
 
 /**
- * An image operation that translates pixels in a raster to a different value. The intended use case
- * is to recode no data values to a different value (e.g. translate -32768 to -9999), but the
- * operation is not limited to recoding no data.
+ * An image operation that translates pixels in a raster to a different value. The intended use case is to recode no
+ * data values to a different value (e.g. translate -32768 to -9999), but the operation is not limited to recoding no
+ * data.
  *
  * @author Parker Abercrombie
  */
@@ -42,11 +42,8 @@ public class RecodeRaster extends PointOpImage {
     private final double destVal;
 
     public RecodeRaster(
-            final RenderedImage image,
-            final double srcVal,
-            final double destVal,
-            final RenderingHints hints) {
-        super(image, (ImageLayout) hints.get(JAI.KEY_IMAGE_LAYOUT), hints, false);
+            final RenderedImage image, final double srcVal, final double destVal, final RenderingHints hints) {
+        super(image, (ImageLayout) hints.get(ImageN.KEY_IMAGE_LAYOUT), hints, false);
 
         this.srcVal = srcVal;
         this.destVal = destVal;
@@ -54,16 +51,14 @@ public class RecodeRaster extends PointOpImage {
     }
 
     @Override
-    protected void computeRect(
-            final PlanarImage[] sources, final WritableRaster dest, final Rectangle destRect) {
+    protected void computeRect(final PlanarImage[] sources, final WritableRaster dest, final Rectangle destRect) {
         final PlanarImage source = sources[0];
         final Rectangle bounds = destRect.intersection(source.getBounds());
         if (!destRect.equals(bounds)) {
             // TODO: Check if this case occurs sometime, and fill pixel values if it does.
             //       If it happen to occurs, we will need to fix other GeoTools operations
             //       as well.
-            Logging.getLogger(TransformException.class)
-                    .warning("Bounds mismatch: " + destRect + " and " + bounds);
+            Logging.getLogger(TransformException.class).warning("Bounds mismatch: " + destRect + " and " + bounds);
         }
         WritableRectIter iterator = RectIterFactory.createWritable(dest, bounds);
 
@@ -104,8 +99,8 @@ public class RecodeRaster extends PointOpImage {
     /////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * The operation descriptor for the "RecodeNoData" operation. This operation translates pixels
-     * equal to the no data value to a different value.
+     * The operation descriptor for the "RecodeNoData" operation. This operation translates pixels equal to the no data
+     * value to a different value.
      */
     private static final class Descriptor extends OperationDescriptorImpl {
         /** Construct the descriptor. */
@@ -129,14 +124,11 @@ public class RecodeRaster extends PointOpImage {
         }
     }
 
-    /**
-     * The {@link java.awt.image.renderable.RenderedImageFactory} for the {@code "RecodeNoData"}
-     * operation.
-     */
+    /** The {@link java.awt.image.renderable.RenderedImageFactory} for the {@code "RecodeNoData"} operation. */
     private static final class CRIF extends CRIFImpl {
         /**
-         * Creates a {@link RenderedImage} representing the results of an imaging operation for a
-         * given {@link ParameterBlock} and {@link RenderingHints}.
+         * Creates a {@link RenderedImage} representing the results of an imaging operation for a given
+         * {@link ParameterBlock} and {@link RenderingHints}.
          */
         @Override
         public RenderedImage create(final ParameterBlock param, final RenderingHints hints) {
@@ -148,22 +140,15 @@ public class RecodeRaster extends PointOpImage {
         }
     }
 
-    /**
-     * Register the "RecodeNoData" image operation to the operation registry of the specified JAI
-     * instance.
-     */
-    public static void register(final JAI jai) {
-        final OperationRegistry registry = jai.getOperationRegistry();
+    /** Register the "RecodeNoData" image operation to the operation registry of the specified ImageN instance. */
+    public static void register(final ImageN imagen) {
+        final OperationRegistry registry = imagen.getOperationRegistry();
         try {
             registry.registerDescriptor(new Descriptor());
-            registry.registerFactory(
-                    RenderedRegistryMode.MODE_NAME, OPERATION_NAME, "geotools.org", new CRIF());
+            registry.registerFactory(RenderedRegistryMode.MODE_NAME, OPERATION_NAME, "geotools.org", new CRIF());
         } catch (IllegalArgumentException exception) {
             final LogRecord record =
-                    Loggings.format(
-                            Level.SEVERE,
-                            LoggingKeys.CANT_REGISTER_JAI_OPERATION_$1,
-                            OPERATION_NAME);
+                    Loggings.format(Level.SEVERE, LoggingKeys.CANT_REGISTER_JAI_OPERATION_$1, OPERATION_NAME);
             record.setSourceMethodName("<classinit>");
             record.setThrown(exception);
             record.setLoggerName(LOGGER.getName());

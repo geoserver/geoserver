@@ -5,6 +5,7 @@
 
 package org.geoserver.security.jwtheaders.filter;
 
+import java.io.Serial;
 import java.util.logging.Logger;
 import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
@@ -18,6 +19,7 @@ public class GeoServerJwtHeadersFilterConfig extends PreAuthenticatedUserNameFil
 
     private static final Logger LOG = Logging.getLogger(GeoServerJwtHeadersFilterConfig.class);
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     // generic required for saving config
@@ -38,8 +40,7 @@ public class GeoServerJwtHeadersFilterConfig extends PreAuthenticatedUserNameFil
         return jwtConfiguration;
     }
 
-    public void setJwtConfiguration(
-            org.geoserver.security.jwtheaders.JwtConfiguration jwtConfiguration) {
+    public void setJwtConfiguration(org.geoserver.security.jwtheaders.JwtConfiguration jwtConfiguration) {
         jwtConfiguration = jwtConfiguration;
     }
 
@@ -94,8 +95,7 @@ public class GeoServerJwtHeadersFilterConfig extends PreAuthenticatedUserNameFil
     // Don't be surprised if the copies behave badly though.
     @Override
     public SecurityConfig clone(boolean allowEnvParametrization) {
-        final GeoServerEnvironment gsEnvironment =
-                GeoServerExtensions.bean(GeoServerEnvironment.class);
+        final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
         GeoServerJwtHeadersFilterConfig target;
         try {
             target = (GeoServerJwtHeadersFilterConfig) this.clone();
@@ -151,8 +151,7 @@ public class GeoServerJwtHeadersFilterConfig extends PreAuthenticatedUserNameFil
         return jwtConfiguration.getUserNameFormatChoice();
     }
 
-    public void setUserNameFormatChoice(
-            JwtConfiguration.UserNameHeaderFormat userNameFormatChoice) {
+    public void setUserNameFormatChoice(JwtConfiguration.UserNameHeaderFormat userNameFormatChoice) {
         jwtConfiguration.setUserNameFormatChoice(userNameFormatChoice);
     }
 

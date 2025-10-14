@@ -7,10 +7,7 @@ package org.geoserver.config;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.util.XStreamPersister;
 
-/**
- * Listener interface for {@linkplain DefaultGeoServerLoader} load catalog and geoServer startup
- * process.
- */
+/** Listener interface for {@linkplain DefaultGeoServerLoader} load catalog and geoServer startup process. */
 public interface GeoServerLoaderListener {
 
     public static final GeoServerLoaderListener EMPTY_LISTENER = new EmptyGeoServerLoaderListener();

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
+import org.apache.commons.lang3.StringUtils;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.SourceBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
@@ -28,10 +29,7 @@ import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 
-/**
- * This visitor search for a Filter in {@link TemplateBuilder} tree using the path provided as a
- * guideline.
- */
+/** This visitor search for a Filter in {@link TemplateBuilder} tree using the path provided as a guideline. */
 public class TemplatePathVisitor extends DuplicatingFilterVisitor {
 
     protected int currentEl;
@@ -51,24 +49,24 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
     @Override
     public Object visit(PropertyName expression, Object extraData) {
         String propertyName = expression.getPropertyName();
-        if (extraData instanceof TemplateBuilder) {
-            TemplateBuilder builder = (TemplateBuilder) extraData;
+        if (extraData instanceof TemplateBuilder builder) {
             Object newExpression = mapPropertyThroughBuilder(propertyName, builder);
             if (newExpression != null) return newExpression;
         }
-        return getFactory(extraData)
-                .property(expression.getPropertyName(), expression.getNamespaceContext());
+        return getFactory(extraData).property(expression.getPropertyName(), expression.getNamespaceContext());
     }
 
     /**
-     * Back maps a given property through the template, to find out if it originates via an
-     * expression.
+     * Back maps a given property through the template, to find out if it originates via an expression.
      *
      * @param propertyName
      * @param builder
      * @return
      */
     protected Expression mapPropertyThroughBuilder(String propertyName, TemplateBuilder builder) {
+        if (StringUtils.isBlank(propertyName)) {
+            return null;
+        }
         String[] elements;
         if (propertyName.indexOf(".") != -1) {
             elements = propertyName.split("\\.");
@@ -90,9 +88,7 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
             }
         } catch (Throwable ex) {
             throw new RuntimeException(
-                    "Unable to evaluate template path against"
-                            + "the template. Cause: "
-                            + ex.getMessage());
+                    "Unable to evaluate template path against the template. Cause: " + ex.getMessage());
         }
         return null;
     }
@@ -107,10 +103,7 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
         return (Filter) expression.accept(completerVisitor, null);
     }
 
-    /**
-     * Find the corresponding function to which the template path is pointing, by iterating over
-     * builder's tree
-     */
+    /** Find the corresponding function to which the template path is pointing, by iterating over builder's tree */
     public Expression findFunction(TemplateBuilder builder, List<String> pathElements) {
         int lastElI = pathElements.size() - 1;
         String lastEl = pathElements.get(lastElI);
@@ -125,22 +118,19 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
         // find the builder to which the path is pointing
         TemplateBuilder jb = findBuilder(builder, pathElements);
         if (jb != null) {
-            if (jb instanceof IteratingBuilder && index != 0) {
+            if (jb instanceof IteratingBuilder itb && index != 0) {
                 // retrieve the builder based on the position
-                IteratingBuilder itb = (IteratingBuilder) jb;
                 jb = getChildFromIterating(itb, index - 1);
             }
 
-            if (jb instanceof DynamicValueBuilder) {
-                DynamicValueBuilder dvb = (DynamicValueBuilder) jb;
+            if (jb instanceof DynamicValueBuilder dvb) {
                 addFilter(dvb.getFilter());
                 this.contextPos = dvb.getContextPos();
                 if (dvb.getXpath() != null) return (PropertyName) super.visit(dvb.getXpath(), null);
                 else {
                     return super.visit(dvb.getCql(), null);
                 }
-            } else if (jb instanceof StaticBuilder) {
-                StaticBuilder staticBuilder = (StaticBuilder) jb;
+            } else if (jb instanceof StaticBuilder staticBuilder) {
                 addFilter(staticBuilder.getFilter());
                 Expression retExpr;
                 if (staticBuilder.getStaticValue() != null) {
@@ -169,26 +159,23 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
         return 0;
     }
 
-    /**
-     * Find the corresponding function to which the template path is pointing, by iterating over
-     * builder's tree
-     */
+    /** Find the corresponding function to which the template path is pointing, by iterating over builder's tree */
     private TemplateBuilder findBuilder(TemplateBuilder parent, List<String> pathElements) {
         List<TemplateBuilder> children = parent.getChildren();
         int length = pathElements.size();
         if (children != null) {
             for (TemplateBuilder tb : children) {
                 String key = ((AbstractTemplateBuilder) tb).getKey(null);
-                if (tb instanceof DynamicIncludeFlatBuilder) {
+                if (tb instanceof DynamicIncludeFlatBuilder builder) {
                     // go get the including node that the dynamic build inglobated
-                    tb = ((DynamicIncludeFlatBuilder) tb).getIncludingNodeBuilder(null);
+                    tb = builder.getIncludingNodeBuilder(null);
                 }
                 if (matchBuilder(tb, key, pathElements, parent)) {
                     boolean isLastEl = currentEl == length;
                     if (isLastEl || tb instanceof StaticBuilder) {
                         return tb;
-                    } else if (tb instanceof SourceBuilder) {
-                        pickSourceAndFilter((SourceBuilder) tb);
+                    } else if (tb instanceof SourceBuilder builder) {
+                        pickSourceAndFilter(builder);
                         TemplateBuilder result = findBuilder(tb, pathElements);
                         if (result != null) {
                             return result;
@@ -241,29 +228,21 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
     }
 
     private boolean matchBuilder(
-            TemplateBuilder current,
-            String key,
-            List<String> pathElements,
-            TemplateBuilder parent) {
+            TemplateBuilder current, String key, List<String> pathElements, TemplateBuilder parent) {
         boolean result = keyMatched(current, key, pathElements);
         if (!result) {
             if (parent instanceof RootBuilder) result = true;
-            else if (parent instanceof SourceBuilder && !((SourceBuilder) parent).hasOwnOutput())
-                result = true;
+            else if (parent instanceof SourceBuilder builder && !builder.hasOwnOutput()) result = true;
         }
         return result;
     }
 
-    /**
-     * A visitor that completes the property name extracted for backwards mapping, using the sources
-     * if present.
-     */
+    /** A visitor that completes the property name extracted for backwards mapping, using the sources if present. */
     private class PropertyNameCompleterVisitor extends DuplicatingFilterVisitor {
         @Override
         public Object visit(PropertyName filter, Object extraData) {
             filter = (PropertyName) super.visit(filter, extraData);
-            if (filter instanceof AttributeExpressionImpl) {
-                AttributeExpressionImpl pn = (AttributeExpressionImpl) filter;
+            if (filter instanceof AttributeExpressionImpl pn) {
                 String property;
                 if (canCompleteXpath(extraData)) property = completeXPath(pn.getPropertyName());
                 else property = pn.getPropertyName();
@@ -273,10 +252,7 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
             return filter;
         }
 
-        /**
-         * Add to the xpath, xpath parts taken from the $source attribute. This is done for Complex
-         * Features only
-         */
+        /** Add to the xpath, xpath parts taken from the $source attribute. This is done for Complex Features only */
         private String completeXPath(String xpath) {
             if (!currentSource.isEmpty() && !isSimple) {
                 Stack<String> sourceParts = new Stack<>();
@@ -293,8 +269,7 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
          * @return true if extradata is true, false otherwise.
          */
         private boolean canCompleteXpath(Object extradata) {
-            return extradata == null
-                    || (extradata instanceof Boolean && ((Boolean) extradata).booleanValue());
+            return extradata == null || (extradata instanceof Boolean b && b.booleanValue());
         }
 
         private String completeXpath(Stack<String> source, String xpath) {
@@ -316,15 +291,14 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
         public Object visit(Function expression, Object extraData) {
             // Stream Function is a special case since after the first property name
             // all the next ones evaluate on the result of the first one.
-            if (expression instanceof StreamFunction) {
-                StreamFunction streamFunction = (StreamFunction) expression;
+            if (expression instanceof StreamFunction streamFunction) {
                 List<Expression> expressions = streamFunction.getParameters();
                 int size = expressions.size();
                 int pnCounter = 0;
                 for (int i = 0; i < size; i++) {
                     Expression e = expressions.get(i);
-                    if (e instanceof PropertyName) {
-                        e = (Expression) visit((PropertyName) e, pnCounter == 0);
+                    if (e instanceof PropertyName name) {
+                        e = (Expression) visit(name, pnCounter == 0);
                         pnCounter++;
                     } else e = visit(e, extraData);
                     expressions.set(i, e);

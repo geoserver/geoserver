@@ -31,10 +31,7 @@ public class CSWXmlReader extends XmlRequestReader {
     private EntityResolverProvider resolverProvider;
 
     public CSWXmlReader(
-            String element,
-            String version,
-            CSWConfiguration configuration,
-            EntityResolverProvider resolverProvider) {
+            String element, String version, CSWConfiguration configuration, EntityResolverProvider resolverProvider) {
         super(new QName(org.geotools.csw.CSW.NAMESPACE, element), new Version("2.0.2"), "csw");
         this.configuration = configuration;
         this.resolverProvider = resolverProvider;
@@ -56,8 +53,7 @@ public class CSWXmlReader extends XmlRequestReader {
         }
 
         if (!parser.getValidationErrors().isEmpty()) {
-            ServiceException exception =
-                    new ServiceException("Invalid request", "InvalidParameterValue");
+            ServiceException exception = new ServiceException("Invalid request", "InvalidParameterValue");
 
             for (Exception error : parser.getValidationErrors()) {
                 LOGGER.warning(error.getLocalizedMessage());

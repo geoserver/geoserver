@@ -44,8 +44,8 @@ public class ZoneWrapper {
     }
 
     /**
-     * Wraps a dateline crossing polygon so that its longitudes are all packed on one side. Will not
-     * modify other geometries.
+     * Wraps a dateline crossing polygon so that its longitudes are all packed on one side. Will not modify other
+     * geometries.
      *
      * @param cs The coordinate sequence representing the polygon outer shell.
      * @return The update coordinate sequence (might be the same as the input CS)
@@ -65,8 +65,7 @@ public class ZoneWrapper {
         return cs;
     }
 
-    public static CoordinateSequence includePole(
-            GeometryFactory gf, CoordinateSequence cs, boolean north) {
+    public static CoordinateSequence includePole(GeometryFactory gf, CoordinateSequence cs, boolean north) {
         List<Coordinate> coordinates = new ArrayList<>(Arrays.asList(cs.toCoordinateArray()));
         Collections.sort(coordinates, (o1, o2) -> (int) Math.signum(o1.x - o2.x));
         Coordinate low = coordinates.get(0);
@@ -76,8 +75,7 @@ public class ZoneWrapper {
             if (low.x > -180) {
                 Coordinate shifted = new Coordinate(high.x - 360, high.y);
                 LineSegment missingPortion = new LineSegment(shifted, low);
-                LineSegment dateline =
-                        new LineSegment(new Coordinate(-180, -90), new Coordinate(-180, 90));
+                LineSegment dateline = new LineSegment(new Coordinate(-180, -90), new Coordinate(-180, 90));
                 Coordinate intersection = missingPortion.intersection(dateline);
                 coordinates.add(0, intersection);
                 if (high.x < 180) {
@@ -97,12 +95,10 @@ public class ZoneWrapper {
         coordinates.add(cl + 1, new Coordinate(-180, poleLatitude));
         coordinates.add(cl + 2, new Coordinate(-180, coordinates.get(0).y));
 
-        return gf.getCoordinateSequenceFactory()
-                .create(coordinates.toArray(new Coordinate[coordinates.size()]));
+        return gf.getCoordinateSequenceFactory().create(coordinates.toArray(new Coordinate[coordinates.size()]));
     }
 
-    public static CoordinateSequence getUnionSequence(
-            GeometryFactory gf, CoordinateSequence cs, Polygon polarPoly) {
+    public static CoordinateSequence getUnionSequence(GeometryFactory gf, CoordinateSequence cs, Polygon polarPoly) {
         Polygon poly = gf.createPolygon(cs);
         CoordinateSequence csUnion;
         if (poly.getArea() < EPS_AREA) {
@@ -123,8 +119,7 @@ public class ZoneWrapper {
             double precision = 1e-3 / 100000; // 1 degree roughly 100km
             // from mm to km
             for (int i = 0; i < 6; i++) {
-                GeometryPrecisionReducer reducer =
-                        new GeometryPrecisionReducer(new PrecisionModel(1 / precision));
+                GeometryPrecisionReducer reducer = new GeometryPrecisionReducer(new PrecisionModel(1 / precision));
                 Geometry reducedPolarPoly = reducer.reduce(polarPoly);
                 Geometry reducedPoly = reducer.reduce(poly);
                 try {
@@ -136,8 +131,7 @@ public class ZoneWrapper {
             }
 
             if (result == null) {
-                throw new RuntimeException(
-                        "Failed to union geometries, even with precision reduction");
+                throw new RuntimeException("Failed to union geometries, even with precision reduction");
             }
         }
 
@@ -171,8 +165,7 @@ public class ZoneWrapper {
             prevLng = lng;
         }
 
-        if (datelineCrossing)
-            return eastCount > westCount ? DatelineLocation.East : DatelineLocation.West;
+        if (datelineCrossing) return eastCount > westCount ? DatelineLocation.East : DatelineLocation.West;
         else return DatelineLocation.NotCrossing;
     }
 

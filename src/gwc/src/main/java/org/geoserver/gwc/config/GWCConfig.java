@@ -7,6 +7,7 @@ package org.geoserver.gwc.config;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,6 +25,7 @@ import org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider;
 
 public class GWCConfig implements Cloneable, Serializable {
 
+    @Serial
     private static final long serialVersionUID = 3287178222706781438L;
 
     private String version;
@@ -43,20 +45,14 @@ public class GWCConfig implements Cloneable, Serializable {
     /** Boolean indicating if InnerCaching should be used instead of default FileSystem caching */
     private boolean innerCachingEnabled;
 
-    /**
-     * Boolean indicating if the Tiles stored in memory should be also stored in the FileSystem as
-     * backup
-     */
+    /** Boolean indicating if the Tiles stored in memory should be also stored in the FileSystem as backup */
     private boolean persistenceEnabled;
 
-    /**
-     * String indicating the class of the {@link CacheProvider} instance used for caching GWC Tiles
-     */
+    /** String indicating the class of the {@link CacheProvider} instance used for caching GWC Tiles */
     private String cacheProviderClass;
 
     /**
-     * {@link Map} containing all the {@link CacheConfiguration} object stored for each {@link
-     * CacheProvider} instance.
+     * {@link Map} containing all the {@link CacheConfiguration} object stored for each {@link CacheProvider} instance.
      */
     private Map<String, CacheConfiguration> cacheConfigurations;
 
@@ -78,10 +74,7 @@ public class GWCConfig implements Cloneable, Serializable {
     /** Default gutter size in pixels */
     private int gutter;
 
-    /**
-     * Which SRS's to cache by default when adding a new Layer. Defaults to {@code [EPSG:4326,
-     * EPSG:900913]}
-     */
+    /** Which SRS's to cache by default when adding a new Layer. Defaults to {@code [EPSG:4326, EPSG:900913]} */
     private HashSet<String> defaultCachingGridSetIds;
 
     private HashSet<String> defaultCoverageCacheFormats;
@@ -242,11 +235,10 @@ public class GWCConfig implements Cloneable, Serializable {
     }
 
     /**
-     * @return an instance of GWCConfig (possibly {@code this}) that is sane, in case the configured
-     *     defaults are not (like in missing some config option). This is just a safety measure to
-     *     ensure a mis configured gwc-gs.xml does not prevent the creation of tile layers (ej,
-     *     automatic creation of new tile layers may be disabled in gwc-gs.xml and its contents may
-     *     not lead to a sane state to be used as default settings).
+     * @return an instance of GWCConfig (possibly {@code this}) that is sane, in case the configured defaults are not
+     *     (like in missing some config option). This is just a safety measure to ensure a mis configured gwc-gs.xml
+     *     does not prevent the creation of tile layers (ej, automatic creation of new tile layers may be disabled in
+     *     gwc-gs.xml and its contents may not lead to a sane state to be used as default settings).
      */
     public GWCConfig saneConfig() {
         if (isSane()) {
@@ -293,10 +285,7 @@ public class GWCConfig implements Cloneable, Serializable {
                 && !defaultVectorCacheFormats.isEmpty();
     }
 
-    /**
-     * Returns a config suitable to match the old defaults when the integrated GWC behaivour was not
-     * configurable.
-     */
+    /** Returns a config suitable to match the old defaults when the integrated GWC behaivour was not configurable. */
     public static GWCConfig getOldDefaults() {
         GWCConfig config = new GWCConfig();
         config.setOldDefaults();
@@ -386,8 +375,7 @@ public class GWCConfig implements Cloneable, Serializable {
             return isWMSCEnabled();
         }
         if ("wmts".equalsIgnoreCase(serviceId)) {
-            throw new RuntimeException(
-                    "To check if WMTS service is enable or disable use service info.");
+            throw new RuntimeException("To check if WMTS service is enable or disable use service info.");
         }
         if ("tms".equalsIgnoreCase(serviceId)) {
             return isTMSEnabled();
@@ -418,8 +406,7 @@ public class GWCConfig implements Cloneable, Serializable {
                 && Objects.equals(cacheProviderClass, gwcConfig.cacheProviderClass)
                 && Objects.equals(cacheConfigurations, gwcConfig.cacheConfigurations)
                 && Objects.equals(defaultCachingGridSetIds, gwcConfig.defaultCachingGridSetIds)
-                && Objects.equals(
-                        defaultCoverageCacheFormats, gwcConfig.defaultCoverageCacheFormats)
+                && Objects.equals(defaultCoverageCacheFormats, gwcConfig.defaultCoverageCacheFormats)
                 && Objects.equals(defaultVectorCacheFormats, gwcConfig.defaultVectorCacheFormats)
                 && Objects.equals(defaultOtherCacheFormats, gwcConfig.defaultOtherCacheFormats)
                 && Objects.equals(lockProviderName, gwcConfig.lockProviderName)
@@ -458,17 +445,13 @@ public class GWCConfig implements Cloneable, Serializable {
         return lockProviderName;
     }
 
-    /**
-     * Sets the name of the {@link LockProvider} Spring bean to be used as the lock provider for
-     * this GWC instance
-     */
+    /** Sets the name of the {@link LockProvider} Spring bean to be used as the lock provider for this GWC instance */
     public void setLockProviderName(String lockProviderName) {
         this.lockProviderName = lockProviderName;
     }
 
     /**
-     * Checks whether GWC Tiles should be cached in memory instead of caching them in the File
-     * System
+     * Checks whether GWC Tiles should be cached in memory instead of caching them in the File System
      *
      * @return a boolean indicating if tiles are cached in memory
      */
@@ -479,16 +462,15 @@ public class GWCConfig implements Cloneable, Serializable {
     /**
      * This method sets a flag indicating if GWC tiles must be cached in memory
      *
-     * @param innerCachingEnabled If this flag is set to true, GWC tiles will be cached in memory
-     *     instead of being cached on the disk.
+     * @param innerCachingEnabled If this flag is set to true, GWC tiles will be cached in memory instead of being
+     *     cached on the disk.
      */
     public void setInnerCachingEnabled(boolean innerCachingEnabled) {
         this.innerCachingEnabled = innerCachingEnabled;
     }
 
     /**
-     * Checks whether GWC Tiles are stored in the File System also if they are already stored in
-     * memory
+     * Checks whether GWC Tiles are stored in the File System also if they are already stored in memory
      *
      * @return a boolean indicating if GWC tiles are also cached in FileSystem
      */
@@ -497,11 +479,10 @@ public class GWCConfig implements Cloneable, Serializable {
     }
 
     /**
-     * This method sets a flag indicating if GWC tiles must be stored in File System even if they
-     * are also cached in memory
+     * This method sets a flag indicating if GWC tiles must be stored in File System even if they are also cached in
+     * memory
      *
-     * @param persistenceEnabled If this flag is set to true, GWC tiles are stored in the File
-     *     System as backup.
+     * @param persistenceEnabled If this flag is set to true, GWC tiles are stored in the File System as backup.
      */
     public void setEnabledPersistence(boolean persistenceEnabled) {
         this.persistenceEnabled = persistenceEnabled;
@@ -526,8 +507,8 @@ public class GWCConfig implements Cloneable, Serializable {
     }
 
     /**
-     * This method returns a {@link Map} containing the {@link CacheConfiguration} instances related
-     * to each {@link CacheProvider}.
+     * This method returns a {@link Map} containing the {@link CacheConfiguration} instances related to each
+     * {@link CacheProvider}.
      *
      * @return A {@link Map} which maps {@link CacheConfiguration}s to {@link CacheProvider}s
      */
@@ -536,11 +517,11 @@ public class GWCConfig implements Cloneable, Serializable {
     }
 
     /**
-     * This method sets a new {@link Map} which associates to each {@link CacheProvider}, the
-     * related {@link CacheConfiguration}.
+     * This method sets a new {@link Map} which associates to each {@link CacheProvider}, the related
+     * {@link CacheConfiguration}.
      *
-     * @param cacheConfigurations A {@link Map} containing {@link CacheConfiguration}s associated to
-     *     the {@link CacheProvider} keys.
+     * @param cacheConfigurations A {@link Map} containing {@link CacheConfiguration}s associated to the
+     *     {@link CacheProvider} keys.
      */
     public void setCacheConfigurations(Map<String, CacheConfiguration> cacheConfigurations) {
         this.cacheConfigurations = new HashMap<>(cacheConfigurations);

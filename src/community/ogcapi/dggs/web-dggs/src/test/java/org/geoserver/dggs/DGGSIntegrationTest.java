@@ -50,18 +50,16 @@ public class DGGSIntegrationTest extends GeoServerSystemTestSupport {
     }
 
     /**
-     * Does an end to end test of the DGGS extension, by querying the WMS service for the layer
-     * created in the setup, with a different name (to test the retype feature source) and with
-     * resolution settings configured as string.
+     * Does an end to end test of the DGGS extension, by querying the WMS service for the layer created in the setup,
+     * with a different name (to test the retype feature source) and with resolution settings configured as string.
      */
     @Test
     public void testGetFeatureInfo() throws Exception {
-        String url =
-                "wms?service=WMS&version=1.1.0&request=GetFeatureInfo&layers="
-                        + TYPENAME
-                        + "&styles=&bbox=-180.0,-90.0,180.0,90.0&width=200&height=100&srs=EPSG:4326&format=image/png&info_format=application/json&query_layers="
-                        + TYPENAME
-                        + "&x=100&y=50";
+        String url = "wms?service=WMS&version=1.1.0&request=GetFeatureInfo&layers="
+                + TYPENAME
+                + "&styles=&bbox=-180.0,-90.0,180.0,90.0&width=200&height=100&srs=EPSG:4326&format=image/png&info_format=application/json&query_layers="
+                + TYPENAME
+                + "&x=100&y=50";
         JSONObject json = (JSONObject) getAsJSON(url);
         print(json);
         assertEquals("FeatureCollection", json.getString("type"));

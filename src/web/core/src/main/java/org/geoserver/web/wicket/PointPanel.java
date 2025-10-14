@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextField;
@@ -23,6 +24,7 @@ import org.locationtech.jts.geom.Point;
  * @author Andrea Aime, GeoSolutions
  */
 public class PointPanel extends FormComponentPanel<Point> {
+    @Serial
     private static final long serialVersionUID = -1046819530873258172L;
 
     GeometryFactory gf = new GeometryFactory();
@@ -77,22 +79,18 @@ public class PointPanel extends FormComponentPanel<Point> {
     }
 
     public PointPanel setReadOnly(final boolean readOnly) {
-        visitChildren(
-                TextField.class,
-                (component, visit) -> {
-                    component.setEnabled(!readOnly);
-                });
+        visitChildren(TextField.class, (component, visit) -> {
+            component.setEnabled(!readOnly);
+        });
 
         return this;
     }
 
     @Override
     public void convertInput() {
-        visitChildren(
-                TextField.class,
-                (component, visit) -> {
-                    ((TextField<?>) component).processInput();
-                });
+        visitChildren(TextField.class, (component, visit) -> {
+            ((TextField<?>) component).processInput();
+        });
 
         // update the point model
         if (x != null && y != null) {
@@ -107,11 +105,9 @@ public class PointPanel extends FormComponentPanel<Point> {
         // when the client programmatically changed the model, update the fields
         // so that the textfields will change too
         updateFields();
-        visitChildren(
-                TextField.class,
-                (component, visit) -> {
-                    ((TextField<?>) component).clearInput();
-                });
+        visitChildren(TextField.class, (component, visit) -> {
+            ((TextField<?>) component).clearInput();
+        });
     }
 
     /** Sets the max number of digits for the */

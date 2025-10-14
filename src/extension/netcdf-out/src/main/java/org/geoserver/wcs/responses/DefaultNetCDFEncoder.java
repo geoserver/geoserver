@@ -5,7 +5,6 @@
  */
 package org.geoserver.wcs.responses;
 
-import it.geosolutions.jaiext.range.NoDataContainer;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
@@ -17,8 +16,9 @@ import java.util.logging.Level;
 import javax.measure.UnconvertibleException;
 import javax.measure.Unit;
 import javax.measure.UnitConverter;
-import javax.media.jai.iterator.RandomIter;
-import javax.media.jai.iterator.RandomIterFactory;
+import org.eclipse.imagen.iterator.RandomIter;
+import org.eclipse.imagen.iterator.RandomIterFactory;
+import org.eclipse.imagen.media.range.NoDataContainer;
 import org.geoserver.wcs.responses.NetCDFDimensionsManager.NetCDFDimensionMapping;
 import org.geoserver.wcs2_0.response.GranuleStack;
 import org.geoserver.web.netcdf.DataPacking;
@@ -40,8 +40,8 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 
 /**
- * A class which takes care of initializing NetCDF dimension from coverages dimension, variables,
- * values for the NetCDF output file and finally write them when invoking the write method.
+ * A class which takes care of initializing NetCDF dimension from coverages dimension, variables, values for the NetCDF
+ * output file and finally write them when invoking the write method.
  *
  * @author Daniele Romagnoli, GeoSolutions SAS
  */
@@ -54,11 +54,11 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
     private String variableUoM;
 
     /**
-     * The unitConverter to be used to convert the pixel values from the input unit (the one coming
-     * from the original coverage) to output unit (the one specified by the user). As an instance,
-     * we may work against a sea_surface_temperature coverage having temperature in celsius whilst
-     * we want to store it back as a sea_surface_temperature in kelvin. In that case the machinery
-     * will setup a not-null unitConverter to be used at time of data writing.
+     * The unitConverter to be used to convert the pixel values from the input unit (the one coming from the original
+     * coverage) to output unit (the one specified by the user). As an instance, we may work against a
+     * sea_surface_temperature coverage having temperature in celsius whilst we want to store it back as a
+     * sea_surface_temperature in kelvin. In that case the machinery will setup a not-null unitConverter to be used at
+     * time of data writing.
      */
     private UnitConverter unitConverter;
 
@@ -76,10 +76,7 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
      * @param encodingParameters customized encoding params
      */
     public DefaultNetCDFEncoder(
-            GranuleStack granuleStack,
-            File file,
-            Map<String, String> encodingParameters,
-            String outputFormat)
+            GranuleStack granuleStack, File file, Map<String, String> encodingParameters, String outputFormat)
             throws IOException {
         super(granuleStack, file, encodingParameters, outputFormat);
     }
@@ -157,12 +154,11 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
                     if (outputUoM != null && !inputUoM.equals(outputUoM)) {
                         if (!inputUoM.isCompatible(outputUoM)) {
                             if (LOGGER.isLoggable(Level.WARNING)) {
-                                LOGGER.warning(
-                                        "input unit "
-                                                + inputUoM
-                                                + " and output unit "
-                                                + outputUoM
-                                                + " are incompatible.\nNo unit conversion will be performed");
+                                LOGGER.warning("input unit "
+                                        + inputUoM
+                                        + " and output unit "
+                                        + outputUoM
+                                        + " are incompatible.\nNo unit conversion will be performed");
                             }
                         } else {
                             unitConverter = getConverter(inputUoM, outputUoM);
@@ -170,17 +166,15 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
                     }
                 } catch (UnconvertibleException ce) {
                     if (LOGGER.isLoggable(Level.SEVERE)) {
-                        LOGGER.severe(
-                                "Unable to create a converter for the specified unit: "
-                                        + variableUoM
-                                        + "\nNo unit conversion will be performed");
+                        LOGGER.severe("Unable to create a converter for the specified unit: "
+                                + variableUoM
+                                + "\nNo unit conversion will be performed");
                     }
                 } catch (IllegalArgumentException e) {
                     if (LOGGER.isLoggable(Level.SEVERE)) {
-                        LOGGER.severe(
-                                "Unable to parse the specified unit: "
-                                        + variableUoM
-                                        + "\nNo unit conversion will be performed");
+                        LOGGER.severe("Unable to parse the specified unit: "
+                                + variableUoM
+                                + "\nNo unit conversion will be performed");
                     }
                 }
             }
@@ -215,9 +209,7 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
         if (noDataSet) {
             Number noData = dataPacker != null ? dataPacker.getReservedValue() : noDataValue;
             varb.addAttribute(
-                    new Attribute(
-                            NetCDFUtilities.FILL_VALUE,
-                            NetCDFUtilities.transcodeNumber(varDataType, noData)));
+                    new Attribute(NetCDFUtilities.FILL_VALUE, NetCDFUtilities.transcodeNumber(varDataType, noData)));
         }
 
         // Initialize the gridMapping part of the variable
@@ -231,12 +223,9 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
                         Variable sourceVar =
                                 source.findVariable(sampleGranule.getName().toString());
                         if (sourceVar == null) {
-                            LOGGER.info(
-                                    String.format(
-                                            "Could not copy attributes because "
-                                                    + "variable '%s' not found in NetCDF/GRIB %s",
-                                            sampleGranule.getName().toString(),
-                                            source.getLocation()));
+                            LOGGER.info(String.format(
+                                    "Could not copy attributes because " + "variable '%s' not found in NetCDF/GRIB %s",
+                                    sampleGranule.getName().toString(), source.getLocation()));
                         } else {
                             copyAttributes(sourceVar, varb, dataPacking);
                         }
@@ -273,7 +262,8 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
             dimName[iDim] = dimension.getNetCDFDimension().getShortName();
             iDim++;
         }
-        String name = variableName != null ? variableName : sampleGranule.getName().toString();
+        String name =
+                variableName != null ? variableName : sampleGranule.getName().toString();
         final Variable var = writer.findVariable(name);
         if (var == null) {
             throw new IllegalArgumentException("The requested variable doesn't exists: " + name);
@@ -283,7 +273,8 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
 
         // Get the data type for a sample image (All granules of the same coverage will use
         // the same sample model
-        final int imageDataType = sampleGranule.getRenderedImage().getSampleModel().getDataType();
+        final int imageDataType =
+                sampleGranule.getRenderedImage().getSampleModel().getDataType();
         final DataType netCDFDataType = var.getDataType();
         final Array matrix = NetCDFUtilities.getArray(dimSize, netCDFDataType);
 
@@ -332,8 +323,7 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
                     try (NetcdfDataset source = getSourceNetcdfDataset(gridCoverage)) {
                         if (source != null) {
                             for (ExtraVariableRecord record : nonscalarExtraVariables) {
-                                if (!record.writtenIndices.contains(
-                                        indexing[record.dimensionIndex])) {
+                                if (!record.writtenIndices.contains(indexing[record.dimensionIndex])) {
                                     writer.write(
                                             writer.findVariable(record.extraVariable.getOutput()),
                                             new int[] {indexing[record.dimensionIndex]},

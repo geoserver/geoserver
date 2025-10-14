@@ -21,13 +21,13 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
- * An authentication provider for the superuser called {@link #ROOTUSERNAME}. This user hat the
- * administrator role {@link GeoServerRole#ADMIN_ROLE} No other users are authenticated.
+ * An authentication provider for the superuser called {@link GeoServerUser#ROOT_USERNAME}. This user hat the
+ * administrator role {@link GeoServerRole#ADMIN_ROLE}. No other users are authenticated.
  *
  * <p>The password is checked using {@link GeoServerSecurityManager#checkMasterPassword(String)}
  *
- * <p>If the password does not match, NO {@link BadCredentialsException} is thrown. Maybe there is a
- * user in one of the {@link GeoServerUserGroupService} objects with the same name.
+ * <p>If the password does not match, NO {@link BadCredentialsException} is thrown. Maybe there is a user in one of the
+ * {@link GeoServerUserGroupService} objects with the same name.
  *
  * @author christian
  */
@@ -47,12 +47,10 @@ public class GeoServerRootAuthenticationProvider extends GeoServerAuthentication
     public Authentication authenticate(Authentication authentication, HttpServletRequest request)
             throws AuthenticationException {
 
-        UsernamePasswordAuthenticationToken token =
-                (UsernamePasswordAuthenticationToken) authentication;
+        UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) authentication;
 
         // check if name is root
-        if (!GeoServerUser.ROOT_USERNAME.equals(SecurityUtils.getUsername(token.getPrincipal())))
-            return null;
+        if (!GeoServerUser.ROOT_USERNAME.equals(SecurityUtils.getUsername(token.getPrincipal()))) return null;
 
         // check password
         if (token.getCredentials() != null) {
@@ -61,8 +59,7 @@ public class GeoServerRootAuthenticationProvider extends GeoServerAuthentication
                 roles.add(GeoServerRole.ADMIN_ROLE);
 
                 UsernamePasswordAuthenticationToken result =
-                        new UsernamePasswordAuthenticationToken(
-                                GeoServerUser.ROOT_USERNAME, null, roles);
+                        new UsernamePasswordAuthenticationToken(GeoServerUser.ROOT_USERNAME, null, roles);
                 result.setDetails(token.getDetails());
                 return result;
             }

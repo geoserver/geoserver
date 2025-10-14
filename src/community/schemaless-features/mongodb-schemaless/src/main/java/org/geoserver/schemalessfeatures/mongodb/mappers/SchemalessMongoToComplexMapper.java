@@ -41,8 +41,8 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.locationtech.jts.geom.Geometry;
 
 /**
- * A MongoDB implementation of SchemalessMapper. This class is responsible to build a Feature from a
- * DBObject source, and to create/update the AttrbiuteType along with the feature building process.
+ * A MongoDB implementation of SchemalessMapper. This class is responsible to build a Feature from a DBObject source,
+ * and to create/update the AttrbiuteType along with the feature building process.
  */
 public class SchemalessMongoToComplexMapper extends SchemalessFeatureMapper<DBObject> {
 
@@ -77,8 +77,7 @@ public class SchemalessMongoToComplexMapper extends SchemalessFeatureMapper<DBOb
         ComplexFeatureBuilder featureBuilder = new ComplexFeatureBuilder(type);
         GeometryAttribute geometryAttribute = null;
         for (Property p : attributes) {
-            if (p instanceof GeometryAttribute) {
-                GeometryAttribute geom = (GeometryAttribute) p;
+            if (p instanceof GeometryAttribute geom) {
                 handleGeometryReprojection(geom);
                 if (p.getName().equals(type.getGeometryDescriptor().getName())) {
                     geometryAttribute = geom;
@@ -116,22 +115,16 @@ public class SchemalessMongoToComplexMapper extends SchemalessFeatureMapper<DBOb
             Object value = rootDBO.get(key);
             if (value == null) {
                 attributes.add(buildNullAttribute(namespaceURI, key, parentType));
-            } else if (value instanceof BasicDBList) {
-                BasicDBList list = (BasicDBList) value;
-                attributes.addAll(
-                        buildComplexAttributesUnbounded(namespaceURI, key, list, parentType));
-            } else if (value instanceof DBObject) {
-                DBObject dbObj = (DBObject) value;
+            } else if (value instanceof BasicDBList list) {
+                attributes.addAll(buildComplexAttributesUnbounded(namespaceURI, key, list, parentType));
+            } else if (value instanceof DBObject dbObj) {
                 if (MongoSchemalessUtils.isGeometry(dbObj)) {
                     Geometry geom = geomBuilder.toGeometry(dbObj);
-                    GeometryAttribute geometryAttribute =
-                            buildGeometryAttribute(geom, namespaceURI, key, parentType);
+                    GeometryAttribute geometryAttribute = buildGeometryAttribute(geom, namespaceURI, key, parentType);
                     attributes.add(geometryAttribute);
                     continue;
                 }
-                attributes.add(
-                        buildComplexAttribute(
-                                namespaceURI, key, (DBObject) value, parentType, false));
+                attributes.add(buildComplexAttribute(namespaceURI, key, dbObj, parentType, false));
             } else {
                 attributes.add(buildSimpleAttribute(namespaceURI, key, value, parentType));
             }
@@ -145,53 +138,38 @@ public class SchemalessMongoToComplexMapper extends SchemalessFeatureMapper<DBOb
             DBObject dbobject,
             DynamicComplexType parentType,
             boolean isCollection) {
-        PropertyDescriptor descriptorProperty =
-                parentType.getDescriptor(new NameImpl(namespaceURI, attrName));
+        PropertyDescriptor descriptorProperty = parentType.getDescriptor(new NameImpl(namespaceURI, attrName));
 
         // if the value being mapped was null for a previous feature
         // we might have it as a simple attribute type holding a null value
         // in that case the descriptor is rebuilt.
         boolean notAComplexType =
-                descriptorProperty != null
-                        && !(descriptorProperty.getType() instanceof DynamicComplexType);
+                descriptorProperty != null && !(descriptorProperty.getType() instanceof DynamicComplexType);
         if (descriptorProperty == null || notAComplexType)
             descriptorProperty =
-                    buildFullyObjectPropertyModelDescriptor(
-                            parentType, namespaceURI, attrName, isCollection);
+                    buildFullyObjectPropertyModelDescriptor(parentType, namespaceURI, attrName, isCollection);
         ComplexType complexTypeProperty = (ComplexType) descriptorProperty.getType();
         PropertyDescriptor nestedFeatureDescriptor = extractFeatureDescriptor(descriptorProperty);
-        DynamicComplexType nestedFeatureType =
-                (DynamicComplexType) nestedFeatureDescriptor.getType();
-        ComplexFeatureBuilder featureBuilder =
-                new ComplexFeatureBuilder((AttributeDescriptor) nestedFeatureDescriptor);
+        DynamicComplexType nestedFeatureType = (DynamicComplexType) nestedFeatureDescriptor.getType();
+        ComplexFeatureBuilder featureBuilder = new ComplexFeatureBuilder((AttributeDescriptor) nestedFeatureDescriptor);
         List<Property> attributes = getNestedAttributes(dbobject, nestedFeatureType);
         for (Property p : attributes) featureBuilder.append(p.getName(), p);
         Feature f = featureBuilder.buildFeature(null);
-        ComplexAttribute propertyAttribute =
-                attributeBuilder.createComplexAttribute(
-                        Arrays.asList(f),
-                        complexTypeProperty,
-                        (AttributeDescriptor) descriptorProperty,
-                        null);
+        ComplexAttribute propertyAttribute = attributeBuilder.createComplexAttribute(
+                Arrays.asList(f), complexTypeProperty, (AttributeDescriptor) descriptorProperty, null);
         return propertyAttribute;
     }
 
     private List<Property> buildComplexAttributesUnbounded(
-            String namespaceURI,
-            String attrName,
-            BasicDBList value,
-            DynamicComplexType parentType) {
+            String namespaceURI, String attrName, BasicDBList value, DynamicComplexType parentType) {
         List<Property> attributes = new ArrayList<>();
         for (int i = 0; i < value.size(); i++) {
             Object obj = value.get(i);
-            if (obj instanceof DBObject) {
-                Attribute attribute =
-                        buildComplexAttribute(
-                                namespaceURI, attrName, (DBObject) obj, parentType, true);
+            if (obj instanceof DBObject object) {
+                Attribute attribute = buildComplexAttribute(namespaceURI, attrName, object, parentType, true);
                 attributes.add(attribute);
             } else if (obj != null) {
-                Attribute attribute =
-                        buildSimpleAttribute(namespaceURI, attrName, obj, parentType, true);
+                Attribute attribute = buildSimpleAttribute(namespaceURI, attrName, obj, parentType, true);
                 attributes.add(attribute);
             } else if (obj == null) {
                 Attribute attribute = buildNullAttribute(namespaceURI, attrName, parentType);

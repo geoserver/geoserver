@@ -7,6 +7,7 @@ package org.geoserver.web.data.store;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
@@ -48,13 +49,13 @@ import org.geotools.api.data.Repository;
 import org.xml.sax.EntityResolver;
 
 /**
- * A default {@link StoreEditPanel} contribution for the {@link DataStorePanelInfo} extension point
- * to work on any {@link DataStoreInfo}s.
+ * A default {@link StoreEditPanel} contribution for the {@link DataStorePanelInfo} extension point to work on any
+ * {@link DataStoreInfo}s.
  *
- * <p>This default store parameters panel contributes to the store edit form {@link
- * DataStorePanelInfo#getComponentClass() extension point} by providing a dynamically and
- * introspectively generated list of form input fields based on the {@link DataAccessFactory}
- * parameters for the given {@code DataStoreInfo}.
+ * <p>This default store parameters panel contributes to the store edit form
+ * {@link DataStorePanelInfo#getComponentClass() extension point} by providing a dynamically and introspectively
+ * generated list of form input fields based on the {@link DataAccessFactory} parameters for the given
+ * {@code DataStoreInfo}.
  *
  * @author Gabriel Roldan
  * @see Param
@@ -69,16 +70,16 @@ import org.xml.sax.EntityResolver;
 @SuppressWarnings("serial")
 public class DefaultDataStoreEditPanel extends StoreEditPanel {
 
+    @Serial
     private static final long serialVersionUID = -1969433619372747193L;
 
     /**
-     * Creates a new parameters panel with a list of input fields matching the {@link Param}s for
-     * the factory related to the {@code DataStoreInfo} that's the model of the provided {@code
-     * Form}.
+     * Creates a new parameters panel with a list of input fields matching the {@link Param}s for the factory related to
+     * the {@code DataStoreInfo} that's the model of the provided {@code Form}.
      *
      * @param componentId the id for this component instance
-     * @param storeEditForm the form being build by the calling class, whose model is the {@link
-     *     DataStoreInfo} being edited
+     * @param storeEditForm the form being build by the calling class, whose model is the {@link DataStoreInfo} being
+     *     edited
      */
     public DefaultDataStoreEditPanel(final String componentId, final Form storeEditForm) {
         super(componentId, storeEditForm);
@@ -114,45 +115,39 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
         }
 
         final List<String> keys = new ArrayList<>(paramsMetadata.keySet());
-        final IModel<Map<String, Serializable>> paramsModel =
-                new PropertyModel<>(model, "connectionParameters");
+        final IModel<Map<String, Serializable>> paramsModel = new PropertyModel<>(model, "connectionParameters");
 
-        ListView<String> paramsList =
-                new ListView<>("parameters", keys) {
-                    private static final long serialVersionUID = 1L;
+        ListView<String> paramsList = new ListView<>("parameters", keys) {
+            @Serial
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    protected void populateItem(ListItem<String> item) {
-                        String paramName = item.getDefaultModelObjectAsString();
-                        ParamInfo paramMetadata = paramsMetadata.get(paramName);
+            @Override
+            protected void populateItem(ListItem<String> item) {
+                String paramName = item.getDefaultModelObjectAsString();
+                ParamInfo paramMetadata = paramsMetadata.get(paramName);
 
-                        Component inputComponent =
-                                getInputComponent("parameterPanel", paramsModel, paramMetadata);
+                Component inputComponent = getInputComponent("parameterPanel", paramsModel, paramMetadata);
 
-                        String description = paramMetadata.getTitle();
-                        if (description != null) {
-                            inputComponent.add(AttributeModifier.replace("title", description));
-                        }
-                        item.add(inputComponent);
-                    }
-                };
+                String description = paramMetadata.getTitle();
+                if (description != null) {
+                    inputComponent.add(AttributeModifier.replace("title", description));
+                }
+                item.add(inputComponent);
+            }
+        };
         // needed for form components not to loose state
         paramsList.setReuseItems(true);
 
         add(paramsList);
     }
 
-    /**
-     * Creates a form input component for the given datastore param based on its type and metadata
-     * properties.
-     */
+    /** Creates a form input component for the given datastore param based on its type and metadata properties. */
     protected Panel getInputComponent(
             final String componentId,
             final IModel<Map<String, Serializable>> paramsModel,
             final ParamInfo paramMetadata) {
 
-        final GeoServerEnvironment gsEnvironment =
-                GeoServerExtensions.bean(GeoServerEnvironment.class);
+        final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
 
         final String paramName = paramMetadata.getName();
         final String paramLabel = paramMetadata.getName();
@@ -173,33 +168,26 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
                 valueModel = adaptEnumeration(binding, valueModel);
             }
             IModel<String> labelModel = new ResourceModel(paramLabel, paramLabel);
-            parameterPanel =
-                    new DropDownChoiceParamPanel(
-                            componentId, valueModel, labelModel, options, required);
+            parameterPanel = new DropDownChoiceParamPanel(componentId, valueModel, labelModel, options, required);
 
         } else if (Boolean.class == binding) {
             // TODO Add prefix for better i18n?
-            parameterPanel =
-                    new CheckBoxParamPanel(
-                            componentId,
-                            new MapModel<>(paramsModel, paramName),
-                            new ResourceModel(paramLabel, paramLabel));
+            parameterPanel = new CheckBoxParamPanel(
+                    componentId, new MapModel<>(paramsModel, paramName), new ResourceModel(paramLabel, paramLabel));
 
         } else if (File.class == binding) {
-            parameterPanel =
-                    new FileParamPanel(
-                            componentId,
-                            new MapModel<>(paramsModel, paramName),
-                            new ResourceModel(paramLabel, paramLabel),
-                            required);
+            parameterPanel = new FileParamPanel(
+                    componentId,
+                    new MapModel<>(paramsModel, paramName),
+                    new ResourceModel(paramLabel, paramLabel),
+                    required);
 
         } else if (String.class == binding && paramMetadata.isPassword()) {
-            parameterPanel =
-                    new PasswordParamPanel(
-                            componentId,
-                            new MapModel<>(paramsModel, paramName),
-                            new ResourceModel(paramLabel, paramLabel),
-                            required);
+            parameterPanel = new PasswordParamPanel(
+                    componentId,
+                    new MapModel<>(paramsModel, paramName),
+                    new ResourceModel(paramLabel, paramLabel),
+                    required);
         } else {
             IModel<String> model;
             if ("url".equalsIgnoreCase(paramName)) {
@@ -210,19 +198,9 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
 
             Panel tp;
             if (paramMetadata.isLargeText()) {
-                tp =
-                        new TextAreaParamPanel(
-                                componentId,
-                                model,
-                                new ResourceModel(paramLabel, paramLabel),
-                                required);
+                tp = new TextAreaParamPanel(componentId, model, new ResourceModel(paramLabel, paramLabel), required);
             } else {
-                tp =
-                        new TextParamPanel<>(
-                                componentId,
-                                model,
-                                new ResourceModel(paramLabel, paramLabel),
-                                required);
+                tp = new TextParamPanel<>(componentId, model, new ResourceModel(paramLabel, paramLabel), required);
             }
 
             // if it can be a reference to the local filesystem make sure it's valid
@@ -255,9 +233,8 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
         }
 
         Object parameterValue = parameterPanel.getDefaultModelObject();
-        boolean visible =
-                !(deprecated && isEmpty(parameterValue))
-                        && !paramMetadata.getLevel().equals("program");
+        boolean visible = !(deprecated && isEmpty(parameterValue))
+                && !paramMetadata.getLevel().equals("program");
         parameterPanel.setVisible(visible);
         parameterPanel.setVisibilityAllowed(visible);
 
@@ -265,24 +242,23 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
     }
 
     @SuppressWarnings("unchecked")
-    private IModel<Serializable> adaptEnumeration(
-            Class<?> binding, IModel<Serializable> valueModel) {
+    private IModel<Serializable> adaptEnumeration(Class<?> binding, IModel<Serializable> valueModel) {
         return new EnumAdapterModel(valueModel, binding);
     }
 
     private boolean isEmpty(Object value) {
         if (value == null) {
             return true;
-        } else if (value instanceof String) {
-            return ((String) value).isEmpty();
+        } else if (value instanceof String string) {
+            return string.isEmpty();
         } else {
             return false;
         }
     }
 
     /**
-     * Makes sure the file path for shapefiles do start with file:// otherwise stuff like
-     * /home/user/file.shp won't be recognized as valid... <br>
+     * Makes sure the file path for shapefiles do start with file:// otherwise stuff like /home/user/file.shp won't be
+     * recognized as valid... <br>
      * Added support for http:// and https:// protocols.
      *
      * @author aaime

@@ -5,6 +5,7 @@
  */
 package org.geoserver.inspire;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -13,6 +14,7 @@ import java.io.Serializable;
  * @author Andrea Aime - GeoSolutions
  */
 public class UniqueResourceIdentifier implements Serializable {
+    @Serial
     private static final long serialVersionUID = 3277074136449520282L;
 
     private String code;

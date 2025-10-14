@@ -28,9 +28,9 @@ import org.junit.Assert;
 /**
  * Test Appender can be attached to Log4J configuration to verify expected logging output.
  *
- * <p>If you are reading this after failing to clean up a TestAppender: Logging is a really easy way
- * to have a memory leak, and this logger will nom-nom-nom with great enthusiasm. It is very easy to
- * leave one of these attached giving a subsequent test an entertaining failure.
+ * <p>If you are reading this after failing to clean up a TestAppender: Logging is a really easy way to have a memory
+ * leak, and this logger will nom-nom-nom with great enthusiasm. It is very easy to leave one of these attached giving a
+ * subsequent test an entertaining failure.
  */
 @Plugin(name = "TestAppender", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE)
 public class TestAppender extends AbstractAppender implements AutoCloseable {
@@ -73,10 +73,7 @@ public class TestAppender extends AbstractAppender implements AutoCloseable {
 
     /** Add appender to configuration and start listening for events. */
     public void startRecording() {
-        @SuppressWarnings({
-            "PMD.UnnecessaryReturn",
-            "PMD.CloseResource"
-        }) // current context, no need to enforce AutoClosable
+        @SuppressWarnings("PMD.CloseResource") // current context, no need to enforce AutoClosable
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         Configuration configuration = ctx.getConfiguration();
 
@@ -87,14 +84,13 @@ public class TestAppender extends AbstractAppender implements AutoCloseable {
         } else if (check == this) { // NOPMD
             // already configured, so that is okay then
         } else {
-            throw new IllegalStateException(
-                    "Unable to configure '"
-                            + getName()
-                            + "' appender, as "
-                            + check
-                            + " is already configured as '"
-                            + getName()
-                            + "'.");
+            throw new IllegalStateException("Unable to configure '"
+                    + getName()
+                    + "' appender, as "
+                    + check
+                    + " is already configured as '"
+                    + getName()
+                    + "'.");
         }
     }
 
@@ -152,10 +148,7 @@ public class TestAppender extends AbstractAppender implements AutoCloseable {
     }
     /** Remove appender from logging configuration (and stop listening for events). */
     public void stopRecording() {
-        @SuppressWarnings({
-            "PMD.UnnecessaryReturn",
-            "PMD.CloseResource"
-        }) // current context, no need to enforce AutoClosable
+        @SuppressWarnings("PMD.CloseResource") // current context, no need to enforce AutoClosable
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         Configuration configuration = ctx.getConfiguration();
 
@@ -166,14 +159,13 @@ public class TestAppender extends AbstractAppender implements AutoCloseable {
             configuration.getAppenders().remove(getName(), this);
             this.stopRecording();
         } else {
-            throw new IllegalStateException(
-                    "Unable to de-configure '"
-                            + getName()
-                            + "' appender, as "
-                            + check
-                            + " is already configured as '"
-                            + getName()
-                            + "'.");
+            throw new IllegalStateException("Unable to de-configure '"
+                    + getName()
+                    + "' appender, as "
+                    + check
+                    + " is already configured as '"
+                    + getName()
+                    + "'.");
         }
     }
     /** Remove appender from logging configuration (and stop listening for events). */
@@ -187,10 +179,7 @@ public class TestAppender extends AbstractAppender implements AutoCloseable {
     @Override
     public void close() throws IOException {
         try {
-            @SuppressWarnings({
-                "resource",
-                "PMD.CloseResource"
-            }) // no need to close AutoClosable loggerContext here
+            @SuppressWarnings({"PMD.CloseResource"}) // no need to close AutoClosable loggerContext here
             LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
             Configuration configuration = ctx.getConfiguration();
             configuration.getAppenders().values().remove(this);

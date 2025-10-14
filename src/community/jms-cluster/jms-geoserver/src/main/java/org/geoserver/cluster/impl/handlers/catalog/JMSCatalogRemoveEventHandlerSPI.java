@@ -15,8 +15,7 @@ import org.geoserver.cluster.events.ToggleSwitch;
 /** @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it */
 public class JMSCatalogRemoveEventHandlerSPI extends JMSCatalogEventHandlerSPI {
 
-    public JMSCatalogRemoveEventHandlerSPI(
-            final int priority, Catalog cat, XStream xstream, ToggleSwitch producer) {
+    public JMSCatalogRemoveEventHandlerSPI(final int priority, Catalog cat, XStream xstream, ToggleSwitch producer) {
         super(priority, cat, xstream, producer);
     }
 

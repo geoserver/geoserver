@@ -5,16 +5,17 @@
  */
 package org.vfny.geoserver.global;
 
+import java.io.Serial;
+
 /**
- * Thrown when there is an error in configuration. Added a third constructor for ease of exception
- * type chaining.
+ * Thrown when there is an error in configuration. Added a third constructor for ease of exception type chaining.
  *
  * @author Chris Holmes
  * @author dzwiers
- * @version $Id$
  */
 public class ConfigurationException extends Exception {
     /** */
+    @Serial
     private static final long serialVersionUID = 6333673036778693749L;
 
     /**

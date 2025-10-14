@@ -29,11 +29,10 @@ public class GoogleTokenServices extends GeoServerOAuthRemoteTokenServices {
         formData.add("token", accessToken);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", getAuthorizationHeader(accessToken));
-        String accessTokenUrl =
-                new StringBuilder(checkTokenEndpointUrl)
-                        .append("?access_token=")
-                        .append(accessToken)
-                        .toString();
+        String accessTokenUrl = new StringBuilder(checkTokenEndpointUrl)
+                .append("?access_token=")
+                .append(accessToken)
+                .toString();
         return postForMap(accessTokenUrl, formData, headers);
     }
 
@@ -47,7 +46,7 @@ public class GoogleTokenServices extends GeoServerOAuthRemoteTokenServices {
 
     @Override
     protected String getAuthorizationHeader(String accessToken) {
-        String creds = String.format("%s:%s", clientId, clientSecret);
+        String creds = "%s:%s".formatted(clientId, clientSecret);
         try {
             return "Basic " + new String(Base64.getEncoder().encode(creds.getBytes("UTF-8")));
         } catch (UnsupportedEncodingException e) {

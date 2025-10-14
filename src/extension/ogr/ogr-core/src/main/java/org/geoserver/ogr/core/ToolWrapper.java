@@ -27,8 +27,7 @@ public interface ToolWrapper {
     public String getToolFormatParameter();
 
     /**
-     * If true, the input file should precede the output file in the list of arguments passed to the
-     * tool.
+     * If true, the input file should precede the output file in the list of arguments passed to the tool.
      *
      * @return <code>true</code> if input comes first, <code>false</code> otherwise
      */
@@ -51,10 +50,6 @@ public interface ToolWrapper {
      * @return the output file
      */
     public File convert(
-            File inputData,
-            File outputDirectory,
-            String typeName,
-            Format format,
-            CoordinateReferenceSystem crs)
+            File inputData, File outputDirectory, String typeName, Format format, CoordinateReferenceSystem crs)
             throws IOException, InterruptedException;
 }

@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import java.util.Locale;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.model.IModel;
@@ -19,12 +20,13 @@ import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
 /**
- * A form component for a {@link Geometry} object, expressed either as 2-3 space separated ordinates
- * or a WKT formatted {@link Geometry}
+ * A form component for a {@link Geometry} object, expressed either as 2-3 space separated ordinates or a WKT formatted
+ * {@link Geometry}
  *
  * @author Andrea Aime, GeoSolutions
  */
 public class GeometryTextArea extends TextArea<Geometry> {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     protected TextArea<String> geometry;
@@ -52,7 +54,8 @@ public class GeometryTextArea extends TextArea<Geometry> {
      *
      * @author Andrea Aime - GeoSolutions
      */
-    private class GeometryConverter implements IConverter<Object> {
+    private static class GeometryConverter implements IConverter<Object> {
+        @Serial
         private static final long serialVersionUID = 5868644160487841740L;
 
         transient GeometryFactory gf = new GeometryFactory();
@@ -84,8 +87,8 @@ public class GeometryTextArea extends TextArea<Geometry> {
 
         @Override
         public String convertToString(Object value, Locale locale) {
-            if (value instanceof Point) {
-                Coordinate c = ((Point) value).getCoordinate();
+            if (value instanceof Point point) {
+                Coordinate c = point.getCoordinate();
                 return c.x + " " + c.y;
             } else {
                 return value.toString();

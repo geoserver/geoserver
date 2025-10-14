@@ -41,34 +41,24 @@ public class WMSRequests {
     /**
      * Encodes the url of a GetMap request pointing to a tile cache if one exists.
      *
-     * <p>The tile cache location is determined from {@link GeoServer#getTileCache()}. If the above
-     * method returns null this method falls back to the behaviour of {@link
-     * #getGetMapUrl(WMSMapContent, Layer, Envelope, String[])}.
+     * <p>The tile cache location is determined from the tilecache parameter. If the above method returns null this
+     * method falls back to the behaviour of {@link #getGetMapUrl(GetMapRequest, Layer, int, Envelope, String[])}.
      *
-     * <p>If the <tt>layer</tt> argument is <code>null</code>, the request is made including all
-     * layers in the <tt>mapContexT</tt>.
-     *
-     * <p>If the <tt>bbox</tt> argument is <code>null</code>. {@link
-     * WMSMapContent#getAreaOfInterest()} is used for the bbox parameter.
+     * <p>If the {@code layer} argument is {@code null}, the request is made including all layers in the
+     * {@code mapContext}.
      *
      * @param req The getMap request.
-     * @param layer The Map layer, may be <code>null</code>.
+     * @param layer The Map layer, may be {@code null}.
      * @param layerIndex The index of the layer in the request
-     * @param bbox The bounding box of the request, may be <code>null</code>.
-     * @param kvp Additional or overidding kvp parameters, may be <code>null</code>
+     * @param bbox The bounding box of the request, may be {@code null}.
+     * @param kvp Additional or overidding kvp parameters, may be {@code null}
      * @return The full url for a getMap request.
      */
     public static String getTiledGetMapUrl(
-            GeoServer geoserver,
-            GetMapRequest req,
-            Layer layer,
-            int layerIndex,
-            Envelope bbox,
-            String[] kvp) {
+            GeoServer geoserver, GetMapRequest req, Layer layer, int layerIndex, Envelope bbox, String[] kvp) {
 
-        HashMap<String, String> params =
-                getGetMapParams(
-                        req, layer.getTitle(), layerIndex, layer.getStyle().getName(), bbox, kvp);
+        HashMap<String, String> params = getGetMapParams(
+                req, layer.getTitle(), layerIndex, layer.getStyle().getName(), bbox, kvp);
 
         String baseUrl = getTileCacheBaseUrl(req, geoserver);
 
@@ -82,13 +72,12 @@ public class WMSRequests {
     /**
      * Returns the full url to the tile cache used by GeoServer ( if any ).
      *
-     * <p>If the tile cache set in the configuration ({@link GeoServer#getTileCache()}) is set to an
-     * asbsolute url, it is simply returned. Otherwise the value is appended to the scheme and host
-     * of the supplied <tt>request</tt>.
+     * <p>If the tile cache set in the configuration is set to an absolute url, it is simply returned. Otherwise, the
+     * value is appended to the scheme and host of the supplied {@code request}.
      *
      * @param req The request.
      * @param geoServer The geoserver configuration.
-     * @return The url to the tile cache, or <code>null</code> if no tile cache set.
+     * @return The url to the tile cache, or {@code null} if no tile cache set.
      */
     private static String getTileCacheBaseUrl(GetMapRequest req, GeoServer geoServer) {
         // first check if tile cache set
@@ -126,57 +115,44 @@ public class WMSRequests {
     /**
      * Encodes the url of a GetMap request.
      *
-     * <p>If the <tt>layer</tt> argument is <code>null</code>, the request is made including all
-     * layers in the <tt>mapContexT</tt>.
-     *
-     * <p>If the <tt>bbox</tt> argument is <code>null</code>. {@link
-     * WMSMapContent#getAreaOfInterest()} is used for the bbox parameter.
+     * <p>If the {@code layer} argument is {@code null}, the request is made including all layers in the
+     * {@code mapContext}.
      *
      * @param req The getMap request
-     * @param layer The Map layer, may be <code>null</code>.
+     * @param layer The Map layer, may be {@code null}.
      * @param layerIndex The index of the layer in the request
-     * @param bbox The bounding box of the request, may be <code>null</code>.
-     * @param kvp Additional or overidding kvp parameters, may be <code>null</code>
+     * @param bbox The bounding box of the request, may be {@code null}.
+     * @param kvp Additional or overidding kvp parameters, may be {@code null}
      * @return The full url for a getMap request.
      */
-    public static String getGetMapUrl(
-            GetMapRequest req, Layer layer, int layerIndex, Envelope bbox, String[] kvp) {
+    public static String getGetMapUrl(GetMapRequest req, Layer layer, int layerIndex, Envelope bbox, String[] kvp) {
 
         String layerName = layer != null ? layer.getTitle() : null;
         String style = layer != null ? layer.getStyle().getName() : null;
 
-        LinkedHashMap<String, String> params =
-                getGetMapParams(req, layerName, layerIndex, style, bbox, kvp);
+        LinkedHashMap<String, String> params = getGetMapParams(req, layerName, layerIndex, style, bbox, kvp);
         return ResponseUtils.buildURL(req.getBaseUrl(), "wms", params, URLType.SERVICE);
     }
 
     /**
      * Encodes the url of a GetMap request.
      *
-     * <p>If the <tt>layer</tt> argument is <code>null</code>, the request is made including all
-     * layers in the <tt>mapContexT</tt>.
+     * <p>If the {@code layer} argument is {@code null}, the request is made including all layers in the
+     * {@code mapContext}.
      *
-     * <p>If the <tt>style</tt> argument is not <code>null</code> and the <tt>layer</tt> argument is
-     * <code>null</code>, then the default style for that layer is used.
-     *
-     * <p>If the <tt>bbox</tt> argument is <code>null</code>. {@link
-     * WMSMapContent#getAreaOfInterest()} is used for the bbox parameter.
+     * <p>If the {@code style} argument is not {@code null} and the {@code layer} argument is {@code null}, then the
+     * default style for that layer is used.
      *
      * @param req The getMap request
-     * @param layer The layer name, may be <code>null</code>.
+     * @param layer The layer name, may be {@code null}.
      * @param layerIndex The index of the layer in the request.
-     * @param style The style name, may be <code>null</code>
-     * @param bbox The bounding box of the request, may be <code>null</code>.
-     * @param kvp Additional or overidding kvp parameters, may be <code>null</code>
+     * @param style The style name, may be {@code null}
+     * @param bbox The bounding box of the request, may be {@code null}.
+     * @param kvp Additional or overidding kvp parameters, may be {@code null}
      * @return The full url for a getMap request.
      */
     public static String getGetMapUrl(
-            GetMapRequest req,
-            String layer,
-            int layerIndex,
-            String style,
-            Envelope bbox,
-            String[] kvp) {
+            GetMapRequest req, String layer, int layerIndex, String style, Envelope bbox, String[] kvp) {
         HashMap<String, String> params = getGetMapParams(req, layer, layerIndex, style, bbox, kvp);
         return ResponseUtils.buildURL(req.getBaseUrl(), "wms", params, URLType.SERVICE);
     }
@@ -185,8 +161,8 @@ public class WMSRequests {
      * Encodes the url of a GetLegendGraphic request.
      *
      * @param req The wms request.
-     * @param layers The layers, may not be <code>null</code>.
-     * @param kvp Additional or overidding kvp parameters, may be <code>null</code>
+     * @param layers The layers, may not be {@code null}.
+     * @param kvp Additional or overidding kvp parameters, may be {@code null}
      * @return The full url for a getMap request.
      */
     public static String getGetLegendGraphicUrl(WMSRequest req, Layer[] layers, String[] kvp) {
@@ -231,12 +207,7 @@ public class WMSRequests {
 
     /** Helper method for encoding GetMap request parameters. */
     static LinkedHashMap<String, String> getGetMapParams(
-            GetMapRequest req,
-            String layer,
-            int layerIndex,
-            String style,
-            Envelope bbox,
-            String[] kvp) {
+            GetMapRequest req, String layer, int layerIndex, String style, Envelope bbox, String[] kvp) {
         // parameters
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
 
@@ -268,11 +239,13 @@ public class WMSRequests {
             } else {
                 // use default for layer
                 if (useLayerIndex) {
-                    styles.append(req.getLayers().get(layerIndex).getDefaultStyle().getName());
+                    styles.append(
+                            req.getLayers().get(layerIndex).getDefaultStyle().getName());
                 } else {
                     for (int i = 0; i < req.getLayers().size(); i++) {
                         if (layer.equals(req.getLayers().get(i).getName())) {
-                            styles.append(req.getLayers().get(i).getDefaultStyle().getName());
+                            styles.append(
+                                    req.getLayers().get(i).getDefaultStyle().getName());
                         }
                     }
                 }
@@ -314,14 +287,11 @@ public class WMSRequests {
 
             if (req.getRawKvp().get("filter") != null) {
                 // split out the filter we need
-                List filters =
-                        KvpUtils.readFlat(req.getRawKvp().get("filter"), KvpUtils.OUTER_DELIMETER);
+                List filters = KvpUtils.readFlat(req.getRawKvp().get("filter"), KvpUtils.OUTER_DELIMETER);
                 params.put("filter", (String) filters.get(index));
             } else if (req.getRawKvp().get("cql_filter") != null) {
                 // split out the filter we need
-                List filters =
-                        KvpUtils.readFlat(
-                                req.getRawKvp().get("cql_filter"), KvpUtils.CQL_DELIMITER);
+                List filters = KvpUtils.readFlat(req.getRawKvp().get("cql_filter"), KvpUtils.CQL_DELIMITER);
                 params.put("cql_filter", (String) filters.get(index));
             } else if (req.getRawKvp().get("featureid") != null) {
                 // semantics of feature id slightly different, replicate entire value
@@ -334,8 +304,7 @@ public class WMSRequests {
                 }
             }
             if (StringUtils.hasText(kvpMap.get("sortby"))) {
-                List<String> sortBy =
-                        KvpUtils.readFlat(kvpMap.get("sortby"), KvpUtils.OUTER_DELIMETER);
+                List<String> sortBy = KvpUtils.readFlat(kvpMap.get("sortby"), KvpUtils.OUTER_DELIMETER);
                 if (!sortBy.get(index).isEmpty()) {
                     params.put("sortby", sortBy.get(index));
                 }
@@ -475,9 +444,9 @@ public class WMSRequests {
     }
 
     /**
-     * Layer groups are expanded into their component layers very early in the WMS GetMap request
-     * handling process. This method is intended to reverse that process and find the index in the
-     * raw layers KVP parameter that corresponds to a layer index after layer groups are expanded.
+     * Layer groups are expanded into their component layers very early in the WMS GetMap request handling process. This
+     * method is intended to reverse that process and find the index in the raw layers KVP parameter that corresponds to
+     * a layer index after layer groups are expanded.
      *
      * @param req the WMS GetMap request
      * @param layerIndex the layer index in the expanded layers list
@@ -494,9 +463,7 @@ public class WMSRequests {
             return layerIndex;
         }
         // layer group and one or more additional layers and/or layer groups
-        List<?> layers =
-                new LayerParser(WMS.get())
-                        .parseLayers(names, req.getRemoteOwsURL(), req.getRemoteOwsType());
+        List<?> layers = new LayerParser(WMS.get()).parseLayers(names, req.getRemoteOwsURL(), req.getRemoteOwsType());
         int numLayers = 0;
         for (int index = 0; index < layers.size(); index++) {
             if (layers.get(index) instanceof LayerGroupInfo) {
@@ -508,19 +475,17 @@ public class WMSRequests {
                 return index;
             }
         }
-        throw new IllegalArgumentException(
-                "Unable to determine raw index for " + layerIndex + " in " + names);
+        throw new IllegalArgumentException("Unable to determine raw index for " + layerIndex + " in " + names);
     }
 
     /**
-     * Copy the Entry matching the key from the kvp map and put it into the formatOptions map. If a
-     * parameter is already present in formatOption map its value will be preserved.
+     * Copy the Entry matching the key from the kvp map and put it into the formatOptions map. If a parameter is already
+     * present in formatOption map its value will be preserved.
      *
      * @param key the key to parse
      * @throws Exception - In the event of an unsuccesful parse.
      */
-    public static void mergeEntry(
-            Map<String, String> kvp, Map<String, Object> formatOptions, final String key)
+    public static void mergeEntry(Map<String, String> kvp, Map<String, Object> formatOptions, final String key)
             throws Exception {
         // look up parser objects
         List<KvpParser> parsers = GeoServerExtensions.extensions(KvpParser.class);
@@ -550,8 +515,8 @@ public class WMSRequests {
     /**
      * Encodes a map of formation options to be used as the value in a kvp.
      *
-     * <p>A string of the form 'key1:value1,value2;key2:value1;...', or the empty string if the
-     * formatOptions map is empty.
+     * <p>A string of the form 'key1:value1,value2;key2:value1;...', or the empty string if the formatOptions map is
+     * empty.
      *
      * @param formatOptions The map of formation options.
      * @param sb StringBuffer to append to.
@@ -567,8 +532,8 @@ public class WMSRequests {
             Object val = entry.getValue();
 
             sb.append(key).append(":");
-            if (val instanceof Collection) {
-                Iterator i = ((Collection) val).iterator();
+            if (val instanceof Collection collection) {
+                Iterator i = collection.iterator();
                 while (i.hasNext()) {
                     sb.append(i.next()).append(",");
                 }
@@ -597,8 +562,8 @@ public class WMSRequests {
      * Encodes a map of format options to be used as the value in a kvp.
      *
      * @param formatOptions The map of format options.
-     * @return A string of the form 'key1:value1,value2;key2:value1;...', or the empty string if the
-     *     formatOptions map is empty.
+     * @return A string of the form 'key1:value1,value2;key2:value1;...', or the empty string if the formatOptions map
+     *     is empty.
      */
     public static String encodeFormatOptions(Map formatOptions) {
         StringBuffer sb = new StringBuffer();
@@ -611,8 +576,8 @@ public class WMSRequests {
      *
      * @param formatOptions The list of formation option maps.
      * @return A string of the form
-     *     'key1.1:value1.1,value1.2;key1.2:value1.1;...[,key2.1:value2.1,value2.2;key2.2:value2.1]',
-     *     or the empty string if the formatOptions list is empty.
+     *     'key1.1:value1.1,value1.2;key1.2:value1.1;...[,key2.1:value2.1,value2.2;key2.2:value2.1]', or the empty
+     *     string if the formatOptions list is empty.
      */
     public static String encodeFormatOptions(List<Map<String, String>> formatOptions) {
         if (formatOptions == null || formatOptions.isEmpty()) {
@@ -655,8 +620,7 @@ public class WMSRequests {
         }
 
         @Override
-        protected List<Object> parseLayers(
-                List<String> requestedLayerNames, URL remoteOwsUrl, String remoteOwsType) {
+        protected List<Object> parseLayers(List<String> requestedLayerNames, URL remoteOwsUrl, String remoteOwsType) {
             try {
                 return super.parseLayers(requestedLayerNames, remoteOwsUrl, remoteOwsType);
             } catch (Exception e) {

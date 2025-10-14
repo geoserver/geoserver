@@ -4,6 +4,7 @@
  */
 package org.geoserver.backuprestore.web;
 
+import java.io.Serial;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.GeoServerApplication;
@@ -11,6 +12,7 @@ import org.geoserver.web.GeoServerApplication;
 /** Detachable model for a specific workspace. */
 public class WorkspaceModel<T extends WorkspaceInfo> extends LoadableDetachableModel<T> {
 
+    @Serial
     private static final long serialVersionUID = 8956830437048564765L;
 
     private ResourceFilePanel resourceFilePanel;
@@ -34,7 +36,8 @@ public class WorkspaceModel<T extends WorkspaceInfo> extends LoadableDetachableM
         } else {
             name = null;
         }
-    };
+    }
+    ;
 
     @Override
     protected T load() {
@@ -52,8 +55,7 @@ public class WorkspaceModel<T extends WorkspaceInfo> extends LoadableDetachableM
             }
         }
 
-        WorkspaceInfo workspace =
-                (T) GeoServerApplication.get().getCatalog().getWorkspaceByName(name);
+        WorkspaceInfo workspace = (T) GeoServerApplication.get().getCatalog().getWorkspaceByName(name);
         if (workspace != null) {
             return (T) workspace;
         }

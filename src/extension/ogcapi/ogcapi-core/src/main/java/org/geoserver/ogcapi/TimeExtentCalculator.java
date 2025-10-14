@@ -25,8 +25,8 @@ import org.geotools.util.DateRange;
 import org.geotools.util.logging.Logging;
 
 /**
- * Utility to support calculation of time ranges for {@link org.geotools.api.data.ResourceInfo}
- * objects. Current implementation supports only {@link org.geoserver.catalog.FeatureTypeInfo}.
+ * Utility to support calculation of time ranges for {@link org.geotools.api.data.ResourceInfo} objects. Current
+ * implementation supports only {@link org.geoserver.catalog.FeatureTypeInfo}.
  */
 public class TimeExtentCalculator {
 
@@ -38,8 +38,8 @@ public class TimeExtentCalculator {
      * Computes the time extend for a give resource
      *
      * @param ri
-     * @return The time extent, of null if the time dimension was missing, not enabled, or there is
-     *     no support yet to calculate a time extent for the type of resource
+     * @return The time extent, of null if the time dimension was missing, not enabled, or there is no support yet to
+     *     calculate a time extent for the type of resource
      * @throws IOException
      */
     public static DateRange getTimeExtent(ResourceInfo ri) throws IOException {
@@ -47,20 +47,18 @@ public class TimeExtentCalculator {
         DimensionInfo time = ri.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
         if (time == null || !time.isEnabled()) return null;
 
-        if (ri instanceof FeatureTypeInfo) {
-            return getTimeExtent((FeatureTypeInfo) ri, time);
-        } else if (ri instanceof CoverageInfo) {
-            return getTimeExtent((CoverageInfo) ri);
+        if (ri instanceof FeatureTypeInfo info1) {
+            return getTimeExtent(info1, time);
+        } else if (ri instanceof CoverageInfo info) {
+            return getTimeExtent(info);
         }
 
         LOGGER.fine("Time extent calculation support not yet available for " + ri);
         return null;
     }
 
-    private static DateRange getTimeExtent(FeatureTypeInfo ft, DimensionInfo time)
-            throws IOException {
-        FeatureSource<? extends FeatureType, ? extends Feature> fs =
-                ft.getFeatureSource(null, null);
+    private static DateRange getTimeExtent(FeatureTypeInfo ft, DimensionInfo time) throws IOException {
+        FeatureSource<? extends FeatureType, ? extends Feature> fs = ft.getFeatureSource(null, null);
         FeatureCollection<? extends FeatureType, ? extends Feature> collection = fs.getFeatures();
 
         String timeAttribute = time.getAttribute();
@@ -85,8 +83,7 @@ public class TimeExtentCalculator {
 
     private static DateRange getTimeExtent(CoverageInfo ci) throws IOException {
         ReaderDimensionsAccessor accessor =
-                new ReaderDimensionsAccessor(
-                        (GridCoverage2DReader) ci.getGridCoverageReader(null, null));
+                new ReaderDimensionsAccessor((GridCoverage2DReader) ci.getGridCoverageReader(null, null));
         Date minTime = accessor.getMinTime();
         Date maxTime = accessor.getMaxTime();
 

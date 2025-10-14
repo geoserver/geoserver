@@ -7,6 +7,7 @@ package org.geoserver.ows;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import org.geotools.filter.function.EnvFunction;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,12 +20,18 @@ import org.springframework.security.core.context.SecurityContextHolder;
  */
 public class EnviromentInjectionCallback extends AbstractDispatcherCallback {
 
+    // do not allow anonymous users to set an arbitrary GSUSER value
+    private static final Set<String> BLOCKED_VARIABLES = Set.of("GSUSER");
+
     @Override
     public Request init(Request request) {
         // see if we have an env map already parsed in the request
         Object obj = request.getKvp().get("env");
         @SuppressWarnings("unchecked")
-        Map<String, Object> envVars = obj instanceof Map ? (Map) obj : null;
+        Map<String, Object> envVars = obj instanceof Map m ? m : null;
+        if (envVars != null) {
+            envVars.keySet().removeIf(key -> BLOCKED_VARIABLES.contains(key.toUpperCase()));
+        }
 
         // inject the current user in it
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

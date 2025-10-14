@@ -52,21 +52,18 @@ public class PwdEnvParametrizationTest extends AbstractAuthenticationProviderTes
         createUserGroupService(PLAIN_UG_SRV, getPlainTextPasswordEncoder().getName());
         createUserGroupService(PBE_UG_SRV, getPBEPasswordEncoder().getName());
         createUserGroupService(STRONG_PBE_UG_SRV, getStrongPBEPasswordEncoder().getName());
-        UsernamePasswordAuthenticationProviderConfig plainTxt =
-                new UsernamePasswordAuthenticationProviderConfig();
+        UsernamePasswordAuthenticationProviderConfig plainTxt = new UsernamePasswordAuthenticationProviderConfig();
         plainTxt.setUserGroupServiceName(PLAIN_UG_SRV);
         plainTxt.setName(PLAIN_TXT_PRV);
         plainTxt.setClassName(UsernamePasswordAuthenticationProvider.class.getName());
         getSecurityManager().saveAuthenticationProvider(plainTxt);
-        UsernamePasswordAuthenticationProviderConfig pbe =
-                new UsernamePasswordAuthenticationProviderConfig();
+        UsernamePasswordAuthenticationProviderConfig pbe = new UsernamePasswordAuthenticationProviderConfig();
         pbe.setUserGroupServiceName(PBE_UG_SRV);
         pbe.setName(PBE_PRV);
         pbe.setClassName(UsernamePasswordAuthenticationProvider.class.getName());
         getSecurityManager().saveAuthenticationProvider(pbe);
 
-        UsernamePasswordAuthenticationProviderConfig strongPbe =
-                new UsernamePasswordAuthenticationProviderConfig();
+        UsernamePasswordAuthenticationProviderConfig strongPbe = new UsernamePasswordAuthenticationProviderConfig();
         strongPbe.setUserGroupServiceName(STRONG_PBE_UG_SRV);
         strongPbe.setName(STRONG_PBE_PRV);
         strongPbe.setClassName(UsernamePasswordAuthenticationProvider.class.getName());
@@ -79,10 +76,8 @@ public class PwdEnvParametrizationTest extends AbstractAuthenticationProviderTes
         System.setProperty(key, "plain:my_password");
         try {
             createGeoServerUser("test_env1", "${env.pwd1}", PBE_UG_SRV);
-            AuthenticationProvider provider =
-                    getSecurityManager().loadAuthenticationProvider(PBE_PRV);
-            Authentication authentication =
-                    new UsernamePasswordAuthenticationToken("test_env1", "my_password");
+            AuthenticationProvider provider = getSecurityManager().loadAuthenticationProvider(PBE_PRV);
+            Authentication authentication = new UsernamePasswordAuthenticationToken("test_env1", "my_password");
             authentication = provider.authenticate(authentication);
             assertNotNull(authentication);
         } finally {
@@ -93,14 +88,11 @@ public class PwdEnvParametrizationTest extends AbstractAuthenticationProviderTes
     @Test
     public void testPbeUgSrvWithDigestPwd() throws IOException, PasswordPolicyException {
         String key = "env.pwd2";
-        System.setProperty(
-                key, "digest1:D9miJH/hVgfxZJscMafEtbtliG0ROxhLfsznyWfG38X2pda2JOSV4POi55PQI4tw");
+        System.setProperty(key, "digest1:D9miJH/hVgfxZJscMafEtbtliG0ROxhLfsznyWfG38X2pda2JOSV4POi55PQI4tw");
         try {
             createGeoServerUser("test_env2", "${env.pwd2}", PBE_UG_SRV);
-            AuthenticationProvider provider =
-                    getSecurityManager().loadAuthenticationProvider(PBE_PRV);
-            Authentication authentication =
-                    new UsernamePasswordAuthenticationToken("test_env2", "geoserver");
+            AuthenticationProvider provider = getSecurityManager().loadAuthenticationProvider(PBE_PRV);
+            Authentication authentication = new UsernamePasswordAuthenticationToken("test_env2", "geoserver");
             authentication = provider.authenticate(authentication);
             assertNotNull(authentication);
         } finally {
@@ -114,10 +106,8 @@ public class PwdEnvParametrizationTest extends AbstractAuthenticationProviderTes
         System.setProperty(key, "plain:my_password");
         try {
             createGeoServerUser("test_env3", "${env.pwd3}", PLAIN_UG_SRV);
-            AuthenticationProvider provider =
-                    getSecurityManager().loadAuthenticationProvider(PLAIN_TXT_PRV);
-            Authentication authentication =
-                    new UsernamePasswordAuthenticationToken("test_env3", "my_password");
+            AuthenticationProvider provider = getSecurityManager().loadAuthenticationProvider(PLAIN_TXT_PRV);
+            Authentication authentication = new UsernamePasswordAuthenticationToken("test_env3", "my_password");
             authentication = provider.authenticate(authentication);
             assertNotNull(authentication);
         } finally {
@@ -128,14 +118,11 @@ public class PwdEnvParametrizationTest extends AbstractAuthenticationProviderTes
     @Test
     public void testPlainTxtUgSrvWithDigestPwd() throws IOException, PasswordPolicyException {
         String key = "env.pwd4";
-        System.setProperty(
-                key, "digest1:D9miJH/hVgfxZJscMafEtbtliG0ROxhLfsznyWfG38X2pda2JOSV4POi55PQI4tw");
+        System.setProperty(key, "digest1:D9miJH/hVgfxZJscMafEtbtliG0ROxhLfsznyWfG38X2pda2JOSV4POi55PQI4tw");
         try {
             createGeoServerUser("test_env4", "${env.pwd4}", PLAIN_UG_SRV);
-            AuthenticationProvider provider =
-                    getSecurityManager().loadAuthenticationProvider(PLAIN_TXT_PRV);
-            Authentication authentication =
-                    new UsernamePasswordAuthenticationToken("test_env4", "geoserver");
+            AuthenticationProvider provider = getSecurityManager().loadAuthenticationProvider(PLAIN_TXT_PRV);
+            Authentication authentication = new UsernamePasswordAuthenticationToken("test_env4", "geoserver");
             authentication = provider.authenticate(authentication);
             assertNotNull(authentication);
         } finally {
@@ -149,10 +136,8 @@ public class PwdEnvParametrizationTest extends AbstractAuthenticationProviderTes
         System.setProperty(key, "plain:my_password");
         try {
             createGeoServerUser("test_env5", "${env.pwd5}", STRONG_PBE_UG_SRV);
-            AuthenticationProvider provider =
-                    getSecurityManager().loadAuthenticationProvider(STRONG_PBE_PRV);
-            Authentication authentication =
-                    new UsernamePasswordAuthenticationToken("test_env5", "my_password");
+            AuthenticationProvider provider = getSecurityManager().loadAuthenticationProvider(STRONG_PBE_PRV);
+            Authentication authentication = new UsernamePasswordAuthenticationToken("test_env5", "my_password");
             authentication = provider.authenticate(authentication);
             assertNotNull(authentication);
         } finally {
@@ -163,14 +148,11 @@ public class PwdEnvParametrizationTest extends AbstractAuthenticationProviderTes
     @Test
     public void testStrongPBEUgSrvWithDigestPwd() throws IOException, PasswordPolicyException {
         String key = "env.pwd6";
-        System.setProperty(
-                key, "digest1:D9miJH/hVgfxZJscMafEtbtliG0ROxhLfsznyWfG38X2pda2JOSV4POi55PQI4tw");
+        System.setProperty(key, "digest1:D9miJH/hVgfxZJscMafEtbtliG0ROxhLfsznyWfG38X2pda2JOSV4POi55PQI4tw");
         try {
             createGeoServerUser("test_env6", "${env.pwd6}", PLAIN_UG_SRV);
-            AuthenticationProvider provider =
-                    getSecurityManager().loadAuthenticationProvider(PLAIN_TXT_PRV);
-            Authentication authentication =
-                    new UsernamePasswordAuthenticationToken("test_env6", "geoserver");
+            AuthenticationProvider provider = getSecurityManager().loadAuthenticationProvider(PLAIN_TXT_PRV);
+            Authentication authentication = new UsernamePasswordAuthenticationToken("test_env6", "geoserver");
             authentication = provider.authenticate(authentication);
             assertNotNull(authentication);
         } finally {
@@ -181,14 +163,11 @@ public class PwdEnvParametrizationTest extends AbstractAuthenticationProviderTes
     @Test
     public void testStrongPBEUgSrvAuthFails() throws IOException, PasswordPolicyException {
         String key = "env.pwd7";
-        System.setProperty(
-                key, "digest1:D9miJH/hVgfxZJscMafEtbtliG0ROxhLfsznyWfG38X2pda2JOSV4POi55PQI4tw");
+        System.setProperty(key, "digest1:D9miJH/hVgfxZJscMafEtbtliG0ROxhLfsznyWfG38X2pda2JOSV4POi55PQI4tw");
         try {
             createGeoServerUser("test_env7", "${env.pwd7}", PLAIN_UG_SRV);
-            AuthenticationProvider provider =
-                    getSecurityManager().loadAuthenticationProvider(PLAIN_TXT_PRV);
-            Authentication authentication =
-                    new UsernamePasswordAuthenticationToken("test_env7", "wrong");
+            AuthenticationProvider provider = getSecurityManager().loadAuthenticationProvider(PLAIN_TXT_PRV);
+            Authentication authentication = new UsernamePasswordAuthenticationToken("test_env7", "wrong");
             authentication = provider.authenticate(authentication);
             assertNull(authentication);
         } finally {
@@ -199,14 +178,11 @@ public class PwdEnvParametrizationTest extends AbstractAuthenticationProviderTes
     @Test
     public void testPlainTxtUgSrvAuthFails() throws IOException, PasswordPolicyException {
         String key = "env.pwd8";
-        System.setProperty(
-                key, "digest1:D9miJH/hVgfxZJscMafEtbtliG0ROxhLfsznyWfG38X2pda2JOSV4POi55PQI4tw");
+        System.setProperty(key, "digest1:D9miJH/hVgfxZJscMafEtbtliG0ROxhLfsznyWfG38X2pda2JOSV4POi55PQI4tw");
         try {
             createGeoServerUser("test_env8", "${env.pwd8}", PLAIN_UG_SRV);
-            AuthenticationProvider provider =
-                    getSecurityManager().loadAuthenticationProvider(PLAIN_TXT_PRV);
-            Authentication authentication =
-                    new UsernamePasswordAuthenticationToken("test_env8", "wrong");
+            AuthenticationProvider provider = getSecurityManager().loadAuthenticationProvider(PLAIN_TXT_PRV);
+            Authentication authentication = new UsernamePasswordAuthenticationToken("test_env8", "wrong");
             authentication = provider.authenticate(authentication);
             assertNull(authentication);
         } finally {
@@ -220,10 +196,8 @@ public class PwdEnvParametrizationTest extends AbstractAuthenticationProviderTes
         System.setProperty(key, "plain:my_password");
         try {
             createGeoServerUser("test_env9", "${env.pwd9}", PBE_UG_SRV);
-            AuthenticationProvider provider =
-                    getSecurityManager().loadAuthenticationProvider(PBE_PRV);
-            Authentication authentication =
-                    new UsernamePasswordAuthenticationToken("test_env9", "wrong");
+            AuthenticationProvider provider = getSecurityManager().loadAuthenticationProvider(PBE_PRV);
+            Authentication authentication = new UsernamePasswordAuthenticationToken("test_env9", "wrong");
             authentication = provider.authenticate(authentication);
             assertNull(authentication);
         } finally {
@@ -233,8 +207,7 @@ public class PwdEnvParametrizationTest extends AbstractAuthenticationProviderTes
 
     private void createGeoServerUser(String username, String pwd, String ugSrvName)
             throws IOException, PasswordPolicyException {
-        GeoServerUserGroupService groupService =
-                getSecurityManager().loadUserGroupService(ugSrvName);
+        GeoServerUserGroupService groupService = getSecurityManager().loadUserGroupService(ugSrvName);
         GeoServerUserGroupStore userGroupStore = groupService.createStore();
         GeoServerUser user = userGroupStore.createUserObject(username, pwd, true);
         userGroupStore.addUser(user);

@@ -8,6 +8,7 @@ package org.geoserver.security.web;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,6 +20,7 @@ import org.geoserver.web.FormTestPage;
 
 public abstract class AbstractConfirmRemovalPanelTest<T> extends AbstractSecurityWicketTestSupport
         implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     protected abstract void setupPanel(List<T> roots);
@@ -53,10 +55,7 @@ public abstract class AbstractConfirmRemovalPanelTest<T> extends AbstractSecurit
         tester.assertNoErrorMessage();
 
         assertTrue(
-                "Expected "
-                        + getRemoveableObjectRegExp()
-                        + " to match "
-                        + labelTextForRemovedObjects(),
+                "Expected " + getRemoveableObjectRegExp() + " to match " + labelTextForRemovedObjects(),
                 labelTextForRemovedObjects().matches(getRemoveableObjectRegExp()));
 
         tester.assertVisible("form:panel:removedObjects");
@@ -95,18 +94,14 @@ public abstract class AbstractConfirmRemovalPanelTest<T> extends AbstractSecurit
 
     protected String labelTextForRemovedObjects() {
         ListView list =
-                (ListView)
-                        tester.getComponentFromLastRenderedPage(
-                                "form:panel:removedObjects:rulesRemoved:rules");
+                (ListView) tester.getComponentFromLastRenderedPage("form:panel:removedObjects:rulesRemoved:rules");
 
         return list.getDefaultModelObjectAsString();
     }
 
     protected String labelTextForProblematicObjects() {
-        ListView list =
-                (ListView)
-                        tester.getComponentFromLastRenderedPage(
-                                "form:panel:problematicObjects:rulesNotRemoved:problems");
+        ListView list = (ListView)
+                tester.getComponentFromLastRenderedPage("form:panel:problematicObjects:rulesNotRemoved:problems");
         return list.getDefaultModelObjectAsString();
     }
 }

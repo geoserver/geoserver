@@ -32,6 +32,8 @@ Add the following dependency to your Java project to interact with GeoServer's R
         <version>${gs.version}</version>
       </dependency>
 ```
+**Note** this being a Community Module, the artifacts are not created or published, so you will need to build this module yourself using the `rest-openapi` Maven profile
+
 ### Java
 
 ```java

@@ -4,6 +4,7 @@
  */
 package org.geoserver.gwc.web.blob;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.geowebcache.config.BlobStoreInfo;
  */
 public class BlobStoresProvider extends GeoServerDataProvider<BlobStoreInfo> {
 
+    @Serial
     private static final long serialVersionUID = 4400431816195261839L;
 
     public static final Property<BlobStoreInfo> ID = new BeanProperty<>("id", "id");
@@ -30,8 +32,7 @@ public class BlobStoresProvider extends GeoServerDataProvider<BlobStoreInfo> {
     public static final Property<BlobStoreInfo> DEFAULT = new BeanProperty<>("default", "default");
 
     @Override
-    protected List<org.geoserver.web.wicket.GeoServerDataProvider.Property<BlobStoreInfo>>
-            getProperties() {
+    protected List<org.geoserver.web.wicket.GeoServerDataProvider.Property<BlobStoreInfo>> getProperties() {
         return Arrays.asList(ID, TYPE, ENABLED, DEFAULT);
     }
 
@@ -40,10 +41,9 @@ public class BlobStoresProvider extends GeoServerDataProvider<BlobStoreInfo> {
         if (sort != null && sort.getProperty().equals(TYPE.getName())) {
 
             return (o1, o2) -> {
-                int r =
-                        BlobStoreTypes.getFromClass(o1.getClass())
-                                .toString()
-                                .compareTo(BlobStoreTypes.getFromClass(o2.getClass()).toString());
+                int r = BlobStoreTypes.getFromClass(o1.getClass())
+                        .toString()
+                        .compareTo(BlobStoreTypes.getFromClass(o2.getClass()).toString());
                 return sort.isAscending() ? r : -r;
             };
 

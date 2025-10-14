@@ -5,17 +5,19 @@
 package org.geoserver.wps.validator;
 
 import com.google.common.reflect.Parameter;
+import java.io.Serial;
 import org.springframework.validation.Errors;
 
 /**
- * A validator checking the maximum size of an object, in MB. This validator uses
- * ObjectSizeEstimator classes, and receives special treatment to advertise the limits to the
- * outside world, and apply them on raw binary inputs without going through the estimation
+ * A validator checking the maximum size of an object, in MB. This validator uses ObjectSizeEstimator classes, and
+ * receives special treatment to advertise the limits to the outside world, and apply them on raw binary inputs without
+ * going through the estimation
  *
  * @author Andrea Aime - GeoSolutions
  */
 public class MaxSizeValidator implements WPSInputValidator {
 
+    @Serial
     private static final long serialVersionUID = 6486547223545859567L;
 
     /** Key in the {@link Parameter} metadata map representing the size limits */

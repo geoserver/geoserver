@@ -44,8 +44,7 @@ public class WPSResourceManagerTest extends WPSTestSupport {
         }
         WPS_RESOURCE_DIR.mkdirs();
         FileSystemResourceStore resourceStore = new FileSystemResourceStore(WPS_RESOURCE_DIR);
-        DefaultProcessArtifactsStore artifactsStore =
-                (DefaultProcessArtifactsStore) resourceMgr.getArtifactsStore();
+        DefaultProcessArtifactsStore artifactsStore = (DefaultProcessArtifactsStore) resourceMgr.getArtifactsStore();
         artifactsStore.setResourceStore(resourceStore);
 
         tracker = new ProcessStatusTracker();
@@ -106,18 +105,15 @@ public class WPSResourceManagerTest extends WPSTestSupport {
     public void testGetExternalOutputFileDisabled() throws Exception {
         // null output directory
         this.resourceMgr.setExternalOutputDirectory(null);
-        checkOutputFileException(
-                "foo", null, WPSException.class, "Writing to external output files is disabled");
+        checkOutputFileException("foo", null, WPSException.class, "Writing to external output files is disabled");
 
         // empty output directory
         this.resourceMgr.setExternalOutputDirectory("");
-        checkOutputFileException(
-                "foo", null, WPSException.class, "Writing to external output files is disabled");
+        checkOutputFileException("foo", null, WPSException.class, "Writing to external output files is disabled");
 
         // output directory all spaces
         this.resourceMgr.setExternalOutputDirectory("    ");
-        checkOutputFileException(
-                "foo", null, WPSException.class, "Writing to external output files is disabled");
+        checkOutputFileException("foo", null, WPSException.class, "Writing to external output files is disabled");
     }
 
     @Test
@@ -126,24 +122,16 @@ public class WPSResourceManagerTest extends WPSTestSupport {
 
         // path traversal throws exception
         checkOutputFileException(
-                "foo/../../",
-                "bar",
-                IllegalArgumentException.class,
-                "Output file contains invalid '..' in path");
+                "foo/../../", "bar", IllegalArgumentException.class, "Output file contains invalid '..' in path");
         checkOutputFileException(
-                "foo",
-                "../../bar",
-                IllegalArgumentException.class,
-                "Output file contains invalid '..' in path");
+                "foo", "../../bar", IllegalArgumentException.class, "Output file contains invalid '..' in path");
 
         // output file outside of the allowed directory
         String path1 = new File(resourceLoader.getBaseDirectory(), "foo").getAbsolutePath();
-        checkOutputFileException(
-                path1, "bar", WPSException.class, "Output file is not in the allowed directory");
+        checkOutputFileException(path1, "bar", WPSException.class, "Output file is not in the allowed directory");
 
         // valid absolute output file path
-        File expected =
-                new File(resourceLoader.getBaseDirectory(), "test/foo/bar").getAbsoluteFile();
+        File expected = new File(resourceLoader.getBaseDirectory(), "test/foo/bar").getAbsoluteFile();
         assertEquals(expected, this.resourceMgr.getExternalOutputFile(expected.getPath(), null));
         String path2 = new File(resourceLoader.getBaseDirectory(), "test/foo").getAbsolutePath();
         assertEquals(expected, this.resourceMgr.getExternalOutputFile(path2, "bar"));
@@ -153,10 +141,8 @@ public class WPSResourceManagerTest extends WPSTestSupport {
         assertEquals(expected, this.resourceMgr.getExternalOutputFile("foo", "bar"));
     }
 
-    private void checkOutputFileException(
-            String path, String file, Class<? extends Exception> clazz, String message) {
-        Exception exception =
-                assertThrows(clazz, () -> this.resourceMgr.getExternalOutputFile(path, file));
+    private void checkOutputFileException(String path, String file, Class<? extends Exception> clazz, String message) {
+        Exception exception = assertThrows(clazz, () -> this.resourceMgr.getExternalOutputFile(path, file));
         assertEquals(message, exception.getMessage());
     }
 }

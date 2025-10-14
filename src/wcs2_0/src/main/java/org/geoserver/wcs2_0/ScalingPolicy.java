@@ -5,16 +5,10 @@
  */
 package org.geoserver.wcs2_0;
 
-import it.geosolutions.jaiext.utilities.ImageLayout2;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.RenderedImage;
-import javax.media.jai.Interpolation;
-import javax.media.jai.InterpolationNearest;
-import javax.media.jai.JAI;
-import javax.media.jai.Warp;
-import javax.media.jai.WarpAffine;
 import net.opengis.wcs20.ScaleAxisByFactorType;
 import net.opengis.wcs20.ScaleAxisType;
 import net.opengis.wcs20.ScaleByFactorType;
@@ -24,6 +18,12 @@ import net.opengis.wcs20.ScalingType;
 import net.opengis.wcs20.TargetAxisExtentType;
 import net.opengis.wcs20.TargetAxisSizeType;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.imagen.ImageN;
+import org.eclipse.imagen.Interpolation;
+import org.eclipse.imagen.InterpolationNearest;
+import org.eclipse.imagen.Warp;
+import org.eclipse.imagen.WarpAffine;
+import org.eclipse.imagen.media.utilities.ImageLayout2;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geotools.api.coverage.grid.GridEnvelope;
@@ -40,8 +40,7 @@ import org.geotools.util.factory.Hints;
 import org.vfny.geoserver.util.WCSUtils;
 
 /**
- * {@link Enum} for implementing the management of the various scaling options available for the
- * scaling extension.
+ * {@link Enum} for implementing the management of the various scaling options available for the scaling extension.
  *
  * <p>This enum works as a factory to separate the code that handles the scaling operations.
  *
@@ -84,8 +83,7 @@ enum ScalingPolicy {
             double[] scaleFactors = getScaleFactors(scaling);
             // reading the data can cause the coverage to have asymmetric pre-applied scale factors
             // due to small numerical differences in their values, so keep both
-            scaleFactors =
-                    arrangeScaleFactors(hints, new double[] {scaleFactors[0], scaleFactors[0]});
+            scaleFactors = arrangeScaleFactors(hints, new double[] {scaleFactors[0], scaleFactors[0]});
 
             // checks
             if (scaleFactors[0] <= 0) {
@@ -108,24 +106,18 @@ enum ScalingPolicy {
                     return sourceGC;
                 } else {
                     // interpolate coverage if requested and not nearest!!!!
-                    final Operation operation =
-                            CoverageProcessor.getInstance().getOperation("Warp");
+                    final Operation operation = CoverageProcessor.getInstance().getOperation("Warp");
                     final ParameterValueGroup parameters = operation.getParameters();
                     parameters.parameter("Source").setValue(sourceGC);
                     parameters
                             .parameter("warp")
-                            .setValue(
-                                    new WarpAffine(
-                                            AffineTransform.getScaleInstance(1, 1))); // identity
+                            .setValue(new WarpAffine(AffineTransform.getScaleInstance(1, 1))); // identity
                     parameters.parameter("interpolation").setValue(interpolation);
                     parameters
                             .parameter("backgroundValues")
-                            .setValue(
-                                    CoverageUtilities.getBackgroundValues(
-                                            sourceGC)); // TODO check and
+                            .setValue(CoverageUtilities.getBackgroundValues(sourceGC)); // TODO check and
                     // improve
-                    return (GridCoverage2D)
-                            CoverageProcessor.getInstance(hints).doOperation(parameters, hints);
+                    return (GridCoverage2D) CoverageProcessor.getInstance(hints).doOperation(parameters, hints);
                 }
             }
 
@@ -135,14 +127,8 @@ enum ScalingPolicy {
             WCSUtils.checkOutputLimits(
                     wcsinfo,
                     new GridEnvelope2D(
-                            0,
-                            0,
-                            (int)
-                                    (gridRange.getSpan(gridGeometry.gridDimensionX)
-                                            * scaleFactors[0]),
-                            (int)
-                                    (gridRange.getSpan(gridGeometry.gridDimensionY)
-                                            * scaleFactors[1])),
+                            0, 0, (int) (gridRange.getSpan(gridGeometry.gridDimensionX) * scaleFactors[0]), (int)
+                                    (gridRange.getSpan(gridGeometry.gridDimensionY) * scaleFactors[1])),
                     sourceGC.getRenderedImage().getSampleModel());
 
             // === scale
@@ -159,23 +145,22 @@ enum ScalingPolicy {
             parameters.parameter("yScale").setValue(scaleFactors[1]);
             parameters.parameter("xTrans").setValue(0.0);
             parameters.parameter("yTrans").setValue(0.0);
-            return (GridCoverage2D)
-                    CoverageProcessor.getInstance(hints).doOperation(parameters, hints);
+            return (GridCoverage2D) CoverageProcessor.getInstance(hints).doOperation(parameters, hints);
         }
     },
 
     /**
      * In this case we scale each axis bto a predefined size.
      *
-     * <p>We do rely on the {@link org.geotools.coverage.processing.operation.Warp} operation as the
-     * final size must be respected on each axis.
+     * <p>We do rely on the {@link org.geotools.coverage.processing.operation.Warp} operation as the final size must be
+     * respected on each axis.
      */
     ScaleToSize {
 
         /**
-         * In this case we must retain the lower bounds by scale the size, hence {@link
-         * ScaleDescriptor} JAI operation cannot be used. Same goes for {@link AffineDescriptor},
-         * the only real option is {@link WarpDescriptor}.
+         * In this case we must retain the lower bounds by scale the size, hence {@link ScaleDescriptor} ImageN
+         * operation cannot be used. Same goes for {@link AffineDescriptor}, the only real option is
+         * {@link WarpDescriptor}.
          */
         @Override
         public GridCoverage2D scale(
@@ -198,24 +183,18 @@ enum ScalingPolicy {
                     return sourceGC;
                 } else {
                     // interpolate coverage if requested and not nearest!!!!
-                    final Operation operation =
-                            CoverageProcessor.getInstance().getOperation("Warp");
+                    final Operation operation = CoverageProcessor.getInstance().getOperation("Warp");
                     final ParameterValueGroup parameters = operation.getParameters();
                     parameters.parameter("Source").setValue(sourceGC);
                     parameters
                             .parameter("warp")
-                            .setValue(
-                                    new WarpAffine(
-                                            AffineTransform.getScaleInstance(1, 1))); // identity
+                            .setValue(new WarpAffine(AffineTransform.getScaleInstance(1, 1))); // identity
                     parameters.parameter("interpolation").setValue(interpolation);
                     parameters
                             .parameter("backgroundValues")
-                            .setValue(
-                                    CoverageUtilities.getBackgroundValues(
-                                            sourceGC)); // TODO check and
+                            .setValue(CoverageUtilities.getBackgroundValues(sourceGC)); // TODO check and
                     // improve
-                    return (GridCoverage2D)
-                            CoverageProcessor.getInstance().doOperation(parameters, hints);
+                    return (GridCoverage2D) CoverageProcessor.getInstance().doOperation(parameters, hints);
                 }
             }
 
@@ -231,15 +210,13 @@ enum ScalingPolicy {
             final RenderedImage sourceImage = sourceGC.getRenderedImage();
             final int sourceMinX = sourceImage.getMinX();
             final int sourceMinY = sourceImage.getMinY();
-            final AffineTransform affineTransform =
-                    new AffineTransform(
-                            scaleX,
-                            0,
-                            0,
-                            scaleY,
-                            sourceMinX - scaleX * sourceMinX, // preserve sourceImage.getMinX()
-                            sourceMinY
-                                    - scaleY * sourceMinY); // preserve sourceImage.getMinY() as per
+            final AffineTransform affineTransform = new AffineTransform(
+                    scaleX,
+                    0,
+                    0,
+                    scaleY,
+                    sourceMinX - scaleX * sourceMinX, // preserve sourceImage.getMinX()
+                    sourceMinY - scaleY * sourceMinY); // preserve sourceImage.getMinY() as per
             // spec
             Warp warp;
             try {
@@ -249,7 +226,7 @@ enum ScalingPolicy {
             }
             // impose final
             final ImageLayout2 layout = new ImageLayout2(sourceMinX, sourceMinY, sizeX, sizeY);
-            hints.add(new Hints(JAI.KEY_IMAGE_LAYOUT, layout));
+            hints.add(new Hints(ImageN.KEY_IMAGE_LAYOUT, layout));
             final Operation operation = CoverageProcessor.getInstance().getOperation("Warp");
             final ParameterValueGroup parameters = operation.getParameters();
             parameters.parameter("Source").setValue(sourceGC);
@@ -262,19 +239,16 @@ enum ScalingPolicy {
                                     : InterpolationPolicy.getDefaultPolicy().getInterpolation());
             parameters
                     .parameter("backgroundValues")
-                    .setValue(
-                            CoverageUtilities.getBackgroundValues(
-                                    sourceGC)); // TODO check and improve
-            GridCoverage2D gc =
-                    (GridCoverage2D) CoverageProcessor.getInstance().doOperation(parameters, hints);
+                    .setValue(CoverageUtilities.getBackgroundValues(sourceGC)); // TODO check and improve
+            GridCoverage2D gc = (GridCoverage2D) CoverageProcessor.getInstance().doOperation(parameters, hints);
             return gc;
         }
     },
     /**
      * In this case we scale each axis to a predefined extent.
      *
-     * <p>We do rely on the {@link org.geotools.coverage.processing.operation.Warp} operation as the
-     * final extent must be respected on each axis.
+     * <p>We do rely on the {@link org.geotools.coverage.processing.operation.Warp} operation as the final extent must
+     * be respected on each axis.
      */
     ScaleToExtent {
 
@@ -290,37 +264,28 @@ enum ScalingPolicy {
 
             // parse area
             final ScaleToExtentType scaleType = scaling.getScaleToExtent();
-            final EList<TargetAxisExtentType> targetAxisExtentElements =
-                    scaleType.getTargetAxisExtent();
+            final EList<TargetAxisExtentType> targetAxisExtentElements = scaleType.getTargetAxisExtent();
 
             TargetAxisExtentType xExtent = null, yExtent = null;
             for (TargetAxisExtentType axisExtentType : targetAxisExtentElements) {
                 final String axisName = axisExtentType.getAxis();
-                if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/i")
-                        || axisName.equals("i")) {
+                if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/i") || axisName.equals("i")) {
                     xExtent = axisExtentType;
-                } else if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/j")
-                        || axisName.equals("j")) {
+                } else if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/j") || axisName.equals("j")) {
                     yExtent = axisExtentType;
                 } else {
                     // TODO remove when supporting TIME and ELEVATION
                     throw new WCS20Exception(
-                            "Scale Axis Undefined",
-                            WCS20Exception.WCS20ExceptionCode.ScaleAxisUndefined,
-                            axisName);
+                            "Scale Axis Undefined", WCS20Exception.WCS20ExceptionCode.ScaleAxisUndefined, axisName);
                 }
             }
             if (xExtent == null) {
                 throw new WCS20Exception(
-                        "Missing extent along i",
-                        WCS20Exception.WCS20ExceptionCode.InvalidExtent,
-                        "Null");
+                        "Missing extent along i", WCS20Exception.WCS20ExceptionCode.InvalidExtent, "Null");
             }
             if (yExtent == null) {
                 throw new WCS20Exception(
-                        "Missing extent along j",
-                        WCS20Exception.WCS20ExceptionCode.InvalidExtent,
-                        "Null");
+                        "Missing extent along j", WCS20Exception.WCS20ExceptionCode.InvalidExtent, "Null");
             }
 
             final int minx = (int) targetAxisExtentElements.get(0).getLow(); // TODO should this be
@@ -334,18 +299,19 @@ enum ScalingPolicy {
 
             if (minx >= maxx) {
                 throw new WCS20Exception(
-                        "Invalid Extent for dimension:" + targetAxisExtentElements.get(0).getAxis(),
+                        "Invalid Extent for dimension:"
+                                + targetAxisExtentElements.get(0).getAxis(),
                         WCS20Exception.WCS20ExceptionCode.InvalidExtent,
                         String.valueOf(maxx));
             }
             if (miny >= maxy) {
                 throw new WCS20Exception(
-                        "Invalid Extent for dimension:" + targetAxisExtentElements.get(1).getAxis(),
+                        "Invalid Extent for dimension:"
+                                + targetAxisExtentElements.get(1).getAxis(),
                         WCS20Exception.WCS20ExceptionCode.InvalidExtent,
                         String.valueOf(maxy));
             }
-            final Rectangle destinationRectangle =
-                    new Rectangle(minx, miny, maxx - minx + 1, maxy - miny + 1);
+            final Rectangle destinationRectangle = new Rectangle(minx, miny, maxx - minx + 1, maxy - miny + 1);
             // UNSCALE
             if (destinationRectangle.equals(sourceGE)) {
                 // NO SCALING do we need interpolation?
@@ -353,24 +319,18 @@ enum ScalingPolicy {
                     return sourceGC;
                 } else {
                     // interpolate coverage if requested and not nearest!!!!
-                    final Operation operation =
-                            CoverageProcessor.getInstance().getOperation("Warp");
+                    final Operation operation = CoverageProcessor.getInstance().getOperation("Warp");
                     final ParameterValueGroup parameters = operation.getParameters();
                     parameters.parameter("Source").setValue(sourceGC);
                     parameters
                             .parameter("warp")
-                            .setValue(
-                                    new WarpAffine(
-                                            AffineTransform.getScaleInstance(1, 1))); // identity
+                            .setValue(new WarpAffine(AffineTransform.getScaleInstance(1, 1))); // identity
                     parameters.parameter("interpolation").setValue(interpolation);
                     parameters
                             .parameter("backgroundValues")
-                            .setValue(
-                                    CoverageUtilities.getBackgroundValues(
-                                            sourceGC)); // TODO check and
+                            .setValue(CoverageUtilities.getBackgroundValues(sourceGC)); // TODO check and
                     // improve
-                    return (GridCoverage2D)
-                            CoverageProcessor.getInstance(hints).doOperation(parameters, hints);
+                    return (GridCoverage2D) CoverageProcessor.getInstance(hints).doOperation(parameters, hints);
                 }
             }
 
@@ -386,16 +346,13 @@ enum ScalingPolicy {
             final RenderedImage sourceImage = sourceGC.getRenderedImage();
             final int sourceMinX = sourceImage.getMinX();
             final int sourceMinY = sourceImage.getMinY();
-            final AffineTransform affineTransform =
-                    new AffineTransform(
-                            scaleX,
-                            0,
-                            0,
-                            scaleY,
-                            destinationRectangle.x
-                                    - scaleX * sourceMinX, // preserve sourceImage.getMinX()
-                            destinationRectangle.y
-                                    - scaleY * sourceMinY); // preserve sourceImage.getMinY()
+            final AffineTransform affineTransform = new AffineTransform(
+                    scaleX,
+                    0,
+                    0,
+                    scaleY,
+                    destinationRectangle.x - scaleX * sourceMinX, // preserve sourceImage.getMinX()
+                    destinationRectangle.y - scaleY * sourceMinY); // preserve sourceImage.getMinY()
             // as per spec
             Warp warp;
             try {
@@ -405,13 +362,12 @@ enum ScalingPolicy {
             }
 
             // impose size
-            final ImageLayout2 layout =
-                    new ImageLayout2(
-                            destinationRectangle.x,
-                            destinationRectangle.y,
-                            destinationRectangle.width,
-                            destinationRectangle.height);
-            hints.add(new Hints(JAI.KEY_IMAGE_LAYOUT, layout));
+            final ImageLayout2 layout = new ImageLayout2(
+                    destinationRectangle.x,
+                    destinationRectangle.y,
+                    destinationRectangle.width,
+                    destinationRectangle.height);
+            hints.add(new Hints(ImageN.KEY_IMAGE_LAYOUT, layout));
 
             final Operation operation = CoverageProcessor.getInstance().getOperation("Warp");
             final ParameterValueGroup parameters = operation.getParameters();
@@ -425,11 +381,8 @@ enum ScalingPolicy {
                                     : InterpolationPolicy.getDefaultPolicy().getInterpolation());
             parameters
                     .parameter("backgroundValues")
-                    .setValue(
-                            CoverageUtilities.getBackgroundValues(
-                                    sourceGC)); // TODO check and improve
-            GridCoverage2D gc =
-                    (GridCoverage2D) CoverageProcessor.getInstance().doOperation(parameters, hints);
+                    .setValue(CoverageUtilities.getBackgroundValues(sourceGC)); // TODO check and improve
+            GridCoverage2D gc = (GridCoverage2D) CoverageProcessor.getInstance().doOperation(parameters, hints);
             // RenderedImageBrowser.showChain(gc.getRenderedImage(),false);
             return gc;
         }
@@ -466,24 +419,18 @@ enum ScalingPolicy {
                     return sourceGC;
                 } else {
                     // interpolate coverage if requested and not nearest!!!!
-                    final Operation operation =
-                            CoverageProcessor.getInstance().getOperation("Warp");
+                    final Operation operation = CoverageProcessor.getInstance().getOperation("Warp");
                     final ParameterValueGroup parameters = operation.getParameters();
                     parameters.parameter("Source").setValue(sourceGC);
                     parameters
                             .parameter("warp")
-                            .setValue(
-                                    new WarpAffine(
-                                            AffineTransform.getScaleInstance(1, 1))); // identity
+                            .setValue(new WarpAffine(AffineTransform.getScaleInstance(1, 1))); // identity
                     parameters.parameter("interpolation").setValue(interpolation);
                     parameters
                             .parameter("backgroundValues")
-                            .setValue(
-                                    CoverageUtilities.getBackgroundValues(
-                                            sourceGC)); // TODO check and
+                            .setValue(CoverageUtilities.getBackgroundValues(sourceGC)); // TODO check and
                     // improve
-                    return (GridCoverage2D)
-                            CoverageProcessor.getInstance(hints).doOperation(parameters, hints);
+                    return (GridCoverage2D) CoverageProcessor.getInstance(hints).doOperation(parameters, hints);
                 }
             }
 
@@ -493,10 +440,8 @@ enum ScalingPolicy {
             WCSUtils.checkOutputLimits(
                     wcsinfo,
                     new GridEnvelope2D(
-                            0,
-                            0,
-                            (int) (gridRange.getSpan(gridGeometry.gridDimensionX) * scaleFactorX),
-                            (int) (gridRange.getSpan(gridGeometry.gridDimensionY) * scaleFactorY)),
+                            0, 0, (int) (gridRange.getSpan(gridGeometry.gridDimensionX) * scaleFactorX), (int)
+                                    (gridRange.getSpan(gridGeometry.gridDimensionY) * scaleFactorY)),
                     sourceGC.getRenderedImage().getSampleModel());
 
             // scale
@@ -513,30 +458,24 @@ enum ScalingPolicy {
             parameters.parameter("yScale").setValue(scaleFactors[1]);
             parameters.parameter("xTrans").setValue(0.0);
             parameters.parameter("yTrans").setValue(0.0);
-            return (GridCoverage2D)
-                    CoverageProcessor.getInstance(hints).doOperation(parameters, hints);
+            return (GridCoverage2D) CoverageProcessor.getInstance(hints).doOperation(parameters, hints);
         }
     };
     /**
-     * Scale the provided {@link GridCoverage2D} according to the provided {@link ScalingType} and
-     * the provided {@link Interpolation} and {@link Hints}.
+     * Scale the provided {@link GridCoverage2D} according to the provided {@link ScalingType} and the provided
+     * {@link Interpolation} and {@link Hints}.
      *
      * @param sourceGC the {@link GridCoverage2D} to scale.
-     * @param scaling the instance of {@link ScalingType} that contains he type of scaling to
-     *     perform.
-     * @param interpolation the {@link Interpolation} to use. In case it is <code>null</code> we
-     *     will use the {@link InterpolationPolicy} default value.
+     * @param scaling the instance of {@link ScalingType} that contains he type of scaling to perform.
+     * @param interpolation the {@link Interpolation} to use. In case it is {@code null} we will use the
+     *     {@link InterpolationPolicy} default value.
      * @param hints {@link Hints} to use during this operation.
      * @param wcsinfo the current instance of {@link WCSInfo} that contains wcs config for GeoServer
-     * @return a scaled version of the input {@link GridCoverage2D}. It cam be subsampled or
-     *     oversampled, it depends on the {@link ScalingType} content.
+     * @return a scaled version of the input {@link GridCoverage2D}. It cam be subsampled or oversampled, it depends on
+     *     the {@link ScalingType} content.
      */
     public abstract GridCoverage2D scale(
-            GridCoverage2D sourceGC,
-            ScalingType scaling,
-            Interpolation interpolation,
-            Hints hints,
-            WCSInfo wcsinfo);
+            GridCoverage2D sourceGC, ScalingType scaling, Interpolation interpolation, Hints hints, WCSInfo wcsinfo);
 
     /** Retrieve the {@link ScalingPolicy} from the provided {@link ScalingType} */
     public static ScalingPolicy getPolicy(ScalingType scaling) {
@@ -558,8 +497,8 @@ enum ScalingPolicy {
     }
 
     /**
-     * Extract the requested targetSize from this scaling extension in case the provided scaling is
-     * a ScaleToSizeType type.
+     * Extract the requested targetSize from this scaling extension in case the provided scaling is a ScaleToSizeType
+     * type.
      *
      * <p>Throw an {@link IllegalArgumentException} in case the scaling type is not a supported one.
      */
@@ -571,18 +510,14 @@ enum ScalingPolicy {
             TargetAxisSizeType xSize = null, ySize = null;
             for (TargetAxisSizeType axisSizeType : targetAxisSizeElements) {
                 final String axisName = axisSizeType.getAxis();
-                if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/i")
-                        || axisName.equals("i")) {
+                if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/i") || axisName.equals("i")) {
                     xSize = axisSizeType;
-                } else if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/j")
-                        || axisName.equals("j")) {
+                } else if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/j") || axisName.equals("j")) {
                     ySize = axisSizeType;
                 } else {
                     // TODO remove when supporting TIME and ELEVATION
                     throw new WCS20Exception(
-                            "Scale Axis Undefined",
-                            WCS20Exception.WCS20ExceptionCode.ScaleAxisUndefined,
-                            axisName);
+                            "Scale Axis Undefined", WCS20Exception.WCS20ExceptionCode.ScaleAxisUndefined, axisName);
                 }
             }
             final int sizeX = (int) xSize.getTargetSize(); // TODO should this be int?
@@ -605,18 +540,14 @@ enum ScalingPolicy {
             TargetAxisExtentType xSize = null, ySize = null;
             for (TargetAxisExtentType axisSizeType : ste.getTargetAxisExtent()) {
                 final String axisName = axisSizeType.getAxis();
-                if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/i")
-                        || axisName.equals("i")) {
+                if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/i") || axisName.equals("i")) {
                     xSize = axisSizeType;
-                } else if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/j")
-                        || axisName.equals("j")) {
+                } else if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/j") || axisName.equals("j")) {
                     ySize = axisSizeType;
                 } else {
                     // TODO remove when supporting TIME and ELEVATION
                     throw new WCS20Exception(
-                            "Scale Axis Undefined",
-                            WCS20Exception.WCS20ExceptionCode.ScaleAxisUndefined,
-                            axisName);
+                            "Scale Axis Undefined", WCS20Exception.WCS20ExceptionCode.ScaleAxisUndefined, axisName);
                 }
             }
             final int sizeX = (int) (xSize.getHigh() - xSize.getLow()); // TODO should this be int?
@@ -637,14 +568,13 @@ enum ScalingPolicy {
 
         } else {
             throw new IllegalArgumentException(
-                    "targe size can not be computed from this type of scaling: "
-                            + getPolicy(scaling));
+                    "targe size can not be computed from this type of scaling: " + getPolicy(scaling));
         }
     }
 
     /**
-     * Extract the requested scaleFactors from this scaling extension in case the provided scaling
-     * is a ScaleXXXFactor type.
+     * Extract the requested scaleFactors from this scaling extension in case the provided scaling is a ScaleXXXFactor
+     * type.
      *
      * <p>Throw an {@link IllegalArgumentException} in case the scaling type is not a supported one.
      */
@@ -668,18 +598,14 @@ enum ScalingPolicy {
                 ScaleAxisType xScale = null, yScale = null;
                 for (ScaleAxisType scaleAxisType : targetAxisScaleElements) {
                     final String axisName = scaleAxisType.getAxis();
-                    if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/i")
-                            || axisName.equals("i")) {
+                    if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/i") || axisName.equals("i")) {
                         xScale = scaleAxisType;
-                    } else if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/j")
-                            || axisName.equals("j")) {
+                    } else if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/j") || axisName.equals("j")) {
                         yScale = scaleAxisType;
                     } else {
                         // TODO remove when supporting TIME and ELEVATION
                         throw new WCS20Exception(
-                                "Scale Axis Undefined",
-                                WCS20Exception.WCS20ExceptionCode.ScaleAxisUndefined,
-                                axisName);
+                                "Scale Axis Undefined", WCS20Exception.WCS20ExceptionCode.ScaleAxisUndefined, axisName);
                     }
                 }
                 if (xScale == null) {
@@ -717,12 +643,12 @@ enum ScalingPolicy {
     }
 
     /**
-     * In case some scaling factor have been pre-applied, make sure to arrange the requested target
-     * scaleFactors by taking into account the previous ones.
+     * In case some scaling factor have been pre-applied, make sure to arrange the requested target scaleFactors by
+     * taking into account the previous ones.
      *
-     * <p>This is usually required when using overviews. Suppose you want to get a target
-     * scaleFactor of 0.00001 and the worst overview provide you a scale factor of 0.0001, then the
-     * current scaleFactor need to be adjusted by a remaining 0.1 factor.
+     * <p>This is usually required when using overviews. Suppose you want to get a target scaleFactor of 0.00001 and the
+     * worst overview provide you a scale factor of 0.0001, then the current scaleFactor need to be adjusted by a
+     * remaining 0.1 factor.
      *
      * @return the arranged scaleFactor
      */

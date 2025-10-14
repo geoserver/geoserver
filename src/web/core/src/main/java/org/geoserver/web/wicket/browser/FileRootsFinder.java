@@ -19,14 +19,14 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.FileAccessManager;
 
 /**
- * Support class to locate the file system roots the file chooser uses to locate files, along with
- * utility to match file paths in said roots
+ * Support class to locate the file system roots the file chooser uses to locate files, along with utility to match file
+ * paths in said roots
  */
 public class FileRootsFinder implements Serializable {
 
     /**
-     * Utility so split and rebuild paths accounting for ResourceStore little own illusion of
-     * working on a *nix file system regardless of the actual file system
+     * Utility so split and rebuild paths accounting for ResourceStore little own illusion of working on a *nix file
+     * system regardless of the actual file system
      */
     class PathSplitter {
 
@@ -151,17 +151,15 @@ public class FileRootsFinder implements Serializable {
     }
 
     /**
-     * Support method for autocomplete text boxes, given a input and an optional file filter returns
-     * an a {@link Stream} containing the actual paths matching the provided input (any
-     * file/directory starting with the same path as the input and containing the file name in a
-     * case insensitive way)
+     * Support method for autocomplete text boxes, given a input and an optional file filter returns an a {@link Stream}
+     * containing the actual paths matching the provided input (any file/directory starting with the same path as the
+     * input and containing the file name in a case insensitive way)
      *
-     * @param input A partial path, can be a single name or a full path (can be relative, will
-     *     be24:14 matched against the data directory)
-     * @param fileFilter An optional file filter to filter the returned files. The file filter
-     *     should accept directories.
+     * @param input A partial path, can be a single name or a full path (can be relative, will be24:14 matched against
+     *     the data directory)
+     * @param fileFilter An optional file filter to filter the returned files. The file filter should accept
+     *     directories.
      */
-    @SuppressWarnings("PMD.CloseResource")
     public Stream<String> getMatches(String input, FileFilter fileFilter) {
         // null safe, simplify code
         FileFilter ff = fileFilter == null ? f -> true : fileFilter;
@@ -178,11 +176,10 @@ public class FileRootsFinder implements Serializable {
             GeoServerResourceLoader loader = getLoader();
             Resource resource = loader.get(ddSplitter.base);
             File dataDirectoryRoot = loader.get("/").dir();
-            result =
-                    resource.list().stream()
-                            .filter(r -> r.name().toLowerCase().contains(ddSplitter.name))
-                            .filter(r -> ff.accept(new File(dataDirectoryRoot, r.path())))
-                            .map(r -> ddSplitter.buildPath(r.name()));
+            result = resource.list().stream()
+                    .filter(r -> r.name().toLowerCase().contains(ddSplitter.name))
+                    .filter(r -> ff.accept(new File(dataDirectoryRoot, r.path())))
+                    .map(r -> ddSplitter.buildPath(r.name()));
         } else {
             result = Stream.empty();
         }
@@ -202,13 +199,11 @@ public class FileRootsFinder implements Serializable {
 
             File searchBase = new File(root, pathInRoot);
             String[] names =
-                    searchBase.list(
-                            (dir, fileName) -> fileName.toLowerCase().contains(fsSplitter.name));
+                    searchBase.list((dir, fileName) -> fileName.toLowerCase().contains(fsSplitter.name));
             if (names != null) {
-                Stream<String> rootPaths =
-                        Arrays.stream(names)
-                                .filter(name -> ff.accept(new File(fsSplitter.base, name)))
-                                .map(fileName -> fsSplitter.buildPath(fileName));
+                Stream<String> rootPaths = Arrays.stream(names)
+                        .filter(name -> ff.accept(new File(fsSplitter.base, name)))
+                        .map(fileName -> fsSplitter.buildPath(fileName));
                 result = Stream.concat(result, rootPaths);
             }
         }
@@ -216,10 +211,9 @@ public class FileRootsFinder implements Serializable {
         // the above won't work for roots that are full paths (e.g., sandboxing)
         // so we need to check the input against the roots themselves
         String prefix = prefixPaths ? "file://" : "";
-        Stream<String> rootMatches =
-                getRoots().stream()
-                        .filter(root -> root.getPath().contains(input))
-                        .map(r -> prefix + r.getPath());
+        Stream<String> rootMatches = getRoots().stream()
+                .filter(root -> root.getPath().contains(input))
+                .map(r -> prefix + r.getPath());
         result = Stream.concat(result, rootMatches);
 
         return result.distinct().sorted();

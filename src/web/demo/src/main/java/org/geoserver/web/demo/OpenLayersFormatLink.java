@@ -12,11 +12,10 @@ public class OpenLayersFormatLink extends CommonFormatLink {
     @Override
     public ExternalLink getFormatLink(PreviewLayer layer) {
 
-        ExternalLink olLink =
-                new ExternalLink(
-                        this.getComponentId(),
-                        layer.getWmsLink() + "&format=application/openlayers",
-                        (new StringResourceModel(this.getTitleKey(), null, null)).getString());
+        ExternalLink olLink = new ExternalLink(
+                this.getComponentId(),
+                layer.getWmsLink() + "&format=application/openlayers",
+                (new StringResourceModel(this.getTitleKey(), null, null)).getString());
         olLink.setVisible(layer.hasServiceSupport("WMS"));
         return olLink;
     }

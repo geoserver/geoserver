@@ -35,18 +35,15 @@ import org.xml.sax.helpers.DefaultHandler;
 /**
  * ReaderUtils purpose.
  *
- * <p>This class is intended to be used as a library of XML relevant operation for the GeoTools
- * XMLConfigDigester class.
+ * <p>This class is intended to be used as a library of XML relevant operation for the GeoTools XMLConfigDigester class.
  *
  * <p>
  *
  * @author dzwiers, Refractions Research, Inc.
- * @version $Id$
  */
 public class ReaderUtils {
     /** Used internally to create log information to detect errors. */
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.global");
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.global");
 
     /**
      * ReaderUtils constructor.
@@ -90,15 +87,14 @@ public class ReaderUtils {
      * <p>Returns the file passed in to allow this to wrap file creations.
      *
      * @param file A file Handle to test.
-     * @param isDir true when the File passed in is expected to be a directory, false when the
-     *     handle is expected to be a file.
+     * @param isDir true when the File passed in is expected to be a directory, false when the handle is expected to be
+     *     a file.
      * @return the File handle passed in
      * @throws FileNotFoundException When the file does not exist or is not the type specified.
      */
     public static File checkFile(File file, boolean isDir) throws FileNotFoundException {
         if (!file.exists()) {
-            throw new FileNotFoundException(
-                    (isDir ? "Folder" : "File") + " does not exist: " + file);
+            throw new FileNotFoundException((isDir ? "Folder" : "File") + " does not exist: " + file);
         }
 
         if (isDir && !file.isDirectory()) {
@@ -139,8 +135,8 @@ public class ReaderUtils {
     /**
      * getChildElements purpose.
      *
-     * <p>Used to help with XML manipulations. Returns *all* child elements of the specified name.
-     * An exception occurs when the node is required and not found.
+     * <p>Used to help with XML manipulations. Returns *all* child elements of the specified name. An exception occurs
+     * when the node is required and not found.
      *
      * @param root The root element to look for children in.
      * @param name The name of the child element to look for.
@@ -148,8 +144,7 @@ public class ReaderUtils {
      * @return The child element found, null if not found.
      * @throws Exception When a child element is required and not found.
      */
-    public static Element[] getChildElements(Element root, String name, boolean mandatory)
-            throws Exception {
+    public static Element[] getChildElements(Element root, String name, boolean mandatory) throws Exception {
         final List<Element> elements = new ArrayList<>();
         Node child = root.getFirstChild();
         while (child != null) {
@@ -163,8 +158,7 @@ public class ReaderUtils {
         }
 
         if (mandatory && (elements.isEmpty())) {
-            throw new Exception(
-                    root.getNodeName() + " does not contains a child element named " + name);
+            throw new Exception(root.getNodeName() + " does not contains a child element named " + name);
         }
 
         return elements.toArray(new Element[0]);
@@ -173,8 +167,8 @@ public class ReaderUtils {
     /**
      * getChildElement purpose.
      *
-     * <p>Used to help with XML manipulations. Returns the first child element of the specified
-     * name. An exception occurs when the node is required and not found.
+     * <p>Used to help with XML manipulations. Returns the first child element of the specified name. An exception
+     * occurs when the node is required and not found.
      *
      * @param root The root element to look for children in.
      * @param name The name of the child element to look for.
@@ -182,8 +176,7 @@ public class ReaderUtils {
      * @return The child element found, null if not found.
      * @throws Exception When a child element is required and not found.
      */
-    public static Element getChildElement(Element root, String name, boolean mandatory)
-            throws Exception {
+    public static Element getChildElement(Element root, String name, boolean mandatory) throws Exception {
         Node child = root.getFirstChild();
 
         while (child != null) {
@@ -197,8 +190,7 @@ public class ReaderUtils {
         }
 
         if (mandatory && (child == null)) {
-            throw new Exception(
-                    root.getNodeName() + " does not contains a child element named " + name);
+            throw new Exception(root.getNodeName() + " does not contains a child element named " + name);
         }
 
         return null;
@@ -207,8 +199,7 @@ public class ReaderUtils {
     /**
      * getChildElement purpose.
      *
-     * <p>Used to help with XML manipulations. Returns the first child element of the specified
-     * name.
+     * <p>Used to help with XML manipulations. Returns the first child element of the specified name.
      *
      * @param root The root element to look for children in.
      * @param name The name of the child element to look for.
@@ -227,20 +218,19 @@ public class ReaderUtils {
     /**
      * getIntAttribute purpose.
      *
-     * <p>Used to help with XML manipulations. Returns the first child integer attribute of the
-     * specified name. An exception occurs when the node is required and not found.
+     * <p>Used to help with XML manipulations. Returns the first child integer attribute of the specified name. An
+     * exception occurs when the node is required and not found.
      *
      * @param elem The root element to look for children in.
      * @param attName The name of the attribute to look for.
-     * @param mandatory true when an exception should be thrown if the attribute element does not
-     *     exist.
-     * @param defaultValue a default value to return incase the attribute was not found. mutually
-     *     exclusive with the Exception thrown.
+     * @param mandatory true when an exception should be thrown if the attribute element does not exist.
+     * @param defaultValue a default value to return incase the attribute was not found. mutually exclusive with the
+     *     Exception thrown.
      * @return The int value if the attribute was found, the default otherwise.
      * @throws Exception When an attribute element is required and not found.
      */
-    public static int getIntAttribute(
-            Element elem, String attName, boolean mandatory, int defaultValue) throws Exception {
+    public static int getIntAttribute(Element elem, String attName, boolean mandatory, int defaultValue)
+            throws Exception {
         String attValue = getAttribute(elem, attName, mandatory);
 
         if (!mandatory && (attValue == null)) {
@@ -251,13 +241,12 @@ public class ReaderUtils {
             return Integer.parseInt(attValue);
         } catch (Exception ex) {
             if (mandatory) {
-                throw new Exception(
-                        attName
-                                + " attribute of element "
-                                + elem.getNodeName()
-                                + " must be an integer, but it's '"
-                                + attValue
-                                + "'");
+                throw new Exception(attName
+                        + " attribute of element "
+                        + elem.getNodeName()
+                        + " must be an integer, but it's '"
+                        + attValue
+                        + "'");
             } else {
                 return defaultValue;
             }
@@ -267,18 +256,16 @@ public class ReaderUtils {
     /**
      * getIntAttribute purpose.
      *
-     * <p>Used to help with XML manipulations. Returns the first child integer attribute of the
-     * specified name. An exception occurs when the node is required and not found.
+     * <p>Used to help with XML manipulations. Returns the first child integer attribute of the specified name. An
+     * exception occurs when the node is required and not found.
      *
      * @param elem The root element to look for children in.
      * @param attName The name of the attribute to look for.
-     * @param mandatory true when an exception should be thrown if the attribute element does not
-     *     exist.
+     * @param mandatory true when an exception should be thrown if the attribute element does not exist.
      * @return The value if the attribute was found, the null otherwise.
      * @throws Exception When a child attribute is required and not found.
      */
-    public static String getAttribute(Element elem, String attName, boolean mandatory)
-            throws Exception {
+    public static String getAttribute(Element elem, String attName, boolean mandatory) throws Exception {
         if (elem == null) {
             if (mandatory) {
                 throw new NullPointerException();
@@ -298,13 +285,9 @@ public class ReaderUtils {
         if (mandatory) {
             if (att == null) {
                 throw new Exception(
-                        "element "
-                                + elem.getNodeName()
-                                + " does not contains an attribute named "
-                                + attName);
+                        "element " + elem.getNodeName() + " does not contains an attribute named " + attName);
             } else if ("".equals(value)) {
-                throw new Exception(
-                        "attribute " + attName + "in element " + elem.getNodeName() + " is empty");
+                throw new Exception("attribute " + attName + "in element " + elem.getNodeName() + " is empty");
             }
         }
 
@@ -314,19 +297,17 @@ public class ReaderUtils {
     /**
      * getBooleanAttribute purpose.
      *
-     * <p>Used to help with XML manipulations. Returns the first child integer attribute of the
-     * specified name. An exception occurs when the node is required and not found.
+     * <p>Used to help with XML manipulations. Returns the first child integer attribute of the specified name. An
+     * exception occurs when the node is required and not found.
      *
      * @param elem The root element to look for children in.
      * @param attName The name of the attribute to look for.
-     * @param mandatory true when an exception should be thrown if the attribute element does not
-     *     exist.
+     * @param mandatory true when an exception should be thrown if the attribute element does not exist.
      * @param defaultValue what to return for a non-mandatory that is not found.
      * @return The value if the attribute was found, the false otherwise.
      * @throws Exception When a child attribute is required and not found.
      */
-    public static boolean getBooleanAttribute(
-            Element elem, String attName, boolean mandatory, boolean defaultValue)
+    public static boolean getBooleanAttribute(Element elem, String attName, boolean mandatory, boolean defaultValue)
             throws Exception {
         String value = getAttribute(elem, attName, mandatory);
 
@@ -340,8 +321,7 @@ public class ReaderUtils {
     /**
      * getChildText purpose.
      *
-     * <p>Used to help with XML manipulations. Returns the first child text value of the specified
-     * element name.
+     * <p>Used to help with XML manipulations. Returns the first child text value of the specified element name.
      *
      * @param root The root element to look for children in.
      * @param childName The name of the attribute to look for.
@@ -358,8 +338,8 @@ public class ReaderUtils {
     /**
      * getChildText purpose.
      *
-     * <p>Used to help with XML manipulations. Returns the first child text value of the specified
-     * element name. An exception occurs when the node is required and not found.
+     * <p>Used to help with XML manipulations. Returns the first child text value of the specified element name. An
+     * exception occurs when the node is required and not found.
      *
      * @param root The root element to look for children in.
      * @param childName The name of the attribute to look for.
@@ -367,8 +347,7 @@ public class ReaderUtils {
      * @return The value if the child was found, the null otherwise.
      * @throws Exception When a child attribute is required and not found.
      */
-    public static String getChildText(Element root, String childName, boolean mandatory)
-            throws Exception {
+    public static String getChildText(Element root, String childName, boolean mandatory) throws Exception {
         Element elem = getChildElement(root, childName, mandatory);
 
         if (elem != null) {
@@ -403,8 +382,8 @@ public class ReaderUtils {
     /**
      * getChildText purpose.
      *
-     * <p>Used to help with XML manipulations. Returns the text value of the specified element name.
-     * An exception occurs when the node is required and not found.
+     * <p>Used to help with XML manipulations. Returns the text value of the specified element name. An exception occurs
+     * when the node is required and not found.
      *
      * @param elem The root element to look for children in.
      * @param mandatory true when an exception should be thrown if the text does not exist.
@@ -514,18 +493,16 @@ public class ReaderUtils {
     /**
      * getDoubleAttribute purpose.
      *
-     * <p>Used to help with XML manipulations. Returns the first child integer attribute of the
-     * specified name. An exception occurs when the node is required and not found.
+     * <p>Used to help with XML manipulations. Returns the first child integer attribute of the specified name. An
+     * exception occurs when the node is required and not found.
      *
      * @param elem The root element to look for children in.
      * @param attName The name of the attribute to look for.
-     * @param mandatory true when an exception should be thrown if the attribute element does not
-     *     exist.
+     * @param mandatory true when an exception should be thrown if the attribute element does not exist.
      * @return The double value if the attribute was found, the NaN otherwise.
      * @throws Exception When an attribute element is required and not found.
      */
-    public static double getDoubleAttribute(Element elem, String attName, boolean mandatory)
-            throws Exception {
+    public static double getDoubleAttribute(Element elem, String attName, boolean mandatory) throws Exception {
         String value = getAttribute(elem, attName, mandatory);
 
         if ((value == null) || ("".equals(value))) {
@@ -538,13 +515,12 @@ public class ReaderUtils {
             try {
                 d = Double.parseDouble(value);
             } catch (NumberFormatException ex) {
-                throw new ConfigurationException(
-                        "Illegal attribute value for "
-                                + attName
-                                + " in element "
-                                + elem.getNodeName()
-                                + ". Expected double, but was "
-                                + value);
+                throw new ConfigurationException("Illegal attribute value for "
+                        + attName
+                        + " in element "
+                        + elem.getNodeName()
+                        + ". Expected double, but was "
+                        + value);
             }
         }
 
@@ -556,23 +532,19 @@ public class ReaderUtils {
      *
      * @param xml The document.
      * @param errorHandler The validation error handler.
-     * @param targetNamespace The target namespace of the schema, may be <code>null</code>
+     * @param targetNamespace The target namespace of the schema, may be {@code null}
      * @param schemaLocation The location of the schema to validate against, may be <code>null
      *     </code>
      * @throws RuntimeException If reader failed to parse properly.
      */
     public static void validate(
-            Document xml,
-            DefaultHandler errorHandler,
-            String targetNamespace,
-            String schemaLocation) {
+            Document xml, DefaultHandler errorHandler, String targetNamespace, String schemaLocation) {
         try {
             Transformer tx = TransformerFactory.newInstance().newTransformer();
             ByteArrayOutputStream output = new ByteArrayOutputStream();
             tx.transform(new DOMSource(xml), new StreamResult(output));
 
-            try (InputStreamReader reader =
-                    new InputStreamReader(new ByteArrayInputStream(output.toByteArray()))) {
+            try (InputStreamReader reader = new InputStreamReader(new ByteArrayInputStream(output.toByteArray()))) {
                 validate(reader, errorHandler, targetNamespace, schemaLocation);
             }
         } catch (Exception e) {
@@ -585,16 +557,13 @@ public class ReaderUtils {
      *
      * @param xml Reader representing xml stream to parse.
      * @param errorHandler The validation error handler.
-     * @param targetNamespace The target namespace of the schema, may be <code>null</code>
+     * @param targetNamespace The target namespace of the schema, may be {@code null}
      * @param schemaLocation The location of the schema to validate against, may be <code>null
      *     </code>
      * @throws RuntimeException If reader failed to parse properly.
      */
     public static void validate(
-            Reader xml,
-            DefaultHandler errorHandler,
-            String targetNamespace,
-            String schemaLocation) {
+            Reader xml, DefaultHandler errorHandler, String targetNamespace, String schemaLocation) {
         InputSource in = new InputSource(xml);
 
         try {
@@ -606,8 +575,7 @@ public class ReaderUtils {
             sf.setValidating(true);
             SAXParser parser = sf.newSAXParser();
             parser.setProperty(
-                    "http://java.sun.com/xml/jaxp/properties/schemaLanguage",
-                    "http://www.w3.org/2001/XMLSchema");
+                    "http://java.sun.com/xml/jaxp/properties/schemaLanguage", "http://www.w3.org/2001/XMLSchema");
 
             //            SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
             //               parser.setProperty("http://xml.org/sax/features/validation",
@@ -620,8 +588,7 @@ public class ReaderUtils {
             //                    Boolean.TRUE);
 
             if (schemaLocation != null) {
-                parser.setProperty(
-                        "http://java.sun.com/xml/jaxp/properties/schemaSource", schemaLocation);
+                parser.setProperty("http://java.sun.com/xml/jaxp/properties/schemaSource", schemaLocation);
                 //                        if ( targetNamespace != null ) {
                 //
                 // parser.setProperty("http://apache.org/xml/properties/schema/external-schemaLocation",

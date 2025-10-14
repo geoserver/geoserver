@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.security.oauth2;
 
+import java.io.Serial;
 import java.util.logging.Logger;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -26,6 +27,7 @@ public class GeoServerOAuth2AuthProviderPanel<T extends GeoServerOAuth2FilterCon
         extends PreAuthenticatedUserNameFilterPanel<T> {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = -3025321797363970302L;
 
     static Logger LOGGER = Logging.getLogger("org.geoserver.security");
@@ -70,9 +72,8 @@ public class GeoServerOAuth2AuthProviderPanel<T extends GeoServerOAuth2FilterCon
     }
 
     /**
-     * Allows subclasses to add a panel at the top of the parameter list, in addition to normal
-     * Wicket extension mechanism, which places them at the bottom instead. The default
-     * implementation just hides the top panel.
+     * Allows subclasses to add a panel at the top of the parameter list, in addition to normal Wicket extension
+     * mechanism, which places them at the bottom instead. The default implementation just hides the top panel.
      *
      * @return
      * @param panelId

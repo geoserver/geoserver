@@ -21,11 +21,10 @@ import org.geoserver.security.impl.GeoServerRole;
 public interface GeoServerRoleService extends GeoServerSecurityService {
 
     /**
-     * Creates the granted authority store associated with this service, or null if creating a store
-     * is not supported.
+     * Creates the granted authority store associated with this service, or null if creating a store is not supported.
      *
-     * <p>Implementations that do not support a store should ensure that {@link #canCreateStore()}
-     * returns <code>false</code>.
+     * <p>Implementations that do not support a store should ensure that {@link #canCreateStore()} returns <code>false
+     * </code>.
      */
     GeoServerRoleStore createStore() throws IOException;
 
@@ -64,8 +63,7 @@ public interface GeoServerRoleService extends GeoServerSecurityService {
     SortedSet<GeoServerRole> getRolesForGroup(String groupname) throws IOException;
 
     /**
-     * Get the list of roles currently known by users (implementations must provide the admin role
-     * "ROLE_ADMINISTRATOR")
+     * Get the list of roles currently known by users (implementations must provide the admin role "ROLE_ADMINISTRATOR")
      *
      * @return a collection which cannot be modified
      */
@@ -81,8 +79,8 @@ public interface GeoServerRoleService extends GeoServerSecurityService {
     Map<String, String> getParentMappings() throws IOException;
 
     /**
-     * Creates a {@link GeoServerRole} object . Implementations can use their special classes
-     * derived from {@link GeoServerRole}
+     * Creates a {@link GeoServerRole} object . Implementations can use their special classes derived from
+     * {@link GeoServerRole}
      */
     GeoServerRole createRoleObject(String role) throws IOException;
 
@@ -104,15 +102,13 @@ public interface GeoServerRoleService extends GeoServerSecurityService {
     void load() throws IOException;
 
     /**
-     * This is a callback for personalized roles Example: Role employee has a property
-     * "employeeNumber", which has no value or a default value. "employeeNumber" is also called a
-     * role parameter in this context.
+     * This is a callback for personalized roles Example: Role employee has a property "employeeNumber", which has no
+     * value or a default value. "employeeNumber" is also called a role parameter in this context.
      *
-     * <p>A user "harry" has assigned the role employee and has a user property "empNr" with the
-     * value 4711
+     * <p>A user "harry" has assigned the role employee and has a user property "empNr" with the value 4711
      *
-     * <p>Now, this method should create a {@link Properties} object containing the property
-     * "employeeNumber" with the value 4711.
+     * <p>Now, this method should create a {@link Properties} object containing the property "employeeNumber" with the
+     * value 4711.
      *
      * <p>A GIS example could be a BBOX for specific user to restrict his access to the wms service
      *
@@ -122,19 +118,18 @@ public interface GeoServerRoleService extends GeoServerSecurityService {
      * @param userProps the properties of the user from {@link GeoServerUserGroupService}
      * @return null for no personalization, the personalized properties otherwise
      */
-    Properties personalizeRoleParams(
-            String roleName, Properties roleParams, String userName, Properties userProps)
+    Properties personalizeRoleParams(String roleName, Properties roleParams, String userName, Properties userProps)
             throws IOException;
 
     /**
-     * @return the local role having the same privileges as {@link GeoserverRole#ADMIN_ROLE} or
-     *     <code>null</code> if no such role exists
+     * @return the local role having the same privileges as {@link GeoServerRole#ADMIN_ROLE} or {@code null} if no such
+     *     role exists
      */
     GeoServerRole getAdminRole();
 
     /**
-     * @return the local role having the same privileges {@link GeoServerRole#GROUP_ADMIN_ROLE} or
-     *     <code>null</code> if no such role exists
+     * @return the local role having the same privileges {@link GeoServerRole#GROUP_ADMIN_ROLE} or @code null} if no
+     *     such role exists
      */
     GeoServerRole getGroupAdminRole();
 

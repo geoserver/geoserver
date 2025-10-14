@@ -5,25 +5,25 @@
 
 package org.geoserver.elasticsearch;
 
+import java.io.Serial;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.web.data.resource.ResourceConfigurationPanelInfo;
 
 /**
- * Implements ResourceConfigurationPanelInfo extension point to add Elasticsearch attribute
- * configuration link on resource page. <br>
- * Priority is reduced under standard {@link ExtensionPriority#LOWEST} to shows the Elasticsearch
- * link after other panels.
+ * Implements ResourceConfigurationPanelInfo extension point to add Elasticsearch attribute configuration link on
+ * resource page. <br>
+ * Priority is reduced under standard {@link ExtensionPriority#LOWEST} to shows the Elasticsearch link after other
+ * panels.
  */
-class ElasticConfigurationPanelInfo extends ResourceConfigurationPanelInfo
-        implements ExtensionPriority {
+class ElasticConfigurationPanelInfo extends ResourceConfigurationPanelInfo implements ExtensionPriority {
 
+    @Serial
     private static final long serialVersionUID = 1485404586629946126L;
 
     @Override
     public boolean canHandle(Object obj) {
-        if (obj instanceof FeatureTypeInfo) {
-            FeatureTypeInfo fti = (FeatureTypeInfo) obj;
+        if (obj instanceof FeatureTypeInfo fti) {
             for (String st : getSupportedTypes()) {
                 // getType can return null
                 if (st != null && st.equals(fti.getStore().getType())) {

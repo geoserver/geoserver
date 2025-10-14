@@ -5,6 +5,7 @@
  */
 package org.geoserver.catalog.impl;
 
+import java.io.Serial;
 import java.math.BigDecimal;
 import java.util.Objects;
 import org.geoserver.catalog.DimensionDefaultValueSetting;
@@ -12,14 +13,14 @@ import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 
 /**
- * Configuration about a dimension, such as time or elevation (theoretically could be a custom one
- * too)
+ * Configuration about a dimension, such as time or elevation (theoretically could be a custom one too)
  *
  * @author Andrea Aime - GeoSolutions
  */
 public class DimensionInfoImpl implements DimensionInfo {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = -2978192474130857785L;
 
     boolean enabled;
@@ -226,16 +227,9 @@ public class DimensionInfoImpl implements DimensionInfo {
         result = prime * result + ((unitSymbol == null) ? 0 : unitSymbol.hashCode());
         result = prime * result + ((presentation == null) ? 0 : presentation.hashCode());
         result = prime * result + ((resolution == null) ? 0 : resolution.hashCode());
-        result =
-                prime * result
-                        + ((nearestMatchEnabled == null) ? 0 : nearestMatchEnabled.hashCode());
-        result =
-                prime * result
-                        + ((rawNearestMatchEnabled == null)
-                                ? 0
-                                : rawNearestMatchEnabled.hashCode());
-        result =
-                prime * result + ((acceptableInterval == null) ? 0 : acceptableInterval.hashCode());
+        result = prime * result + ((nearestMatchEnabled == null) ? 0 : nearestMatchEnabled.hashCode());
+        result = prime * result + ((rawNearestMatchEnabled == null) ? 0 : rawNearestMatchEnabled.hashCode());
+        result = prime * result + ((acceptableInterval == null) ? 0 : acceptableInterval.hashCode());
         result = prime * result + ((startValue == null) ? 0 : startValue.hashCode());
         result = prime * result + ((endValue == null) ? 0 : endValue.hashCode());
         result = prime * ((nearestFailBehavior == null ? 0 : nearestFailBehavior.hashCode()));

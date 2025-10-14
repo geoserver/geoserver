@@ -11,8 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Strategy interface for writing output to an output stream.
  *
- * <p>This interface is used to provide different modes of output, an example would be response
- * buffering.
+ * <p>This interface is used to provide different modes of output, an example would be response buffering.
  *
  * @author Jody Garnett, Refractions Research
  * @author Justin Deoliveira, The Open Planning Project
@@ -24,8 +23,7 @@ public interface ServiceStrategy extends Cloneable {
     /**
      * Get a OutputStream we can use to add content.
      *
-     * <p>This output stream may be a wrapper around <code>response.getOutpuStream()</code> or may
-     * not be.
+     * <p>This output stream may be a wrapper around <code>response.getOutpuStream()</code> or may not be.
      *
      * @param response The servlet response.
      * @return An output stream to write to.
@@ -35,8 +33,8 @@ public interface ServiceStrategy extends Cloneable {
     public DispatcherOutputStream getDestination(HttpServletResponse response) throws IOException;
 
     /**
-     * Flushes the output, causing the response to be written to the actual resposne output stream:
-     * <code>response.getOutputStrema()</code>
+     * Flushes the output, causing the response to be written to the actual resposne output stream: <code>
+     * response.getOutputStrema()</code>
      *
      * <p>Any resources that the strategy holds on to should also be released at this point.
      *

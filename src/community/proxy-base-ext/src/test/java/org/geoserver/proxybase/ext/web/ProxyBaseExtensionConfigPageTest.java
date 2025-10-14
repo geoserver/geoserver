@@ -24,11 +24,9 @@ public class ProxyBaseExtensionConfigPageTest extends GeoServerWicketTestSupport
     @Before
     public void prepareConfiguration() throws IOException {
         GeoServerDataDirectory dd = getDataDirectory();
-        new File(
-                        testData.getDataDirectoryRoot(),
-                        ProxyBaseExtRuleDAO.PROXY_BASE_EXT_RULES_DIRECTORY)
-                .mkdir();
-        try (OutputStream os = dd.get(ProxyBaseExtRuleDAO.PROXY_BASE_EXT_RULES_PATH).out();
+        new File(testData.getDataDirectoryRoot(), ProxyBaseExtRuleDAO.PROXY_BASE_EXT_RULES_DIRECTORY).mkdir();
+        try (OutputStream os =
+                        dd.get(ProxyBaseExtRuleDAO.PROXY_BASE_EXT_RULES_PATH).out();
                 InputStream is = getClass().getResourceAsStream("/proxy-base-ext.xml")) {
             IOUtils.copy(is, os);
         }
@@ -40,17 +38,13 @@ public class ProxyBaseExtensionConfigPageTest extends GeoServerWicketTestSupport
         tester.startPage(ProxyBaseExtensionConfigPage.class);
         tester.assertRenderedPage(ProxyBaseExtensionConfigPage.class);
         // three rules loaded
-        DataView table =
-                (DataView)
-                        tester.getComponentFromLastRenderedPage("rulesPanel:listContainer:items");
+        DataView table = (DataView) tester.getComponentFromLastRenderedPage("rulesPanel:listContainer:items");
         assertEquals(3, table.getItemCount());
         // match of the first rule
-        tester.assertModelValue(
-                "rulesPanel:listContainer:items:1:itemProperties:1:component", "schemas/(.*)");
+        tester.assertModelValue("rulesPanel:listContainer:items:1:itemProperties:1:component", "schemas/(.*)");
         // parameter of the second rule
         tester.assertModelValue(
-                "rulesPanel:listContainer:items:2:itemProperties:2:component",
-                "https://basic.example.com");
+                "rulesPanel:listContainer:items:2:itemProperties:2:component", "https://basic.example.com");
     }
 
     @Test

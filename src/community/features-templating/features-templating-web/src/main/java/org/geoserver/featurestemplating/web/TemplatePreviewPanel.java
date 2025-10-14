@@ -103,29 +103,26 @@ public class TemplatePreviewPanel extends Panel {
         Model<PreviewInfoModel> previewModel = new Model<>(new PreviewInfoModel());
 
         previewInfoForm = new Form<>("previewForm", previewModel);
-        outputFormatsDropDown =
-                new OutputFormatsDropDown(
-                        "outputFormats",
-                        new PropertyModel<>(previewModel, "outputFormat"),
-                        page.getForm().getModelObject().getExtension());
-        outputFormatsDropDown.add(
-                new OnChangeAjaxBehavior() {
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
-                        SupportedFormat outputFormat = outputFormatsDropDown.getModelObject();
-                        if (SupportedFormat.GML.equals(outputFormat)
-                                || SupportedFormat.HTML.equals(outputFormat)) {
-                            previewEditor.setMode("xml");
-                        } else {
-                            previewEditor.setModeAndSubMode("javascript", "json");
-                        }
-                        if (previewFeedback.hasFeedbackMessage()) {
-                            clearFeedbackMessages();
-                            ajaxRequestTarget.add(previewFeedback);
-                        }
-                        ajaxRequestTarget.add(previewEditor);
-                    }
-                });
+        outputFormatsDropDown = new OutputFormatsDropDown(
+                "outputFormats",
+                new PropertyModel<>(previewModel, "outputFormat"),
+                page.getForm().getModelObject().getExtension());
+        outputFormatsDropDown.add(new OnChangeAjaxBehavior() {
+            @Override
+            protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
+                SupportedFormat outputFormat = outputFormatsDropDown.getModelObject();
+                if (SupportedFormat.GML.equals(outputFormat) || SupportedFormat.HTML.equals(outputFormat)) {
+                    previewEditor.setMode("xml");
+                } else {
+                    previewEditor.setModeAndSubMode("javascript", "json");
+                }
+                if (previewFeedback.hasFeedbackMessage()) {
+                    clearFeedbackMessages();
+                    ajaxRequestTarget.add(previewFeedback);
+                }
+                ajaxRequestTarget.add(previewEditor);
+            }
+        });
 
         previewInfoForm.add(outputFormatsDropDown);
         IModel<TemplateInfo> templateInfo = page.getTemplateInfoModel();
@@ -134,31 +131,26 @@ public class TemplatePreviewPanel extends Panel {
         List<WorkspaceInfo> workspaces = getWorkspaces(getCatalog());
         ChoiceRenderer<WorkspaceInfo> wsRenderer = new ChoiceRenderer<>("name", "name");
         workspaceInfoDropDownChoice =
-                new DropDownChoice<>(
-                        "workspaces",
-                        new PropertyModel<>(previewModel, "ws"),
-                        workspaces,
-                        wsRenderer);
+                new DropDownChoice<>("workspaces", new PropertyModel<>(previewModel, "ws"), workspaces, wsRenderer);
         WorkspaceInfo wi = null;
         if (hasWorkspace) {
             wi = setWorkspaceValue(templateInfo.getObject().getWorkspace(), workspaces);
         }
 
-        workspaceInfoDropDownChoice.add(
-                new OnChangeAjaxBehavior() {
+        workspaceInfoDropDownChoice.add(new OnChangeAjaxBehavior() {
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
-                        WorkspaceInfo wi = workspaceInfoDropDownChoice.getModelObject();
-                        featureTypesDD.setChoices(getFeatureTypes(getCatalog(), wi));
-                        featureTypesDD.setEnabled(true);
-                        ajaxRequestTarget.add(featureTypesDD);
-                        if (previewFeedback.hasFeedbackMessage()) {
-                            clearFeedbackMessages();
-                            ajaxRequestTarget.add(previewFeedback);
-                        }
-                    }
-                });
+            @Override
+            protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
+                WorkspaceInfo wi = workspaceInfoDropDownChoice.getModelObject();
+                featureTypesDD.setChoices(getFeatureTypes(getCatalog(), wi));
+                featureTypesDD.setEnabled(true);
+                ajaxRequestTarget.add(featureTypesDD);
+                if (previewFeedback.hasFeedbackMessage()) {
+                    clearFeedbackMessages();
+                    ajaxRequestTarget.add(previewFeedback);
+                }
+            }
+        });
         previewInfoForm.add(workspaceInfoDropDownChoice);
         List<FeatureTypeInfo> featureTypes;
         if (hasWorkspace) {
@@ -167,20 +159,14 @@ public class TemplatePreviewPanel extends Panel {
             featureTypes = Collections.emptyList();
         }
         ChoiceRenderer<FeatureTypeInfo> ftiChoiceRenderer = new ChoiceRenderer<>("name", "name");
-        featureTypesDD =
-                new DropDownChoice<>(
-                        "featureTypes",
-                        new PropertyModel<>(previewModel, "featureType"),
-                        featureTypes,
-                        ftiChoiceRenderer);
+        featureTypesDD = new DropDownChoice<>(
+                "featureTypes", new PropertyModel<>(previewModel, "featureType"), featureTypes, ftiChoiceRenderer);
         featureTypesDD.setOutputMarkupId(true);
         if (!hasWorkspace) featureTypesDD.setEnabled(false);
         if (hasFeatureType) setFeatureTypeInfoValue(templateInfo.getObject().getFeatureType());
         previewInfoForm.add(featureTypesDD);
         previewInfoForm.add(
-                previewEditor =
-                        new CodeMirrorEditor(
-                                "previewArea", "xml", new PropertyModel<>(this, "previewResult")));
+                previewEditor = new CodeMirrorEditor("previewArea", "xml", new PropertyModel<>(this, "previewResult")));
         previewEditor.setOutputMarkupId(true);
         previewEditor.setTextAreaMarkupId("previewEditor");
         previewEditor.setMarkupId("previewArea");
@@ -189,11 +175,9 @@ public class TemplatePreviewPanel extends Panel {
         previewInfoForm.add(previewEditor);
         previewInfoForm.add(previewFeedback = new FeedbackPanel("validateFeedback"));
         previewFeedback.setOutputMarkupId(true);
-        featureIdField =
-                new TextField<>("featureId", new PropertyModel<>(previewModel, "featureId"));
+        featureIdField = new TextField<>("featureId", new PropertyModel<>(previewModel, "featureId"));
         previewInfoForm.add(featureIdField);
-        cqlFilterField =
-                new TextField<>("cqlFilterField", new PropertyModel<>(previewModel, "cqlFilter"));
+        cqlFilterField = new TextField<>("cqlFilterField", new PropertyModel<>(previewModel, "cqlFilter"));
         previewInfoForm.add(cqlFilterField);
         previewInfoForm.add(getSubmit());
         previewInfoForm.add(getValidate());
@@ -220,9 +204,7 @@ public class TemplatePreviewPanel extends Panel {
         boolean canBuildLink = outputFormat != null && ws != null && featureType != null;
         if (canBuildLink) {
             TemplateLayerConfig layerConfig =
-                    featureType
-                            .getMetadata()
-                            .get(TemplateLayerConfig.METADATA_KEY, TemplateLayerConfig.class);
+                    featureType.getMetadata().get(TemplateLayerConfig.METADATA_KEY, TemplateLayerConfig.class);
             TemplateRule rule = new TemplateRule();
             IModel<TemplateInfo> templateInfo = page.getTemplateInfoModel();
             rule.setTemplateIdentifier(templateInfo.getObject().getIdentifier());
@@ -238,24 +220,14 @@ public class TemplatePreviewPanel extends Panel {
             getCatalog().save(featureType);
             String mime = getOutputFormat(outputFormat);
             String typeName = ws.getName() + ":" + featureType.getName();
-            return buildWfsLink(
-                    typeName,
-                    mime,
-                    previewInfoModel.getFeatureId(),
-                    previewInfoModel.getCqlFilter(),
-                    ws);
+            return buildWfsLink(typeName, mime, previewInfoModel.getFeatureId(), previewInfoModel.getCqlFilter(), ws);
         } else {
             error("please fill all the field to preview the template response");
         }
         return null;
     }
 
-    String buildWfsLink(
-            String typeName,
-            String outputFormat,
-            String featureId,
-            String cqlFilter,
-            WorkspaceInfo ws) {
+    String buildWfsLink(String typeName, String outputFormat, String featureId, String cqlFilter, WorkspaceInfo ws) {
         Map<String, String> params = new LinkedHashMap<>();
         params.put("service", "WFS");
         params.put("version", "2.0.0");
@@ -266,8 +238,7 @@ public class TemplatePreviewPanel extends Panel {
         if (cqlFilter != null) params.put("cql_filter", cqlFilter);
         else params.put("count", "1");
         params.put(PREVIEW_REQUEST_PARAM, "true");
-        return ResponseUtils.buildURL(
-                getBaseURL(), getPath("ows", false, ws), params, URLMangler.URLType.SERVICE);
+        return ResponseUtils.buildURL(getBaseURL(), getPath("ows", false, ws), params, URLMangler.URLType.SERVICE);
     }
 
     private String getBaseURL() {
@@ -304,54 +275,50 @@ public class TemplatePreviewPanel extends Panel {
 
     private void removeTemplatePreviewRule(FeatureTypeInfo featureType) {
         TemplateLayerConfig config =
-                featureType
-                        .getMetadata()
-                        .get(TemplateLayerConfig.METADATA_KEY, TemplateLayerConfig.class);
+                featureType.getMetadata().get(TemplateLayerConfig.METADATA_KEY, TemplateLayerConfig.class);
         Set<TemplateRule> rules = config.getTemplateRules();
-        rules.removeIf(
-                r -> r.getCqlFilter() != null && r.getCqlFilter().equals(PREVIEW_RULE_FILTER));
+        rules.removeIf(r -> r.getCqlFilter() != null && r.getCqlFilter().equals(PREVIEW_RULE_FILTER));
         featureType.getMetadata().put(TemplateLayerConfig.METADATA_KEY, config);
         getCatalog().save(featureType);
     }
 
     private AjaxSubmitLink getSubmit() {
-        AjaxSubmitLink submitLink =
-                new AjaxSubmitLink("preview", previewInfoForm) {
+        AjaxSubmitLink submitLink = new AjaxSubmitLink("preview", previewInfoForm) {
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        super.onSubmit(target);
-                        clearFeedbackMessages();
-                        target.add(previewFeedback);
-                        previewEditor.clearInput();
-                        IModel<TemplateInfo> templateInfo = page.getTemplateInfoModel();
-                        String rawTemplate = page.getStringTemplateFromInput();
-                        page.saveTemplateInfo(templateInfo.getObject(), rawTemplate);
-                        Form<PreviewInfoModel> previewForm = (Form<PreviewInfoModel>) getForm();
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                super.onSubmit(target);
+                clearFeedbackMessages();
+                target.add(previewFeedback);
+                previewEditor.clearInput();
+                IModel<TemplateInfo> templateInfo = page.getTemplateInfoModel();
+                String rawTemplate = page.getStringTemplateFromInput();
+                page.saveTemplateInfo(templateInfo.getObject(), rawTemplate);
+                Form<PreviewInfoModel> previewForm = (Form<PreviewInfoModel>) getForm();
 
-                        if (!validateAndReport(previewForm.getModelObject())) return;
-                        String url = buildWFSLink(previewForm.getModelObject());
-                        previewResult = performWfsRequest(url);
-                        previewEditor.setModelObject(previewResult);
-                        previewEditor.modelChanged();
-                        target.add(previewEditor);
-                    }
+                if (!validateAndReport(previewForm.getModelObject())) return;
+                String url = buildWFSLink(previewForm.getModelObject());
+                previewResult = performWfsRequest(url);
+                previewEditor.setModelObject(previewResult);
+                previewEditor.modelChanged();
+                target.add(previewEditor);
+            }
 
-                    @Override
-                    protected void onAfterSubmit(AjaxRequestTarget target) {
-                        FeatureTypeInfo featureTypeInfo = featureTypesDD.getModelObject();
-                        if (featureTypeInfo != null) {
-                            // clean cache
-                            TemplateInfo ti = page.getTemplateInfoModel().getObject();
-                            TemplateLoader.get().cleanCache(featureTypeInfo, ti.getIdentifier());
-                            // remove the rule
-                            removeTemplatePreviewRule(featureTypeInfo);
-                        }
-                        if (previewEditor.hasFeedbackMessage()) {
-                            target.add(previewFeedback);
-                        }
-                    }
-                };
+            @Override
+            protected void onAfterSubmit(AjaxRequestTarget target) {
+                FeatureTypeInfo featureTypeInfo = featureTypesDD.getModelObject();
+                if (featureTypeInfo != null) {
+                    // clean cache
+                    TemplateInfo ti = page.getTemplateInfoModel().getObject();
+                    TemplateLoader.get().cleanCache(featureTypeInfo, ti.getIdentifier());
+                    // remove the rule
+                    removeTemplatePreviewRule(featureTypeInfo);
+                }
+                if (previewEditor.hasFeedbackMessage()) {
+                    target.add(previewFeedback);
+                }
+            }
+        };
         return submitLink;
     }
 
@@ -367,29 +334,27 @@ public class TemplatePreviewPanel extends Panel {
     }
 
     private AjaxSubmitLink getValidate() {
-        AjaxSubmitLink submitLink =
-                new AjaxSubmitLink("validate", previewInfoForm) {
+        AjaxSubmitLink submitLink = new AjaxSubmitLink("validate", previewInfoForm) {
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        super.onSubmit(target);
-                        if (previewResult != null) {
-                            SupportedFormat outputFormat = outputFormatsDropDown.getModelObject();
-                            TemplateOutputValidator validator =
-                                    new TemplateOutputValidator(outputFormat);
-                            boolean result = validator.validate(previewResult);
-                            String message = validator.getMessage();
-                            if (!result) previewEditor.error(message);
-                            else previewEditor.info(message);
-                        }
-                    }
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                super.onSubmit(target);
+                if (previewResult != null) {
+                    SupportedFormat outputFormat = outputFormatsDropDown.getModelObject();
+                    TemplateOutputValidator validator = new TemplateOutputValidator(outputFormat);
+                    boolean result = validator.validate(previewResult);
+                    String message = validator.getMessage();
+                    if (!result) previewEditor.error(message);
+                    else previewEditor.info(message);
+                }
+            }
 
-                    @Override
-                    protected void onAfterSubmit(AjaxRequestTarget target) {
-                        super.onAfterSubmit(target);
-                        if (previewEditor.hasFeedbackMessage()) target.add(previewFeedback);
-                    }
-                };
+            @Override
+            protected void onAfterSubmit(AjaxRequestTarget target) {
+                super.onAfterSubmit(target);
+                if (previewEditor.hasFeedbackMessage()) target.add(previewFeedback);
+            }
+        };
         return submitLink;
     }
 
@@ -398,13 +363,14 @@ public class TemplatePreviewPanel extends Panel {
     }
 
     CloseableHttpClient buildHttpClient() {
-        RequestConfig clientConfig =
-                RequestConfig.custom().setConnectTimeout(60000).setSocketTimeout(60000).build();
+        RequestConfig clientConfig = RequestConfig.custom()
+                .setConnectTimeout(60000)
+                .setSocketTimeout(60000)
+                .build();
         CookieStore cookieStore = new BasicCookieStore();
         RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
         if (attributes != null) {
-            BasicClientCookie cookie =
-                    new BasicClientCookie("JSESSIONID", attributes.getSessionId());
+            BasicClientCookie cookie = new BasicClientCookie("JSESSIONID", attributes.getSessionId());
             HttpServletRequest request = request();
             cookie.setPath(request.getContextPath());
             // gets a calendar using the default time zone and locale.
@@ -440,8 +406,7 @@ public class TemplatePreviewPanel extends Panel {
     }
 
     WorkspaceInfo setWorkspaceValue(String workspaceValue) {
-        List<WorkspaceInfo> workspaces =
-                (List<WorkspaceInfo>) workspaceInfoDropDownChoice.getChoices();
+        List<WorkspaceInfo> workspaces = (List<WorkspaceInfo>) workspaceInfoDropDownChoice.getChoices();
         if (workspaces.isEmpty()) workspaces = getWorkspaces(getCatalog());
         return setWorkspaceValue(workspaceValue, workspaces);
     }
@@ -449,10 +414,9 @@ public class TemplatePreviewPanel extends Panel {
     WorkspaceInfo setWorkspaceValue(String workspaceValue, List<WorkspaceInfo> workspaces) {
         WorkspaceInfo result = null;
         if (workspaceInfoDropDownChoice != null && !workspaces.isEmpty()) {
-            Optional<WorkspaceInfo> selectedWs =
-                    workspaces.stream()
-                            .filter(ws -> ws.getName().equals(workspaceValue))
-                            .findFirst();
+            Optional<WorkspaceInfo> selectedWs = workspaces.stream()
+                    .filter(ws -> ws.getName().equals(workspaceValue))
+                    .findFirst();
             if (selectedWs.isPresent()) {
                 result = selectedWs.get();
                 workspaceInfoDropDownChoice.setEnabled(false);
@@ -465,11 +429,9 @@ public class TemplatePreviewPanel extends Panel {
     }
 
     void setFeatureTypeInfoValue(String featureTypeInfoValue) {
-        List<FeatureTypeInfo> featureTypeInfos =
-                (List<FeatureTypeInfo>) featureTypesDD.getChoices();
+        List<FeatureTypeInfo> featureTypeInfos = (List<FeatureTypeInfo>) featureTypesDD.getChoices();
         if (featureTypeInfos.isEmpty())
-            featureTypeInfos =
-                    getFeatureTypes(getCatalog(), workspaceInfoDropDownChoice.getModelObject());
+            featureTypeInfos = getFeatureTypes(getCatalog(), workspaceInfoDropDownChoice.getModelObject());
         setFeatureTypeInfoValue(featureTypeInfoValue, featureTypeInfos);
     }
 
@@ -478,13 +440,11 @@ public class TemplatePreviewPanel extends Panel {
             this.outputFormatsDropDown.setChoices(SupportedFormat.getByExtension(extension));
     }
 
-    void setFeatureTypeInfoValue(
-            String featureTypeInfoValue, List<FeatureTypeInfo> featureTypeInfos) {
+    void setFeatureTypeInfoValue(String featureTypeInfoValue, List<FeatureTypeInfo> featureTypeInfos) {
         if (featureTypesDD != null && !featureTypeInfos.isEmpty()) {
-            Optional<FeatureTypeInfo> op =
-                    featureTypeInfos.stream()
-                            .filter(fti -> fti.getName().equals(featureTypeInfoValue))
-                            .findFirst();
+            Optional<FeatureTypeInfo> op = featureTypeInfos.stream()
+                    .filter(fti -> fti.getName().equals(featureTypeInfoValue))
+                    .findFirst();
 
             if (op.isPresent()) {
                 featureTypesDD.setEnabled(false);

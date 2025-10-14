@@ -10,14 +10,13 @@ import java.util.List;
 import org.geoserver.ows.KvpParser;
 
 /**
- * Parses the {@code time} parameter of the request. The date, time and period are expected to be
- * formatted according ISO-8601 standard.
+ * Parses the {@code time} parameter of the request. The date, time and period are expected to be formatted according
+ * ISO-8601 standard.
  *
  * @author Cedric Briancon
  * @author Martin Desruisseaux
  * @author Simone Giannecchini, GeoSolutions SAS
  * @author Jonathan Meyer, Applied Information Sciences, jon@gisjedi.com
- * @version $Id$
  */
 public class TimeKvpParser extends KvpParser {
 

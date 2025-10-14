@@ -6,6 +6,7 @@
 
 package org.geoserver.security.config;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.SerializationUtils;
@@ -24,6 +25,7 @@ import org.geoserver.security.rememberme.RememberMeServicesConfig;
  */
 public class SecurityManagerConfig implements SecurityConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private String roleServiceName;
@@ -40,16 +42,11 @@ public class SecurityManagerConfig implements SecurityConfig {
     public SecurityManagerConfig(SecurityManagerConfig config) {
         this.roleServiceName = config.getRoleServiceName();
         this.authProviderNames =
-                config.getAuthProviderNames() != null
-                        ? new ArrayList<>(config.getAuthProviderNames())
-                        : null;
+                config.getAuthProviderNames() != null ? new ArrayList<>(config.getAuthProviderNames()) : null;
         this.filterChain =
-                config.getFilterChain() != null
-                        ? new GeoServerSecurityFilterChain(config.getFilterChain())
-                        : null;
+                config.getFilterChain() != null ? new GeoServerSecurityFilterChain(config.getFilterChain()) : null;
         this.rememberMeService = new RememberMeServicesConfig(config.getRememberMeService());
-        this.bruteForcePrevention =
-                new BruteForcePreventionConfig(config.getBruteForcePrevention());
+        this.bruteForcePrevention = new BruteForcePreventionConfig(config.getBruteForcePrevention());
         this.encryptingUrlParams = config.isEncryptingUrlParams();
         this.configPasswordEncrypterName = config.getConfigPasswordEncrypterName();
         // this.masterPasswordURL=config.getMasterPasswordURL();
@@ -59,12 +56,8 @@ public class SecurityManagerConfig implements SecurityConfig {
     private Object readResolve() {
         authProviderNames = authProviderNames != null ? authProviderNames : new ArrayList<>();
         filterChain = filterChain != null ? filterChain : new GeoServerSecurityFilterChain();
-        rememberMeService =
-                rememberMeService != null ? rememberMeService : new RememberMeServicesConfig();
-        bruteForcePrevention =
-                bruteForcePrevention != null
-                        ? bruteForcePrevention
-                        : new BruteForcePreventionConfig();
+        rememberMeService = rememberMeService != null ? rememberMeService : new RememberMeServicesConfig();
+        bruteForcePrevention = bruteForcePrevention != null ? bruteForcePrevention : new BruteForcePreventionConfig();
         return this;
     }
 
@@ -130,17 +123,13 @@ public class SecurityManagerConfig implements SecurityConfig {
     @Override
     public SecurityConfig clone(boolean allowEnvParametrization) {
 
-        final GeoServerEnvironment gsEnvironment =
-                GeoServerExtensions.bean(GeoServerEnvironment.class);
+        final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
 
         SecurityManagerConfig target = SerializationUtils.clone(this);
 
         if (target != null) {
-            if (allowEnvParametrization
-                    && gsEnvironment != null
-                    && GeoServerEnvironment.allowEnvParametrization()) {
-                target.setConfigPasswordEncrypterName(
-                        (String) gsEnvironment.resolveValue(configPasswordEncrypterName));
+            if (allowEnvParametrization && gsEnvironment != null && GeoServerEnvironment.allowEnvParametrization()) {
+                target.setConfigPasswordEncrypterName((String) gsEnvironment.resolveValue(configPasswordEncrypterName));
                 target.setRoleServiceName((String) gsEnvironment.resolveValue(roleServiceName));
             }
         }

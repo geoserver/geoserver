@@ -10,7 +10,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>2.27-SNAPSHOT</version>
+    <version>3.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>gs-platform</artifactId>
@@ -95,18 +95,9 @@
     </dependency>
 
     <dependency>
-      <groupId>javax.media</groupId>
-      <artifactId>jai_core</artifactId>
+      <groupId>org.eclipse.imagen</groupId>
+      <artifactId>imagen-core</artifactId>
     </dependency>
-    <dependency>
-      <groupId>javax.media</groupId>
-      <artifactId>jai_codec</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>javax.media</groupId>
-      <artifactId>jai_imageio</artifactId>
-    </dependency>
-
     <dependency>
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>

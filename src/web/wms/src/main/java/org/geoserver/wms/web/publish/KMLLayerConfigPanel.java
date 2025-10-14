@@ -6,6 +6,7 @@
 package org.geoserver.wms.web.publish;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,6 +27,7 @@ import org.geotools.api.feature.type.PropertyDescriptor;
 /** Configures a layer KML related attributes (coming from metadata) */
 public class KMLLayerConfigPanel extends PublishedConfigurationPanel<LayerInfo> {
 
+    @Serial
     private static final long serialVersionUID = 6469105227923320272L;
     /** TODO: replace this with a list coming from the KML regionation classes */
     static final List<String> KML_STRATEGIES =
@@ -35,26 +37,20 @@ public class KMLLayerConfigPanel extends PublishedConfigurationPanel<LayerInfo> 
         super(id, model);
 
         PropertyModel<MetadataMap> metadata = new PropertyModel<>(model, "resource.metadata");
-        add(
-                new DropDownChoice<>(
-                        "kml.regionateAttribute",
-                        new MapModel<>(metadata, "kml.regionateAttribute"),
-                        new AttributeNamesModel(new PropertyModel<>(model, "resource"))));
-        add(
-                new DropDownChoice<>(
-                        "kml.regionateStrategy",
-                        new MapModel<>(metadata, "kml.regionateStrategy"),
-                        KML_STRATEGIES));
-        TextField<Integer> maxFeatures =
-                new TextField<>(
-                        "kml.regionateFeatureLimit",
-                        new MapModel<>(metadata, "kml.regionateFeatureLimit"),
-                        Integer.class);
+        add(new DropDownChoice<>(
+                "kml.regionateAttribute",
+                new MapModel<>(metadata, "kml.regionateAttribute"),
+                new AttributeNamesModel(new PropertyModel<>(model, "resource"))));
+        add(new DropDownChoice<>(
+                "kml.regionateStrategy", new MapModel<>(metadata, "kml.regionateStrategy"), KML_STRATEGIES));
+        TextField<Integer> maxFeatures = new TextField<>(
+                "kml.regionateFeatureLimit", new MapModel<>(metadata, "kml.regionateFeatureLimit"), Integer.class);
         maxFeatures.add(RangeValidator.minimum(1));
         add(maxFeatures);
     }
 
     private static class AttributeNamesModel extends LoadableDetachableModel<List<String>> {
+        @Serial
         private static final long serialVersionUID = 2480902398710400909L;
 
         IModel<FeatureTypeInfo> featureTypeInfo;

@@ -14,8 +14,7 @@ import org.geoserver.smartdataloader.metadata.DataStoreMetadata;
 import org.junit.Test;
 
 /** Tests related to ExclusionsDomainModelVisitor. */
-public abstract class JDBCExclusionsDomainModelVisitorTest
-        extends AbstractJDBCSmartDataLoaderTestSupport {
+public abstract class JDBCExclusionsDomainModelVisitorTest extends AbstractJDBCSmartDataLoaderTestSupport {
 
     public JDBCExclusionsDomainModelVisitorTest(JDBCFixtureHelper fixtureHelper) {
         super(fixtureHelper);
@@ -36,15 +35,10 @@ public abstract class JDBCExclusionsDomainModelVisitorTest
         exclusions.add("meteo_observations.value");
         exclusions.add("meteo_parameters.param_unit");
         exclusions.add("meteo_parameters.param_name");
-        DomainModel newDomainModel = ExclusionsDomainModelVisitor.buildDomainModel(dm, exclusions);
+        DomainModel newDomainModel = ExclusionsDomainModelVisitor.buildDomainModel(dm, null, exclusions);
         assertEquals(1, newDomainModel.getRootEntity().getAttributes().size()); // only id
         assertEquals("id", newDomainModel.getRootEntity().getAttributes().get(0).getName());
-        assertEquals(
-                2,
-                newDomainModel
-                        .getRootEntity()
-                        .getRelations()
-                        .size()); // meteo_stations.meteo_observations
+        assertEquals(2, newDomainModel.getRootEntity().getRelations().size()); // meteo_stations.meteo_observations
         assertEquals(
                 "meteo_observations",
                 newDomainModel

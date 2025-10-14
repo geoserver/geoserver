@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.web.panel;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -24,8 +25,7 @@ import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
 
 /**
- * A panel that lets the user select a geonetwork endpoint and input a uuid of the metadata record
- * in geonetwork.
+ * A panel that lets the user select a geonetwork endpoint and input a uuid of the metadata record in geonetwork.
  *
  * <p>The available geonetwork endpoints are configured in the yaml.
  *
@@ -33,6 +33,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
  */
 // TODO WICKET8 - Verify this page works OK
 public abstract class ImportGeonetworkPanel extends Panel {
+    @Serial
     private static final long serialVersionUID = 1297739738862860160L;
 
     public ImportGeonetworkPanel(String id) {
@@ -46,9 +47,7 @@ public abstract class ImportGeonetworkPanel extends Panel {
         GeoServerDialog dialog = new GeoServerDialog("importDialog");
         dialog.setInitialHeight(100);
         add(dialog);
-        add(
-                new FeedbackPanel("importFeedback", new ContainerFeedbackMessageFilter(this))
-                        .setOutputMarkupId(true));
+        add(new FeedbackPanel("importFeedback", new ContainerFeedbackMessageFilter(this)).setOutputMarkupId(true));
 
         DropDownChoice<String> dropDown = createDropDown();
         dropDown.setNullValid(true);
@@ -61,59 +60,44 @@ public abstract class ImportGeonetworkPanel extends Panel {
     }
 
     private AjaxSubmitLink createImportAction(
-            final DropDownChoice<String> dropDown,
-            final TextField<String> inputUUID,
-            GeoServerDialog dialog) {
+            final DropDownChoice<String> dropDown, final TextField<String> inputUUID, GeoServerDialog dialog) {
         return new AjaxSubmitLink("link") {
+            @Serial
             private static final long serialVersionUID = -8718015688839770852L;
 
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 boolean valid = true;
                 if (dropDown.getModelObject() == null || "".equals(dropDown.getModelObject())) {
-                    error(
-                            new ParamResourceModel(
-                                            "errorSelectGeonetwork", ImportGeonetworkPanel.this)
-                                    .getString());
+                    error(new ParamResourceModel("errorSelectGeonetwork", ImportGeonetworkPanel.this).getString());
                     valid = false;
                 }
                 final String uuId = inputUUID.getValue();
                 if ("".equals(uuId)) {
-                    error(
-                            new ParamResourceModel("errorUuidRequired", ImportGeonetworkPanel.this)
-                                    .getString());
+                    error(new ParamResourceModel("errorUuidRequired", ImportGeonetworkPanel.this).getString());
                     valid = false;
                 }
                 if (valid) {
-                    dialog.setTitle(
-                            new ParamResourceModel(
-                                    "confirmImportDialog.title", ImportGeonetworkPanel.this));
-                    dialog.showOkCancel(
-                            target,
-                            new GeoServerDialog.DialogDelegate() {
+                    dialog.setTitle(new ParamResourceModel("confirmImportDialog.title", ImportGeonetworkPanel.this));
+                    dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
-                                private static final long serialVersionUID = -5552087037163833563L;
+                        @Serial
+                        private static final long serialVersionUID = -5552087037163833563L;
 
-                                @Override
-                                protected Component getContents(String id) {
-                                    ParamResourceModel resource =
-                                            new ParamResourceModel(
-                                                    "confirmImportDialog.content",
-                                                    ImportGeonetworkPanel.this);
-                                    return new MultiLineLabel(id, resource.getString());
-                                }
+                        @Override
+                        protected Component getContents(String id) {
+                            ParamResourceModel resource =
+                                    new ParamResourceModel("confirmImportDialog.content", ImportGeonetworkPanel.this);
+                            return new MultiLineLabel(id, resource.getString());
+                        }
 
-                                @Override
-                                protected boolean onSubmit(
-                                        AjaxRequestTarget target, Component contents) {
-                                    handleImport(
-                                            dropDown.getModelObject(),
-                                            inputUUID.getModelObject(),
-                                            target,
-                                            getFeedbackPanel());
-                                    return true;
-                                }
-                            });
+                        @Override
+                        protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                            handleImport(
+                                    dropDown.getModelObject(), inputUUID.getModelObject(), target, getFeedbackPanel());
+                            return true;
+                        }
+                    });
                 }
 
                 target.add(getFeedbackPanel());
@@ -131,9 +115,7 @@ public abstract class ImportGeonetworkPanel extends Panel {
 
     private DropDownChoice<String> createDropDown() {
         ConfigurationService configService =
-                GeoServerApplication.get()
-                        .getApplicationContext()
-                        .getBean(ConfigurationService.class);
+                GeoServerApplication.get().getApplicationContext().getBean(ConfigurationService.class);
         MetadataConfiguration configuration = configService.getMetadataConfiguration();
         ArrayList<String> optionsGeonetwork = new ArrayList<>();
         if (configuration != null && configuration.getGeonetworks() != null) {

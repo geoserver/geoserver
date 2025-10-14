@@ -18,10 +18,6 @@ public class BoreholeViewMockData extends AbstractAppSchemaMockData {
     public void addContent() {
         putNamespace("gsmlp", "http://xmlns.geosciml.org/geosciml-portrayal/2.0");
         addFeatureType(
-                "gsmlp",
-                "BoreholeView",
-                "BoreholeView.xml",
-                "Gsml32Borehole.properties",
-                "geosciml-portrayal.xsd");
+                "gsmlp", "BoreholeView", "BoreholeView.xml", "Gsml32Borehole.properties", "geosciml-portrayal.xsd");
     }
 }

@@ -39,12 +39,22 @@ public class ConformanceTest extends MapsTestSupport {
     @Test
     public void testConformanceHTML() throws Exception {
         org.jsoup.nodes.Document document = getAsJSoup("ogc/maps/v1/conformance?f=text/html");
-        assertEquals("GeoServer OGC API Maps Conformance", document.select("#title").text());
+        assertEquals(
+                "GeoServer OGC API Maps Conformance", document.select("#title").text());
         assertEquals(ConformanceClass.CORE, document.select("#content li:eq(0)").text());
-        assertEquals(ConformanceClass.COLLECTIONS, document.select("#content li:eq(1)").text());
-        assertEquals(MapsService.CONF_CLASS_CORE, document.select("#content li:eq(2)").text());
-        assertEquals(MapsService.CONF_CLASS_GEODATA, document.select("#content li:eq(3)").text());
-        assertEquals(MapsService.CONF_CLASS_BBOX, document.select("#content li:eq(4)").text());
-        assertEquals(MapsService.CONF_CLASS_CRS, document.select("#content li:eq(5)").text());
+        assertEquals(
+                ConformanceClass.COLLECTIONS,
+                document.select("#content li:eq(1)").text());
+        assertEquals(
+                MapsService.CONF_CLASS_CORE,
+                document.select("#content li:eq(2)").text());
+        assertEquals(
+                MapsService.CONF_CLASS_GEODATA,
+                document.select("#content li:eq(3)").text());
+        assertEquals(
+                MapsService.CONF_CLASS_BBOX,
+                document.select("#content li:eq(4)").text());
+        assertEquals(
+                MapsService.CONF_CLASS_CRS, document.select("#content li:eq(5)").text());
     }
 }

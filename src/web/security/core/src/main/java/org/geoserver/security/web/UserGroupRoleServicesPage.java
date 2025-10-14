@@ -29,27 +29,24 @@ public class UserGroupRoleServicesPage extends AbstractSecurityPage {
     public UserGroupRoleServicesPage() {
         // add(new ServicesPanel("panel"));
         List<ITab> tabs = new ArrayList<>();
-        tabs.add(
-                new AbstractTab(new StringResourceModel("services", this, null)) {
-                    @Override
-                    public Panel getPanel(String panelId) {
-                        return new ServicesPanel(panelId);
-                    }
-                });
-        tabs.add(
-                new AbstractTab(new StringResourceModel("usersgroups", this, null)) {
-                    @Override
-                    public Panel getPanel(String panelId) {
-                        return new UsersGroupsPanel(panelId);
-                    }
-                });
-        tabs.add(
-                new AbstractTab(new StringResourceModel("roles", this, null)) {
-                    @Override
-                    public Panel getPanel(String panelId) {
-                        return new RolesPanel(panelId);
-                    }
-                });
+        tabs.add(new AbstractTab(new StringResourceModel("services", this, null)) {
+            @Override
+            public Panel getPanel(String panelId) {
+                return new ServicesPanel(panelId);
+            }
+        });
+        tabs.add(new AbstractTab(new StringResourceModel("usersgroups", this, null)) {
+            @Override
+            public Panel getPanel(String panelId) {
+                return new UsersGroupsPanel(panelId);
+            }
+        });
+        tabs.add(new AbstractTab(new StringResourceModel("roles", this, null)) {
+            @Override
+            public Panel getPanel(String panelId) {
+                return new RolesPanel(panelId);
+            }
+        });
         add(new TabbedPanel<>("panel", tabs));
     }
 
@@ -71,7 +68,7 @@ public class UserGroupRoleServicesPage extends AbstractSecurityPage {
         }
     }
 
-    class UsersGroupsPanel extends Panel {
+    static class UsersGroupsPanel extends Panel {
 
         public UsersGroupsPanel(String id) {
             super(id);
@@ -80,7 +77,7 @@ public class UserGroupRoleServicesPage extends AbstractSecurityPage {
         }
     }
 
-    class RolesPanel extends Panel {
+    static class RolesPanel extends Panel {
 
         public RolesPanel(String id) {
             super(id);

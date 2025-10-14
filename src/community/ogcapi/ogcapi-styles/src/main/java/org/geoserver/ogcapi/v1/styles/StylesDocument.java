@@ -53,8 +53,7 @@ public class StylesDocument extends AbstractDocument {
                         return true;
                     } catch (Exception e) {
                         styles.close();
-                        throw new ServiceException(
-                                "Failed to iterate over the feature types in the catalog", e);
+                        throw new ServiceException("Failed to iterate over the feature types in the catalog", e);
                     }
                 }
             }

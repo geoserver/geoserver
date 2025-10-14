@@ -26,15 +26,14 @@ import org.w3c.dom.NodeList;
  *
  * <p>Usage:
  *
- * <pre>
- *         <code>
- *                 File catalog = new File( ".../catalog.xml" );
- *                 LegacygCatalogReader reader = new LegacygCatalogReader();
- *                 reader.read( catalog );
- *                 List dataStores = reader.dataStores();
- *                 List nameSpaces = reader.nameSpaces();
- *         </code>
- * </pre>
+ * <pre>{@code
+ * File catalog = new File( ".../catalog.xml" );
+ * LegacygCatalogReader reader = new LegacygCatalogReader();
+ * reader.read( catalog );
+ * List dataStores = reader.dataStores();
+ * List nameSpaces = reader.nameSpaces();
+ *
+ * }</pre>
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
@@ -64,8 +63,7 @@ public class LegacyCatalogReader {
     /**
      * Reads "datastore" elements from the catalog.xml file.
      *
-     * <p>For each datastore element read, a map is returned which contains the following key /
-     * values:
+     * <p>For each datastore element read, a map is returned which contains the following key / values:
      *
      * <ul>
      *   <li>"id": data store id (String)
@@ -74,7 +72,7 @@ public class LegacyCatalogReader {
      *   <li>"connectionParams": data store connection parameters (Map)
      * </ul>
      *
-     * * indicates that the parameter is optional and may be <code>null</code>
+     * * indicates that the parameter is optional and may be {@code null}
      *
      * @return A list of Map objects containing datastore information.
      * @throws Exception If error processing "datastores" element.
@@ -92,13 +90,10 @@ public class LegacyCatalogReader {
 
             String id = ReaderUtils.getAttribute(dataStoreElement, "id", true);
             dataStore.put("id", id);
-            dataStore.put(
-                    "namespace", ReaderUtils.getAttribute(dataStoreElement, "namespace", false));
+            dataStore.put("namespace", ReaderUtils.getAttribute(dataStoreElement, "namespace", false));
             dataStore.put(
                     "enabled",
-                    Boolean.valueOf(
-                            ReaderUtils.getBooleanAttribute(
-                                    dataStoreElement, "enabled", false, true)));
+                    Boolean.valueOf(ReaderUtils.getBooleanAttribute(dataStoreElement, "enabled", false, true)));
             try {
                 Map<String, String> params = dataStoreParams(dataStoreElement);
                 dataStore.put("connectionParams", params);
@@ -130,7 +125,7 @@ public class LegacyCatalogReader {
      *   <li>"description": description of the format (String) *
      * </ul>
      *
-     * * indicates that the parameter is optional and may be <code>null</code>
+     * * indicates that the parameter is optional and may be {@code null}
      *
      * @return A list of Map objects containg the format information.
      * @throws Exception If error processing "datastores" element.
@@ -149,16 +144,12 @@ public class LegacyCatalogReader {
             format.put("id", ReaderUtils.getAttribute(formatElement, "id", true));
             format.put("namespace", ReaderUtils.getAttribute(formatElement, "namespace", false));
             format.put(
-                    "enabled",
-                    Boolean.valueOf(
-                            ReaderUtils.getBooleanAttribute(
-                                    formatElement, "enabled", false, true)));
+                    "enabled", Boolean.valueOf(ReaderUtils.getBooleanAttribute(formatElement, "enabled", false, true)));
 
             format.put("type", ReaderUtils.getChildText(formatElement, "type", true));
             format.put("url", ReaderUtils.getChildText(formatElement, "url", false));
             format.put("title", ReaderUtils.getChildText(formatElement, "title", false));
-            format.put(
-                    "description", ReaderUtils.getChildText(formatElement, "description", false));
+            format.put("description", ReaderUtils.getChildText(formatElement, "description", false));
 
             formats.add(format);
         }
@@ -169,10 +160,10 @@ public class LegacyCatalogReader {
     /**
      * Reads "namespace" elements from the catalog.xml file.
      *
-     * <p>For each namespace element read, an entry of <prefix,uri> is created in a map. The default
-     * uri is located under the empty string key.
+     * <p>For each namespace element read, an entry of &lt;prefix,uri&gt; is created in a map. The default uri is
+     * located under the empty string key.
      *
-     * @return A map containing <prefix,uri> tuples.
+     * @return A map containing &lt;prefix,uri&gt; tuples.
      * @throws Exception If error processing "namespaces" element.
      */
     public Map<String, String> namespaces() throws Exception {
@@ -182,10 +173,10 @@ public class LegacyCatalogReader {
     /**
      * Reads "namespace" elements from the catalog.xml file that correspond to isolated workspaces.
      *
-     * <p>For each namespace element read, an entry of <prefix,uri> is created in a map. The default
-     * uri is located under the empty string key.
+     * <p>For each namespace element read, an entry of &lt;prefix,uri&gt; is created in a map. The default uri is
+     * located under the empty string key.
      *
-     * @return A map containing <prefix,uri> tuples.
+     * @return A map containing &lt;prefix,uri&gt; tuples.
      * @throws Exception If error processing "namespaces" element.
      */
     public Map<String, String> isolatedNamespaces() throws Exception {
@@ -193,8 +184,8 @@ public class LegacyCatalogReader {
     }
 
     /**
-     * Helper method that retrieves namespaces from the catalog.xml file. If readIsolated parameter
-     * is TRUE isolated workspace will be read, otherwise only non isolated workspaces will be read.
+     * Helper method that retrieves namespaces from the catalog.xml file. If readIsolated parameter is TRUE isolated
+     * workspace will be read, otherwise only non isolated workspaces will be read.
      */
     private Map<String, String> readNamespaces(boolean readIsolated) throws Exception {
         // get the namespaces XML root element
@@ -214,10 +205,8 @@ public class LegacyCatalogReader {
                 // get namespace information from the XML node
                 String prefix = namespaceElement.getAttribute("prefix");
                 String uri = namespaceElement.getAttribute("uri");
-                boolean isDefault =
-                        namespaceElement.getAttribute("default").equalsIgnoreCase("true");
-                boolean isIsolated =
-                        namespaceElement.getAttribute("isolated").equalsIgnoreCase("true");
+                boolean isDefault = namespaceElement.getAttribute("default").equalsIgnoreCase("true");
+                boolean isIsolated = namespaceElement.getAttribute("isolated").equalsIgnoreCase("true");
                 // let's see if we need to return this namespace
                 if ((!readIsolated && isIsolated) || (readIsolated && !isIsolated)) {
                     // not interest in this namespace, move to the next one
@@ -240,9 +229,9 @@ public class LegacyCatalogReader {
     /**
      * Reads "style" elements from the catalog.xml file.
      *
-     * <p>For each style element read, an entry of <id,filename> is created in a map.
+     * <p>For each style element read, an entry of &lt;id,filename&gt; is created in a map.
      *
-     * @return A map containing style <id,filename> tuples.
+     * @return A map containing style &lt;id,filename&gt; tuples.
      * @throws Exception If error processing "styles" element.
      */
     public Map<String, String> styles() throws Exception {
@@ -267,8 +256,7 @@ public class LegacyCatalogReader {
      * @throws Exception If problem parsing any parameters.
      */
     protected Map<String, String> dataStoreParams(Element dataStoreElement) throws Exception {
-        Element paramsElement =
-                ReaderUtils.getChildElement(dataStoreElement, "connectionParams", true);
+        Element paramsElement = ReaderUtils.getChildElement(dataStoreElement, "connectionParams", true);
         NodeList paramList = paramsElement.getElementsByTagName("parameter");
 
         Map<String, String> params = new HashMap<>();
@@ -288,7 +276,7 @@ public class LegacyCatalogReader {
      * Convenience method for reading namespace prefix and uri from a namespace element.
      *
      * @param namespaceElement The "namespace" element.
-     * @return A <prefix,uri> tuple.
+     * @return A &lt;prefix,uri&gt; tuple.
      * @throws Exception If problem parsing any parameters.
      */
     protected Map.Entry<String, String> namespaceTuple(Element namespaceElement) throws Exception {

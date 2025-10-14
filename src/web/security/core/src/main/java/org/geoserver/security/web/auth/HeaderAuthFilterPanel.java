@@ -30,7 +30,6 @@ public class HeaderAuthFilterPanel
     public void renderHead(IHeaderResponse response) {
         // Content-Security-Policy: inline styles must be nonce=...
         String css = " ul.horizontal div {\n" + "    display:inline;\n" + "  }";
-        response.render(
-                CssHeaderItem.forCSS(css, "org-geoserver-security-web-auth-HeaderAuthFilterPanel"));
+        response.render(CssHeaderItem.forCSS(css, "org-geoserver-security-web-auth-HeaderAuthFilterPanel"));
     }
 }

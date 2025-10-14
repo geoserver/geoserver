@@ -32,9 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /** Controller for the Map Service query endpoint */
 @RestController
-@RequestMapping(
-        path = "/gsr/services/{workspaceName}/MapServer",
-        produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/gsr/services/{workspaceName}/MapServer", produces = MediaType.APPLICATION_JSON_VALUE)
 public class QueryController extends AbstractGSRController {
 
     @Autowired
@@ -46,34 +44,23 @@ public class QueryController extends AbstractGSRController {
     public GSRModel query(
             @PathVariable String workspaceName,
             @PathVariable Integer layerId,
-            @RequestParam(
-                            name = "geometryType",
-                            required = false,
-                            defaultValue = "esriGeometryEnvelope")
+            @RequestParam(name = "geometryType", required = false, defaultValue = "esriGeometryEnvelope")
                     String geometryTypeName,
             @RequestParam(name = "geometry", required = false) String geometryText,
             @RequestParam(name = "inSR", required = false) String inSRText,
             @RequestParam(name = "outSR", required = false) String outSRText,
-            @RequestParam(
-                            name = "spatialRel",
-                            required = false,
-                            defaultValue = "esriSpatialRelIntersects")
+            @RequestParam(name = "spatialRel", required = false, defaultValue = "esriSpatialRelIntersects")
                     String spatialRelText,
             @RequestParam(name = "objectIds", required = false) String objectIdsText,
             @RequestParam(name = "relationPattern", required = false) String relatePattern,
             @RequestParam(name = "time", required = false) String time,
             @RequestParam(name = "text", required = false) String text,
-            @RequestParam(name = "maxAllowableOffsets", required = false)
-                    String maxAllowableOffsets,
+            @RequestParam(name = "maxAllowableOffsets", required = false) String maxAllowableOffsets,
             @RequestParam(name = "where", required = false) String whereClause,
-            @RequestParam(name = "returnGeometry", required = false, defaultValue = "true")
-                    Boolean returnGeometry,
-            @RequestParam(name = "outFields", required = false, defaultValue = "*")
-                    String outFieldsText,
-            @RequestParam(name = "returnIdsOnly", required = false, defaultValue = "false")
-                    boolean returnIdsOnly,
-            @RequestParam(name = "quantizationParameters", required = false)
-                    String quantizationParameters)
+            @RequestParam(name = "returnGeometry", required = false, defaultValue = "true") Boolean returnGeometry,
+            @RequestParam(name = "outFields", required = false, defaultValue = "*") String outFieldsText,
+            @RequestParam(name = "returnIdsOnly", required = false, defaultValue = "false") boolean returnIdsOnly,
+            @RequestParam(name = "quantizationParameters", required = false) String quantizationParameters)
             throws IOException {
 
         LayersAndTables layersAndTables = LayerDAO.find(catalog, workspaceName);
@@ -99,8 +86,7 @@ public class QueryController extends AbstractGSRController {
         if (returnIdsOnly) {
             return FeatureEncoder.objectIds(features);
         } else {
-            FeatureList featureList =
-                    new FeatureList(features, returnGeometry, outSRText, quantizationParameters);
+            FeatureList featureList = new FeatureList(features, returnGeometry, outSRText, quantizationParameters);
             return featureList;
         }
     }

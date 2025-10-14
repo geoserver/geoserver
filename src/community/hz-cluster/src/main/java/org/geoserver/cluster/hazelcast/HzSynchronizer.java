@@ -5,7 +5,6 @@
  */
 package org.geoserver.cluster.hazelcast;
 
-import static java.lang.String.format;
 import static org.geoserver.cluster.hazelcast.HazelcastUtil.localAddress;
 
 import com.codahale.metrics.MetricRegistry;
@@ -46,16 +45,15 @@ import org.geotools.util.logging.Logging;
 /**
  * Base hazelcast based synchronizer that does event collapsing.
  *
- * <p>This synchronizer maintains a thread safe queue that is populated with events as they occur.
- * Upon receiving of an event a new runnable is scheduled and run after a short delay (default 5
- * sec). The runnable calls the {@link #processEvent(Queue)} method to be implemented by subclasses.
+ * <p>This synchronizer maintains a thread safe queue that is populated with events as they occur. Upon receiving of an
+ * event a new runnable is scheduled and run after a short delay (default 5 sec). The runnable calls the
+ * {@link #processEvent(Queue)} method to be implemented by subclasses.
  *
  * <p>This synchronizer events messages received from the same source.
  *
  * @author Justin Deoliveira, OpenGeo
  */
-public abstract class HzSynchronizer extends GeoServerSynchronizer
-        implements MessageListener<Event> {
+public abstract class HzSynchronizer extends GeoServerSynchronizer implements MessageListener<Event> {
 
     protected static Logger LOGGER = Logging.getLogger("org.geoserver.cluster.hazelcast");
 
@@ -97,20 +95,19 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer
         if (!isStarted()) {
             // wait for service to be fully started before processing events.
             if (LOGGER.isLoggable(Level.FINER)) {
-                LOGGER.finer(format("Ignoring message: %s. Service is not started.", event));
+                LOGGER.finer("Ignoring message: %s. Service is not started.".formatted(event));
             }
             return;
         }
         incCounter(getClass(), "recieved");
         if (localAddress(cluster.getHz()).equals(event.getSource())) {
             if (LOGGER.isLoggable(Level.FINER)) {
-                LOGGER.finer(
-                        format("%s - Skipping message generated locally: %s", nodeId(), event));
+                LOGGER.finer("%s - Skipping message generated locally: %s".formatted(nodeId(), event));
             }
             return;
         }
         if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine(format("%s - Received event %s", nodeId(), event));
+            LOGGER.fine("%s - Received event %s".formatted(nodeId(), event));
         }
 
         // schedule job to process the event with a short delay
@@ -135,7 +132,7 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer
             try {
                 future = processEvent(event);
             } catch (Exception e) {
-                LOGGER.log(Level.WARNING, format("%s - Event processing failed", nodeId()), e);
+                LOGGER.log(Level.WARNING, "%s - Event processing failed".formatted(nodeId()), e);
             }
 
             incCounter(getClass(), "reloads");
@@ -148,8 +145,7 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer
     /**
      * Processes the event queue.
      *
-     * <p><b>Note:</b> It is the responsibility of subclasses to clear events from the queue as they
-     * are processed.
+     * <p><b>Note:</b> It is the responsibility of subclasses to clear events from the queue as they are processed.
      */
     protected abstract Future<?> processEvent(Event event);
 
@@ -159,12 +155,9 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer
 
     ConfigChangeEvent newChangeEvent(Info subj, Type type) {
         String name = (String) (OwsUtils.has(subj, "name") ? OwsUtils.get(subj, "name") : null);
-        WorkspaceInfo ws =
-                (WorkspaceInfo)
-                        (OwsUtils.has(subj, "workspace") ? OwsUtils.get(subj, "workspace") : null);
+        WorkspaceInfo ws = (WorkspaceInfo) (OwsUtils.has(subj, "workspace") ? OwsUtils.get(subj, "workspace") : null);
 
-        StoreInfo store =
-                (StoreInfo) (OwsUtils.has(subj, "store") ? OwsUtils.get(subj, "store") : null);
+        StoreInfo store = (StoreInfo) (OwsUtils.has(subj, "store") ? OwsUtils.get(subj, "store") : null);
 
         ConfigChangeEvent ev = new ConfigChangeEvent(subj.getId(), name, subj.getClass(), type);
         if (ws != null) {
@@ -173,18 +166,14 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer
         if (store != null) {
             ev.setStoreId(store.getId());
         }
-        if (subj instanceof ResourceInfo) {
-            ev.setNativeName(((ResourceInfo) subj).getNativeName());
+        if (subj instanceof ResourceInfo info) {
+            ev.setNativeName(info.getNativeName());
         }
         return ev;
     }
 
     ConfigChangeEvent newChangeEvent(
-            Info subj,
-            Type type,
-            List<String> propNames,
-            List<Object> oldValues,
-            List<Object> newValues) {
+            Info subj, Type type, List<String> propNames, List<Object> oldValues, List<Object> newValues) {
         ConfigChangeEvent event = newChangeEvent(subj, type);
         event.setPropertyNames(propNames);
         event.setOldValues(oldValues);
@@ -214,10 +203,7 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer
 
     @Override
     public void handleGlobalChange(
-            GeoServerInfo global,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {
+            GeoServerInfo global, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
         // optimization for update sequence
         if (propertyNames.size() == 1 && propertyNames.contains("updateSequence")) {
             return;
@@ -232,10 +218,7 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer
 
     @Override
     public void handleServiceChange(
-            ServiceInfo service,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {
+            ServiceInfo service, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
         dispatch(newChangeEvent(service, Type.MODIFY, propertyNames, oldValues, newValues));
     }
 
@@ -256,10 +239,7 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer
 
     @Override
     public void handleSettingsModified(
-            SettingsInfo settings,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {
+            SettingsInfo settings, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
         // optimization for update sequence
         if (propertyNames.size() == 1 && propertyNames.contains("updateSequence")) {
             return;
@@ -287,7 +267,7 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer
     }
 
     public void start() {
-        LOGGER.info(format("%s - Enabling processing of configuration change events", nodeId()));
+        LOGGER.info("%s - Enabling processing of configuration change events".formatted(nodeId()));
         this.started = true;
     }
 

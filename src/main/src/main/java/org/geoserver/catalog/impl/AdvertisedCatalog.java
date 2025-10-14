@@ -5,6 +5,7 @@
  */
 package org.geoserver.catalog.impl;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.catalog.Catalog;
@@ -33,6 +34,7 @@ import org.geotools.filter.expression.InternalVolatileFunction;
  */
 public class AdvertisedCatalog extends AbstractFilteredCatalog {
 
+    @Serial
     private static final long serialVersionUID = 3361872345280114573L;
 
     /**
@@ -41,14 +43,14 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
      * @author Andrea Aime - GeoSolutions
      */
     public static final class AdvertisedLayerGroup extends DecoratingLayerGroupInfo {
+        @Serial
         private static final long serialVersionUID = 1037043388874118840L;
+
         private List<PublishedInfo> filteredLayers;
         private List<StyleInfo> filteredStyles;
 
         public AdvertisedLayerGroup(
-                LayerGroupInfo delegate,
-                List<PublishedInfo> filteredLayers,
-                List<StyleInfo> filteredStyles) {
+                LayerGroupInfo delegate, List<PublishedInfo> filteredLayers, List<StyleInfo> filteredStyles) {
             super(delegate);
             this.filteredLayers = filteredLayers;
             this.filteredStyles = filteredStyles;
@@ -65,16 +67,16 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
         }
 
         /**
-         * Returns the original layers, including the advertised ones. Use this method only if
-         * strictly necessary (current use case, figuring out if the group is queryable or not)
+         * Returns the original layers, including the advertised ones. Use this method only if strictly necessary
+         * (current use case, figuring out if the group is queryable or not)
          */
         public List<PublishedInfo> getOriginalLayers() {
             return delegate.getLayers();
         }
 
         /**
-         * Returns the original styles, including the advertised ones. Use this method only if
-         * strictly necessary (current use case, figuring out if the group is queryable or not)
+         * Returns the original styles, including the advertised ones. Use this method only if strictly necessary
+         * (current use case, figuring out if the group is queryable or not)
          */
         public List<StyleInfo> getOriginalStyles() {
             return delegate.getStyles();
@@ -134,8 +136,7 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
         Request request = Dispatcher.REQUEST.get();
         if (request != null) {
             if ("GetCapabilities".equalsIgnoreCase(request.getRequest())) {
-                String resourceContext =
-                        resource.getNamespace().getPrefix() + "/" + resource.getName();
+                String resourceContext = resource.getNamespace().getPrefix() + "/" + resource.getName();
                 return !resourceContext.equalsIgnoreCase(request.getContext());
             }
         }
@@ -183,8 +184,8 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
             PublishedInfo p = layers.get(i);
             StyleInfo style = (styles != null && styles.size() > i) ? styles.get(i) : null;
 
-            if (p instanceof LayerInfo) {
-                p = checkAccess((LayerInfo) p);
+            if (p instanceof LayerInfo info) {
+                p = checkAccess(info);
             } else {
                 p = checkAccess((LayerGroupInfo) p);
             }
@@ -257,27 +258,22 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
             return filter;
         }
 
-        org.geotools.api.filter.expression.Function visible =
-                new InternalVolatileFunction() {
-                    /**
-                     * Returns {@code false} if the catalog info shall be hidden, {@code true}
-                     * otherwise.
-                     */
-                    @Override
-                    public Boolean evaluate(Object info) {
-                        if (info instanceof ResourceInfo) {
-                            return !hideResource((ResourceInfo) info);
-                        } else if (info instanceof LayerInfo) {
-                            return !hideLayer((LayerInfo) info);
-                        } else if (info instanceof LayerGroupInfo) {
-                            return checkAccess((LayerGroupInfo) info) != null;
-                        } else {
-                            throw new IllegalArgumentException(
-                                    "Can't build filter for objects of type "
-                                            + info.getClass().getName());
-                        }
-                    }
-                };
+        org.geotools.api.filter.expression.Function visible = new InternalVolatileFunction() {
+            /** Returns {@code false} if the catalog info shall be hidden, {@code true} otherwise. */
+            @Override
+            public Boolean evaluate(Object info) {
+                if (info instanceof ResourceInfo resourceInfo) {
+                    return !hideResource(resourceInfo);
+                } else if (info instanceof LayerInfo layerInfo) {
+                    return !hideLayer(layerInfo);
+                } else if (info instanceof LayerGroupInfo groupInfo) {
+                    return checkAccess(groupInfo) != null;
+                } else {
+                    throw new IllegalArgumentException("Can't build filter for objects of type "
+                            + info.getClass().getName());
+                }
+            }
+        };
 
         FilterFactory factory = Predicates.factory;
 
@@ -328,8 +324,7 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
 
     @Override
     public void save(LayerGroupInfo layerGroup) {
-        if (layerGroup instanceof AdvertisedLayerGroup) {
-            AdvertisedLayerGroup decorator = (AdvertisedLayerGroup) layerGroup;
+        if (layerGroup instanceof AdvertisedLayerGroup decorator) {
             LayerGroupInfo unwrapped = decorator.unwrap(LayerGroupInfo.class);
             delegate.save(unwrapped);
         } else {

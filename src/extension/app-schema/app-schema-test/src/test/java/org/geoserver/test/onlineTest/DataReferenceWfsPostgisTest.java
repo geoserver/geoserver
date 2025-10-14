@@ -17,8 +17,7 @@ public class DataReferenceWfsPostgisTest extends DataReferenceWfsPostgisWithJoin
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
-        AppSchemaDataAccessRegistry.getAppSchemaProperties()
-                .setProperty("app-schema.joining", "false");
+        AppSchemaDataAccessRegistry.getAppSchemaProperties().setProperty("app-schema.joining", "false");
         super.setUpTestData(testData);
     }
 }

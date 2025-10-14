@@ -11,11 +11,11 @@ import org.geoserver.GeoServerConfigurationLock;
 import org.geoserver.GeoServerConfigurationLock.LockType;
 
 /**
- * Protects the catalog and configuration from concurrent access from the web GUI side (will stay
- * here until the catalog and configution will become thread safe).
+ * Protects the catalog and configuration from concurrent access from the web GUI side (will stay here until the catalog
+ * and configution will become thread safe).
  *
- * <p>It locks in write mode all {@link GeoServerSecuredPage} subclasses, as those have some
- * possibility to write on the configuration/catalog, all other pages are locked in read mode.
+ * <p>It locks in write mode all {@link GeoServerSecuredPage} subclasses, as those have some possibility to write on the
+ * configuration/catalog, all other pages are locked in read mode.
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -44,8 +44,7 @@ public class WicketConfigurationLockCallback implements WicketCallback {
     }
 
     @Override
-    public void onRequestTargetSet(
-            RequestCycle cycle, Class<? extends IRequestablePage> requestTarget) {
+    public void onRequestTargetSet(RequestCycle cycle, Class<? extends IRequestablePage> requestTarget) {
 
         if (!GeoServerUnlockablePage.class.isAssignableFrom(requestTarget)) {
             LockType type = locker.getCurrentLock();

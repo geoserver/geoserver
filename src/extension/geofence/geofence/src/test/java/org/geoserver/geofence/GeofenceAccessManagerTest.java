@@ -53,8 +53,7 @@ public class GeofenceAccessManagerTest extends GeofenceBaseTest {
         assertTrue(wl.isWritable());
 
         // check layer access
-        LayerInfo layer =
-                catalog.getLayerByName(getLayerId(MockData.BASIC_POLYGONS)); // uses the login
+        LayerInfo layer = catalog.getLayerByName(getLayerId(MockData.BASIC_POLYGONS)); // uses the login
 
         VectorAccessLimits vl = (VectorAccessLimits) accessManager.getAccessLimits(user, layer);
         assertEquals(Filter.INCLUDE, vl.getReadFilter());
@@ -194,8 +193,7 @@ public class GeofenceAccessManagerTest extends GeofenceBaseTest {
 
         LayerInfo generic = catalog.getLayerByName(getLayerId(MockData.GENERICENTITY));
         if (generic != null) {
-            VectorAccessLimits vl =
-                    (VectorAccessLimits) accessManager.getAccessLimits(user, generic);
+            VectorAccessLimits vl = (VectorAccessLimits) accessManager.getAccessLimits(user, generic);
             assertEquals(Filter.INCLUDE, vl.getReadFilter());
             assertEquals(Filter.INCLUDE, vl.getWriteFilter());
 
@@ -222,8 +220,7 @@ public class GeofenceAccessManagerTest extends GeofenceBaseTest {
         VectorAccessLimits vl = (VectorAccessLimits) accessManager.getAccessLimits(user, generic);
 
         FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
-        Geometry limit =
-                new WKTReader().read("MULTIPOLYGON(((48 62, 48 63, 49 63, 49 62, 48 62)))");
+        Geometry limit = new WKTReader().read("MULTIPOLYGON(((48 62, 48 63, 49 63, 49 62, 48 62)))");
         Filter filter = ff.intersects(ff.property(""), ff.literal(limit));
 
         assertEquals(filter, vl.getReadFilter());
@@ -231,8 +228,8 @@ public class GeofenceAccessManagerTest extends GeofenceBaseTest {
     }
 
     /**
-     * This test is very similar to testAreaLimited(), but the source resource is set to have the
-     * 900913 SRS. We expect that the allowedarea is projected into the resource CRS.
+     * This test is very similar to testAreaLimited(), but the source resource is set to have the 900913 SRS. We expect
+     * that the allowedarea is projected into the resource CRS.
      */
     @Test
     public void testArea900913Vector() throws Exception {
@@ -264,10 +261,9 @@ public class GeofenceAccessManagerTest extends GeofenceBaseTest {
         // Check we have the geometry filter set
         VectorAccessLimits vl = (VectorAccessLimits) accessManager.getAccessLimits(user, resource);
 
-        Geometry expectedLimit =
-                new WKTReader()
-                        .read(
-                                " MULTIPOLYGON (((5343335.558077131 8859142.800565697, 5343335.558077131 9100250.907059547, 5454655.048870404 9100250.907059547, 5454655.048870404 8859142.800565697, 5343335.558077131 8859142.800565697)))");
+        Geometry expectedLimit = new WKTReader()
+                .read(
+                        " MULTIPOLYGON (((5343335.558077131 8859142.800565697, 5343335.558077131 9100250.907059547, 5454655.048870404 9100250.907059547, 5454655.048870404 8859142.800565697, 5343335.558077131 8859142.800565697)))");
 
         IntersectExtractor ier = new IntersectExtractor();
         vl.getReadFilter().accept(ier, null);
@@ -306,24 +302,47 @@ public class GeofenceAccessManagerTest extends GeofenceBaseTest {
         layerInfo.setName(generic.getName());
 
         // Check we have the geometry filter set
-        CoverageAccessLimits accessLimits =
-                (CoverageAccessLimits) accessManager.getAccessLimits(user, resource);
+        CoverageAccessLimits accessLimits = (CoverageAccessLimits) accessManager.getAccessLimits(user, resource);
 
-        Geometry expectedLimit =
-                new WKTReader()
-                        .read(
-                                "MULTIPOLYGON (((5343335.558077131 8859142.800565697, 5343335.558077131 9100250.907059547, 5454655.048870404 9100250.907059547, 5454655.048870404 8859142.800565697, 5343335.558077131 8859142.800565697)))");
+        Geometry expectedLimit = new WKTReader()
+                .read(
+                        "MULTIPOLYGON (((5343335.558077131 8859142.800565697, 5343335.558077131 9100250.907059547, 5454655.048870404 9100250.907059547, 5454655.048870404 8859142.800565697, 5343335.558077131 8859142.800565697)))");
 
         assertTrue(expectedLimit.equalsExact(accessLimits.getRasterFilter(), .000000001));
     }
 
+    public void assertAddress(String input, String expectedAddress) {
+        String addr = GeofenceAccessManager.parseAddress(input);
+        assertEquals("Parsed address does not match", expectedAddress, addr);
+    }
+
     @Test
-    public void testIPv6Address() {
+    public void testParseAddress() {
+        assertAddress("127.0.0.1", "127.0.0.1"); // NOPMD
+        assertAddress("127.0.0.1:8000", "127.0.0.1"); // NOPMD
+        assertAddress("999.999.999.999:8000", "999.999.999.999"); // yes, it's parsable
+        assertAddress("0:0:0:0:0:0:0:42", "0:0:0:0:0:0:0:42"); // NOPMD
+        assertAddress(":::::::42", ":::::::42");
+        assertAddress("[:1::2::4a4a:F1F0:42]", ":1::2::4a4a:F1F0:42");
+        assertAddress("[::::::F1F0:42]:1234", "::::::F1F0:42");
+        assertAddress("whatever", "whatever");
+        assertAddress("whatever:1000", "whatever");
+    }
+
+    @Test
+    public void testIPv6AddressXFF() {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setRemoteAddr("[0:0:0:0:0:0:0:1]");
+        request.addHeader("x-forwarded-for", "[0:0:0:0:0:0:0:1]:1234");
         String sourceAddress = accessManager.getSourceAddress(request);
-        // assert that address does not contain any brackets
-        assertFalse(sourceAddress.matches("\\[(.*)\\]"));
+        assertEquals("0:0:0:0:0:0:0:1", sourceAddress); // NOPMD
+    }
+
+    @Test
+    public void testIPv6AddressRemoteAddr() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRemoteAddr("[0:0:0:0:0:0:0:1]:1234");
+        String sourceAddress = accessManager.getSourceAddress(request);
+        assertEquals("0:0:0:0:0:0:0:1", sourceAddress); // NOPMD
     }
 
     static class IntersectExtractor extends DefaultFilterVisitor {

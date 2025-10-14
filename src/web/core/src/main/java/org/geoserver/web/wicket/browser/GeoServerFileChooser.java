@@ -8,6 +8,7 @@ package org.geoserver.web.wicket.browser;
 import java.awt.AWTError;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -32,7 +33,9 @@ import org.geotools.util.logging.Logging;
 // TODO WICKET8 - Verify this page works OK
 public class GeoServerFileChooser extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -6246944669686555266L;
+
     static Boolean HIDE_FS = null;
 
     static {
@@ -71,8 +74,7 @@ public class GeoServerFileChooser extends Panel {
     /**
      * Constructor with optional flag to control how file system resources are exposed.
      *
-     * <p>When <tt>hideFileSyste</tt> is set to <tt>true</tt> only the data directory is exposed in
-     * the file browser.
+     * <p>When <tt>hideFileSyste</tt> is set to <tt>true</tt> only the data directory is exposed in the file browser.
      */
     public GeoServerFileChooser(String id, IModel<File> file, boolean hideFileSystem) {
         super(id, file);
@@ -88,12 +90,8 @@ public class GeoServerFileChooser extends Panel {
 
         // first check if the file is a relative reference into the data dir
         if (selection != null) {
-            File relativeToDataDir =
-                    Resources.find(
-                            Resources.fromURL(
-                                    Files.asResource(loader.getBaseDirectory()),
-                                    selection.getPath()),
-                            true);
+            File relativeToDataDir = Resources.find(
+                    Resources.fromURL(Files.asResource(loader.getBaseDirectory()), selection.getPath()), true);
             if (relativeToDataDir != null) {
                 selection = relativeToDataDir;
             }
@@ -131,52 +129,48 @@ public class GeoServerFileChooser extends Panel {
         setDefaultModel(file);
 
         // the root chooser
-        final DropDownChoice<File> choice =
-                new DropDownChoice<>(
-                        "roots",
-                        new Model<>(selectionRoot),
-                        new Model<>(roots),
-                        new FileRootsRenderer(this));
-        choice.add(
-                new AjaxFormComponentUpdatingBehavior("change") {
+        final DropDownChoice<File> choice = new DropDownChoice<>(
+                "roots", new Model<>(selectionRoot), new Model<>(roots), new FileRootsRenderer(this));
+        choice.add(new AjaxFormComponentUpdatingBehavior("change") {
 
-                    private static final long serialVersionUID = -1527567847101388940L;
+            @Serial
+            private static final long serialVersionUID = -1527567847101388940L;
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        File selection = choice.getModelObject();
-                        breadcrumbs.setRootFile(selection);
-                        updateFileBrowser(selection, Optional.of(target));
-                    }
-                });
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                File selection = choice.getModelObject();
+                breadcrumbs.setRootFile(selection);
+                updateFileBrowser(selection, Optional.of(target));
+            }
+        });
         choice.setOutputMarkupId(true);
         add(choice);
 
         // the breadcrumbs
-        breadcrumbs =
-                new FileBreadcrumbs("breadcrumbs", new Model<>(selectionRoot), file) {
+        breadcrumbs = new FileBreadcrumbs("breadcrumbs", new Model<>(selectionRoot), file) {
 
-                    private static final long serialVersionUID = -6995769189316700797L;
+            @Serial
+            private static final long serialVersionUID = -6995769189316700797L;
 
-                    @Override
-                    protected void pathItemClicked(File file, Optional<AjaxRequestTarget> target) {
-                        updateFileBrowser(file, target);
-                    }
-                };
+            @Override
+            protected void pathItemClicked(File file, Optional<AjaxRequestTarget> target) {
+                updateFileBrowser(file, target);
+            }
+        };
         breadcrumbs.setOutputMarkupId(true);
         add(breadcrumbs);
 
         // the file tables
-        fileTable =
-                new FileDataView("fileTable", new FileProvider(file)) {
+        fileTable = new FileDataView("fileTable", new FileProvider(file)) {
 
-                    private static final long serialVersionUID = -5481794219862786117L;
+            @Serial
+            private static final long serialVersionUID = -5481794219862786117L;
 
-                    @Override
-                    protected void linkNameClicked(File file, Optional<AjaxRequestTarget> target) {
-                        updateFileBrowser(file, target);
-                    }
-                };
+            @Override
+            protected void linkNameClicked(File file, Optional<AjaxRequestTarget> target) {
+                updateFileBrowser(file, target);
+            }
+        };
         fileTable.setOutputMarkupId(true);
         add(fileTable);
     }
@@ -194,10 +188,7 @@ public class GeoServerFileChooser extends Panel {
         // do nothing, subclasses will override
     }
 
-    /**
-     * Action undertaken as a directory is clicked. Default behavior is to drill down into the
-     * directory.
-     */
+    /** Action undertaken as a directory is clicked. Default behavior is to drill down into the directory. */
     protected void directoryClicked(File file, Optional<AjaxRequestTarget> target) {
         // explicitly change the root model, inform the other components the model has changed
         this.file.setObject(file);
@@ -222,8 +213,8 @@ public class GeoServerFileChooser extends Panel {
     }
 
     /**
-     * Set the file table fixed height. Set it to null if you don't want fixed height with overflow,
-     * and to a valid CSS measure if you want it instead. Default value is "25em"
+     * Set the file table fixed height. Set it to null if you don't want fixed height with overflow, and to a valid CSS
+     * measure if you want it instead. Default value is "25em"
      */
     public void setFileTableHeight(String height) {
         fileTable.setTableHeight(height);
@@ -256,6 +247,7 @@ public class GeoServerFileChooser extends Panel {
     //
     static class FileRootsRenderer extends ChoiceRenderer<File> {
 
+        @Serial
         private static final long serialVersionUID = 1389015915737006638L;
 
         Component component;
@@ -270,8 +262,7 @@ public class GeoServerFileChooser extends Panel {
             if (f == USER_HOME) {
                 return new ParamResourceModel("userHome", component).getString();
             } else {
-                GeoServerResourceLoader loader =
-                        GeoServerExtensions.bean(GeoServerResourceLoader.class);
+                GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
 
                 if (f.equals(loader.getBaseDirectory())) {
                     return new ParamResourceModel("dataDirectory", component).getString();
@@ -279,8 +270,7 @@ public class GeoServerFileChooser extends Panel {
             }
 
             try {
-                final String displayName =
-                        FileSystemView.getFileSystemView().getSystemDisplayName(f);
+                final String displayName = FileSystemView.getFileSystemView().getSystemDisplayName(f);
                 if (displayName != null && !displayName.trim().isEmpty()) {
                     return displayName.trim();
                 }

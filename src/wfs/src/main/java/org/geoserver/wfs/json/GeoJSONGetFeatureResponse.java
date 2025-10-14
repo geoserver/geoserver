@@ -48,15 +48,13 @@ import org.geotools.referencing.NamedIdentifier;
 import org.locationtech.jts.geom.Geometry;
 
 /**
- * A GetFeatureInfo response handler specialized in producing Json and JsonP data for a
- * GetFeatureInfo request.
+ * A GetFeatureInfo response handler specialized in producing Json and JsonP data for a GetFeatureInfo request.
  *
  * @author Simone Giannecchini, GeoSolutions
  * @author Carlo Cancellieri - GeoSolutions
  * @author Carsten Klein, DataGis
  */
-public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
-        implements ComplexFeatureAwareFormat {
+public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat implements ComplexFeatureAwareFormat {
     private final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(this.getClass());
 
     // store the response type
@@ -82,7 +80,9 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
     @Override
     public String getCapabilitiesElementName() {
         return JSONType.getJSONType(
-                        getOutputFormats().isEmpty() ? null : getOutputFormats().iterator().next())
+                        getOutputFormats().isEmpty()
+                                ? null
+                                : getOutputFormats().iterator().next())
                 .toString();
     }
 
@@ -109,19 +109,15 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
     }
 
     @Override
-    @SuppressWarnings(
-            "PMD.CloseResource") // the output stream is managed outside, only wrappers here
-    protected void write(
-            FeatureCollectionResponse featureCollection, OutputStream output, Operation operation)
+    @SuppressWarnings("PMD.CloseResource") // the output stream is managed outside, only wrappers here
+    protected void write(FeatureCollectionResponse featureCollection, OutputStream output, Operation operation)
             throws IOException {
         if (LOGGER.isLoggable(Level.FINE)) LOGGER.fine("about to encode JSON");
 
         // get feature count for request
         BigInteger totalNumberOfFeatures = featureCollection.getTotalNumberOfFeatures();
         BigInteger featureCount =
-                (totalNumberOfFeatures != null && totalNumberOfFeatures.longValue() < 0)
-                        ? null
-                        : totalNumberOfFeatures;
+                (totalNumberOfFeatures != null && totalNumberOfFeatures.longValue() < 0) ? null : totalNumberOfFeatures;
 
         try {
             OutputStreamWriter osw =
@@ -146,8 +142,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
             jsonWriter.key("features");
             jsonWriter.array();
             List<FeatureCollection> resultsList = featureCollection.getFeature();
-            FeaturesInfo featuresInfo =
-                    writeFeatures(resultsList, operation, isComplex, jsonWriter);
+            FeaturesInfo featuresInfo = writeFeatures(resultsList, operation, isComplex, jsonWriter);
             jsonWriter.endArray(); // end features
             boolean hasGeom = featuresInfo.hasGeometry;
             CoordinateReferenceSystem crs = featuresInfo.crs;
@@ -170,21 +165,18 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
             outWriter.flush();
 
         } catch (JSONException jsonException) {
-            ServiceException serviceException =
-                    new ServiceException("Error: " + jsonException.getMessage());
+            ServiceException serviceException = new ServiceException("Error: " + jsonException.getMessage());
             serviceException.initCause(jsonException);
             throw serviceException;
         }
     }
 
     /** Builds, configures and returns {@link GeoJSONBuilder} */
-    protected GeoJSONBuilder getGeoJSONBuilder(
-            FeatureCollectionResponse featureCollection, Writer outWriter) {
+    protected GeoJSONBuilder getGeoJSONBuilder(FeatureCollectionResponse featureCollection, Writer outWriter) {
         final GeoJSONBuilder jsonWriter = new GeoJSONBuilder(outWriter);
         int numDecimals = getNumDecimals(featureCollection.getFeature(), gs, gs.getCatalog());
         jsonWriter.setNumberOfDecimals(numDecimals);
-        jsonWriter.setEncodeMeasures(
-                encodeMeasures(featureCollection.getFeature(), gs.getCatalog()));
+        jsonWriter.setEncodeMeasures(encodeMeasures(featureCollection.getFeature(), gs.getCatalog()));
         return jsonWriter;
     }
 
@@ -196,39 +188,28 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
 
     /** Writes the feature to the output */
     public FeaturesInfo writeFeatures(
-            List<FeatureCollection> resultsList,
-            Operation operation,
-            boolean isComplex,
-            GeoJSONBuilder jsonWriter) {
+            List<FeatureCollection> resultsList, Operation operation, boolean isComplex, GeoJSONBuilder jsonWriter) {
         FeaturesInfo featuresInfo;
         if (!isComplex) {
-            featuresInfo =
-                    encodeSimpleFeatures(jsonWriter, resultsList, isFeatureBounding(), operation);
+            featuresInfo = encodeSimpleFeatures(jsonWriter, resultsList, isFeatureBounding(), operation);
         } else {
 
-            ComplexGeoJsonWriterOptions complexWriterOptions =
-                    getComplexGeoJsonWriterOptions(resultsList);
+            ComplexGeoJsonWriterOptions complexWriterOptions = getComplexGeoJsonWriterOptions(resultsList);
             // encode collection with complex features
-            ComplexGeoJsonWriter complexWriter =
-                    new ComplexGeoJsonWriter(jsonWriter, complexWriterOptions) {
+            ComplexGeoJsonWriter complexWriter = new ComplexGeoJsonWriter(jsonWriter, complexWriterOptions) {
 
-                        @Override
-                        protected void writeExtraFeatureProperties(
-                                Feature feature, boolean topLevelFeature) {
-                            // the various links should be reported only for the top feature, not
-                            // for all nested ones
-                            if (topLevelFeature) {
-                                GeoJSONGetFeatureResponse.this.writeExtraFeatureProperties(
-                                        feature, operation, jsonWriter);
-                            }
-                        }
-                    };
+                @Override
+                protected void writeExtraFeatureProperties(Feature feature, boolean topLevelFeature) {
+                    // the various links should be reported only for the top feature, not
+                    // for all nested ones
+                    if (topLevelFeature) {
+                        GeoJSONGetFeatureResponse.this.writeExtraFeatureProperties(feature, operation, jsonWriter);
+                    }
+                }
+            };
             complexWriter.write(resultsList);
-            featuresInfo =
-                    new FeaturesInfo(
-                            complexWriter.foundCrs(),
-                            complexWriter.geometryFound(),
-                            complexWriter.getFeaturesCount());
+            featuresInfo = new FeaturesInfo(
+                    complexWriter.foundCrs(), complexWriter.geometryFound(), complexWriter.getFeaturesCount());
         }
         return featuresInfo;
     }
@@ -247,8 +228,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
      *   <li>WFS 3 numberReturned
      * </ul>
      */
-    protected void writeCollectionCounts(
-            BigInteger featureCount, long numberReturned, GeoJSONBuilder jsonWriter) {
+    protected void writeCollectionCounts(BigInteger featureCount, long numberReturned, GeoJSONBuilder jsonWriter) {
         // counts
         if (featureCount != null) {
             jsonWriter.key("totalFeatures").value(featureCount);
@@ -263,10 +243,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
 
     /** Writes the collection bounds */
     protected void writeCollectionBounds(
-            boolean featureBounding,
-            GeoJSONBuilder jsonWriter,
-            List<FeatureCollection> resultsList,
-            boolean hasGeom) {
+            boolean featureBounding, GeoJSONBuilder jsonWriter, List<FeatureCollection> resultsList, boolean hasGeom) {
         // Bounding box for featurecollection
         if (hasGeom && featureBounding) {
             CoordinateReferenceSystem crs = null;
@@ -289,8 +266,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
         }
     }
 
-    protected void writeCollectionCRS(GeoJSONBuilder jsonWriter, CoordinateReferenceSystem crs)
-            throws IOException {
+    protected void writeCollectionCRS(GeoJSONBuilder jsonWriter, CoordinateReferenceSystem crs) throws IOException {
         // Coordinate Reference System
         try {
             if ("true".equals(GeoServerExtensions.getProperty("GEOSERVER_GEOJSON_LEGACY_CRS"))) {
@@ -305,8 +281,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
     }
 
     /** Writes OGC API - Features compliant paging links */
-    protected void writePagingLinks(
-            FeatureCollectionResponse response, Operation operation, GeoJSONBuilder jw) {
+    protected void writePagingLinks(FeatureCollectionResponse response, Operation operation, GeoJSONBuilder jw) {
 
         if (response.getPrevious() != null || response.getNext() != null) {
             jw.key("links");
@@ -318,8 +293,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
         }
     }
 
-    protected void writeLink(
-            GeoJSONBuilder jw, String title, String mimeType, String rel, String href) {
+    protected void writeLink(GeoJSONBuilder jw, String title, String mimeType, String rel, String href) {
         if (href != null) {
             jw.object();
             if (title != null) {
@@ -347,14 +321,13 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
             FeatureCollectionResponse response, Operation operation, GeoJSONBuilder jw) {}
 
     /** Container class for information related with a group of features. */
-    protected class FeaturesInfo {
+    protected static class FeaturesInfo {
 
         final CoordinateReferenceSystem crs;
         final boolean hasGeometry;
         public long featureCount;
 
-        protected FeaturesInfo(
-                CoordinateReferenceSystem crs, boolean hasGeometry, long featureCount) {
+        protected FeaturesInfo(CoordinateReferenceSystem crs, boolean hasGeometry, long featureCount) {
             this.crs = crs;
             this.hasGeometry = hasGeometry;
             this.featureCount = featureCount;
@@ -397,8 +370,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
                     // set that axis order that should be used to write geometries
                     GeometryDescriptor defaultGeomType = fType.getGeometryDescriptor();
                     if (defaultGeomType != null) {
-                        CoordinateReferenceSystem featureCrs =
-                                defaultGeomType.getCoordinateReferenceSystem();
+                        CoordinateReferenceSystem featureCrs = defaultGeomType.getCoordinateReferenceSystem();
                         jsonWriter.setAxisOrder(CRS.getAxisOrder(featureCrs));
                         if (crs == null) {
                             crs = featureCrs;
@@ -448,18 +420,11 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
                             jsonWriter.value(TemporalUtils.printDate((Date) value));
                         } else {
                             jsonWriter.key(ad.getLocalName());
-                            if ((value instanceof Double && Double.isNaN((Double) value))
-                                    || value instanceof Float && Float.isNaN((Float) value)) {
+                            if (isNaN(value)) {
                                 jsonWriter.value(null);
-                            } else if ((value instanceof Double
-                                            && ((Double) value) == Double.POSITIVE_INFINITY)
-                                    || value instanceof Float
-                                            && ((Float) value) == Float.POSITIVE_INFINITY) {
+                            } else if (isPositiveInfinity(value)) {
                                 jsonWriter.value("Infinity");
-                            } else if ((value instanceof Double
-                                            && ((Double) value) == Double.NEGATIVE_INFINITY)
-                                    || value instanceof Float
-                                            && ((Float) value) == Float.NEGATIVE_INFINITY) {
+                            } else if (isNegativeInfinity(value)) {
                                 jsonWriter.value("-Infinity");
                             } else {
                                 jsonWriter.value(value);
@@ -469,8 +434,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
                     jsonWriter.endObject(); // end the properties
 
                     // Bounding box for feature in properties
-                    ReferencedEnvelope refenv =
-                            ReferencedEnvelope.reference(simpleFeature.getBounds());
+                    ReferencedEnvelope refenv = ReferencedEnvelope.reference(simpleFeature.getBounds());
                     if (featureBounding && !refenv.isEmpty()) {
                         jsonWriter.writeBoundingBox(refenv);
                     }
@@ -484,16 +448,28 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
         return new FeaturesInfo(crs, hasGeom, featureCount);
     }
 
+    private boolean isNegativeInfinity(Object value) {
+        return (value instanceof Double dv && dv == Double.NEGATIVE_INFINITY)
+                || (value instanceof Float fv && fv == Float.NEGATIVE_INFINITY);
+    }
+
+    private boolean isPositiveInfinity(Object value) {
+        return (value instanceof Double dv && dv == Double.POSITIVE_INFINITY)
+                || (value instanceof Float fv && fv == Float.POSITIVE_INFINITY);
+    }
+
+    private boolean isNaN(Object value) {
+        return (value instanceof Double dv && Double.isNaN(dv)) || (value instanceof Float fv && Float.isNaN(fv));
+    }
+
     /**
-     * Writes the "geometry" key and its value. May be overridden by subclasses to encode geometry
-     * in a different manner
+     * Writes the "geometry" key and its value. May be overridden by subclasses to encode geometry in a different manner
      *
      * @param jsonWriter the GeoJSONBuilder to write to
      * @param descriptor the geometry descriptor
      * @param aGeom the geometry to write
      */
-    protected void writeGeometry(
-            GeoJSONBuilder jsonWriter, GeometryDescriptor descriptor, Geometry aGeom) {
+    protected void writeGeometry(GeoJSONBuilder jsonWriter, GeometryDescriptor descriptor, Geometry aGeom) {
         jsonWriter.key("geometry");
         // Write the geometry, whether it is a null or not
         if (aGeom != null) {
@@ -507,8 +483,8 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
     }
 
     /**
-     * By spec the geometry should be there and null. This method allows subclasses to go outside of
-     * the spec and save some payload.
+     * By spec the geometry should be there and null. This method allows subclasses to go outside of the spec and save
+     * some payload.
      *
      * @return
      */
@@ -533,11 +509,9 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
      * @param operation The operation causing this output to be written
      * @param jsonWriter The {@link GeoJSONBuilder} being used to write the feature
      */
-    protected void writeExtraFeatureProperties(
-            Feature feature, Operation operation, GeoJSONBuilder jsonWriter) {}
+    protected void writeExtraFeatureProperties(Feature feature, Operation operation, GeoJSONBuilder jsonWriter) {}
 
-    private void writeCrs(final GeoJSONBuilder jsonWriter, CoordinateReferenceSystem crs)
-            throws FactoryException {
+    private void writeCrs(final GeoJSONBuilder jsonWriter, CoordinateReferenceSystem crs) throws FactoryException {
         if (crs != null) {
             String identifier = SrsSyntax.OGC_URN.getSRS(ResourcePool.lookupIdentifier(crs, true));
 
@@ -600,10 +574,8 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
         return "json";
     }
 
-    private ComplexGeoJsonWriterOptions getComplexGeoJsonWriterOptions(
-            List<FeatureCollection> resultsList) {
-        List<ComplexGeoJsonWriterOptions> settings =
-                GeoServerExtensions.extensions(ComplexGeoJsonWriterOptions.class);
+    private ComplexGeoJsonWriterOptions getComplexGeoJsonWriterOptions(List<FeatureCollection> resultsList) {
+        List<ComplexGeoJsonWriterOptions> settings = GeoServerExtensions.extensions(ComplexGeoJsonWriterOptions.class);
         ComplexGeoJsonWriterOptions chosen = null;
         for (ComplexGeoJsonWriterOptions setting : settings) {
             if (setting.canHandle(resultsList)) chosen = setting;

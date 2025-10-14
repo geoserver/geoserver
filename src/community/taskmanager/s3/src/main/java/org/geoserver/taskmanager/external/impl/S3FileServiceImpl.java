@@ -8,6 +8,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.S3ClientOptions;
+import java.io.Serial;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -20,6 +21,7 @@ import java.net.URLEncoder;
  */
 public class S3FileServiceImpl extends AbstractS3FileServiceImpl {
 
+    @Serial
     private static final long serialVersionUID = -5960841858385823283L;
 
     private String alias;
@@ -38,8 +40,7 @@ public class S3FileServiceImpl extends AbstractS3FileServiceImpl {
 
     public S3FileServiceImpl() {}
 
-    public S3FileServiceImpl(
-            String endpoint, String user, String password, String alias, String rootFolder) {
+    public S3FileServiceImpl(String endpoint, String user, String password, String alias, String rootFolder) {
         this.endpoint = endpoint;
         this.user = user;
         this.password = password;
@@ -92,13 +93,11 @@ public class S3FileServiceImpl extends AbstractS3FileServiceImpl {
     @Override
     public URI getURI(String filePath) {
         try {
-            return new URI(
-                    alias
-                            + "://"
-                            + rootFolder
-                            + "/"
-                            + URLEncoder.encode(filePath.toString(), "UTF-8")
-                                    .replaceAll("%2F", "/"));
+            return new URI(alias
+                    + "://"
+                    + rootFolder
+                    + "/"
+                    + URLEncoder.encode(filePath.toString(), "UTF-8").replaceAll("%2F", "/"));
         } catch (URISyntaxException | UnsupportedEncodingException e) {
             throw new IllegalStateException(e);
         }
@@ -107,16 +106,13 @@ public class S3FileServiceImpl extends AbstractS3FileServiceImpl {
     @Override
     public AmazonS3 getS3Client() {
         if (user == null) {
-            throw new IllegalArgumentException(
-                    "The user is required, add a property: alias.s3.user");
+            throw new IllegalArgumentException("The user is required, add a property: alias.s3.user");
         }
         if (password == null) {
-            throw new IllegalArgumentException(
-                    "The password is required, add a property: alias.s3.password");
+            throw new IllegalArgumentException("The password is required, add a property: alias.s3.password");
         }
         if (rootFolder == null) {
-            throw new IllegalStateException(
-                    "The rootfolder is required, add a property: alias.s3.rootfolder");
+            throw new IllegalStateException("The rootfolder is required, add a property: alias.s3.rootfolder");
         }
 
         AmazonS3 s3;

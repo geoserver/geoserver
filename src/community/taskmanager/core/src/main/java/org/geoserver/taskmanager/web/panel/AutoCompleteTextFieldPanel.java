@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.web.panel;
 
+import java.io.Serial;
 import java.util.Collection;
 import java.util.Iterator;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
@@ -12,21 +13,22 @@ import org.apache.wicket.model.IModel;
 
 public class AutoCompleteTextFieldPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -1829729746678003578L;
 
     public AutoCompleteTextFieldPanel(String id, IModel<String> model, Collection<String> orig) {
         super(id, model);
 
-        add(
-                new AutoCompleteTextField<String>("textfield", model) {
+        add(new AutoCompleteTextField<String>("textfield", model) {
 
-                    private static final long serialVersionUID = 3534191360864988131L;
+            @Serial
+            private static final long serialVersionUID = 3534191360864988131L;
 
-                    @Override
-                    protected Iterator<String> getChoices(String input) {
-                        return orig.stream().filter(s -> s.startsWith(input)).iterator();
-                    }
-                });
+            @Override
+            protected Iterator<String> getChoices(String input) {
+                return orig.stream().filter(s -> s.startsWith(input)).iterator();
+            }
+        });
     }
 
     @SuppressWarnings("unchecked")

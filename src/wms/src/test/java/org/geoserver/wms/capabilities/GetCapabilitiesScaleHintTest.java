@@ -55,14 +55,11 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
     private static final Set<String> LEGEND_FORMAT = Collections.singleton("image/png");
 
     /** Test layers */
-    public static final QName REGIONATED =
-            new QName(MockData.SF_URI, "Regionated", MockData.SF_PREFIX);
+    public static final QName REGIONATED = new QName(MockData.SF_URI, "Regionated", MockData.SF_PREFIX);
 
     public static final QName ACCIDENT = new QName(MockData.SF_URI, "Accident", MockData.SF_PREFIX);
-    public static final QName ACCIDENT2 =
-            new QName(MockData.SF_URI, "Accident2", MockData.SF_PREFIX);
-    public static final QName ACCIDENT3 =
-            new QName(MockData.SF_URI, "Accident3", MockData.SF_PREFIX);
+    public static final QName ACCIDENT2 = new QName(MockData.SF_URI, "Accident2", MockData.SF_PREFIX);
+    public static final QName ACCIDENT3 = new QName(MockData.SF_URI, "Accident3", MockData.SF_PREFIX);
 
     private Catalog catalog;
 
@@ -80,10 +77,7 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
         testData.setUpSecurity();
     }
 
-    /**
-     * Adds required styles to test the selection of maximum and minimum denominator from style's
-     * rules.
-     */
+    /** Adds required styles to test the selection of maximum and minimum denominator from style's rules. */
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
 
@@ -97,8 +91,7 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
     }
 
     void addLayerAndStyle(SystemTestData testData, QName name) throws IOException {
-        testData.addVectorLayer(
-                name, null, name.getLocalPart() + ".properties", getClass(), this.catalog);
+        testData.addVectorLayer(name, null, name.getLocalPart() + ".properties", getClass(), this.catalog);
 
         final String styleName = name.getLocalPart();
         testData.addStyle(styleName, getClass(), this.catalog);
@@ -258,9 +251,7 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
 
         assertEquals(0.0, Double.valueOf(scaleElement.getAttribute("min")), 0d);
 
-        assertEquals(
-                Double.valueOf(253427.07037725858),
-                Double.valueOf(scaleElement.getAttribute("max")));
+        assertEquals(Double.valueOf(253427.07037725858), Double.valueOf(scaleElement.getAttribute("max")));
     }
 
     /**
@@ -288,8 +279,7 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
         Element scaleElement = (Element) scaleNode.item(0);
 
         assertEquals(Double.valueOf(320000000), Double.valueOf(scaleElement.getAttribute("min")));
-        assertEquals(
-                Double.POSITIVE_INFINITY, Double.valueOf(scaleElement.getAttribute("max")), 0d);
+        assertEquals(Double.POSITIVE_INFINITY, Double.valueOf(scaleElement.getAttribute("max")), 0d);
     }
 
     /**
@@ -317,11 +307,8 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
 
         Element scaleElement = (Element) scaleNode.item(0);
 
-        assertEquals(
-                Double.valueOf(126713.53518862929),
-                Double.valueOf(scaleElement.getAttribute("min")));
-        assertEquals(
-                Double.POSITIVE_INFINITY, Double.valueOf(scaleElement.getAttribute("max")), 0d);
+        assertEquals(Double.valueOf(126713.53518862929), Double.valueOf(scaleElement.getAttribute("min")));
+        assertEquals(Double.POSITIVE_INFINITY, Double.valueOf(scaleElement.getAttribute("max")), 0d);
     }
 
     /**
@@ -367,18 +354,13 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
         NodeList scaleNode = layerElement.getElementsByTagName("ScaleHint");
         Element scaleElement = (Element) scaleNode.item(0);
 
-        assertEquals(
-                Double.valueOf(31678.383797157323),
-                Double.valueOf(scaleElement.getAttribute("min")));
-        assertEquals(
-                Double.valueOf(253427.07037725858),
-                Double.valueOf(scaleElement.getAttribute("max")));
+        assertEquals(Double.valueOf(31678.383797157323), Double.valueOf(scaleElement.getAttribute("min")));
+        assertEquals(Double.valueOf(253427.07037725858), Double.valueOf(scaleElement.getAttribute("max")));
     }
     /**
      * Retrieves the WMS's capabilities document.
      *
-     * @param scaleHintUnitsPerDiaPixel true if the scalehint must be in units per diagonal of a
-     *     pixel
+     * @param scaleHintUnitsPerDiaPixel true if the scalehint must be in units per diagonal of a pixel
      * @return Capabilities as {@link Document}
      */
     private Document findCapabilities(Boolean scaleHintUnitsPerDiaPixel) throws Exception {
@@ -389,8 +371,7 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
         mm.put(WMS.SCALEHINT_MAPUNITS_PIXEL, scaleHintUnitsPerDiaPixel);
         info.getGeoServer().save(info);
 
-        GetCapabilitiesTransformer tr =
-                new GetCapabilitiesTransformer(wms, BASE_URL, FORMATS, LEGEND_FORMAT, null);
+        GetCapabilitiesTransformer tr = new GetCapabilitiesTransformer(wms, BASE_URL, FORMATS, LEGEND_FORMAT, null);
         GetCapabilitiesRequest req = new GetCapabilitiesRequest();
         req.setBaseUrl(BASE_URL);
         req.setVersion(WMS.VERSION_1_1_1.toString());
@@ -408,8 +389,7 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
      *
      * @return The layer element or null it the required layer isn't found
      */
-    private Element searchLayerElement(final String layerRequired, Document capabilities)
-            throws XpathException {
+    private Element searchLayerElement(final String layerRequired, Document capabilities) throws XpathException {
 
         NodeList layersNodes = xpath.getMatchingNodes("//Layer/Name", capabilities);
         for (int i = 0; i < layersNodes.getLength(); i++) {
@@ -423,8 +403,7 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
 
                 if (layerRequired.equalsIgnoreCase(nodeValue)) {
 
-                    return (Element)
-                            e.getParentNode(); // returns the layer element associated to the
+                    return (Element) e.getParentNode(); // returns the layer element associated to the
                     // required layer name.
                 }
             }

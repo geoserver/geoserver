@@ -8,8 +8,7 @@ package org.geoserver.ows;
 /**
  * An exception thrown by a service to report back an http error code.
  *
- * <p>Instances of this exception are recognized by the dispatcher. The {@link #getErrorCode()} is
- * used to set
+ * <p>Instances of this exception are recognized by the dispatcher. The {@link #getErrorCode()} is used to set
  *
  * @author Justin Deoliveira, The Open Planning Project
  */

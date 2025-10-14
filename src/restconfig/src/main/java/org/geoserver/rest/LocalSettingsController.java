@@ -51,11 +51,7 @@ public class LocalSettingsController extends AbstractGeoServerController {
     }
 
     @GetMapping(
-            produces = {
-                MediaType.APPLICATION_JSON_VALUE,
-                MediaType.APPLICATION_XML_VALUE,
-                MediaType.TEXT_HTML_VALUE
-            })
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
     public RestWrapper<SettingsInfo> localSettingsGet(@PathVariable String workspaceName) {
 
         WorkspaceInfo workspaceInfo = geoServer.getCatalog().getWorkspaceByName(workspaceName);
@@ -76,8 +72,7 @@ public class LocalSettingsController extends AbstractGeoServerController {
             },
             produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public String localSettingsCreate(
-            @PathVariable String workspaceName, @RequestBody SettingsInfo settingsInfo) {
+    public String localSettingsCreate(@PathVariable String workspaceName, @RequestBody SettingsInfo settingsInfo) {
         String name = "";
         if (workspaceName != null) {
             Catalog catalog = geoServer.getCatalog();
@@ -97,8 +92,7 @@ public class LocalSettingsController extends AbstractGeoServerController {
                 MediaType.APPLICATION_XML_VALUE,
                 MediaType.TEXT_XML_VALUE
             })
-    public void localSettingsPut(
-            @PathVariable String workspaceName, @RequestBody SettingsInfo settingsInfo) {
+    public void localSettingsPut(@PathVariable String workspaceName, @RequestBody SettingsInfo settingsInfo) {
         if (workspaceName != null) {
             WorkspaceInfo workspaceInfo = geoServer.getCatalog().getWorkspaceByName(workspaceName);
             SettingsInfo original = geoServer.getSettings(workspaceInfo);
@@ -125,9 +119,7 @@ public class LocalSettingsController extends AbstractGeoServerController {
 
     @Override
     public boolean supports(
-            MethodParameter methodParameter,
-            Type targetType,
-            Class<? extends HttpMessageConverter<?>> converterType) {
+            MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return SettingsInfo.class.isAssignableFrom(methodParameter.getParameterType());
     }
 

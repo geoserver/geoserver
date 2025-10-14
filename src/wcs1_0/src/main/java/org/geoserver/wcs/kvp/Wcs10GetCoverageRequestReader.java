@@ -75,25 +75,19 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
     }
 
     @Override
-    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
-            throws Exception {
+    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp) throws Exception {
         GetCoverageType getCoverage = (GetCoverageType) super.read(request, kvp, rawKvp);
 
         // grab coverage info to perform further checks
         if (getCoverage.getSourceCoverage() == null) {
             if (kvp.get("coverage") == null)
                 throw new WcsException(
-                        "source coverage parameter is mandatory",
-                        MissingParameterValue,
-                        "source coverage");
+                        "source coverage parameter is mandatory", MissingParameterValue, "source coverage");
             else getCoverage.setSourceCoverage((String) ((List) kvp.get("coverage")).get(0));
         }
         // if not specified, throw a resounding exception (by spec)
         if (!getCoverage.isSetVersion())
-            throw new WcsException(
-                    "Version has not been specified",
-                    WcsExceptionCode.MissingParameterValue,
-                    "version");
+            throw new WcsException("Version has not been specified", WcsExceptionCode.MissingParameterValue, "version");
 
         // do the version negotiation dance
         List<String> provided = new ArrayList<>();
@@ -107,9 +101,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
 
         if (!Wcs10GetCoverageRequestReader.VERSION.equals(version)) {
             throw new WcsException(
-                    "An invalid version number has been specified",
-                    WcsExceptionCode.InvalidParameterValue,
-                    "version");
+                    "An invalid version number has been specified", WcsExceptionCode.InvalidParameterValue, "version");
         }
         getCoverage.setVersion(Wcs10GetCoverageRequestReader.VERSION);
 
@@ -140,12 +132,9 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
         // check for CRS
         //
         String crsName = (String) kvp.get("crs");
-        if (crsName == null)
-            throw new WcsException("CRS parameter is mandatory", MissingParameterValue, "crs");
+        if (crsName == null) throw new WcsException("CRS parameter is mandatory", MissingParameterValue, "crs");
         final CoordinateReferenceSystem crs = decodeCRS100(crsName);
-        if (crs == null)
-            throw new WcsException(
-                    "CRS parameter is invalid:" + crsName, InvalidParameterValue, "crs");
+        if (crs == null) throw new WcsException("CRS parameter is invalid:" + crsName, InvalidParameterValue, "crs");
         //        final VerticalCRS verticalCRS = CRS.getVerticalCRS(crs);
         //        final boolean hasVerticalCRS = verticalCRS != null;
 
@@ -153,8 +142,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
         // at least one between BBOX and TIME must be there
         //
         final GeneralBounds bbox = (GeneralBounds) kvp.get("BBOX");
-        if (bbox == null)
-            throw new WcsException("bbox parameter is mandatory", MissingParameterValue, "bbox");
+        if (bbox == null) throw new WcsException("bbox parameter is mandatory", MissingParameterValue, "bbox");
 
         // afabiani: consider Elevation as band, forcing the bbox to be 2D only
         if (bbox.getDimension() != 2)
@@ -163,11 +151,8 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
                     InvalidParameterValue,
                     "bbox");
 
-        final GeneralBounds envelope =
-                new GeneralBounds(
-                        /* TODO: ignore 3D CRS for now crs */ bbox.getDimension() == 3
-                                ? DefaultGeographicCRS.WGS84_3D
-                                : crs);
+        final GeneralBounds envelope = new GeneralBounds(
+                /* TODO: ignore 3D CRS for now crs */ bbox.getDimension() == 3 ? DefaultGeographicCRS.WGS84_3D : crs);
         if (
         /* TODO: ignore 3D CRS for now !hasVerticalCRS */ bbox.getDimension() == 2)
             envelope.setEnvelope(
@@ -185,17 +170,15 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
         //                    .getOrdinate(0), bbox.getUpperCorner().getOrdinate(1),
         // bbox.getUpperCorner()
         //                    .getOrdinate(2));
-        else
-            throw new WcsException(
-                    "bbox not compliant with the specified CRS", InvalidParameterValue, "bbox");
+        else throw new WcsException("bbox not compliant with the specified CRS", InvalidParameterValue, "bbox");
 
         //
         // TIME
         //
         TimeSequenceType timeSequence = null;
         Object time = kvp.get("TIME");
-        if (time != null && time instanceof TimeSequenceType) {
-            timeSequence = (TimeSequenceType) time;
+        if (time != null && time instanceof TimeSequenceType type) {
+            timeSequence = type;
         } else if (time != null) {
             timeSequence = Wcs10Factory.eINSTANCE.createTimeSequenceType();
             if (time instanceof Collection) {
@@ -226,7 +209,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
             //
 
             // get W and H
-            int width = w instanceof Integer ? ((Integer) w) : Integer.parseInt((String) w);
+            int width = w instanceof Integer i ? i : Integer.parseInt((String) w);
             int height = w instanceof Integer ? ((Integer) h) : Integer.parseInt((String) h);
             grid.getAxisName().add("x");
             grid.getAxisName().add("y");
@@ -234,8 +217,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
             final Object d = kvp.get("depth");
             if (d != null) {
                 // afabiani: we consider 2D grdis only
-                throw new WcsException(
-                        "3D grids are not supported.", InvalidParameterValue, "depth");
+                throw new WcsException("3D grids are not supported.", InvalidParameterValue, "depth");
                 //                // check that the envelope is 3D or throw an error
                 //                if (bbox.getDimension() != 3)
                 //                    throw new WcsException("Found depth but envelope is of
@@ -309,8 +291,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
                 final Object rz = kvp.get("resz");
                 if (rz != null) {
                     // afabiani: we consider 2D grdis only
-                    throw new WcsException(
-                            "3D grids are not supported.", InvalidParameterValue, "resz");
+                    throw new WcsException("3D grids are not supported.", InvalidParameterValue, "resz");
                     //                    // eventual depth
                     //                    final double resZ = Double.parseDouble((String) rz);
                     //                    // check that the envelope is 3D or throw an error
@@ -347,9 +328,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
                     grid.getOffsetVector().add(resolutionVector);
                 }
 
-            } else
-                throw new WcsException(
-                        "Could not recognize grid resolution", InvalidParameterValue, "");
+            } else throw new WcsException("Could not recognize grid resolution", InvalidParameterValue, "");
         }
 
         spatialSubset.getEnvelope().add(envelope);
@@ -367,8 +346,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
             final TimePositionType timePosition = Gml4wcsFactory.eINSTANCE.createTimePositionType();
             timePosition.setValue(tPos);
             timeSequence.getTimePosition().add(timePosition);
-        } else if (tPos instanceof DateRange) {
-            DateRange range = (DateRange) tPos;
+        } else if (tPos instanceof DateRange range) {
             final TimePeriodType timePeriod = Wcs10Factory.eINSTANCE.createTimePeriodType();
             final TimePositionType start = Gml4wcsFactory.eINSTANCE.createTimePositionType();
             start.setValue(range.getMinValue());
@@ -424,10 +402,8 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
 
     /** */
     @SuppressWarnings("unchecked")
-    private void checkTypeAxisRange(
-            final RangeSubsetType rangeSubset, Object axis, String axisName) {
-        if (axis instanceof String) {
-            String bands = (String) axis;
+    private void checkTypeAxisRange(final RangeSubsetType rangeSubset, Object axis, String axisName) {
+        if (axis instanceof String bands) {
             if (bands != null) {
                 if (bands.contains("/")) {
                     List<String> unparsed = KvpUtils.readFlat(bands, new Tokenizer("/"));
@@ -476,8 +452,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
                     axisSubset.setName(axisName);
 
                     for (String bandValue : unparsed) {
-                        TypedLiteralType singleValue =
-                                Wcs10Factory.eINSTANCE.createTypedLiteralType();
+                        TypedLiteralType singleValue = Wcs10Factory.eINSTANCE.createTypedLiteralType();
                         singleValue.setValue(bandValue);
 
                         axisSubset.getSingleValue().add(singleValue);
@@ -496,12 +471,11 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
             axisSubset.getSingleValue().add(singleValue);
 
             rangeSubset.getAxisSubset().add(axisSubset);
-        } else if (axis instanceof Collection) {
+        } else if (axis instanceof Collection<?> collection) {
             AxisSubsetType axisSubset = Wcs10Factory.eINSTANCE.createAxisSubsetType();
             axisSubset.setName(axisName);
-            for (Object value : (Collection<?>) axis) {
-                if (value instanceof NumberRange) {
-                    NumberRange<?> range = (NumberRange<?>) value;
+            for (Object value : collection) {
+                if (value instanceof NumberRange<?> range) {
                     IntervalType interval = Wcs10Factory.eINSTANCE.createIntervalType();
                     TypedLiteralType min = Wcs10Factory.eINSTANCE.createTypedLiteralType();
                     TypedLiteralType max = Wcs10Factory.eINSTANCE.createTypedLiteralType();
@@ -527,15 +501,9 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
 
         // check and set format
         String format = (String) kvp.get("format");
-        if (format == null)
-            throw new WcsException(
-                    "format parameter is mandatory", MissingParameterValue, "format");
+        if (format == null) throw new WcsException("format parameter is mandatory", MissingParameterValue, "format");
 
-        final String crsName =
-                (String)
-                        (kvp.get("response_crs") != null
-                                ? kvp.get("response_crs")
-                                : kvp.get("crs"));
+        final String crsName = (String) (kvp.get("response_crs") != null ? kvp.get("response_crs") : kvp.get("crs"));
         CoordinateReferenceSystem crs = null;
         if (crsName != null) {
             crs = decodeCRS100(crsName);
@@ -562,15 +530,11 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
             // in 100 we work with Lon,Lat always
             return CRS.decode(crsName, true);
         } catch (FactoryException e) {
-            throw new WcsException(
-                    "Could not recognize crs " + crsName, InvalidParameterValue, "crs");
+            throw new WcsException("Could not recognize crs " + crsName, InvalidParameterValue, "crs");
         }
     }
 
-    /**
-     * Parses the interpolation parameter from the kvp. If nothing is present the default nearest
-     * neighbor is set.
-     */
+    /** Parses the interpolation parameter from the kvp. If nothing is present the default nearest neighbor is set. */
     private InterpolationMethodType parseInterpolation(Map kvp) {
         if (kvp.containsKey("interpolation")) {
             return (InterpolationMethodType) kvp.get("interpolation");

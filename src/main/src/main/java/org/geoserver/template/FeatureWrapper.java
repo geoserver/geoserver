@@ -9,16 +9,14 @@ import static org.geoserver.template.TemplateUtils.FM_VERSION;
 
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.ext.beans.CollectionModel;
+import freemarker.ext.beans.MemberAccessPolicy;
 import freemarker.template.Configuration;
-import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.SimpleHash;
 import freemarker.template.TemplateCollectionModel;
 import freemarker.template.TemplateDateModel;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 import freemarker.template.TemplateSequenceModel;
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -50,12 +48,11 @@ import org.locationtech.jts.geom.Geometry;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
 /**
- * Wraps a {@link Feature} in the freemarker {@link BeansWrapper} interface allowing a template to
- * be directly applied to a {@link Feature} or {@link FeatureCollection}.
+ * Wraps a {@link Feature} in the freemarker {@link BeansWrapper} interface allowing a template to be directly applied
+ * to a {@link Feature} or {@link FeatureCollection}.
  *
- * <p>When a {@link FeatureCollection} is being processed by the template, it is available via the
- * <code>$features</code> variable, which can be broken down into single features and attributes
- * following this hierarchy:
+ * <p>When a {@link FeatureCollection} is being processed by the template, it is available via the <code>$features
+ * </code> variable, which can be broken down into single features and attributes following this hierarchy:
  *
  * <ul>
  *   <li>features -> feature
@@ -65,8 +62,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
  *         <li>attributes -> attribute
  *             <ul>
  *               <li>value (String), a default String representation of the attribute value
- *               <li>rawValue (Object), the actual attribute value if it's non null, the empty
- *                   string otherwise
+ *               <li>rawValue (Object), the actual attribute value if it's non null, the empty string otherwise
  *               <li>name (String)
  *               <li>type (String)
  *               <li>isGeometry (Boolean)
@@ -74,8 +70,8 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
  *       </ul>
  * </ul>
  *
- * Example of a template processing a feature collection which will print out the features id of
- * every feature in the collection.
+ * Example of a template processing a feature collection which will print out the features id of every feature in the
+ * collection.
  *
  * <pre><code>
  *  &lt;#list features as feature&gt;
@@ -83,8 +79,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
  *  &lt;/#list&gt;
  * </code></pre>
  *
- * <p>To use this wrapper,use the {@link
- * Configuration#setObjectWrapper(freemarker.template.ObjectWrapper)} method:
+ * <p>To use this wrapper,use the {@link Configuration#setObjectWrapper(freemarker.template.ObjectWrapper)} method:
  *
  * <pre>
  *         <code>
@@ -104,21 +99,35 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
  * @author Gabriel Roldan, TOPP
  */
 public class FeatureWrapper extends BeansWrapper {
+
     static Catalog gsCatalog;
+
+    private BeansWrapper wrapper = null;
 
     /** factory to create CollectionTemplateModel from FeatureCollection */
     protected TemplateFeatureCollectionFactory templateFeatureCollectionFactory;
 
     public FeatureWrapper() {
-        super(FM_VERSION);
-        setSimpleMapWrapper(true);
-        this.templateFeatureCollectionFactory = copyTemplateFeatureCollectionFactory;
+        this(copyTemplateFeatureCollectionFactory);
     }
 
     public FeatureWrapper(TemplateFeatureCollectionFactory templateFeatureCollectionFactory) {
         super(FM_VERSION);
         setSimpleMapWrapper(true);
         this.templateFeatureCollectionFactory = templateFeatureCollectionFactory;
+    }
+
+    @Override
+    public void clearClassIntrospectionCache() {
+        super.clearClassIntrospectionCache();
+        this.wrapper.clearClassIntrospectionCache();
+        ((GeoServerMemberAccessPolicy) getMemberAccessPolicy()).reset();
+    }
+
+    @Override
+    public void setMemberAccessPolicy(MemberAccessPolicy memberAccessPolicy) {
+        super.setMemberAccessPolicy(memberAccessPolicy);
+        this.wrapper = TemplateUtils.getSafeWrapper(null, memberAccessPolicy, null);
     }
 
     private Catalog getCatalog() {
@@ -160,8 +169,7 @@ public class FeatureWrapper extends BeansWrapper {
      *   <li>for any other value returns its toString()
      * </ul>
      *
-     * @param o the object for which to return a String representation suitable to be used as
-     *     template content
+     * @param o the object for which to return a String representation suitable to be used as template content
      * @return the formated date as a String, or the object
      */
     private static String valueToString(Object o) {
@@ -169,17 +177,17 @@ public class FeatureWrapper extends BeansWrapper {
             // nulls throw tempaltes off, use empty string
             return "";
         }
-        if (o instanceof Date) {
-            if (o instanceof Timestamp) {
-                return DateFormat.getDateTimeInstance().format((Date) o);
+        if (o instanceof Date date) {
+            if (o instanceof Date timestamp) {
+                return DateFormat.getDateTimeInstance().format(timestamp);
             }
-            if (o instanceof Time) {
-                return DateFormat.getTimeInstance().format((Date) o);
+            if (o instanceof Date time) {
+                return DateFormat.getTimeInstance().format(time);
             }
-            return DateFormat.getInstance().format((Date) o);
+            return DateFormat.getInstance().format(date);
         }
-        if (o instanceof Boolean) {
-            return ((Boolean) o).booleanValue() ? "true" : "false";
+        if (o instanceof Boolean boolean1) {
+            return boolean1.booleanValue() ? "true" : "false";
         }
         if (o instanceof Geometry) {
             return String.valueOf(o);
@@ -206,23 +214,20 @@ public class FeatureWrapper extends BeansWrapper {
     @Override
     public TemplateModel wrap(Object object) throws TemplateModelException {
         // check for feature collection
-        if (object instanceof FeatureCollection) {
+        if (object instanceof FeatureCollection collection) {
             // create a model with just one variable called 'features'
-            SimpleHash map = new SimpleHash(new DefaultObjectWrapper(FM_VERSION));
-            map.put(
-                    "features",
-                    templateFeatureCollectionFactory.createTemplateFeatureCollection(
-                            (FeatureCollection) object, this));
-            map.put("type", wrap(((FeatureCollection) object).getSchema()));
+            SimpleHash map = new SimpleHash(this.wrapper);
+            map.put("features", templateFeatureCollectionFactory.createTemplateFeatureCollection(collection, this));
+            map.put("type", wrap(collection.getSchema()));
 
             return map;
-        } else if (object instanceof ComplexType) {
+        } else if (object instanceof ComplexType type) {
 
-            return buildType((ComplexType) object);
+            return buildType(type);
 
-        } else if (object instanceof Feature) {
+        } else if (object instanceof Feature feature) {
 
-            return buildComplex((Feature) object);
+            return buildComplex(feature);
         }
 
         return super.wrap(object);
@@ -247,14 +252,15 @@ public class FeatureWrapper extends BeansWrapper {
             attribute.put("type", descr.getType().getBinding().getName());
             attribute.put(
                     "isGeometry",
-                    Boolean.valueOf(Geometry.class.isAssignableFrom(descr.getType().getBinding())));
+                    Boolean.valueOf(
+                            Geometry.class.isAssignableFrom(descr.getType().getBinding())));
 
             attributeMap.put(descr.getName().toString(), attribute);
         }
 
         // build up the result, feature type is represented by its name an
         // attributes
-        SimpleHash map = new SimpleHash(new DefaultObjectWrapper(FM_VERSION));
+        SimpleHash map = new SimpleHash(this.wrapper);
         map.put("attributes", new SequenceMapModel(attributeMap, this));
         map.put("name", ft.getName().getLocalPart());
         map.put("namespace", getNamespace(ft.getName()));
@@ -265,7 +271,7 @@ public class FeatureWrapper extends BeansWrapper {
 
     private SimpleHash buildComplex(ComplexAttribute att) {
         // create the model
-        SimpleHash map = new SimpleHash(new DefaultObjectWrapper(FM_VERSION));
+        SimpleHash map = new SimpleHash(this.wrapper);
 
         // next create the Map representing the per attribute useful
         // properties for a template
@@ -276,11 +282,10 @@ public class FeatureWrapper extends BeansWrapper {
 
         ResourceInfo info = null;
         if (cat != null) {
-            info =
-                    cat.getResourceByName(
-                            att.getType().getName().getNamespaceURI(),
-                            att.getType().getName().getLocalPart(),
-                            ResourceInfo.class);
+            info = cat.getResourceByName(
+                    att.getType().getName().getNamespaceURI(),
+                    att.getType().getName().getLocalPart(),
+                    ResourceInfo.class);
 
             if (info != null) {
                 map.put("type", info);
@@ -302,8 +307,8 @@ public class FeatureWrapper extends BeansWrapper {
         // create a variable "attributes" which his a list of all the
         // attributes, but at the same time, is a map keyed by name
         map.put("attributes", new SequenceMapModel(attributeMap, this));
-        if (att instanceof Feature) {
-            map.put("bounds", ((Feature) att).getBounds());
+        if (att instanceof Feature feature) {
+            map.put("bounds", feature.getBounds());
         }
 
         return map;
@@ -320,8 +325,8 @@ public class FeatureWrapper extends BeansWrapper {
         dummy.put("keywords", new ArrayList<>());
         dummy.put("metadataLinks", new ArrayList<>());
         dummy.put("SRS", "[SRS]");
-        if (f instanceof Feature) {
-            final GeometryDescriptor gd = ((Feature) f).getType().getGeometryDescriptor();
+        if (f instanceof Feature feature) {
+            final GeometryDescriptor gd = feature.getType().getGeometryDescriptor();
             if (gd != null) {
                 dummy.put("nativeCRS", gd.getCoordinateReferenceSystem());
             }
@@ -330,11 +335,11 @@ public class FeatureWrapper extends BeansWrapper {
     }
 
     /**
-     * Adapts a Feature to a java.util.Map, where the map keys are the feature attribute names and
-     * the values other Map representing the Feature name/value attributes.
+     * Adapts a Feature to a java.util.Map, where the map keys are the feature attribute names and the values other Map
+     * representing the Feature name/value attributes.
      *
-     * <p>A special purpose Map implementation is used in order to lazily return the attribute
-     * properties, most notably the toString representation of attribute values.
+     * <p>A special purpose Map implementation is used in order to lazily return the attribute properties, most notably
+     * the toString representation of attribute values.
      *
      * @author Gabriel Roldan
      * @see AttributeMap
@@ -359,11 +364,8 @@ public class FeatureWrapper extends BeansWrapper {
                     attName = type.getName();
                     Object attributeMap;
                     if (type.getMaxOccurs() > 1) attributeMap = getListMaps(attName);
-                    else
-                        attributeMap =
-                                new AttributeMap(attName, feature, feature.getProperty(attName));
-                    entrySet.add(
-                            new MapEntry<Object, Object>(attName.getLocalPart(), attributeMap));
+                    else attributeMap = new AttributeMap(attName, feature, feature.getProperty(attName));
+                    entrySet.add(new MapEntry<Object, Object>(attName.getLocalPart(), attributeMap));
                 }
             }
             return entrySet;
@@ -381,17 +383,17 @@ public class FeatureWrapper extends BeansWrapper {
     /**
      * Wraps a Feature as a <code>Map&lt;String, Map&lt;String, Object&gt;&gt;</code>.
      *
-     * <p>The Map keys are the wrapped feature's property names and the Map values are Maps with
-     * appropriate key/value pairs for each feature attribute.
+     * <p>The Map keys are the wrapped feature's property names and the Map values are Maps with appropriate key/value
+     * pairs for each feature attribute.
      *
      * <p>For instance, the value attribute Maps hold the following properties:
      *
      * <ul>
      *   <li>name: String holding the attribute name
      *   <li>type: String with the java class name bound to the attribute type
-     *   <li>value: String representation of the attribute value suitable to be used directly in a
-     *       template expression. <code>null</code> values are returned as the empty string, non
-     *       String values as per {@link FeatureWrapper#valueToString(Object)}
+     *   <li>value: String representation of the attribute value suitable to be used directly in a template expression.
+     *       {@code null} values are returned as the empty string, non String values as per
+     *       {@link FeatureWrapper#valueToString(Object)}
      *   <li>rawValue: the actual attribute value as it is in the Feature
      *   <li>isGeometry: Boolean indicating whether the attribute is of a geometric type
      * </ul>
@@ -408,8 +410,7 @@ public class FeatureWrapper extends BeansWrapper {
         private Set<MapEntry> entrySet;
 
         /**
-         * Builds an "attribute map" as used in templates for the given attribute of the given
-         * feature.
+         * Builds an "attribute map" as used in templates for the given attribute of the given feature.
          *
          * @param attributeName the name of the feature attribute this attribute map is built for
          * @param feature the feature where to lazily grab the attribute named <code>attributeName
@@ -420,15 +421,14 @@ public class FeatureWrapper extends BeansWrapper {
             this.feature = feature;
         }
 
-        public AttributeMap(
-                final Name attributeName, final ComplexAttribute feature, final Property prop) {
+        public AttributeMap(final Name attributeName, final ComplexAttribute feature, final Property prop) {
             this(attributeName, feature);
             this.prop = prop;
         }
 
         /**
-         * Override so asking for the hashCode does not implies traversing the whole map and thus
-         * calling entrySet() prematurely
+         * Override so asking for the hashCode does not implies traversing the whole map and thus calling entrySet()
+         * prematurely
          */
         @Override
         @SuppressWarnings("PMD.OverrideBothEqualsAndHashcode")
@@ -437,10 +437,9 @@ public class FeatureWrapper extends BeansWrapper {
         }
 
         /**
-         * Returns this map's entry set. An entry for each of the properties mentioned in this
-         * class's javadoc is returned. Of special interest is the entry for the <code>"value"
-         * </code> property, which is lazily evaluated through the use of a {@link
-         * DeferredValueEntry}
+         * Returns this map's entry set. An entry for each of the properties mentioned in this class's javadoc is
+         * returned. Of special interest is the entry for the <code>"value"
+         * </code> property, which is lazily evaluated through the use of a {@link DeferredValueEntry}
          */
         @Override
         public Set entrySet() {
@@ -448,15 +447,13 @@ public class FeatureWrapper extends BeansWrapper {
                 entrySet = new LinkedHashSet<>();
                 final ComplexType featureType = feature.getType();
                 PropertyDescriptor attributeDescr = featureType.getDescriptor(attributeName);
-                Property property =
-                        this.prop == null ? feature.getProperty(attributeName) : this.prop;
+                Property property = this.prop == null ? feature.getProperty(attributeName) : this.prop;
 
                 if (property == null) {
                     // maybe polymorphism? let's try
                     @SuppressWarnings("unchecked")
-                    List<AttributeDescriptor> substitutionGroup =
-                            (List<AttributeDescriptor>)
-                                    attributeDescr.getUserData().get("substitutionGroup");
+                    List<AttributeDescriptor> substitutionGroup = (List<AttributeDescriptor>)
+                            attributeDescr.getUserData().get("substitutionGroup");
                     if (substitutionGroup != null) {
                         Iterator<AttributeDescriptor> it = substitutionGroup.iterator();
                         while (property == null && it.hasNext()) {
@@ -468,31 +465,26 @@ public class FeatureWrapper extends BeansWrapper {
                     }
                 }
 
-                entrySet.add(
-                        new MapEntry<Object, Object>(
-                                "isComplex", property instanceof ComplexAttribute));
+                entrySet.add(new MapEntry<Object, Object>("isComplex", property instanceof ComplexAttribute));
 
                 Object value = null;
-                if (property instanceof ComplexAttribute) {
-                    value = buildComplex((ComplexAttribute) property);
+                if (property instanceof ComplexAttribute attribute) {
+                    value = buildComplex(attribute);
                 } else if (property != null) {
                     value = property.getValue();
                 }
 
                 entrySet.add(new DeferredValueEntry("value", value));
                 entrySet.add(new MapEntry<Object, Object>("name", attributeName.getLocalPart()));
-                entrySet.add(
-                        new MapEntry<Object, Object>("namespace", getNamespace(attributeName)));
+                entrySet.add(new MapEntry<Object, Object>("namespace", getNamespace(attributeName)));
                 entrySet.add(new MapEntry<Object, Object>("prefix", getPrefix(attributeName)));
 
                 if (attributeDescr.getType() instanceof ComplexType) {
                     entrySet.add(
-                            new MapEntry<Object, Object>(
-                                    "type", buildType((ComplexType) attributeDescr.getType())));
+                            new MapEntry<Object, Object>("type", buildType((ComplexType) attributeDescr.getType())));
                 } else {
-                    entrySet.add(
-                            new MapEntry<Object, Object>(
-                                    "type", attributeDescr.getType().getBinding().getName()));
+                    entrySet.add(new MapEntry<Object, Object>(
+                            "type", attributeDescr.getType().getBinding().getName()));
                 }
 
                 Object rawValue = value == null ? "" : value;
@@ -505,12 +497,12 @@ public class FeatureWrapper extends BeansWrapper {
         }
 
         /**
-         * A special purpose Map.Entry whose value is transformed to String on demand, thus avoiding
-         * to hold both the actual value object and its string value.
+         * A special purpose Map.Entry whose value is transformed to String on demand, thus avoiding to hold both the
+         * actual value object and its string value.
          *
          * @see FeatureWrapper#valueToString(Object)
          */
-        private class DeferredValueEntry extends MapEntry<Object, Object> {
+        private static class DeferredValueEntry extends MapEntry<Object, Object> {
             private static final long serialVersionUID = -3919798947862996744L;
 
             public DeferredValueEntry(String key, Object attribute) {
@@ -539,8 +531,7 @@ public class FeatureWrapper extends BeansWrapper {
     }
 
     /**
-     * Default Factory to Create TemplateCollectionModel from FeatureCollection by making a copy of
-     * features in list
+     * Default Factory to Create TemplateCollectionModel from FeatureCollection by making a copy of features in list
      *
      * @author Niels Charlier, Curtin University of Technology
      */
@@ -549,8 +540,7 @@ public class FeatureWrapper extends BeansWrapper {
 
         @Override
         @SuppressWarnings("unchecked")
-        public CollectionModel createTemplateFeatureCollection(
-                FeatureCollection collection, BeansWrapper wrapper) {
+        public CollectionModel createTemplateFeatureCollection(FeatureCollection collection, BeansWrapper wrapper) {
             return new CollectionModel(DataUtilities.list(collection), wrapper);
         }
     }

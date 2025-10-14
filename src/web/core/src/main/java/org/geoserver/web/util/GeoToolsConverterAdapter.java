@@ -5,13 +5,16 @@
  */
 package org.geoserver.web.util;
 
+import java.io.Serial;
 import java.util.Locale;
 import org.apache.wicket.util.convert.IConverter;
 import org.geotools.util.Converter;
 
 public class GeoToolsConverterAdapter implements IConverter<Object> {
 
+    @Serial
     private static final long serialVersionUID = -3177870394414885877L;
+
     Converter myConverter;
     Class<?> myTarget;
 

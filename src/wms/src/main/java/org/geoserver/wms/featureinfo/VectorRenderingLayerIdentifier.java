@@ -82,17 +82,15 @@ import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
 
 /**
- * Painting based layer identifier: this method actually paints a reduced version of the map to find
- * out which features really intercept the clicked point
+ * Painting based layer identifier: this method actually paints a reduced version of the map to find out which features
+ * really intercept the clicked point
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifier
-        implements ExtensionPriority {
+public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifier implements ExtensionPriority {
 
     static final Logger LOGGER = Logging.getLogger(VectorRenderingLayerIdentifier.class);
-    private static final String FEATURE_INFO_RENDERING_ENABLED_KEY =
-            "org.geoserver.wms.featureinfo.render.enabled";
+    private static final String FEATURE_INFO_RENDERING_ENABLED_KEY = "org.geoserver.wms.featureinfo.render.enabled";
     // smaller by default than VectorBasicLayerIdentifier because this mode accounts for symbol
     // sizes,
     // not just for info point to geometry distance
@@ -108,11 +106,10 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
         String value = System.getProperty(FEATURE_INFO_RENDERING_ENABLED_KEY, "true");
         RENDERING_FEATUREINFO_ENABLED = Boolean.valueOf(value);
         if (!RENDERING_FEATUREINFO_ENABLED) {
-            LOGGER.info(
-                    "Rendering based GetFeatureInfo disabled since "
-                            + FEATURE_INFO_RENDERING_ENABLED_KEY
-                            + " is set to "
-                            + value);
+            LOGGER.info("Rendering based GetFeatureInfo disabled since "
+                    + FEATURE_INFO_RENDERING_ENABLED_KEY
+                    + " is set to "
+                    + value);
         }
     }
 
@@ -132,8 +129,8 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
     }
 
     @Override
-    public List<FeatureCollection> identify(
-            FeatureInfoRequestParameters params, final int maxFeatures) throws Exception {
+    public List<FeatureCollection> identify(FeatureInfoRequestParameters params, final int maxFeatures)
+            throws Exception {
         LOGGER.log(Level.FINER, "Applying rendering based feature info identifier");
 
         // at the moment the new identifier works only with simple features due to a limitation
@@ -143,8 +140,8 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             return fallback.identify(params, maxFeatures);
         }
 
-        final Style style =
-                preprocessStyle(params.getStyle(), params.getLayer().getFeature().getFeatureType());
+        final Style style = preprocessStyle(
+                params.getStyle(), params.getLayer().getFeature().getFeatureType());
         final int userBuffer = params.getBuffer() > 0 ? params.getBuffer() : MIN_BUFFER_SIZE;
         final int buffer = getBuffer(userBuffer);
 
@@ -167,12 +164,11 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             mc.addLayer(layer);
             // setup the env variables just like in the original GetMap
             RenderingVariables.setupEnvironmentVariables(mc);
+            RenderingVariables.setQueryHintsFromEnv(layer);
 
             // setup the transformation from screen to world space
-            AffineTransform worldToScreen =
-                    RendererUtilities.worldToScreenTransform(
-                            params.getRequestedBounds(),
-                            new Rectangle(params.getWidth(), params.getHeight()));
+            AffineTransform worldToScreen = RendererUtilities.worldToScreenTransform(
+                    params.getRequestedBounds(), new Rectangle(params.getWidth(), params.getHeight()));
             AffineTransform screenToWorld = worldToScreen.createInverse();
 
             // apply uom rescale on the rules
@@ -183,20 +179,14 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             if (radius < buffer) {
                 radius = buffer;
             }
-            Envelope targetRasterSpace =
-                    new Envelope(
-                            params.getX() - radius,
-                            params.getX() + radius,
-                            params.getY() - radius,
-                            params.getY() + radius);
-            Envelope targetModelSpace =
-                    JTS.transform(targetRasterSpace, new AffineTransform2D(screenToWorld));
+            Envelope targetRasterSpace = new Envelope(
+                    params.getX() - radius, params.getX() + radius, params.getY() - radius, params.getY() + radius);
+            Envelope targetModelSpace = JTS.transform(targetRasterSpace, new AffineTransform2D(screenToWorld));
 
             // prepare the image we are going to check rendering against
             int paintAreaSize = radius * 2;
-            final BufferedImage image =
-                    ImageTypeSpecifier.createFromBufferedImageType(BufferedImage.TYPE_INT_ARGB)
-                            .createBufferedImage(paintAreaSize, paintAreaSize);
+            final BufferedImage image = ImageTypeSpecifier.createFromBufferedImageType(BufferedImage.TYPE_INT_ARGB)
+                    .createBufferedImage(paintAreaSize, paintAreaSize);
             image.setAccelerationPriority(0);
 
             // and now the listener that will check for painted pixels
@@ -207,8 +197,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             }
             Rectangle hitArea = new Rectangle(mid - buffer, mid - buffer, hitAreaSize, hitAreaSize);
             final FeatureInfoRenderListener featureInfoListener =
-                    new FeatureInfoRenderListener(
-                            image, hitArea, maxFeatures, params.getPropertyNames());
+                    new FeatureInfoRenderListener(image, hitArea, maxFeatures, params.getPropertyNames());
 
             // update the map context
             mc.getViewport().setBounds(new ReferencedEnvelope(targetModelSpace, getMap.getCrs()));
@@ -242,17 +231,13 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             private Graphics2D graphics;
 
             @Override
-            protected RenderedImage prepareImage(
-                    int width, int height, IndexColorModel palette, boolean transparent) {
+            protected RenderedImage prepareImage(int width, int height, IndexColorModel palette, boolean transparent) {
                 return image;
             }
 
             @Override
             protected Graphics2D getGraphics(
-                    boolean transparent,
-                    Color bgColor,
-                    RenderedImage preparedImage,
-                    Map<Key, Object> hintsMap) {
+                    boolean transparent, Color bgColor, RenderedImage preparedImage, Map<Key, Object> hintsMap) {
                 graphics = super.getGraphics(transparent, bgColor, preparedImage, hintsMap);
                 return graphics;
             }
@@ -276,7 +261,8 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
 
     private void rescaleRules(List<Rule> rules, FeatureInfoRequestParameters params) {
         Map<Object, Object> rendererParams = new HashMap<>();
-        Integer requestedDpi = ((Integer) params.getGetMapRequest().getFormatOptions().get("dpi"));
+        Integer requestedDpi =
+                ((Integer) params.getGetMapRequest().getFormatOptions().get("dpi"));
         if (requestedDpi != null) {
             rendererParams.put(StreamingRenderer.DPI_KEY, requestedDpi);
         }
@@ -285,8 +271,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
         double standardDpi = RendererUtilities.getDpi(rendererParams);
         if (requestedDpi != null && standardDpi != requestedDpi) {
             double scaleFactor = requestedDpi / standardDpi;
-            DpiRescaleStyleVisitor dpiVisitor =
-                    new GraphicsAwareDpiRescaleStyleVisitor(scaleFactor);
+            DpiRescaleStyleVisitor dpiVisitor = new GraphicsAwareDpiRescaleStyleVisitor(scaleFactor);
             for (int i = 0; i < rules.size(); i++) {
                 rules.get(i).accept(dpiVisitor);
                 Rule rescaled = (Rule) dpiVisitor.getCopy();
@@ -296,8 +281,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
 
         // apply UOM rescaling
         double pixelsPerMeters =
-                RendererUtilities.calculatePixelsPerMeterRatio(
-                        params.getScaleDenominator(), rendererParams);
+                RendererUtilities.calculatePixelsPerMeterRatio(params.getScaleDenominator(), rendererParams);
         UomRescaleStyleVisitor uomVisitor = new UomRescaleStyleVisitor(pixelsPerMeters);
         for (int i = 0; i < rules.size(); i++) {
             rules.get(i).accept(uomVisitor);
@@ -334,10 +318,10 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
         for (Map.Entry<FeatureType, List<Feature>> entry : map.entrySet()) {
             FeatureType type = entry.getKey();
             List<Feature> list = entry.getValue();
-            if (type instanceof SimpleFeatureType) {
+            if (type instanceof SimpleFeatureType featureType) {
                 @SuppressWarnings("unchecked")
                 List<SimpleFeature> sf = new ArrayList<>((List) list);
-                result.add(new ListFeatureCollection((SimpleFeatureType) type, sf));
+                result.add(new ListFeatureCollection(featureType, sf));
             } else {
                 result.add(new ListComplexFeatureCollection(type, list));
             }
@@ -353,8 +337,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
         return result;
     }
 
-    private FeatureLayer getLayer(FeatureInfoRequestParameters params, Style style)
-            throws IOException {
+    private FeatureLayer getLayer(FeatureInfoRequestParameters params, Style style) throws IOException {
         // build the full filter
         List<Object> times = params.getTimes();
         List<Object> elevations = params.getElevations();
@@ -363,14 +346,14 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
         GetMapRequest getMapRequest = params.getGetMapRequest();
         FeatureTypeInfo featureInfo = layer.getFeature();
         wms.validateVectorDimensions(times, elevations, featureInfo, getMapRequest);
-        Filter dimensionFilter =
-                wms.getDimensionFilter(times, elevations, featureInfo, getMapRequest);
+        Filter dimensionFilter = wms.getDimensionFilter(times, elevations, featureInfo, getMapRequest);
         Filter filter = Filters.and(FF, dimensionFilter, layerFilter);
 
         GetMapRequest getMap = getMapRequest;
         FeatureSource<? extends FeatureType, ? extends Feature> featureSource =
                 super.handleClipParam(params, layer.getFeatureSource(true, getMap.getCrs()));
-        final Query definitionQuery = new Query(featureSource.getSchema().getName().getLocalPart());
+        final Query definitionQuery =
+                new Query(featureSource.getSchema().getName().getLocalPart());
         definitionQuery.setVersion(getMap.getFeatureVersion());
         definitionQuery.setFilter(filter);
         definitionQuery.setSortBy(params.getSort());
@@ -390,19 +373,15 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             } else {
                 // source = new PagingFeatureSource(source,
                 // request.getStartIndex(), limit);
-                throw new ServiceException(
-                        "startIndex is not supported for the " + layer.getName() + " layer");
+                throw new ServiceException("startIndex is not supported for the " + layer.getName() + " layer");
             }
         }
 
-        int maxFeatures =
-                getMap.getMaxFeatures() != null ? getMap.getMaxFeatures() : Integer.MAX_VALUE;
+        int maxFeatures = getMap.getMaxFeatures() != null ? getMap.getMaxFeatures() : Integer.MAX_VALUE;
         definitionQuery.setMaxFeatures(maxFeatures);
 
         FeatureLayer result =
-                new FeatureLayer(
-                        new FeatureInfoFeatureSource<>(featureSource, params.getPropertyNames()),
-                        style);
+                new FeatureLayer(new FeatureInfoFeatureSource<>(featureSource, params.getPropertyNames()), style);
         result.setQuery(definitionQuery);
 
         return result;
@@ -463,10 +442,9 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             // graphic fills using dynamic sizes for their strokes
             if (dynamicRules.isEmpty()) {
                 if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.fine(
-                            "No dynamic rules found, even if the estimator initially though so, "
-                                    + "using the static analysis result: "
-                                    + estimatedRadius);
+                    LOGGER.fine("No dynamic rules found, even if the estimator initially though so, "
+                            + "using the static analysis result: "
+                            + estimatedRadius);
                 }
                 return estimatedRadius;
             }
@@ -475,14 +453,12 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             // or direct proportionalities we could just compute the max value of the fields
             // involved
             FeatureSource<?, ?> fs = layer.getFeatureSource();
-            Envelope targetRasterSpace =
-                    new Envelope(
-                            -estimatedRadius,
-                            params.getWidth() + estimatedRadius,
-                            -estimatedRadius,
-                            params.getWidth() + estimatedRadius);
-            Envelope expanded =
-                    JTS.transform(targetRasterSpace, new AffineTransform2D(screenToWorld));
+            Envelope targetRasterSpace = new Envelope(
+                    -estimatedRadius,
+                    params.getWidth() + estimatedRadius,
+                    -estimatedRadius,
+                    params.getWidth() + estimatedRadius);
+            Envelope expanded = JTS.transform(targetRasterSpace, new AffineTransform2D(screenToWorld));
             ReferencedEnvelope renderingBBOX = new ReferencedEnvelope(expanded, getMap.getCrs());
             ReferencedEnvelope queryBBOX =
                     renderingBBOX.transform(fs.getSchema().getCoordinateReferenceSystem(), true);
@@ -532,8 +508,8 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
     }
 
     /**
-     * Checks if the features just rendered hit the target area, and collects them. Stops the
-     * rendering once enough features are collected
+     * Checks if the features just rendered hit the target area, and collects them. Stops the rendering once enough
+     * features are collected
      *
      * @author Andrea Aime - GeoSolutions
      */
@@ -560,8 +536,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
 
         Graphics2D graphics;
 
-        public FeatureInfoRenderListener(
-                BufferedImage bi, Rectangle hitArea, int maxFeatures, String[] propertyNames) {
+        public FeatureInfoRenderListener(BufferedImage bi, Rectangle hitArea, int maxFeatures, String[] propertyNames) {
             verifyColorModel(bi);
             Raster raster = getRaster(bi);
             this.scanlineStride = raster.getDataBuffer().getSize() / raster.getHeight();
@@ -586,8 +561,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
         private void verifyColorModel(BufferedImage bi) {
             ColorModel cm = bi.getColorModel();
             if (!(cm instanceof DirectColorModel)) {
-                throw new IllegalArgumentException(
-                        "Invalid color model, it should be a DirectColorModel");
+                throw new IllegalArgumentException("Invalid color model, it should be a DirectColorModel");
             }
             DirectColorModel dcm = (DirectColorModel) cm;
             if (dcm.getNumColorComponents() != 3 || !dcm.hasAlpha()) {
@@ -601,8 +575,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             // a copy of the raster to get a data buffer we can scroll over without issues
             Raster raster = image.getRaster();
             if (raster.getParent() != null) {
-                throw new IllegalArgumentException(
-                        "The provided raster is a child of another image");
+                throw new IllegalArgumentException("The provided raster is a child of another image");
             } else {
                 return raster;
             }
@@ -660,8 +633,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             } else {
                 if (retypeBuilder == null) {
                     SimpleFeatureType targetType =
-                            SimpleFeatureTypeBuilder.retype(
-                                    feature.getFeatureType(), propertyNames);
+                            SimpleFeatureTypeBuilder.retype(feature.getFeatureType(), propertyNames);
                     retypeBuilder = new SimpleFeatureBuilder(targetType);
                 }
                 return SimpleFeatureBuilder.retype(feature, retypeBuilder);
@@ -683,8 +655,8 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
     }
 
     /**
-     * A tiny wrapper that forces the attributes needed by getfeatureinfo to be returned: the
-     * renderer normally tries to get only the attributes it needs for performance reasons
+     * A tiny wrapper that forces the attributes needed by getfeatureinfo to be returned: the renderer normally tries to
+     * get only the attributes it needs for performance reasons
      *
      * @author Andrea Aime - GeoSolutions
      * @param <T> FeatureType

@@ -14,8 +14,7 @@ import org.geoserver.security.web.role.RoleServicePanelInfo;
  *
  * @author Justin Deoliveira, OpenGeo
  */
-public class JDBCRoleServicePanelInfo
-        extends RoleServicePanelInfo<JDBCRoleServiceConfig, JDBCRoleServicePanel> {
+public class JDBCRoleServicePanelInfo extends RoleServicePanelInfo<JDBCRoleServiceConfig, JDBCRoleServicePanel> {
 
     public JDBCRoleServicePanelInfo() {
         setComponentClass(JDBCRoleServicePanel.class);

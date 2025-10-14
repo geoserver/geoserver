@@ -49,15 +49,14 @@ import org.geotools.api.style.ResourceLocator;
 import org.geotools.api.style.SelectedChannelType;
 import org.geotools.api.style.Style;
 import org.geotools.api.style.StyledLayerDescriptor;
-import org.geotools.data.DataUtilities;
 import org.geotools.styling.AbstractStyleVisitor;
 import org.geotools.styling.DefaultResourceLocator;
 import org.geotools.util.URLs;
 import org.xml.sax.EntityResolver;
 
 /**
- * File or Resource access to GeoServer data directory. In addition to paths Catalog obhjects such
- * as workspace or FeatureTypeInfo can be used to locate resources.
+ * File or Resource access to GeoServer data directory. In addition to paths Catalog obhjects such as workspace or
+ * FeatureTypeInfo can be used to locate resources.
  *
  * <p>Example usage:
  *
@@ -85,7 +84,38 @@ public class GeoServerDataDirectory {
     /** resource loader */
     GeoServerResourceLoader resourceLoader;
 
-    EntityResolverProvider entityResolverProvider;
+    /**
+     * Static reference to the EntityResolverProvider to avoid circular dependency issues during startup.
+     *
+     * <p>This static field prevents deadlocks that can occur when accessing the EntityResolverProvider through
+     * GeoServerExtensions during catalog loading (particularly for style group layer groups), as Spring might still be
+     * initializing beans.
+     *
+     * <p>The field must be static because some code (like ResourcePool.dataDir()) directly instantiates a
+     * GeoServerDataDirectory instead of relying on the Spring bean of that type.
+     *
+     * <p>The deadlock occurs in the following call chain:
+     *
+     * <pre>{@code
+     * loadCatalog() ->
+     * CatalogImpl.add(LayerGroup) ->
+     *  validate(LayerGroup) ->
+     *   StyledLayerDescriptor sld = styles.get(i).getSLD() ->
+     *    StyleInfoImpl.getSLD() ->
+     *     ResourcePool.getSld(StyleInfo) ->
+     *      GeoServerDataDirectory.parseSld(StyleInfo) ->
+     *       GeoServerDataDirectory.getEntityResolver() ->
+     *        GeoServerExtensions.bean(EntityResolverProvider.class) ->
+     *         DefaultListableBeanFactory.getSingletonFactoryBeanForTypeCheck()
+     * }</pre>
+     *
+     * <p>During catalog loading, a temporary provider is set using
+     * {@link #setEntityResolverProvider(EntityResolverProvider)} and cleared afterwards.
+     *
+     * @see #setEntityResolverProvider(EntityResolverProvider)
+     * @see #getEntityResolver()
+     */
+    private static EntityResolverProvider entityResolverProvider;
 
     GeoServerResourceLocator resourceLocator;
 
@@ -114,8 +144,7 @@ public class GeoServerDataDirectory {
     }
 
     /**
-     * Returns a directory under the {@link #root()} directory, if the directory does not exist it
-     * will be created.
+     * Returns a directory under the {@link #root()} directory, if the directory does not exist it will be created.
      *
      * @return directory (created if needed)
      */
@@ -123,18 +152,15 @@ public class GeoServerDataDirectory {
         return get(Paths.path(location)).dir();
     }
 
-    /**
-     * Returns a file under the {@link #root()} directory, if the file does not exist null is
-     * returned.
-     */
+    /** Returns a file under the {@link #root()} directory, if the file does not exist null is returned. */
     public File findFile(String... location) throws IOException {
         Resource resource = get(Paths.path(location));
         return Resources.find(resource);
     }
 
     /**
-     * Returns the root of the directory which contains spatial data files, if the directory does
-     * exist, null is returned.
+     * Returns the root of the directory which contains spatial data files, if the directory does exist, null is
+     * returned.
      *
      * <p>This directory is called 'data', and is located directly under {@link #root()}
      */
@@ -144,8 +170,8 @@ public class GeoServerDataDirectory {
     }
 
     /**
-     * Returns the root of the directory which contains spatial data files, if the directory does
-     * not exist it will be created.
+     * Returns the root of the directory which contains spatial data files, if the directory does not exist it will be
+     * created.
      *
      * <p>This directory is called 'data', and is located directly under {@link #root()}
      */
@@ -155,27 +181,20 @@ public class GeoServerDataDirectory {
     }
 
     /**
-     * Returns a directory under the {@link #dataRoot()} directory, if the directory does not exist
-     * null will be returned.
+     * Returns a directory under the {@link #root()} directory, if the directory does not exist null will be returned.
      */
     public File findDataDir(String... location) throws IOException {
         Resource resource = get(Paths.path("data", Paths.path(location)));
         return Resources.directory(resource);
     }
 
-    /**
-     * Returns a directory under the {@link #dataRoot()} directory, if the directory does not exist
-     * it will be created.
-     */
+    /** Returns a directory under the {@link #root()} directory, if the directory does not exist it will be created. */
     public File findOrCreateDataDir(String... location) throws IOException {
         Resource resource = get(Paths.path("data", Paths.path(location)));
         return resource.dir();
     }
 
-    /**
-     * Returns a file under the {@link #dataRoot()} directory, if the file does not exist null is
-     * returned.
-     */
+    /** Returns a file under the {@link #root()} directory, if the file does not exist null is returned. */
     public File findDataFile(String... location) throws IOException {
         Resource resource = get(Paths.path("data", Paths.path(location)));
         return Resources.file(resource);
@@ -225,8 +244,7 @@ public class GeoServerDataDirectory {
     static final String SECURITY_DIR = "security";
 
     /**
-     * Retrieve a resource relative to the root of the data directory. An empty path will retrieve
-     * the directory itself.
+     * Retrieve a resource relative to the root of the data directory. An empty path will retrieve the directory itself.
      *
      * @return A {@link Resource}
      */
@@ -237,8 +255,7 @@ public class GeoServerDataDirectory {
     }
 
     /**
-     * Retrieve a resource in the security directory. An empty path will retrieve the directory
-     * itself.
+     * Retrieve a resource in the security directory. An empty path will retrieve the directory itself.
      *
      * @return A {@link Resource}
      */
@@ -249,8 +266,7 @@ public class GeoServerDataDirectory {
     }
 
     /**
-     * Retrieve a resource in the workspaces directory. An empty path will retrieve the directory
-     * itself.
+     * Retrieve a resource in the workspaces directory. An empty path will retrieve the directory itself.
      *
      * @return A {@link Resource}
      */
@@ -266,15 +282,14 @@ public class GeoServerDataDirectory {
      * @return A {@link Resource}
      */
     public @Nonnull Resource defaultWorkspaceConfig() {
-        Resource r = getRoot("default.xml");
+        Resource r = getWorkspaces("default.xml");
         assert r != null;
         return r;
     }
 
     /**
-     * Retrieve a resource in the workspace configuration directory. An empty path will retrieve the
-     * directory itself. A null workspace will retrieve the resouce in the global configuration
-     * directory.
+     * Retrieve a resource in the workspace configuration directory. An empty path will retrieve the directory itself. A
+     * null workspace will retrieve the resouce in the global configuration directory.
      *
      * @param ws The workspace
      * @return A {@link Resource}
@@ -303,9 +318,9 @@ public class GeoServerDataDirectory {
     }
 
     /**
-     * Retrieve a resource in the configuration directory of the workspace associated with a
-     * namespace. An empty path will retrieve the directory itself. A null namespace will retrieve
-     * the resouce in the global configuration directory.
+     * Retrieve a resource in the configuration directory of the workspace associated with a namespace. An empty path
+     * will retrieve the directory itself. A null namespace will retrieve the resouce in the global configuration
+     * directory.
      *
      * @param ns The namespace
      * @return A {@link Resource}
@@ -334,8 +349,7 @@ public class GeoServerDataDirectory {
     }
 
     /**
-     * Retrieve a resource in the configuration directory of a Store. An empty path will retrieve
-     * the directory itself.
+     * Retrieve a resource in the configuration directory of a Store. An empty path will retrieve the directory itself.
      *
      * @param store The store
      * @return A {@link Resource}
@@ -402,14 +416,14 @@ public class GeoServerDataDirectory {
      */
     private @Nonnull Resource config(StoreInfo si) {
         final Resource r;
-        if (si instanceof DataStoreInfo) {
-            r = config((DataStoreInfo) si);
-        } else if (si instanceof CoverageStoreInfo) {
-            r = config((CoverageStoreInfo) si);
-        } else if (si instanceof WMTSStoreInfo) {
-            r = config((WMTSStoreInfo) si);
-        } else if (si instanceof WMSStoreInfo) {
-            r = config((WMSStoreInfo) si);
+        if (si instanceof DataStoreInfo ds) {
+            r = config(ds);
+        } else if (si instanceof CoverageStoreInfo cs) {
+            r = config(cs);
+        } else if (si instanceof WMTSStoreInfo wmtss) {
+            r = config(wmtss);
+        } else if (si instanceof WMSStoreInfo wmss) {
+            r = config(wmss);
         } else {
             // It'd be nice if we could be generic and cover potential future StoreInfo types.
             throw new IllegalArgumentException(
@@ -427,14 +441,14 @@ public class GeoServerDataDirectory {
      */
     private @Nonnull Resource config(ResourceInfo si) {
         final Resource r;
-        if (si instanceof FeatureTypeInfo) {
-            r = config((FeatureTypeInfo) si);
-        } else if (si instanceof CoverageInfo) {
-            r = config((CoverageInfo) si);
-        } else if (si instanceof WMTSLayerInfo) {
-            r = config((WMTSLayerInfo) si);
-        } else if (si instanceof WMSLayerInfo) {
-            r = config((WMSLayerInfo) si);
+        if (si instanceof FeatureTypeInfo ft) {
+            r = config(ft);
+        } else if (si instanceof CoverageInfo cv) {
+            r = config(cv);
+        } else if (si instanceof WMTSLayerInfo wmts) {
+            r = config(wmts);
+        } else if (si instanceof WMSLayerInfo wms) {
+            r = config(wms);
         } else {
             // It'd be nice if we could be generic and cover potential future ResourceInfo types.
             throw new IllegalArgumentException(
@@ -445,8 +459,8 @@ public class GeoServerDataDirectory {
     }
 
     /**
-     * Retrieve a resource in the configuration directory of a Resource. An empty path will retrieve
-     * the directory itself.
+     * Retrieve a resource in the configuration directory of a Resource. An empty path will retrieve the directory
+     * itself.
      *
      * @param ri The store
      * @return A {@link Resource}
@@ -506,8 +520,7 @@ public class GeoServerDataDirectory {
     }
 
     /**
-     * Retrieve a resource in the configuration directory of a Layer. An empty path will retrieve
-     * the directory itself.
+     * Retrieve a resource in the configuration directory of a Layer. An empty path will retrieve the directory itself.
      *
      * @param l The layer
      * @return A {@link Resource}
@@ -544,8 +557,7 @@ public class GeoServerDataDirectory {
     }
 
     /**
-     * Retrieve a resource in the layer groups directory. An empty path will retrieve the directory
-     * itself.
+     * Retrieve a resource in the layer groups directory. An empty path will retrieve the directory itself.
      *
      * @return A {@link Resource}
      */
@@ -556,9 +568,8 @@ public class GeoServerDataDirectory {
     }
 
     /**
-     * Retrieve a resource in the layer groups directory of a workspace. An empty path will retrieve
-     * the directory itself. A null workspace will return the resource in the global layer groups
-     * directory
+     * Retrieve a resource in the layer groups directory of a workspace. An empty path will retrieve the directory
+     * itself. A null workspace will return the resource in the global layer groups directory
      *
      * @return A {@link Resource}
      */
@@ -569,8 +580,8 @@ public class GeoServerDataDirectory {
     }
 
     /**
-     * Retrieve a resource in the configuration directory of a LayerGroup. An empty path will
-     * retrieve the directory itself. This directory is shared by all Layer Groups in a Workspace.
+     * Retrieve a resource in the configuration directory of a LayerGroup. An empty path will retrieve the directory
+     * itself. This directory is shared by all Layer Groups in a Workspace.
      *
      * @param lgi The store
      * @return A {@link Resource}
@@ -589,14 +600,13 @@ public class GeoServerDataDirectory {
      * @return A {@link Resource}
      */
     public @Nonnull Resource config(LayerGroupInfo lgi) {
-        Resource r = get(lgi, String.format("%s.xml", lgi.getName()));
+        Resource r = get(lgi, "%s.xml".formatted(lgi.getName()));
         assert r != null;
         return r;
     }
 
     /**
-     * Retrieve a resource in the styles directory. An empty path will retrieve the directory
-     * itself.
+     * Retrieve a resource in the styles directory. An empty path will retrieve the directory itself.
      *
      * @return A {@link Resource}
      */
@@ -607,8 +617,8 @@ public class GeoServerDataDirectory {
     }
 
     /**
-     * Retrieve a resource in the styles directory of a workspace. An empty path will retrieve the
-     * directory itself. A null workspace will return the resource in the global styles directory
+     * Retrieve a resource in the styles directory of a workspace. An empty path will retrieve the directory itself. A
+     * null workspace will return the resource in the global styles directory
      *
      * @return A {@link Resource}
      */
@@ -619,8 +629,8 @@ public class GeoServerDataDirectory {
     }
 
     /**
-     * Retrieve a resource in the configuration directory of a Resource. An empty path will retrieve
-     * the directory itself.
+     * Retrieve a resource in the configuration directory of a Resource. An empty path will retrieve the directory
+     * itself.
      *
      * @param si The store
      * @return A {@link Resource}
@@ -672,9 +682,8 @@ public class GeoServerDataDirectory {
     }
 
     /**
-     * Retrieve the StyleInfo as a GeoTools Style object. Note this is just the data structure as
-     * written, the matching external graphics are unmodified and may not be (yet) available on the
-     * local system.
+     * Retrieve the StyleInfo as a GeoTools Style object. Note this is just the data structure as written, the matching
+     * external graphics are unmodified and may not be (yet) available on the local system.
      *
      * @param s The style
      * @return A {@link Resource}
@@ -687,16 +696,15 @@ public class GeoServerDataDirectory {
         final DefaultResourceLocator locator = new ResourceAwareResourceLocator();
         locator.setSourceUrl(Resources.toURL(styleResource));
         StyledLayerDescriptor sld =
-                Styles.handler(s.getFormat())
-                        .parse(styleResource, s.getFormatVersion(), locator, null);
+                Styles.handler(s.getFormat()).parse(styleResource, s.getFormatVersion(), locator, null);
         final Style style = Styles.style(sld);
         assert style != null;
         return style;
     }
 
     /**
-     * Retrieve the styled layer descriptor prepared for direct GeoTools use. All file references
-     * have been made absolute.
+     * Retrieve the styled layer descriptor prepared for direct GeoTools use. All file references have been made
+     * absolute.
      *
      * @param s The style
      * @return A {@link StyledLayerDescriptor}
@@ -704,12 +712,9 @@ public class GeoServerDataDirectory {
     public @Nonnull StyledLayerDescriptor parsedSld(final StyleInfo s) throws IOException {
         final Resource styleResource = style(s);
         if (styleResource.getType() == Type.UNDEFINED) {
-            throw new IOException(
-                    "No such resource: "
-                            + s.getFilename()
-                            + (s.getWorkspace() != null
-                                    ? " in workspace " + s.getWorkspace()
-                                    : ""));
+            throw new IOException("No such resource: "
+                    + s.getFilename()
+                    + (s.getWorkspace() != null ? " in workspace " + s.getWorkspace() : ""));
         }
         File input = styleResource.file();
 
@@ -717,15 +722,13 @@ public class GeoServerDataDirectory {
         locator.setSourceUrl(Resources.toURL(styleResource));
         EntityResolver entityResolver = getEntityResolver();
         final StyledLayerDescriptor sld =
-                Styles.handler(s.getFormat())
-                        .parse(input, s.getFormatVersion(), locator, getEntityResolver());
+                Styles.handler(s.getFormat()).parse(input, s.getFormatVersion(), locator, getEntityResolver());
 
         return sld;
     }
 
     /**
-     * Retrieve the style prepared for direct GeoTools use. All file references have been made
-     * absolute.
+     * Retrieve the style prepared for direct GeoTools use. All file references have been made absolute.
      *
      * @param s The style
      * @return A {@link Style}
@@ -737,12 +740,44 @@ public class GeoServerDataDirectory {
         return style;
     }
 
+    /**
+     * Sets a temporary EntityResolverProvider to be used during catalog loading.
+     *
+     * <p>This method allows setting a temporary provider that doesn't depend on Spring bean initialization, preventing
+     * deadlocks during catalog loading, particularly when loading style group layer groups.
+     *
+     * <p>The provider is used in {@link #getEntityResolver()} if available, falling back to GeoServerExtensions lookup
+     * only if no provider has been explicitly set.
+     *
+     * @param provider the EntityResolverProvider to use, or null to clear the provider
+     * @see #getEntityResolver()
+     */
+    public static void setEntityResolverProvider(EntityResolverProvider provider) {
+        GeoServerDataDirectory.entityResolverProvider = provider;
+    }
+
+    /**
+     * Gets an EntityResolver for parsing XML files.
+     *
+     * <p>This method first checks for a statically set EntityResolverProvider (set via
+     * {@link #setEntityResolverProvider(EntityResolverProvider)}) and only falls back to GeoServerExtensions lookup if
+     * none is available.
+     *
+     * <p>This approach prevents deadlocks during catalog loading when parsing XML in layer groups, as it avoids
+     * circular dependencies with Spring bean initialization.
+     *
+     * @return an EntityResolver, or null if none is available
+     * @see #setEntityResolverProvider(EntityResolverProvider)
+     */
     private EntityResolver getEntityResolver() {
         // would be best injected, but apparently most of the code is
         // actually creating a GeoServerDataDirectory object programmatically and/or on the fly, so
         // we have to resort to a dynamic spring context lookup instead
         EntityResolver resolver = null;
-        EntityResolverProvider provider = GeoServerExtensions.bean(EntityResolverProvider.class);
+        EntityResolverProvider provider = GeoServerDataDirectory.entityResolverProvider;
+        if (provider == null) {
+            provider = GeoServerExtensions.bean(EntityResolverProvider.class);
+        }
         if (provider != null) {
             resolver = provider.getEntityResolver();
         }
@@ -792,64 +827,59 @@ public class GeoServerDataDirectory {
         final Resource baseDir = get(s);
         try {
             Style parsedStyle = parsedStyleResources(s);
-            parsedStyle.accept(
-                    new AbstractStyleVisitor() {
-                        @Override
-                        public void visit(ExternalGraphic exgr) {
-                            if (exgr.getOnlineResource() == null) {
-                                return;
-                            }
+            parsedStyle.accept(new AbstractStyleVisitor() {
+                @Override
+                public void visit(ExternalGraphic exgr) {
+                    if (exgr.getOnlineResource() == null) {
+                        return;
+                    }
+                    try {
+                        final String location = exgr.getURI();
+                        Resource r = resourceLoader.fromURL(location);
+
+                        if (r != null && r.getType() != Type.UNDEFINED) {
+                            resources.add(r);
+                        }
+                    } catch (IllegalArgumentException e) {
+                        GeoServerConfigPersister.LOGGER.log(
+                                Level.WARNING, "Error attemping to process SLD resource", e);
+                    }
+                }
+
+                @Override
+                public void visit(Mark mark) {
+                    final Expression wellKnownName = mark.getWellKnownName();
+                    if (wellKnownName instanceof Literal) {
+                        final String name = wellKnownName.evaluate(null, String.class);
+                        if (name.startsWith("resource:")) {
                             try {
-                                final String location = exgr.getURI();
-                                Resource r = resourceLoader.fromURL(location);
+                                Resource r = resourceLoader.fromURL(name);
 
                                 if (r != null && r.getType() != Type.UNDEFINED) {
                                     resources.add(r);
                                 }
                             } catch (IllegalArgumentException e) {
                                 GeoServerConfigPersister.LOGGER.log(
-                                        Level.WARNING,
-                                        "Error attemping to process SLD resource",
-                                        e);
+                                        Level.WARNING, "Error attemping to process SLD resource", e);
                             }
                         }
+                    }
+                }
 
-                        @Override
-                        public void visit(Mark mark) {
-                            final Expression wellKnownName = mark.getWellKnownName();
-                            if (wellKnownName instanceof Literal) {
-                                final String name = wellKnownName.evaluate(null, String.class);
-                                if (name.startsWith("resource:")) {
-                                    try {
-                                        Resource r = resourceLoader.fromURL(name);
-
-                                        if (r != null && r.getType() != Type.UNDEFINED) {
-                                            resources.add(r);
-                                        }
-                                    } catch (IllegalArgumentException e) {
-                                        GeoServerConfigPersister.LOGGER.log(
-                                                Level.WARNING,
-                                                "Error attemping to process SLD resource",
-                                                e);
-                                    }
-                                }
-                            }
+                // TODO: Workaround for GEOT-4803, Remove when it is fixed, KS
+                @Override
+                public void visit(ChannelSelection cs) {
+                    if (cs.getGrayChannel() != null) {
+                        cs.getGrayChannel().accept(this);
+                    }
+                    final SelectedChannelType[] rgbChannels = cs.getRGBChannels();
+                    if (rgbChannels != null) {
+                        for (SelectedChannelType ch : rgbChannels) {
+                            if (ch != null) ch.accept(this);
                         }
-
-                        // TODO: Workaround for GEOT-4803, Remove when it is fixed, KS
-                        @Override
-                        public void visit(ChannelSelection cs) {
-                            if (cs.getGrayChannel() != null) {
-                                cs.getGrayChannel().accept(this);
-                            }
-                            final SelectedChannelType[] rgbChannels = cs.getRGBChannels();
-                            if (rgbChannels != null) {
-                                for (SelectedChannelType ch : rgbChannels) {
-                                    if (ch != null) ch.accept(this);
-                                }
-                            }
-                        }
-                    });
+                    }
+                }
+            });
         } catch (FileNotFoundException e) {
             GeoServerConfigPersister.LOGGER.log(Level.WARNING, "Error loading style:" + e);
         } catch (IOException e) {
@@ -858,10 +888,7 @@ public class GeoServerDataDirectory {
         return resources;
     }
 
-    /**
-     * Wrapper for {@link DataUtilities#fileToURL} that unescapes braces used to delimit CQL
-     * templates.
-     */
+    /** Wrapper for {@link URLs#fileToUrl(File)} that unescapes braces used to delimit CQL templates. */
     public static URL fileToUrlPreservingCqlTemplates(File file) {
         URL url = URLs.fileToUrl(file);
         if (!file.getPath().contains("${")) {
@@ -939,9 +966,7 @@ public class GeoServerDataDirectory {
                         u = new URL(u.toString() + "?" + url.getQuery());
                     } catch (MalformedURLException ex) {
                         GeoServerConfigPersister.LOGGER.log(
-                                Level.WARNING,
-                                "Error processing query string for resource with uri: " + uri,
-                                ex);
+                                Level.WARNING, "Error processing query string for resource with uri: " + uri, ex);
                         return null;
                     }
                 }
@@ -951,9 +976,7 @@ public class GeoServerDataDirectory {
                         u = new URL(u.toString() + "#" + url.getRef());
                     } catch (MalformedURLException ex) {
                         GeoServerConfigPersister.LOGGER.log(
-                                Level.WARNING,
-                                "Error processing # fragment for resource with uri: " + uri,
-                                ex);
+                                Level.WARNING, "Error processing # fragment for resource with uri: " + uri, ex);
                         return null;
                     }
                 }

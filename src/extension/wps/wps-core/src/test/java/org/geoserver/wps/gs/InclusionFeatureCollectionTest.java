@@ -32,7 +32,6 @@ public class InclusionFeatureCollectionTest extends WPSTestSupport {
     GeometryFactory gf = new GeometryFactory();
 
     @Test
-    @SuppressWarnings("PMD.SimplifiableTestAssertion") // JTS geometry equality
     public void testExecute() throws Exception {
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.setName("featureType");
@@ -43,8 +42,7 @@ public class InclusionFeatureCollectionTest extends WPSTestSupport {
         SimpleFeatureBuilder b = new SimpleFeatureBuilder(tb.buildFeatureType());
 
         DefaultFeatureCollection features = new DefaultFeatureCollection(null, b.getFeatureType());
-        DefaultFeatureCollection secondFeatures =
-                new DefaultFeatureCollection(null, b.getFeatureType());
+        DefaultFeatureCollection secondFeatures = new DefaultFeatureCollection(null, b.getFeatureType());
 
         Coordinate[] firstArray = new Coordinate[5];
         for (int numFeatures = 0; numFeatures < 1; numFeatures++) {
@@ -83,7 +81,6 @@ public class InclusionFeatureCollectionTest extends WPSTestSupport {
     }
 
     @Test
-    @SuppressWarnings("PMD.SimplifiableTestAssertion") // JTS geometry equality
     public void testExecute1() throws Exception {
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.setName("featureType");
@@ -94,8 +91,7 @@ public class InclusionFeatureCollectionTest extends WPSTestSupport {
         SimpleFeatureBuilder b = new SimpleFeatureBuilder(tb.buildFeatureType());
 
         DefaultFeatureCollection features = new DefaultFeatureCollection(null, b.getFeatureType());
-        DefaultFeatureCollection secondFeatures =
-                new DefaultFeatureCollection(null, b.getFeatureType());
+        DefaultFeatureCollection secondFeatures = new DefaultFeatureCollection(null, b.getFeatureType());
 
         Coordinate[] firstArray = new Coordinate[5];
         for (int numFeatures = 0; numFeatures < 1; numFeatures++) {
@@ -111,10 +107,9 @@ public class InclusionFeatureCollectionTest extends WPSTestSupport {
             secondFeatures.add(b.buildFeature(numFeatures + ""));
         }
 
-        Coordinate centre =
-                ((Polygon) secondFeatures.features().next().getDefaultGeometry())
-                        .getCentroid()
-                        .getCoordinate();
+        Coordinate centre = ((Polygon) secondFeatures.features().next().getDefaultGeometry())
+                .getCentroid()
+                .getCoordinate();
         Point p = gf.createPoint(centre);
         b.add(p);
         b.add(0);

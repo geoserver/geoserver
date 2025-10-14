@@ -36,26 +36,19 @@ public class GSRExceptionHandler implements APIExceptionHandler {
     @Override
     public void handle(Throwable throwable, HttpServletResponse httpServletResponse) {
         Map<String, Object> error = new LinkedHashMap<>();
-        if (throwable instanceof ServiceException) {
-            ServiceException exception = (ServiceException) throwable;
+        if (throwable instanceof ServiceException exception) {
             error.put("error", exception.getError());
         } else {
             error.put(
                     "error",
-                    new ServiceError(
-                            500,
-                            throwable.getMessage(),
-                            Collections.singletonList(throwable.getMessage())));
+                    new ServiceError(500, throwable.getMessage(), Collections.singletonList(throwable.getMessage())));
         }
         try (ServletOutputStream os = httpServletResponse.getOutputStream()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(os, error);
             os.flush();
         } catch (Exception ex) {
-            LOGGER.log(
-                    Level.INFO,
-                    "Problem writing exception information back to calling client:",
-                    ex);
+            LOGGER.log(Level.INFO, "Problem writing exception information back to calling client:", ex);
         }
     }
 }

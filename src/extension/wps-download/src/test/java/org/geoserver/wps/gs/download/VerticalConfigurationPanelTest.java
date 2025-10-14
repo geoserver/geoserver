@@ -62,8 +62,7 @@ public class VerticalConfigurationPanelTest extends GeoServerWicketTestSupport {
         tester.startPage(page);
 
         tester.assertComponent("form:panel", VerticalCRSConfigurationPanel.class);
-        MarkupContainer container =
-                (MarkupContainer) tester.getComponentFromLastRenderedPage("form:panel:verticalCRS");
+        MarkupContainer container = (MarkupContainer) tester.getComponentFromLastRenderedPage("form:panel:verticalCRS");
         assertNotNull(container);
     }
 }

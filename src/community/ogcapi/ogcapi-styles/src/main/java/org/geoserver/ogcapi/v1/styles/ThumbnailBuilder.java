@@ -57,8 +57,7 @@ public class ThumbnailBuilder {
         defaulter.autoSetMissingProperties(request);
 
         WebMap map = wms.getMap(request);
-        if (map instanceof RenderedImageMap) {
-            RenderedImageMap rim = (RenderedImageMap) map;
+        if (map instanceof RenderedImageMap rim) {
             return rim.getImage();
         }
 
@@ -67,11 +66,8 @@ public class ThumbnailBuilder {
     }
 
     private void setupBoundsAndSizeFromConfiguration(StyleInfo styleInfo, GetMapRequest request) {
-        Optional<StyleMetadataInfo> styleMetadata =
-                Optional.ofNullable(
-                        styleInfo
-                                .getMetadata()
-                                .get(StyleMetadataInfo.METADATA_KEY, StyleMetadataInfo.class));
+        Optional<StyleMetadataInfo> styleMetadata = Optional.ofNullable(
+                styleInfo.getMetadata().get(StyleMetadataInfo.METADATA_KEY, StyleMetadataInfo.class));
         if (styleMetadata.isPresent()) {
             StyleMetadataInfo metadata = styleMetadata.get();
             ReferencedEnvelope envelope = metadata.getThumbnailEnvelope();
@@ -87,8 +83,7 @@ public class ThumbnailBuilder {
         }
     }
 
-    public void setupLayersAndStyles(StyleInfo styleInfo, GetMapRequest request)
-            throws IOException {
+    public void setupLayersAndStyles(StyleInfo styleInfo, GetMapRequest request) throws IOException {
         StyledLayerDescriptor sld = styleInfo.getSLD();
         if (sld.getStyledLayers().length == 1) {
             // single layer case -> find the best candidate layer
@@ -108,20 +103,16 @@ public class ThumbnailBuilder {
                 group.getLayers().add(null);
                 group.getStyles().add(styleInfo);
                 request.setLayers(
-                        group.layers().stream()
-                                .map(l -> new MapLayerInfo(l))
-                                .collect(Collectors.toList()));
-                request.setStyles(
-                        group.styles().stream()
-                                .map(
-                                        s -> {
-                                            try {
-                                                return s.getStyle();
-                                            } catch (IOException e) {
-                                                throw new RuntimeException(e);
-                                            }
-                                        })
-                                .collect(Collectors.toList()));
+                        group.layers().stream().map(l -> new MapLayerInfo(l)).collect(Collectors.toList()));
+                request.setStyles(group.styles().stream()
+                        .map(s -> {
+                            try {
+                                return s.getStyle();
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        })
+                        .collect(Collectors.toList()));
             } catch (Exception e) {
                 throw new APIException(
                         "InternalError",
@@ -133,22 +124,20 @@ public class ThumbnailBuilder {
     }
 
     /**
-     * Picks the first layer that has the style associated as default, or if none found, the first
-     * having it as associate. To get some stability in the output in case of multiple associations,
-     * the styles are sorted by workspace and name
+     * Picks the first layer that has the style associated as default, or if none found, the first having it as
+     * associate. To get some stability in the output in case of multiple associations, the styles are sorted by
+     * workspace and name
      */
     private LayerInfo getAssociatedLayer(StyleInfo styleInfo) {
         LayerInfo layer = null;
-        try (CloseableIterator<LayerInfo> layers =
-                catalog.list(
-                        LayerInfo.class,
-                        Predicates.or(
-                                Predicates.equal("defaultStyle", styleInfo),
-                                Predicates.equal(
-                                        "styles", styleInfo, MultiValuedFilter.MatchAction.ANY)),
-                        null,
-                        null,
-                        Predicates.sortBy("prefixedName", true))) {
+        try (CloseableIterator<LayerInfo> layers = catalog.list(
+                LayerInfo.class,
+                Predicates.or(
+                        Predicates.equal("defaultStyle", styleInfo),
+                        Predicates.equal("styles", styleInfo, MultiValuedFilter.MatchAction.ANY)),
+                null,
+                null,
+                Predicates.sortBy("prefixedName", true))) {
             while (layers.hasNext()) {
                 LayerInfo next = layers.next();
                 if (styleInfo.equals(next.getDefaultStyle())) {

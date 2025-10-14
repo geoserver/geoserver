@@ -9,9 +9,10 @@ import static org.geoserver.web.data.store.StoreProvider.ENABLED;
 import static org.geoserver.web.data.store.StoreProvider.NAME;
 import static org.geoserver.web.data.store.StoreProvider.WORKSPACE;
 
+import java.io.Serial;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.markup.html.image.Image;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
@@ -25,6 +26,7 @@ import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.workspace.WorkspaceEditPage;
+import org.geoserver.web.wicket.CachingImage;
 import org.geoserver.web.wicket.ConfirmationAjaxLink;
 import org.geoserver.web.wicket.DateTimeLabel;
 import org.geoserver.web.wicket.GSModalWindow;
@@ -39,13 +41,13 @@ import org.geoserver.web.wicket.SimpleBookmarkableLink;
  *
  * @author Justin Deoliveira
  * @author Gabriel Roldan
- * @version $Id$
  * @see StorePage
  * @see StoreProvider
  */
 @SuppressWarnings("serial")
 public class StorePanel extends GeoServerTablePanel<StoreInfo> {
 
+    @Serial
     private static final long serialVersionUID = 5957961031378924960L;
 
     private GSModalWindow popupWindow;
@@ -63,8 +65,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
     }
 
     @Override
-    protected Component getComponentForProperty(
-            String id, IModel<StoreInfo> itemModel, Property<StoreInfo> property) {
+    protected Component getComponentForProperty(String id, IModel<StoreInfo> itemModel, Property<StoreInfo> property) {
 
         final CatalogIconFactory icons = CatalogIconFactory.get();
 
@@ -74,7 +75,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
             PackageResourceReference storeIcon = icons.getStoreIcon(storeInfo);
 
             Fragment f = new Fragment(id, "iconFragment", this);
-            f.add(new Image("storeIcon", storeIcon));
+            f.add(new CachingImage("storeIcon", storeIcon));
 
             return f;
         } else if (property == WORKSPACE) {
@@ -90,12 +91,14 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
                 enabledIcon = icons.getDisabledIcon();
             }
             Fragment f = new Fragment(id, "iconFragment", this);
-            f.add(new Image("storeIcon", enabledIcon));
+            f.add(new CachingImage("storeIcon", enabledIcon));
             return f;
         } else if (property == StoreProvider.MODIFIED_TIMESTAMP) {
             return new DateTimeLabel(id, StoreProvider.MODIFIED_TIMESTAMP.getModel(itemModel));
         } else if (property == StoreProvider.CREATED_TIMESTAMP) {
             return new DateTimeLabel(id, StoreProvider.CREATED_TIMESTAMP.getModel(itemModel));
+        } else if (property == StoreProvider.MODIFIED_BY) {
+            return new Label(id, StoreProvider.MODIFIED_BY.getModel(itemModel));
         }
         return null;
     }
@@ -157,17 +160,15 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
 
         ResourceModel resRemove = new ResourceModel("removeStore", "Remove");
 
-        ParamResourceModel confirmRemove =
-                new ParamResourceModel("confirmRemoveStoreX", this, info.getName());
+        ParamResourceModel confirmRemove = new ParamResourceModel("confirmRemoveStoreX", this, info.getName());
 
-        SimpleAjaxLink<Object> linkPanel =
-                new ConfirmationAjaxLink<>(id, null, resRemove, confirmRemove) {
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        getCatalog().remove((StoreInfo) itemModel.getObject());
-                        target.add(StorePanel.this);
-                    }
-                };
+        SimpleAjaxLink<Object> linkPanel = new ConfirmationAjaxLink<>(id, null, resRemove, confirmRemove) {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                getCatalog().remove((StoreInfo) itemModel.getObject());
+                target.add(StorePanel.this);
+            }
+        };
         return linkPanel;
     }
 }

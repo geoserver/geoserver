@@ -17,8 +17,8 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.vfny.geoserver.wcs.WcsException;
 
 /**
- * A data handler for the fake "geoserver/coverage20" mime type. In fact, it encodes WCS 2.0 GMLCov
- * document (an xml document)
+ * A data handler for the fake "geoserver/coverage20" mime type. In fact, it encodes WCS 2.0 GMLCov document (an xml
+ * document)
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -26,15 +26,12 @@ public class GMLCovHandler implements DataContentHandler {
 
     @Override
     public Object getContent(DataSource source) throws IOException {
-        throw new UnsupportedOperationException(
-                "This handler is not able to work on the parsing side");
+        throw new UnsupportedOperationException("This handler is not able to work on the parsing side");
     }
 
     @Override
-    public Object getTransferData(DataFlavor flavor, DataSource source)
-            throws UnsupportedFlavorException, IOException {
-        throw new UnsupportedOperationException(
-                "This handler is not able to work on the parsing side");
+    public Object getTransferData(DataFlavor flavor, DataSource source) throws UnsupportedFlavorException, IOException {
+        throw new UnsupportedOperationException("This handler is not able to work on the parsing side");
     }
 
     @Override

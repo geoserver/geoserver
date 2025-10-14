@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.web;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
@@ -20,6 +21,7 @@ import org.geoserver.web.GeoServerSecuredPage;
 
 public class BulkOperationsPage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = -3476820703264158330L;
 
     @Override
@@ -28,33 +30,33 @@ public class BulkOperationsPage extends GeoServerSecuredPage {
 
         Form<Object> form = new Form<Object>("form");
         List<ITab> tabs = new ArrayList<>();
-        tabs.add(
-                new AbstractTab(new ResourceModel("bulkRun")) {
-                    private static final long serialVersionUID = 4375160438369461475L;
+        tabs.add(new AbstractTab(new ResourceModel("bulkRun")) {
+            @Serial
+            private static final long serialVersionUID = 4375160438369461475L;
 
-                    @Override
-                    public Panel getPanel(String panelId) {
-                        return new BulkRunPanel(panelId);
-                    }
-                });
-        tabs.add(
-                new AbstractTab(new ResourceModel("bulkImport")) {
-                    private static final long serialVersionUID = 4375160438369461475L;
+            @Override
+            public Panel getPanel(String panelId) {
+                return new BulkRunPanel(panelId);
+            }
+        });
+        tabs.add(new AbstractTab(new ResourceModel("bulkImport")) {
+            @Serial
+            private static final long serialVersionUID = 4375160438369461475L;
 
-                    @Override
-                    public Panel getPanel(String panelId) {
-                        return new BulkImportPanel(panelId);
-                    }
-                });
-        tabs.add(
-                new AbstractTab(new ResourceModel("bulkInitialize")) {
-                    private static final long serialVersionUID = 4375160438369461475L;
+            @Override
+            public Panel getPanel(String panelId) {
+                return new BulkImportPanel(panelId);
+            }
+        });
+        tabs.add(new AbstractTab(new ResourceModel("bulkInitialize")) {
+            @Serial
+            private static final long serialVersionUID = 4375160438369461475L;
 
-                    @Override
-                    public Panel getPanel(String panelId) {
-                        return new BulkInitPanel(panelId);
-                    }
-                });
+            @Override
+            public Panel getPanel(String panelId) {
+                return new BulkInitPanel(panelId);
+            }
+        });
         form.add(new TabbedPanel<ITab>("tabs", tabs));
 
         add(form);

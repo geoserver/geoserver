@@ -34,11 +34,10 @@ import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 import org.geotools.util.logging.Logging;
 
 /**
- * This class provides a visitor to allow the usage of property directly referencing the domain
- * model when dealing with templates of complex features. It extracts the attribute names from
- * DynamicValueBuilders, sources and filters to map them to the correct xpath. Source are mapped to
- * the JDBC feature sources name while ${propertyName} and $${cql} directives to the target Xpath of
- * the matched AttributeMapping.
+ * This class provides a visitor to allow the usage of property directly referencing the domain model when dealing with
+ * templates of complex features. It extracts the attribute names from DynamicValueBuilders, sources and filters to map
+ * them to the correct xpath. Source are mapped to the JDBC feature sources name while ${propertyName} and $${cql}
+ * directives to the target Xpath of the matched AttributeMapping.
  */
 public class SimplifiedPropertyReplacer extends DefaultTemplateVisitor {
 
@@ -89,14 +88,11 @@ public class SimplifiedPropertyReplacer extends DefaultTemplateVisitor {
     public Object visit(DynamicValueBuilder dynamicBuilder, Object extradata) {
         if (!mappingsStack.isEmpty()) {
             Expression expression =
-                    dynamicBuilder.getCql() != null
-                            ? dynamicBuilder.getCql()
-                            : dynamicBuilder.getXpath();
+                    dynamicBuilder.getCql() != null ? dynamicBuilder.getCql() : dynamicBuilder.getXpath();
             FilterAttributeExtractor extractor = new FilterAttributeExtractor();
             expression.accept(extractor, null);
-            List<String> xpaths =
-                    convertSimplifiedPropertyNamesToXpaths(
-                            extractor.getAttributeNames(), dynamicBuilder.getContextPos());
+            List<String> xpaths = convertSimplifiedPropertyNamesToXpaths(
+                    extractor.getAttributeNames(), dynamicBuilder.getContextPos());
             replaceWithXpath(xpaths, expression, dynamicBuilder);
 
             replaceSimplifiedPropertyNamesInFilter(dynamicBuilder, extractor);
@@ -110,9 +106,8 @@ public class SimplifiedPropertyReplacer extends DefaultTemplateVisitor {
         if (filter != null && !mappingsStack.isEmpty()) {
             extractor.clear();
             filter.accept(extractor, null);
-            List<String> filterXpaths =
-                    convertSimplifiedPropertyNamesToXpaths(
-                            extractor.getAttributeNames(), builder.getFilterContextPos());
+            List<String> filterXpaths = convertSimplifiedPropertyNamesToXpaths(
+                    extractor.getAttributeNames(), builder.getFilterContextPos());
             replaceWithXpath(filterXpaths, filter, builder);
         }
     }
@@ -143,18 +138,15 @@ public class SimplifiedPropertyReplacer extends DefaultTemplateVisitor {
                     if (part.startsWith(RELATION_MARK)) {
                         // then we need to map the source local to the builder
                         part = part.replace(RELATION_MARK, "").replace(" ", "");
-                        xpathPart =
-                                findMatchingXpathFromTableName(
-                                        part, context.getAttributeMappings());
+                        xpathPart = findMatchingXpathFromTableName(part, context.getAttributeMappings());
                     }
 
                     if (xpathPart != null) {
                         isNested = true;
                     } else {
-                        List<AttributeMapping> filteredMappings =
-                                context.getAttributeMappings().stream()
-                                        .filter(m -> !(m instanceof NestedAttributeMapping))
-                                        .collect(Collectors.toList());
+                        List<AttributeMapping> filteredMappings = context.getAttributeMappings().stream()
+                                .filter(m -> !(m instanceof NestedAttributeMapping))
+                                .collect(Collectors.toList());
                         xpathPart = findMatchingXpathInAttributeMappingList(part, filteredMappings);
                     }
                     currentXpath = concatXpathPart(currentXpath, xpathPart);
@@ -176,19 +168,17 @@ public class SimplifiedPropertyReplacer extends DefaultTemplateVisitor {
             try {
                 result = findMatchingXpathFromTableName(source, attributeMappings);
             } catch (IOException e) {
-                throw new RuntimeException(
-                        "Failed to map source " + source + " to the proper xpath");
+                throw new RuntimeException("Failed to map source " + source + " to the proper xpath");
             }
         }
         return result;
     }
 
-    private String findMatchingXpathFromTableName(String pathPart, List<AttributeMapping> mappings)
-            throws IOException {
+    private String findMatchingXpathFromTableName(String pathPart, List<AttributeMapping> mappings) throws IOException {
         String result = null;
         for (AttributeMapping mapping : mappings) {
-            if (mapping instanceof NestedAttributeMapping) {
-                result = findMatchingXpathInNested(pathPart, (NestedAttributeMapping) mapping);
+            if (mapping instanceof NestedAttributeMapping attributeMapping) {
+                result = findMatchingXpathInNested(pathPart, attributeMapping);
             } else {
                 result = findMatchingXpathInJdbcMultipleValue(pathPart, mapping);
             }
@@ -198,35 +188,31 @@ public class SimplifiedPropertyReplacer extends DefaultTemplateVisitor {
         return result;
     }
 
-    private String findMatchingXpathInNested(String pathPart, NestedAttributeMapping nested)
-            throws IOException {
+    private String findMatchingXpathInNested(String pathPart, NestedAttributeMapping nested) throws IOException {
         FeatureTypeMapping ftm = nested.getFeatureTypeMapping(null);
         String result = null;
         String sourceName = ftm.getSource().getName().getLocalPart();
         if (sourceName.equals(pathPart)) {
-            result =
-                    nested.getTargetXPath().toString()
-                            + "/"
-                            + strName(ftm.getTargetFeature().getName());
+            result = nested.getTargetXPath().toString()
+                    + "/"
+                    + strName(ftm.getTargetFeature().getName());
             mappingsStack.add(ftm);
             if (LOGGER.isLoggable(Level.FINE))
-                LOGGER.fine(
-                        "Source " + pathPart + " mapped to " + sourceName + "  in NestedMapping");
+                LOGGER.fine("Source " + pathPart + " mapped to " + sourceName + "  in NestedMapping");
         }
         return result;
     }
 
-    private String findMatchingXpathInJdbcMultipleValue(
-            String pathPart, AttributeMapping attributeMapping) throws IOException {
+    private String findMatchingXpathInJdbcMultipleValue(String pathPart, AttributeMapping attributeMapping)
+            throws IOException {
         MultipleValueExtractor mvExtractor = new MultipleValueExtractor();
         attributeMapping.getSourceExpression().accept(mvExtractor, null);
         String result = null;
         List<MultipleValue> mvList = mvExtractor.getMultipleValues();
         if (mvList != null && !mvList.isEmpty()) {
-            List<MultipleValue> jdbcMvList =
-                    mvList.stream()
-                            .filter(mv -> mv instanceof JdbcMultipleValue)
-                            .collect(Collectors.toList());
+            List<MultipleValue> jdbcMvList = mvList.stream()
+                    .filter(mv -> mv instanceof JdbcMultipleValue)
+                    .collect(Collectors.toList());
             for (MultipleValue mv : jdbcMvList) {
                 String tableName = ((JdbcMultipleValue) mv).getTargetTable();
                 if (pathPart.equals(tableName)) {
@@ -239,11 +225,7 @@ public class SimplifiedPropertyReplacer extends DefaultTemplateVisitor {
                     mappingsStack.add(ftm);
                     if (LOGGER.isLoggable(Level.FINE))
                         LOGGER.fine(
-                                "Source "
-                                        + pathPart
-                                        + " mapped to "
-                                        + targetXpath
-                                        + " in JdbcMultipleValue directive");
+                                "Source " + pathPart + " mapped to " + targetXpath + " in JdbcMultipleValue directive");
                     break;
                 }
             }
@@ -251,8 +233,7 @@ public class SimplifiedPropertyReplacer extends DefaultTemplateVisitor {
         return result;
     }
 
-    private String findMatchingXpathInAttributeMappingList(
-            String pathPart, List<AttributeMapping> mappings) {
+    private String findMatchingXpathInAttributeMappingList(String pathPart, List<AttributeMapping> mappings) {
         String result = null;
         MultipleValueExtractor extractor = new MultipleValueExtractor();
         for (AttributeMapping mapping : mappings) {
@@ -297,8 +278,8 @@ public class SimplifiedPropertyReplacer extends DefaultTemplateVisitor {
         List<MultipleValue> mvList = extractor.getMultipleValues();
         if (result == null && mvList != null && !mvList.isEmpty()) {
             MultipleValue mv = mvList.get(0);
-            if (mv instanceof JdbcMultipleValue) {
-                Expression column = ((JdbcMultipleValue) mv).getTargetValue();
+            if (mv instanceof JdbcMultipleValue value) {
+                Expression column = value.getTargetValue();
                 extractor.clear();
                 column.accept(extractor, null);
                 String[] attrs = extractor.getAttributeNames();
@@ -317,25 +298,21 @@ public class SimplifiedPropertyReplacer extends DefaultTemplateVisitor {
         return result;
     }
 
-    private void replaceWithXpath(
-            List<String> xpaths, Object toReplace, AbstractTemplateBuilder builder) {
+    private void replaceWithXpath(List<String> xpaths, Object toReplace, AbstractTemplateBuilder builder) {
         if (!xpaths.isEmpty()) {
-            DuplicatingFilterVisitor dupVisitor =
-                    new DuplicatingFilterVisitor() {
-                        private int i = 0;
+            DuplicatingFilterVisitor dupVisitor = new DuplicatingFilterVisitor() {
+                private int i = 0;
 
-                        @Override
-                        public Object visit(PropertyName expression, Object extraData) {
-                            AttributeExpressionImpl pn =
-                                    new AttributeExpressionImpl(
-                                            xpaths.get(i), expression.getNamespaceContext());
-                            i++;
-                            return pn;
-                        }
-                    };
-            if (toReplace instanceof Expression) {
-                replacePropertyNamesInExpression(
-                        (Expression) toReplace, dupVisitor, (DynamicValueBuilder) builder);
+                @Override
+                public Object visit(PropertyName expression, Object extraData) {
+                    AttributeExpressionImpl pn =
+                            new AttributeExpressionImpl(xpaths.get(i), expression.getNamespaceContext());
+                    i++;
+                    return pn;
+                }
+            };
+            if (toReplace instanceof Expression expression) {
+                replacePropertyNamesInExpression(expression, dupVisitor, (DynamicValueBuilder) builder);
             } else {
                 replacePropertyNamesInFilter((Filter) toReplace, dupVisitor, builder);
             }

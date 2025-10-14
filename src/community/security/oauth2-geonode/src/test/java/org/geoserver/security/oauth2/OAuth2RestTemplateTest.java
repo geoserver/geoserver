@@ -85,22 +85,17 @@ public class OAuth2RestTemplateTest extends AbstractOAuth2RestTemplateTest {
         DefaultOAuth2AccessToken token = new DefaultOAuth2AccessToken("12345");
         token.setTokenType("access_token");
         restTemplate.getOAuth2ClientContext().setAccessToken(token);
-        OAuth2RequestAuthenticator customAuthenticator =
-                new OAuth2RequestAuthenticator() {
+        OAuth2RequestAuthenticator customAuthenticator = new OAuth2RequestAuthenticator() {
 
-                    @Override
-                    public void authenticate(
-                            OAuth2ProtectedResourceDetails resource,
-                            OAuth2ClientContext clientContext,
-                            ClientHttpRequest req) {
-                        req.getHeaders()
-                                .set(
-                                        "X-Authorization",
-                                        clientContext.getAccessToken().getTokenType()
-                                                + " "
-                                                + "Nah-nah-na-nah-nah");
-                    }
-                };
+            @Override
+            public void authenticate(
+                    OAuth2ProtectedResourceDetails resource, OAuth2ClientContext clientContext, ClientHttpRequest req) {
+                req.getHeaders()
+                        .set(
+                                "X-Authorization",
+                                clientContext.getAccessToken().getTokenType() + " " + "Nah-nah-na-nah-nah");
+            }
+        };
 
         customAuthenticator.authenticate(resource, restTemplate.getOAuth2ClientContext(), request);
         String auth = request.getHeaders().getFirst("X-Authorization");
@@ -126,13 +121,9 @@ public class OAuth2RestTemplateTest extends AbstractOAuth2RestTemplateTest {
         assertNotNull(urlMangler);
 
         Authentication user =
-                new UsernamePasswordAuthenticationToken(
-                        "admin",
-                        "geoserver",
-                        Arrays.asList(
-                                new GrantedAuthority[] {
-                                    new SimpleGrantedAuthority("ROLE_ADMINISTRATOR")
-                                }));
+                new UsernamePasswordAuthenticationToken("admin", "geoserver", Arrays.asList(new GrantedAuthority[] {
+                    new SimpleGrantedAuthority("ROLE_ADMINISTRATOR")
+                }));
         SecurityContextHolder.getContext().setAuthentication(user);
 
         StringBuilder baseURL = new StringBuilder("http://test.geoserver-org/wms");
@@ -184,7 +175,9 @@ public class OAuth2RestTemplateTest extends AbstractOAuth2RestTemplateTest {
                 String path, MultiValueMap<String, String> formData, HttpHeaders headers) {
 
             assertTrue(headers.containsKey("Authorization"));
-            assertEquals(getAuthorizationHeader(accessToken), headers.get("Authorization").get(0));
+            assertEquals(
+                    getAuthorizationHeader(accessToken),
+                    headers.get("Authorization").get(0));
 
             Map<String, Object> body = new HashMap<>();
             body.put("client_id", clientId);

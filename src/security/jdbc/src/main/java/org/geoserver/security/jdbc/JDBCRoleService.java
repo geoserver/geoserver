@@ -42,8 +42,7 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
     static final String DEFAULT_DDL_FILE = "rolesddl.xml";
 
     /** logger */
-    static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.security.jdbc");
+    static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.security.jdbc");
 
     protected Set<RoleLoadedListener> listeners = Collections.synchronizedSet(new HashSet<>());
 
@@ -84,8 +83,8 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
     }
 
     /**
-     * Uses {@link #initializeDSFromConfig(SecurityNamedServiceConfig)} and {@link
-     * #checkORCreateJDBCPropertyFile(String, File, String)}
+     * Uses {@link #initializeDSFromConfig(SecurityNamedServiceConfig)} and
+     * {@link #checkORCreateJDBCPropertyFile(String, File, String)}
      *
      * @see
      *     org.geoserver.security.GeoServerRoleService#initializeFromConfig(org.geoserver.security.config.SecurityNamedServiceConfig)
@@ -96,21 +95,17 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
         this.name = config.getName();
         initializeDSFromConfig(config);
 
-        if (config instanceof JDBCSecurityServiceConfig) {
-            JDBCSecurityServiceConfig jdbcConfig = (JDBCSecurityServiceConfig) config;
+        if (config instanceof JDBCSecurityServiceConfig jdbcConfig) {
 
             String fileNameDML = jdbcConfig.getPropertyFileNameDML();
-            Resource file =
-                    checkORCreateJDBCPropertyFile(fileNameDML, getConfigRoot(), DEFAULT_DML_FILE);
+            Resource file = checkORCreateJDBCPropertyFile(fileNameDML, getConfigRoot(), DEFAULT_DML_FILE);
             dmlProps = Util.loadUniversal(file.in());
 
             String fileNameDDL = jdbcConfig.getPropertyFileNameDDL();
             if (fileNameDDL != null && !fileNameDDL.isEmpty()) {
-                file =
-                        checkORCreateJDBCPropertyFile(
-                                fileNameDDL, getConfigRoot(), DEFAULT_DDL_FILE);
+                file = checkORCreateJDBCPropertyFile(fileNameDDL, getConfigRoot(), DEFAULT_DDL_FILE);
                 ddlProps = Util.loadUniversal(file.in());
-                createTablesIfRequired((JDBCSecurityServiceConfig) config);
+                createTablesIfRequired(jdbcConfig);
             }
         }
         this.adminRoleName = ((SecurityRoleServiceConfig) config).getAdminRoleName();
@@ -157,9 +152,7 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
                     String propName = rs2.getString(1);
                     Object propValue = rs2.getObject(2);
                     if (propName != null) {
-                        roleObject
-                                .getProperties()
-                                .put(propName, propValue == null ? "" : propValue);
+                        roleObject.getProperties().put(propName, propValue == null ? "" : propValue);
                     }
                 }
             }
@@ -342,10 +335,7 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
         // do nothing
     }
 
-    /**
-     * @see
-     *     org.geoserver.security.GeoServerRoleService#getParentRole(org.geoserver.security.impl.GeoServerRole)
-     */
+    /** @see org.geoserver.security.GeoServerRoleService#getParentRole(org.geoserver.security.impl.GeoServerRole) */
     @Override
     public GeoServerRole getParentRole(GeoServerRole role) throws IOException {
 
@@ -368,9 +358,7 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
                     while (rs2.next()) {
                         String propName = rs2.getString(1);
                         Object propValue = rs2.getObject(2);
-                        roleObject
-                                .getProperties()
-                                .put(propName, propValue == null ? "" : propValue);
+                        roleObject.getProperties().put(propName, propValue == null ? "" : propValue);
                     }
                 }
             }
@@ -383,19 +371,13 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
         return roleObject;
     }
 
-    /**
-     * @see
-     *     org.geoserver.security.GeoServerRoleService#registerRoleLoadedListener(RoleLoadedListener)
-     */
+    /** @see org.geoserver.security.GeoServerRoleService#registerRoleLoadedListener(RoleLoadedListener) */
     @Override
     public void registerRoleLoadedListener(RoleLoadedListener listener) {
         listeners.add(listener);
     }
 
-    /**
-     * @see
-     *     org.geoserver.security.GeoServerRoleService#unregisterRoleLoadedListener(RoleLoadedListener)
-     */
+    /** @see org.geoserver.security.GeoServerRoleService#unregisterRoleLoadedListener(RoleLoadedListener) */
     @Override
     public void unregisterRoleLoadedListener(RoleLoadedListener listener) {
         listeners.remove(listener);
@@ -410,8 +392,7 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
     }
 
     /**
-     * @see
-     *     org.geoserver.security.GeoServerRoleService#getGroupNamesForRole(org.geoserver.security.impl.GeoServerRole)
+     * @see org.geoserver.security.GeoServerRoleService#getGroupNamesForRole(org.geoserver.security.impl.GeoServerRole)
      */
     @Override
     public SortedSet<String> getGroupNamesForRole(GeoServerRole role) throws IOException {
@@ -438,8 +419,7 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
     }
 
     /**
-     * @see
-     *     org.geoserver.security.GeoServerRoleService#getUserNamesForRole(org.geoserver.security.impl.GeoServerRole)
+     * @see org.geoserver.security.GeoServerRoleService#getUserNamesForRole(org.geoserver.security.impl.GeoServerRole)
      */
     @Override
     public SortedSet<String> getUserNamesForRole(GeoServerRole role) throws IOException {
@@ -491,15 +471,14 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
     }
 
     /**
-     * @see org.geoserver.security.GeoServerRoleService#personalizeRoleParams(java.lang.String,
-     *     java.util.Properties, java.lang.String, java.util.Properties)
-     *     <p>Default implementation: if a user property name equals a role propertyname, take the
-     *     value from to user property and use it for the role property.
+     * @see org.geoserver.security.GeoServerRoleService#personalizeRoleParams(java.lang.String, java.util.Properties,
+     *     java.lang.String, java.util.Properties)
+     *     <p>Default implementation: if a user property name equals a role propertyname, take the value from to user
+     *     property and use it for the role property.
      */
     @Override
     public Properties personalizeRoleParams(
-            String roleName, Properties roleParams, String userName, Properties userProps)
-            throws IOException {
+            String roleName, Properties roleParams, String userName, Properties userProps) throws IOException {
 
         // this is true if the set is modified --> common
         // property names exist

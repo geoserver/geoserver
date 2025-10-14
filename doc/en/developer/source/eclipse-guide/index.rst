@@ -157,25 +157,13 @@ Eclipse preferences
 Code formatting
 ^^^^^^^^^^^^^^^
 
-The Google formatter plugin is embedded in the build and will reformat the code at each build, matching the coding conventions. Please always build before committing!
+GeoServer uses the `palantir-java-format <https://github.com/palantir/palantir-java-format?tab=readme-ov-file#palantir-java-format>`__ which is a fork of the google-java-format AOSP style updated Lamda expressions and 120 columns.
 
-The `google-java-format <https://github.com/google/google-java-format>`__ project offers a plugin for Eclipse, but we are waiting an support for ASOP variant. While we wait for this fix build once on the command line, to format the any code changes before committing.
+The formatter plugin is embedded in the build and will reformat the code at each build, matching the coding conventions. Please always build locally before committing!
 
-As workaround you could use a `modified version <https://github.com/fernandor777/google-java-format/releases/download/1.7-gsgt/google-java-format-eclipse-plugin-1.6.0.jar>`__ with 4 spaces indent by default, putting the jar file on Eclipse dropins folder.
+The `palantir-java-format <https://github.com/palantir/palantir-java-format>`__ project offers a `plugin <https://github.com/palantir/palantir-java-format/tree/develop/eclipse_plugin>`__ for Eclipse.
 
-
-You may also:
-
-#. Download https://github.com/geotools/geotools/blob/main/build/eclipse/eclipse-java-google-style.xml
-#. Navigate to ``Java``, ``Code Style``, ``Formatter`` and click ``Import...``
-#. Select the ``eclipse-java-google-style.xml`` file downloaded in step 1
-#. Click ``Apply``
-
-   .. image:: code_formatting2.png
-
-#. We follow `Google Code Formatting <https://google.github.io/styleguide/javaguide.html>`__ with the AOSP variant (4 spaces indent instead of 2).
-  
-   For more information see GeoTools `Coding Style <http://docs.geotools.org/latest/developer/conventions/code/style.html>`__ page.
+Code formatting is covered by our build :ref:`Quality Assurance <spotless>` checks.
 
 Code templates
 ^^^^^^^^^^^^^^

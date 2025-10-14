@@ -68,19 +68,17 @@ import org.locationtech.jts.geom.Polygon;
  */
 public class UpdateElementHandler extends AbstractTransactionElementHandler {
 
-    static final Map<String, Class<?>> GML_PROPERTIES_BINDINGS =
-            Map.ofEntries(
-                    entry("name", String.class),
-                    entry("description", String.class),
-                    entry("boundedBy", Geometry.class),
-                    entry("location", Geometry.class),
-                    entry("metaDataProperty", String.class));
+    static final Map<String, Class<?>> GML_PROPERTIES_BINDINGS = Map.ofEntries(
+            entry("name", String.class),
+            entry("description", String.class),
+            entry("boundedBy", Geometry.class),
+            entry("location", Geometry.class),
+            entry("metaDataProperty", String.class));
 
-    static final Set<String> GML_NAMESPACES =
-            Set.of(
-                    GML.NAMESPACE,
-                    /* org.geotools.gml3.GML.NAMESPACE, same as GML.NAMESPACE */
-                    org.geotools.gml3.v3_2.GML.NAMESPACE);
+    static final Set<String> GML_NAMESPACES = Set.of(
+            GML.NAMESPACE,
+            /* org.geotools.gml3.GML.NAMESPACE, same as GML.NAMESPACE */
+            org.geotools.gml3.v3_2.GML.NAMESPACE);
 
     /** logger */
     static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.wfs");
@@ -112,14 +110,12 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
                     String propertyName = property.getName().getLocalPart();
                     AttributeDescriptor attributeType = null;
                     PropertyDescriptor pd = featureType.getDescriptor(propertyName);
-                    if (pd instanceof AttributeDescriptor) {
-                        attributeType = (AttributeDescriptor) pd;
+                    if (pd instanceof AttributeDescriptor descriptor) {
+                        attributeType = descriptor;
                     }
                     if ((attributeType != null) && (attributeType.getMinOccurs() > 0)) {
                         String msg =
-                                "Property '"
-                                        + attributeType.getLocalName()
-                                        + "' is mandatory but no value specified.";
+                                "Property '" + attributeType.getLocalName() + "' is mandatory but no value specified.";
                         throw new WFSException(element, msg, "MissingParameterValue");
                     }
                 }
@@ -134,8 +130,7 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
                     propertyName = ff.property(name.getLocalPart());
                 }
 
-                AttributeDescriptor descriptor =
-                        propertyName.evaluate(featureType, AttributeDescriptor.class);
+                AttributeDescriptor descriptor = propertyName.evaluate(featureType, AttributeDescriptor.class);
                 if (descriptor == null) {
                     if (getInfo().isCiteCompliant()) {
                         // was it a common GML property that we don't have backing storage for?
@@ -160,9 +155,7 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
             }
         } catch (IOException e) {
             throw new WFSTransactionException(
-                    "Could not locate feature type information for " + update.getTypeName(),
-                    e,
-                    update.getHandle());
+                    "Could not locate feature type information for " + update.getTypeName(), e, update.getHandle());
         }
     }
 
@@ -171,23 +164,20 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
 
         // was it a null? If so, assume valid (already checked for nulls before)
         if (value == null // parsed as null
-                || (value instanceof String
-                        && ((String) value).trim().isEmpty()) // as an empty string
-                || (value instanceof Map
-                        && ((Map) value).isEmpty()) // or the usual map that the parser creates
+                || (value instanceof String string && string.trim().isEmpty()) // as an empty string
+                || (value instanceof Map map && map.isEmpty()) // or the usual map that the parser creates
         ) {
             return;
         }
 
         // check geometry dimension (as converter is too forgiving for cite tests)
-        if (value != null && value instanceof Geometry) {
-            if (!checkConsistentGeometryDimensions((Geometry) value, binding)) {
+        if (value != null && value instanceof Geometry geometry) {
+            if (!checkConsistentGeometryDimensions(geometry, binding)) {
                 String propertyName = property.getName().getLocalPart();
-                WFSException e =
-                        new WFSException(
-                                element,
-                                "Incorrect geometry dimension for property " + propertyName,
-                                WFSException.INVALID_VALUE);
+                WFSException e = new WFSException(
+                        element,
+                        "Incorrect geometry dimension for property " + propertyName,
+                        WFSException.INVALID_VALUE);
                 e.setLocator(propertyName);
                 throw e;
             }
@@ -197,40 +187,32 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
         if (converted == null) {
             String propertyName = property.getName().getLocalPart();
             WFSException e =
-                    new WFSException(
-                            element,
-                            "Invalid value for property " + propertyName,
-                            WFSException.INVALID_VALUE);
+                    new WFSException(element, "Invalid value for property " + propertyName, WFSException.INVALID_VALUE);
             e.setLocator(propertyName);
             throw e;
         }
     }
 
     /**
-     * This will check that the geometry is the same dimension as the binding. i.e. a Polygon value
-     * with a binding of MultiPolygon is ok (both dimension 2) i.e. a LineString value with a
-     * binding of Polygon is bad (1 vs 2 dimensions)
+     * This will check that the geometry is the same dimension as the binding. i.e. a Polygon value with a binding of
+     * MultiPolygon is ok (both dimension 2) i.e. a LineString value with a binding of Polygon is bad (1 vs 2
+     * dimensions)
      *
      * @param value
      * @param binding
      * @return
      */
     static boolean checkConsistentGeometryDimensions(Geometry value, Class<?> binding) {
-        if ((value == null)
-                || (binding == Geometry.class)
-                || (binding == GeometryCollection.class)) {
+        if ((value == null) || (binding == Geometry.class) || (binding == GeometryCollection.class)) {
             return true;
         }
         switch (value.getDimension()) {
             case 0:
-                return (binding.isAssignableFrom(Point.class)
-                        || binding.isAssignableFrom(MultiPoint.class));
+                return (binding.isAssignableFrom(Point.class) || binding.isAssignableFrom(MultiPoint.class));
             case 1:
-                return (binding.isAssignableFrom(LineString.class)
-                        || binding.isAssignableFrom(MultiLineString.class));
+                return (binding.isAssignableFrom(LineString.class) || binding.isAssignableFrom(MultiLineString.class));
             case 2:
-                return (binding.isAssignableFrom(Polygon.class)
-                        || binding.isAssignableFrom(MultiPolygon.class));
+                return (binding.isAssignableFrom(Polygon.class) || binding.isAssignableFrom(MultiPolygon.class));
             default:
                 return false;
         }
@@ -253,15 +235,13 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
 
         String msg = "Could not locate FeatureStore for '" + elementName + "'";
         if (!featureStores.containsKey(elementName)) {
-            throw new WFSTransactionException(
-                    msg, ServiceException.INVALID_PARAMETER_VALUE, element.getHandle());
+            throw new WFSTransactionException(msg, ServiceException.INVALID_PARAMETER_VALUE, element.getHandle());
         }
 
         SimpleFeatureStore store = DataUtilities.simple(featureStores.get(elementName));
 
         if (store == null) {
-            throw new WFSTransactionException(
-                    msg, ServiceException.INVALID_PARAMETER_VALUE, element.getHandle());
+            throw new WFSTransactionException(msg, ServiceException.INVALID_PARAMETER_VALUE, element.getHandle());
         }
 
         LOGGER.finer("Transaction Update:" + update);
@@ -274,9 +254,7 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
             CoordinateReferenceSystem declaredCRS =
                     WFSReprojectionUtil.getDeclaredCrs(store.getSchema(), request.getVersion());
             if (filter != null) {
-                filter =
-                        WFSReprojectionUtil.normalizeFilterCRS(
-                                filter, store.getSchema(), declaredCRS);
+                filter = WFSReprojectionUtil.normalizeFilterCRS(filter, store.getSchema(), declaredCRS);
             } else {
                 filter = Filter.INCLUDE;
             }
@@ -300,8 +278,7 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
 
                 // if geometry, it may be necessary to reproject it to the native CRS before
                 // update
-                if (values[j] instanceof Geometry) {
-                    Geometry geometry = (Geometry) values[j];
+                if (values[j] instanceof Geometry geometry) {
 
                     // get the source crs, check the geometry itself first. If not set, assume
                     // the default one
@@ -315,8 +292,8 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
 
                     // see if the geometry has a CRS other than the default one
                     CoordinateReferenceSystem target = null;
-                    if (types[j] instanceof GeometryDescriptor) {
-                        target = ((GeometryDescriptor) types[j]).getCoordinateReferenceSystem();
+                    if (types[j] instanceof GeometryDescriptor descriptor) {
+                        target = descriptor.getCoordinateReferenceSystem();
                     }
 
                     if (getInfo().isCiteCompliant())
@@ -324,21 +301,17 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
 
                     // if we have a source and target and they are not equal, do
                     // the reprojection, otherwise just update the value as is
-                    if (source != null
-                            && target != null
-                            && !CRS.equalsIgnoreMetadata(source, target)) {
+                    if (source != null && target != null && !CRS.equalsIgnoreMetadata(source, target)) {
                         try {
                             // TODO: this code should be shared with the code
                             // from ReprojectingFeatureCollection --JD
                             MathTransform tx = CRS.findMathTransform(source, target, true);
-                            GeometryCoordinateSequenceTransformer gtx =
-                                    new GeometryCoordinateSequenceTransformer();
+                            GeometryCoordinateSequenceTransformer gtx = new GeometryCoordinateSequenceTransformer();
                             gtx.setMathTransform(tx);
 
                             values[j] = gtx.transform(geometry);
                         } catch (Exception e) {
-                            String message =
-                                    "Failed to reproject geometry:" + e.getLocalizedMessage();
+                            String message = "Failed to reproject geometry:" + e.getLocalizedMessage();
                             throw new WFSTransactionException(message, e);
                         }
                     }
@@ -354,8 +327,7 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
 
             SimpleFeatureCollection features = store.getFeatures(filter);
             TransactionEvent event =
-                    new TransactionEvent(
-                            TransactionEventType.PRE_UPDATE, request, elementName, features);
+                    new TransactionEvent(TransactionEventType.PRE_UPDATE, request, elementName, features);
             event.setSource(Update.WFS11.unadapt(update));
 
             listener.dataStoreChange(event);
@@ -415,13 +387,8 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
                 }
                 response.addUpdatedFeatures(handle, changedIds);
 
-                listener.dataStoreChange(
-                        new TransactionEvent(
-                                TransactionEventType.POST_UPDATE,
-                                request,
-                                elementName,
-                                changed,
-                                Update.WFS11.unadapt(update)));
+                listener.dataStoreChange(new TransactionEvent(
+                        TransactionEventType.POST_UPDATE, request, elementName, changed, Update.WFS11.unadapt(update)));
             }
 
             // update the update counter
@@ -450,12 +417,9 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
         return Update.class;
     }
 
-    /**
-     * @see org.geoserver.wfs.TransactionElementHandler#getTypeNames(org.eclipse.emf.ecore.EObject)
-     */
+    /** @see org.geoserver.wfs.TransactionElementHandler#getTypeNames(TransactionRequest, TransactionElement ) */
     @Override
-    public QName[] getTypeNames(TransactionRequest request, TransactionElement element)
-            throws WFSTransactionException {
+    public QName[] getTypeNames(TransactionRequest request, TransactionElement element) throws WFSTransactionException {
         return new QName[] {element.getTypeName()};
     }
 }

@@ -37,7 +37,8 @@ public class GWCConfigPersisterTest {
 
     private GWCConfigPersister persister;
 
-    @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Before
     public void setUp() throws Exception {
@@ -68,15 +69,13 @@ public class GWCConfigPersisterTest {
         }
 
         when(resourceLoader.get(Paths.BASE)).thenReturn(Files.asResource(baseDirectory));
-        when(resourceLoader.get(eq(GWCConfigPersister.GWC_CONFIG_FILE)))
-                .thenReturn(Files.asResource(configFile));
+        when(resourceLoader.get(eq(GWCConfigPersister.GWC_CONFIG_FILE))).thenReturn(Files.asResource(configFile));
 
         GWCConfig config = GWCConfig.getOldDefaults();
         config.setCacheNonDefaultStyles(true);
         config.setDirectWMSIntegrationEnabled(true);
         config.setMetaTilingThreads(12);
-        config.setCacheWarningSkips(
-                new LinkedHashSet<>(Arrays.asList(WarningType.Default, WarningType.FailedNearest)));
+        config.setCacheWarningSkips(new LinkedHashSet<>(Arrays.asList(WarningType.Default, WarningType.FailedNearest)));
 
         persister.save(config);
         assertSame(config, persister.getConfig());

@@ -9,9 +9,9 @@ import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.util.ArrayList;
 import java.util.List;
-import javax.media.jai.PlanarImage;
-import javax.media.jai.RenderedImageAdapter;
-import javax.media.jai.RenderedImageList;
+import org.eclipse.imagen.PlanarImage;
+import org.eclipse.imagen.RenderedImageAdapter;
+import org.eclipse.imagen.RenderedImageList;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.Request;
 import org.geoserver.wms.map.RenderedImageTimeDecorator;
@@ -67,15 +67,13 @@ public class RasterCleaner extends AbstractDispatcherCallback {
         if (list != null) {
             images.remove();
             for (RenderedImage image : list) {
-                if (image instanceof RenderedImageAdapter) {
-                    image = ((RenderedImageAdapter) image).getWrappedImage();
+                if (image instanceof RenderedImageAdapter adapter) {
+                    image = adapter.getWrappedImage();
                 }
 
-                if (image instanceof RenderedImageTimeDecorator)
-                    image = ((RenderedImageTimeDecorator) image).getDelegate();
+                if (image instanceof RenderedImageTimeDecorator decorator) image = decorator.getDelegate();
 
-                if (image instanceof RenderedImageList) {
-                    RenderedImageList ril = (RenderedImageList) image;
+                if (image instanceof RenderedImageList ril) {
                     for (Object o : ril) {
                         disposeImage((RenderedImage) o);
                     }
@@ -89,10 +87,9 @@ public class RasterCleaner extends AbstractDispatcherCallback {
 
     /** Immediately disposes an image, the image might not be usable any longer after this call */
     public static void disposeImage(RenderedImage image) {
-        if (image instanceof PlanarImage) {
-            ImageUtilities.disposePlanarImageChain((PlanarImage) image);
-        } else if (image instanceof BufferedImage) {
-            BufferedImage bi = (BufferedImage) image;
+        if (image instanceof PlanarImage planarImage) {
+            ImageUtilities.disposePlanarImageChain(planarImage);
+        } else if (image instanceof BufferedImage bi) {
             bi.flush();
         }
     }

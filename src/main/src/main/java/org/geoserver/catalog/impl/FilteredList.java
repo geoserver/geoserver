@@ -8,8 +8,7 @@ import java.util.AbstractList;
 import java.util.List;
 
 /**
- * Allows exposing a filtered list of items, but keeping in synch the underlying full list on
- * modification
+ * Allows exposing a filtered list of items, but keeping in synch the underlying full list on modification
  *
  * @author Niels Charlier (grabbed from SecuredLayerGroupInfo.getLayers() inner class)
  */

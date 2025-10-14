@@ -77,19 +77,17 @@ public class WfsOnlineTestOracleSetup extends AbstractReferenceDataSetup {
     // modifier
     private void setDataVersion(double version) throws Exception {
         this.run("{CALL DROP_TABLE('" + versiontbl + "')}");
-        this.run(
-                "CREATE TABLE "
-                        + versiontbl
-                        + " ("
-                        + "NAME VARCHAR2(100 BYTE) NOT NULL, "
-                        + "VERSION NUMBER(25,2),"
-                        + "INSERT_DATE DATE)");
-        this.run(
-                "insert into "
-                        + versiontbl
-                        + "(name,version,insert_date) values('Data reference set',"
-                        + version
-                        + ",current_timestamp)");
+        this.run("CREATE TABLE "
+                + versiontbl
+                + " ("
+                + "NAME VARCHAR2(100 BYTE) NOT NULL, "
+                + "VERSION NUMBER(25,2),"
+                + "INSERT_DATE DATE)");
+        this.run("insert into "
+                + versiontbl
+                + "(name,version,insert_date) values('Data reference set',"
+                + version
+                + ",current_timestamp)");
     }
 
     @Override
@@ -98,7 +96,6 @@ public class WfsOnlineTestOracleSetup extends AbstractReferenceDataSetup {
     }
 
     @Override
-    @SuppressWarnings("PMD.JUnit4TestShouldUseBeforeAnnotation")
     public void setUp() throws Exception {
         runSqlInsertScript();
     }

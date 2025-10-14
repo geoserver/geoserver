@@ -20,19 +20,17 @@ import org.geotools.filter.FunctionImpl;
 import org.geotools.filter.capability.FunctionNameImpl;
 
 /**
- * Builds a URL based on a <code>String.format()</code> like template and a list of parameters to
- * expand either in the path or in the query string. The path is then going to be parsed, and passed
- * through URLManglers, to form a full service link. The path portion does not need to be a full
- * URL, but only the part besides the base URL.
+ * Builds a URL based on a <code>String.format()</code> like template and a list of parameters to expand either in the
+ * path or in the query string. The path is then going to be parsed, and passed through URLManglers, to form a full
+ * service link. The path portion does not need to be a full URL, but only the part besides the base URL.
  */
 public class ServiceLinkFunction extends FunctionImpl {
 
-    public static FunctionName NAME =
-            new FunctionNameImpl(
-                    "serviceLink",
-                    String.class,
-                    parameter("template", String.class),
-                    parameter("param", Object.class, 0, Integer.MAX_VALUE));
+    public static FunctionName NAME = new FunctionNameImpl(
+            "serviceLink",
+            String.class,
+            parameter("template", String.class),
+            parameter("param", Object.class, 0, Integer.MAX_VALUE));
 
     public ServiceLinkFunction() {
         this.functionName = NAME;
@@ -44,14 +42,13 @@ public class ServiceLinkFunction extends FunctionImpl {
         String template = params.get(0).evaluate(feature, String.class);
         if (template == null) return null;
 
-        Object[] templateParameters =
-                params.stream()
-                        .skip(1)
-                        .map(p -> p.evaluate(feature, String.class))
-                        .map(v -> v != null ? ResponseUtils.urlEncode(v) : null)
-                        .toArray();
+        Object[] templateParameters = params.stream()
+                .skip(1)
+                .map(p -> p.evaluate(feature, String.class))
+                .map(v -> v != null ? ResponseUtils.urlEncode(v) : null)
+                .toArray();
 
-        String uri = String.format(template, templateParameters);
+        String uri = template.formatted(templateParameters);
         Map<String, String> kvp = lenientQueryStringParse(uri);
         String path = ResponseUtils.getPath(uri);
 
@@ -62,23 +59,21 @@ public class ServiceLinkFunction extends FunctionImpl {
     }
 
     /**
-     * Turns the query string in a <code>Map<String, String></code>. If a parameter is repeated,
-     * then only the first instance of it is retained.
+     * Turns the query string in a <code>Map<String, String></code>. If a parameter is repeated, then only the first
+     * instance of it is retained.
      */
     private Map<String, String> lenientQueryStringParse(String path) {
         Map<String, String> kvp = new LinkedHashMap<>();
-        KvpUtils.parseQueryString(path)
-                .forEach(
-                        (k, v) -> {
-                            if (v instanceof String) {
-                                kvp.put(k, (String) v);
-                            } else if (v instanceof String[]) {
-                                kvp.put(k, ((String[]) v)[0]);
-                            } else if (v != null) {
-                                // generic fallback
-                                kvp.put(k, v.toString());
-                            }
-                        });
+        KvpUtils.parseQueryString(path).forEach((k, v) -> {
+            if (v instanceof String string) {
+                kvp.put(k, string);
+            } else if (v instanceof String[] strings) {
+                kvp.put(k, strings[0]);
+            } else if (v != null) {
+                // generic fallback
+                kvp.put(k, v.toString());
+            }
+        });
         return kvp;
     }
 }

@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.media.jai.Interpolation;
+import org.eclipse.imagen.Interpolation;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.data.util.CoverageUtils;
@@ -25,24 +25,19 @@ import org.geoserver.wcs2_0.WCS20Const;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geotools.api.coverage.grid.Format;
 import org.geotools.api.coverage.grid.GridCoverageReader;
-import org.geotools.api.coverage.grid.GridEnvelope;
 import org.geotools.api.geometry.BoundingBox;
 import org.geotools.api.parameter.GeneralParameterValue;
 import org.geotools.api.parameter.ParameterValueGroup;
-import org.geotools.api.referencing.datum.PixelInCell;
 import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.OverviewPolicy;
 import org.geotools.data.util.DefaultProgressListener;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
-import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.parameter.Parameter;
-import org.geotools.referencing.CRS;
 import org.geotools.util.Version;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.factory.Hints;
@@ -60,17 +55,15 @@ public class RequestUtils {
     private static final Logger LOGGER = Logging.getLogger(RequestUtils.class);
 
     /**
-     * Given a list of provided versions, and a list of accepted versions, this method will return
-     * the negotiated version to be used for response according to the OWS 2.0 specification.
+     * Given a list of provided versions, and a list of accepted versions, this method will return the negotiated
+     * version to be used for response according to the OWS 2.0 specification.
      *
      * <p>The difference from the 11 version is that here versions can have format "x.y".
      *
-     * @param providedList a non null, non empty list of provided versions (in "x.y.z" or "x.y"
-     *     format)
-     * @param acceptedList a list of accepted versions, eventually null or empty (in "x.y.z" or
-     *     "x.y" format)
+     * @param providedList a non null, non empty list of provided versions (in "x.y.z" or "x.y" format)
+     * @param acceptedList a list of accepted versions, eventually null or empty (in "x.y.z" or "x.y" format)
      * @return the negotiated version to be used for response
-     * @see org.geoserver.ows.util.RequestUtils#getVersionOws11(java.util.List, java.util.List)
+     * @see org.geoserver.ows.util.RequestUtils#getVersionOWS(List, List, boolean)
      */
     public static String getVersionOws20(List<String> providedList, List<String> acceptedList) {
 
@@ -81,7 +74,8 @@ public class RequestUtils {
         }
 
         // if no accept list provided, we return the biggest supported version
-        if (acceptedList == null || acceptedList.isEmpty()) return provided.last().toString();
+        if (acceptedList == null || acceptedList.isEmpty())
+            return provided.last().toString();
 
         // next figure out what the client accepts (and check they are good version numbers)
         List<Version> accepted = new ArrayList<>();
@@ -106,16 +100,14 @@ public class RequestUtils {
         // exceptionCode="VersionNegotiationFailed"
         if (negotiated == null)
             throw new OWS20Exception(
-                    "Could not find any matching version",
-                    OWS20Exception.OWSExceptionCode.VersionNegotiationFailed);
+                    "Could not find any matching version", OWS20Exception.OWSExceptionCode.VersionNegotiationFailed);
 
         return negotiated.toString();
     }
 
     /**
-     * Checks the validity of a version number (the specification version numbers, two or three dot
-     * separated integers between 0 and 99). Throws a ServiceException if the version number is not
-     * valid.
+     * Checks the validity of a version number (the specification version numbers, two or three dot separated integers
+     * between 0 and 99). Throws a ServiceException if the version number is not valid.
      *
      * @param v the version number (in string format)
      * @param locator the locator for the service exception (may be null)
@@ -130,10 +122,7 @@ public class RequestUtils {
         }
     }
 
-    /**
-     * Reads the best matching grid out of a grid coverage applying sub-sampling and using overviews
-     * as necessary
-     */
+    /** Reads the best matching grid out of a grid coverage applying sub-sampling and using overviews as necessary */
     public static GridCoverage2D readBestCoverage(
             CoverageInfo cinfo,
             final GridCoverage2DReader reader,
@@ -152,8 +141,7 @@ public class RequestUtils {
         ////
         try {
             final ReferencedEnvelope coverageEnvelope = WCSUtils.fitEnvelope(cinfo, reader);
-            if (!coverageEnvelope.intersects(
-                    (BoundingBox) ReferencedEnvelope.reference(readGG.getEnvelope()))) {
+            if (!coverageEnvelope.intersects((BoundingBox) ReferencedEnvelope.reference(readGG.getEnvelope()))) {
                 return null;
             }
 
@@ -198,7 +186,8 @@ public class RequestUtils {
             // also have a READ_GRIDGEOMETRY2D. In such case we just
             // override it with the one we just build for this
             // request.
-            final String readGGName = AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString();
+            final String readGGName =
+                    AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString();
             final String readInterpolationName =
                     ImageMosaicFormat.INTERPOLATION.getName().toString();
             final String overviewPolicyName =
@@ -223,9 +212,7 @@ public class RequestUtils {
             }
 
             // did we find anything?
-            if (!foundGG
-                    || !foundInterpolation
-                    || !foundOverviewPolicy) { // || !(foundBgColor && bgColor != null)) {
+            if (!foundGG || !foundInterpolation || !foundOverviewPolicy) { // || !(foundBgColor && bgColor != null)) {
                 // add the correct read geometry to the supplied
                 // params since we did not find anything
                 List<GeneralParameterValue> paramList = new ArrayList<>();
@@ -236,9 +223,7 @@ public class RequestUtils {
                 if (!foundInterpolation) {
                     paramList.add(readInterpolation);
                 }
-                if (!foundOverviewPolicy
-                        && readOverview != null
-                        && readOverview.getValue() != null) {
+                if (!foundOverviewPolicy && readOverview != null && readOverview.getValue() != null) {
                     paramList.add(readOverview);
                 }
 
@@ -246,92 +231,49 @@ public class RequestUtils {
             }
             coverage = reader.read(readParams);
         } else {
-            coverage = reader.read(new GeneralParameterValue[] {readGGParam, readInterpolation});
+            coverage = reader.read(readGGParam, readInterpolation);
         }
 
         return coverage;
     }
 
     /**
-     * Returns the "Sample to geophysics" transform as an affine transform, or {@code null} if none.
-     * Note that the returned instance may be an immutable one, not necessarly the default Java2D
-     * implementation.
+     * Returns the "Sample to geophysics" transform as an affine transform, or {@code null} if none. Note that the
+     * returned instance may be an immutable one, not necessarly the default Java2D implementation.
      *
      * @param gridToCRS The "grid to CRS" {@link MathTransform} transform.
-     * @return The "grid to CRS" affine transform of the given coverage, or {@code null} if none or
-     *     if the transform is not affine.
+     * @return The "grid to CRS" affine transform of the given coverage, or {@code null} if none or if the transform is
+     *     not affine.
      */
     public static AffineTransform getAffineTransform(final MathTransform gridToCRS) {
         if (gridToCRS == null) {
             return null;
         }
 
-        if (gridToCRS instanceof AffineTransform) {
-            return (AffineTransform) gridToCRS;
+        if (gridToCRS instanceof AffineTransform transform) {
+            return transform;
         }
         return null;
     }
     /**
-     * This utility method can be used to read a small sample {@link GridCoverage2D} for inspection
-     * from the specified {@link CoverageInfo}.
+     * This utility method can be used to read a small sample {@link GridCoverage2D} for inspection from the specified
+     * {@link GridCoverage2DReader}.
      *
      * @param reader the {@link GridCoverage2DReader} that we'll read the coverage from
      */
-    public static GridCoverage2D readSampleGridCoverage(GridCoverage2DReader reader)
-            throws Exception {
-        //
-        // Now reading a fake small GridCoverage just to retrieve meta
-        // information about bands:
-        //
-        // - calculating a new envelope which is just 5x5 pixels
-        // - if it's a mosaic, limit the number of tiles we're going to read to one
-        //   (with time and elevation there might be hundreds of superimposed tiles)
-        // - reading the GridCoverage subset
-        //
-
-        final GeneralBounds originalEnvelope = reader.getOriginalEnvelope();
-        final GridEnvelope originalRange = reader.getOriginalGridRange();
+    public static GridCoverage2D readSampleGridCoverage(GridCoverage2DReader reader) throws Exception {
         final Format coverageFormat = reader.getFormat();
 
         final ParameterValueGroup readParams = coverageFormat.getReadParameters();
         final Map<String, Serializable> parameters = CoverageUtils.getParametersKVP(readParams);
-        final int minX = originalRange.getLow(0);
-        final int minY = originalRange.getLow(1);
-        final int width = originalRange.getSpan(0);
-        final int height = originalRange.getSpan(1);
-        final int maxX = minX + (width <= 5 ? width : 5);
-        final int maxY = minY + (height <= 5 ? height : 5);
-
-        // we have to be sure that we are working against a valid grid range.
-        final GridEnvelope2D testRange = new GridEnvelope2D(minX, minY, maxX, maxY);
-
-        // build the corresponding envelope
-        final MathTransform gridToWorldCorner =
-                reader.getOriginalGridToWorld(PixelInCell.CELL_CORNER);
-        final GeneralBounds testEnvelope =
-                CRS.transform(gridToWorldCorner, new GeneralBounds(testRange.getBounds()));
-        testEnvelope.setCoordinateReferenceSystem(originalEnvelope.getCoordinateReferenceSystem());
-
-        // make sure mosaics with many superimposed tiles won't blow up with
-        // a "too many open files" exception
-        String maxAllowedTiles = ImageMosaicFormat.MAX_ALLOWED_TILES.getName().toString();
-        if (parameters.keySet().contains(maxAllowedTiles)) {
-            parameters.put(maxAllowedTiles, 1);
-        }
-        parameters.put(
-                AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString(),
-                new GridGeometry2D(testRange, testEnvelope));
-
-        // try to read this coverage
-        return reader.read(CoverageUtils.getParameters(readParams, parameters, true));
+        return CoverageUtils.readSampleGridCoverage(reader, readParams, parameters, null, false);
     }
 
     /**
-     * This utility method can be used to read a small sample {@link GridCoverage2D} for inspection
-     * from the specified {@link CoverageInfo}.
+     * This utility method can be used to read a small sample {@link GridCoverage2D} for inspection from the specified
+     * {@link CoverageInfo}.
      *
-     * @param ci the {@link CoverageInfo} that contains the description of the GeoServer coverage to
-     *     read from.
+     * @param ci the {@link CoverageInfo} that contains the description of the GeoServer coverage to read from.
      */
     public static GridCoverage2D readSampleGridCoverage(CoverageInfo ci) throws Exception {
         final GridCoverage2DReader reader = getCoverageReader(ci);
@@ -339,16 +281,14 @@ public class RequestUtils {
     }
 
     /** Grabs the reader from the specified coverage */
-    public static GridCoverage2DReader getCoverageReader(CoverageInfo ci)
-            throws IOException, Exception {
+    public static GridCoverage2DReader getCoverageReader(CoverageInfo ci) throws IOException, Exception {
         // get a reader for this coverage
         final CoverageStoreInfo store = ci.getStore();
         final GridCoverageReader reader_ =
                 ci.getGridCoverageReader(new DefaultProgressListener(), GeoTools.getDefaultHints());
         if (reader_ == null) {
-            throw new Exception(
-                    "Unable to acquire a reader for this coverage with format: "
-                            + store.getFormat().getName());
+            throw new Exception("Unable to acquire a reader for this coverage with format: "
+                    + store.getFormat().getName());
         }
         final GridCoverage2DReader reader = (GridCoverage2DReader) reader_;
         return reader;
@@ -358,9 +298,7 @@ public class RequestUtils {
     public static void checkVersion(String version) {
         if (version == null) {
             throw new WCS20Exception(
-                    "Missing version",
-                    OWS20Exception.OWSExceptionCode.MissingParameterValue,
-                    version);
+                    "Missing version", OWS20Exception.OWSExceptionCode.MissingParameterValue, "version");
         }
 
         if (!WCS20Const.V201.equals(version) && !WCS20Const.V20.equals(version)) {
@@ -372,9 +310,7 @@ public class RequestUtils {
     public static void checkService(String serviceName) {
         if (serviceName == null) {
             throw new WCS20Exception(
-                    "Missing service name",
-                    OWS20Exception.OWSExceptionCode.MissingParameterValue,
-                    "service");
+                    "Missing service name", OWS20Exception.OWSExceptionCode.MissingParameterValue, "service");
         }
         if (!"WCS".equals(serviceName)) {
             throw new WCS20Exception(

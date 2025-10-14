@@ -8,6 +8,7 @@ package org.geoserver.security;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.geotools.api.data.Query;
@@ -24,7 +25,9 @@ import org.locationtech.jts.geom.MultiPolygon;
  * @author Andrea Aime - GeoSolutions
  */
 public class VectorAccessLimits extends DataAccessLimits {
+    @Serial
     private static final long serialVersionUID = 1646981660625898503L;
+
     private static FilterFactory FF = CommonFactoryFinder.getFilterFactory(null);
 
     /** The list of attributes the user is allowed to read (will be band names for raster data) */
@@ -181,8 +184,7 @@ public class VectorAccessLimits extends DataAccessLimits {
         writeFilter(writeFilter, out);
     }
 
-    private void writeProperties(List<PropertyName> attributes, ObjectOutputStream oos)
-            throws IOException {
+    private void writeProperties(List<PropertyName> attributes, ObjectOutputStream oos) throws IOException {
         if (attributes == null) {
             oos.writeInt(-1);
         } else {
@@ -194,8 +196,7 @@ public class VectorAccessLimits extends DataAccessLimits {
         }
     }
 
-    private List<PropertyName> readProperties(ObjectInputStream ois)
-            throws IOException, ClassNotFoundException {
+    private List<PropertyName> readProperties(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         int size = ois.readInt();
         if (size == -1) {
             return null;

@@ -1,0 +1,16 @@
+services:
+  geoserver:
+    image: ogccite/geoserver:geotiff11
+    build:
+      args:
+        # The WCS 1.1 data directory has a variety of raster data sources
+        GEOSERVER_DATA_DIR_SRC: "./wcs11/citewcs-1.1"
+
+  teamengine:
+    image: ogccite/teamengine-production
+    healthcheck:
+      test: "curl -f http://localhost:8080/teamengine/ || exit 1"
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 5s

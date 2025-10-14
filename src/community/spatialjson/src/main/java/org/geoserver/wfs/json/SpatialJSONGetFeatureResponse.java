@@ -47,17 +47,16 @@ import org.geotools.referencing.CRS;
 import org.locationtech.jts.geom.Geometry;
 
 /**
- * A GetFeatureInfo response handler specialized in producing JSON and JSONP data in
- * <em>SpatialJSON</em> format for a GetFeature request.
+ * A GetFeatureInfo response handler specialized in producing JSON and JSONP data in <em>SpatialJSON</em> format for a
+ * GetFeature request.
  *
  * @author Carsten Klein, DataGis
  */
 public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
 
     /**
-     * The minimum length in bytes (in UTF-8 encoding) a string must have in order to be added to
-     * the shared string table. Strings shorter than this are generally not considered a candidate
-     * for the shared string table.
+     * The minimum length in bytes (in UTF-8 encoding) a string must have in order to be added to the shared string
+     * table. Strings shorter than this are generally not considered a candidate for the shared string table.
      */
     private static final int SST_MINIMUM_BYTE_LENGTH = 2;
 
@@ -67,16 +66,15 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
     /**
      * Default value for the {@code sharedstrings} format option.
      *
-     * <p>Use {@code true} to create shared strings from all String type properties, or {@code
-     * false} to <em>not</em> create a shared string table. Alternatively, a comma-separated list of
-     * property names may be specified from which to create shared strings. (The latter makes no
-     * sense as a default value, however.)
+     * <p>Use {@code true} to create shared strings from all String type properties, or {@code false} to <em>not</em>
+     * create a shared string table. Alternatively, a comma-separated list of property names may be specified from which
+     * to create shared strings. (The latter makes no sense as a default value, however.)
      */
     private static final String SHARED_STRINGS_OPTION_DEFAULT = "true";
 
     /**
-     * Parses and returns the basic MIME type, that is the type without any additional parameters,
-     * from the specified format string.
+     * Parses and returns the basic MIME type, that is the type without any additional parameters, from the specified
+     * format string.
      *
      * @param format the format string to parse
      */
@@ -92,37 +90,38 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
     /** capabilities output format string. */
     @Override
     public String getCapabilitiesElementName() {
-        return getOutputFormats().isEmpty() ? null : getOutputFormats().iterator().next();
+        return getOutputFormats().isEmpty()
+                ? null
+                : getOutputFormats().iterator().next();
     }
 
     /** Returns the mime type */
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
-        return getOutputFormats().isEmpty() ? null : getOutputFormats().iterator().next();
+        return getOutputFormats().isEmpty()
+                ? null
+                : getOutputFormats().iterator().next();
     }
 
     /**
-     * Builds, configures and returns {@link GeoJSONBuilder}. This method actually instantiates
-     * class {@link GeoJSONBuilderWithContext}, an extended version of the {@code GeoJSONBuilder}
-     * with an additional data context.
+     * Builds, configures and returns {@link GeoJSONBuilder}. This method actually instantiates class
+     * {@link GeoJSONBuilderWithContext}, an extended version of the {@code GeoJSONBuilder} with an additional data
+     * context.
      *
      * @see Context
      */
     @Override
-    protected GeoJSONBuilder getGeoJSONBuilder(
-            FeatureCollectionResponse featureCollection, Writer outWriter) {
+    protected GeoJSONBuilder getGeoJSONBuilder(FeatureCollectionResponse featureCollection, Writer outWriter) {
         final GeoJSONBuilder jsonWriter = new GeoJSONBuilderWithContext(outWriter);
         int numDecimals = getNumDecimals(featureCollection.getFeature(), gs, gs.getCatalog());
         jsonWriter.setNumberOfDecimals(numDecimals);
-        jsonWriter.setEncodeMeasures(
-                encodeMeasures(featureCollection.getFeature(), gs.getCatalog()));
+        jsonWriter.setEncodeMeasures(encodeMeasures(featureCollection.getFeature(), gs.getCatalog()));
         return jsonWriter;
     }
 
     @Override
     @SuppressWarnings("rawtypes")
-    protected void write(
-            FeatureCollectionResponse featureCollection, OutputStream output, Operation operation)
+    protected void write(FeatureCollectionResponse featureCollection, OutputStream output, Operation operation)
             throws IOException {
         Name typeName = null;
         for (FeatureCollection fc : featureCollection.getFeatures()) {
@@ -152,8 +151,8 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
     }
 
     /**
-     * Modified version of {@link GeoJSONGetFeatureResponse#encodeSimpleFeatures} writing simple
-     * features in SpatialJSON format.
+     * Modified version of {@link GeoJSONGetFeatureResponse#encodeSimpleFeatures} writing simple features in SpatialJSON
+     * format.
      */
     @Override
     @SuppressWarnings("rawtypes")
@@ -182,8 +181,7 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
         try {
             context = (Context) jsonWriter;
         } catch (Exception e) {
-            throw new IllegalArgumentException(
-                    "Passed GeoJSONBuilder instance has no Context associated", e);
+            throw new IllegalArgumentException("Passed GeoJSONBuilder instance has no Context associated", e);
         }
 
         if (!"false".equals(sharedStringsOption)) {
@@ -205,12 +203,11 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
                 }
                 // create a string table only if at least one property name or pattern is given
                 if (sharedStringsOption.length() > 0) {
-                    sharedStringAttributes =
-                            new LinkedPatternHashSet(
-                                    KvpUtils.escapedTokens(sharedStringsOption, ',').stream()
-                                            .map(KvpUtils::unescape)
-                                            .collect(Collectors.toSet()),
-                                    mode);
+                    sharedStringAttributes = new LinkedPatternHashSet(
+                            KvpUtils.escapedTokens(sharedStringsOption, ',').stream()
+                                    .map(KvpUtils::unescape)
+                                    .collect(Collectors.toSet()),
+                            mode);
                 }
             } else {
                 // empty set => allow adding all string properties to the string table
@@ -245,8 +242,7 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
                     // set that axis order that should be used to write geometries
                     defaultGeomType = fType.getGeometryDescriptor();
                     if (defaultGeomType != null) {
-                        CoordinateReferenceSystem featureCrs =
-                                defaultGeomType.getCoordinateReferenceSystem();
+                        CoordinateReferenceSystem featureCrs = defaultGeomType.getCoordinateReferenceSystem();
                         jsonWriter.setAxisOrder(CRS.getAxisOrder(featureCrs));
                         if (crs == null) {
                             crs = featureCrs;
@@ -313,18 +309,14 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
                                 propertyNames.add(ad.getLocalName());
                             }
                         } else {
-                            if ((value instanceof Double && Double.isNaN((Double) value))
-                                    || value instanceof Float && Float.isNaN((Float) value)) {
+                            if ((value instanceof Double double3 && Double.isNaN(double3))
+                                    || value instanceof Float float3 && Float.isNaN(float3)) {
                                 jsonWriter.value(null);
-                            } else if ((value instanceof Double
-                                            && ((Double) value) == Double.POSITIVE_INFINITY)
-                                    || value instanceof Float
-                                            && ((Float) value) == Float.POSITIVE_INFINITY) {
+                            } else if ((value instanceof Double double2 && double2 == Double.POSITIVE_INFINITY)
+                                    || value instanceof Float float2 && float2 == Float.POSITIVE_INFINITY) {
                                 jsonWriter.value("Infinity");
-                            } else if ((value instanceof Double
-                                            && ((Double) value) == Double.NEGATIVE_INFINITY)
-                                    || value instanceof Float
-                                            && ((Float) value) == Float.NEGATIVE_INFINITY) {
+                            } else if ((value instanceof Double double1 && double1 == Double.NEGATIVE_INFINITY)
+                                    || value instanceof Float float1 && float1 == Float.NEGATIVE_INFINITY) {
                                 jsonWriter.value("-Infinity");
                             } else {
                                 if (value instanceof CharSequence
@@ -345,8 +337,7 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
                     jsonWriter.endArray(); // end the properties
 
                     // Bounding box for feature in properties
-                    ReferencedEnvelope refenv =
-                            ReferencedEnvelope.reference(simpleFeature.getBounds());
+                    ReferencedEnvelope refenv = ReferencedEnvelope.reference(simpleFeature.getBounds());
                     if (featureBounding && !refenv.isEmpty()) {
                         jsonWriter.writeBoundingBox(refenv);
                     }
@@ -371,8 +362,7 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
         try {
             context = (Context) jw;
         } catch (Exception e) {
-            throw new IllegalArgumentException(
-                    "Passed GeoJSONBuilder instance has no Context associated.", e);
+            throw new IllegalArgumentException("Passed GeoJSONBuilder instance has no Context associated.", e);
         }
 
         // write mandatory schema information
@@ -430,39 +420,36 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
      * Returns the {@code sharedstrings} format option.
      *
      * @param formatOptions the {@code FORMAT_OPTIONS} to obtain shared strings option from
-     * @return the {@code sharedstrings} format option, or {@code "false"} if the option was
-     *     specified but is empty ({@code ""}) or {@link #SHARED_STRINGS_OPTION_DEFAULT} if the
-     *     {@code sharedstrings} format option was not specified at all
+     * @return the {@code sharedstrings} format option, or {@code "false"} if the option was specified but is empty
+     *     ({@code ""}) or {@link #SHARED_STRINGS_OPTION_DEFAULT} if the {@code sharedstrings} format option was not
+     *     specified at all
      */
     private String getSharedStringsOption(Map<String, String> formatOptions) {
         String result = null;
         if (formatOptions != null) {
             result = formatOptions.get(SHARED_STRINGS_OPTION_KEY);
         }
-        return result == null
-                ? SHARED_STRINGS_OPTION_DEFAULT
-                : result.length() == 0 ? "false" : result;
+        return result == null ? SHARED_STRINGS_OPTION_DEFAULT : result.length() == 0 ? "false" : result;
     }
 
     /**
-     * A {@code LinkedHashSet} implementation for storing Java Regular Expression Patterns. This
-     * class has an additional method {@link #containsMatched(CharSequence)} to determine whether
-     * this set contains a pattern that matches the specified character sequence entirely.
+     * A {@code LinkedHashSet} implementation for storing Java Regular Expression Patterns. This class has an additional
+     * method {@link #containsMatched(CharSequence)} to determine whether this set contains a pattern that matches the
+     * specified character sequence entirely.
      *
-     * <p>The only constructor of this class takes a collection of character sequences from which it
-     * creates its patterns. The specified {@code mode} parameter defines what kind of patterns
-     * these string expressions do represent:
+     * <p>The only constructor of this class takes a collection of character sequences from which it creates its
+     * patterns. The specified {@code mode} parameter defines what kind of patterns these string expressions do
+     * represent:
      *
      * <ul>
      *   <li><b>{@code text}</b>: interpret specified string expressions as literal text
      *   <li><b>{@code glob}</b>: interpret specified string expressions as glob pattern
      * </ul>
      *
-     * <p>For all other values of mode (including {@code null}) the specified string expressions are
-     * interpreted as a Java Regular Expression.
+     * <p>For all other values of mode (including {@code null}) the specified string expressions are interpreted as a
+     * Java Regular Expression.
      *
-     * <p>For a brief description of the supported glob pattern syntax, see method {@link
-     * #globToPattern(String)}.
+     * <p>For a brief description of the supported glob pattern syntax, see method {@link #globToPattern(String)}.
      */
     private static class LinkedPatternHashSet extends LinkedHashSet<Pattern> {
 
@@ -473,8 +460,8 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
         private final Map<CharSequence, Boolean> cache = new HashMap<>();
 
         /**
-         * Converts a collection of patterns (character sequences) to a collection of Patterns. The
-         * specified {@code mode} parameter defines how to convert each pattern.
+         * Converts a collection of patterns (character sequences) to a collection of Patterns. The specified
+         * {@code mode} parameter defines how to convert each pattern.
          *
          * <ul>
          *   <li><b>{@code text}</b>: interpret each element as literal text
@@ -491,9 +478,7 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
         protected static Collection<Pattern> getPatterns(Collection<CharSequence> c, String mode) {
             switch (mode) {
                 case "glob":
-                    return c.stream()
-                            .map(s -> globToPattern(s.toString()))
-                            .collect(Collectors.toList());
+                    return c.stream().map(s -> globToPattern(s.toString())).collect(Collectors.toList());
 
                 case "text":
                     return c.stream()
@@ -501,9 +486,7 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
                             .collect(Collectors.toList());
 
                 default:
-                    return c.stream()
-                            .map(s -> Pattern.compile(s.toString()))
-                            .collect(Collectors.toList());
+                    return c.stream().map(s -> Pattern.compile(s.toString())).collect(Collectors.toList());
             }
         }
 
@@ -547,8 +530,8 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
          * </tr>
          * </table>
          *
-         * <p>Like with Java Regular Expression character classes, supports specifying multiple
-         * ranges and mixing ranges with discrete sets of characters ({@code [a-fxyz0-9ijk]}).
+         * <p>Like with Java Regular Expression character classes, supports specifying multiple ranges and mixing ranges
+         * with discrete sets of characters ({@code [a-fxyz0-9ijk]}).
          *
          * <p>However, glob pattern character classes do <em>not</em> support:
          *
@@ -558,19 +541,17 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
          *   <li>nested character classes (like union, intersection or subtraction)
          * </ul>
          *
-         * <p>Basically, all characters in a character class are interpreted literally. The only
-         * exceptions are:
+         * <p>Basically, all characters in a character class are interpreted literally. The only exceptions are:
          *
          * <ul>
          *   <li>negation indicated by {@code !} (must be the first character)
-         *   <li>{@code ]} matches ] only if it's the first or second (with negation) character in
-         *       the class (e. g. {@code []a-d]} matches characters ], a, b, c and d, whereas {@code
-         *       [!]a-d]} matches all characters except ], a, b, c and d)
+         *   <li>{@code ]} matches ] only if it's the first or second (with negation) character in the class (e. g.
+         *       {@code []a-d]} matches characters ], a, b, c and d, whereas {@code [!]a-d]} matches all characters
+         *       except ], a, b, c and d)
          * </ul>
          *
-         * <p>Outside of a character class, all characters except {@code *}, {@code ?} and {@code [}
-         * are interpreted literally. The special meaning of these characters can be removed by
-         * escaping them with a backslash.
+         * <p>Outside of a character class, all characters except {@code *}, {@code ?} and {@code [} are interpreted
+         * literally. The special meaning of these characters can be removed by escaping them with a backslash.
          *
          * @param s the glob pattern to convert
          * @return the specified glob pattern as a Java Regular Expression Pattern instance
@@ -674,15 +655,13 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
             try {
                 return Pattern.compile(result.append('$').toString());
             } catch (PatternSyntaxException e) {
-                throw (PatternSyntaxException)
-                        new PatternSyntaxException(e.getDescription(), s, -1).initCause(e);
+                throw (PatternSyntaxException) new PatternSyntaxException(e.getDescription(), s, -1).initCause(e);
             }
         }
 
         /**
-         * Constructs a new linked Pattern hash set with Patterns defined by the specified
-         * collection. The passed character sequences are converted according to the {@code mode}
-         * parameter.
+         * Constructs a new linked Pattern hash set with Patterns defined by the specified collection. The passed
+         * character sequences are converted according to the {@code mode} parameter.
          *
          * @param c the character sequences to convert to Patterns and to populate the new set with
          * @param mode the conversion mode
@@ -692,13 +671,12 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
         }
 
         /**
-         * Returns {@code true} is this set contains a Pattern that matches the specified character
-         * sequence. Returns {@code false} if the specified character sequence is {@code null}.
+         * Returns {@code true} is this set contains a Pattern that matches the specified character sequence. Returns
+         * {@code false} if the specified character sequence is {@code null}.
          *
          * @param s the character sequence to test this set's elements against
-         * @return {@code true} is this set contains a Pattern that matches the specified character
-         *     sequence, {@code false} otherwise or if the specified character sequence is {@code
-         *     null}
+         * @return {@code true} is this set contains a Pattern that matches the specified character sequence,
+         *     {@code false} otherwise or if the specified character sequence is {@code null}
          */
         public boolean containsMatched(CharSequence s) {
             if (s == null) {
@@ -743,17 +721,16 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
     private class SharedStringTable {
 
         /**
-         * The string table. This map's keys are the strings stored in the string table. Each
-         * mapping's value is the index of the string in this string table, which corresponds to the
-         * mapping's insertion order. Since a {@link LinkedHashMap} shall be used for this map, the
-         * insertion order is preserved and the string table's are returned in correct order when
-         * iterating over the map's key set.
+         * The string table. This map's keys are the strings stored in the string table. Each mapping's value is the
+         * index of the string in this string table, which corresponds to the mapping's insertion order. Since a
+         * {@link LinkedHashMap} shall be used for this map, the insertion order is preserved and the string table's are
+         * returned in correct order when iterating over the map's key set.
          */
         private final Map<String, Integer> table;
 
         /**
-         * Contains all zero-based indexes of properties that are of type String (technically) and
-         * whose values (or at least some of them) are actually stored in this string table.
+         * Contains all zero-based indexes of properties that are of type String (technically) and whose values (or at
+         * least some of them) are actually stored in this string table.
          */
         private final Set<Integer> indexes;
 
@@ -764,25 +741,23 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
         }
 
         /**
-         * Adds the specified value to this string table if it does not already contain that value,
-         * updates the set of property indexes and returns the specified value's index in this
-         * string table. Returns the specified string value if the value has not been added to the
-         * string table. These are the reasons that prevent a string value from being added to the
-         * string table:
+         * Adds the specified value to this string table if it does not already contain that value, updates the set of
+         * property indexes and returns the specified value's index in this string table. Returns the specified string
+         * value if the value has not been added to the string table. These are the reasons that prevent a string value
+         * from being added to the string table:
          *
          * <ul>
          *   <li>the specified value is {@code null}
-         *   <li>the specified value's byte length is smaller than {@link
-         *       SpatialJSONGetFeatureResponse#SST_MINIMUM_BYTE_LENGTH SST_MINIMUM_BYTE_LENGTH}
-         *   <li>the specified value's byte length is smaller than the number if digits of its table
-         *       index
+         *   <li>the specified value's byte length is smaller than
+         *       {@link SpatialJSONGetFeatureResponse#SST_MINIMUM_BYTE_LENGTH SST_MINIMUM_BYTE_LENGTH}
+         *   <li>the specified value's byte length is smaller than the number if digits of its table index
          *   <li>the string table is full (contains {@link Integer#MAX_VALUE} entries)
          * </ul>
          *
          * @param value string value to be added to this string table
          * @param index zero-based index of the specified value in the {@code properties} array
-         * @return the value's index in this string table, or {@code value} if the specified value
-         *     has not been added to this string table
+         * @return the value's index in this string table, or {@code value} if the specified value has not been added to
+         *     this string table
          */
         public Object add(String value, int index) {
             if (value == null) {
@@ -863,11 +838,10 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
     }
 
     /**
-     * Defines the methods of the Context used for sharing data between methods {@link
-     * #encodeSimpleFeatures} and {@link #writeExtraCollectionProperties}. Since this Context is
-     * attached to the {@link GeoJSONBuilder} for simplicity (see class {@link
-     * GeoJSONBuilderWithContext}), using a dedicated interface could provide more clarity to the
-     * code.
+     * Defines the methods of the Context used for sharing data between methods {@link #encodeSimpleFeatures} and
+     * {@link #writeExtraCollectionProperties}. Since this Context is attached to the {@link GeoJSONBuilder} for
+     * simplicity (see class {@link GeoJSONBuilderWithContext}), using a dedicated interface could provide more clarity
+     * to the code.
      *
      * @see GeoJSONBuilderWithContext
      */
@@ -884,8 +858,8 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
         void setPropertyNames(List<String> propertyNames);
 
         /**
-         * Returns the geometry name or {@code null} if none is available. This property is part of
-         * the Schema Information.
+         * Returns the geometry name or {@code null} if none is available. This property is part of the Schema
+         * Information.
          */
         String getGeometryName();
 
@@ -908,8 +882,8 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
     }
 
     /**
-     * Implementation of the GeoJSONBuilder with an additional {@link Context} to store/share data
-     * between methods {@link #encodeSimpleFeatures} and {@link #writeExtraCollectionProperties}.
+     * Implementation of the GeoJSONBuilder with an additional {@link Context} to store/share data between methods
+     * {@link #encodeSimpleFeatures} and {@link #writeExtraCollectionProperties}.
      *
      * @see #Context
      */

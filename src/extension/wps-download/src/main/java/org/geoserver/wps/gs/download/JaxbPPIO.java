@@ -35,8 +35,8 @@ public class JaxbPPIO extends ComplexPPIO {
 
     @Override
     public Object decode(Object input) throws Exception {
-        if (input instanceof String) {
-            return decode(new ByteArrayInputStream(((String) input).getBytes()));
+        if (input instanceof String string) {
+            return decode(new ByteArrayInputStream(string.getBytes()));
         }
         return super.decode(input);
     }
@@ -45,8 +45,7 @@ public class JaxbPPIO extends ComplexPPIO {
     public Object decode(InputStream input) throws Exception {
         Unmarshaller unmarshaller = this.context.createUnmarshaller();
 
-        EntityResolver resolver =
-                resolverProvider != null ? resolverProvider.getEntityResolver() : null;
+        EntityResolver resolver = resolverProvider != null ? resolverProvider.getEntityResolver() : null;
         if (resolver == null) {
             return unmarshaller.unmarshal(input);
         } else {

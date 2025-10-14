@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.geotools.api.coverage.grid.GridCoverageReader;
 import org.geotools.api.data.ResourceInfo;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.PAMResourceInfo;
@@ -46,29 +45,23 @@ public class CoverageViewPamResourceInfo extends DefaultResourceInfo implements 
      * @param viewPam the PAM dataset to populate
      */
     private void populatePAMFromViewBands(CoverageViewReader.ViewInputs info, PAMDataset viewPam) {
-        Map<String, GridCoverageReader> readers = info.getInputReaders();
+        Map<String, GridCoverage2DReader> readers = info.getInputReaders();
         // iterate over the view bands and populate the PAM dataset
         for (CoverageView.CoverageBand band : info.getBands()) {
             for (CoverageView.InputCoverageBand inputCoverageBand : band.getInputCoverageBands()) {
                 // get the reader for the coverage associated with this input coverage band
-                GridCoverageReader reader = readers.get(inputCoverageBand.getCoverageName());
-                if (reader instanceof GridCoverage2DReader) {
-                    GridCoverage2DReader bandReader = (GridCoverage2DReader) reader;
-                    ResourceInfo resourceInfoBand =
-                            bandReader.getInfo(inputCoverageBand.getCoverageName());
-                    // reader is associated with a PAM
-                    if (resourceInfoBand instanceof PAMResourceInfo) {
-                        PAMDataset bandPam = ((PAMResourceInfo) resourceInfoBand).getPAMDataset();
-                        if (bandPam != null) {
-                            List<PAMDataset.PAMRasterBand> pamRasterBands =
-                                    bandPam.getPAMRasterBand();
-                            // find the PAMRasterBand for the given band index and put in the output
-                            Optional<PAMDataset.PAMRasterBand> pamRasterBandOptional =
-                                    getPAMRasterBandByBandIndex(
-                                            pamRasterBands, inputCoverageBand.getBand());
-                            pamRasterBandOptional.ifPresent(
-                                    pamRasterBand -> viewPam.getPAMRasterBand().add(pamRasterBand));
-                        }
+                GridCoverage2DReader bandReader = readers.get(inputCoverageBand.getCoverageName());
+                ResourceInfo resourceInfoBand = bandReader.getInfo(inputCoverageBand.getCoverageName());
+                // reader is associated with a PAM
+                if (resourceInfoBand instanceof PAMResourceInfo resourceInfo) {
+                    PAMDataset bandPam = resourceInfo.getPAMDataset();
+                    if (bandPam != null) {
+                        List<PAMDataset.PAMRasterBand> pamRasterBands = bandPam.getPAMRasterBand();
+                        // find the PAMRasterBand for the given band index and put in the output
+                        Optional<PAMDataset.PAMRasterBand> pamRasterBandOptional =
+                                getPAMRasterBandByBandIndex(pamRasterBands, inputCoverageBand.getBand());
+                        pamRasterBandOptional.ifPresent(
+                                pamRasterBand -> viewPam.getPAMRasterBand().add(pamRasterBand));
                     }
                 }
             }

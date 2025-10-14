@@ -34,11 +34,10 @@ public class PNGJWriter {
         boolean isScanlineSupported = writer.isScanlineSupported(image);
         // If it is not supported, then the image is rescaled to bytes
         if (!isScanlineSupported) {
-            image =
-                    new ImageWorker(image)
-                            .rescaleToBytes()
-                            .forceComponentColorModel()
-                            .getRenderedImage();
+            image = new ImageWorker(image)
+                    .rescaleToBytes()
+                    .forceComponentColorModel()
+                    .getRenderedImage();
         }
 
         RenderedImage output = null;
@@ -53,8 +52,8 @@ public class PNGJWriter {
     }
 
     /**
-     * SUB filtering is useful for raster images with "high" variation, otherwise we go for NONE,
-     * empirically it provides better compression at lower effort
+     * SUB filtering is useful for raster images with "high" variation, otherwise we go for NONE, empirically it
+     * provides better compression at lower effort
      */
     private FilterType getFilterType(WMSMapContent mapContent) {
         RasterSymbolizerVisitor visitor = new RasterSymbolizerVisitor();
@@ -78,12 +77,12 @@ public class PNGJWriter {
     }
 
     /**
-     * Check if the style contains a "high change" raster symbolizer, that is, one that generates a
-     * continuous set of values for which SUB filtering provides better results
+     * Check if the style contains a "high change" raster symbolizer, that is, one that generates a continuous set of
+     * values for which SUB filtering provides better results
      *
      * @author Andrea Aime - GeoSolutions
      */
-    class RasterSymbolizerVisitor extends AbstractStyleVisitor {
+    static class RasterSymbolizerVisitor extends AbstractStyleVisitor {
 
         boolean highChangeRasterSymbolizer;
 

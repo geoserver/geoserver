@@ -68,8 +68,7 @@ public class XHTMLTemplateWriter extends XMLTemplateWriter {
         }
     }
 
-    private void injectJSONLD(EncodingHints encodingHints)
-            throws ExecutionException, IOException, XMLStreamException {
+    private void injectJSONLD(EncodingHints encodingHints) throws ExecutionException, IOException, XMLStreamException {
         List injectJSONLD = encodingHints.get(JSON_LD_SCRIPT, List.class, Collections.emptyList());
         if (!injectJSONLD.isEmpty()) {
             List<FeatureCollection> collections = (List<FeatureCollection>) injectJSONLD;
@@ -112,8 +111,8 @@ public class XHTMLTemplateWriter extends XMLTemplateWriter {
                     List linkAttrs = encodingHints.get(key, List.class);
                     if (!linkAttrs.isEmpty()) streamWriter.writeStartElement(LINK);
                     for (Object o : linkAttrs) {
-                        if (o instanceof Attribute) {
-                            Attribute attribute = ((Attribute) o);
+                        if (o instanceof Attribute attribute1) {
+                            Attribute attribute = attribute1;
                             QName name = attribute.getName();
                             streamWriter.writeAttribute(name.getLocalPart(), attribute.getValue());
                         }

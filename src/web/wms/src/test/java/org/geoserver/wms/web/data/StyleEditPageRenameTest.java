@@ -58,8 +58,7 @@ public class StyleEditPageRenameTest extends GeoServerWicketTestSupport {
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
-        testData.addStyle(
-                STYLE_TO_MOVE_NAME, STYLE_TO_MOVE_FILENAME, this.getClass(), getCatalog());
+        testData.addStyle(STYLE_TO_MOVE_NAME, STYLE_TO_MOVE_FILENAME, this.getClass(), getCatalog());
     }
 
     // Test that a user can non-destructively move the style out of a workspace.
@@ -74,7 +73,8 @@ public class StyleEditPageRenameTest extends GeoServerWicketTestSupport {
         GeoServerDataDirectory dataDir = new GeoServerDataDirectory(catalog.getResourceLoader());
         // verify move to workspace was successful
         assertEquals(
-                Resource.Type.UNDEFINED, dataDir.get("styles/" + STYLE_TO_MOVE_FILENAME).getType());
+                Resource.Type.UNDEFINED,
+                dataDir.get("styles/" + STYLE_TO_MOVE_FILENAME).getType());
         assertEquals(
                 Resource.Type.RESOURCE,
                 dataDir.get("workspaces/sf/styles/" + STYLE_TO_MOVE_FILENAME).getType());
@@ -101,7 +101,8 @@ public class StyleEditPageRenameTest extends GeoServerWicketTestSupport {
 
         // verify move out of the workspace was successful
         assertEquals(
-                Resource.Type.RESOURCE, dataDir.get("styles/" + STYLE_TO_MOVE_FILENAME).getType());
+                Resource.Type.RESOURCE,
+                dataDir.get("styles/" + STYLE_TO_MOVE_FILENAME).getType());
         assertEquals(
                 Resource.Type.UNDEFINED,
                 dataDir.get("workspaces/sf/styles/" + STYLE_TO_MOVE_FILENAME).getType());
@@ -121,12 +122,10 @@ public class StyleEditPageRenameTest extends GeoServerWicketTestSupport {
             // test the copy style link
             tester.newFormTester("styleForm").select("context:panel:templates", 1);
             tester.executeAjaxEvent("styleForm:context:panel:templates", "change");
-            Component generateLink =
-                    tester.getComponentFromLastRenderedPage("styleForm:context:panel:generate");
+            Component generateLink = tester.getComponentFromLastRenderedPage("styleForm:context:panel:generate");
             tester.executeAjaxEvent(generateLink, "click");
             // check single quote in the message has been escaped
-            assertThat(
-                    tester.getLastResponseAsString(), CoreMatchers.containsString("l\\'éditeur"));
+            assertThat(tester.getLastResponseAsString(), CoreMatchers.containsString("l\\'éditeur"));
         } finally {
             session.clear();
             session.setLocale(Locale.getDefault());
@@ -147,12 +146,10 @@ public class StyleEditPageRenameTest extends GeoServerWicketTestSupport {
             // test the copy style link
             tester.newFormTester("styleForm").select("context:panel:existingStyles", 1);
             tester.executeAjaxEvent("styleForm:context:panel:existingStyles", "change");
-            Component copyLink =
-                    tester.getComponentFromLastRenderedPage("styleForm:context:panel:copy");
+            Component copyLink = tester.getComponentFromLastRenderedPage("styleForm:context:panel:copy");
             tester.executeAjaxEvent(copyLink, "click");
             // check single quote in the message has been escaped
-            assertThat(
-                    tester.getLastResponseAsString(), CoreMatchers.containsString("l\\'éditeur"));
+            assertThat(tester.getLastResponseAsString(), CoreMatchers.containsString("l\\'éditeur"));
         } finally {
             session.clear();
             session.setLocale(Locale.getDefault());

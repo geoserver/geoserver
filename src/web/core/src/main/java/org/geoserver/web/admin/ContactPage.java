@@ -29,21 +29,19 @@ public class ContactPage extends ServerAdminPage {
         add(form);
 
         form.add(new ContactPanel("contact", contactModel));
-        form.add(
-                new Button("submit") {
-                    @Override
-                    public void onSubmit() {
-                        save(true);
-                    }
-                });
+        form.add(new Button("submit") {
+            @Override
+            public void onSubmit() {
+                save(true);
+            }
+        });
         form.add(applyLink(form));
-        form.add(
-                new Button("cancel") {
-                    @Override
-                    public void onSubmit() {
-                        doReturn();
-                    }
-                });
+        form.add(new Button("cancel") {
+            @Override
+            public void onSubmit() {
+                doReturn();
+            }
+        });
     }
 
     public void save(boolean doReturn) {

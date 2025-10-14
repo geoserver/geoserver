@@ -22,15 +22,14 @@ import org.geotools.util.SuppressFBWarnings;
 import org.geotools.util.logging.Logging;
 
 /**
- * Dispatcher callback that sets and clears the {@link LocalWorkspace} and {@link LocalPublished}
- * thread locals.
+ * Dispatcher callback that sets and clears the {@link LocalWorkspace} and {@link LocalPublished} thread locals.
  *
  * <p>This class is responsible for parsing request context information ({@code workspace/ows?},
- * {@code layergroup/wms?}, {@code workspace/layer}) and resolving the intended local workspace,
- * layer group, and/or layer information which are stored in a thread locale for reference.
+ * {@code layergroup/wms?}, {@code workspace/layer}) and resolving the intended local workspace, layer group, and/or
+ * layer information which are stored in a thread locale for reference.
  *
- * <p>The logic used here is duplicated by GeoServerHomePage which provides a user interface
- * reflecting this context lookup process.
+ * <p>The logic used here is duplicated by GeoServerHomePage which provides a user interface reflecting this context
+ * lookup process.
  *
  * @author Justin Deoliveira, OpenGeo
  */
@@ -39,11 +38,9 @@ public class LocalWorkspaceCallback implements DispatcherCallback, ExtensionPrio
     static final Logger LOGGER = Logging.getLogger(LocalWorkspaceCallback.class);
 
     GeoServer gs;
-    Catalog catalog;
 
     public LocalWorkspaceCallback(GeoServer gs) {
         this.gs = gs;
-        catalog = gs.getCatalog();
     }
 
     @Override
@@ -62,6 +59,7 @@ public class LocalWorkspaceCallback implements DispatcherCallback, ExtensionPrio
             }
 
             // check if the context matches a workspace
+            Catalog catalog = gs.getCatalog();
             ws = catalog.getWorkspaceByName(first);
             if (ws != null) {
                 LocalWorkspace.set(ws);
@@ -81,36 +79,24 @@ public class LocalWorkspaceCallback implements DispatcherCallback, ExtensionPrio
                         if (l != null) {
                             LocalPublished.set(l);
                         } else {
-                            LOGGER.log(
-                                    Level.FINE,
-                                    "Could not lookup context {0} as a layer, trying as group",
-                                    first);
+                            LOGGER.log(Level.FINE, "Could not lookup context {0} as a layer, trying as group", first);
                             lg = catalog.getLayerGroupByName(ws, last);
                             if (lg != null) {
                                 LocalPublished.set(lg);
                             } else {
                                 // TODO: perhaps throw an exception?
-                                LOGGER.log(
-                                        Level.FINE,
-                                        "Could not lookup context {0} as a group either",
-                                        first);
+                                LOGGER.log(Level.FINE, "Could not lookup context {0} as a group either", first);
                             }
                         }
                     }
                 }
             } else {
-                LOGGER.log(
-                        Level.FINE,
-                        "Could not lookup context {0} as a workspace, trying as group",
-                        first);
+                LOGGER.log(Level.FINE, "Could not lookup context {0} as a workspace, trying as group", first);
                 lg = catalog.getLayerGroupByName((WorkspaceInfo) null, first);
                 if (lg != null) {
                     LocalPublished.set(lg);
                 } else {
-                    LOGGER.log(
-                            Level.FINE,
-                            "Could not lookup context {0} as a layer group either",
-                            first);
+                    LOGGER.log(Level.FINE, "Could not lookup context {0} as a layer group either", first);
                 }
             }
             if (ws == null && lg == null) {
@@ -141,8 +127,7 @@ public class LocalWorkspaceCallback implements DispatcherCallback, ExtensionPrio
     }
 
     @Override
-    public Response responseDispatched(
-            Request request, Operation operation, Object result, Response response) {
+    public Response responseDispatched(Request request, Operation operation, Object result, Response response) {
         return null;
     }
 

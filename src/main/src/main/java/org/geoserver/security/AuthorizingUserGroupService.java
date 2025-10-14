@@ -44,9 +44,7 @@ public abstract class AuthorizingUserGroupService implements GeoServerUserGroupS
     @Override
     public GeoServerUserGroupStore createStore() throws IOException {
         try {
-            return getClass()
-                    .getConstructor(GeoServerUserGroupService.class)
-                    .newInstance(delegate.createStore());
+            return getClass().getConstructor(GeoServerUserGroupService.class).newInstance(delegate.createStore());
         } catch (Exception e) {
             throw new IOException(e);
         }
@@ -98,8 +96,7 @@ public abstract class AuthorizingUserGroupService implements GeoServerUserGroupS
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username)
-            throws UsernameNotFoundException, DataAccessException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException {
         return filterUser((GeoServerUser) delegate.loadUserByUsername(username));
     }
 
@@ -114,14 +111,12 @@ public abstract class AuthorizingUserGroupService implements GeoServerUserGroupS
     }
 
     @Override
-    public GeoServerUser createUserObject(String username, String password, boolean isEnabled)
-            throws IOException {
+    public GeoServerUser createUserObject(String username, String password, boolean isEnabled) throws IOException {
         return filterUser(delegate.createUserObject(username, password, isEnabled));
     }
 
     @Override
-    public GeoServerUserGroup createGroupObject(String groupname, boolean isEnabled)
-            throws IOException {
+    public GeoServerUserGroup createGroupObject(String groupname, boolean isEnabled) throws IOException {
         return filterGroup(delegate.createGroupObject(groupname, isEnabled));
     }
 
@@ -223,8 +218,7 @@ public abstract class AuthorizingUserGroupService implements GeoServerUserGroupS
     }
 
     @Override
-    public void associateUserToGroup(GeoServerUser user, GeoServerUserGroup group)
-            throws IOException {
+    public void associateUserToGroup(GeoServerUser user, GeoServerUserGroup group) throws IOException {
         // TODO: should probably throw exception if trying to add to filtered group
         if (filterUser(user) != null && filterGroup(group) != null) {
             delegateAsStore().associateUserToGroup(user, group);
@@ -232,8 +226,7 @@ public abstract class AuthorizingUserGroupService implements GeoServerUserGroupS
     }
 
     @Override
-    public void disAssociateUserFromGroup(GeoServerUser user, GeoServerUserGroup group)
-            throws IOException {
+    public void disAssociateUserFromGroup(GeoServerUser user, GeoServerUserGroup group) throws IOException {
         // TODO: should probably throw exception if trying to add to filtered group
         if (filterUser(user) != null && filterGroup(group) != null) {
             delegateAsStore().disAssociateUserFromGroup(user, group);
@@ -266,15 +259,12 @@ public abstract class AuthorizingUserGroupService implements GeoServerUserGroupS
     }
 
     @Override
-    public SortedSet<GeoServerUser> getUsersHavingPropertyValue(String propname, String propvalue)
-            throws IOException {
-        return filterUsers(
-                new TreeSet<>(delegate.getUsersHavingPropertyValue(propname, propvalue)));
+    public SortedSet<GeoServerUser> getUsersHavingPropertyValue(String propname, String propvalue) throws IOException {
+        return filterUsers(new TreeSet<>(delegate.getUsersHavingPropertyValue(propname, propvalue)));
     }
 
     @Override
-    public int getUserCountHavingPropertyValue(String propname, String propvalue)
-            throws IOException {
+    public int getUserCountHavingPropertyValue(String propname, String propvalue) throws IOException {
         return getUsersHavingPropertyValue(propname, propvalue).size();
     }
 

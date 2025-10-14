@@ -17,6 +17,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.FeatureInfoRequestParameters;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
+import org.geoserver.wms.RenderingVariables;
 import org.geoserver.wms.WMS;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.api.data.Query;
@@ -45,8 +46,8 @@ import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Polygon;
 
 /**
- * An identifier for vector layers that will take into account the filters, viewparams, styles and
- * build a bbox (plus extra filters) query against the database
+ * An identifier for vector layers that will take into account the filters, viewparams, styles and build a bbox (plus
+ * extra filters) query against the database
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -54,8 +55,7 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
 
     static final Logger LOGGER = Logging.getLogger(VectorBasicLayerIdentifier.class);
 
-    public static final String FEATUREINFO_DEFAULT_BUFFER =
-            "org.geoserver.wms.featureinfo.minBuffer";
+    public static final String FEATUREINFO_DEFAULT_BUFFER = "org.geoserver.wms.featureinfo.minBuffer";
     public static final int MIN_BUFFER_SIZE = Integer.getInteger(FEATUREINFO_DEFAULT_BUFFER, 5);
 
     private WMS wms;
@@ -65,8 +65,7 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
     }
 
     @Override
-    public List<FeatureCollection> identify(FeatureInfoRequestParameters params, int maxFeatures)
-            throws Exception {
+    public List<FeatureCollection> identify(FeatureInfoRequestParameters params, int maxFeatures) throws Exception {
         LOGGER.log(Level.FINER, "Appliying bbox based feature info identifier");
 
         final MapLayerInfo layer = params.getLayer();
@@ -122,7 +121,7 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
         Filter rulesFilters = buildRulesFilter(ff, rules);
         if (!(featureSource.getSchema() instanceof SimpleFeatureType)
                 || !(rulesFilters instanceof Or)
-                || (rulesFilters instanceof Or && ((Or) rulesFilters).getChildren().size() <= 20)) {
+                || (rulesFilters instanceof Or or && or.getChildren().size() <= 20)) {
             getFInfoFilter = ff.and(getFInfoFilter, rulesFilters);
         } else {
             postFilter = rulesFilters;
@@ -134,8 +133,7 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
         FeatureTypeInfo featureInfo = layer.getFeature();
         GetMapRequest getMapRequest = params.getGetMapRequest();
         wms.validateVectorDimensions(times, elevations, featureInfo, getMapRequest);
-        Filter dimensionFilter =
-                wms.getDimensionFilter(times, elevations, featureInfo, getMapRequest);
+        Filter dimensionFilter = wms.getDimensionFilter(times, elevations, featureInfo, getMapRequest);
         getFInfoFilter = Filters.and(ff, getFInfoFilter, dimensionFilter);
 
         // simplify the filter
@@ -144,31 +142,25 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
 
         // build the query
         String typeName = schema.getName().getLocalPart();
-        Query q =
-                new Query(
-                        typeName,
-                        null,
-                        getFInfoFilter,
-                        maxFeatures,
-                        params.getPropertyNames(),
-                        null);
-        q.setSortBy(params.getSort());
+        Query query = new Query(typeName, null, getFInfoFilter, maxFeatures, params.getPropertyNames(), null);
+        query.setSortBy(params.getSort());
 
         // handle sql view params
+        RenderingVariables.setupEnvironmentVariables(params);
+        query = RenderingVariables.setHintsToQuery(query);
         final Map<String, String> viewParams = params.getViewParams();
         if (viewParams != null && !viewParams.isEmpty()) {
-            q.setHints(new Hints(Hints.VIRTUAL_TABLE_PARAMETERS, viewParams));
+            query.setHints(new Hints(Hints.VIRTUAL_TABLE_PARAMETERS, viewParams));
         }
 
-        LOGGER.log(Level.FINE, q.toString());
+        LOGGER.log(Level.FINE, query.toString());
         // let's see if we need to reproject
         if (!wms.isFeaturesReprojectionDisabled()) {
             // reproject the features to the getMapRequest CRS, this way complex feature will also
             // be reprojected
-            q.setCoordinateSystemReproject(requestedCRS);
+            query.setCoordinateSystemReproject(requestedCRS);
         }
-        FeatureCollection<? extends FeatureType, ? extends Feature> match =
-                featureSource.getFeatures(q);
+        FeatureCollection<? extends FeatureType, ? extends Feature> match = featureSource.getFeatures(query);
 
         // if we could not include the rules filter into the query, post process in
         // memory

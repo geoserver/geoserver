@@ -40,17 +40,11 @@ public abstract class AbstractGetCoverageTest extends WCSTestSupport {
 
     @Before
     public void setup() {
-        kvpreader =
-                (GetCoverageRequestReader)
-                        applicationContext.getBean("wcs111GetCoverageRequestReader");
+        kvpreader = (GetCoverageRequestReader) applicationContext.getBean("wcs111GetCoverageRequestReader");
         service = (WebCoverageService111) applicationContext.getBean("wcs111ServiceTarget");
         configuration = new WCSConfiguration();
-        xmlReader =
-                new WcsXmlReader(
-                        "GetCoverage",
-                        "1.1.1",
-                        configuration,
-                        EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
+        xmlReader = new WcsXmlReader(
+                "GetCoverage", "1.1.1", configuration, EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
     }
 
     @After
@@ -62,8 +56,7 @@ public abstract class AbstractGetCoverageTest extends WCSTestSupport {
 
     /** Runs GetCoverage on the specified parameters and returns an array of coverages */
     protected GridCoverage[] executeGetCoverageKvp(Map<String, Object> raw) throws Exception {
-        GetCoverageType getCoverage =
-                (GetCoverageType) kvpreader.read(kvpreader.createRequest(), parseKvp(raw), raw);
+        GetCoverageType getCoverage = (GetCoverageType) kvpreader.read(kvpreader.createRequest(), parseKvp(raw), raw);
         GridCoverage[] result = service.getCoverage(getCoverage);
         coverages.addAll(Arrays.asList(result));
         return result;
@@ -80,8 +73,7 @@ public abstract class AbstractGetCoverageTest extends WCSTestSupport {
 
     /** Runs GetCoverage on the specified parameters and returns an array of coverages */
     protected GridCoverage[] executeGetCoverageXml(String request) throws Exception {
-        GetCoverageType getCoverage =
-                (GetCoverageType) xmlReader.read(null, new StringReader(request), null);
+        GetCoverageType getCoverage = (GetCoverageType) xmlReader.read(null, new StringReader(request), null);
         return service.getCoverage(getCoverage);
     }
 

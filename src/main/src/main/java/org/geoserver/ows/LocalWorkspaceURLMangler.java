@@ -10,8 +10,7 @@ import static org.geoserver.ows.util.ResponseUtils.stripRemainingPath;
 import java.util.Map;
 
 /**
- * Mangles service URL's based on teh presence of a {@link LocalWorkspace} and {@link
- * LocalPublished}.
+ * Mangles service URL's based on teh presence of a {@link LocalWorkspace} and {@link LocalPublished}.
  *
  * <p>When the local workspace and layer are present this mangler will turns urls of the form:
  *
@@ -37,8 +36,7 @@ public class LocalWorkspaceURLMangler implements URLMangler {
     }
 
     @Override
-    public void mangleURL(
-            StringBuilder baseURL, StringBuilder path, Map<String, String> kvp, URLType type) {
+    public void mangleURL(StringBuilder baseURL, StringBuilder path, Map<String, String> kvp, URLType type) {
 
         if (type == URLType.SERVICE && stripRemainingPath(path.toString()).equalsIgnoreCase(ows)) {
             if (LocalWorkspace.get() != null) {

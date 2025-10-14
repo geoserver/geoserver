@@ -122,8 +122,7 @@ public abstract class AbstractProcessStoreTest {
         return FF.sort(propertyName, SortOrder.DESCENDING);
     }
 
-    protected void checkFiltered(
-            ProcessStatusStore store, Query query, ExecutionStatus... statuses) {
+    protected void checkFiltered(ProcessStatusStore store, Query query, ExecutionStatus... statuses) {
         List<ExecutionStatus> filtered = store.list(query);
         checkContains(filtered, statuses);
     }
@@ -132,8 +131,7 @@ public abstract class AbstractProcessStoreTest {
         return query(cql, 0, Integer.MAX_VALUE);
     }
 
-    private Query query(String cql, int startIndex, int maxFeatures, SortBy... sortBy)
-            throws CQLException {
+    private Query query(String cql, int startIndex, int maxFeatures, SortBy... sortBy) throws CQLException {
         Filter filter = ECQL.toFilter(cql);
         Query query = new Query(null, filter);
         query.setStartIndex(startIndex);

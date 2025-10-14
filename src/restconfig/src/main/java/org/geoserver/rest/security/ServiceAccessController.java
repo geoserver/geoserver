@@ -14,8 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/security/acl/services")
-public class ServiceAccessController
-        extends AbstractAclController<ServiceAccessRule, ServiceAccessRuleDAO> {
+public class ServiceAccessController extends AbstractAclController<ServiceAccessRule, ServiceAccessRuleDAO> {
 
     public ServiceAccessController() {
         super(ServiceAccessRuleDAO.get());
@@ -41,17 +40,12 @@ public class ServiceAccessController
     protected String validateRuleKey(String ruleKey) {
         String[] elements = parseElements(ruleKey);
         if (elements.length != 2) {
-            return "Invalid rule "
-                    + ruleKey
-                    + ", the expected format is service.method=role1,role2,...";
+            return "Invalid rule " + ruleKey + ", the expected format is service.method=role1,role2,...";
         }
 
         if (ANY.equals(elements[0])) {
             if (!ANY.equals(elements[1])) {
-                return "Invalid rule "
-                        + ruleKey
-                        + ", when namespace "
-                        + "is * then also layer must be *.";
+                return "Invalid rule " + ruleKey + ", when namespace " + "is * then also layer must be *.";
             }
         }
 

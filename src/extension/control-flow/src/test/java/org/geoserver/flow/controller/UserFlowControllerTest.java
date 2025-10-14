@@ -21,8 +21,7 @@ public class UserFlowControllerTest extends AbstractFlowControllerTest {
         UserConcurrentFlowController controller = new UserConcurrentFlowController(1);
 
         Request firstRequest = buildCookieRequest(null);
-        FlowControllerTestingThread tSample =
-                new FlowControllerTestingThread(firstRequest, 0, 0, controller);
+        FlowControllerTestingThread tSample = new FlowControllerTestingThread(firstRequest, 0, 0, controller);
         tSample.start();
         waitTerminated(tSample, MAX_WAIT);
 
@@ -33,11 +32,9 @@ public class UserFlowControllerTest extends AbstractFlowControllerTest {
         // identify themselves
         // as the same client, until we interrupt them
         FlowControllerTestingThread t1 =
-                new FlowControllerTestingThread(
-                        buildCookieRequest(cookieValue), 0, Long.MAX_VALUE, controller);
+                new FlowControllerTestingThread(buildCookieRequest(cookieValue), 0, Long.MAX_VALUE, controller);
         FlowControllerTestingThread t2 =
-                new FlowControllerTestingThread(
-                        buildCookieRequest(cookieValue), 0, Long.MAX_VALUE, controller);
+                new FlowControllerTestingThread(buildCookieRequest(cookieValue), 0, Long.MAX_VALUE, controller);
         try {
             // start threads making sure every one of them managed to block somewhere before
             // starting the next one

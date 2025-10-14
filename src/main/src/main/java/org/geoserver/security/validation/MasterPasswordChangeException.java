@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.validation;
 
+import java.io.Serial;
 import org.geoserver.security.password.MasterPasswordChangeRequest;
 
 /**
@@ -13,13 +14,13 @@ import org.geoserver.security.password.MasterPasswordChangeRequest;
  * @author christian
  */
 public class MasterPasswordChangeException extends AbstractSecurityException {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public static final String CURRENT_PASSWORD_REQUIRED = "CURRENT_PASSWORD_REQUIRED";
     public static final String CURRENT_PASSWORD_ERROR = "CURRENT_PASSWORD_ERROR";
     public static final String CONFIRMATION_PASSWORD_REQUIRED = "CONFIRMATION_PASSWORD_REQUIRED";
-    public static final String PASSWORD_AND_CONFIRMATION_NOT_EQUAL =
-            "PASSWORD_AND_CONFIRMATION_NOT_EQUAL";
+    public static final String PASSWORD_AND_CONFIRMATION_NOT_EQUAL = "PASSWORD_AND_CONFIRMATION_NOT_EQUAL";
     public static final String NEW_PASSWORD_REQUIRED = "NEW_PASSWORD_REQUIRED";
     public static final String NEW_EQUALS_CURRENT = "NEW_EQUALS_CURRENT";
 

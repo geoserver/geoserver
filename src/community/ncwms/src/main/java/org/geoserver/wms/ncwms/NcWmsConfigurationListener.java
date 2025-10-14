@@ -23,14 +23,11 @@ public class NcWmsConfigurationListener extends ConfigurationListenerAdapter {
 
     @Override
     public void handleServiceChange(
-            ServiceInfo service,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {
-        if (service instanceof WMSInfo
+            ServiceInfo service, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
+        if (service instanceof WMSInfo info
                 && propertyNames.contains("metadata")
                 && configChanged(propertyNames.indexOf("metadata"), oldValues, newValues)) {
-            ncwms.configurationChanged((WMSInfo) service);
+            ncwms.configurationChanged(info);
         }
     }
 

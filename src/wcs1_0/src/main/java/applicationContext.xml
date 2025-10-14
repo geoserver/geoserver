@@ -16,7 +16,7 @@
     <constructor-arg ref="geoServer" />
     <constructor-arg ref="coverageResponseDelegateFactory"/>
   </bean>
-  <bean id="wcsLogger" class="org.geoserver.ows.util.EMFLogger">
+  <bean id="wcs100Logger" class="org.geoserver.ows.util.EMFLogger">
     <constructor-arg type="java.lang.String" value="org.geoserver.wcs" />
   </bean>
   <bean id="wcs100Service" class="org.springframework.aop.framework.ProxyFactoryBean">
@@ -25,7 +25,7 @@
     </property>
     <property name="interceptorNames">
       <list>
-        <value>wcsLogger</value>
+        <value>wcs100Logger</value>
         <value>wcs100ServiceInterceptor*</value>
         <value>wcs100ServiceTarget</value>
       </list>
@@ -199,5 +199,10 @@
   
   <bean id="workspaceQualifier" class="org.geoserver.wcs.WCS10WorkspaceQualifier">
       <constructor-arg ref="catalog"/>
+  </bean>
+
+  <bean id="wcs10ExceptionHandler" class="org.geoserver.wcs.WCS10ServiceExceptionHandler">
+    <constructor-arg ref="wcsService-1.0.0"/>
+    <constructor-arg ref="geoServer"/>
   </bean>
 </beans>

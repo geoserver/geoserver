@@ -16,8 +16,8 @@ import org.springframework.web.context.WebApplicationContext;
 /**
  * Places a GeoServer module into the servlet context.
  *
- * <p>This class is only around to maintain backwards compatability for hte struts ui stuff which
- * requires application modules to be placed into the servlet context.
+ * <p>This class is only around to maintain backwards compatability for hte struts ui stuff which requires application
+ * modules to be placed into the servlet context.
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
@@ -37,8 +37,7 @@ public class GeoServerServletContextInitializer implements ApplicationContextAwa
 
     @Override
     public void setApplicationContext(ApplicationContext context) throws BeansException {
-        if (context instanceof WebApplicationContext) {
-            WebApplicationContext webContext = (WebApplicationContext) context;
+        if (context instanceof WebApplicationContext webContext) {
             ServletContext sc = webContext.getServletContext();
             if (sc == null) {
                 LOGGER.warning(

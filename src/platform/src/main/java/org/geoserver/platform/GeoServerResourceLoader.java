@@ -25,23 +25,21 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.web.context.ServletContextAware;
 
 /**
- * Access to resources in GeoServer including configuration information and unmanaged cache or log
- * files.
+ * Access to resources in GeoServer including configuration information and unmanaged cache or log files.
  *
  * <p>The loader maintains a search path in which it will use to look up resources.
  *
  * <ul>
- *   <li>Configuration is accessed using {@link ResourceStore#get(String)} which provides stream
- *       based access. If required configuration can be unpacked into a file in the data directory.
- *       The most common example is for use as a template.
- *   <li>Files in the data directory can also be used as a temporary cache. These files should be
- *       considered temporary and may need to be recreated (when upgrading or for use on different
- *       nodes in a cluster).
+ *   <li>Configuration is accessed using {@link ResourceStore#get(String)} which provides stream based access. If
+ *       required configuration can be unpacked into a file in the data directory. The most common example is for use as
+ *       a template.
+ *   <li>Files in the data directory can also be used as a temporary cache. These files should be considered temporary
+ *       and may need to be recreated (when upgrading or for use on different nodes in a cluster).
  *   <li>
  * </ul>
  *
- * <p>The {@link #baseDirectory} is a member of this path. Files and directories created by the
- * resource loader are made relative to {@link #baseDirectory}.
+ * <p>The {@link #baseDirectory} is a member of this path. Files and directories created by the resource loader are made
+ * relative to {@link #baseDirectory}.
  *
  * <pre>
  * <code>
@@ -55,16 +53,14 @@ import org.springframework.web.context.ServletContextAware;
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
-public class GeoServerResourceLoader extends DefaultResourceLoader
-        implements ResourceStore, ServletContextAware {
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.platform");
+public class GeoServerResourceLoader extends DefaultResourceLoader implements ResourceStore, ServletContextAware {
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.platform");
 
     /**
      * ResourceStore used for configuration resources.
      *
-     * <p>Initially this is configured to access resources in the base directory, however spring may
-     * inject an external implementation (jdbc database blob, github, ...).
+     * <p>Initially this is configured to access resources in the base directory, however spring may inject an external
+     * implementation (jdbc database blob, github, ...).
      */
     ResourceStore resources;
 
@@ -74,8 +70,8 @@ public class GeoServerResourceLoader extends DefaultResourceLoader
     /**
      * Creates a new resource loader (with no base directory).
      *
-     * <p>Used to construct a GeoServerResourceLoader for test cases (and is unable to create
-     * resources from relative paths.
+     * <p>Used to construct a GeoServerResourceLoader for test cases (and is unable to create resources from relative
+     * paths.
      */
     public GeoServerResourceLoader() {
         baseDirectory = null;
@@ -150,8 +146,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader
     }
 
     /**
-     * Used to look up resources based on user provided url (or path) using the Data Directory as
-     * base directory.
+     * Used to look up resources based on user provided url (or path) using the Data Directory as base directory.
      *
      * <p>Convenience method for Resources.fromURL(resources.get(Paths.BASE), url)
      *
@@ -162,8 +157,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader
     }
 
     /**
-     * Used to look up resources based on user provided url using the Data Directory as base
-     * directory.
+     * Used to look up resources based on user provided url using the Data Directory as base directory.
      *
      * <p>Convenience method for Resources.fromURL(resources.get(Paths.BASE), url)
      *
@@ -174,8 +168,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader
     }
 
     /**
-     * Used to look up resources based on user provided path using the Data Directory as base
-     * directory.
+     * Used to look up resources based on user provided path using the Data Directory as base directory.
      *
      * <p>Convenience method for Resources.fromPath(resources.get(Paths.BASE), path)
      *
@@ -189,8 +182,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader
      * Performs file lookup.
      *
      * @param location The name of the resource to lookup, can be absolute or relative.
-     * @return The file handle representing the resource, or null if the resource could not be
-     *     found.
+     * @return The file handle representing the resource, or null if the resource could not be found.
      * @throws IOException In the event of an I/O error.
      */
     public File find(String location) throws IOException {
@@ -203,17 +195,15 @@ public class GeoServerResourceLoader extends DefaultResourceLoader
      *
      * @param parentFile The containing directory, optionally null.
      * @param location The name of the resource to lookup, can be absolute or relative.
-     * @return The file handle representing the resource, or null if the resource could not be
-     *     found.
+     * @return The file handle representing the resource, or null if the resource could not be found.
      * @throws IOException In the event of an I/O error.
      */
     public File find(File parentFile, String location) throws IOException {
         if (LOGGER.isLoggable(Level.FINEST)) {
-            LOGGER.finest(
-                    "Looking up resource "
-                            + location
-                            + " with parent "
-                            + (parentFile != null ? parentFile.getPath() : "null"));
+            LOGGER.finest("Looking up resource "
+                    + location
+                    + " with parent "
+                    + (parentFile != null ? parentFile.getPath() : "null"));
         }
         Resource resource = get(Paths.convert(getBaseDirectory(), parentFile, location));
         return Resources.find(resource);
@@ -228,8 +218,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader
      * </pre>
      *
      * @param location The components of the path of the resource to lookup.
-     * @return The file handle representing the resource, or null if the resource could not be
-     *     found.
+     * @return The file handle representing the resource, or null if the resource could not be found.
      * @throws IOException Any I/O errors that occur.
      */
     public File find(String... location) throws IOException {
@@ -247,8 +236,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader
      *
      * @param parentFile The parent directory, may be null.
      * @param location The components of the path of the resource to lookup.
-     * @return The file handle representing the resource, or null if the resource could not be
-     *     found.
+     * @return The file handle representing the resource, or null if the resource could not be found.
      * @throws IOException Any I/O errors that occur.
      */
     public File find(File parentFile, String... location) throws IOException {
@@ -269,8 +257,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader
     /**
      * Performs a directory lookup, creating the file if it does not exist.
      *
-     * @param location The components of the path that make up the location of the directory to find
-     *     or create.
+     * @param location The components of the path that make up the location of the directory to find or create.
      */
     public File findOrCreateDirectory(String... location) throws IOException {
         Resource directory = get(Paths.path(location));
@@ -281,8 +268,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader
      * Performs a directory lookup, creating the file if it does not exist.
      *
      * @param parentFile The containing directory, possibly null.
-     * @param location The components of the path that make up the location of the directory to find
-     *     or create.
+     * @param location The components of the path that make up the location of the directory to find or create.
      */
     public File findOrCreateDirectory(File parentFile, String... location) throws IOException {
         Resource directory = get(Paths.convert(getBaseDirectory(), parentFile, location));
@@ -330,8 +316,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader
      * <p>Calls through to {@link #createDirectory(String)}
      *
      * @param parentFile The containing directory, possibly null.
-     * @param location The components of the path that make up the location of the directory to
-     *     create
+     * @param location The components of the path that make up the location of the directory to create
      * @return newly created directory
      */
     public File createDirectory(File parentFile, String... location) throws IOException {
@@ -342,8 +327,8 @@ public class GeoServerResourceLoader extends DefaultResourceLoader
     /**
      * Creates a new directory.
      *
-     * <p>Relative paths are created relative to {@link #baseDirectory}. If {@link #baseDirectory}
-     * is not set, an IOException is thrown.
+     * <p>Relative paths are created relative to {@link #baseDirectory}. If {@link #baseDirectory} is not set, an
+     * IOException is thrown.
      *
      * <p>If <code>location</code> already exists as a file, an IOException is thrown.
      *
@@ -358,8 +343,8 @@ public class GeoServerResourceLoader extends DefaultResourceLoader
     /**
      * Creates a new directory, optionally specifying a containing directory.
      *
-     * <p>Relative paths are created relative to {@link #baseDirectory}. If {@link #baseDirectory}
-     * is not set, an IOException is thrown.
+     * <p>Relative paths are created relative to {@link #baseDirectory}. If {@link #baseDirectory} is not set, an
+     * IOException is thrown.
      *
      * <p>If <code>location</code> already exists as a file, an IOException is thrown.
      *
@@ -437,9 +422,8 @@ public class GeoServerResourceLoader extends DefaultResourceLoader
     /**
      * Copies a resource located on the classpath to a specified path.
      *
-     * <p>The <tt>resource</tt> is obtained from teh context class loader of the current thread.
-     * When the <tt>to</tt> parameter is specified as a relative path it is considered to be
-     * relative to {@link #getBaseDirectory()}.
+     * <p>The <tt>resource</tt> is obtained from teh context class loader of the current thread. When the <tt>to</tt>
+     * parameter is specified as a relative path it is considered to be relative to {@link #getBaseDirectory()}.
      *
      * @param classpathResource The resource to copy.
      * @param location The destination to copy to.
@@ -466,8 +450,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader
      * @param target File to copy content into (must be already created)
      * @param scope Class used as base for classpathResource
      */
-    public void copyFromClassPath(String classpathResource, File target, Class<?> scope)
-            throws IOException {
+    public void copyFromClassPath(String classpathResource, File target, Class<?> scope) throws IOException {
 
         byte[] buffer = new byte[4096];
         int read;
@@ -475,41 +458,30 @@ public class GeoServerResourceLoader extends DefaultResourceLoader
                 OutputStream os = new FileOutputStream(target)) {
             while ((read = is.read(buffer)) > 0) os.write(buffer, 0, read);
         } catch (FileNotFoundException targetException) {
-            throw new IOException(
-                    "Can't write to file "
-                            + target.getAbsolutePath()
-                            + ". Check write permissions on target folder for user "
-                            + System.getProperty("user.name"));
+            throw new IOException("Can't write to file "
+                    + target.getAbsolutePath()
+                    + ". Check write permissions on target folder for user "
+                    + System.getProperty("user.name"));
         } catch (IOException e) {
             LOGGER.log(Level.FINE, "Unable to copy logging configuration file", e);
         }
     }
 
-    private InputStream getStreamFromResource(String classpathResource, Class<?> scope)
-            throws IOException {
+    private InputStream getStreamFromResource(String classpathResource, Class<?> scope) throws IOException {
         InputStream is = null;
         if (scope == null) {
-            is =
-                    Thread.currentThread()
-                            .getContextClassLoader()
-                            .getResourceAsStream(classpathResource);
+            is = Thread.currentThread().getContextClassLoader().getResourceAsStream(classpathResource);
             if (is == null) {
-                throw new IOException(
-                        "Could not load "
-                                + classpathResource
-                                + " from scope "
-                                + Thread.currentThread().getContextClassLoader().toString()
-                                + ".");
+                throw new IOException("Could not load "
+                        + classpathResource
+                        + " from scope "
+                        + Thread.currentThread().getContextClassLoader().toString()
+                        + ".");
             }
         } else {
             is = scope.getResourceAsStream(classpathResource);
             if (is == null) {
-                throw new IOException(
-                        "Could not load "
-                                + classpathResource
-                                + " from scope "
-                                + scope.toString()
-                                + ".");
+                throw new IOException("Could not load " + classpathResource + " from scope " + scope.toString() + ".");
             }
         }
 
@@ -517,24 +489,20 @@ public class GeoServerResourceLoader extends DefaultResourceLoader
     }
 
     /**
-     * Determines the location of the geoserver data directory based on the following lookup
-     * mechanism:
+     * Determines the location of the geoserver data directory based on the following lookup mechanism:
      *
      * <p>1) Java environment variable 2) Servlet context variable 3) System variable
      *
-     * <p>For each of these, the methods checks that 1) The path exists 2) Is a directory 3) Is
-     * writable. If none of the locatioons are suitable fall back to servlet data directory
+     * <p>For each of these, the methods checks that 1) The path exists 2) Is a directory 3) Is writable. If none of the
+     * locatioons are suitable fall back to servlet data directory
      *
      * @param servContext The servlet context.
-     * @return String The absolute path to the data directory, or <code>null</code> if it could not
-     *     be found.
+     * @return String The absolute path to the data directory, or {@code null} if it could not be found.
      */
     public static String lookupGeoServerDataDirectory(ServletContext servContext) {
 
         final String[] typeStrs = {
-            "Java environment variable ",
-            "Servlet context parameter ",
-            "System environment variable "
+            "Java environment variable ", "Servlet context parameter ", "System environment variable "
         };
 
         String requireFileVar = "GEOSERVER_REQUIRE_FILE";
@@ -611,8 +579,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader
     /**
      * Check that required files exist and throw {@link IllegalArgumentException} if they do not.
      *
-     * @param files either a single file name or a list of file names separated by {@link
-     *     File#pathSeparator}
+     * @param files either a single file name or a list of file names separated by {@link File#pathSeparator}
      * @param source description of source from which file name(s) obtained
      */
     static void requireFile(String files, String source) {

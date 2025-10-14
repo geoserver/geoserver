@@ -89,10 +89,8 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
         nextInternal();
 
         this.outputRecordDescriptor = outputRecordDescriptor;
-        builder =
-                new GenericRecordBuilder(
-                        outputRecordDescriptor,
-                        outputRecordDescriptor.getQueryablesMapping(mapping.getMappingName()));
+        builder = new GenericRecordBuilder(
+                outputRecordDescriptor, outputRecordDescriptor.getQueryablesMapping(mapping.getMappingName()));
     }
 
     @Override
@@ -106,8 +104,8 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
 
         if (it.hasNext()) {
             next = it.next();
-            if (next instanceof LayerInfo) {
-                next = ((LayerInfo) next).getResource();
+            if (next instanceof LayerInfo info) {
+                next = info.getResource();
             }
         } else {
             next = null;
@@ -124,8 +122,8 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
 
         CatalogInfo info = nextInternal();
 
-        if (info instanceof ResourceInfo) {
-            return convertToFeature((ResourceInfo) info);
+        if (info instanceof ResourceInfo resourceInfo) {
+            return convertToFeature(resourceInfo);
         } else {
             return convertToFeature((LayerGroupInfo) info);
         }
@@ -139,9 +137,8 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
                 value = mappingElement.getContent().evaluate(resource);
 
                 if (value != null || mappingElement.isRequired()) {
-                    if (value instanceof Collection) {
-                        List<Object> elements =
-                                interpolate(interpolationProperties, (Collection<?>) value);
+                    if (value instanceof Collection<?> collection) {
+                        List<Object> elements = interpolate(interpolationProperties, collection);
                         if (elements != null) {
                             builder.addElement(
                                     mappingElement.getKey(),
@@ -161,11 +158,7 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
 
             } catch (IllegalArgumentException e) {
                 throw new IllegalArgumentException(
-                        "Failed mapping property '"
-                                + mappingElement.getKey()
-                                + "': "
-                                + e.getMessage(),
-                        e);
+                        "Failed mapping property '" + mappingElement.getKey() + "': " + e.getMessage(), e);
             }
         }
         return id;
@@ -176,30 +169,27 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
         FeatureCustomizer customizer = null;
 
         // DirectDownload capability is only checked for Coverage layers
-        if (info instanceof CoverageInfo) {
-            CoverageInfo coverageInfo = (CoverageInfo) info;
+        if (info instanceof CoverageInfo coverageInfo) {
             MetadataMap metadata = coverageInfo.getMetadata();
 
             boolean directDownloadEnabled = false;
             // Look for specific settings for this layer
-            DirectDownloadSettings settings =
-                    DirectDownloadSettings.getSettingsFromMetadata(
-                            metadata,
-                            GeoServerExtensions.bean(GeoServer.class).getService(CSWInfo.class));
+            DirectDownloadSettings settings = DirectDownloadSettings.getSettingsFromMetadata(
+                    metadata, GeoServerExtensions.bean(GeoServer.class).getService(CSWInfo.class));
             if (settings != null) {
                 directDownloadEnabled = settings.isDirectDownloadEnabled();
             }
 
             if (directDownloadEnabled) {
-                String typeName = outputRecordDescriptor.getFeatureType().getName().getLocalPart();
+                String typeName =
+                        outputRecordDescriptor.getFeatureType().getName().getLocalPart();
                 // customizer = FeatureCustomizer.getCustomizer(typeName);
                 customizer = FeatureCustomizer.getCustomizer(typeName);
                 if (customizer == null) {
                     if (LOGGER.isLoggable(Level.WARNING)) {
-                        LOGGER.warning(
-                                "No Mapping customizer have been found for "
-                                        + typeName
-                                        + ". Mapping customizations will not be made");
+                        LOGGER.warning("No Mapping customizer have been found for "
+                                + typeName
+                                + ". Mapping customizations will not be made");
                     }
                 }
             }
@@ -250,8 +240,7 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
 
             return builder.build(id);
         } catch (IllegalArgumentException e) {
-            String message =
-                    "Error mapping layer group " + resource.getName() + ": " + e.getMessage();
+            String message = "Error mapping layer group " + resource.getName() + ": " + e.getMessage();
             LOGGER.log(Level.SEVERE, message, e);
             throw new IllegalArgumentException(message, e);
         }
@@ -263,8 +252,7 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
     }
 
     /** Pattern to match a property to be substituted. Note the reluctant quantifier. */
-    protected static final Pattern PROPERTY_INTERPOLATION_PATTERN =
-            Pattern.compile("\\$\\{(.+?)\\}");
+    protected static final Pattern PROPERTY_INTERPOLATION_PATTERN = Pattern.compile("\\$\\{(.+?)\\}");
 
     protected static String interpolate(Map<String, String> properties, String input) {
         String result = input;
@@ -273,8 +261,7 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
             String propertyName = matcher.group(1);
             String propertyValue = properties.get(propertyName);
             if (propertyValue == null) {
-                throw new RuntimeException(
-                        "Interpolation failed for missing property " + propertyName);
+                throw new RuntimeException("Interpolation failed for missing property " + propertyName);
             } else {
                 result = result.replace(matcher.group(), propertyValue).trim();
                 matcher.reset(result);
@@ -288,8 +275,8 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
             List<Object> elements = new ArrayList<>();
             for (Object element : value) {
                 Object result = null;
-                if (element instanceof Collection<?>) {
-                    result = interpolate(properties, (Collection<?>) element);
+                if (element instanceof Collection<?> collection) {
+                    result = interpolate(properties, collection);
                 } else if (element != null) {
                     result = interpolate(properties, element.toString());
                 }

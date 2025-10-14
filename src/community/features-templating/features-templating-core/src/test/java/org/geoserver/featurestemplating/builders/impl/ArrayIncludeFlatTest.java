@@ -44,8 +44,7 @@ public class ArrayIncludeFlatTest {
     private static final String ARRAY_METADATA =
             "{\"array\":[1,2,3,4], \"anotherArray\":[\"one\",\"two\",\"three\",\"four\"]}";
 
-    private static final String BASE_WITH_NULL =
-            "[\"someStaticValue\",\"$includeFlat{${nullNode}!}\"]";
+    private static final String BASE_WITH_NULL = "[\"someStaticValue\",\"$includeFlat{${nullNode}!}\"]";
 
     private SimpleFeature jsonFieldSimpleFeature;
 
@@ -57,12 +56,8 @@ public class ArrayIncludeFlatTest {
         tb.add("nullNode", String.class);
         tb.setName("jsonFieldSimpleType");
         SimpleFeatureType schema = tb.buildFeatureType();
-        schema.getDescriptor("jsonNode")
-                .getUserData()
-                .put(JDBCDataStore.JDBC_NATIVE_TYPENAME, "json");
-        schema.getDescriptor("nullNode")
-                .getUserData()
-                .put(JDBCDataStore.JDBC_NATIVE_TYPENAME, "json");
+        schema.getDescriptor("jsonNode").getUserData().put(JDBCDataStore.JDBC_NATIVE_TYPENAME, "json");
+        schema.getDescriptor("nullNode").getUserData().put(JDBCDataStore.JDBC_NATIVE_TYPENAME, "json");
 
         SimpleFeatureBuilder fb = new SimpleFeatureBuilder(schema);
         fb.add(ARRAY_METADATA);
@@ -73,11 +68,8 @@ public class ArrayIncludeFlatTest {
     public void testArrayIncludeFlat() throws Exception {
         List<String> validArrayFields =
                 Arrays.asList("one", "two", "three", "four", "1", "2", "3", "4", "someStaticValue");
-        JsonNode node =
-                new ObjectMapper(new JsonFactory().enable(JsonParser.Feature.ALLOW_COMMENTS))
-                        .readTree(BASE);
-        TemplateReaderConfiguration configuration =
-                new TemplateReaderConfiguration(new NamespaceSupport());
+        JsonNode node = new ObjectMapper(new JsonFactory().enable(JsonParser.Feature.ALLOW_COMMENTS)).readTree(BASE);
+        TemplateReaderConfiguration configuration = new TemplateReaderConfiguration(new NamespaceSupport());
         JSONTemplateReader templateReader = templateReader(node, configuration);
         CompositeBuilder builder = new CompositeBuilder(null, new NamespaceSupport(), false);
         templateReader.getBuilderFromJson("array", node, builder, configuration.getBuilderMaker());
@@ -95,10 +87,8 @@ public class ArrayIncludeFlatTest {
     public void testArrayIncludeFlatWithNull() throws Exception {
         List<String> validArrayFields = Arrays.asList("null", "someStaticValue");
         JsonNode node =
-                new ObjectMapper(new JsonFactory().enable(JsonParser.Feature.ALLOW_COMMENTS))
-                        .readTree(BASE_WITH_NULL);
-        TemplateReaderConfiguration configuration =
-                new TemplateReaderConfiguration(new NamespaceSupport());
+                new ObjectMapper(new JsonFactory().enable(JsonParser.Feature.ALLOW_COMMENTS)).readTree(BASE_WITH_NULL);
+        TemplateReaderConfiguration configuration = new TemplateReaderConfiguration(new NamespaceSupport());
         JSONTemplateReader templateReader = templateReader(node, configuration);
         CompositeBuilder builder = new CompositeBuilder(null, new NamespaceSupport(), false);
         templateReader.getBuilderFromJson("array", node, builder, configuration.getBuilderMaker());
@@ -120,18 +110,14 @@ public class ArrayIncludeFlatTest {
         return new ObjectMapper().readTree(new String(baos.toByteArray()));
     }
 
-    private JSONTemplateReader templateReader(
-            JsonNode node, TemplateReaderConfiguration configuration) {
-        JSONTemplateReader templateReader =
-                new JSONTemplateReader(node, configuration, Collections.emptyList());
+    private JSONTemplateReader templateReader(JsonNode node, TemplateReaderConfiguration configuration) {
+        JSONTemplateReader templateReader = new JSONTemplateReader(node, configuration, Collections.emptyList());
         return templateReader;
     }
 
     private TemplateOutputWriter writer(OutputStream stream) throws IOException {
-        GeoJSONWriter writer =
-                new GeoJSONWriter(
-                        new JsonFactory().createGenerator(stream, JsonEncoding.UTF8),
-                        TemplateIdentifier.JSON);
+        GeoJSONWriter writer = new GeoJSONWriter(
+                new JsonFactory().createGenerator(stream, JsonEncoding.UTF8), TemplateIdentifier.JSON);
         return writer;
     }
 }

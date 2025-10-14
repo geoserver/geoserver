@@ -23,7 +23,7 @@ public interface SettingsInfo extends Info {
      *
      * <p>Will be null for global settings: {@link GeoServerInfo#getSettings()}
      *
-     * @return A workspace, or <code>null</code>.
+     * @return A workspace, or {@code null}.
      */
     WorkspaceInfo getWorkspace();
 
@@ -55,14 +55,14 @@ public interface SettingsInfo extends Info {
     void setNumDecimals(int numDecimals);
 
     /**
-     * Provider web site used for default contact information, or service provider information if
-     * user has not filled in contact details.
+     * Provider web site used for default contact information, or service provider information if user has not filled in
+     * contact details.
      */
     String getOnlineResource();
 
     /**
-     * Provider web site used for default contact information, or service provider information if
-     * user has not filled in contact details.
+     * Provider web site used for default contact information, or service provider information if user has not filled in
+     * contact details.
      *
      * @param onlineResource Provider website
      */
@@ -71,8 +71,7 @@ public interface SettingsInfo extends Info {
     /**
      * The url of a proxy in front of the GeoServer instance.
      *
-     * <p>This value is used when a reference back to the GeoServer instance must be made in a
-     * response.
+     * <p>This value is used when a reference back to the GeoServer instance must be made in a response.
      */
     String getProxyBaseUrl();
 
@@ -82,24 +81,22 @@ public interface SettingsInfo extends Info {
     /** The base url to use when including a reference to an xml schema document in a response. */
     String getSchemaBaseUrl();
 
-    /**
-     * Sets the base url to use when including a reference to an xml schema document in a response.
-     */
+    /** Sets the base url to use when including a reference to an xml schema document in a response. */
     void setSchemaBaseUrl(String schemaBaseUrl);
 
     /**
      * Sets indent level for XML output, causing output to be more verbose.
      *
-     * <p>Then set to false GeoServer will also take step so to strip out some formating and produce
-     * more condensed output.
+     * <p>Then set to false GeoServer will also take step so to strip out some formating and produce more condensed
+     * output.
      */
     boolean isVerbose();
 
     /**
      * Sets indent level for XML output, causing output to be more verbose.
      *
-     * <p>Then set to false GeoServer will also take step so to strip out some formating and produce
-     * more condensed output.
+     * <p>Then set to false GeoServer will also take step so to strip out some formating and produce more condensed
+     * output.
      */
     void setVerbose(boolean verbose);
 
@@ -127,11 +124,9 @@ public interface SettingsInfo extends Info {
     boolean isLocalWorkspaceIncludesPrefix();
 
     /**
-     * Set whether or not a local workspace should keep namespace prefixes in the getCapabilities
-     * etc...
+     * Set whether or not a local workspace should keep namespace prefixes in the getCapabilities etc...
      *
-     * @param includePrefix if true then the prefixes will be kept, default behaviour is to remove
-     *     it.
+     * @param includePrefix if true then the prefixes will be kept, default behaviour is to remove it.
      */
     void setLocalWorkspaceIncludesPrefix(boolean includePrefix);
 
@@ -142,6 +137,10 @@ public interface SettingsInfo extends Info {
     public boolean isShowModifiedTimeColumnsInAdminList();
 
     public void setShowModifiedTimeColumnsInAdminList(boolean showModifiedTimeColumnsInAdminList);
+
+    public boolean isShowModifiedUserInAdminList();
+
+    public void setShowModifiedUserInAdminList(boolean showModifiedUserInAdminList);
 
     /**
      * Get the default Locale

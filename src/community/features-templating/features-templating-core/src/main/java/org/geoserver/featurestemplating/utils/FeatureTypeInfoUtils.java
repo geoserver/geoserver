@@ -22,12 +22,10 @@ public class FeatureTypeInfoUtils {
      * @param collection the FeatureCollection for which retrieve the FeatureTypeInfo.
      * @return the FeatureTypeInfo.
      */
-    public static FeatureTypeInfo getFeatureTypeInfo(
-            Catalog catalog, FeatureCollection collection) {
-        if (collection instanceof TypeInfoCollectionWrapper)
-            return ((TypeInfoCollectionWrapper) collection).getFeatureTypeInfo();
-        else if (collection instanceof FeatureCollectionDecorator)
-            return getFeatureTypeInfo(catalog, ((FeatureCollectionDecorator) collection).getName());
+    public static FeatureTypeInfo getFeatureTypeInfo(Catalog catalog, FeatureCollection collection) {
+        if (collection instanceof TypeInfoCollectionWrapper wrapper) return wrapper.getFeatureTypeInfo();
+        else if (collection instanceof FeatureCollectionDecorator decorator)
+            return getFeatureTypeInfo(catalog, decorator.getName());
         else return getFeatureTypeInfo(catalog, collection.getSchema().getName());
     }
 
@@ -42,9 +40,7 @@ public class FeatureTypeInfoUtils {
         FeatureTypeInfo featureType = catalog.getFeatureTypeByName(collectionId);
         if (featureType == null) {
             throw new ServiceException(
-                    "Unknown collection " + collectionId,
-                    ServiceException.INVALID_PARAMETER_VALUE,
-                    "collectionId");
+                    "Unknown collection " + collectionId, ServiceException.INVALID_PARAMETER_VALUE, "collectionId");
         }
         return featureType;
     }

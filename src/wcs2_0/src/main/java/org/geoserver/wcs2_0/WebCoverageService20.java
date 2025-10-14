@@ -17,19 +17,18 @@ import org.geotools.xml.transform.TransformerBase;
 /**
  * Web Coverage Services interface.
  *
- * <p>Each of the methods on this class corresponds to an operation as defined by the Web Coverage
- * Specification. See {@link "http://www.opengeospatial.org/standards/wcs"} for more details.
+ * <p>Each of the methods on this class corresponds to an operation as defined by the Web Coverage Specification. See
+ * {@see "http://www.opengeospatial.org/standards/wcs"} for more details.
  *
  * @author Emanuele Tajariol (etj) - GeoSolutions
  */
 public interface WebCoverageService20 {
 
     /**
-     * A key that can be be used to identify the originating CoverageInfo attached to the output
-     * GridCoverage, which can be used to retrieve extra metadata about the coverage
+     * A key that can be be used to identify the originating CoverageInfo attached to the output GridCoverage, which can
+     * be used to retrieve extra metadata about the coverage
      */
-    public static final String ORIGINATING_COVERAGE_INFO =
-            "org.geoserver.wcs.originatingCoverageInfo";
+    public static final String ORIGINATING_COVERAGE_INFO = "org.geoserver.wcs.originatingCoverageInfo";
 
     /** WCS service info. */
     WCSInfo getServiceInfo();
@@ -40,10 +39,7 @@ public interface WebCoverageService20 {
     /** DescribeCoverage operation. */
     WCS20DescribeCoverageTransformer describeCoverage(DescribeCoverageType request);
 
-    /**
-     * The WCS EO desscribe coverage set operation (available only if the wcs-eo plugin is
-     * installed)
-     */
+    /** The WCS EO desscribe coverage set operation (available only if the wcs-eo plugin is installed) */
     TransformerBase describeEOCoverageSet(DescribeEOCoverageSetType request);
 
     /** GetCoverage operation. */

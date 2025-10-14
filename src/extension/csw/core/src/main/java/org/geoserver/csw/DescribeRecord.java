@@ -30,20 +30,19 @@ public class DescribeRecord {
     static final Logger LOGGER = Logging.getLogger(DescribeRecord.class);
 
     /**
-     * In case we make the schema languages pluggable we'll have to check what we actually support,
-     * for the moment here is a set of different ways to refer to XML schema
+     * In case we make the schema languages pluggable we'll have to check what we actually support, for the moment here
+     * is a set of different ways to refer to XML schema
      */
-    static final Set<String> SUPPORTED_SCHEMA_LANGUAGES =
-            new HashSet<>() {
-                /** */
-                private static final long serialVersionUID = -7972590028331744087L;
+    static final Set<String> SUPPORTED_SCHEMA_LANGUAGES = new HashSet<>() {
+        /** */
+        private static final long serialVersionUID = -7972590028331744087L;
 
-                {
-                    add("XMLSCHEMA");
-                    add("http://www.w3.org/2001/XMLSchema");
-                    add("http://www.w3.org/XML/Schema");
-                }
-            };
+        {
+            add("XMLSCHEMA");
+            add("http://www.w3.org/2001/XMLSchema");
+            add("http://www.w3.org/XML/Schema");
+        }
+    };
 
     CSWInfo csw;
 
@@ -83,8 +82,7 @@ public class DescribeRecord {
                 for (QName name : request.getTypeName()) {
                     requested.add(name.getLocalPart());
                 }
-                AttributeDescriptor[] descriptors =
-                        getFeatureDescriptors(store.getRecordDescriptors());
+                AttributeDescriptor[] descriptors = getFeatureDescriptors(store.getRecordDescriptors());
                 for (AttributeDescriptor descriptor : descriptors) {
                     // convert the feature type name to a QName and check if it was requested
                     String typeName = descriptor.getName().getLocalPart();
@@ -96,17 +94,14 @@ public class DescribeRecord {
                 // we could be left with some extra feature types, the spec says we should not
                 // complain and just return the ones we have (eventually an empty document)
                 if (!requested.isEmpty()) {
-                    LOGGER.log(
-                            Level.FINE,
-                            "Failed to locate feature types " + requested + ", ignoring them");
+                    LOGGER.log(Level.FINE, "Failed to locate feature types " + requested + ", ignoring them");
                 }
 
                 return result.toArray(new AttributeDescriptor[result.size()]);
             }
         } catch (IOException e) {
             throw new ServiceException(
-                    "Failed to retrieve the feature type schemas",
-                    ServiceException.NO_APPLICABLE_CODE);
+                    "Failed to retrieve the feature type schemas", ServiceException.NO_APPLICABLE_CODE);
         }
     }
 }

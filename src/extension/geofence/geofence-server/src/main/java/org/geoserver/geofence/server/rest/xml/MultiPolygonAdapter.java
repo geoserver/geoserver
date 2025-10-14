@@ -40,12 +40,13 @@ public class MultiPolygonAdapter extends XmlAdapter<Object, MultiPolygon> {
     @Override
     public MultiPolygon unmarshal(Object o) throws Exception {
         try {
-            Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+            Document doc =
+                    DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
             doc.appendChild(doc.importNode(((Element) o).getFirstChild(), true));
             DOMParser parser = new DOMParser(new GMLConfiguration(), doc);
             Geometry geom = (Geometry) parser.parse();
-            if (geom instanceof Polygon) {
-                return new MultiPolygon(new Polygon[] {(Polygon) geom}, geom.getFactory());
+            if (geom instanceof Polygon polygon) {
+                return new MultiPolygon(new Polygon[] {polygon}, geom.getFactory());
             } else if (geom instanceof GeometryCollection) {
                 Polygon[] pols = new Polygon[geom.getNumGeometries()];
                 for (int i = 0; i < pols.length; i++) {

@@ -7,6 +7,7 @@ package org.geoserver.security.web.cas;
 
 import static org.geoserver.security.cas.CasAuthenticationFilterConfig.CasSpecificRoleSource.CustomAttribute;
 
+import java.io.Serial;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -42,9 +43,9 @@ import org.geotools.util.logging.Logging;
  * @author mcr
  */
 // TODO WICKET8 - Verify this page works OK
-public class CasAuthFilterPanel
-        extends PreAuthenticatedUserNameFilterPanel<CasAuthenticationFilterConfig> {
+public class CasAuthFilterPanel extends PreAuthenticatedUserNameFilterPanel<CasAuthenticationFilterConfig> {
 
+    @Serial
     private static final long serialVersionUID = 1;
 
     static Logger LOGGER = Logging.getLogger("org.geoserver.security");
@@ -70,16 +71,11 @@ public class CasAuthFilterPanel
                     protected void onSubmit(AjaxRequestTarget target) {
                         try {
                             testURL("casServerUrlPrefix", GeoServerCasConstants.LOGOUT_URI);
-                            info(
-                                    new StringResourceModel(
-                                                    "casConnectionSuccessful",
-                                                    CasAuthFilterPanel.this,
-                                                    null)
-                                            .getObject());
+                            info(new StringResourceModel("casConnectionSuccessful", CasAuthFilterPanel.this, null)
+                                    .getObject());
                         } catch (Exception e) {
                             error(e);
-                            ((GeoServerBasePage) getPage())
-                                    .addFeedbackPanels(target); // to display message
+                            ((GeoServerBasePage) getPage()).addFeedbackPanels(target); // to display message
                             LOGGER.log(Level.WARNING, "CAS connection error ", e);
                         }
                     }
@@ -91,16 +87,11 @@ public class CasAuthFilterPanel
                     protected void onSubmit(AjaxRequestTarget target) {
                         try {
                             testURL("proxyCallbackUrlPrefix", null);
-                            info(
-                                    new StringResourceModel(
-                                                    "casProxyCallbackSuccessful",
-                                                    CasAuthFilterPanel.this,
-                                                    null)
-                                            .getObject());
+                            info(new StringResourceModel("casProxyCallbackSuccessful", CasAuthFilterPanel.this, null)
+                                    .getObject());
                         } catch (Exception e) {
                             error(e);
-                            ((GeoServerBasePage) getPage())
-                                    .addFeedbackPanels(target); // to display message
+                            ((GeoServerBasePage) getPage()).addFeedbackPanels(target); // to display message
                             LOGGER.log(Level.WARNING, "CAS proxy callback  error ", e);
                         }
                     }
@@ -116,16 +107,11 @@ public class CasAuthFilterPanel
                     protected void onSubmit(AjaxRequestTarget target) {
                         try {
                             testURL("urlInCasLogoutPage", null);
-                            info(
-                                    new StringResourceModel(
-                                                    "urlInCasLogoutPageSuccessful",
-                                                    CasAuthFilterPanel.this,
-                                                    null)
-                                            .getObject());
+                            info(new StringResourceModel("urlInCasLogoutPageSuccessful", CasAuthFilterPanel.this, null)
+                                    .getObject());
                         } catch (Exception e) {
                             error(e);
-                            ((GeoServerBasePage) getPage())
-                                    .addFeedbackPanels(target); // to display message
+                            ((GeoServerBasePage) getPage()).addFeedbackPanels(target); // to display message
                             LOGGER.log(Level.WARNING, "CAs url in logout page error ", e);
                         }
                     }
@@ -153,8 +139,7 @@ public class CasAuthFilterPanel
 
     @Override
     protected DropDownChoice<RoleSource> createRoleSourceDropDown() {
-        List<RoleSource> sources =
-                new ArrayList<>(Arrays.asList(PreAuthenticatedUserNameRoleSource.values()));
+        List<RoleSource> sources = new ArrayList<>(Arrays.asList(PreAuthenticatedUserNameRoleSource.values()));
         sources.addAll(Arrays.asList(CasAuthenticationFilterConfig.CasSpecificRoleSource.values()));
         return new DropDownChoice<>("roleSource", sources, new RoleSourceChoiceRenderer());
     }

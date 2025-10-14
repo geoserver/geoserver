@@ -37,7 +37,6 @@ import org.w3c.dom.Document;
  * Unit test suite for {@link GetCapabilitiesResponse}
  *
  * @author Simone Giannecchini - GeoSolutions
- * @version $Id$
  */
 public class GetCapabilitiesReponseTest extends WMSTestSupport {
 
@@ -47,16 +46,12 @@ public class GetCapabilitiesReponseTest extends WMSTestSupport {
         String request = "wms?version=1.1.1&request=GetCapabilities&service=WMS";
         MockHttpServletResponse result = getAsServletResponse(request);
         Assert.assertTrue(result.containsHeader("content-disposition"));
-        Assert.assertEquals(
-                "inline; filename=getcapabilities_1.1.1.xml",
-                result.getHeader("content-disposition"));
+        Assert.assertEquals("inline; filename=getcapabilities_1.1.1.xml", result.getHeader("content-disposition"));
 
         request = "wms?version=1.3.0&request=GetCapabilities&service=WMS";
         result = getAsServletResponse(request);
         Assert.assertTrue(result.containsHeader("content-disposition"));
-        Assert.assertEquals(
-                "inline; filename=getcapabilities_1.3.0.xml",
-                result.getHeader("content-disposition"));
+        Assert.assertEquals("inline; filename=getcapabilities_1.3.0.xml", result.getHeader("content-disposition"));
     }
 
     @Test
@@ -110,10 +105,9 @@ public class GetCapabilitiesReponseTest extends WMSTestSupport {
         info.setInternationalAbstract(_abstract);
         geoServer.save(info);
 
-        String request =
-                "wms?version=1.1.1&request=GetCapabilities&service=WMS&"
-                        + "AcceptLanguages="
-                        + Locale.ENGLISH.getLanguage();
+        String request = "wms?version=1.1.1&request=GetCapabilities&service=WMS&"
+                + "AcceptLanguages="
+                + Locale.ENGLISH.getLanguage();
         Document result = getAsDOM(request);
 
         String service = "/WMT_MS_Capabilities/Service";
@@ -122,13 +116,11 @@ public class GetCapabilitiesReponseTest extends WMSTestSupport {
 
         String fifteenLayer = "/WMT_MS_Capabilities/Capability/Layer/Layer[Name = 'cdf:Fifteen']";
         assertXpathEvaluatesTo("a i18n title for layer fifteen", fifteenLayer + "/Title", result);
-        assertXpathEvaluatesTo(
-                "a i18n abstract for layer fifteen", fifteenLayer + "/Abstract", result);
+        assertXpathEvaluatesTo("a i18n abstract for layer fifteen", fifteenLayer + "/Abstract", result);
 
         String natureGroup = "/WMT_MS_Capabilities/Capability/Layer/Layer/Layer[Name = 'nature']";
         assertXpathEvaluatesTo("a i18n title for group nature", natureGroup + "/Title", result);
-        assertXpathEvaluatesTo(
-                "a i18n abstract for group nature", natureGroup + "/Abstract", result);
+        assertXpathEvaluatesTo("a i18n abstract for group nature", natureGroup + "/Abstract", result);
 
         assertXpathEvaluatesTo("english keyword", natureGroup + "/KeywordList/Keyword", result);
 
@@ -179,11 +171,10 @@ public class GetCapabilitiesReponseTest extends WMSTestSupport {
         // we put both fr and *. Content for fr is not available but since a * is present the
         // available one in it
         // will be returned in capabilities
-        String request =
-                "wms?version=1.1.1&request=GetCapabilities&service=WMS&"
-                        + "AcceptLanguages="
-                        + Locale.FRENCH.getLanguage()
-                        + " *";
+        String request = "wms?version=1.1.1&request=GetCapabilities&service=WMS&"
+                + "AcceptLanguages="
+                + Locale.FRENCH.getLanguage()
+                + " *";
         Document result = getAsDOM(request);
 
         String service = "/WMT_MS_Capabilities/Service";
@@ -223,9 +214,7 @@ public class GetCapabilitiesReponseTest extends WMSTestSupport {
         global.getSettings().getContact().setOnlineResource("");
         geoServer.save(global);
 
-        Document dom =
-                getAsDOM(
-                        "wms?version=1.1.1&request=GetCapabilities&service=WMS&AcceptLanguages=it");
+        Document dom = getAsDOM("wms?version=1.1.1&request=GetCapabilities&service=WMS&AcceptLanguages=it");
 
         assertXpathEvaluatesTo(
                 "http://localhost:8080/geoserver/?Language=it",
@@ -260,8 +249,7 @@ public class GetCapabilitiesReponseTest extends WMSTestSupport {
 
             Document dom = getAsDOM("wms?version=1.1.1&request=GetCapabilities&service=WMS");
 
-            String fifteenLayer =
-                    "/WMT_MS_Capabilities/Capability/Layer/Layer[Name = 'cdf:Fifteen']";
+            String fifteenLayer = "/WMT_MS_Capabilities/Capability/Layer/Layer[Name = 'cdf:Fifteen']";
             assertXpathEvaluatesTo("null locale title", fifteenLayer + "/Title", dom);
             assertXpathEvaluatesTo("null locale abstract", fifteenLayer + "/Abstract", dom);
         } finally {
@@ -333,20 +321,16 @@ public class GetCapabilitiesReponseTest extends WMSTestSupport {
             global.getSettings().setContact(contactInfo);
             getGeoServer().save(global);
 
-            Document doc =
-                    getAsDOM(
-                            "wms?version=1.1.1&request=GetCapabilities&service=WMS&AcceptLanguages=en");
+            Document doc = getAsDOM("wms?version=1.1.1&request=GetCapabilities&service=WMS&AcceptLanguages=en");
             String contactInf = "//ContactInformation";
             String primary = contactInf + "/ContactPersonPrimary";
 
-            assertXpathEvaluatesTo(
-                    "I'm an english organization", primary + "/ContactOrganization", doc);
+            assertXpathEvaluatesTo("I'm an english organization", primary + "/ContactOrganization", doc);
             assertXpathEvaluatesTo("I'm an english person", primary + "/ContactPerson", doc);
             assertXpathEvaluatesTo("Cartographer", contactInf + "/ContactPosition", doc);
             assertXpathEvaluatesTo("02304566607", contactInf + "/ContactVoiceTelephone", doc);
             assertXpathEvaluatesTo("0023030948", contactInf + "/ContactFacsimileTelephone", doc);
-            assertXpathEvaluatesTo(
-                    "english@person.com", contactInf + "/ContactElectronicMailAddress", doc);
+            assertXpathEvaluatesTo("english@person.com", contactInf + "/ContactElectronicMailAddress", doc);
 
             String addrInfo = contactInf + "/ContactAddress";
 
@@ -381,8 +365,7 @@ public class GetCapabilitiesReponseTest extends WMSTestSupport {
             String request = "wms?version=1.1.1&request=GetCapabilities&service=WMS";
             Document result = getAsDOM(request);
 
-            String groupStyleEl =
-                    "//Layer[Name = '" + layerGroupName + "']/Style[Name = 'group-style-name']";
+            String groupStyleEl = "//Layer[Name = '" + layerGroupName + "']/Style[Name = 'group-style-name']";
             assertXpathExists(groupStyleEl, result);
         } finally {
             if (groupInfo != null) catalog.remove(groupInfo);
@@ -395,8 +378,7 @@ public class GetCapabilitiesReponseTest extends WMSTestSupport {
         LayerGroupInfo groupInfo = null;
         try {
             String layerGroupName = "test_group_style";
-            createLakesPlacesLayerGroup(
-                    catalog, layerGroupName, LayerGroupInfo.Mode.OPAQUE_CONTAINER, null);
+            createLakesPlacesLayerGroup(catalog, layerGroupName, LayerGroupInfo.Mode.OPAQUE_CONTAINER, null);
             groupInfo = catalog.getLayerGroupByName(layerGroupName);
             LayerGroupStyle groupStyle = new LayerGroupStyleImpl();
             StyleInfo groupStyleName = new StyleInfoImpl(catalog);
@@ -409,8 +391,7 @@ public class GetCapabilitiesReponseTest extends WMSTestSupport {
             String request = "wms?version=1.1.1&request=GetCapabilities&service=WMS";
             Document result = getAsDOM(request);
 
-            String groupStyleEl =
-                    "//Layer[Name = '" + layerGroupName + "']/Style[Name = 'group-style-name']";
+            String groupStyleEl = "//Layer[Name = '" + layerGroupName + "']/Style[Name = 'group-style-name']";
             assertXpathExists(groupStyleEl, result);
         } finally {
             if (groupInfo != null) catalog.remove(groupInfo);
@@ -436,8 +417,7 @@ public class GetCapabilitiesReponseTest extends WMSTestSupport {
             String request = "wms?version=1.1.1&request=GetCapabilities&service=WMS";
             Document result = getAsDOM(request);
 
-            String groupStyleEl =
-                    "//Layer[Name = '" + layerGroupName + "']/Style[Name = 'group-style-name']";
+            String groupStyleEl = "//Layer[Name = '" + layerGroupName + "']/Style[Name = 'group-style-name']";
             assertXpathNotExists(groupStyleEl, result);
         } finally {
             if (groupInfo != null) catalog.remove(groupInfo);
@@ -455,5 +435,12 @@ public class GetCapabilitiesReponseTest extends WMSTestSupport {
         // same goes with the Mars POI layer
         assertXpathExists("//Layer[Name='MarsPoi']/SRS[text()='IAU:49900']", dom);
         assertXpathExists("//Layer[Name='MarsPoi']/BoundingBox[@SRS='IAU:49900']", dom);
+    }
+
+    @Test
+    public void testWmtVer() throws Exception {
+        // legacy wmtver support (WMS 1.0), 1.0.0 should be found in the generated document (CITE tests check it)
+        Document dom = getAsDOM("wms?request=GetCapabilities&wmtver=1.0.0&service=WMS");
+        assertXpathEvaluatesTo("1.0.0", "/WMT_MS_Capabilities/@version", dom);
     }
 }

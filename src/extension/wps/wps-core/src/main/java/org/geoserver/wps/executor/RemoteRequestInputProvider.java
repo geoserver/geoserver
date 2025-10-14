@@ -55,8 +55,7 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
 
     private long maxSize;
 
-    public RemoteRequestInputProvider(
-            InputType input, ComplexPPIO ppio, int timeout, long maxSize) {
+    public RemoteRequestInputProvider(InputType input, ComplexPPIO ppio, int timeout, long maxSize) {
         super(input, ppio);
         this.timeout = timeout;
         this.complexPPIO = ppio;
@@ -87,11 +86,10 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
             if (result != null && !complexPPIO.getType().isInstance(result)) {
                 // Some text parsers return a Map when it can not be converted to
                 // the proper type.  Detect those errors here rather than later.
-                throw new IllegalArgumentException(
-                        "Decoded result is not a "
-                                + complexPPIO.getType().getName()
-                                + ", got a: "
-                                + result.getClass().getName());
+                throw new IllegalArgumentException("Decoded result is not a "
+                        + complexPPIO.getType().getName()
+                        + ", got a: "
+                        + result.getClass().getName());
             }
             return result;
         } catch (WPSException e) {
@@ -115,8 +113,10 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
             return null;
         }
         // build a new client with the configured timeout
-        RequestConfig config =
-                RequestConfig.custom().setConnectTimeout(timeout).setSocketTimeout(timeout).build();
+        RequestConfig config = RequestConfig.custom()
+                .setConnectTimeout(timeout)
+                .setSocketTimeout(timeout)
+                .build();
         return HttpClients.custom()
                 .disableAutomaticRetries()
                 .disableRedirectHandling()
@@ -136,8 +136,7 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
     }
 
     private CloseableHttpResponse mainHttpRequest(
-            CloseableHttpClient client, InputReferenceType ref, ProgressListener listener)
-            throws IOException {
+            CloseableHttpClient client, InputReferenceType ref, ProgressListener listener) throws IOException {
         if (client == null) {
             // return null if not an HTTP(S) request
             return null;
@@ -182,24 +181,19 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
                     "NoApplicableCode",
                     getInputId());
         } else if (ref.getBodyReference() == null || ref.getBodyReference().getHref() == null) {
-            throw new WPSException(
-                    "A POST request should contain a non empty body",
-                    "NoApplicableCode",
-                    getInputId());
+            throw new WPSException("A POST request should contain a non empty body", "NoApplicableCode", getInputId());
         }
         String bodyReferenceHref = ref.getBodyReference().getHref();
         URLCheckers.confirm(bodyReferenceHref);
         return bodyReferenceHref;
     }
 
-    private static CloseableHttpResponse bodyHttpRequest(CloseableHttpClient client, String href)
-            throws IOException {
+    private static CloseableHttpResponse bodyHttpRequest(CloseableHttpClient client, String href) throws IOException {
         // return null if not an HTTP(S) request; otherwise execute a GET request
         return isHttpURL(href) ? client.execute(RequestBuilder.get(href).build()) : null;
     }
 
-    private InputStream getInputStream(
-            CloseableHttpResponse response, String href, ProgressListener listener)
+    private InputStream getInputStream(CloseableHttpResponse response, String href, ProgressListener listener)
             throws IOException {
         if (href == null) {
             // no URL to open a stream from
@@ -221,18 +215,16 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
         return new CancellingInputStream(is, listener);
     }
 
-    private InputStream getResponseStream(CloseableHttpResponse response, String href)
-            throws IOException {
+    private InputStream getResponseStream(CloseableHttpResponse response, String href) throws IOException {
         int code = response.getStatusLine().getStatusCode();
         if (code != 200) {
             // do not expose the status code to users
-            throw new IllegalStateException(
-                    "Error getting remote resources from "
-                            + href
-                            + ", http error "
-                            + code
-                            + ": "
-                            + response.getStatusLine().getReasonPhrase());
+            throw new IllegalStateException("Error getting remote resources from "
+                    + href
+                    + ", http error "
+                    + code
+                    + ": "
+                    + response.getStatusLine().getReasonPhrase());
         }
         try {
             Header length = response.getFirstHeader(HttpHeaders.CONTENT_LENGTH);
@@ -262,12 +254,7 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
         File file = URLs.urlToFile(url);
         if (maxSize > 0 && maxSize < file.length()) {
             throw new WPSException(
-                    "Input "
-                            + getInputId()
-                            + " size "
-                            + file.length()
-                            + " exceeds maximum allowed size of "
-                            + maxSize,
+                    "Input " + getInputId() + " size " + file.length() + " exceeds maximum allowed size of " + maxSize,
                     "NoApplicableCode",
                     getInputId());
         }

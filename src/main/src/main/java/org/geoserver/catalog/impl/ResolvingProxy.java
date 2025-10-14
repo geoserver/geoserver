@@ -33,8 +33,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 public class ResolvingProxy extends ProxyBase {
 
     /** Avoids the cost of looking up over and over the same proxy class */
-    static final Map<Class<?>, Constructor> PROXY_CLASS_CONSTRUCTOR_CACHE =
-            new ConcurrentHashMap<>();
+    static final Map<Class<?>, Constructor> PROXY_CLASS_CONSTRUCTOR_CACHE = new ConcurrentHashMap<>();
 
     /**
      * Wraps an object in the proxy.
@@ -65,13 +64,13 @@ public class ResolvingProxy extends ProxyBase {
     public static <T> T resolve(Catalog catalog, T object) {
         if (object instanceof Proxy) {
             InvocationHandler h = Proxy.getInvocationHandler(object);
-            if (h instanceof ResolvingProxy) {
-                if (catalog instanceof CatalogImpl) {
-                    catalog = ((CatalogImpl) catalog).getRawCatalog();
+            if (h instanceof ResolvingProxy proxy) {
+                if (catalog instanceof CatalogImpl impl) {
+                    catalog = impl.getRawCatalog();
                 }
 
-                String ref = ((ResolvingProxy) h).getRef();
-                String pre = ((ResolvingProxy) h).getPrefix();
+                String ref = proxy.getRef();
+                String pre = proxy.getPrefix();
 
                 if (object instanceof WorkspaceInfo) {
                     Object ws = catalog.getWorkspace(ref);
@@ -100,12 +99,7 @@ public class ResolvingProxy extends ProxyBase {
                     if (resolved == null) {
                         if (ref.indexOf(":") > 0) {
                             String[] qualifiedName = ref.split(":");
-                            resolved =
-                                    (T)
-                                            catalog.getStoreByName(
-                                                    qualifiedName[0],
-                                                    qualifiedName[1],
-                                                    StoreInfo.class);
+                            resolved = (T) catalog.getStoreByName(qualifiedName[0], qualifiedName[1], StoreInfo.class);
                         } else {
                             resolved = (T) catalog.getStoreByName(ref, StoreInfo.class);
                         }
@@ -185,8 +179,8 @@ public class ResolvingProxy extends ProxyBase {
         String result = null;
         if (object instanceof Proxy) {
             InvocationHandler h = Proxy.getInvocationHandler(object);
-            if (h instanceof ResolvingProxy) {
-                String ref = ((ResolvingProxy) h).getRef();
+            if (h instanceof ResolvingProxy proxy) {
+                String ref = proxy.getRef();
                 if (ref != null && !"".equals(ref)) result = ref;
             }
         }

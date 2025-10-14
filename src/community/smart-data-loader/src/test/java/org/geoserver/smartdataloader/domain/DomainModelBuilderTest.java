@@ -1,6 +1,7 @@
 package org.geoserver.smartdataloader.domain;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.sql.DatabaseMetaData;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.smartdataloader.AbstractJDBCSmartDataLoaderTestSupport;
 import org.geoserver.smartdataloader.JDBCFixtureHelper;
+import org.geoserver.smartdataloader.domain.entities.DomainEntitySimpleAttribute;
 import org.geoserver.smartdataloader.domain.entities.DomainModel;
 import org.geoserver.smartdataloader.domain.entities.DomainRelation;
 import org.geoserver.smartdataloader.metadata.DataStoreMetadata;
@@ -104,7 +106,8 @@ public abstract class DomainModelBuilderTest extends AbstractJDBCSmartDataLoader
 
         // check build domainmodel
         int rootMeteoParametersRelationsSize = dm.getRootEntity().getRelations().size();
-        DomainRelation meteoParameterRelation = dm.getRootEntity().getRelations().get(0);
+        DomainRelation meteoParameterRelation =
+                dm.getRootEntity().getRelations().get(0);
         String containingEntityNameMeteoParametersRelation =
                 meteoParameterRelation.getContainingEntity().getName();
         String destinationEntityNameMeteoParametersRelation =
@@ -140,7 +143,8 @@ public abstract class DomainModelBuilderTest extends AbstractJDBCSmartDataLoader
         LOGGER.log(Level.INFO, dm.toString());
 
         // check build domainmodel
-        int rootMeteoObservationsRelationsSize = dm.getRootEntity().getRelations().size();
+        int rootMeteoObservationsRelationsSize =
+                dm.getRootEntity().getRelations().size();
         // check we have 2 relations
         assertEquals(2, rootMeteoObservationsRelationsSize);
         // check relations containing and destination entity, as much as relations from that
@@ -154,13 +158,16 @@ public abstract class DomainModelBuilderTest extends AbstractJDBCSmartDataLoader
         DomainRelation relationSt = map.get("meteo_stations");
         DomainRelation relationParam = map.get("meteo_parameters");
         int relationSizeSt = relationSt.getDestinationEntity().getRelations().size();
-        int relationSizeParam = relationParam.getDestinationEntity().getRelations().size();
+        int relationSizeParam =
+                relationParam.getDestinationEntity().getRelations().size();
         assertEquals(1, relationSizeSt);
         assertEquals(0, relationSizeParam);
         String stContainingEntity = relationSt.getContainingEntity().getName();
         String paramContainingEntity = relationParam.getContainingEntity().getName();
         assertEquals(stContainingEntity, paramContainingEntity);
         assertEquals("meteo_observations", stContainingEntity);
-        assertEquals(4, dm.getRootEntity().getAttributes().size());
+        assertEquals(5, dm.getRootEntity().getAttributes().size());
+        List<DomainEntitySimpleAttribute> attributes = dm.getRootEntity().getAttributes();
+        assertTrue(attributes.stream().anyMatch(dsa -> dsa.getName().equals("universal_id")));
     }
 }

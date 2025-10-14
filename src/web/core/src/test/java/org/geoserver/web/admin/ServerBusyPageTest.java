@@ -53,22 +53,21 @@ public class ServerBusyPageTest extends GeoServerWicketTestSupport {
         AtomicBoolean acquired = new AtomicBoolean(false);
         AtomicBoolean release = new AtomicBoolean(false);
         if (locker != null) {
-            Thread configWriter =
-                    new Thread("Config-writer") {
+            Thread configWriter = new Thread("Config-writer") {
 
-                        @Override
-                        public void run() {
-                            // Acquiring Configuration Lock as another user
-                            locker.lock(type);
-                            acquired.set(true);
+                @Override
+                public void run() {
+                    // Acquiring Configuration Lock as another user
+                    locker.lock(type);
+                    acquired.set(true);
 
-                            try {
-                                Awaitility.await().forever().until(() -> release.get());
-                            } finally {
-                                locker.unlock();
-                            }
-                        }
-                    };
+                    try {
+                        Awaitility.await().forever().until(() -> release.get());
+                    } finally {
+                        locker.unlock();
+                    }
+                }
+            };
             configWriter.start();
 
             try {

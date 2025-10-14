@@ -24,7 +24,6 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.GWC;
-import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.FormTestPage;
 import org.geoserver.web.GeoServerWicketTestSupport;
@@ -35,7 +34,6 @@ import org.junit.Test;
 /** @author prushforth */
 public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport {
     static QName MOSAIC = new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX);
-    GeoServerTileLayer tileLayer;
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -50,8 +48,7 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         testData.addVectorLayer(PONDS, getCatalog());
         Map<SystemTestData.LayerProperty, Object> props = new HashMap<>();
 
-        testData.addRasterLayer(
-                MOSAIC, "raster-filter-test.zip", null, props, SystemTestData.class, getCatalog());
+        testData.addRasterLayer(MOSAIC, "raster-filter-test.zip", null, props, SystemTestData.class, getCatalog());
         testData.addVectorLayer(BASIC_POLYGONS, getCatalog());
     }
 
@@ -60,9 +57,7 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         // get a test layer and instantiate the model
         final LayerInfo layer = getCatalog().getLayerByName(MockData.PONDS.getLocalPart());
         Model<LayerInfo> model = new Model<>(layer);
-        FormTestPage page =
-                new FormTestPage(
-                        (ComponentBuilder) id -> new MapMLLayerConfigurationPanel(id, model));
+        FormTestPage page = new FormTestPage((ComponentBuilder) id -> new MapMLLayerConfigurationPanel(id, model));
         // let's start the page and check that the components are correctly instantiated
         tester.startPage(page);
         tester.assertRenderedPage(FormTestPage.class);
@@ -79,6 +74,7 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         tester.assertModelValue("form:panel:licenseLink", null);
         tester.assertModelValue("form:panel:useTiles", null);
         tester.assertModelValue("form:panel:useFeatures", null);
+        tester.assertModelValue("form:panel:useMultiExtents", null);
         tester.assertModelValue("form:panel:dimension", null);
         tester.assertModelValue("form:panel:featurecaptionattributes", null);
         tester.assertModelValue("form:panel:featureCaptionTemplate", null);
@@ -113,9 +109,7 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         // get a test layer and instantiate the model
         final LayerInfo layer = getCatalog().getLayerByName(MOSAIC.getLocalPart());
         Model<LayerInfo> model = new Model<>(layer);
-        FormTestPage page =
-                new FormTestPage(
-                        (ComponentBuilder) id -> new MapMLLayerConfigurationPanel(id, model));
+        FormTestPage page = new FormTestPage((ComponentBuilder) id -> new MapMLLayerConfigurationPanel(id, model));
         // let's start the page and check that the components are correctly instantiated
         tester.startPage(page);
         tester.assertRenderedPage(FormTestPage.class);
@@ -123,14 +117,15 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         // check that the "attributes" (works with raster dimensions) dropdown is available
         tester.assertComponent("form:panel:featurecaptionattributes", ListMultipleChoice.class);
         tester.assertComponent("form:panel:mime", DropDownChoice.class);
-        // check that the "useFeatures" checkbox is disabled as expected with raster data
-        tester.assertDisabled("form:panel:useFeatures");
+        // check that the "useFeatures" checkbox is no longer disabled with raster data
+        tester.assertEnabled("form:panel:useFeatures");
         FormTester ft = tester.newFormTester("form");
         tester.assertModelValue("form:panel:featurecaptionattributes", null);
         tester.assertModelValue("form:panel:licenseTitle", null);
         tester.assertModelValue("form:panel:licenseLink", null);
         tester.assertModelValue("form:panel:useTiles", null);
         tester.assertModelValue("form:panel:useFeatures", null);
+        tester.assertModelValue("form:panel:useMultiExtents", null);
         tester.assertModelValue("form:panel:dimension", null);
         tester.assertModelValue("form:panel:featurecaptionattributes", null);
         tester.assertModelValue("form:panel:featureCaptionTemplate", null);
@@ -167,9 +162,7 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         layer.getResource().getMetadata().put(MapMLConstants.MAPML_USE_FEATURES, true);
         Model<LayerInfo> model = new Model<>(layer);
 
-        FormTestPage page =
-                new FormTestPage(
-                        (ComponentBuilder) id -> new MapMLLayerConfigurationPanel(id, model));
+        FormTestPage page = new FormTestPage((ComponentBuilder) id -> new MapMLLayerConfigurationPanel(id, model));
         // let's start the page and check that the components are correctly instantiated
         tester.startPage(page);
 
@@ -181,9 +174,7 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         tester.assertDisabled("form:panel:mime");
         layer.getResource().getMetadata().put(MapMLConstants.MAPML_USE_FEATURES, false);
         Model<LayerInfo> model2 = new Model<>(layer);
-        page =
-                new FormTestPage(
-                        (ComponentBuilder) id -> new MapMLLayerConfigurationPanel(id, model2));
+        page = new FormTestPage((ComponentBuilder) id -> new MapMLLayerConfigurationPanel(id, model2));
         // let's start the page and check that the components are correctly instantiated
         tester.startPage(page);
         // check that the "mime" checkbox is enabled as expected when mapML useFeatures is disabled
@@ -214,14 +205,11 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         Model<LayerInfo> modelTile = new Model<>(layerInfo);
 
         FormTestPage pageTile =
-                new FormTestPage(
-                        (ComponentBuilder) id -> new MapMLLayerConfigurationPanel(id, modelTile));
+                new FormTestPage((ComponentBuilder) id -> new MapMLLayerConfigurationPanel(id, modelTile));
         // let's start the page and check that the components are correctly instantiated
         tester.startPage(pageTile);
         DropDownChoice<String> dropDownChoiceTile =
                 (DropDownChoice) tester.getComponentFromLastRenderedPage("form:panel:mime");
-        assertThat(
-                dropDownChoiceTile.getChoices(),
-                Matchers.containsInAnyOrder("image/jpeg", "image/png"));
+        assertThat(dropDownChoiceTile.getChoices(), Matchers.containsInAnyOrder("image/jpeg", "image/png"));
     }
 }

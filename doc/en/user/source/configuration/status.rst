@@ -36,32 +36,23 @@ The following table describes the current status indicators.
        
        Press :guilabel:`Free Memory` to recycle unused memory by running the garbage collector.
    * - JVM Version
-     - Denotes which version of the JVM (Java Virtual Machine) is being used to power the server. Here the JVM is AdoptOpenJDK 1.8.0_282.
+     - Denotes which version of the JVM (Java Virtual Machine) is being used to power the server. Here the JVM is AdoptOpenJDK 17.0.13.
    * - Java Rendering Engine
      - Shows the rendering engine used for vector operations.
    * - Available Fonts
      - Shows the number of fonts available. Selecting the link will show the full list.
-   * - Native JAI
-     - GeoServer uses `Java Advanced Imaging <https://www.oracle.com/java/technologies/java-archive-downloads-java-client-downloads.html>`__ (JAI) framework for image rendering and coverage manipulation.
-     
-       We recommend the use of JAI-EXT operations for greater stability.
 
-   * - Native JAI ImageIO
-     - GeoServer uses `JAI Image IO <https://docs.oracle.com/javase/6/docs/technotes/guides/imageio/>`__ (JAI) framework for raster data loading and image encoding.
-     
-       We recommend use of libjpeg-turbo for those interested in increasing encoding performance.
-       
-   * - JAI Maximum Memory
+   * - Image Processing Maximum Memory
      - The amount of memory available for the image processing tile cache, in this case 1.78 GB.
-   * - JAI Memory Usage
+   * - Image Processing Memory Usage
      - Run-time amount of memory is used for the tile cache.
        
-       Press :guilabel:`Free Memory` to clear available JAI memory by flushing the tile cache.
-   * - JAI Memory Threshold
+       Press :guilabel:`Free Memory` to clear available Image Processing memory by flushing the tile cache.
+   * - Image Processing Memory Threshold
      - Refers to the percentage, e.g. 75, of cache memory to retain during tile removal.
-   * - Number of JAI Tile Threads
+   * - Number of Image Processing Tile Threads
      - The number of parallel threads used by the scheduler to handle tiles.
-   * - JAI Tile Thread Priority
+   * - Image Processing Tile Thread Priority
      - Schedules the global tile scheduler priority. The priority value defaults to 5, and must fall between 1 and 10.
    * - Thread Pool Core Pool Size
      - Number of threads that the ThreadPoolExecutor will create. This is underlying Java runtime functionality - see the Java documentation for ThreadPoolExecutor for more information.

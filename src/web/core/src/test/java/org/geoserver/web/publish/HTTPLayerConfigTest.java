@@ -28,14 +28,8 @@ public class HTTPLayerConfigTest extends GeoServerWicketTestSupport {
     @Before
     public void init() {
         polygons = getCatalog().getLayerByName(MockData.BASIC_POLYGONS.getLocalPart());
-        page =
-                new FormTestPage(
-                        (ComponentBuilder)
-                                id ->
-                                        new HTTPLayerConfig(
-                                                id,
-                                                new Model<>(polygons),
-                                                LayerHTTPLayerConfig.RESOURCE_METADATA));
+        page = new FormTestPage((ComponentBuilder)
+                id -> new HTTPLayerConfig(id, new Model<>(polygons), LayerHTTPLayerConfig.RESOURCE_METADATA));
         tester.startPage(page);
     }
 
@@ -54,16 +48,9 @@ public class HTTPLayerConfigTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testInvalid() {
-        final LayerInfo polygons =
-                getCatalog().getLayerByName(MockData.BASIC_POLYGONS.getLocalPart());
-        FormTestPage page =
-                new FormTestPage(
-                        (ComponentBuilder)
-                                id ->
-                                        new HTTPLayerConfig(
-                                                id,
-                                                new Model<>(polygons),
-                                                LayerHTTPLayerConfig.RESOURCE_METADATA));
+        final LayerInfo polygons = getCatalog().getLayerByName(MockData.BASIC_POLYGONS.getLocalPart());
+        FormTestPage page = new FormTestPage((ComponentBuilder)
+                id -> new HTTPLayerConfig(id, new Model<>(polygons), LayerHTTPLayerConfig.RESOURCE_METADATA));
         tester.startPage(page);
         tester.assertComponent("form:panel:cacheAgeMax", TextField.class);
 
@@ -71,8 +58,7 @@ public class HTTPLayerConfigTest extends GeoServerWicketTestSupport {
         FormTester ft = tester.newFormTester("form");
         ft.setValue("panel:cacheAgeMax", "-20");
         ft.submit();
-        tester.assertErrorMessages(
-                "The value of 'cacheAgeMax' must be between 0 and 9223372036854775807.");
+        tester.assertErrorMessages("The value of 'cacheAgeMax' must be between 0 and 9223372036854775807.");
     }
 
     @Test
@@ -88,8 +74,6 @@ public class HTTPLayerConfigTest extends GeoServerWicketTestSupport {
                         .messages(new ErrorLevelFeedbackMessageFilter(FeedbackMessage.ERROR))
                         .size());
         // System.out.println(polygons.getResource().getMetadata().get("cacheAgeMax").getClass());
-        assertEquals(
-                Integer.valueOf(3600),
-                polygons.getResource().getMetadata().get("cacheAgeMax", Integer.class));
+        assertEquals(Integer.valueOf(3600), polygons.getResource().getMetadata().get("cacheAgeMax", Integer.class));
     }
 }

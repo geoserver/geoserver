@@ -16,10 +16,7 @@ import org.geotools.geopkg.GeoPackage;
 import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.sqlite.SQLiteConfig;
 
-/**
- * Base class for GeoPackage based PPIOs, subclasses provide specialized behavior to store rasters
- * and vectors
- */
+/** Base class for GeoPackage based PPIOs, subclasses provide specialized behavior to store rasters and vectors */
 abstract class GeopkgPPIO extends ComplexPPIO {
     /** Registered GeoPackage MIME type */
     public static final String MIME_TYPE = "application/geopackage+sqlite3";
@@ -56,10 +53,9 @@ abstract class GeopkgPPIO extends ComplexPPIO {
     }
 
     protected void setupEntryMetadata(Entry e, Object ri) {
-        if (ri instanceof ResourceInfo) {
-            ResourceInfo meta = (ResourceInfo) ri;
+        if (ri instanceof ResourceInfo meta) {
             // initialize entry metadata
-            e.setTableName(((ResourceInfo) ri).getName());
+            e.setTableName(meta.getName());
             e.setIdentifier(meta.getTitle());
             e.setDescription(abstractOrDescription(meta));
         }

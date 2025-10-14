@@ -6,12 +6,11 @@
 package org.geoserver.wms.map;
 
 import java.awt.image.RenderedImage;
-import java.awt.image.SampleModel;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.geoserver.config.JAIInfo;
+import org.geoserver.config.ImageProcessingInfo;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;
@@ -58,8 +57,7 @@ public class PNGMapResponse extends RenderedImageMapResponse {
      *   <li>transparency = supported
      * </ol>
      */
-    private static MapProducerCapabilities CAPABILITIES =
-            new MapProducerCapabilities(true, true, true);
+    private static MapProducerCapabilities CAPABILITIES = new MapProducerCapabilities(true, true, true);
 
     public PNGMapResponse(WMS wms) {
         super(OUTPUT_FORMATS, wms);
@@ -78,11 +76,10 @@ public class PNGMapResponse extends RenderedImageMapResponse {
     /**
      * Transforms the rendered image into the appropriate format, streaming to the output stream.
      *
-     * @see RasterMapOutputFormat#formatImageOutputStream(RenderedImage, OutputStream)
+     * @see RenderedImageMapResponse#formatImageOutputStream(RenderedImage, OutputStream, WMSMapContent)
      */
     @Override
-    public void formatImageOutputStream(
-            RenderedImage image, OutputStream outStream, WMSMapContent mapContent)
+    public void formatImageOutputStream(RenderedImage image, OutputStream outStream, WMSMapContent mapContent)
             throws ServiceException, IOException {
         // /////////////////////////////////////////////////////////////////
         //
@@ -96,19 +93,13 @@ public class PNGMapResponse extends RenderedImageMapResponse {
         // check to see if we have to see a translucent or bitmask quantizer
         image = applyPalette(image, mapContent, f -> f != null && f.contains("png8"), true);
         float quality = (100 - wms.getPngCompression()) / 100.0f;
-        JAIInfo.PngEncoderType encoder = wms.getPNGEncoderType();
-        if (encoder == JAIInfo.PngEncoderType.PNGJ) {
+        ImageProcessingInfo.PngEncoderType encoder = wms.getPNGEncoderType();
+        if (encoder == ImageProcessingInfo.PngEncoderType.PNGJ) {
             image = new PNGJWriter().writePNG(image, outStream, quality, mapContent);
             RasterCleaner.addImage(image);
         } else {
-            Boolean PNGNativeAcc = (encoder == JAIInfo.PngEncoderType.NATIVE);
-            SampleModel sm = image.getSampleModel();
-            int numBits = sm.getSampleSize(0);
-            // png acceleration only works on 2 bit and 8 bit images, crashes on 4 bits
-            boolean nativeAcceleration =
-                    PNGNativeAcc.booleanValue() && !(numBits > 1 && numBits < 8);
             ImageWorker iw = new ImageWorker(image);
-            iw.writePNG(outStream, "FILTERED", quality, nativeAcceleration, false);
+            iw.writePNG(outStream, "FILTERED", quality, false);
             RasterCleaner.addImage(iw.getRenderedImage());
         }
 

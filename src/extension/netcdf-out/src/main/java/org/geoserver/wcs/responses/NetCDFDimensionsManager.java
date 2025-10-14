@@ -33,8 +33,8 @@ import ucar.ma2.Index;
 import ucar.nc2.Dimension;
 
 /**
- * Provides mapping between a Coverage {@link DimensionBean}, a NetCDF {@link Dimension} as well as
- * the related dimension values (the coordinates).
+ * Provides mapping between a Coverage {@link DimensionBean}, a NetCDF {@link Dimension} as well as the related
+ * dimension values (the coordinates).
  *
  * @author Daniele Romagnoli, GeoSolutions SAS
  */
@@ -43,8 +43,8 @@ public class NetCDFDimensionsManager {
     static final Logger LOGGER = Logging.getLogger(NetCDFDimensionsManager.class);
 
     /**
-     * A dimension mapping between dimension names and dimension mapper instances We use a Linked
-     * map to preserve the dimension order
+     * A dimension mapping between dimension names and dimension mapper instances We use a Linked map to preserve the
+     * dimension order
      */
     private Map<String, NetCDFDimensionMapping> netcdfDimensions = new LinkedHashMap<>();
 
@@ -64,10 +64,7 @@ public class NetCDFDimensionsManager {
         netcdfDimensions.putAll(mapping);
     }
 
-    /**
-     * Initialize the Manager by collecting all dimensions from the granule stack and preparing the
-     * mapping.
-     */
+    /** Initialize the Manager by collecting all dimensions from the granule stack and preparing the mapping. */
     public void collectCoverageDimensions(GranuleStack granuleStack) {
 
         final List<DimensionBean> dimensions = granuleStack.getDimensions();
@@ -101,18 +98,13 @@ public class NetCDFDimensionsManager {
                     if (NetCDFUtilities.isATime(dataType)) {
                         tree =
                                 // new TreeSet(new DateRangeComparator());
-                                isRange
-                                        ? new TreeSet<>(new DateRangeComparator())
-                                        : new TreeSet<>();
+                                isRange ? new TreeSet<>(new DateRangeComparator()) : new TreeSet<>();
                     } else {
                         tree = // new TreeSet<Object>();
-                                isRange
-                                        ? new TreeSet<>(new NumberRangeComparator())
-                                        : new TreeSet<>();
+                                isRange ? new TreeSet<>(new NumberRangeComparator()) : new TreeSet<>();
                     }
             }
-            mapper.setDimensionValues(
-                    new NetCDFDimensionsManager.NetCDFDimensionMapping.DimensionValuesSet(tree));
+            mapper.setDimensionValues(new NetCDFDimensionsManager.NetCDFDimensionMapping.DimensionValuesSet(tree));
             add(name, mapper);
         }
 
@@ -132,8 +124,7 @@ public class NetCDFDimensionsManager {
             final Object value = properties.get(dimensionName);
             if (value == null) {
                 if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.warning(
-                            "No Dimensions available with the specified name: " + dimensionName);
+                    LOGGER.warning("No Dimensions available with the specified name: " + dimensionName);
                 }
             } else {
                 dimension.getDimensionValues().addValue(value);
@@ -149,9 +140,8 @@ public class NetCDFDimensionsManager {
     }
 
     /**
-     * A NetCDFDimensionMapping class to associate to a dimension: - the input coverageDimension, -
-     * the output netCDFDimension, - the available values for the coordinate variable of that
-     * dimension
+     * A NetCDFDimensionMapping class to associate to a dimension: - the input coverageDimension, - the output
+     * netCDFDimension, - the available values for the coordinate variable of that dimension
      */
     static class NetCDFDimensionMapping {
 
@@ -239,7 +229,7 @@ public class NetCDFDimensionsManager {
             }
 
             @Override
-            @SuppressWarnings({"unchecked", "PMD.UnnecessaryCast"})
+            @SuppressWarnings("unchecked")
             public void addValue(Object object) {
                 ((Set) values).add(object);
             }
@@ -280,16 +270,15 @@ public class NetCDFDimensionsManager {
         }
 
         /**
-         * Get the values for a Dimension wrapped by its specific DimensionManager and return them
-         * as a NetCDF Array object
+         * Get the values for a Dimension wrapped by its specific DimensionManager and return them as a NetCDF Array
+         * object
          *
-         * @param rangeValues specify whether the data should be returned as a 1D array or a 2D
-         *     array (the latter for dimensions having ranges)
-         * @param netCDFCoordinates used to check whether a dimension is related to a coordinate. In
-         *     that case, just return the coordinate values.
+         * @param rangeValues specify whether the data should be returned as a 1D array or a 2D array (the latter for
+         *     dimensions having ranges)
+         * @param netCDFCoordinates used to check whether a dimension is related to a coordinate. In that case, just
+         *     return the coordinate values.
          */
-        public Array getDimensionData(
-                final boolean rangeValues, NetCDFCoordinate[] netCDFCoordinates) {
+        public Array getDimensionData(final boolean rangeValues, NetCDFCoordinate[] netCDFCoordinates) {
             final String dimensionName = getName();
 
             // Special management for latitude and logitude
@@ -322,12 +311,10 @@ public class NetCDFDimensionsManager {
                 final int numElements = values.size();
 
                 final String dimensionDataType = getCoverageDimension().getDatatype();
-                final DataType netCDFDataType =
-                        NetCDFUtilities.getNetCDFDataType(dimensionDataType);
+                final DataType netCDFDataType = NetCDFUtilities.getNetCDFDataType(dimensionDataType);
 
                 // Get a proper array to contain the dimension values
-                final int[] dimensionSize =
-                        rangeValues ? new int[] {numElements, 2} : new int[] {numElements};
+                final int[] dimensionSize = rangeValues ? new int[] {numElements, 2} : new int[] {numElements};
                 final Array data = NetCDFUtilities.getArray(dimensionSize, netCDFDataType);
 
                 final Index index = data.getIndex();
@@ -350,8 +337,8 @@ public class NetCDFDimensionsManager {
         }
 
         /**
-         * Get the value from the input object. Take care of time elements since they need to be
-         * referred to the time origin
+         * Get the value from the input object. Take care of time elements since they need to be referred to the time
+         * origin
          *
          * @param isTime does this object represents a temporal entity?
          * @param endValue specify whether it needs to return the second value of a range
@@ -359,8 +346,7 @@ public class NetCDFDimensionsManager {
         private Object getValue(Object input, boolean isTime, boolean endValue) {
             if (isTime) {
                 return getTime(input, endValue);
-            } else if (input instanceof NumberRange) {
-                NumberRange range = (NumberRange) input;
+            } else if (input instanceof NumberRange range) {
                 return endValue ? range.getMaxValue() : range.getMinValue();
             }
             // Simply return back the value
@@ -368,23 +354,23 @@ public class NetCDFDimensionsManager {
         }
 
         /**
-         * Return the time value for this object. Note that times are referred with respect to an
-         * origin {@link NetCDFUtilities#START_TIME}.
+         * Return the time value for this object. Note that times are referred with respect to an origin
+         * {@link NetCDFUtilities#START_TIME}.
          *
          * @param endTime specify whether it needs to return the second value of a time range
          */
         private Double getTime(Object input, boolean endTime) {
             long time = 0;
-            if (input instanceof Timestamp) {
-                time = ((Timestamp) input).getTime();
-            } else if (input instanceof DateRange) {
+            if (input instanceof Timestamp timestamp) {
+                time = timestamp.getTime();
+            } else if (input instanceof DateRange range) {
                 if (!endTime) {
-                    time = ((DateRange) input).getMinValue().getTime();
+                    time = range.getMinValue().getTime();
                 } else {
-                    time = ((DateRange) input).getMaxValue().getTime();
+                    time = range.getMaxValue().getTime();
                 }
-            } else if (input instanceof Date) {
-                time = ((Date) input).getTime();
+            } else if (input instanceof Date date) {
+                time = date.getTime();
             } else {
                 throw new IllegalArgumentException("Unsupported time");
             }

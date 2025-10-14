@@ -9,14 +9,15 @@ import java.util.Comparator;
 import java.util.Objects;
 import java.util.UUID;
 import javax.xml.bind.annotation.XmlRootElement;
+import org.apache.commons.lang3.StringUtils;
 import org.geoserver.ows.Request;
 import org.geoserver.util.XCQL;
 import org.geotools.api.filter.Filter;
 import org.geotools.filter.text.cql2.CQLException;
 
 /**
- * A template rule associated to a FeatureTypeInfo. Its evaluation determines if a specific template
- * should be applied for a Request.
+ * A template rule associated to a FeatureTypeInfo. Its evaluation determines if a specific template should be applied
+ * for a Request.
  */
 @XmlRootElement(name = "Rule")
 public class TemplateRule implements Serializable {
@@ -70,14 +71,24 @@ public class TemplateRule implements Serializable {
      */
     public boolean applyRule(Request request) {
         boolean result = true;
-        if (outputFormat != null) result = matchOutputFormat(getOutputFormat(request));
-
+        if (outputFormat != null) {
+            result = matchOutputFormatCommaSeparated(getOutputFormat(request));
+        }
         if (result && cqlFilter != null) {
             result = evaluateCQLFilter(cqlFilter, request);
         }
         if (result && profileFilter != null) result = evaluateCQLFilter(profileFilter, request);
 
         return result;
+    }
+
+    private boolean matchOutputFormatCommaSeparated(String outputFormatExpression) {
+        if (StringUtils.isBlank(outputFormatExpression)) return false;
+        String[] outputFormats = outputFormatExpression.split(",");
+        for (String outputFormat : outputFormats) {
+            if (matchOutputFormat(outputFormat.trim())) return true;
+        }
+        return false;
     }
 
     private boolean evaluateCQLFilter(String filter, Request request) {
@@ -133,8 +144,7 @@ public class TemplateRule implements Serializable {
         TemplateIdentifier identifier = TemplateIdentifier.fromOutputFormat(outputFormat);
         if (identifier == null) return false;
         String nameIdentifier = identifier.name();
-        if (this.outputFormat.equals(SupportedFormat.GML.name()))
-            return nameIdentifier.startsWith(this.outputFormat);
+        if (this.outputFormat.equals(SupportedFormat.GML.name())) return nameIdentifier.startsWith(this.outputFormat);
         else if (this.outputFormat.equals(SupportedFormat.GEOJSON.name()))
             return nameIdentifier.equals(TemplateIdentifier.GEOJSON.name())
                     || nameIdentifier.equals(TemplateIdentifier.JSON.name());
@@ -177,8 +187,8 @@ public class TemplateRule implements Serializable {
         if (outputFormat == null)
             outputFormat = request.getKvp() != null ? (String) request.getKvp().get("f") : null;
         if (outputFormat == null)
-            outputFormat =
-                    request.getKvp() != null ? (String) request.getKvp().get("INFO_FORMAT") : null;
+            outputFormat = request.getKvp() != null ? (String) request.getKvp().get("INFO_FORMAT") : null;
+        if (outputFormat == null) outputFormat = request.getHttpRequest().getHeader("accept");
         return outputFormat;
     }
 
@@ -230,13 +240,11 @@ public class TemplateRule implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-                templateIdentifier, templateName, outputFormat, service, cqlFilter, priority);
+        return Objects.hash(templateIdentifier, templateName, outputFormat, service, cqlFilter, priority);
     }
 
     /**
-     * Rule comparator to sort the TemplateRules in order to get the one with higher priority or the
-     * one that is forced.
+     * Rule comparator to sort the TemplateRules in order to get the one with higher priority or the one that is forced.
      */
     public static class TemplateRuleComparator implements Comparator<TemplateRule> {
 

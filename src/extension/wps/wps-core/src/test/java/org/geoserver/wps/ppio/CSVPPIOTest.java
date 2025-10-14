@@ -67,8 +67,7 @@ public class CSVPPIOTest extends WPSTestSupport {
     /** Test method for {@link org.geoserver.wps.ppio.WFSPPIO#decode(java.io.InputStream)}. */
     @Test
     public void testDecodeInputStream() throws Exception {
-        SimpleFeatureCollection states =
-                (SimpleFeatureCollection) new CSVPPIO(resourceManager).decode(is);
+        SimpleFeatureCollection states = (SimpleFeatureCollection) new CSVPPIO(resourceManager).decode(is);
 
         assertEquals("Wrong number of states", 51, states.size());
         assertEquals("Wrong number of columns", 9, states.getSchema().getAttributeCount());
@@ -83,8 +82,7 @@ public class CSVPPIOTest extends WPSTestSupport {
     @Test
     public void testEncodeOutputStream() throws Exception {
 
-        SimpleFeatureCollection states =
-                (SimpleFeatureCollection) new CSVPPIO(resourceManager).decode(is);
+        SimpleFeatureCollection states = (SimpleFeatureCollection) new CSVPPIO(resourceManager).decode(is);
 
         assertEquals("Wrong number of states", 51, states.size());
 
@@ -99,9 +97,9 @@ public class CSVPPIOTest extends WPSTestSupport {
         while ((line = r.readLine()) != null) {
             String[] attribs = line.split(",");
             if (lines == 0) {
-                assertEquals(attribs[0], "State");
+                assertEquals("State", attribs[0]);
                 assertEquals(attribs[1], "inc1980");
-                assertEquals(attribs[4], "inc2000");
+                assertEquals("inc2000", attribs[4]);
                 assertEquals(attribs[8], "inc2012");
             }
             if (attribs[0].equalsIgnoreCase("Tennessee")) {

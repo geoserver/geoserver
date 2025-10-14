@@ -7,6 +7,7 @@ package org.geoserver.web.resources;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serial;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,23 +41,19 @@ import org.geoserver.web.wicket.ParamResourceModel;
 /**
  * The ResourceBrowser page, allows user access to ResourceStore.
  *
- * <p>Only access to ResourceStore contents is provided (absolute and relative paths are not
- * supported).
+ * <p>Only access to ResourceStore contents is provided (absolute and relative paths are not supported).
  *
  * @author Niels Charlier
  */
 public class PageResourceBrowser extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = 3979040405548783679L;
 
     /** Behaviour for disabled button */
-    private static final ClassAppender DISABLED_BEHAVIOR =
-            new ClassAppender(new Model<>("disabled"));
+    private static final ClassAppender DISABLED_BEHAVIOR = new ClassAppender(new Model<>("disabled"));
 
-    /**
-     * The extension that are recognised as simple text resources (and can be edited with simple
-     * text editor).
-     */
+    /** The extension that are recognised as simple text resources (and can be edited with simple text editor). */
     private static final String[] TEXTUAL_EXTENSIONS = {
         "txt",
         "properties",
@@ -101,7 +98,6 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
 
         // used for all pop-up dialogs.
         dialog = new GeoServerDialog("dialog");
-        dialog.setResizable(false);
 
         // upload button
         final AjaxLink<Void> btnUpload = new UploadButton();
@@ -131,68 +127,36 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
         final AjaxLink<Void> btnDelete = new DeleteButton();
 
         // update menu buttons enabled states according to current selection
-        treeView.addSelectionListener(
-                target -> {
-                    Collection<TreeNode<Resource>> nodes = treeView.getSelectedNodes();
-                    boolean containsRoot = false;
-                    boolean containsDir = false;
-                    for (TreeNode<Resource> node : nodes) {
-                        if (!node.isLeaf()) {
-                            containsDir = true;
-                        }
-                        if (node.getObject().path().isEmpty()) {
-                            containsRoot = true;
-                        }
-                    }
-                    TreeNode<Resource> node = treeView.getSelectedNode();
+        treeView.addSelectionListener(target -> {
+            Collection<TreeNode<Resource>> nodes = treeView.getSelectedNodes();
+            boolean containsRoot = false;
+            boolean containsDir = false;
+            for (TreeNode<Resource> node : nodes) {
+                if (!node.isLeaf()) {
+                    containsDir = true;
+                }
+                if (node.getObject().path().isEmpty()) {
+                    containsRoot = true;
+                }
+            }
+            TreeNode<Resource> node = treeView.getSelectedNode();
 
-                    enable(btnUpload, node != null && !node.isLeaf());
-                    enable(btnNew, node != null && !node.isLeaf());
-                    enable(btnDownload, node != null && node.isLeaf());
-                    enable(btnEdit, node != null && node.isLeaf() && isTextual(node.getObject()));
-                    enable(btnRename, node != null && !node.getObject().path().isEmpty());
-                    enable(
-                            btnPaste,
-                            node != null && !clipBoard.getItems().isEmpty() && !node.isLeaf());
-                    enable(btnCopy, !nodes.isEmpty() && !containsDir);
-                    enable(btnCut, !nodes.isEmpty() && !containsRoot);
-                    enable(btnDelete, !nodes.isEmpty() && !containsRoot);
+            enable(btnUpload, node != null && !node.isLeaf());
+            enable(btnNew, node != null && !node.isLeaf());
+            enable(btnDownload, node != null && node.isLeaf());
+            enable(btnEdit, node != null && node.isLeaf() && isTextual(node.getObject()));
+            enable(btnRename, node != null && !node.getObject().path().isEmpty());
+            enable(btnPaste, node != null && !clipBoard.getItems().isEmpty() && !node.isLeaf());
+            enable(btnCopy, !nodes.isEmpty() && !containsDir);
+            enable(btnCut, !nodes.isEmpty() && !containsRoot);
+            enable(btnDelete, !nodes.isEmpty() && !containsRoot);
 
-                    target.add(
-                            btnUpload,
-                            btnNew,
-                            btnDownload,
-                            btnEdit,
-                            btnCopy,
-                            btnCut,
-                            btnPaste,
-                            btnRename,
-                            btnDelete);
-                });
+            target.add(btnUpload, btnNew, btnDownload, btnEdit, btnCopy, btnCut, btnPaste, btnRename, btnDelete);
+        });
 
         // initialize and add buttons
-        initButtons(
-                btnUpload,
-                btnNew,
-                btnDownload,
-                btnEdit,
-                btnCopy,
-                btnCut,
-                btnPaste,
-                btnRename,
-                btnDelete);
-        add(
-                dialog,
-                btnUpload,
-                btnNew,
-                btnDownload,
-                btnEdit,
-                btnCopy,
-                btnCut,
-                btnPaste,
-                btnRename,
-                btnDelete,
-                treeView);
+        initButtons(btnUpload, btnNew, btnDownload, btnEdit, btnCopy, btnCut, btnPaste, btnRename, btnDelete);
+        add(dialog, btnUpload, btnNew, btnDownload, btnEdit, btnCopy, btnCut, btnPaste, btnRename, btnDelete, treeView);
     }
 
     /**
@@ -271,6 +235,7 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
     }
 
     private class UploadButton extends AjaxLink<Void> {
+        @Serial
         private static final long serialVersionUID = -6538820444407766106L;
 
         public UploadButton() {
@@ -281,61 +246,55 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
         public void onClick(AjaxRequestTarget target) {
             dialog.setInitialHeight(225);
 
-            dialog.showOkCancel(
-                    target,
-                    new DialogDelegate() {
-                        private static final long serialVersionUID = 1557172478015946688L;
-                        private PanelUpload uploadPanel;
+            dialog.showOkCancel(target, new DialogDelegate() {
+                @Serial
+                private static final long serialVersionUID = 1557172478015946688L;
 
-                        @Override
-                        protected Component getContents(String id) {
-                            uploadPanel =
-                                    new PanelUpload(
-                                            id, treeView.getSelectedNode().getObject().path());
-                            return uploadPanel;
-                        }
+                private PanelUpload uploadPanel;
 
-                        @Override
-                        protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
-                            uploadPanel.getFeedbackMessages().clear();
-                            if (uploadPanel.getFileUpload() == null) {
-                                uploadPanel.error(
-                                        new ParamResourceModel("fileRequired", getPage())
-                                                .getString());
-                            } else {
-                                Resource dest = getUploadPanelResource(uploadPanel);
-                                if (Resources.exists(dest)) {
-                                    uploadPanel.error(
-                                            new ParamResourceModel("resourceExists", getPage())
-                                                    .getString()
-                                                    .replace("%", dest.path()));
-                                } else {
-                                    try (OutputStream os = dest.out()) {
-                                        IOUtils.copy(
-                                                uploadPanel.getFileUpload().getInputStream(), os);
-                                        treeView.setSelectedNode(
-                                                new ResourceNode(dest, expandedStates), target);
-                                        return true;
-                                    } catch (IOException | IllegalStateException e) {
-                                        uploadPanel.error(e.getMessage());
-                                    }
-                                }
+                @Override
+                protected Component getContents(String id) {
+                    uploadPanel = new PanelUpload(
+                            id, treeView.getSelectedNode().getObject().path());
+                    return uploadPanel;
+                }
+
+                @Override
+                protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                    uploadPanel.getFeedbackMessages().clear();
+                    if (uploadPanel.getFileUpload() == null) {
+                        uploadPanel.error(new ParamResourceModel("fileRequired", getPage()).getString());
+                    } else {
+                        Resource dest = getUploadPanelResource(uploadPanel);
+                        if (Resources.exists(dest)) {
+                            uploadPanel.error(new ParamResourceModel("resourceExists", getPage())
+                                    .getString()
+                                    .replace("%", dest.path()));
+                        } else {
+                            try (OutputStream os = dest.out()) {
+                                IOUtils.copy(uploadPanel.getFileUpload().getInputStream(), os);
+                                treeView.setSelectedNode(new ResourceNode(dest, expandedStates), target);
+                                return true;
+                            } catch (IOException | IllegalStateException e) {
+                                uploadPanel.error(e.getMessage());
                             }
-                            target.add(uploadPanel.getFeedbackPanel());
-                            return false;
                         }
-                    });
+                    }
+                    target.add(uploadPanel.getFeedbackPanel());
+                    return false;
+                }
+            });
         }
     }
 
     private Resource getUploadPanelResource(PanelUpload uploadPanel) {
         String dir = uploadPanel.getDirectory();
-        Resource dest =
-                store().get(Paths.path(dir, uploadPanel.getFileUpload().getClientFileName()));
+        Resource dest = store().get(Paths.path(dir, uploadPanel.getFileUpload().getClientFileName()));
         return dest;
     }
 
     private class NewButton extends AjaxLink<Void> {
+        @Serial
         private static final long serialVersionUID = 8112272759002275843L;
 
         public NewButton() {
@@ -346,80 +305,75 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
         public void onClick(AjaxRequestTarget target) {
             dialog.setInitialHeight(525);
 
-            dialog.showOkCancel(
-                    target,
-                    new DialogDelegate() {
-                        private static final long serialVersionUID = -8898887236980594842L;
+            dialog.showOkCancel(target, new DialogDelegate() {
+                @Serial
+                private static final long serialVersionUID = -8898887236980594842L;
 
-                        private PanelEdit editPanel;
+                private PanelEdit editPanel;
 
-                        @Override
-                        protected Component getContents(String id) {
-                            // pick a non-existing resource name (can be changed by
-                            // user)
-                            String dest = getPath();
-                            for (int i = 1; Resources.exists(store().get(dest)); i++) {
-                                dest = getIthPath(i);
-                            }
-                            editPanel = new PanelEdit(id, store().get(dest), true, "");
-                            return editPanel;
-                        }
+                @Override
+                protected Component getContents(String id) {
+                    // pick a non-existing resource name (can be changed by
+                    // user)
+                    String dest = getPath();
+                    for (int i = 1; Resources.exists(store().get(dest)); i++) {
+                        dest = getIthPath(i);
+                    }
+                    editPanel = new PanelEdit(id, store().get(dest), true, "");
+                    return editPanel;
+                }
 
-                        private String getIthPath(int i) {
-                            return Paths.path(
-                                    treeView.getSelectedNode().getObject().path(),
-                                    "new." + i + ".txt");
-                        }
+                private String getIthPath(int i) {
+                    return Paths.path(treeView.getSelectedNode().getObject().path(), "new." + i + ".txt");
+                }
 
-                        private String getPath() {
-                            return Paths.path(
-                                    treeView.getSelectedNode().getObject().path(), "new.txt");
-                        }
+                private String getPath() {
+                    return Paths.path(treeView.getSelectedNode().getObject().path(), "new.txt");
+                }
 
-                        @Override
-                        protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
-                            editPanel.getFeedbackMessages().clear();
-                            String resourcePath = editPanel.getResource();
-                            if (!Paths.isValid(resourcePath)) {
-                                try {
-                                    Paths.valid(resourcePath);
-                                } catch (IllegalArgumentException reason) {
-                                    error(reason.getMessage());
-                                    return false;
-                                }
-                            } else {
-                                Resource dest = store().get(resourcePath);
-                                if (Resources.exists(dest)) {
-                                    editPanel.error(
-                                            new ParamResourceModel("resourceExists", getPage())
-                                                    .getString()
-                                                    .replace("%", dest.path()));
-                                } else {
-                                    try (OutputStream os = dest.out()) {
-                                        String newContents = editPanel.getContents();
-                                        if (newContents != null) {
-                                            os.write(newContents.getBytes());
-                                            if (!newContents.endsWith("\n")) {
-                                                os.write(System.lineSeparator().getBytes());
-                                            }
-                                        }
-                                        // select newly created node
-                                        treeView.setSelectedNode(
-                                                new ResourceNode(dest, expandedStates), target);
-                                        return true;
-                                    } catch (IOException | IllegalStateException e) {
-                                        error(e.getMessage());
-                                    }
-                                }
-                            }
-                            target.add(editPanel.getFeedbackPanel());
+                @Override
+                protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                    editPanel.getFeedbackMessages().clear();
+                    String resourcePath = editPanel.getResource();
+                    if (!Paths.isValid(resourcePath)) {
+                        try {
+                            Paths.valid(resourcePath);
+                        } catch (IllegalArgumentException reason) {
+                            error(reason.getMessage());
                             return false;
                         }
-                    });
+                    } else {
+                        Resource dest = store().get(resourcePath);
+                        if (Resources.exists(dest)) {
+                            editPanel.error(new ParamResourceModel("resourceExists", getPage())
+                                    .getString()
+                                    .replace("%", dest.path()));
+                        } else {
+                            try (OutputStream os = dest.out()) {
+                                String newContents = editPanel.getContents();
+                                if (newContents != null) {
+                                    os.write(newContents.getBytes());
+                                    if (!newContents.endsWith("\n")) {
+                                        os.write(System.lineSeparator().getBytes());
+                                    }
+                                }
+                                // select newly created node
+                                treeView.setSelectedNode(new ResourceNode(dest, expandedStates), target);
+                                return true;
+                            } catch (IOException | IllegalStateException e) {
+                                error(e.getMessage());
+                            }
+                        }
+                    }
+                    target.add(editPanel.getFeedbackPanel());
+                    return false;
+                }
+            });
         }
     }
 
     private class DownloadButton extends Link<Void> {
+        @Serial
         private static final long serialVersionUID = 2746429086122117005L;
 
         public DownloadButton() {
@@ -430,14 +384,14 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
         public void onClick() {
             Resource res = treeView.getSelectedNode().getObject();
             getRequestCycle()
-                    .scheduleRequestHandlerAfterCurrent(
-                            new ResourceStreamRequestHandler(new WicketResourceAdaptor(res))
-                                    .setFileName(res.name())
-                                    .setContentDisposition(ContentDisposition.ATTACHMENT));
+                    .scheduleRequestHandlerAfterCurrent(new ResourceStreamRequestHandler(new WicketResourceAdaptor(res))
+                            .setFileName(res.name())
+                            .setContentDisposition(ContentDisposition.ATTACHMENT));
         }
     }
 
     private class EditButton extends AjaxLink<Void> {
+        @Serial
         private static final long serialVersionUID = 6690936054046040647L;
 
         public EditButton() {
@@ -452,39 +406,37 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
             try (InputStream is = resource.in()) {
                 contents = IOUtils.toString(is, StandardCharsets.UTF_8);
 
-                dialog.showOkCancel(
-                        target,
-                        new DialogDelegate() {
-                            private static final long serialVersionUID = -8898887236980594842L;
+                dialog.showOkCancel(target, new DialogDelegate() {
+                    @Serial
+                    private static final long serialVersionUID = -8898887236980594842L;
 
-                            private PanelEdit editPanel;
+                    private PanelEdit editPanel;
 
-                            @Override
-                            protected Component getContents(String id) {
-                                editPanel = new PanelEdit(id, resource, false, contents);
-                                return editPanel;
-                            }
+                    @Override
+                    protected Component getContents(String id) {
+                        editPanel = new PanelEdit(id, resource, false, contents);
+                        return editPanel;
+                    }
 
-                            @Override
-                            protected boolean onSubmit(
-                                    AjaxRequestTarget target, Component contents) {
-                                editPanel.getFeedbackMessages().clear();
-                                try (OutputStream os = resource.out()) {
-                                    String newContents = editPanel.getContents();
-                                    if (newContents != null) {
-                                        os.write(newContents.getBytes());
-                                        if (!newContents.endsWith("\n")) {
-                                            os.write(System.lineSeparator().getBytes());
-                                        }
-                                    }
-                                    return true;
-                                } catch (IOException | IllegalStateException e) {
-                                    error(e.getMessage());
+                    @Override
+                    protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                        editPanel.getFeedbackMessages().clear();
+                        try (OutputStream os = resource.out()) {
+                            String newContents = editPanel.getContents();
+                            if (newContents != null) {
+                                os.write(newContents.getBytes());
+                                if (!newContents.endsWith("\n")) {
+                                    os.write(System.lineSeparator().getBytes());
                                 }
-                                target.add(editPanel.getFeedbackPanel());
-                                return false;
                             }
-                        });
+                            return true;
+                        } catch (IOException | IllegalStateException e) {
+                            error(e.getMessage());
+                        }
+                        target.add(editPanel.getFeedbackPanel());
+                        return false;
+                    }
+                });
             } catch (IOException | IllegalStateException e) {
                 error(e.getMessage());
                 target.add(bottomFeedbackPanel);
@@ -494,6 +446,7 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
     }
 
     private class PasteButton extends AjaxLink<Void> {
+        @Serial
         private static final long serialVersionUID = 2647829118342823975L;
 
         public PasteButton() {
@@ -510,110 +463,106 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
             }
             final List<TreeNode<Resource>> newSelected = new ArrayList<>();
 
-            dialog.showOkCancel(
-                    target,
-                    new DialogDelegate() {
-                        private static final long serialVersionUID = -8898887236980594842L;
+            dialog.showOkCancel(target, new DialogDelegate() {
+                @Serial
+                private static final long serialVersionUID = -8898887236980594842L;
 
-                        private PanelPaste pastePanel;
+                private PanelPaste pastePanel;
 
-                        @Override
-                        protected Component getContents(String id) {
-                            pastePanel =
-                                    new PanelPaste(
-                                            id,
-                                            listResources(sources),
-                                            treeView.getSelectedNode().getObject().path(),
-                                            clipBoard.isCopy());
-                            return pastePanel;
+                @Override
+                protected Component getContents(String id) {
+                    pastePanel = new PanelPaste(
+                            id,
+                            listResources(sources),
+                            treeView.getSelectedNode().getObject().path(),
+                            clipBoard.isCopy());
+                    return pastePanel;
+                }
+
+                @Override
+                protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                    pastePanel.getFeedbackMessages().clear();
+
+                    String dir = pastePanel.getDirectory();
+
+                    Iterator<Resource> it = sources.iterator();
+                    while (it.hasNext()) {
+                        Resource src = it.next();
+                        pasteResource(dir, it, src);
+                    }
+
+                    // we select all the newly created nodes.
+                    treeView.setSelectedNodes(newSelected, target);
+
+                    // clear clipboard from moved resources (copied resources
+                    // will remain,
+                    // in case user wants to copy them multiple times)
+                    clipBoard.clearRemoved();
+
+                    // we leave modal only if operation was complete
+                    if (!sources.isEmpty()) {
+                        pastePanel.getSourceField().setModelObject(listResources(sources));
+                        target.add(pastePanel.getFeedbackPanel());
+                        target.add(pastePanel.getSourceField());
+                        return false;
+                    }
+
+                    return true;
+                }
+
+                private void pasteResource(String dir, Iterator<Resource> it, Resource src) {
+                    Resource dest = store().get(Paths.path(dir, src.name()));
+                    if (clipBoard.isCopy() && Resources.serializable(dest).equals(src)) {
+                        // if we are copying a resource to its own
+                        // directory, we will give it a new name.
+                        for (int i = 1; Resources.exists(dest); i++) {
+                            dest = store().get(getPath(dir, src, i));
                         }
-
-                        @Override
-                        protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
-                            pastePanel.getFeedbackMessages().clear();
-
-                            String dir = pastePanel.getDirectory();
-
-                            Iterator<Resource> it = sources.iterator();
-                            while (it.hasNext()) {
-                                Resource src = it.next();
-                                pasteResource(dir, it, src);
-                            }
-
-                            // we select all the newly created nodes.
-                            treeView.setSelectedNodes(newSelected, target);
-
-                            // clear clipboard from moved resources (copied resources
-                            // will remain,
-                            // in case user wants to copy them multiple times)
-                            clipBoard.clearRemoved();
-
-                            // we leave modal only if operation was complete
-                            if (!sources.isEmpty()) {
-                                pastePanel.getSourceField().setModelObject(listResources(sources));
-                                target.add(pastePanel.getFeedbackPanel());
-                                target.add(pastePanel.getSourceField());
-                                return false;
-                            }
-
-                            return true;
-                        }
-
-                        private void pasteResource(
-                                String dir, Iterator<Resource> it, Resource src) {
-                            Resource dest = store().get(Paths.path(dir, src.name()));
-                            if (clipBoard.isCopy() && Resources.serializable(dest).equals(src)) {
-                                // if we are copying a resource to its own
-                                // directory, we will give it a new name.
-                                for (int i = 1; Resources.exists(dest); i++) {
-                                    dest = store().get(getPath(dir, src, i));
-                                }
-                            }
-                            if (Resources.exists(dest)) {
-                                pastePanel.error(
-                                        new ParamResourceModel("resourceExists", getPage())
-                                                .getString()
-                                                .replace("%", dest.path()));
+                    }
+                    if (Resources.exists(dest)) {
+                        pastePanel.error(new ParamResourceModel("resourceExists", getPage())
+                                .getString()
+                                .replace("%", dest.path()));
+                    } else {
+                        try {
+                            if (clipBoard.isCopy()) {
+                                Resources.copy(src, dest);
                             } else {
-                                try {
-                                    if (clipBoard.isCopy()) {
-                                        Resources.copy(src, dest);
-                                    } else {
-                                        if (!store().move(src.path(), dest.path())) {
-                                            moveFailed(dest);
-                                        }
-                                    }
-                                    it.remove();
-                                    newSelected.add(new ResourceNode(dest, expandedStates));
-                                } catch (IOException | IllegalStateException e) {
-                                    pastePanel.error(e.getMessage());
+                                if (!store().move(src.path(), dest.path())) {
+                                    moveFailed(dest);
                                 }
                             }
+                            it.remove();
+                            newSelected.add(new ResourceNode(dest, expandedStates));
+                        } catch (IOException | IllegalStateException e) {
+                            pastePanel.error(e.getMessage());
                         }
+                    }
+                }
 
-                        private void moveFailed(Resource dest) throws IOException {
-                            throw new IOException(
-                                    new ParamResourceModel("moveFailed", getPage())
-                                            .getString()
-                                            .replace("%", dest.path()));
-                        }
+                private void moveFailed(Resource dest) throws IOException {
+                    throw new IOException(new ParamResourceModel("moveFailed", getPage())
+                            .getString()
+                            .replace("%", dest.path()));
+                }
 
-                        private String getPath(String dir, Resource src, int i) {
-                            return Paths.path(
-                                    dir,
-                                    FilenameUtils.getExtension(src.name()).isEmpty()
-                                            ? src.name() + "." + i
-                                            : FilenameUtils.getBaseName(src.name())
-                                                    + "."
-                                                    + i
-                                                    + "."
-                                                    + FilenameUtils.getExtension(src.name()));
-                        }
-                    });
+                private String getPath(String dir, Resource src, int i) {
+                    return Paths.path(
+                            dir,
+                            FilenameUtils.getExtension(src.name()).isEmpty()
+                                    ? src.name() + "." + i
+                                    : FilenameUtils.getBaseName(src.name())
+                                            + "."
+                                            + i
+                                            + "."
+                                            + FilenameUtils.getExtension(src.name()));
+                }
+            });
         }
     }
 
     private class CopyButton extends AjaxLink<Void> {
+        @Serial
         private static final long serialVersionUID = 3883958793500232081L;
 
         public CopyButton() {
@@ -628,7 +577,9 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
     }
 
     private class CutButton extends AjaxLink<Void> {
+        @Serial
         private static final long serialVersionUID = 2647829118342823975L;
+
         private final AjaxLink<Void> btnPaste;
 
         public CutButton(AjaxLink<Void> btnPaste) {
@@ -641,13 +592,15 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
             clipBoard.setItems(treeView.getSelectedNodes(), false, target);
             enable(
                     btnPaste,
-                    treeView.getSelectedNode() != null && !treeView.getSelectedNode().isLeaf());
+                    treeView.getSelectedNode() != null
+                            && !treeView.getSelectedNode().isLeaf());
             target.add(treeView.getSelectedViews());
             target.add(btnPaste);
         }
     }
 
     private class RenameButton extends AjaxLink<Void> {
+        @Serial
         private static final long serialVersionUID = 2647829118342823975L;
 
         public RenameButton() {
@@ -658,73 +611,60 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
         public void onClick(AjaxRequestTarget target) {
             dialog.setInitialHeight(150);
 
-            dialog.showOkCancel(
-                    target,
-                    new DialogDelegate() {
-                        private static final long serialVersionUID = -8898887236980594842L;
+            dialog.showOkCancel(target, new DialogDelegate() {
+                @Serial
+                private static final long serialVersionUID = -8898887236980594842L;
 
-                        private PanelRename renamePanel;
+                private PanelRename renamePanel;
 
-                        @Override
-                        protected Component getContents(String id) {
-                            renamePanel =
-                                    new PanelRename(
-                                            id, treeView.getSelectedNode().getObject().name());
-                            return renamePanel;
-                        }
+                @Override
+                protected Component getContents(String id) {
+                    renamePanel = new PanelRename(
+                            id, treeView.getSelectedNode().getObject().name());
+                    return renamePanel;
+                }
 
-                        @Override
-                        protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
-                            renamePanel.getFeedbackMessages().clear();
+                @Override
+                protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                    renamePanel.getFeedbackMessages().clear();
 
-                            Resource src = treeView.getSelectedNode().getObject();
-                            Resource dest =
-                                    treeView.getSelectedNode()
-                                            .getObject()
-                                            .parent()
-                                            .get(renamePanel.getName());
-                            if (Resources.exists(dest)) {
-                                renamePanel.error(
-                                        new ParamResourceModel("resourceExists", getPage())
-                                                .getString()
-                                                .replace("%", dest.path()));
-                            } else {
-                                Boolean expandedModel =
-                                        expandedStates.getResourceExpandedState(src).getObject();
-                                if (!src.renameTo(dest)) {
-                                    renamePanel.error(
-                                            new ParamResourceModel("renameFailed", getPage())
-                                                    .getString());
-                                } else {
-                                    if (clipBoard
-                                            .getItems()
-                                            .contains(new ResourceNode(src, expandedStates))) {
-                                        clipBoard.clearRemoved();
-                                        clipBoard.addItem(
-                                                new ResourceNode(dest, expandedStates), target);
-                                    }
-
-                                    // we have a new expanded state. if the original
-                                    // node was expanded, we expand this one as well.
-                                    // (child nodes might still loose their expanded
-                                    // state though)
-                                    expandedStates
-                                            .getResourceExpandedState(dest)
-                                            .setObject(expandedModel);
-                                    // select the new node
-                                    treeView.setSelectedNode(
-                                            new ResourceNode(dest, expandedStates), target);
-                                    return true;
-                                }
+                    Resource src = treeView.getSelectedNode().getObject();
+                    Resource dest =
+                            treeView.getSelectedNode().getObject().parent().get(renamePanel.getName());
+                    if (Resources.exists(dest)) {
+                        renamePanel.error(new ParamResourceModel("resourceExists", getPage())
+                                .getString()
+                                .replace("%", dest.path()));
+                    } else {
+                        Boolean expandedModel =
+                                expandedStates.getResourceExpandedState(src).getObject();
+                        if (!src.renameTo(dest)) {
+                            renamePanel.error(new ParamResourceModel("renameFailed", getPage()).getString());
+                        } else {
+                            if (clipBoard.getItems().contains(new ResourceNode(src, expandedStates))) {
+                                clipBoard.clearRemoved();
+                                clipBoard.addItem(new ResourceNode(dest, expandedStates), target);
                             }
-                            target.add(renamePanel.getFeedbackPanel());
-                            return false;
+
+                            // we have a new expanded state. if the original
+                            // node was expanded, we expand this one as well.
+                            // (child nodes might still loose their expanded
+                            // state though)
+                            expandedStates.getResourceExpandedState(dest).setObject(expandedModel);
+                            // select the new node
+                            treeView.setSelectedNode(new ResourceNode(dest, expandedStates), target);
+                            return true;
                         }
-                    });
+                    }
+                    target.add(renamePanel.getFeedbackPanel());
+                    return false;
+                }
+            });
         }
     }
 
     private class DeleteButton extends AjaxLink<Void> {
+        @Serial
         private static final long serialVersionUID = -7370119488741589880L;
 
         public DeleteButton() {
@@ -740,42 +680,40 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
                 toBeDeleted.add(selectedNode.getObject());
             }
 
-            dialog.showOkCancel(
-                    target,
-                    new DialogDelegate() {
-                        private static final long serialVersionUID = 1557172478015946688L;
+            dialog.showOkCancel(target, new DialogDelegate() {
+                @Serial
+                private static final long serialVersionUID = 1557172478015946688L;
 
-                        @Override
-                        protected Component getContents(String id) {
-                            return new Label(
-                                    id,
-                                    new ParamResourceModel("confirmDelete", getPage()).getString()
-                                            + " "
-                                            + listResources(toBeDeleted));
+                @Override
+                protected Component getContents(String id) {
+                    return new Label(
+                            id,
+                            new ParamResourceModel("confirmDelete", getPage()).getString()
+                                    + " "
+                                    + listResources(toBeDeleted));
+                }
+
+                @Override
+                protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                    for (Resource res : toBeDeleted) {
+                        if (!res.delete()) {
+                            error(new ParamResourceModel("deleteFailed", getPage())
+                                    .getString()
+                                    .replace("%", res.path()));
+                            target.add(bottomFeedbackPanel);
+                            target.add(topFeedbackPanel);
                         }
+                    }
+                    // if deleted node was on clipboard, remove it form the
+                    // clipboard
+                    clipBoard.clearRemoved();
 
-                        @Override
-                        protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
-                            for (Resource res : toBeDeleted) {
-                                if (!res.delete()) {
-                                    error(
-                                            new ParamResourceModel("deleteFailed", getPage())
-                                                    .getString()
-                                                    .replace("%", res.path()));
-                                    target.add(bottomFeedbackPanel);
-                                    target.add(topFeedbackPanel);
-                                }
-                            }
-                            // if deleted node was on clipboard, remove it form the
-                            // clipboard
-                            clipBoard.clearRemoved();
+                    // remove selection
+                    treeView.setSelectedNodes(Collections.emptySet(), target);
 
-                            // remove selection
-                            treeView.setSelectedNodes(Collections.emptySet(), target);
-
-                            return true;
-                        }
-                    });
+                    return true;
+                }
+            });
         }
     }
 }

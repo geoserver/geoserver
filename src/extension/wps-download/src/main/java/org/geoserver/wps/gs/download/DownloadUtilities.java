@@ -69,8 +69,7 @@ final class DownloadUtilities {
                 || roi instanceof MultiPoint
                 || roi instanceof LineString
                 || roi instanceof MultiLineString) {
-            throw new IllegalStateException(
-                    "The Region of Interest is not a Polygon or Multipolygon!");
+            throw new IllegalStateException("The Region of Interest is not a Polygon or Multipolygon!");
         }
         // Empty check and validity check
         if (roi.isEmpty() || !roi.isValid()) {
@@ -81,17 +80,14 @@ final class DownloadUtilities {
     /**
      * Looks for a valid PPIO given the provided mime type and process parameter.
      *
-     * <p>The lenient approach makes this method try harder to send back a result but it is
-     * preferrable to be non-lenient since otherwise we might get s a PPIO which is not really what
-     * we need.
+     * <p>The lenient approach makes this method try harder to send back a result but it is preferrable to be
+     * non-lenient since otherwise we might get s a PPIO which is not really what we need.
      *
      * @param mime the mime-type for which we are searching for a {@link ProcessParameterIO}
-     * @param lenient whether or not trying to be lenient when returning a suitable {@link
-     *     ProcessParameterIO}.
-     * @return either <code>null</code> or the found
+     * @param lenient whether or not trying to be lenient when returning a suitable {@link ProcessParameterIO}.
+     * @return either {@code null} or the found
      */
-    static final ProcessParameterIO find(
-            Parameter<?> p, ApplicationContext context, String mime, boolean lenient) {
+    static final ProcessParameterIO find(Parameter<?> p, ApplicationContext context, String mime, boolean lenient) {
         //
         // lenient approach, try to give something back in any case
         //
@@ -125,12 +121,10 @@ final class DownloadUtilities {
         // Get the PPIO for the mimetype
         if (mime != null) {
             if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(
-                        Level.FINE, "Trying to search for a PPIO for the parameter " + p.getName());
+                LOGGER.log(Level.FINE, "Trying to search for a PPIO for the parameter " + p.getName());
             }
             for (ProcessParameterIO ppio : all) {
-                if (ppio instanceof ComplexPPIO
-                        && ((ComplexPPIO) ppio).getMimeType().equals(mime)) {
+                if (ppio instanceof ComplexPPIO iO && iO.getMimeType().equals(mime)) {
                     return ppio;
                 }
             }
@@ -146,13 +140,11 @@ final class DownloadUtilities {
     /**
      * This methods checks if the provided {@link FeatureCollection} is empty or not.
      *
-     * <p>In case the provided feature collection is empty it throws an {@link
-     * IllegalStateException};
+     * <p>In case the provided feature collection is empty it throws an {@link IllegalStateException};
      *
      * @param features the {@link SimpleFeatureCollection} to check
      */
-    static final void checkIsEmptyFeatureCollection(SimpleFeatureCollection features)
-            throws IllegalStateException {
+    static final void checkIsEmptyFeatureCollection(SimpleFeatureCollection features) throws IllegalStateException {
         if (features == null || features.isEmpty()) {
             throw new IllegalStateException("Got an empty feature collection.");
         }
@@ -184,17 +176,13 @@ final class DownloadUtilities {
      * @param crs target CRS for the transformation
      * @return a transformed Geometry object
      */
-    static Geometry transformGeometry(Geometry geometry, CoordinateReferenceSystem crs)
-            throws IOException {
-        final CoordinateReferenceSystem geometryCRS =
-                (CoordinateReferenceSystem) geometry.getUserData();
+    static Geometry transformGeometry(Geometry geometry, CoordinateReferenceSystem crs) throws IOException {
+        final CoordinateReferenceSystem geometryCRS = (CoordinateReferenceSystem) geometry.getUserData();
         // find math transform between the two coordinate reference systems
         MathTransform targetTX = null;
         if (!CRS.equalsIgnoreMetadata(geometryCRS, crs)) {
             if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(
-                        Level.FINE,
-                        "Geometry CRS is not equal to the target CRS, we might have to reproject");
+                LOGGER.log(Level.FINE, "Geometry CRS is not equal to the target CRS, we might have to reproject");
             }
             // we MIGHT have to reproject
             try {
@@ -205,9 +193,7 @@ final class DownloadUtilities {
             // reproject
             if (!targetTX.isIdentity()) {
                 if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.log(
-                            Level.FINE,
-                            "CRS transform is not an identity, we have to reproject the Geometry");
+                    LOGGER.log(Level.FINE, "CRS transform is not an identity, we have to reproject the Geometry");
                 }
                 try {
                     geometry = JTS.transform(geometry, targetTX);
@@ -217,12 +203,10 @@ final class DownloadUtilities {
 
                 // checks
                 if (geometry == null) {
-                    throw new IllegalStateException(
-                            "The Region of Interest is null after going back to native CRS!");
+                    throw new IllegalStateException("The Region of Interest is null after going back to native CRS!");
                 }
                 geometry.setUserData(crs); // set new CRS
-                DownloadUtilities.checkPolygonROI(
-                        geometry); // Check if the geometry is a Polygon or MultiPolygon
+                DownloadUtilities.checkPolygonROI(geometry); // Check if the geometry is a Polygon or MultiPolygon
             }
         }
         return geometry;
@@ -237,9 +221,7 @@ final class DownloadUtilities {
     static Resource findStyle(StyleInfo style) throws IOException {
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
         Resource styleFile = loader.get(Paths.path("styles", style.getFilename()));
-        if (styleFile != null
-                && styleFile.getType() == Resource.Type.RESOURCE
-                && Resources.canRead(styleFile)) {
+        if (styleFile != null && styleFile.getType() == Resource.Type.RESOURCE && Resources.canRead(styleFile)) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Style " + style.getName() + " found");
             }
@@ -248,28 +230,16 @@ final class DownloadUtilities {
         } else {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(
-                        Level.FINE,
-                        "Style "
-                                + style.getName()
-                                + " not found. Trying to search in the layer workspace");
+                        Level.FINE, "Style " + style.getName() + " not found. Trying to search in the layer workspace");
             }
             // the SLD file is not public, most probably it is located under a workspace.
             // lets try to search for the file inside the same layer workspace folder ...
             styleFile =
-                    loader.get(
-                            Paths.path(
-                                    "workspaces",
-                                    style.getWorkspace().getName(),
-                                    "styles",
-                                    style.getFilename()));
+                    loader.get(Paths.path("workspaces", style.getWorkspace().getName(), "styles", style.getFilename()));
 
-            if (styleFile != null
-                    && styleFile.getType() == Resource.Type.RESOURCE
-                    && Resources.canRead(styleFile)) {
+            if (styleFile != null && styleFile.getType() == Resource.Type.RESOURCE && Resources.canRead(styleFile)) {
                 if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.log(
-                            Level.FINE,
-                            "The style file cannot be found anywhere. We need to skip the SLD file");
+                    LOGGER.log(Level.FINE, "The style file cannot be found anywhere. We need to skip the SLD file");
                 }
                 // unfortunately the style file cannot be found anywhere. We need to skip the SLD
                 // file!

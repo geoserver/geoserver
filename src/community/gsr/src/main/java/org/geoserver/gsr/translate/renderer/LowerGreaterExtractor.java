@@ -29,13 +29,11 @@ class LowerGreaterExtractor implements PropertyRangeExtractor {
         if (children == null || children.size() != 2) return null;
 
         org.geotools.api.filter.Filter child1 = children.get(0);
-        if (!(child1 instanceof PropertyIsGreaterThanOrEqualTo
-                || child1 instanceof PropertyIsGreaterThan)) return null;
+        if (!(child1 instanceof PropertyIsGreaterThanOrEqualTo || child1 instanceof PropertyIsGreaterThan)) return null;
         BinaryComparisonOperator lowerBound = (BinaryComparisonOperator) child1;
 
         org.geotools.api.filter.Filter child2 = children.get(1);
-        if (!(child2 instanceof PropertyIsLessThanOrEqualTo
-                || child2 instanceof PropertyIsLessThan)) return null;
+        if (!(child2 instanceof PropertyIsLessThanOrEqualTo || child2 instanceof PropertyIsLessThan)) return null;
         BinaryComparisonOperator upperBound = (BinaryComparisonOperator) child2;
         Expression property1 = lowerBound.getExpression1();
         Expression property2 = upperBound.getExpression1();
@@ -60,7 +58,6 @@ class LowerGreaterExtractor implements PropertyRangeExtractor {
         }
         Double maxAsDouble = max.evaluate(null, double.class);
 
-        return new PropertyRange(
-                propertyName, new NumberRange(Double.class, minAsDouble, maxAsDouble));
+        return new PropertyRange(propertyName, new NumberRange(Double.class, minAsDouble, maxAsDouble));
     }
 }

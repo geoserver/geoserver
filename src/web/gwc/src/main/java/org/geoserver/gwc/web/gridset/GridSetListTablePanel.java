@@ -5,6 +5,7 @@
  */
 package org.geoserver.gwc.web.gridset;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,10 +28,10 @@ import org.geowebcache.grid.GridSet;
  */
 public abstract class GridSetListTablePanel extends GeoServerTablePanel<GridSet> {
 
+    @Serial
     private static final long serialVersionUID = 5957961031378924960L;
 
-    public GridSetListTablePanel(
-            final String id, final GridSetTableProvider provider, final boolean selectable) {
+    public GridSetListTablePanel(final String id, final GridSetTableProvider provider, final boolean selectable) {
         super(id, provider, selectable);
     }
 
@@ -79,8 +80,8 @@ public abstract class GridSetListTablePanel extends GeoServerTablePanel<GridSet>
     protected abstract Component actionLink(final String id, String gridSetName);
 
     /**
-     * Overrides to return a disabled and non selectable checkbox if the GridSet for the item is an
-     * internally defined one
+     * Overrides to return a disabled and non selectable checkbox if the GridSet for the item is an internally defined
+     * one
      *
      * @see org.geoserver.web.wicket.GeoServerTablePanel#selectOneCheckbox
      */

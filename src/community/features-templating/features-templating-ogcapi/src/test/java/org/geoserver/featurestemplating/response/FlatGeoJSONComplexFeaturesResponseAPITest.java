@@ -21,8 +21,7 @@ public class FlatGeoJSONComplexFeaturesResponseAPITest extends TemplateComplexTe
 
     private static final String FLAT_MF_TEMPLATE = "FlatGeoJSONMappedFeature";
 
-    private static final String FLAT_MF_RULE_CQL =
-            "requestParam('" + FLAT_MF_TEMPLATE + "')='true'";
+    private static final String FLAT_MF_RULE_CQL = "requestParam('" + FLAT_MF_TEMPLATE + "')='true'";
 
     private static final String FLAT_MF_PARAM = "&FlatGeoJSONMappedFeature=true";
 
@@ -44,10 +43,7 @@ public class FlatGeoJSONComplexFeaturesResponseAPITest extends TemplateComplexTe
     @Test
     public void testGeoJSONResponseOGCAPI() throws Exception {
         String condition = "requestParam('" + FLAT_MF_TEMPLATE + "')='true'";
-        String path =
-                "ogc/features/v1/collections/"
-                        + "gsml:MappedFeature"
-                        + "/items?f=application%2Fgeo%2Bjson";
+        String path = "ogc/features/v1/collections/" + "gsml:MappedFeature" + "/items?f=application%2Fgeo%2Bjson";
         path += FLAT_MF_PARAM;
         JSONObject result = (JSONObject) getJson(path);
         JSONArray features = (JSONArray) result.get("features");
@@ -61,15 +57,14 @@ public class FlatGeoJSONComplexFeaturesResponseAPITest extends TemplateComplexTe
 
     @Test
     public void testGeoJSONQueryOGCAPI() throws Exception {
-        StringBuilder sb =
-                new StringBuilder("ogc/features/v1/collections/")
-                        .append("gsml:MappedFeature")
-                        .append("/items?f=application%2Fgeo%2Bjson")
-                        .append("&filter-lang=cql-text")
-                        .append(
-                                "&filter= features.properties.gsml:GeologicUnit_gsml:composition.gsml:compositionPart.lithology.name")
-                        .append(" = 'name_2' ")
-                        .append(FLAT_MF_PARAM);
+        StringBuilder sb = new StringBuilder("ogc/features/v1/collections/")
+                .append("gsml:MappedFeature")
+                .append("/items?f=application%2Fgeo%2Bjson")
+                .append("&filter-lang=cql-text")
+                .append(
+                        "&filter= features.properties.gsml:GeologicUnit_gsml:composition.gsml:compositionPart.lithology.name")
+                .append(" = 'name_2' ")
+                .append(FLAT_MF_PARAM);
         JSONObject result = (JSONObject) getJson(sb.toString());
         JSONArray features = (JSONArray) result.get("features");
         assertEquals(1, features.size());
@@ -80,10 +75,7 @@ public class FlatGeoJSONComplexFeaturesResponseAPITest extends TemplateComplexTe
 
     @Test
     public void testGeoJSONResponseWithCustomSeparator() throws Exception {
-        String path =
-                "ogc/features/v1/collections/"
-                        + "gsml:MappedFeature"
-                        + "/items?f=application%2Fgeo%2Bjson";
+        String path = "ogc/features/v1/collections/" + "gsml:MappedFeature" + "/items?f=application%2Fgeo%2Bjson";
         path += FLAT_MF_PARAM;
         path += "&separator=.";
         JSONObject result = (JSONObject) getJson(path);
@@ -95,9 +87,7 @@ public class FlatGeoJSONComplexFeaturesResponseAPITest extends TemplateComplexTe
             Set<String> keys = properties.keySet();
             for (String key : keys) {
                 boolean keyWithSep =
-                        !key.equals("@id")
-                                && !key.equals("description")
-                                && !key.equals("gsml:geologicUnitType");
+                        !key.equals("@id") && !key.equals("description") && !key.equals("gsml:geologicUnitType");
                 if (keyWithSep) {
                     String[] arKey = key.split("\\.");
                     assertTrue(arKey.length > 0);

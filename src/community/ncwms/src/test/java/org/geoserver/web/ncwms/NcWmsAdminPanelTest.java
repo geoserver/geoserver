@@ -36,8 +36,7 @@ public class NcWmsAdminPanelTest extends GeoServerWicketTestSupport {
 
         // start the WMS admin page
         tester.startPage(WMSAdminPage.class);
-        tester.assertModelValue(
-                "form:extensions:0:content:timeSeriesPoolSize", TIME_SERIES_THREADS);
+        tester.assertModelValue("form:extensions:0:content:timeSeriesPoolSize", TIME_SERIES_THREADS);
         tester.assertModelValue("form:extensions:0:content:maxTimeSeriesValues", MAXTIMES);
 
         // update the values
@@ -45,15 +44,12 @@ public class NcWmsAdminPanelTest extends GeoServerWicketTestSupport {
         final int NEW_MAXTIMES_VALUE = 27;
         FormTester form = tester.newFormTester("form");
         form.setValue("extensions:0:content:timeSeriesPoolSize", String.valueOf(NEW_POOL_VALUE));
-        form.setValue(
-                "extensions:0:content:maxTimeSeriesValues", String.valueOf(NEW_MAXTIMES_VALUE));
+        form.setValue("extensions:0:content:maxTimeSeriesValues", String.valueOf(NEW_MAXTIMES_VALUE));
         form.submit("submit");
         tester.assertNoErrorMessage();
 
         NcWmsInfo updatedConfig =
-                gs.getService(WMSInfo.class)
-                        .getMetadata()
-                        .get(NcWmsService.WMS_CONFIG_KEY, NcWmsInfo.class);
+                gs.getService(WMSInfo.class).getMetadata().get(NcWmsService.WMS_CONFIG_KEY, NcWmsInfo.class);
         assertEquals(NEW_POOL_VALUE, updatedConfig.getTimeSeriesPoolSize());
         assertEquals(NEW_MAXTIMES_VALUE, updatedConfig.getMaxTimeSeriesValues());
     }

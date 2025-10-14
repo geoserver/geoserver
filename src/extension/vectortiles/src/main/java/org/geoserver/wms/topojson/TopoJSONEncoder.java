@@ -35,12 +35,10 @@ import org.locationtech.jts.geom.PrecisionModel;
 
 public class TopoJSONEncoder {
 
-    private static class TopologyAdapter
-            implements JsonSerializer<Topology>, JsonDeserializer<Topology> {
+    private static class TopologyAdapter implements JsonSerializer<Topology>, JsonDeserializer<Topology> {
 
         @Override
-        public JsonElement serialize(
-                Topology topology, Type typeOfSrc, JsonSerializationContext context) {
+        public JsonElement serialize(Topology topology, Type typeOfSrc, JsonSerializationContext context) {
 
             JsonObject root = new JsonObject();
             root.addProperty("type", "Topology");
@@ -96,10 +94,8 @@ public class TopoJSONEncoder {
                 if (topology.getScreenToWorldTransform().isIdentity()) {
                     jsonArc = TopoJSONEncoder.serialize(arc.getCoordinateSequence());
                 } else {
-                    jsonArc =
-                            TopoJSONEncoder.quantize(
-                                    arc.getCoordinateSequence(),
-                                    arc.getFactory().getPrecisionModel());
+                    jsonArc = TopoJSONEncoder.quantize(
+                            arc.getCoordinateSequence(), arc.getFactory().getPrecisionModel());
                 }
                 arcs.add(jsonArc);
             }
@@ -179,10 +175,9 @@ public class TopoJSONEncoder {
                 JsonElement jsonValue;
                 if (value instanceof Map) {
                     jsonValue = properties((Map<String, Object>) value);
-                } else if (value instanceof Boolean) {
-                    jsonValue = new JsonPrimitive((Boolean) value);
-                } else if (value instanceof Number) {
-                    Number n = (Number) value;
+                } else if (value instanceof Boolean boolean1) {
+                    jsonValue = new JsonPrimitive(boolean1);
+                } else if (value instanceof Number n) {
                     if (n instanceof Double && n.doubleValue() % 1 == 0) {
                         n = Long.valueOf(n.longValue());
                     } else if (n instanceof Float && n.floatValue() % 1 == 0) {
@@ -320,8 +315,7 @@ public class TopoJSONEncoder {
         return arc;
     }
 
-    public static JsonArray quantize(
-            final CoordinateSequence coords, PrecisionModel precisionModel) {
+    public static JsonArray quantize(final CoordinateSequence coords, PrecisionModel precisionModel) {
         JsonArray arc = new JsonArray();
         final int size = coords.size();
 

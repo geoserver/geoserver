@@ -20,8 +20,8 @@ import org.geotools.xsd.Node;
 /**
  * Binding object for the type http://cite.opengeospatial.org/gmlsf:FeatureReferenceType.
  *
- * <p>This is a special binding for wfs 1.1 cite tests. Its is a type defined in the application
- * schema for the test suite.
+ * <p>This is a special binding for wfs 1.1 cite tests. Its is a type defined in the application schema for the test
+ * suite.
  *
  * <p>
  *
@@ -100,8 +100,7 @@ public class FeatureReferenceTypeBinding extends AbstractComplexBinding {
             Object associated = association.getValue();
 
             // check for feature
-            if (associated instanceof SimpleFeature) {
-                SimpleFeature feature = (SimpleFeature) associated;
+            if (associated instanceof SimpleFeature feature) {
                 Name typeName = feature.getType().getName();
                 QName name = new QName(typeName.getNamespaceURI(), typeName.getLocalPart());
 

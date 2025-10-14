@@ -18,8 +18,7 @@ import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.sort.SortBy;
 
 /**
- * The GeoServer catalog which provides access to meta information about the data served by
- * GeoServer.
+ * The GeoServer catalog which provides access to meta information about the data served by GeoServer.
  *
  * <p>The following types of metadata are stored:
  *
@@ -33,27 +32,25 @@ import org.geotools.api.filter.sort.SortBy;
  * <h2>Workspaces</h2>
  *
  * <p>A workspace is a container for any number of stores. All workspaces can be obtained with the
- * {@link #getWorkspaces()}. A workspace is identified by its name ({@link
- * WorkspaceInfo#getName()}). A workspace can be looked up by its name with the {@link
- * #getWorkspaceByName(String)} method.
+ * {@link #getWorkspaces()}. A workspace is identified by its name ({@link WorkspaceInfo#getName()}). A workspace can be
+ * looked up by its name with the {@link #getWorkspaceByName(String)} method.
  *
  * <h2>Stores</h2>
  *
- * <p>The {@link #getStores(Class)} method provides access to all the stores in the catalog of a
- * specific type. For instance, the following would obtain all datstores from the catalog:
+ * <p>The {@link #getStores(Class)} method provides access to all the stores in the catalog of a specific type. For
+ * instance, the following would obtain all datstores from the catalog:
  *
  * <pre>
  *  //get all datastores
  *  List<DataStoreInfo> dataStores = catalog.getStores( DataStoreInfo.class );
  *  </pre>
  *
- * The methods {@link #getDataStores()} and {@link #getCoverageStores()} provide a convenience for
- * the two well known types.
+ * The methods {@link #getDataStores()} and {@link #getCoverageStores()} provide a convenience for the two well known
+ * types.
  *
- * <p>A store is contained within a workspace (see {@link StoreInfo#getWorkspace()}). The {@link
- * #getStoresByWorkspace(WorkspaceInfo, Class)} method for only stores contained with a specific
- * workspace. For instance, the following would obtain all datastores store within a particular
- * workspace:
+ * <p>A store is contained within a workspace (see {@link StoreInfo#getWorkspace()}). The
+ * {@link #getStoresByWorkspace(WorkspaceInfo, Class)} method for only stores contained with a specific workspace. For
+ * instance, the following would obtain all datastores store within a particular workspace:
  *
  * <pre>
  *  //get a workspace
@@ -65,22 +62,20 @@ import org.geotools.api.filter.sort.SortBy;
  *
  * <h2>Resources</h2>
  *
- * <p>The {@link #getResources(Class)} method provides access to all resources in the catalog of a
- * particular type. For instance, to acess all feature types in the catalog:
+ * <p>The {@link #getResources(Class)} method provides access to all resources in the catalog of a particular type. For
+ * instance, to acess all feature types in the catalog:
  *
  * <pre>
  *  List<FeatureTypeInfo> featureTypes = catalog.getResources( FeatureTypeInfo.class );
  * </pre>
  *
- * The {@link #getFeatureTypes()} and {@link #getCoverages()} methods are a convenience for the well
- * known types.
+ * The {@link #getFeatureTypes()} and {@link #getCoverages()} methods are a convenience for the well known types.
  *
- * <p>A resource is contained within a namespace, therefore it is identified by a namespace uri,
- * local name pair. The {@link #getResourceByName(String, String, Class)} method provides access to
- * a resource by its namespace qualified name. The method {@link #getResourceByName(String, Class)}
- * provides access to a resource by its unqualified name. The latter method will do an exhaustive
- * search of all namespaces for a resource with the specified name. If only a single resoure with
- * the name is found it is returned. Some examples:
+ * <p>A resource is contained within a namespace, therefore it is identified by a namespace uri, local name pair. The
+ * {@link #getResourceByName(String, String, Class)} method provides access to a resource by its namespace qualified
+ * name. The method {@link #getResourceByName(String, Class)} provides access to a resource by its unqualified name. The
+ * latter method will do an exhaustive search of all namespaces for a resource with the specified name. If only a single
+ * resoure with the name is found it is returned. Some examples:
  *
  * <pre>
  *   //get a feature type by its qualified name
@@ -97,10 +92,9 @@ import org.geotools.api.filter.sort.SortBy;
  *
  * <h2>Layers</h2>
  *
- * <p>A layers is used to publish a resource. The {@link #getLayers()} provides access to all layers
- * in the catalog. A layer is uniquely identified by its name. The {@link #getLayerByName(String)}
- * method provides access to a layer by its name. The {@link #getLayers(ResourceInfo)} return all
- * the layers publish a specific resource. Some examples:
+ * <p>A layers is used to publish a resource. The {@link #getLayers()} provides access to all layers in the catalog. A
+ * layer is uniquely identified by its name. The {@link #getLayerByName(String)} method provides access to a layer by
+ * its name. The {@link #getLayers(ResourceInfo)} return all the layers publish a specific resource. Some examples:
  *
  * <pre>
  *  //get a layer by its name
@@ -114,9 +108,8 @@ import org.geotools.api.filter.sort.SortBy;
  *
  * <h2>Modifing the Catalog</h2>
  *
- * <p>Catalog objects such as stores and resoures are mutable and can be modified. However, any
- * modifications made on an object do not apply until they are saved. For instance, consider the
- * following example of modifying a feature type:
+ * <p>Catalog objects such as stores and resoures are mutable and can be modified. However, any modifications made on an
+ * object do not apply until they are saved. For instance, consider the following example of modifying a feature type:
  *
  * <pre>
  *  //get a feature type
@@ -133,9 +126,9 @@ import org.geotools.api.filter.sort.SortBy;
  *
  * <h2>Isolated Workspaces</h2>
  *
- * Is possible to request a catalog object using its workspace prefix or its namespace URI, the last
- * method will not work to retrieve the content of an isolated workspace unless in the context of a
- * virtual service belonging to that workspace.
+ * Is possible to request a catalog object using its workspace prefix or its namespace URI, the last method will not
+ * work to retrieve the content of an isolated workspace unless in the context of a virtual service belonging to that
+ * workspace.
  *
  * @author Justin Deoliveira, The Open Planning project
  */
@@ -158,9 +151,9 @@ public interface Catalog extends CatalogInfo {
      * Validate a store.
      *
      * @param store the StoreInfo to be validated
-     * @param isNew a boolean; if true then an existing store with the same name and workspace will
-     *     cause a validation error.
-     * @returns List<RuntimeException> non-empty if validation fails
+     * @param isNew a boolean; if true then an existing store with the same name and workspace will cause a validation
+     *     error.
+     * @return List<RuntimeException> non-empty if validation fails
      */
     ValidationResult validate(StoreInfo store, boolean isNew);
 
@@ -173,19 +166,18 @@ public interface Catalog extends CatalogInfo {
     /**
      * Detaches the store from the catalog.
      *
-     * <p>This method does not remove the object from the catalog, it "unnattaches" the object
-     * resolving any proxies.
+     * <p>This method does not remove the object from the catalog, it "unnattaches" the object resolving any proxies.
      *
-     * <p>In the even the specified object does not exist in the catalog it itself should be
-     * returned, this method should never return null.
+     * <p>In the even the specified object does not exist in the catalog it itself should be returned, this method
+     * should never return null.
      */
     <T extends StoreInfo> T detach(T store);
 
     /**
      * Returns the store with the specified id.
      *
-     * <p><tt>clazz</td> is used to determine the implementation of StoreInfo which should be
-     * returned. An example which would return a data store.
+     * <p><tt>clazz</td> is used to determine the implementation of StoreInfo which should be returned. An example which
+     * would return a data store.
      *
      * <pre>
      *   <code>
@@ -195,15 +187,15 @@ public interface Catalog extends CatalogInfo {
      *
      * @param id The id of the store.
      * @param clazz The class of the store to return.
-     * @return The store matching id, or <code>null</code> if no such store exists.
+     * @return The store matching id, or {@code null} if no such store exists.
      */
     <T extends StoreInfo> T getStore(String id, Class<T> clazz);
 
     /**
      * Returns the store with the specified name.
      *
-     * <p><tt>clazz</td> is used to determine the implementation of StoreInfo which should be
-     * returned. An example which would return a data store.
+     * <p><tt>clazz</td> is used to determine the implementation of StoreInfo which should be returned. An example which
+     * would return a data store.
      *
      * <p>
      *
@@ -211,18 +203,18 @@ public interface Catalog extends CatalogInfo {
      *   getStoreByName(null,name,clazz);
      * </pre>
      *
-     * @param name The name of the store. The name can be {@code null} or {@link #DEFAULT} to
-     *     retrieve the default store in the default workspace.
+     * @param name The name of the store. The name can be {@code null} or {@link #DEFAULT} to retrieve the default store
+     *     in the default workspace.
      * @param clazz The class of the store to return.
-     * @return The store matching name, or <code>null</code> if no such store exists.
+     * @return The store matching name, or {@code null} if no such store exists.
      */
     <T extends StoreInfo> T getStoreByName(String name, Class<T> clazz);
 
     /**
      * Returns the store with the specified name in the specified workspace.
      *
-     * <p><tt>clazz</td> is used to determine the implementation of StoreInfo which should be
-     * returned. An example which would return a data store.
+     * <p><tt>clazz</td> is used to determine the implementation of StoreInfo which should be returned. An example which
+     * would return a data store.
      *
      * <p>
      *
@@ -232,20 +224,20 @@ public interface Catalog extends CatalogInfo {
      * </code>
      * </pre>
      *
-     * @param workspaceName The name of the workspace containing the store. The name can be {@code
-     *     null} or {@link #DEFAULT} to identify the default workspace.
-     * @param name The name of the store. The name can be {@code null} or {@link #DEFAULT} to
-     *     retrieve the default store in the specified workspace.
+     * @param workspaceName The name of the workspace containing the store. The name can be {@code null} or
+     *     {@link #DEFAULT} to identify the default workspace.
+     * @param name The name of the store. The name can be {@code null} or {@link #DEFAULT} to retrieve the default store
+     *     in the specified workspace.
      * @param clazz The class of store to return.
-     * @return The store matching name, or <code>null</code> if no such store e xists.
+     * @return The store matching name, or {@code null} if no such store e xists.
      */
     <T extends StoreInfo> T getStoreByName(String workspaceName, String name, Class<T> clazz);
 
     /**
      * Returns the store with the specified name in the specified workspace.
      *
-     * <p><tt>clazz</td> is used to determine the implementation of StoreInfo which should be
-     * returned. An example which would return a data store.
+     * <p><tt>clazz</td> is used to determine the implementation of StoreInfo which should be returned. An example which
+     * would return a data store.
      *
      * <p>
      *
@@ -257,18 +249,18 @@ public interface Catalog extends CatalogInfo {
      * </pre>
      *
      * @param workspace The workspace containing the store.
-     * @param name The name of the store. The name can be {@code null} or {@link #DEFAULT} to
-     *     retrieve the default store in the default workspace.
+     * @param name The name of the store. The name can be {@code null} or {@link #DEFAULT} to retrieve the default store
+     *     in the default workspace.
      * @param clazz The class of store to return.
-     * @return The store matching name, or <code>null</code> if no such store exists.
+     * @return The store matching name, or {@code null} if no such store exists.
      */
     <T extends StoreInfo> T getStoreByName(WorkspaceInfo workspace, String name, Class<T> clazz);
 
     /**
      * All stores in the catalog of the specified type.
      *
-     * <p>The <tt>clazz</tt> parameter is used to filter the types of stores returned. An example
-     * which would return all data stores:
+     * <p>The <tt>clazz</tt> parameter is used to filter the types of stores returned. An example which would return all
+     * data stores:
      *
      * <pre>
      *   <code>
@@ -281,8 +273,8 @@ public interface Catalog extends CatalogInfo {
     /**
      * All stores in the specified workspace of the given type.
      *
-     * <p>The <tt>clazz</tt> parameter is used to filter the types of stores returned. An example
-     * which would return all data stores in a specific workspace:
+     * <p>The <tt>clazz</tt> parameter is used to filter the types of stores returned. An example which would return all
+     * data stores in a specific workspace:
      *
      * <pre>
      *   <code>
@@ -292,8 +284,7 @@ public interface Catalog extends CatalogInfo {
      * </code>
      * </pre>
      *
-     * @param workspace The workspace containing returned stores, may be null to specify the default
-     *     workspace.
+     * @param workspace The workspace containing returned stores, may be null to specify the default workspace.
      * @param clazz The type of stores to lookup.
      */
     <T extends StoreInfo> List<T> getStoresByWorkspace(WorkspaceInfo workspace, Class<T> clazz);
@@ -310,15 +301,14 @@ public interface Catalog extends CatalogInfo {
      *
      * <p>The <tt>clazz</tt> parameter is used to filter the types of stores returned.
      *
-     * @param workspaceName The name of the workspace containing returned store s, may be null to
-     *     specify the default workspace.
+     * @param workspaceName The name of the workspace containing returned store s, may be null to specify the default
+     *     workspace.
      * @param clazz The type of stores to lookup.
      */
     <T extends StoreInfo> List<T> getStoresByWorkspace(String workspaceName, Class<T> clazz);
 
     /**
-     * Returns a WMS store matching a particular id, or <code>null</code> if no such data store
-     * could be found.
+     * Returns a WMS store matching a particular id, or {@code null} if no such data store could be found.
      *
      * <p>This method is convenience for:
      *
@@ -341,8 +331,7 @@ public interface Catalog extends CatalogInfo {
     WMSStoreInfo getWMSStoreByName(String name);
 
     /**
-     * Returns a WMTS store matching a particular id, or <code>null</code> if no such data store
-     * could be found.
+     * Returns a WMTS store matching a particular id, or {@code null} if no such data store could be found.
      *
      * <p>This method is convenience for:
      *
@@ -365,8 +354,7 @@ public interface Catalog extends CatalogInfo {
     WMTSStoreInfo getWMTSStoreByName(String name);
 
     /**
-     * Returns a datastore matching a particular id, or <code>null</code> if no such data store
-     * could be found.
+     * Returns a datastore matching a particular id, or {@code null} if no such data store could be found.
      *
      * <p>This method is convenience for:
      *
@@ -411,8 +399,8 @@ public interface Catalog extends CatalogInfo {
      * </code> if no such datastore could be found.
      *
      * @param name The name of the datastore.
-     * @param workspace The workspace containing the datastore, may be <code>nu ll</code> to specify
-     *     the default workspace.
+     * @param workspace The workspace containing the datastore, may be <code>nu ll</code> to specify the default
+     *     workspace.
      * @return The store matching the name, or null if no such store could be f ound.
      */
     DataStoreInfo getDataStoreByName(WorkspaceInfo workspace, String name);
@@ -446,8 +434,8 @@ public interface Catalog extends CatalogInfo {
     /**
      * All data stores in the catalog.
      *
-     * <p>The resulting list should not be modified to add or remove stores, the {@link
-     * #add(StoreInfo)} and {@link #remove(StoreInfo)} are used for this purpose.
+     * <p>The resulting list should not be modified to add or remove stores, the {@link #add(StoreInfo)} and
+     * {@link #remove(StoreInfo)} are used for this purpose.
      */
     List<DataStoreInfo> getDataStores();
 
@@ -458,8 +446,7 @@ public interface Catalog extends CatalogInfo {
     void setDefaultDataStore(WorkspaceInfo workspace, DataStoreInfo defaultStore);
 
     /**
-     * Returns a coverage store matching a particular id, or <code>null</code> if no such coverage
-     * store could be found.
+     * Returns a coverage store matching a particular id, or {@code null} if no such coverage store could be found.
      *
      * <p>This method is convenience for:
      *
@@ -470,8 +457,7 @@ public interface Catalog extends CatalogInfo {
     CoverageStoreInfo getCoverageStore(String id);
 
     /**
-     * Returns a coverage store matching a particular name, or <code>null</code> if no such coverage
-     * store could be found.
+     * Returns a coverage store matching a particular name, or {@code null} if no such coverage store could be found.
      *
      * <p>This method is a convenience for: <code>
      *   <pre>
@@ -504,8 +490,8 @@ public interface Catalog extends CatalogInfo {
      * null</code> if no such coverageStore could be found.
      *
      * @param name The name of the coverageStore.
-     * @param workspace The workspace containing the coverageStore, may be <code>null</code> to
-     *     specify the default workspace.
+     * @param workspace The workspace containing the coverageStore, may be {@code null} to specify the default
+     *     workspace.
      * @return The store matching the name, or null if no such store could be found.
      */
     CoverageStoreInfo getCoverageStoreByName(WorkspaceInfo workspace, String name);
@@ -539,16 +525,16 @@ public interface Catalog extends CatalogInfo {
     /**
      * All coverage stores in the catalog.
      *
-     * <p>The resulting list should not be modified to add or remove stores, the {@link
-     * #add(StoreInfo)} and {@link #remove(StoreInfo)} are used for this purpose.
+     * <p>The resulting list should not be modified to add or remove stores, the {@link #add(StoreInfo)} and
+     * {@link #remove(StoreInfo)} are used for this purpose.
      */
     List<CoverageStoreInfo> getCoverageStores();
 
     /**
      * Returns the resource with the specified id.
      *
-     * <p><tt>clazz</td> is used to determine the implementation of ResourceInfo which should be
-     * returned. An example which would return a feature type.
+     * <p><tt>clazz</td> is used to determine the implementation of ResourceInfo which should be returned. An example
+     * which would return a feature type.
      *
      * <pre>
      *   <code>
@@ -558,7 +544,7 @@ public interface Catalog extends CatalogInfo {
      *
      * @param id The id of the resource.
      * @param clazz The class of the resource to return.
-     * @return The resource matching id, or <code>null</code> if no such resource exists.
+     * @return The resource matching id, or {@code null} if no such resource exists.
      */
     <T extends ResourceInfo> T getResource(String id, Class<T> clazz);
 
@@ -567,36 +553,32 @@ public interface Catalog extends CatalogInfo {
      *
      * <p><tt>ns</tt> may be specified as a namespace prefix or uri.
      *
-     * <p><tt>clazz</td> is used to determine the implementation of ResourceInfo which should be
-     * returned.
+     * <p><tt>clazz</td> is used to determine the implementation of ResourceInfo which should be returned.
      *
-     * @param ns The prefix or uri to which the resource belongs, may be <code>null</code>.
+     * @param ns The prefix or uri to which the resource belongs, may be {@code null}.
      * @param name The name of the resource.
      * @param clazz The class of the resource.
-     * @return The resource matching the name, or <code>null</code> if no such resource exists.
+     * @return The resource matching the name, or {@code null} if no such resource exists.
      */
     <T extends ResourceInfo> T getResourceByName(String ns, String name, Class<T> clazz);
 
     /**
      * Looks up a resource by qualified name.
      *
-     * <p><tt>clazz</td> is used to determine the implementation of ResourceInfo which should be
-     * returned.
+     * <p><tt>clazz</td> is used to determine the implementation of ResourceInfo which should be returned.
      *
-     * @param ns The namespace to which the resource belongs, may be <code>null</code> to specify
-     *     the default namespace.
+     * @param ns The namespace to which the resource belongs, may be {@code null} to specify the default namespace.
      * @param name The name of the resource.
      * @param clazz The class of the resource.
-     * @return The resource matching the name, or <code>null</code> if no such resource exists.
+     * @return The resource matching the name, or {@code null} if no such resource exists.
      */
     <T extends ResourceInfo> T getResourceByName(NamespaceInfo ns, String name, Class<T> clazz);
 
     /**
      * Looks up a resource by qualified name.
      *
-     * <p><tt>clazz</td> is used to determine the implementation of ResourceInfo which should be
-     * returned. Isolated workspaces content will be ignored unless in the context of a matching
-     * virtual service.
+     * <p><tt>clazz</td> is used to determine the implementation of ResourceInfo which should be returned. Isolated
+     * workspaces content will be ignored unless in the context of a matching virtual service.
      *
      * @param <T>
      * @param name The qualified name.
@@ -609,14 +591,12 @@ public interface Catalog extends CatalogInfo {
      * <p>The lookup rules used by this method are as follows:
      *
      * <ul>
-     *   <li>If a resource in the default namespace is found matching the specified name, it is
-     *       returned.
-     *   <li>If a single resource among all non-default namespaces is found matching the specified
-     *       name, it is returned.
+     *   <li>If a resource in the default namespace is found matching the specified name, it is returned.
+     *   <li>If a single resource among all non-default namespaces is found matching the specified name, it is returned.
      * </ul>
      *
-     * Care should be taken when using this method, use of {@link #getResourceByName(String, String,
-     * Class)} is preferred.
+     * Care should be taken when using this method, use of {@link #getResourceByName(String, String, Class)} is
+     * preferred.
      *
      * @param name The name of the resource.
      * @param clazz The type of the resource.
@@ -630,9 +610,9 @@ public interface Catalog extends CatalogInfo {
      * Validate a resource.
      *
      * @param resource the ResourceInfo to be validated
-     * @param isNew a boolean; if true then an existing resource with the same name and store will
-     *     cause a validation error.
-     * @returns List<RuntimeException> non-empty if validation fails
+     * @param isNew a boolean; if true then an existing resource with the same name and store will cause a validation
+     *     error.
+     * @return List<RuntimeException> non-empty if validation fails
      */
     ValidationResult validate(ResourceInfo resource, boolean isNew);
 
@@ -645,19 +625,18 @@ public interface Catalog extends CatalogInfo {
     /**
      * Detatches the resource from the catalog.
      *
-     * <p>This method does not remove the object from the catalog, it "unnattaches" the object
-     * resolving any proxies.
+     * <p>This method does not remove the object from the catalog, it "unnattaches" the object resolving any proxies.
      *
-     * <p>In the even the specified object does not exist in the catalog it itself should be
-     * returned, this method should never return null.
+     * <p>In the even the specified object does not exist in the catalog it itself should be returned, this method
+     * should never return null.
      */
     <T extends ResourceInfo> T detach(T resource);
 
     /**
      * All resources in the catalog of the specified type.
      *
-     * <p>The <tt>clazz</tt> parameter is used to filter the types of resources returned. An example
-     * which would return all feature types:
+     * <p>The <tt>clazz</tt> parameter is used to filter the types of resources returned. An example which would return
+     * all feature types:
      *
      * <pre>
      *   <code>
@@ -670,23 +649,22 @@ public interface Catalog extends CatalogInfo {
     /**
      * All resources in the specified namespace of the specified type.
      *
-     * <p>The <tt>clazz</tt> parameter is used to filter the types of resources returned. An example
-     * which would return all feature types:
+     * <p>The <tt>clazz</tt> parameter is used to filter the types of resources returned. An example which would return
+     * all feature types:
      *
      * @param namespace The namespace.
      * @param clazz The class of resources returned.
      * @return List of resources of the specified type in the specified namespace.
      */
-    <T extends ResourceInfo> List<T> getResourcesByNamespace(
-            NamespaceInfo namespace, Class<T> clazz);
+    <T extends ResourceInfo> List<T> getResourcesByNamespace(NamespaceInfo namespace, Class<T> clazz);
 
     /**
      * All resources in the specified namespace of the specified type.
      *
      * <p>The <tt>namespace</tt> may specify the prefix, or the uri of the namespace.
      *
-     * <p>The <tt>clazz</tt> parameter is used to filter the types of resources returned. An example
-     * which would return all feature types:
+     * <p>The <tt>clazz</tt> parameter is used to filter the types of resources returned. An example which would return
+     * all feature types:
      *
      * <p>This method is convenience for:
      *
@@ -695,8 +673,7 @@ public interface Catalog extends CatalogInfo {
      * return getResourcesByNamespace(ns,clazz);
      * </pre>
      *
-     * Isolated workspaces content will be ignored unless in the context of a matching virtual
-     * service.
+     * Isolated workspaces content will be ignored unless in the context of a matching virtual service.
      *
      * @param namespace The namespace.
      * @param clazz The class of resources returned.
@@ -723,8 +700,7 @@ public interface Catalog extends CatalogInfo {
     <T extends ResourceInfo> List<T> getResourcesByStore(StoreInfo store, Class<T> clazz);
 
     /**
-     * Returns the feature type matching a particular id, or <code>null</code> if no such feature
-     * type could be found.
+     * Returns the feature type matching a particular id, or {@code null} if no such feature type could be found.
      *
      * <p>This method is convenience for:
      *
@@ -732,7 +708,7 @@ public interface Catalog extends CatalogInfo {
      * getResource( id, FeatureTypeInfo.class );
      * </pre>
      *
-     * @return The feature type matching the id, or <code>null</code> if no such resource exists.
+     * @return The feature type matching the id, or {@code null} if no such resource exists.
      */
     FeatureTypeInfo getFeatureType(String id);
 
@@ -747,10 +723,10 @@ public interface Catalog extends CatalogInfo {
      * getResourceByName( ns, name, FeatureTypeInfo.class );
      * </pre>
      *
-     * @param ns The prefix or uri to which the feature type belongs, may be <code>null</code> to
-     *     specify the default namespace.
+     * @param ns The prefix or uri to which the feature type belongs, may be {@code null} to specify the default
+     *     namespace.
      * @param name The name of the feature type.
-     * @return The feature type matching the name, or <code>null</code> if no such resource exists.
+     * @return The feature type matching the name, or {@code null} if no such resource exists.
      */
     FeatureTypeInfo getFeatureTypeByName(String ns, String name);
 
@@ -763,10 +739,9 @@ public interface Catalog extends CatalogInfo {
      * getResourceByName( ns, name, FeatureTypeInfo.class );
      * </pre>
      *
-     * @param ns The namespace to which the feature type belongs, may be <code>null</code> to
-     *     specify the default namespace.
+     * @param ns The namespace to which the feature type belongs, may be {@code null} to specify the default namespace.
      * @param name The name of the feature type.
-     * @return The feature type matching the name, or <code>null</code> if no such resource exists.
+     * @return The feature type matching the name, or {@code null} if no such resource exists.
      */
     FeatureTypeInfo getFeatureTypeByName(NamespaceInfo ns, String name);
 
@@ -779,8 +754,7 @@ public interface Catalog extends CatalogInfo {
      * getResourceByName( name, FeatureTypeInfo.class );
      * </pre>
      *
-     * Isolated workspaces content will be ignored unless in the context of a matching virtual
-     * service.
+     * Isolated workspaces content will be ignored unless in the context of a matching virtual service.
      *
      * @param name The qualified name.
      */
@@ -792,18 +766,16 @@ public interface Catalog extends CatalogInfo {
      * <p>The lookup rules used by this method are as follows:
      *
      * <ul>
-     *   <li>If a feature type in the default namespace is found matching the specified name, it is
+     *   <li>If a feature type in the default namespace is found matching the specified name, it is returned.
+     *   <li>If a single feature type among all non-default namespaces is found matching the specified name, it is
      *       returned.
-     *   <li>If a single feature type among all non-default namespaces is found matching the
-     *       specified name, it is returned.
      * </ul>
      *
-     * Care should be taken when using this method, use of {@link #getFeatureTypeByName(String,
-     * String)} is preferred.
+     * Care should be taken when using this method, use of {@link #getFeatureTypeByName(String, String)} is preferred.
      *
      * @param name The name of the feature type.
-     * @return The single feature type matching the specified name, or <code>null</code> if either
-     *     none could be found or multiple were found.
+     * @return The single feature type matching the specified name, or {@code null} if either none could be found or
+     *     multiple were found.
      */
     FeatureTypeInfo getFeatureTypeByName(String name);
 
@@ -819,8 +791,7 @@ public interface Catalog extends CatalogInfo {
      * </pre>
      *
      * <p>The resulting list should not be used to add or remove resources from the catalog, the
-     * {@link #add(ResourceInfo)} and {@link #remove(ResourceInfo)} methods are used for this
-     * purpose.
+     * {@link #add(ResourceInfo)} and {@link #remove(ResourceInfo)} methods are used for this purpose.
      */
     List<FeatureTypeInfo> getFeatureTypes();
 
@@ -849,7 +820,7 @@ public interface Catalog extends CatalogInfo {
      *
      * @param dataStore The data store.
      * @param name The feature type name.
-     * @return The feature type, or <code>null</code> if no such feature type e xists.
+     * @return The feature type, or {@code null} if no such feature type e xists.
      */
     FeatureTypeInfo getFeatureTypeByDataStore(DataStoreInfo dataStore, String name);
 
@@ -862,8 +833,7 @@ public interface Catalog extends CatalogInfo {
     List<FeatureTypeInfo> getFeatureTypesByDataStore(DataStoreInfo store);
 
     /**
-     * Returns the coverage matching a particular id, or <code>null</code> if no such coverage could
-     * be found.
+     * Returns the coverage matching a particular id, or {@code null} if no such coverage could be found.
      *
      * <p>This method is a convenience for:
      *
@@ -884,12 +854,11 @@ public interface Catalog extends CatalogInfo {
      * getResourceByName(ns,name,CoverageInfo.class);
      * </pre>
      *
-     * Isolated workspaces content will be ignored unless in the context of a matching virtual
-     * service.
+     * Isolated workspaces content will be ignored unless in the context of a matching virtual service.
      *
-     * @param ns The prefix or uri to which the coverage belongs, may be <code>null</code>.
+     * @param ns The prefix or uri to which the coverage belongs, may be {@code null}.
      * @param name The name of the coverage.
-     * @return The coverage matching the name, or <code>null</code> if no such resource exists.
+     * @return The coverage matching the name, or {@code null} if no such resource exists.
      */
     CoverageInfo getCoverageByName(String ns, String name);
 
@@ -902,9 +871,9 @@ public interface Catalog extends CatalogInfo {
      * getResourceByName(ns,name,CoverageInfo.class);
      * </pre>
      *
-     * @param ns The namespace to which the coverage belongs, may be <code>null</code>.
+     * @param ns The namespace to which the coverage belongs, may be {@code null}.
      * @param name The name of the coverage.
-     * @return The coverage matching the name, or <code>null</code> if no such resource exists.
+     * @return The coverage matching the name, or {@code null} if no such resource exists.
      */
     CoverageInfo getCoverageByName(NamespaceInfo ns, String name);
 
@@ -917,8 +886,7 @@ public interface Catalog extends CatalogInfo {
      * getResourceByName(name,CoverageInfo.class);
      * </pre>
      *
-     * Isolated workspaces content will be ignored unless in the context of a matching virtual
-     * service.
+     * Isolated workspaces content will be ignored unless in the context of a matching virtual service.
      *
      * @param name The qualified name.
      */
@@ -930,18 +898,15 @@ public interface Catalog extends CatalogInfo {
      * <p>The lookup rules used by this method are as follows:
      *
      * <ul>
-     *   <li>If a coverage in the default namespace is found matching the specified name, it is
-     *       returned.
-     *   <li>If a single coverage among all non-default namespaces is found matching the specified
-     *       name, it is returned.
+     *   <li>If a coverage in the default namespace is found matching the specified name, it is returned.
+     *   <li>If a single coverage among all non-default namespaces is found matching the specified name, it is returned.
      * </ul>
      *
-     * Care should be taken when using this method, use of {@link #getCoverageByName(String,
-     * String)} is preferred.
+     * Care should be taken when using this method, use of {@link #getCoverageByName(String, String)} is preferred.
      *
      * @param name The name of the coverage.
-     * @return The single coverage matching the specified name, or <code>null</code> if either none
-     *     could be found or multiple were found.
+     * @return The single coverage matching the specified name, or {@code null} if either none could be found or
+     *     multiple were found.
      */
     CoverageInfo getCoverageByName(String name);
 
@@ -956,8 +921,8 @@ public interface Catalog extends CatalogInfo {
      * </code>
      * </pre>
      *
-     * <p>This method should not be used to add or remove coverages from the catalog. The {@link
-     * #add(ResourceInfo)} and {@link #remove(ResourceInfo)} methods are used for this purpose.
+     * <p>This method should not be used to add or remove coverages from the catalog. The {@link #add(ResourceInfo)} and
+     * {@link #remove(ResourceInfo)} methods are used for this purpose.
      */
     List<CoverageInfo> getCoverages();
 
@@ -986,7 +951,7 @@ public interface Catalog extends CatalogInfo {
      *
      * @param coverageStore The coverage store.
      * @param name The coverage name.
-     * @return The coverage, or <code>null</code> if no such coverage exists.
+     * @return The coverage, or {@code null} if no such coverage exists.
      */
     CoverageInfo getCoverageByCoverageStore(CoverageStoreInfo coverageStore, String name);
 
@@ -1005,9 +970,8 @@ public interface Catalog extends CatalogInfo {
      * Validate a layer.
      *
      * @param layer the LayerInfo to be validated
-     * @param isNew a boolean; if true then an existing layer with the same name will cause a
-     *     validation error.
-     * @returns List<RuntimeException> non-empty if validation fails
+     * @param isNew a boolean; if true then an existing layer with the same name will cause a validation error.
+     * @return List<RuntimeException> non-empty if validation fails
      */
     ValidationResult validate(LayerInfo layer, boolean isNew);
 
@@ -1020,34 +984,26 @@ public interface Catalog extends CatalogInfo {
     /**
      * Detatches the layer from the catalog.
      *
-     * <p>This method does not remove the object from the catalog, it "unnattaches" the object
-     * resolving any proxies.
+     * <p>This method does not remove the object from the catalog, it "unnattaches" the object resolving any proxies.
      *
-     * <p>In the even the specified object does not exist in the catalog it itself should be
-     * returned, this method should never return null.
+     * <p>In the even the specified object does not exist in the catalog it itself should be returned, this method
+     * should never return null.
      */
     LayerInfo detach(LayerInfo layer);
 
     /** All coverages which are part of the specified store. */
     List<CoverageInfo> getCoveragesByStore(CoverageStoreInfo store);
 
-    /**
-     * Returns the layer matching a particular id, or <code>null</code> if no such layer could be
-     * found.
-     */
+    /** Returns the layer matching a particular id, or {@code null} if no such layer could be found. */
     LayerInfo getLayer(String id);
 
-    /**
-     * Returns the layer matching a particular name, or <code>null</code> if no such layer could be
-     * found.
-     */
+    /** Returns the layer matching a particular name, or {@code null} if no such layer could be found. */
     LayerInfo getLayerByName(String name);
 
     /**
      * Returns the layer matching a particular qualified name.
      *
-     * <p>Isolated workspaces content will be ignored unless in the context of a matching virtual
-     * service.
+     * <p>Isolated workspaces content will be ignored unless in the context of a matching virtual service.
      */
     LayerInfo getLayerByName(Name name);
 
@@ -1087,31 +1043,25 @@ public interface Catalog extends CatalogInfo {
     /**
      * Detatches the map from the catalog.
      *
-     * <p>This method does not remove the object from the catalog, it "unnattaches" the object
-     * resolving any proxies.
+     * <p>This method does not remove the object from the catalog, it "unnattaches" the object resolving any proxies.
      *
-     * <p>In the even the specified object does not exist in the catalog it itself should be
-     * returned, this method should never return null.
+     * <p>In the even the specified object does not exist in the catalog it itself should be returned, this method
+     * should never return null.
      */
     MapInfo detach(MapInfo map);
 
     /**
      * All maps in the catalog.
      *
-     * <p>The resulting list should not be used to add or remove maps to or from the catalog, the
-     * {@link #add(MapInfo)} and {@link #remove(MapInfo)} methods are used for this purpose.
+     * <p>The resulting list should not be used to add or remove maps to or from the catalog, the {@link #add(MapInfo)}
+     * and {@link #remove(MapInfo)} methods are used for this purpose.
      */
     List<MapInfo> getMaps();
 
-    /**
-     * Returns the map matching a particular id, or <code>null</code> if no such map could be found.
-     */
+    /** Returns the map matching a particular id, or {@code null} if no such map could be found. */
     MapInfo getMap(String id);
 
-    /**
-     * Returns the map matching a particular name, or <code>null</code> if no such map could be
-     * found.
-     */
+    /** Returns the map matching a particular name, or {@code null} if no such map could be found. */
     MapInfo getMapByName(String name);
 
     /** Adds a layer group to the catalog. */
@@ -1121,9 +1071,8 @@ public interface Catalog extends CatalogInfo {
      * Validate a layergroup.
      *
      * @param layerGroup the LayerGroupInfo to be validated
-     * @param isNew a boolean; if true then an existing layergroup with the same name will cause a
-     *     validation error.
-     * @returns List<RuntimeException> non-empty if validation fails
+     * @param isNew a boolean; if true then an existing layergroup with the same name will cause a validation error.
+     * @return List<RuntimeException> non-empty if validation fails
      */
     ValidationResult validate(LayerGroupInfo layerGroup, boolean isNew);
 
@@ -1136,11 +1085,10 @@ public interface Catalog extends CatalogInfo {
     /**
      * Detatches the layer group from the catalog.
      *
-     * <p>This method does not remove the object from the catalog, it "unnattaches" the object
-     * resolving any proxies.
+     * <p>This method does not remove the object from the catalog, it "unnattaches" the object resolving any proxies.
      *
-     * <p>In the even the specified object does not exist in the catalog it itself should be
-     * returned, this method should never return null.
+     * <p>In the even the specified object does not exist in the catalog it itself should be returned, this method
+     * should never return null.
      */
     LayerGroupInfo detach(LayerGroupInfo layerGroup);
 
@@ -1161,23 +1109,18 @@ public interface Catalog extends CatalogInfo {
      */
     List<LayerGroupInfo> getLayerGroupsByWorkspace(WorkspaceInfo workspace);
 
-    /**
-     * Returns the layer group matching a particular id, or <code>null</code> if no such group could
-     * be found.
-     */
+    /** Returns the layer group matching a particular id, or {@code null} if no such group could be found. */
     LayerGroupInfo getLayerGroup(String id);
 
     /**
-     * Returns the global layer group matching a particular name, or <code>null</code> if no such
-     * style could be found.
+     * Returns the global layer group matching a particular name, or {@code null} if no such style could be found.
      *
-     * <p>If {@code prefixedName} contains a workspace name prefix (like in {@code topp:tasmania},
-     * the layer group will be looked up on that specific workspace ({@code topp}), otherwise it is
-     * assumed a global (with no workspace) layer group.
+     * <p>If {@code prefixedName} contains a workspace name prefix (like in {@code topp:tasmania}, the layer group will
+     * be looked up on that specific workspace ({@code topp}), otherwise it is assumed a global (with no workspace)
+     * layer group.
      *
      * @param name the name of the layer group, may include a workspace name prefix or not.
-     * @return the global layer group matching a particular name, or <code>null</code> if no such
-     *     group could be found.
+     * @return the global layer group matching a particular name, or {@code null} if no such group could be found.
      */
     LayerGroupInfo getLayerGroupByName(String name);
 
@@ -1185,8 +1128,8 @@ public interface Catalog extends CatalogInfo {
      * Returns the layer group matching a particular name in the specified workspace, or <code>null
      * </code> if no such layer group could be found.
      *
-     * @param workspaceName The name of the workspace containing the layer group, {@code null} is
-     *     allowed, meaning to look up for a global layer group
+     * @param workspaceName The name of the workspace containing the layer group, {@code null} is allowed, meaning to
+     *     look up for a global layer group
      * @param name The name of the layer group to return.
      */
     LayerGroupInfo getLayerGroupByName(String workspaceName, String name);
@@ -1195,8 +1138,8 @@ public interface Catalog extends CatalogInfo {
      * Returns the layer group matching a particular name in the specified workspace, or <code>null
      * </code> if no such layer group could be found.
      *
-     * @param workspace The workspace containing the layer group, {@code null} is allowed, meaning
-     *     to look up for a global layer group.
+     * @param workspace The workspace containing the layer group, {@code null} is allowed, meaning to look up for a
+     *     global layer group.
      * @param name The name of the layer group to return.
      */
     LayerGroupInfo getLayerGroupByName(WorkspaceInfo workspace, String name);
@@ -1208,9 +1151,8 @@ public interface Catalog extends CatalogInfo {
      * Validate a style.
      *
      * @param style the StyleInfo to be validated
-     * @param isNew a boolean; if true then an existing style with the same name will cause a
-     *     validation error.
-     * @returns List<RuntimeException> non-empty if validation fails
+     * @param isNew a boolean; if true then an existing style with the same name will cause a validation error.
+     * @return List<RuntimeException> non-empty if validation fails
      */
     ValidationResult validate(StyleInfo style, boolean isNew);
 
@@ -1223,33 +1165,28 @@ public interface Catalog extends CatalogInfo {
     /**
      * Detatches the style from the catalog.
      *
-     * <p>This method does not remove the object from the catalog, it "unnattaches" the object
-     * resolving any proxies.
+     * <p>This method does not remove the object from the catalog, it "unnattaches" the object resolving any proxies.
      *
-     * <p>In the even the specified object does not exist in the catalog it itself should be
-     * returned, this method should never return null.
+     * <p>In the even the specified object does not exist in the catalog it itself should be returned, this method
+     * should never return null.
      */
     StyleInfo detach(StyleInfo style);
 
-    /**
-     * Returns the style matching a particular id, or <code>null</code> if no such style could be
-     * found.
-     */
+    /** Returns the style matching a particular id, or {@code null} if no such style could be found. */
     StyleInfo getStyle(String id);
 
     /**
-     * Returns the style matching a particular name in the specified workspace, or <code>null</code>
-     * if no such style could be found.
+     * Returns the style matching a particular name in the specified workspace, or {@code null} if no such style could
+     * be found.
      *
-     * @param workspaceName The name of the workspace containing the style, {@code null} stands for
-     *     a global style.
+     * @param workspaceName The name of the workspace containing the style, {@code null} stands for a global style.
      * @param name The name of the style to return.
      */
     StyleInfo getStyleByName(String workspaceName, String name);
 
     /**
-     * Returns the style matching a particular name in the specified workspace, or <code>null</code>
-     * if no such style could be found.
+     * Returns the style matching a particular name in the specified workspace, or {@code null} if no such style could
+     * be found.
      *
      * @param workspace The workspace containing the style, {@code null} stands for a global style.
      * @param name The name of the style to return.
@@ -1257,11 +1194,10 @@ public interface Catalog extends CatalogInfo {
     StyleInfo getStyleByName(WorkspaceInfo workspace, String name);
 
     /**
-     * Returns the global style matching a particular name, or <code>null</code> if no such style
-     * could be found.
+     * Returns the global style matching a particular name, or {@code null} if no such style could be found.
      *
-     * <p>Note this is a convenient method for {@link #getStyleByName(WorkspaceInfo, String)} with a
-     * {@code null} workspace argument.
+     * <p>Note this is a convenient method for {@link #getStyleByName(WorkspaceInfo, String)} with a {@code null}
+     * workspace argument.
      *
      * @param name The name of the style to return.
      */
@@ -1270,8 +1206,8 @@ public interface Catalog extends CatalogInfo {
     /**
      * All styles in the catalog.
      *
-     * <p>The resulting list should not be used to add or remove styles, the methods {@link
-     * #add(StyleInfo)} and {@link #remove(StyleInfo)} are used for that purpose.
+     * <p>The resulting list should not be used to add or remove styles, the methods {@link #add(StyleInfo)} and
+     * {@link #remove(StyleInfo)} are used for that purpose.
      */
     List<StyleInfo> getStyles();
 
@@ -1296,9 +1232,8 @@ public interface Catalog extends CatalogInfo {
      * Validate a namespace.
      *
      * @param namespace the NamespaceInfo to be validated
-     * @param isNew a boolean; if true then an existing namespace with the same prefix will cause a
-     *     validation error.
-     * @returns List<RuntimeException> non-empty if validation fails
+     * @param isNew a boolean; if true then an existing namespace with the same prefix will cause a validation error.
+     * @return List<RuntimeException> non-empty if validation fails
      */
     ValidationResult validate(NamespaceInfo namespace, boolean isNew);
 
@@ -1311,11 +1246,10 @@ public interface Catalog extends CatalogInfo {
     /**
      * Detatches the namespace from the catalog.
      *
-     * <p>This method does not remove the object from the catalog, it "unnattaches" the object
-     * resolving any proxies.
+     * <p>This method does not remove the object from the catalog, it "unnattaches" the object resolving any proxies.
      *
-     * <p>In the even the specified object does not exist in the catalog it itself should be
-     * returned, this method should never return null.
+     * <p>In the even the specified object does not exist in the catalog it itself should be returned, this method
+     * should never return null.
      */
     NamespaceInfo detach(NamespaceInfo namespace);
 
@@ -1326,8 +1260,7 @@ public interface Catalog extends CatalogInfo {
      * Looks up a namespace by its prefix.
      *
      * @see NamespaceInfo#getPrefix()
-     * @param prefix The namespace prefix, or {@code null} or {@link #DEFAULT} to get the default
-     *     namespace
+     * @param prefix The namespace prefix, or {@code null} or {@link #DEFAULT} to get the default namespace
      */
     NamespaceInfo getNamespaceByPrefix(String prefix);
 
@@ -1351,9 +1284,8 @@ public interface Catalog extends CatalogInfo {
     /**
      * All namespaces in the catalog.
      *
-     * <p>The resulting list should not be used to add or remove namespaces from the catalog, the
-     * methods {@link #add(NamespaceInfo)} and {@link #remove(NamespaceInfo)} should be used for
-     * that purpose.
+     * <p>The resulting list should not be used to add or remove namespaces from the catalog, the methods
+     * {@link #add(NamespaceInfo)} and {@link #remove(NamespaceInfo)} should be used for that purpose.
      */
     List<NamespaceInfo> getNamespaces();
 
@@ -1364,9 +1296,8 @@ public interface Catalog extends CatalogInfo {
      * Validate a workspace.
      *
      * @param workspace the WorkspaceInfo to be validated
-     * @param isNew a boolean; if true then an existing workspace with the same name will cause a
-     *     validation error.
-     * @returns List<RuntimeException> non-empty if validation fails
+     * @param isNew a boolean; if true then an existing workspace with the same name will cause a validation error.
+     * @return List<RuntimeException> non-empty if validation fails
      */
     ValidationResult validate(WorkspaceInfo workspace, boolean isNew);
 
@@ -1379,11 +1310,10 @@ public interface Catalog extends CatalogInfo {
     /**
      * Detatches the workspace from the catalog.
      *
-     * <p>This method does not remove the object from the catalog, it "unnattaches" the object
-     * resolving any proxies.
+     * <p>This method does not remove the object from the catalog, it "unnattaches" the object resolving any proxies.
      *
-     * <p>In the even the specified object does not exist in the catalog it itself should be
-     * returned, this method should never return null.
+     * <p>In the even the specified object does not exist in the catalog it itself should be returned, this method
+     * should never return null.
      */
     WorkspaceInfo detach(WorkspaceInfo workspace);
 
@@ -1396,20 +1326,18 @@ public interface Catalog extends CatalogInfo {
     /**
      * All workspaces in the catalog.
      *
-     * <p>The resulting list should not be used to add or remove workspaces from the catalog, the
-     * methods {@link #add(WorkspaceInfo)} and {@link #remove(WorkspaceInfo)} should be used for
-     * that purpose.
+     * <p>The resulting list should not be used to add or remove workspaces from the catalog, the methods
+     * {@link #add(WorkspaceInfo)} and {@link #remove(WorkspaceInfo)} should be used for that purpose.
      */
     List<WorkspaceInfo> getWorkspaces();
 
-    /** Returns a workspace by id, or <code>null</code> if no such workspace exists. */
+    /** Returns a workspace by id, or {@code null} if no such workspace exists. */
     WorkspaceInfo getWorkspace(String id);
 
     /**
-     * Returns a workspace by name, or <code>null</code> if no such workspace exists.
+     * Returns a workspace by name, or {@code null} if no such workspace exists.
      *
-     * @param name The name of the store, or {@code null} or {@link #DEFAULT} to get the default
-     *     workspace
+     * @param name The name of the store, or {@code null} or {@link #DEFAULT} to get the default workspace
      */
     WorkspaceInfo getWorkspaceByName(String name);
 
@@ -1425,48 +1353,36 @@ public interface Catalog extends CatalogInfo {
     /**
      * Fires the event for an object being added to the catalog.
      *
-     * <p>This method should not be called by client code. It is meant to be called interally by the
-     * catalog subsystem.
+     * <p>This method should not be called by client code. It is meant to be called interally by the catalog subsystem.
      */
     void fireAdded(CatalogInfo object);
 
     /**
      * Fires the event for an object being modified in the catalog.
      *
-     * <p>This method should not be called by client code. It is meant to be called interally by the
-     * catalog subsystem.
+     * <p>This method should not be called by client code. It is meant to be called interally by the catalog subsystem.
      */
-    void fireModified(
-            CatalogInfo object,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues);
+    void fireModified(CatalogInfo object, List<String> propertyNames, List<Object> oldValues, List<Object> newValues);
 
     /**
      * Fires the event for an object that was modified in the catalog.
      *
-     * <p>This method should not be called by client code. It is meant to be called interally by the
-     * catalog subsystem.
+     * <p>This method should not be called by client code. It is meant to be called interally by the catalog subsystem.
      */
     void firePostModified(
-            CatalogInfo object,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues);
+            CatalogInfo object, List<String> propertyNames, List<Object> oldValues, List<Object> newValues);
 
     /**
      * Fires the event for an object being removed from the catalog.
      *
-     * <p>This method should not be called by client code. It is meant to be called interally by the
-     * catalog subsystem.
+     * <p>This method should not be called by client code. It is meant to be called interally by the catalog subsystem.
      */
     void fireRemoved(CatalogInfo object);
 
     /**
      * Returns the pool or cache for resources.
      *
-     * <p>This object is used to load physical resources like data stores, feature types, styles,
-     * etc...
+     * <p>This object is used to load physical resources like data stores, feature types, styles, etc...
      */
     ResourcePool getResourcePool();
 
@@ -1483,25 +1399,22 @@ public interface Catalog extends CatalogInfo {
     void dispose();
 
     /**
-     * Returns the number of catalog objects of the requested type that match the given query
-     * predicate.
+     * Returns the number of catalog objects of the requested type that match the given query predicate.
      *
-     * @param of the type of catalog objects to return. Super interfaces of concrete catalog objects
-     *     are allowed (such as {@code StoreInfo.class} and {@code ResourceInfo.class}, although the
-     *     more generic {@code Info.class} and {@code CatalogInfo.class} are not.
-     * @param filter the query predicate, use {@link Filter#INCLUDE} if needed, {@code null} is not
-     *     accepted.
-     * @return the total number of catalog objects of the requested type that match the query
-     *     predicate.
+     * @param of the type of catalog objects to return. Super interfaces of concrete catalog objects are allowed (such
+     *     as {@code StoreInfo.class} and {@code ResourceInfo.class}, although the more generic {@code Info.class} and
+     *     {@code CatalogInfo.class} are not.
+     * @param filter the query predicate, use {@link Filter#INCLUDE} if needed, {@code null} is not accepted.
+     * @return the total number of catalog objects of the requested type that match the query predicate.
      */
     public <T extends CatalogInfo> int count(final Class<T> of, final Filter filter);
 
     /**
-     * Access to a single configuration object by the given predicate filter, fails if more than one
-     * object satisfies the filter criteria.
+     * Access to a single configuration object by the given predicate filter, fails if more than one object satisfies
+     * the filter criteria.
      *
-     * <p>Generally useful for query by id or name where name is known to be unique, either globally
-     * or per workspace, although usage is not limited to those cases.
+     * <p>Generally useful for query by id or name where name is known to be unique, either globally or per workspace,
+     * although usage is not limited to those cases.
      *
      * <p>Examples:
      *
@@ -1519,21 +1432,19 @@ public interface Catalog extends CatalogInfo {
      * </code>
      * </pre>
      *
-     * @return the single object of the given {@code type} that matches the given filter, or {@code
-     *     null} if no object matches the provided filter.
-     * @throws IllegalArgumentException if more than one object of type {@code T} match the provided
-     *     filter.
+     * @return the single object of the given {@code type} that matches the given filter, or {@code null} if no object
+     *     matches the provided filter.
+     * @throws IllegalArgumentException if more than one object of type {@code T} match the provided filter.
      */
     <T extends CatalogInfo> T get(Class<T> type, Filter filter) throws IllegalArgumentException;
 
     /**
-     * Returns an {@link Iterator} over the catalog objects of the requested type that match the
-     * given query predicate, positioned at the specified {@code offset} and limited to the number
-     * requested number of elements.
+     * Returns an {@link Iterator} over the catalog objects of the requested type that match the given query predicate,
+     * positioned at the specified {@code offset} and limited to the number requested number of elements.
      *
-     * <p>The returned iterator <strong>shall</strong> be closed once it is no longer needed, to
-     * account for streaming implementations of this interface to release any needed resource such
-     * as database or remote service connections. Example usage:
+     * <p>The returned iterator <strong>shall</strong> be closed once it is no longer needed, to account for streaming
+     * implementations of this interface to release any needed resource such as database or remote service connections.
+     * Example usage:
      *
      * <pre>
      * <code>
@@ -1550,32 +1461,27 @@ public interface Catalog extends CatalogInfo {
      * </code>
      * </pre>
      *
-     * @param of the type of catalog objects to return. Super interfaces of concrete catalog objects
-     *     are allowed (such as {@code StoreInfo.class} and {@code ResourceInfo.class}, although the
-     *     more generic {@code Info.class} and {@code CatalogInfo.class} are not.
-     * @param filter the query predicate, use {@link Filter#INCLUDE} if needed, {@code null} is not
-     *     accepted.
-     * @return an iterator over the predicate matching catalog objects that must be closed once
-     *     consumed
-     * @throws IllegalArgumentException if {@code sortOrder != null} and {code !canSort(of,
-     *     sortOrder)}
+     * @param of the type of catalog objects to return. Super interfaces of concrete catalog objects are allowed (such
+     *     as {@code StoreInfo.class} and {@code ResourceInfo.class}, although the more generic {@code Info.class} and
+     *     {@code CatalogInfo.class} are not.
+     * @param filter the query predicate, use {@link Filter#INCLUDE} if needed, {@code null} is not accepted.
+     * @return an iterator over the predicate matching catalog objects that must be closed once consumed
+     * @throws IllegalArgumentException if {@code sortOrder != null} and {code !canSort(of, sortOrder)}
      */
-    public <T extends CatalogInfo> CloseableIterator<T> list(
-            final Class<T> of, final Filter filter);
+    public <T extends CatalogInfo> CloseableIterator<T> list(final Class<T> of, final Filter filter);
 
     /**
-     * Returns an {@link Iterator} over the catalog objects of the requested type that match the
-     * given query predicate, positioned at the specified {@code offset} and limited to the number
-     * requested number of elements.
+     * Returns an {@link Iterator} over the catalog objects of the requested type that match the given query predicate,
+     * positioned at the specified {@code offset} and limited to the number requested number of elements.
      *
-     * <p>Through the optional {@code offset} and {@code count} arguments, this method allows for
-     * paged queries over the catalog contents. Note that although there's no prescribed sort order,
-     * catalog back end implementations must provide a natural sort order (either based on id or
-     * otherwise), in order for paged queries to be consistent between calls for the same predicate.
+     * <p>Through the optional {@code offset} and {@code count} arguments, this method allows for paged queries over the
+     * catalog contents. Note that although there's no prescribed sort order, catalog back end implementations must
+     * provide a natural sort order (either based on id or otherwise), in order for paged queries to be consistent
+     * between calls for the same predicate.
      *
-     * <p>The returned iterator <strong>shall</strong> be closed once it is no longer needed, to
-     * account for streaming implementations of this interface to release any needed resource such
-     * as database or remote service connections. Example usage:
+     * <p>The returned iterator <strong>shall</strong> be closed once it is no longer needed, to account for streaming
+     * implementations of this interface to release any needed resource such as database or remote service connections.
+     * Example usage:
      *
      * <pre>
      * <code>
@@ -1592,22 +1498,17 @@ public interface Catalog extends CatalogInfo {
      * </code>
      * </pre>
      *
-     * @param of the type of catalog objects to return. Super interfaces of concrete catalog objects
-     *     are allowed (such as {@code StoreInfo.class} and {@code ResourceInfo.class}, although the
-     *     more generic {@code Info.class} and {@code CatalogInfo.class} are not.
-     * @param filter the query predicate, use {@link Predicates#ANY_TEXT} if needed, {@code null} is
-     *     not accepted.
-     * @param offset {@code null} to return an iterator starting at the first matching object,
-     *     otherwise an integer {@code >= 0} to return an iterator positioned at the specified
-     *     offset.
-     * @param count {@code null} to return a non limited in number of elements iterator, an integer
-     *     {@code >= 0} otherwise to specify the maximum number of elements the iterator shall
-     *     return.
+     * @param of the type of catalog objects to return. Super interfaces of concrete catalog objects are allowed (such
+     *     as {@code StoreInfo.class} and {@code ResourceInfo.class}, although the more generic {@code Info.class} and
+     *     {@code CatalogInfo.class} are not.
+     * @param filter the query predicate, use {@link Predicates#ANY_TEXT} if needed, {@code null} is not accepted.
+     * @param offset {@code null} to return an iterator starting at the first matching object, otherwise an integer
+     *     {@code >= 0} to return an iterator positioned at the specified offset.
+     * @param count {@code null} to return a non limited in number of elements iterator, an integer {@code >= 0}
+     *     otherwise to specify the maximum number of elements the iterator shall return.
      * @param sortBy order for sorting
-     * @return an iterator over the predicate matching catalog objects that must be closed once
-     *     consumed
-     * @throws IllegalArgumentException if {@code sortOrder != null} and [@code !canSort(of,
-     *     sortOrder)}
+     * @return an iterator over the predicate matching catalog objects that must be closed once consumed
+     * @throws IllegalArgumentException if {@code sortOrder != null} and [@code !canSort(of, sortOrder)}
      */
     public <T extends CatalogInfo> CloseableIterator<T> list(
             final Class<T> of,
@@ -1620,8 +1521,8 @@ public interface Catalog extends CatalogInfo {
     public void removeListeners(Class<? extends CatalogListener> listenerClass);
 
     /**
-     * Return the catalog capabilities supported by this catalog. Normally this will correspond to
-     * the capabilities supported by the used catalog facade.
+     * Return the catalog capabilities supported by this catalog. Normally this will correspond to the capabilities
+     * supported by the used catalog facade.
      *
      * @return catalog supported capabilities
      */

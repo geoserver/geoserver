@@ -26,12 +26,11 @@ import org.springframework.util.StringUtils;
  *
  * <p>The {@link AuthenticationEntryPoint} is of type {@link DynamicAuthenticationEntryPoint}
  *
- * <p>if {@link ExceptionTranslationFilterConfig#getAuthenticationEntryPointName()} is not empty,
- * use this name for a lookup of an authentication filter and use the entry point of this filter.
+ * <p>if {@link ExceptionTranslationFilterConfig#getAuthenticationFilterName()} is not empty, use this name for a lookup
+ * of an authentication filter and use the entry point of this filter.
  *
- * <p>if the name is empty, use {@link GeoServerSecurityFilter#AUTHENTICATION_ENTRY_POINT_HEADER} as
- * a servlet attribute name. Previous authentication filter should put an entry point in this
- * attribute.
+ * <p>if the name is empty, use {@link GeoServerSecurityFilter#AUTHENTICATION_ENTRY_POINT_HEADER} as a servlet attribute
+ * name. Previous authentication filter should put an entry point in this attribute.
  *
  * <p>if still no entry point was a found, use {@link Http403ForbiddenEntryPoint} as a default.
  *
@@ -54,15 +53,11 @@ public class GeoServerExceptionTranslationFilter extends GeoServerCompositeFilte
 
         @Override
         public void commence(
-                HttpServletRequest request,
-                HttpServletResponse response,
-                AuthenticationException authException)
+                HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
                 throws IOException, ServletException {
 
-            AuthenticationEntryPoint aep =
-                    (AuthenticationEntryPoint)
-                            request.getAttribute(
-                                    GeoServerSecurityFilter.AUTHENTICATION_ENTRY_POINT_HEADER);
+            AuthenticationEntryPoint aep = (AuthenticationEntryPoint)
+                    request.getAttribute(GeoServerSecurityFilter.AUTHENTICATION_ENTRY_POINT_HEADER);
             if (aep != null) // remove from request
             request.removeAttribute(AUTHENTICATION_ENTRY_POINT_HEADER);
 
@@ -103,13 +98,14 @@ public class GeoServerExceptionTranslationFilter extends GeoServerCompositeFilte
 
         AccessDeniedHandlerImpl accessDeniedHandler = new AccessDeniedHandlerImpl();
 
-        if (StringUtils.hasLength(authConfig.getAccessDeniedErrorPage())) {
-            // check if page exists
+        if (StringUtils.hasLength(authConfig.getAccessDeniedErrorPage())
+                && !"/accessDenied.jsp".equals(authConfig.getAccessDeniedErrorPage())) {
+            // check if page exists and ignore erroneous access denied page (HTTP) 403 (see GEOS-4943)
+            // The page /accessDeniedPage.jsp does not exist and would not work if it exists.
             if (GeoServerExtensions.file(authConfig.getAccessDeniedErrorPage()) != null)
                 accessDeniedHandler.setErrorPage(authConfig.getAccessDeniedErrorPage());
             else LOGGER.warning("Cannot find: " + authConfig.getAccessDeniedErrorPage());
         }
-
         filter.setAccessDeniedHandler(accessDeniedHandler);
 
         filter.afterPropertiesSet();

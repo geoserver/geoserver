@@ -21,8 +21,7 @@ public class ProcessParameterIOTest {
 
     public static class TestType {}
 
-    private static ProcessParameterIO testPPIO =
-            new ProcessParameterIO(TestType.class, TestType.class, "testPPIO") {};
+    private static ProcessParameterIO testPPIO = new ProcessParameterIO(TestType.class, TestType.class, "testPPIO") {};
 
     private static GenericApplicationContext context = new GenericApplicationContext();
 
@@ -60,8 +59,7 @@ public class ProcessParameterIOTest {
         try (GenericApplicationContext myContext = new GenericApplicationContext()) {
             myContext.refresh();
             List<ProcessParameterIO> matches =
-                    ProcessParameterIO.findAll(
-                            new Parameter<>("testPPIO", TestType.class), myContext);
+                    ProcessParameterIO.findAll(new Parameter<>("testPPIO", TestType.class), myContext);
             assertEquals(0, matches.size());
         }
     }

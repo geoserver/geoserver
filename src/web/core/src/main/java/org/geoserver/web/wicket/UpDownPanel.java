@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
@@ -20,9 +21,11 @@ import org.apache.wicket.request.resource.PackageResourceReference;
  * @author Andrea Aime - GeoSolutions
  * @param <T>
  */
-public class UpDownPanel<T extends Object> extends Panel {
+public class UpDownPanel<T> extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -5964561496724645286L;
+
     T entry;
     private ImageAjaxLink<?> upLink;
 
@@ -44,9 +47,8 @@ public class UpDownPanel<T extends Object> extends Panel {
 
         upLink =
                 new ImageAjaxLink<Void>(
-                        "up",
-                        new PackageResourceReference(
-                                getClass(), "../img/icons/silk/arrow_up.png")) {
+                        "up", new PackageResourceReference(getClass(), "../img/icons/silk/arrow_up.png")) {
+                    @Serial
                     private static final long serialVersionUID = 2377129539852597050L;
 
                     @Override
@@ -76,9 +78,8 @@ public class UpDownPanel<T extends Object> extends Panel {
 
         downLink =
                 new ImageAjaxLink<Void>(
-                        "down",
-                        new PackageResourceReference(
-                                getClass(), "../img/icons/silk/arrow_down.png")) {
+                        "down", new PackageResourceReference(getClass(), "../img/icons/silk/arrow_down.png")) {
+                    @Serial
                     private static final long serialVersionUID = -1770135905138092575L;
 
                     @Override
@@ -102,8 +103,7 @@ public class UpDownPanel<T extends Object> extends Panel {
                         }
                     }
                 };
-        downLink.getImage()
-                .add(new AttributeModifier("alt", new ParamResourceModel("down", downLink)));
+        downLink.getImage().add(new AttributeModifier("alt", new ParamResourceModel("down", downLink)));
         downLink.setOutputMarkupId(true);
         add(downLink);
     }

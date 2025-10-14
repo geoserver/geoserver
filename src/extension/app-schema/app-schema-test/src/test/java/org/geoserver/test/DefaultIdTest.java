@@ -35,61 +35,37 @@ public class DefaultIdTest extends AbstractAppSchemaTestSupport {
     /** Test GetFeature. */
     @Test
     public void testGetFeature() {
-        Document doc =
-                getAsDOM(
-                        "wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=gsml:MappedFeature");
-        LOGGER.info(
-                "wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=gsml:MappedFeature Response:\n"
-                        + prettyString(doc));
+        Document doc = getAsDOM("wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=gsml:MappedFeature");
+        LOGGER.info("wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=gsml:MappedFeature Response:\n"
+                + prettyString(doc));
         assertXpathCount(4, "//gsml:MappedFeature", doc);
         assertXpathCount(1, "//gsml:MappedFeature[@gml:id='" + ID_PREFIX + "1']", doc);
         assertXpathCount(
-                1,
-                "//gsml:MappedFeature[@gml:id='"
-                        + ID_PREFIX
-                        + "1']/gsml:specification/gsml:GeologicUnit",
-                doc);
+                1, "//gsml:MappedFeature[@gml:id='" + ID_PREFIX + "1']/gsml:specification/gsml:GeologicUnit", doc);
         assertXpathEvaluatesTo(
                 "gu.25699",
-                "//gsml:MappedFeature[@gml:id='"
-                        + ID_PREFIX
-                        + "1']/gsml:specification/gsml:GeologicUnit/@gml:id",
+                "//gsml:MappedFeature[@gml:id='" + ID_PREFIX + "1']/gsml:specification/gsml:GeologicUnit/@gml:id",
                 doc);
 
         assertXpathCount(1, "//gsml:MappedFeature[@gml:id='" + ID_PREFIX + "2']", doc);
         assertXpathCount(
-                1,
-                "//gsml:MappedFeature[@gml:id='"
-                        + ID_PREFIX
-                        + "2']/gsml:specification/gsml:GeologicUnit",
-                doc);
+                1, "//gsml:MappedFeature[@gml:id='" + ID_PREFIX + "2']/gsml:specification/gsml:GeologicUnit", doc);
         assertXpathEvaluatesTo(
                 "gu.25678",
-                "//gsml:MappedFeature[@gml:id='"
-                        + ID_PREFIX
-                        + "2']/gsml:specification/gsml:GeologicUnit/@gml:id",
+                "//gsml:MappedFeature[@gml:id='" + ID_PREFIX + "2']/gsml:specification/gsml:GeologicUnit/@gml:id",
                 doc);
 
         assertXpathCount(1, "//gsml:MappedFeature[@gml:id='" + ID_PREFIX + "3']", doc);
-        assertXpathCount(
-                1, "//gsml:MappedFeature[@gml:id='" + ID_PREFIX + "3']/gsml:specification", doc);
+        assertXpathCount(1, "//gsml:MappedFeature[@gml:id='" + ID_PREFIX + "3']/gsml:specification", doc);
         assertXpathEvaluatesTo(
-                "#gu.25678",
-                "//gsml:MappedFeature[@gml:id='" + ID_PREFIX + "3']/gsml:specification/@xlink:href",
-                doc);
+                "#gu.25678", "//gsml:MappedFeature[@gml:id='" + ID_PREFIX + "3']/gsml:specification/@xlink:href", doc);
 
         assertXpathCount(1, "//gsml:MappedFeature[@gml:id='" + ID_PREFIX + "4']", doc);
         assertXpathCount(
-                1,
-                "//gsml:MappedFeature[@gml:id='"
-                        + ID_PREFIX
-                        + "4']/gsml:specification/gsml:GeologicUnit",
-                doc);
+                1, "//gsml:MappedFeature[@gml:id='" + ID_PREFIX + "4']/gsml:specification/gsml:GeologicUnit", doc);
         assertXpathEvaluatesTo(
                 "gu.25682",
-                "//gsml:MappedFeature[@gml:id='"
-                        + ID_PREFIX
-                        + "4']/gsml:specification/gsml:GeologicUnit/@gml:id",
+                "//gsml:MappedFeature[@gml:id='" + ID_PREFIX + "4']/gsml:specification/gsml:GeologicUnit/@gml:id",
                 doc);
     }
 
@@ -98,13 +74,11 @@ public class DefaultIdTest extends AbstractAppSchemaTestSupport {
     public void testGetFeatureWithFilter() {
         Document doc;
         if (!isGeopkgTest()) {
-            doc =
-                    getAsDOM(
-                            "wfs?service=WFS&version=1.1.0&request=GetFeature&typename=gsml:MappedFeature&BBOX=-35,96,-12,118");
+            doc = getAsDOM(
+                    "wfs?service=WFS&version=1.1.0&request=GetFeature&typename=gsml:MappedFeature&BBOX=-35,96,-12,118");
         } else {
-            doc =
-                    getAsDOM(
-                            "wfs?service=WFS&version=1.1.0&request=GetFeature&typename=gsml:MappedFeature&BBOX=96,-35,118,-12");
+            doc = getAsDOM(
+                    "wfs?service=WFS&version=1.1.0&request=GetFeature&typename=gsml:MappedFeature&BBOX=96,-35,118,-12");
         }
         LOGGER.info(
                 "wfs?service=WFS&version=1.1.0&request=GetFeature&typename=gsml:MappedFeature&BBOX=-35,96,-12,118 response:\n"
@@ -114,30 +88,18 @@ public class DefaultIdTest extends AbstractAppSchemaTestSupport {
 
         assertXpathCount(1, "//gsml:MappedFeature[@gml:id='" + ID_PREFIX + "3']", doc);
         assertXpathCount(
-                1,
-                "//gsml:MappedFeature[@gml:id='"
-                        + ID_PREFIX
-                        + "3']/gsml:specification/gsml:GeologicUnit",
-                doc);
+                1, "//gsml:MappedFeature[@gml:id='" + ID_PREFIX + "3']/gsml:specification/gsml:GeologicUnit", doc);
         assertXpathEvaluatesTo(
                 "gu.25678",
-                "//gsml:MappedFeature[@gml:id='"
-                        + ID_PREFIX
-                        + "3']/gsml:specification/gsml:GeologicUnit/@gml:id",
+                "//gsml:MappedFeature[@gml:id='" + ID_PREFIX + "3']/gsml:specification/gsml:GeologicUnit/@gml:id",
                 doc);
 
         assertXpathCount(1, "//gsml:MappedFeature[@gml:id='" + ID_PREFIX + "4']", doc);
         assertXpathCount(
-                1,
-                "//gsml:MappedFeature[@gml:id='"
-                        + ID_PREFIX
-                        + "4']/gsml:specification/gsml:GeologicUnit",
-                doc);
+                1, "//gsml:MappedFeature[@gml:id='" + ID_PREFIX + "4']/gsml:specification/gsml:GeologicUnit", doc);
         assertXpathEvaluatesTo(
                 "gu.25682",
-                "//gsml:MappedFeature[@gml:id='"
-                        + ID_PREFIX
-                        + "4']/gsml:specification/gsml:GeologicUnit/@gml:id",
+                "//gsml:MappedFeature[@gml:id='" + ID_PREFIX + "4']/gsml:specification/gsml:GeologicUnit/@gml:id",
                 doc);
     }
 }

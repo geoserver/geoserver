@@ -23,7 +23,6 @@ import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.DisposableBean;
 
 public class JDBCStatusStoreLoader implements DisposableBean {
-    @SuppressWarnings("unused")
     private static final Logger LOGGER = Logging.getLogger(JDBCStatusStoreLoader.class);
 
     private static final String JDBCSTATUS_NAME = "jdbcstatusstore.props";
@@ -55,8 +54,7 @@ public class JDBCStatusStoreLoader implements DisposableBean {
         Resource resource = dataDir.get(JDBCSTATUS_NAME);
         if (resource.getType() == Type.UNDEFINED) {
             try (OutputStream os = resource.out();
-                    InputStream is =
-                            JDBCStatusStoreLoader.class.getResourceAsStream(JDBCSTATUS_NAME)) {
+                    InputStream is = JDBCStatusStoreLoader.class.getResourceAsStream(JDBCSTATUS_NAME)) {
                 IOUtils.copy(is, os);
             }
         }

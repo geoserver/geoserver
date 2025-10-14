@@ -8,12 +8,10 @@ package org.geoserver.wfs.xml;
 /**
  * NameSpaceElement purpose.
  *
- * <p>NameSpaceElement sub classes will represent a particular element found within a particular
- * namespace. Most of the methods below should return constants to improve performance.
+ * <p>NameSpaceElement subclasses will represent a particular element found within a particular namespace. Most of the
+ * methods below should return constants to improve performance.
  *
  * @author dzwiers, Refractions Research, Inc.
- * @author $Author: dmzwiers $ (last modification)
- * @version $Id$
  */
 public abstract class NameSpaceElement {
     /** the namespace prefix to use for qualification */
@@ -24,8 +22,8 @@ public abstract class NameSpaceElement {
      *
      * <p>Creates an instance of this NameSpaceElement.
      *
-     * <p>The prefix is to be used for the qualification routines. If the prefix passed is null,
-     * then qualified names will be null unless they have a prefix specified.
+     * <p>The prefix is to be used for the qualification routines. If the prefix passed is null, then qualified names
+     * will be null unless they have a prefix specified.
      *
      * @param prefix The prefix to use for qualification.
      */
@@ -38,8 +36,8 @@ public abstract class NameSpaceElement {
      *
      * <p>Creates an instance of this NameSpaceElement.
      *
-     * <p>The prefix is to be used for the qualification routines is set to null. the qualified
-     * names of the elements will be null
+     * <p>The prefix is to be used for the qualification routines is set to null. the qualified names of the elements
+     * will be null
      */
     public NameSpaceElement() {
         this.prefix = null;
@@ -48,22 +46,12 @@ public abstract class NameSpaceElement {
     /**
      * getTypeDefName purpose.
      *
-     * <p>This will return the name of the definition of the element. This method is useful when
-     * defining a new type and wish to extend an existing defined type, such as <code>
-     * gml:AbstractFeatureType</code>.
+     * <p>This will return the name of the definition of the element. This method is useful when defining a new type and
+     * wish to extend an existing defined type, such as {@code gml:AbstractFeatureType}.
      *
-     * <p><code>
-     * <xs:complexType name="Lines_Type">
-     *   <xs:complexContent>
-     *     <xs:extension base="gml:AbstractFeatureType">
-     *      <xs:sequence>
-     *        <xs:element name="id" type="xs:string"/>
-     *      <xs:element ref="gml:lineStringProperty" minOccurs="0"/>
-     *     </xs:sequence>
-     *    </xs:extension>
-     *   </xs:complexContent>
-     * </xs:complexType>
-     * </code>
+     * <p>{@code <xs:complexType name="Lines_Type"> <xs:complexContent> <xs:extension base="gml:AbstractFeatureType">
+     * <xs:sequence> <xs:element name="id" type="xs:string"/> <xs:element ref="gml:lineStringProperty" minOccurs="0"/>
+     * </xs:sequence> </xs:extension> </xs:complexContent> </xs:complexType> }
      *
      * @return The type def. name, for the above example AbstractFeatureType.
      */
@@ -72,13 +60,10 @@ public abstract class NameSpaceElement {
     /**
      * getTypeDefName purpose.
      *
-     * <p>This will return the name of the element. This method is useful when defining a new
-     * element and wish to extend an existing element, such as <code>xs:string</code>.
+     * <p>This will return the name of the element. This method is useful when defining a new element and wish to extend
+     * an existing element, such as {@code xs:string}.
      *
-     * <p><code>
-     * <xs:element name="id" type="xs:string"/>
-     * <xs:element ref="gml:lineStringProperty" minOccurs="0"/>
-     * </code>
+     * <p>{@code <xs:element name="id" type="xs:string"/> <xs:element ref="gml:lineStringProperty" minOccurs="0"/> }
      *
      * @return The element name, for the above example string or lineStringProperty.
      */
@@ -87,7 +72,7 @@ public abstract class NameSpaceElement {
     /**
      * getQualifiedTypeDefName purpose.
      *
-     * <p>Returns a qualified type definition name <code>prefix:definition name</code>.
+     * <p>Returns a qualified type definition name {@code prefix:definition name}.
      *
      * @return the name if the default prefix is non null, null otherwise
      * @see #getTypeDefName()
@@ -97,7 +82,7 @@ public abstract class NameSpaceElement {
     /**
      * getQualifiedTypeRefName purpose.
      *
-     * <p>Returns a qualified type reference name <code>prefix:reference name</code>.
+     * <p>Returns a qualified type reference name {@code prefix:reference name}.
      *
      * @return the name if the default prefix is non null, null otherwise
      * @see #getTypeRefName()
@@ -107,8 +92,7 @@ public abstract class NameSpaceElement {
     /**
      * getQualifiedTypeDefName purpose.
      *
-     * <p>Returns a qualified type definition name <code>prefix:definition name</code> with the
-     * specified prefix.
+     * <p>Returns a qualified type definition name {@code prefix:definition name} with the specified prefix.
      *
      * @param prefix The prefix to use for qualification.
      * @return the name if either the specified or default prefix is non null, null otherwise
@@ -119,8 +103,7 @@ public abstract class NameSpaceElement {
     /**
      * getQualifiedTypeRefName purpose.
      *
-     * <p>Returns a qualified type reference name <code>prefix:reference name</code> with the
-     * specified prefix.
+     * <p>Returns a qualified type reference name {@code prefix:reference name} with the specified prefix.
      *
      * @param prefix The prefix to use for qualification.
      * @return the name if either the specified or default prefix is non null, null otherwise
@@ -133,19 +116,18 @@ public abstract class NameSpaceElement {
      *
      * <p>Returns an instance of the Class object which would best represent this element.
      *
-     * <p>for example an element of type xs:int would return <code>Integer.class</code>.
+     * <p>for example an element of type xs:int would return {@code Integer.class}.
      *
      * @return Class instance of the Class object which would best represent this element.
      */
     public abstract Class<?> getJavaClass();
 
     /**
-     * This is a bit of a hack, so that GeoServer can generate with the best (default) xml mappings
-     * for each Java class. This should be implemented the other way around, with a nice lookup
-     * table to get the one and only default. But this is far easier to implement, as we just add
-     * this method set to true for the namespace element classes we like best. If for some reason we
-     * set two NSE's that map to the same java class to true then things will behave randomly, which
-     * is why this is a bit of a hack. Apologies, it's late, and I need to finish my docs.
+     * This is a bit of a hack, so that GeoServer can generate with the best (default) xml mappings for each Java class.
+     * This should be implemented the other way around, with a nice lookup table to get the one and only default. But
+     * this is far easier to implement, as we just add this method set to true for the namespace element classes we like
+     * best. If for some reason we set two NSE's that map to the same java class to true then things will behave
+     * randomly, which is why this is a bit of a hack. Apologies, it's late, and I need to finish my docs.
      */
     public boolean isDefault() {
         return false;

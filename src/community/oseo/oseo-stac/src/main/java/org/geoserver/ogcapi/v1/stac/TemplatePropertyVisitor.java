@@ -34,10 +34,7 @@ import org.geotools.api.feature.Feature;
 import org.geotools.api.filter.expression.Expression;
 import org.geotools.api.filter.expression.Literal;
 
-/**
- * Class visiting a feature template and performing some action on the properties mapped via dynamic
- * builders
- */
+/** Class visiting a feature template and performing some action on the properties mapped via dynamic builders */
 class TemplatePropertyVisitor {
 
     public static final String JSON_PROPERTY_TYPE = "jsonPropertyType";
@@ -67,8 +64,8 @@ class TemplatePropertyVisitor {
         // dynamic include flat builders eat their parent node to perform dynamic merge,
         // get it out and visit its children directly, without further checks (the returned builder
         // is a key-less composite)
-        if (atb instanceof DynamicIncludeFlatBuilder) {
-            visitDynamicIncludeFlatBuilder(parentPath, (DynamicIncludeFlatBuilder) atb);
+        if (atb instanceof DynamicIncludeFlatBuilder builder) {
+            visitDynamicIncludeFlatBuilder(parentPath, builder);
             return;
         }
 
@@ -78,8 +75,7 @@ class TemplatePropertyVisitor {
         if (key == null && ((AbstractTemplateBuilder) atb).getKey() != null) return;
 
         String path = getPath(parentPath, key, skipPath);
-        if (atb instanceof DynamicValueBuilder) {
-            DynamicValueBuilder db = (DynamicValueBuilder) atb;
+        if (atb instanceof DynamicValueBuilder db) {
             propertyConsumer.accept(path, db);
         } else {
             for (TemplateBuilder child : atb.getChildren()) {
@@ -104,8 +100,7 @@ class TemplatePropertyVisitor {
         // found, as they are really coming from the database, so in fact, dynamic
         if (dataBuilder instanceof CompositeBuilder && dyn.getXpath() != null) {
             for (TemplateBuilder child : dataBuilder.getChildren()) {
-                if (child instanceof StaticBuilder) {
-                    StaticBuilder sb = (StaticBuilder) child;
+                if (child instanceof StaticBuilder sb) {
                     Expression keyex = sb.getKey();
                     if (!(keyex instanceof Literal)) continue;
                     String key = keyex.evaluate(null, String.class);
@@ -117,17 +112,9 @@ class TemplatePropertyVisitor {
                             || nodeType == JsonNodeType.STRING
                             || nodeType == JsonNodeType.BOOLEAN) {
                         String path = parentPath != null ? parentPath + "." + key : key;
-                        String cql =
-                                "$${jsonPointer("
-                                        + dyn.getXpath().getPropertyName()
-                                        + ", '"
-                                        + key
-                                        + "')}";
+                        String cql = "$${jsonPointer(" + dyn.getXpath().getPropertyName() + ", '" + key + "')}";
                         DynamicValueBuilder fakeBuilder =
-                                new DynamicValueBuilder(
-                                        key,
-                                        cql,
-                                        ((CompositeBuilder) parentBuilder).getNamespaces());
+                                new DynamicValueBuilder(key, cql, ((CompositeBuilder) parentBuilder).getNamespaces());
                         fakeBuilder.addEncodingHint(JSON_PROPERTY_TYPE, getClass(value));
                         propertyConsumer.accept(path, fakeBuilder);
                     }
@@ -170,9 +157,8 @@ class TemplatePropertyVisitor {
 
     private JSONObject evaluate(Expression exp) {
         Object result = exp.evaluate(sampleFeature);
-        if (!(result instanceof JSONObject))
-            result = JSONFieldSupport.parseWhenJSON(exp, null, result);
-        if (result instanceof JSONObject) return (JSONObject) result;
+        if (!(result instanceof JSONObject)) result = JSONFieldSupport.parseWhenJSON(exp, null, result);
+        if (result instanceof JSONObject object) return object;
 
         return null;
     }

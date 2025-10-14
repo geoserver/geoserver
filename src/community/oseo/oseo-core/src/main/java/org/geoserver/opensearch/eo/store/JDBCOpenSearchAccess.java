@@ -91,9 +91,8 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 /**
- * A data store building OpenSearch for EO records based on a wrapped data store providing all
- * expected tables in form of simple features (and leveraging joins to put them together into
- * complex features as needed).
+ * A data store building OpenSearch for EO records based on a wrapped data store providing all expected tables in form
+ * of simple features (and leveraging joins to put them together into complex features as needed).
  *
  * <p>The delegate store is fetched on demand to avoid being caught in a ResourcePool dispose
  *
@@ -125,9 +124,8 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
     static final String COLLECTION_NAME = "name";
 
     /**
-     * Marks an attribute as being a synthetic one, meaning it's not part of the original source
-     * data and should not be back-mapped into the source data. Used as a key in the attribute own
-     * user data.
+     * Marks an attribute as being a synthetic one, meaning it's not part of the original source data and should not be
+     * back-mapped into the source data. Used as a key in the attribute own user data.
      */
     static final String SYNTHETIC = "synthetic";
 
@@ -146,13 +144,11 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
     private GeoServer geoServer;
 
     private LowercasingDataStore delegateStoreCache;
-    private SoftValueHashMap<Name, SimpleFeatureSource> featureSourceCache =
-            new SoftValueHashMap<>();
+    private SoftValueHashMap<Name, SimpleFeatureSource> featureSourceCache = new SoftValueHashMap<>();
 
     private SourcePropertyMapper propertyMapper;
 
-    public JDBCOpenSearchAccess(
-            Repository repository, Name delegateStoreName, String namespaceURI, GeoServer geoServer)
+    public JDBCOpenSearchAccess(Repository repository, Name delegateStoreName, String namespaceURI, GeoServer geoServer)
             throws IOException {
         this.repository = repository;
         this.delegateStoreName = delegateStoreName;
@@ -175,8 +171,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         return namespaceURI;
     }
 
-    private FeatureType buildCollectionFeatureType(DataStore delegate, String namespaceURI)
-            throws IOException {
+    private FeatureType buildCollectionFeatureType(DataStore delegate, String namespaceURI) throws IOException {
         SimpleFeatureType flatSchema = delegate.getSchema(COLLECTION);
 
         TypeBuilder typeBuilder = new OrderedTypeBuilder();
@@ -203,14 +198,12 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
             // map into output type
             ab.init(ad);
             ab.setMinOccurs(0);
-            ab.name(name)
-                    .namespaceURI(attributeNamespace)
-                    .userData(SOURCE_ATTRIBUTE, ad.getLocalName());
+            ab.name(name).namespaceURI(attributeNamespace).userData(SOURCE_ATTRIBUTE, ad.getLocalName());
             ab.userData(PREFIX, prefix);
             AttributeDescriptor mappedDescriptor;
-            if (ad instanceof GeometryDescriptor) {
+            if (ad instanceof GeometryDescriptor descriptor) {
                 GeometryType at = ab.buildGeometryType();
-                ab.setCRS(((GeometryDescriptor) ad).getCoordinateReferenceSystem());
+                ab.setCRS(descriptor.getCoordinateReferenceSystem());
                 mappedDescriptor = ab.buildDescriptor(new NameImpl(attributeNamespace, name), at);
             } else {
                 AttributeType at = ab.buildType();
@@ -221,22 +214,16 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         }
 
         // adding the layer publishing property
-        SimpleFeatureType simpleLayerType =
-                AbstractMappingStore.buildCollectionLayerFeatureType(this);
+        SimpleFeatureType simpleLayerType = AbstractMappingStore.buildCollectionLayerFeatureType(this);
         SimpleFeatureType stylesType = AbstractMappingStore.buildStyleType(this);
-        FeatureType complexLayerType =
-                AbstractMappingStore.buildComplexLayerType(simpleLayerType, stylesType, this);
+        FeatureType complexLayerType = AbstractMappingStore.buildComplexLayerType(simpleLayerType, stylesType, this);
         AttributeDescriptor layerDescriptor =
-                buildFeatureDescriptor(
-                        getName(LAYERS), EO_PREFIX, complexLayerType, 0, Integer.MAX_VALUE);
+                buildFeatureDescriptor(getName(LAYERS), EO_PREFIX, complexLayerType, 0, Integer.MAX_VALUE);
         typeBuilder.add(layerDescriptor);
 
         // map OGC links
-        AttributeDescriptor linksDescriptor =
-                buildFeatureListDescriptor(
-                        OGC_LINKS_PROPERTY_NAME,
-                        EO_PREFIX,
-                        delegate.getSchema("collection_ogclink"));
+        AttributeDescriptor linksDescriptor = buildFeatureListDescriptor(
+                OGC_LINKS_PROPERTY_NAME, EO_PREFIX, delegate.getSchema("collection_ogclink"));
         typeBuilder.add(linksDescriptor);
 
         typeBuilder.setName(COLLECTION);
@@ -253,8 +240,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         return descriptor;
     }
 
-    private AttributeDescriptor buildFeatureListDescriptor(
-            Name name, String prefix, SimpleFeatureType schema) {
+    private AttributeDescriptor buildFeatureListDescriptor(Name name, String prefix, SimpleFeatureType schema) {
         return buildFeatureDescriptor(name, prefix, schema, 0, Integer.MAX_VALUE);
     }
 
@@ -338,9 +324,9 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
             ab.name(name).namespaceURI(namespaceURI).userData(SOURCE_ATTRIBUTE, ad.getLocalName());
             ab.userData(PREFIX, prefix);
             AttributeDescriptor mappedDescriptor;
-            if (ad instanceof GeometryDescriptor) {
+            if (ad instanceof GeometryDescriptor descriptor) {
                 GeometryType at = ab.buildGeometryType();
-                ab.setCRS(((GeometryDescriptor) ad).getCoordinateReferenceSystem());
+                ab.setCRS(descriptor.getCoordinateReferenceSystem());
                 mappedDescriptor = ab.buildDescriptor(new NameImpl(namespaceURI, name), at);
             } else {
                 AttributeType at = ab.buildType();
@@ -357,8 +343,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
 
         // map OGC links
         AttributeDescriptor linksDescriptor =
-                buildFeatureListDescriptor(
-                        OGC_LINKS_PROPERTY_NAME, EO_PREFIX, delegate.getSchema("product_ogclink"));
+                buildFeatureListDescriptor(OGC_LINKS_PROPERTY_NAME, EO_PREFIX, delegate.getSchema("product_ogclink"));
         typeBuilder.add(linksDescriptor);
 
         // the product collection itself
@@ -372,8 +357,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         return typeBuilder.feature();
     }
 
-    private List<String> getMissingRequiredTables(DataStore delegate, String... tables)
-            throws IOException {
+    private List<String> getMissingRequiredTables(DataStore delegate, String... tables) throws IOException {
         Set<String> availableNames = new HashSet<>(Arrays.asList(delegate.getTypeNames()));
         return Arrays.stream(tables)
                 .map(String::toLowerCase)
@@ -443,40 +427,31 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         names.add(productFeatureType.getName());
         // get all collections and their publishing setups
 
-        getCollectionPublishingConfigurations()
-                .forEach(
-                        (name, layers) -> {
-                            if (layers != null && !layers.isEmpty()) {
-                                for (CollectionLayer layer : layers) {
-                                    setupLayerFeatureTypes(names, name, layer);
-                                }
-                            } else {
-                                // a single feature type per collection
-                                names.add(new NameImpl(namespaceURI, name));
-                            }
-                        });
+        getCollectionPublishingConfigurations().forEach((name, layers) -> {
+            if (layers != null && !layers.isEmpty()) {
+                for (CollectionLayer layer : layers) {
+                    setupLayerFeatureTypes(names, name, layer);
+                }
+            } else {
+                // a single feature type per collection
+                names.add(new NameImpl(namespaceURI, name));
+            }
+        });
         return new ArrayList<>(names);
     }
 
-    private void setupLayerFeatureTypes(
-            LinkedHashSet<Name> names, String name, CollectionLayer layer) {
-        if (layer != null
-                && layer.isSeparateBands()
-                && layer.getBands() != null
-                && layer.getBands().length > 0) {
+    private void setupLayerFeatureTypes(LinkedHashSet<Name> names, String name, CollectionLayer layer) {
+        if (layer != null && layer.isSeparateBands() && layer.getBands() != null && layer.getBands().length > 0) {
             // one feature type per band needed to setup a coverage view
             for (String band : layer.getBands()) {
-                names.add(
-                        new NameImpl(
-                                namespaceURI, name + OpenSearchAccess.BAND_LAYER_SEPARATOR + band));
+                names.add(new NameImpl(namespaceURI, name + OpenSearchAccess.BAND_LAYER_SEPARATOR + band));
             }
         } else {
             names.add(new NameImpl(namespaceURI, name));
         }
     }
 
-    private Map<String, List<CollectionLayer>> getCollectionPublishingConfigurations()
-            throws IOException {
+    private Map<String, List<CollectionLayer>> getCollectionPublishingConfigurations() throws IOException {
         FeatureSource<FeatureType, Feature> collectionSource = getCollectionSource();
         Query query = new Query(collectionSource.getName().getLocalPart());
         query.setPropertyNames(COLLECTION_NAME, LAYERS);
@@ -545,11 +520,9 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
             for (Indexable indexable : indexables) {
                 try {
                     String queryable = indexable.getQueryable();
-                    String expression =
-                            getIndexExpression(indexable.getExpression(), indexable.getFieldType());
+                    String expression = getIndexExpression(indexable.getExpression(), indexable.getFieldType());
                     expressions.put(queryable, expression);
-                    boolean exists =
-                            existing.stream().anyMatch(idx -> idx.matches(queryable, expression));
+                    boolean exists = existing.stream().anyMatch(idx -> idx.matches(queryable, expression));
                     logIndexHandling("already exists", collection, queryable, expression, exists);
                     if (!exists) createIndex(cx, collection, indexable);
                 } catch (IOException e) {
@@ -576,24 +549,21 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
 
     private void logIndexHandling(
             String action, String collection, String queryable, String expression, boolean exists) {
-        LOGGER.info(
-                () ->
-                        "Checking if index is "
-                                + action
-                                + " for "
-                                + collection
-                                + "/"
-                                + queryable
-                                + " over "
-                                + expression
-                                + ": "
-                                + exists);
+        LOGGER.info(() -> "Checking if index is "
+                + action
+                + " for "
+                + collection
+                + "/"
+                + queryable
+                + " over "
+                + expression
+                + ": "
+                + exists);
     }
 
     private List<JDBCIndex> getIndexes(Connection cx, String collection) throws SQLException {
         List<JDBCIndex> indexes = new ArrayList<>();
-        try (PreparedStatement ps =
-                cx.prepareStatement("SELECT * FROM queryable_idx_tracker WHERE collection = ?")) {
+        try (PreparedStatement ps = cx.prepareStatement("SELECT * FROM queryable_idx_tracker WHERE collection = ?")) {
             ps.setString(1, collection);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -609,8 +579,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         return indexes;
     }
 
-    private String getIndexExpression(Expression expression, Indexable.FieldType fieldType)
-            throws IOException {
+    private String getIndexExpression(Expression expression, Indexable.FieldType fieldType) throws IOException {
         switch (fieldType) {
             case Geometry:
             case Array:
@@ -626,8 +595,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         JDBCDataStore delegate = getRawDelegateStore();
         SQLDialect dialect = delegate.getSQLDialect();
         if (!(dialect instanceof PostGISDialect)) {
-            throw new IllegalArgumentException(
-                    "Index creation is only current supported with PostGIS");
+            throw new IllegalArgumentException("Index creation is only current supported with PostGIS");
         }
         try {
             String indexTitle = getIndexTitle(collectionName, idx.getQueryable());
@@ -635,8 +603,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
             String indexExpression = getIndexExpression(idx.getExpression(), fieldType);
 
             if (!isFieldOrPointerIndexed(cx, indexExpression)) {
-                LOGGER.info(
-                        "Creating missing index on " + collectionName + "/" + idx.getQueryable());
+                LOGGER.info("Creating missing index on " + collectionName + "/" + idx.getQueryable());
                 StringBuilder sql = new StringBuilder("CREATE INDEX IF NOT EXISTS ");
                 sql.append(indexTitle).append(" ON product ");
                 if (fieldType == Indexable.FieldType.Geometry) {
@@ -645,8 +612,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
                     sql.append(" USING GIN ");
                 }
                 sql.append("(");
-                if (fieldType == Indexable.FieldType.Other
-                        || fieldType == Indexable.FieldType.Geometry) {
+                if (fieldType == Indexable.FieldType.Other || fieldType == Indexable.FieldType.Geometry) {
                     sql.append(indexExpression);
                 } else {
                     sql.append("(").append(indexExpression).append(")");
@@ -657,11 +623,10 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
                     preparedStatement.execute();
                 }
             } else {
-                LOGGER.info(
-                        "Index for indexExpression already exists, tracking new queryable: "
-                                + collectionName
-                                + "/"
-                                + idx.getQueryable());
+                LOGGER.info("Index for indexExpression already exists, tracking new queryable: "
+                        + collectionName
+                        + "/"
+                        + idx.getQueryable());
                 indexTitle = getExistingIndexTitle(cx, indexExpression);
             }
             recordIndex(cx, collectionName, idx.getQueryable(), indexExpression, indexTitle);
@@ -672,8 +637,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
 
     private String getExistingIndexTitle(Connection cx, String fieldOrPointer) throws SQLException {
         try (PreparedStatement ps =
-                cx.prepareStatement(
-                        "SELECT index_name FROM queryable_idx_tracker WHERE expression = ? LIMIT 1")) {
+                cx.prepareStatement("SELECT index_name FROM queryable_idx_tracker WHERE expression = ? LIMIT 1")) {
             ps.setString(1, fieldOrPointer);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -685,12 +649,10 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         return null;
     }
 
-    private boolean isFieldOrPointerIndexed(Connection cx, String fieldOrPointer)
-            throws SQLException {
+    private boolean isFieldOrPointerIndexed(Connection cx, String fieldOrPointer) throws SQLException {
         boolean out = false;
         try (PreparedStatement preparedStatement =
-                cx.prepareStatement(
-                        "SELECT count(*)>0 FROM queryable_idx_tracker WHERE expression = ?")) {
+                cx.prepareStatement("SELECT count(*)>0 FROM queryable_idx_tracker WHERE expression = ?")) {
             preparedStatement.setString(1, fieldOrPointer);
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 while (rs.next()) {
@@ -702,16 +664,11 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
     }
 
     private void recordIndex(
-            Connection cx,
-            String collectionName,
-            String queryable,
-            String fieldOrPointer,
-            String indexTitle)
+            Connection cx, String collectionName, String queryable, String fieldOrPointer, String indexTitle)
             throws SQLException {
         try (PreparedStatement preparedStatement =
-                cx.prepareStatement(
-                        "insert into queryable_idx_tracker (index_name, collection, queryable, expression) "
-                                + "values (?,?,?,?)")) {
+                cx.prepareStatement("insert into queryable_idx_tracker (index_name, collection, queryable, expression) "
+                        + "values (?,?,?,?)")) {
             preparedStatement.setString(1, indexTitle);
             preparedStatement.setString(2, collectionName);
             preparedStatement.setString(3, queryable);
@@ -721,19 +678,16 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
     }
 
     /** Drop product table index */
-    private void dropIndex(
-            Connection cx, String collectionName, String queryable, String indexExpression) {
+    private void dropIndex(Connection cx, String collectionName, String queryable, String indexExpression) {
         JDBCDataStore delegate = getRawDelegateStore();
         SQLDialect dialect = delegate.getSQLDialect();
         if (!(dialect instanceof PostGISDialect)) {
-            throw new IllegalArgumentException(
-                    "Index deletion is only current supported with PostGIS");
+            throw new IllegalArgumentException("Index deletion is only current supported with PostGIS");
         }
         try {
             int indexWithExpressionCount = getIndexExpressionCount(cx, indexExpression);
             LOGGER.info("Removing tracking of : " + collectionName + "/" + queryable);
-            String indexName =
-                    deleteIndexExpressionRecord(cx, collectionName, queryable, indexExpression);
+            String indexName = deleteIndexExpressionRecord(cx, collectionName, queryable, indexExpression);
             // if there is an index, and this is the last field using it, drop
             if (indexWithExpressionCount <= 1 && indexName != null) {
                 LOGGER.info("Dropping index " + indexName);
@@ -747,16 +701,13 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         }
     }
 
-    private String deleteIndexExpressionRecord(
-            Connection cx, String collection, String queryable, String expression)
+    private String deleteIndexExpressionRecord(Connection cx, String collection, String queryable, String expression)
             throws SQLException {
         String out = null;
         // two queryables might be pointing to the same field, just remove one
-        try (PreparedStatement preparedStatement =
-                cx.prepareStatement(
-                        "DELETE FROM queryable_idx_tracker "
-                                + " WHERE collection = ? AND queryable = ? AND expression = ? "
-                                + "RETURNING index_name")) {
+        try (PreparedStatement preparedStatement = cx.prepareStatement("DELETE FROM queryable_idx_tracker "
+                + " WHERE collection = ? AND queryable = ? AND expression = ? "
+                + "RETURNING index_name")) {
             preparedStatement.setString(1, collection);
             preparedStatement.setString(2, queryable);
             preparedStatement.setString(3, expression);
@@ -773,8 +724,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
     private int getIndexExpressionCount(Connection cx, String indexExpression) throws SQLException {
         int out = 0;
         try (PreparedStatement preparedStatement =
-                cx.prepareStatement(
-                        "SELECT count(*) FROM queryable_idx_tracker WHERE expression = ?")) {
+                cx.prepareStatement("SELECT count(*) FROM queryable_idx_tracker WHERE expression = ?")) {
             preparedStatement.setString(1, indexExpression);
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 while (rs.next()) {
@@ -796,9 +746,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
 
         List<String> out = new ArrayList<>();
         try (Connection cx = delegate.getConnection(Transaction.AUTO_COMMIT);
-                PreparedStatement ps =
-                        cx.prepareStatement(
-                                "SELECT indexname FROM pg_indexes WHERE tablename = ?")) {
+                PreparedStatement ps = cx.prepareStatement("SELECT indexname FROM pg_indexes WHERE tablename = ?")) {
             ps.setString(1, tableName);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -814,33 +762,28 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
 
     private String getIndexField(Expression expression) throws IOException {
         String indexField;
-        if (expression instanceof AttributeExpressionImpl) {
-            AttributeExpressionImpl aei = (AttributeExpressionImpl) expression;
+        if (expression instanceof AttributeExpressionImpl aei) {
             indexField = propertyMapper.getSourceName(aei.getPropertyName());
-        } else if (expression instanceof JsonPointerFunction) {
-            Function function = (Function) expression;
+        } else if (expression instanceof JsonPointerFunction function) {
             Expression p0 = function.getParameters().get(0);
-            if (p0 instanceof PropertyName) {
-                indexField = propertyMapper.getSourceName(((PropertyName) p0).getPropertyName());
+            if (p0 instanceof PropertyName name) {
+                indexField = propertyMapper.getSourceName(name.getPropertyName());
             } else {
-                throw new IOException(
-                        "The first argument for the function "
-                                + function
-                                + " arg: "
-                                + p0
-                                + " is not "
-                                + " property name and cannot be converted into a field name");
+                throw new IOException("The first argument for the function "
+                        + function
+                        + " arg: "
+                        + p0
+                        + " is not "
+                        + " property name and cannot be converted into a field name");
             }
         } else {
-            throw new IOException(
-                    "Expression "
-                            + expression
-                            + " is neither a JSON pointer nor a "
-                            + "attribute and can not be converted into a field name, cannot index it.");
+            throw new IOException("Expression "
+                    + expression
+                    + " is neither a JSON pointer nor a "
+                    + "attribute and can not be converted into a field name, cannot index it.");
         }
 
-        if (indexField == null)
-            throw new IOException("Could not map " + expression + " to a source field");
+        if (indexField == null) throw new IOException("Could not map " + expression + " to a source field");
 
         return "\"" + indexField + "\"";
     }
@@ -849,23 +792,20 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         return collectionName.replaceAll(":", "_") + "_" + fieldName.replaceAll(":", "_") + "_idx";
     }
 
-    private String encodeJsonPointer(Function jsonPointer, Indexable.FieldType type)
-            throws IOException {
+    private String encodeJsonPointer(Function jsonPointer, Indexable.FieldType type) throws IOException {
         StringBuilder out = new StringBuilder();
         Expression json = getParameter(jsonPointer, 0, true);
         Expression pointer = getParameter(jsonPointer, 1, true);
-        if (json instanceof PropertyName && pointer instanceof Literal) {
+        if (json instanceof PropertyName name && pointer instanceof Literal literal) {
             // if not a string need to cast the json attribute
             boolean needCast = !type.equals(Indexable.FieldType.JsonString);
             if (needCast) out.append('(');
             out.append("\"");
-            out.append(((PropertyName) json).getPropertyName());
+            out.append(name.getPropertyName());
             out.append("\"");
-            String strPointer = ((Literal) pointer).getValue().toString();
+            String strPointer = literal.getValue().toString();
             List<String> pointerEl =
-                    Stream.of(strPointer.split("/"))
-                            .filter(p -> !p.equals(""))
-                            .collect(Collectors.toList());
+                    Stream.of(strPointer.split("/")).filter(p -> !p.equals("")).collect(Collectors.toList());
             for (int i = 0; i < pointerEl.size(); i++) {
                 String p = pointerEl.get(i);
                 if (i != pointerEl.size() - 1) out.append(" -> ");
@@ -882,9 +822,8 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
                 out.append(cast("", type));
             }
         } else {
-            throw new IOException(
-                    "The first argument of the JSONPointer has to be a property name "
-                            + "and the second has to be a literal");
+            throw new IOException("The first argument of the JSONPointer has to be a property name "
+                    + "and the second has to be a literal");
         }
         return out.toString();
     }
@@ -892,8 +831,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
     private String cast(String property, Indexable.FieldType type) {
         if (String.class.getSimpleName().equals(type.name())) {
             return property + "::text";
-        } else if (Short.class.getSimpleName().equals(type.name())
-                || Byte.class.equals(type.name())) {
+        } else if (Short.class.getSimpleName().equals(type.name()) || Byte.class.equals(type.name())) {
             return property + "::smallint";
         } else if (Integer.class.getSimpleName().equals(type.name())) {
             return property + "::integer";
@@ -927,12 +865,11 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         final List<Expression> params = function.getParameters();
         if (params == null || params.size() <= idx) {
             if (mandatory) {
-                throw new IllegalArgumentException(
-                        "Missing parameter number "
-                                + (idx + 1)
-                                + "for function "
-                                + function.getName()
-                                + ", cannot encode in SQL");
+                throw new IllegalArgumentException("Missing parameter number "
+                        + (idx + 1)
+                        + "for function "
+                        + function.getName()
+                        + ", cannot encode in SQL");
             }
         }
         return params.get(idx);
@@ -975,10 +912,8 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         checkName(granuleTableName, JDBCOpenSearchAccess.GRANULE);
 
         // get the product type, if any (might be a virtual collection)
-        SimpleFeature collectionFeature =
-                getCollectionFeature(collection, delegate, collectionTableName);
-        if (collectionFeature == null)
-            throw new IOException("Collection " + collection + " not found");
+        SimpleFeature collectionFeature = getCollectionFeature(collection, delegate, collectionTableName);
+        if (collectionFeature == null) throw new IOException("Collection " + collection + " not found");
 
         String sensorType = (String) collectionFeature.getAttribute("eoSensorType");
         ProductClass productClass = null;
@@ -1106,9 +1041,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
             if (cqlFilter != null) {
                 try {
                     Filter filter = ECQL.toFilter(cqlFilter);
-                    fs =
-                            DataUtilities.createView(
-                                    fs, new Query(fs.getSchema().getTypeName(), filter));
+                    fs = DataUtilities.createView(fs, new Query(fs.getSchema().getTypeName(), filter));
                 } catch (CQLException | SchemaException e) {
                     throw new IOException(e);
                 }
@@ -1118,8 +1051,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         return fs;
     }
 
-    private void encodeTableName(
-            SQLDialect dialect, String databaseSchema, String tableName, StringBuffer sql) {
+    private void encodeTableName(SQLDialect dialect, String databaseSchema, String tableName, StringBuffer sql) {
         if (databaseSchema != null) {
             dialect.encodeSchemaName(databaseSchema, sql);
             sql.append(".");
@@ -1147,10 +1079,8 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
     }
 
     private SimpleFeature getCollectionFeature(
-            String collectionName, JDBCDataStore delegate, String collectionTableName)
-            throws IOException {
-        final PropertyIsEqualTo collectionNameFilter =
-                FF.equal(FF.property("name"), FF.literal(collectionName), true);
+            String collectionName, JDBCDataStore delegate, String collectionTableName) throws IOException {
+        final PropertyIsEqualTo collectionNameFilter = FF.equal(FF.property("name"), FF.literal(collectionName), true);
         final ContentFeatureCollection collections =
                 delegate.getFeatureSource(collectionTableName).getFeatures(collectionNameFilter);
         SimpleFeature collectionFeature = DataUtilities.first(collections);
@@ -1179,8 +1109,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
     }
 
     @Override
-    public SimpleFeatureSource getGranules(String collectionId, String productId)
-            throws IOException {
+    public SimpleFeatureSource getGranules(String collectionId, String productId) throws IOException {
         // a bit of craziness to avoid depending on the case of the table name
         String productTableName = null;
         String granuleTableName = null;
@@ -1197,54 +1126,43 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
 
         // granule attributes
         SimpleFeatureType granuleSchema = delegate.getSchema(granuleTableName);
-        final String productIdColumn =
-                granuleSchema.getAttributeDescriptors().stream()
-                        .map(ad -> ad.getLocalName())
-                        .filter(s -> "product_id".equalsIgnoreCase(s))
-                        .findFirst()
-                        .get();
+        final String productIdColumn = granuleSchema.getAttributeDescriptors().stream()
+                .map(ad -> ad.getLocalName())
+                .filter(s -> "product_id".equalsIgnoreCase(s))
+                .findFirst()
+                .get();
 
         // grab the database product id
         ContentFeatureSource products = delegate.getFeatureSource(productTableName);
-        final And productFilter =
-                FF.and(
-                        FF.equal(FF.property("eoParentIdentifier"), FF.literal(collectionId), true),
-                        FF.equal(FF.property("eoIdentifier"), FF.literal(productId), true));
+        final And productFilter = FF.and(
+                FF.equal(FF.property("eoParentIdentifier"), FF.literal(collectionId), true),
+                FF.equal(FF.property("eoIdentifier"), FF.literal(productId), true));
         SimpleFeature productFeature = DataUtilities.first(products.getFeatures(productFilter));
 
         if (productFeature == null) {
             throw new IOException(
-                    "Could not find a product with id '"
-                            + productId
-                            + "' in collection '"
-                            + collectionId
-                            + "'");
+                    "Could not find a product with id '" + productId + "' in collection '" + collectionId + "'");
         }
 
         Query granulesQuery = new Query();
         final Object dbProductId = productFeature.getAttribute("id");
-        granulesQuery.setFilter(
-                FF.equal(FF.property(productIdColumn), FF.literal(dbProductId), true));
-        List<String> names =
-                granuleSchema.getAttributeDescriptors().stream()
-                        .map(ad -> ad.getLocalName())
-                        .filter(s -> !s.equals(productIdColumn))
-                        .collect(Collectors.toList());
+        granulesQuery.setFilter(FF.equal(FF.property(productIdColumn), FF.literal(dbProductId), true));
+        List<String> names = granuleSchema.getAttributeDescriptors().stream()
+                .map(ad -> ad.getLocalName())
+                .filter(s -> !s.equals(productIdColumn))
+                .collect(Collectors.toList());
         granulesQuery.setPropertyNames(names);
 
-        final SimpleFeatureStore granulesStore =
-                (SimpleFeatureStore) delegate.getFeatureSource(granuleTableName);
+        final SimpleFeatureStore granulesStore = (SimpleFeatureStore) delegate.getFeatureSource(granuleTableName);
         try {
             return new WritableDataView(granulesStore, granulesQuery) {
                 @Override
                 public java.util.List<org.geotools.api.filter.identity.FeatureId> addFeatures(
-                        org.geotools.feature.FeatureCollection<SimpleFeatureType, SimpleFeature>
-                                featureCollection)
+                        org.geotools.feature.FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection)
                         throws IOException {
                     ListFeatureCollection fc = new ListFeatureCollection(granulesStore.getSchema());
                     SimpleFeatureBuilder fb = new SimpleFeatureBuilder(granulesStore.getSchema());
-                    try (SimpleFeatureIterator fi =
-                            (SimpleFeatureIterator) featureCollection.features()) {
+                    try (SimpleFeatureIterator fi = (SimpleFeatureIterator) featureCollection.features()) {
                         while (fi.hasNext()) {
                             SimpleFeature sf = fi.next();
                             fb.set("product_id", dbProductId);
@@ -1256,7 +1174,8 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
                         }
                     }
                     return delegate.addFeatures(fc);
-                };
+                }
+                ;
             };
         } catch (SchemaException e) {
             throw new IOException(e);
@@ -1265,8 +1184,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
 
     @Override
     public SimpleFeatureType getCollectionLayerSchema() throws IOException {
-        return new JDBCCollectionFeatureStore(this, collectionFeatureType)
-                .getCollectionLayerSchema();
+        return new JDBCCollectionFeatureStore(this, collectionFeatureType).getCollectionLayerSchema();
     }
 
     @Override

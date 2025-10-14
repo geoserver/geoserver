@@ -25,10 +25,7 @@ import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
-/**
- * Helper class that allow the GMLTemplateWriter to write the output according to the gml version
- * requested.
- */
+/** Helper class that allow the GMLTemplateWriter to write the output according to the gml version requested. */
 abstract class GMLDialectManager {
 
     protected XMLStreamWriter streamWriter;
@@ -57,18 +54,18 @@ abstract class GMLDialectManager {
 
     void writeGeometry(Geometry geometry) throws XMLStreamException {
         String gmlNsUri = namespaces.get(GML_PREFIX);
-        if (geometry instanceof Point) {
-            writePoint((Point) geometry, gmlNsUri);
-        } else if (geometry instanceof MultiPoint) {
-            writeMultiPoint((MultiPoint) geometry, gmlNsUri);
-        } else if (geometry instanceof LineString) {
-            writeLineString((LineString) geometry, gmlNsUri);
-        } else if (geometry instanceof MultiLineString) {
-            writeMultiLineString((MultiLineString) geometry, gmlNsUri);
-        } else if (geometry instanceof Polygon) {
-            writePolygon((Polygon) geometry, gmlNsUri);
-        } else if (geometry instanceof MultiPolygon) {
-            writeMultiPolygon((MultiPolygon) geometry, gmlNsUri);
+        if (geometry instanceof Point point1) {
+            writePoint(point1, gmlNsUri);
+        } else if (geometry instanceof MultiPoint point) {
+            writeMultiPoint(point, gmlNsUri);
+        } else if (geometry instanceof LineString string1) {
+            writeLineString(string1, gmlNsUri);
+        } else if (geometry instanceof MultiLineString string) {
+            writeMultiLineString(string, gmlNsUri);
+        } else if (geometry instanceof Polygon polygon1) {
+            writePolygon(polygon1, gmlNsUri);
+        } else if (geometry instanceof MultiPolygon polygon) {
+            writeMultiPolygon(polygon, gmlNsUri);
         }
     }
 
@@ -80,9 +77,7 @@ abstract class GMLDialectManager {
         streamWriter.writeStartElement(GML_PREFIX, "Point", gmlNsUri);
         writeGeometryAttributes(index);
         streamWriter.writeStartElement(
-                GML_PREFIX,
-                coordElementName.equals("coordinates") ? coordElementName : "pos",
-                gmlNsUri);
+                GML_PREFIX, coordElementName.equals("coordinates") ? coordElementName : "pos", gmlNsUri);
         double y = point.getY();
         double x = point.getX();
         if (axisOrder == CRS.AxisOrder.NORTH_EAST) {
@@ -115,6 +110,10 @@ abstract class GMLDialectManager {
         Coordinate[] coordinates = exteriorRing.getCoordinates();
         streamWriter.writeStartElement(GML_PREFIX, "Surface", gmlNsUri);
         writeGeometryAttributes(index);
+
+        streamWriter.writeStartElement(GML_PREFIX, "patches", gmlNsUri);
+        streamWriter.writeStartElement(GML_PREFIX, "PolygonPatch", gmlNsUri);
+
         writePolygonRing("exterior", coordinates, gmlNsUri);
         int numInterior = polygon.getNumInteriorRing();
         for (int i = 0; i < numInterior; i++) {
@@ -122,10 +121,11 @@ abstract class GMLDialectManager {
             writePolygonRing("interior", coordinates, gmlNsUri);
         }
         streamWriter.writeEndElement();
+        streamWriter.writeEndElement();
+        streamWriter.writeEndElement();
     }
 
-    void writePolygonRing(String ringName, Coordinate[] coordinates, String gmlNsUri)
-            throws XMLStreamException {
+    void writePolygonRing(String ringName, Coordinate[] coordinates, String gmlNsUri) throws XMLStreamException {
         streamWriter.writeStartElement(GML_PREFIX, ringName, gmlNsUri);
         streamWriter.writeStartElement(GML_PREFIX, "LinearRing", gmlNsUri);
         streamWriter.writeStartElement(GML_PREFIX, coordElementName, gmlNsUri);
@@ -139,8 +139,7 @@ abstract class GMLDialectManager {
         writeLineString(lineString, gmlNsUri, 0);
     }
 
-    void writeLineString(LineString lineString, String gmlNsUri, int index)
-            throws XMLStreamException {
+    void writeLineString(LineString lineString, String gmlNsUri, int index) throws XMLStreamException {
         Coordinate[] coordinates = lineString.getCoordinates();
         streamWriter.writeStartElement(GML_PREFIX, "LineString", gmlNsUri);
         writeGeometryAttributes(index);
@@ -150,8 +149,7 @@ abstract class GMLDialectManager {
         streamWriter.writeEndElement();
     }
 
-    void writeMultiLineString(MultiLineString lineString, String gmlNsUri)
-            throws XMLStreamException {
+    void writeMultiLineString(MultiLineString lineString, String gmlNsUri) throws XMLStreamException {
         int numGeom = lineString.getNumGeometries();
         streamWriter.writeStartElement(GML_PREFIX, "MultiLineString", gmlNsUri);
         writeGeometryAttributes(0);
@@ -166,12 +164,10 @@ abstract class GMLDialectManager {
     void writeMultiPolygon(MultiPolygon multiPolygon, String gmlNsUri) throws XMLStreamException {
         int numGeom = multiPolygon.getNumGeometries();
         boolean isMultiSurface = multiPolygon instanceof MultiSurface;
-        streamWriter.writeStartElement(
-                GML_PREFIX, isMultiSurface ? "MultiSurface" : "MultiPolygon", gmlNsUri);
+        streamWriter.writeStartElement(GML_PREFIX, isMultiSurface ? "MultiSurface" : "MultiPolygon", gmlNsUri);
         writeGeometryAttributes(0);
         for (int i = 0; i < numGeom; i++) {
-            streamWriter.writeStartElement(
-                    GML_PREFIX, isMultiSurface ? "surfaceMember" : "polygonMember", gmlNsUri);
+            streamWriter.writeStartElement(GML_PREFIX, isMultiSurface ? "surfaceMember" : "polygonMember", gmlNsUri);
             writePolygon((Polygon) multiPolygon.getGeometryN(i), gmlNsUri);
             streamWriter.writeEndElement();
         }
@@ -198,14 +194,11 @@ abstract class GMLDialectManager {
 
     abstract void writeNumberMatched(String numberMatched) throws XMLStreamException;
 
-    void writeBoundingBox(
-            ReferencedEnvelope envelope, CoordinateReferenceSystem crs, boolean useWFSPrefix)
+    void writeBoundingBox(ReferencedEnvelope envelope, CoordinateReferenceSystem crs, boolean useWFSPrefix)
             throws IOException {
         try {
             streamWriter.writeStartElement(
-                    useWFSPrefix ? WFS_PREFIX : GML_PREFIX,
-                    "boundedBy",
-                    namespaces.get(GML_PREFIX));
+                    useWFSPrefix ? WFS_PREFIX : GML_PREFIX, "boundedBy", namespaces.get(GML_PREFIX));
             streamWriter.writeStartElement(GML_PREFIX, "Envelope", namespaces.get(GML_PREFIX));
             writeCrs(crs);
             streamWriter.writeStartElement(GML_PREFIX, "lowerCorner", namespaces.get(GML_PREFIX));
@@ -221,8 +214,7 @@ abstract class GMLDialectManager {
         }
     }
 
-    abstract void writeBoundingBox(ReferencedEnvelope envelope, CoordinateReferenceSystem crs)
-            throws IOException;
+    abstract void writeBoundingBox(ReferencedEnvelope envelope, CoordinateReferenceSystem crs) throws IOException;
 
     void writeCrs(CoordinateReferenceSystem crs) throws XMLStreamException, IOException {
         if (crs != null) {

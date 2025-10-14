@@ -9,6 +9,7 @@ import static org.geotools.dggs.gstore.DGGSResolutionCalculator.CONFIGURED_MINRE
 import static org.geotools.dggs.gstore.DGGSResolutionCalculator.CONFIGURED_OFFSET_KEY;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.Arrays;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
@@ -32,7 +33,9 @@ import org.geotools.util.decorate.Wrapper;
 /** Configures a layer DGGS related attributes */
 public class DGGSConfigPanel extends PublishedConfigurationPanel<LayerInfo> {
 
+    @Serial
     private static final long serialVersionUID = 6469105227923320272L;
+
     private final TextField<Integer> minResolution;
     private final TextField<Integer> maxResolution;
 
@@ -71,10 +74,7 @@ public class DGGSConfigPanel extends PublishedConfigurationPanel<LayerInfo> {
     }
 
     @Override
-    /**
-     * Check the min/max values are consistent, need the panel to included in the hierarchy to find
-     * the /form
-     */
+    /** Check the min/max values are consistent, need the panel to included in the hierarchy to find the /form */
     protected void onInitialize() {
         super.onInitialize();
 
@@ -84,8 +84,8 @@ public class DGGSConfigPanel extends PublishedConfigurationPanel<LayerInfo> {
     private static DGGSInstance getDGGS(IModel<LayerInfo> model) throws IOException {
         FeatureTypeInfo fti = (FeatureTypeInfo) model.getObject().getResource();
         FeatureSource fs = fti.getFeatureSource(null, null);
-        if (fs instanceof Wrapper) {
-            fs = ((Wrapper) fs).unwrap(DGGSFeatureSource.class);
+        if (fs instanceof Wrapper wrapper) {
+            fs = wrapper.unwrap(DGGSFeatureSource.class);
         }
         return ((DGGSFeatureSource) fs).getDGGS();
     }
@@ -112,8 +112,7 @@ public class DGGSConfigPanel extends PublishedConfigurationPanel<LayerInfo> {
 
             if (minValue != null && maxValue != null && minValue > maxValue) {
                 ValidationError error = new ValidationError();
-                error.setMessage(
-                        new ParamResourceModel("minMaxError", DGGSConfigPanel.this).getObject());
+                error.setMessage(new ParamResourceModel("minMaxError", DGGSConfigPanel.this).getObject());
                 minField.error(error);
             }
         }

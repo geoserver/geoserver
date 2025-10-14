@@ -35,10 +35,9 @@ public class MBTilesProcessTest extends WPSTestSupport {
     public void testMBTilesProcess() throws Exception {
         String url = string(post("wps", getXml())).trim();
         String id = (String) KvpUtils.parseQueryString(url).get("executionId");
-        File file =
-                GeoServerExtensions.bean(WPSResourceManager.class)
-                        .getOutputResource(id, "World.mbtiles")
-                        .file();
+        File file = GeoServerExtensions.bean(WPSResourceManager.class)
+                .getOutputResource(id, "World.mbtiles")
+                .file();
         assertNotNull(file);
         assertTrue(file.exists());
 

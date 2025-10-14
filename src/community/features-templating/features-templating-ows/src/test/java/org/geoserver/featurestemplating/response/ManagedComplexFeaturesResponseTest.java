@@ -77,17 +77,10 @@ public class ManagedComplexFeaturesResponseTest extends TemplateComplexTestSuppo
         assertXpathCount(4, "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit", doc);
 
         assertXpathCount(
-                4,
-                "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/gml:description/@xlink:href",
-                doc);
+                4, "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/gml:description/@xlink:href", doc);
+        assertXpathCount(4, "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/gsml:staticContent", doc);
         assertXpathCount(
-                4,
-                "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/gsml:staticContent",
-                doc);
-        assertXpathCount(
-                4,
-                "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/gsml:staticContent/@xlink:title",
-                doc);
+                4, "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/gsml:staticContent/@xlink:title", doc);
 
         // filter on array element lithology
         assertXpathCount(2, "//gsml:lithology", doc);

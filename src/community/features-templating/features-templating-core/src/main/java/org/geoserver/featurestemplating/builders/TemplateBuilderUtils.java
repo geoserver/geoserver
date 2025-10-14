@@ -10,16 +10,15 @@ import org.geoserver.featurestemplating.builders.impl.CompositeBuilder;
 public class TemplateBuilderUtils {
 
     /**
-     * Check if the key of the builder is selectable. By selectable it is meant a key that is not
-     * out of the scope of a feature properties.
+     * Check if the key of the builder is selectable. By selectable it is meant a key that is not out of the scope of a
+     * feature properties.
      *
      * @param builder the builder whose key needs to be checked.
      * @return true if the key is selectable false otherwise.
      */
     public static boolean hasSelectableKey(TemplateBuilder builder) {
         boolean validKey = true;
-        if (builder instanceof SourceBuilder) {
-            SourceBuilder sourceBuilder = (SourceBuilder) builder;
+        if (builder instanceof SourceBuilder sourceBuilder) {
             validKey = !sourceBuilder.isTopLevelFeature() && sourceBuilder.hasOwnOutput();
         }
         return validKey;
@@ -36,8 +35,7 @@ public class TemplateBuilderUtils {
 
     private static AbstractTemplateBuilder lookupBuilder(TemplateBuilder parent, String key) {
         for (TemplateBuilder child : parent.getChildren()) {
-            if (child instanceof AbstractTemplateBuilder) {
-                AbstractTemplateBuilder atb = (AbstractTemplateBuilder) child;
+            if (child instanceof AbstractTemplateBuilder atb) {
                 if (key.equals(atb.getKey(null))) {
                     return atb;
                 } else if (atb instanceof CompositeBuilder && atb.getKey(null) == null) {

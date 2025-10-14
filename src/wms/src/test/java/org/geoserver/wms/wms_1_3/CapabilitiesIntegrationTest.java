@@ -138,10 +138,9 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         Element e = dom.getDocumentElement();
         assertEquals("WMS_Capabilities", e.getLocalName());
         XpathEngine xpath = XMLUnit.newXpathEngine();
-        assertTrue(
-                xpath.getMatchingNodes("//wms:Layer/wms:Name[starts-with(., cite)]", dom)
-                                .getLength()
-                        > 0);
+        assertTrue(xpath.getMatchingNodes("//wms:Layer/wms:Name[starts-with(., cite)]", dom)
+                        .getLength()
+                > 0);
         assertEquals(
                 0,
                 xpath.getMatchingNodes("//wms:Layer/wms:Name[not(starts-with(., cite))]", dom)
@@ -156,12 +155,9 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         // print(dom);
 
         XpathEngine xpath = XMLUnit.newXpathEngine();
-        NodeList nodeLayers =
-                xpath.getMatchingNodes(
-                        "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer", dom);
+        NodeList nodeLayers = xpath.getMatchingNodes("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer", dom);
 
-        assertEquals(
-                expectedLayerCount /* the layers under the opaque group */, nodeLayers.getLength());
+        assertEquals(expectedLayerCount /* the layers under the opaque group */, nodeLayers.getLength());
     }
 
     @org.junit.Test
@@ -171,10 +167,9 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         Element e = dom.getDocumentElement();
         assertEquals("WMS_Capabilities", e.getLocalName());
         XpathEngine xpath = XMLUnit.newXpathEngine();
-        assertTrue(
-                xpath.getMatchingNodes("//wms:Layer/wms:Name[starts-with(., cite)]", dom)
-                                .getLength()
-                        > 0);
+        assertTrue(xpath.getMatchingNodes("//wms:Layer/wms:Name[starts-with(., cite)]", dom)
+                        .getLength()
+                > 0);
         assertEquals(
                 0,
                 xpath.getMatchingNodes("//wms:Layer/wms:Name[not(starts-with(., cite))]", dom)
@@ -192,10 +187,7 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
     @org.junit.Test
     public void testLayerQualified() throws Exception {
         // Qualify the request with a layer.  Other layers should not be included.
-        Document dom =
-                dom(
-                        get("cite/Forests/wms?service=WMS&request=getCapabilities&version=1.3.0"),
-                        true);
+        Document dom = dom(get("cite/Forests/wms?service=WMS&request=getCapabilities&version=1.3.0"), true);
         // print(dom);
         Element e = dom.getDocumentElement();
         assertEquals("WMS_Capabilities", e.getLocalName());
@@ -292,23 +284,16 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         try {
             Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
             // print(doc);
+            assertXpathEvaluatesTo("1", "count(//wms:Layer[wms:Name='MyLayerGroup']/wms:Attribution)", doc);
             assertXpathEvaluatesTo(
-                    "1", "count(//wms:Layer[wms:Name='MyLayerGroup']/wms:Attribution)", doc);
-            assertXpathEvaluatesTo(
-                    "My Attribution",
-                    "//wms:Layer[wms:Name='MyLayerGroup']/wms:Attribution/wms:Title",
-                    doc);
-            assertXpathEvaluatesTo(
-                    "1", "count(//wms:Layer[wms:Name='MyLayerGroup']/wms:MetadataURL)", doc);
+                    "My Attribution", "//wms:Layer[wms:Name='MyLayerGroup']/wms:Attribution/wms:Title", doc);
+            assertXpathEvaluatesTo("1", "count(//wms:Layer[wms:Name='MyLayerGroup']/wms:MetadataURL)", doc);
             assertXpathEvaluatesTo(
                     "http://my/metadata/link",
                     "//wms:Layer[wms:Name='MyLayerGroup']/wms:MetadataURL/wms:OnlineResource/@xlink:href",
                     doc);
             // check keywords are present
-            assertXpathEvaluatesTo(
-                    "2",
-                    "count(//wms:Layer[wms:Name='MyLayerGroup']/wms:KeywordList/wms:Keyword)",
-                    doc);
+            assertXpathEvaluatesTo("2", "count(//wms:Layer[wms:Name='MyLayerGroup']/wms:KeywordList/wms:Keyword)", doc);
             assertXpathEvaluatesTo(
                     "keyword1",
                     "//wms:Layer[wms:Name='MyLayerGroup']/wms:KeywordList/wms:Keyword[@vocabulary='vocabulary1']",
@@ -338,17 +323,15 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         assertXpathEvaluatesTo("2", "count(//wms:Layer[wms:Name='cdf:Fifteen']/wms:Style)", doc);
 
         XpathEngine xpath = newXpathEngine();
-        String href =
-                xpath.evaluate(
-                        "//wms:Layer[wms:Name='cdf:Fifteen']/wms:Style[wms:Name='Default']/wms:LegendURL/wms:OnlineResource/@xlink:href",
-                        doc);
+        String href = xpath.evaluate(
+                "//wms:Layer[wms:Name='cdf:Fifteen']/wms:Style[wms:Name='Default']/wms:LegendURL/wms:OnlineResource/@xlink:href",
+                doc);
         assertTrue(href.contains("GetLegendGraphic"));
         assertTrue(href.contains("layer=cdf%3AFifteen"));
         assertFalse(href.contains("style"));
-        href =
-                xpath.evaluate(
-                        "//wms:Layer[wms:Name='cdf:Fifteen']/wms:Style[wms:Name='point']/wms:LegendURL/wms:OnlineResource/@xlink:href",
-                        doc);
+        href = xpath.evaluate(
+                "//wms:Layer[wms:Name='cdf:Fifteen']/wms:Style[wms:Name='point']/wms:LegendURL/wms:OnlineResource/@xlink:href",
+                doc);
         assertTrue(href.contains("GetLegendGraphic"));
         assertTrue(href.contains("layer=cdf%3AFifteen"));
         assertTrue(href.contains("style=point"));
@@ -358,8 +341,7 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         getCatalog().save(layer);
         Document document = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
         assertXpathEvaluatesTo("1", "count(//wms:Layer[wms:Name='cdf:Fifteen'])", document);
-        assertXpathEvaluatesTo(
-                "1", "count(//wms:Layer[wms:Name='cdf:Fifteen']/wms:Style)", document);
+        assertXpathEvaluatesTo("1", "count(//wms:Layer[wms:Name='cdf:Fifteen']/wms:Style)", document);
         // getStyles() has the default style, styles() doesnt have default style
         assertTrue(layer.getStyles().contains(pointStyle));
         assertFalse(layer.styles().contains(pointStyle));
@@ -404,13 +386,11 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         assertXpathEvaluatesTo("test abstract", base + "wms:Abstract", doc);
         assertXpathEvaluatesTo("test keyword 1", base + "wms:KeywordList/wms:Keyword[1]", doc);
         assertXpathEvaluatesTo("test keyword 2", base + "wms:KeywordList/wms:Keyword[2]", doc);
-        assertXpathEvaluatesTo(
-                "http://example.com/geoserver", base + "wms:OnlineResource/@xlink:href", doc);
+        assertXpathEvaluatesTo("http://example.com/geoserver", base + "wms:OnlineResource/@xlink:href", doc);
 
         String cinfo = base + "wms:ContactInformation/";
         assertXpathEvaluatesTo("__me", cinfo + "wms:ContactPersonPrimary/wms:ContactPerson", doc);
-        assertXpathEvaluatesTo(
-                "__org", cinfo + "wms:ContactPersonPrimary/wms:ContactOrganization", doc);
+        assertXpathEvaluatesTo("__org", cinfo + "wms:ContactPersonPrimary/wms:ContactOrganization", doc);
         assertXpathEvaluatesTo("__position", cinfo + "wms:ContactPosition", doc);
         assertXpathEvaluatesTo("__type", cinfo + "wms:ContactAddress/wms:AddressType", doc);
         assertXpathEvaluatesTo("__address", cinfo + "wms:ContactAddress/wms:Address", doc);
@@ -442,33 +422,20 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
     @Test
     public void testExceptions() throws Exception {
         Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
-        assertXpathEvaluatesTo(
-                "XML", "wms:WMS_Capabilities/wms:Capability/wms:Exception/wms:Format[1]", doc);
-        assertXpathEvaluatesTo(
-                "INIMAGE", "wms:WMS_Capabilities/wms:Capability/wms:Exception/wms:Format[2]", doc);
-        assertXpathEvaluatesTo(
-                "BLANK", "wms:WMS_Capabilities/wms:Capability/wms:Exception/wms:Format[3]", doc);
-        assertXpathEvaluatesTo(
-                "JSON", "wms:WMS_Capabilities/wms:Capability/wms:Exception/wms:Format[4]", doc);
+        assertXpathEvaluatesTo("XML", "wms:WMS_Capabilities/wms:Capability/wms:Exception/wms:Format[1]", doc);
+        assertXpathEvaluatesTo("INIMAGE", "wms:WMS_Capabilities/wms:Capability/wms:Exception/wms:Format[2]", doc);
+        assertXpathEvaluatesTo("BLANK", "wms:WMS_Capabilities/wms:Capability/wms:Exception/wms:Format[3]", doc);
+        assertXpathEvaluatesTo("JSON", "wms:WMS_Capabilities/wms:Capability/wms:Exception/wms:Format[4]", doc);
 
         boolean jsonpOriginal = JSONType.isJsonpEnabled();
         try {
             JSONType.setJsonpEnabled(true);
             doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
-            assertXpathEvaluatesTo(
-                    "JSONP",
-                    "wms:WMS_Capabilities/wms:Capability/wms:Exception/wms:Format[5]",
-                    doc);
-            assertXpathEvaluatesTo(
-                    "5",
-                    "count(wms:WMS_Capabilities/wms:Capability/wms:Exception/wms:Format)",
-                    doc);
+            assertXpathEvaluatesTo("JSONP", "wms:WMS_Capabilities/wms:Capability/wms:Exception/wms:Format[5]", doc);
+            assertXpathEvaluatesTo("5", "count(wms:WMS_Capabilities/wms:Capability/wms:Exception/wms:Format)", doc);
             JSONType.setJsonpEnabled(false);
             doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
-            assertXpathEvaluatesTo(
-                    "4",
-                    "count(wms:WMS_Capabilities/wms:Capability/wms:Exception/wms:Format)",
-                    doc);
+            assertXpathEvaluatesTo("4", "count(wms:WMS_Capabilities/wms:Capability/wms:Exception/wms:Format)", doc);
         } finally {
             JSONType.setJsonpEnabled(jsonpOriginal);
         }
@@ -530,10 +497,7 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         String linesName = MockData.LINES.getPrefix() + ":" + MockData.LINES.getLocalPart();
         Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
 
-        String xpath =
-                "//wms:Layer[wms:Name='"
-                        + linesName
-                        + "']/wms:KeywordList/wms:Keyword[@vocabulary='bar']";
+        String xpath = "//wms:Layer[wms:Name='" + linesName + "']/wms:KeywordList/wms:Keyword[@vocabulary='bar']";
         assertXpathExists(xpath, doc);
         assertXpathEvaluatesTo("foo", xpath, doc);
 
@@ -546,12 +510,9 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
     public void testBoundingBoxCRS84() throws Exception {
         Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
 
+        assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:BoundingBox[@CRS = 'CRS:84']", doc);
         assertXpathExists(
-                "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:BoundingBox[@CRS = 'CRS:84']",
-                doc);
-        assertXpathExists(
-                "/wms:WMS_Capabilities/wms:Capability/wms:Layer//wms:Layer/wms:BoundingBox[@CRS = 'CRS:84']",
-                doc);
+                "/wms:WMS_Capabilities/wms:Capability/wms:Layer//wms:Layer/wms:BoundingBox[@CRS = 'CRS:84']", doc);
     }
 
     @org.junit.Test
@@ -574,16 +535,10 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         xpath = "//wms:Layer[wms:Name='" + layerName + "']/wms:MetadataURL/@type";
         assertXpathEvaluatesTo("FGDC", xpath, doc);
 
-        xpath =
-                "//wms:Layer[wms:Name='"
-                        + layerName
-                        + "']/wms:MetadataURL/wms:OnlineResource/@xlink:type";
+        xpath = "//wms:Layer[wms:Name='" + layerName + "']/wms:MetadataURL/wms:OnlineResource/@xlink:type";
         assertXpathEvaluatesTo("simple", xpath, doc);
 
-        xpath =
-                "//wms:Layer[wms:Name='"
-                        + layerName
-                        + "']/wms:MetadataURL/wms:OnlineResource/@xlink:href";
+        xpath = "//wms:Layer[wms:Name='" + layerName + "']/wms:MetadataURL/wms:OnlineResource/@xlink:href";
         assertXpathEvaluatesTo("http://geoserver.org", xpath, doc);
 
         // Test transforming localhost to proxyBaseUrl
@@ -626,16 +581,10 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         String xpath = "//wms:Layer[wms:Name='" + layerName + "']/wms:DataURL/wms:Format";
         assertXpathEvaluatesTo("text/xml", xpath, doc);
 
-        xpath =
-                "//wms:Layer[wms:Name='"
-                        + layerName
-                        + "']/wms:DataURL/wms:OnlineResource/@xlink:type";
+        xpath = "//wms:Layer[wms:Name='" + layerName + "']/wms:DataURL/wms:OnlineResource/@xlink:type";
         assertXpathEvaluatesTo("simple", xpath, doc);
 
-        xpath =
-                "//wms:Layer[wms:Name='"
-                        + layerName
-                        + "']/wms:DataURL/wms:OnlineResource/@xlink:href";
+        xpath = "//wms:Layer[wms:Name='" + layerName + "']/wms:DataURL/wms:OnlineResource/@xlink:href";
         assertXpathEvaluatesTo("http://geoserver.org", xpath, doc);
 
         // Test transforming localhost to proxyBaseUrl
@@ -667,9 +616,7 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
     public void testOpenlayersFormat() throws Exception {
         Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
         assertXpathEvaluatesTo(
-                "1",
-                "count(//wms:GetMap[wms:Format = '" + OpenLayersMapOutputFormat.MIME_TYPE + "'])",
-                doc);
+                "1", "count(//wms:GetMap[wms:Format = '" + OpenLayersMapOutputFormat.MIME_TYPE + "'])", doc);
     }
 
     @Test
@@ -677,8 +624,7 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
 
         // check the style name got prefixed too
-        assertXpathEvaluatesTo(
-                "cite:Lakes", "//wms:Layer[wms:Name='cite:Lakes']/wms:Style[1]/wms:Name", doc);
+        assertXpathEvaluatesTo("cite:Lakes", "//wms:Layer[wms:Name='cite:Lakes']/wms:Style[1]/wms:Name", doc);
     }
 
     @Test
@@ -696,9 +642,7 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
             // should show up just once
             assertXpathEvaluatesTo("1", "count(//wms:Layer[wms:Name='nature'])", doc);
             assertXpathEvaluatesTo(
-                    "1",
-                    "count(//wms:Layer[wms:Title='containerGroup']/wms:Layer[wms:Name='nature'])",
-                    doc);
+                    "1", "count(//wms:Layer[wms:Title='containerGroup']/wms:Layer[wms:Name='nature'])", doc);
         } finally {
             lakes.setAdvertised(true);
             catalog.save(lakes);
@@ -733,27 +677,24 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
 
             // the layer group is there, but not the contained layers, which are not visible anymore
             assertXpathEvaluatesTo("1", "count(//wms:Layer[wms:Name='opaqueGroup'])", dom);
-            for (PublishedInfo p : getCatalog().getLayerGroupByName(OPAQUE_GROUP).getLayers()) {
+            for (PublishedInfo p :
+                    getCatalog().getLayerGroupByName(OPAQUE_GROUP).getLayers()) {
                 assertXpathNotExists("//wms:Layer[wms:Name='" + p.prefixedName() + "']", dom);
             }
 
             // now check the layer count too, we just hid everything in the container layer
             List<LayerInfo> nestedLayers = new LayerGroupHelper(container).allLayers();
             // System.out.println(nestedLayers);
-            int expectedLayerCount =
-                    getRawTopLayerCount()
-                            // layers gone due to the nesting
-                            - nestedLayers.size()
-                            /* container has been nested and disappeared */
-                            - 1;
+            int expectedLayerCount = getRawTopLayerCount()
+                    // layers gone due to the nesting
+                    - nestedLayers.size()
+                    /* container has been nested and disappeared */
+                    - 1;
             XpathEngine xpath = XMLUnit.newXpathEngine();
             NodeList nodeLayers =
-                    xpath.getMatchingNodes(
-                            "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer", dom);
+                    xpath.getMatchingNodes("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer", dom);
 
-            assertEquals(
-                    expectedLayerCount /* the layers under the opaque group */,
-                    nodeLayers.getLength());
+            assertEquals(expectedLayerCount /* the layers under the opaque group */, nodeLayers.getLength());
         } finally {
             // restore the configuration
             opaque.getLayers().remove(container);
@@ -773,35 +714,24 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         nameSpace.setURI("http://non-advertised.org");
         // remove all layer groups and store them
         List<LayerGroupInfo> layerGroups =
-                catalog.getLayerGroups().stream()
-                        .map(this::unwrapLayerGroup)
-                        .collect(Collectors.toList());
+                catalog.getLayerGroups().stream().map(this::unwrapLayerGroup).collect(Collectors.toList());
         catalog.getLayerGroups().forEach(catalog::remove);
         try {
             catalog.add(workspace);
             catalog.add(nameSpace);
             // add some layers by duplicating existing layers and create a layer group
-            LayerInfo layer1 =
-                    cloneVectorLayerIntoWorkspace(
-                            workspace, nameSpace, MockData.BUILDINGS.getLocalPart());
-            LayerInfo layer2 =
-                    cloneVectorLayerIntoWorkspace(
-                            workspace, nameSpace, MockData.BRIDGES.getLocalPart());
-            LayerGroupInfo layerGroup =
-                    createLayerGroup(workspace, "NON_ADVERTISED", layer1, layer2);
+            LayerInfo layer1 = cloneVectorLayerIntoWorkspace(workspace, nameSpace, MockData.BUILDINGS.getLocalPart());
+            LayerInfo layer2 = cloneVectorLayerIntoWorkspace(workspace, nameSpace, MockData.BRIDGES.getLocalPart());
+            LayerGroupInfo layerGroup = createLayerGroup(workspace, "NON_ADVERTISED", layer1, layer2);
             // reduce layer group bounds and store the original bounds which correspond to all
             // layers bounds
             ReferencedEnvelope layersBounds = layerGroup.getBounds();
             ReferencedEnvelope layerGroupBounds =
-                    new ReferencedEnvelope(
-                            -10, 10, -20, 20, layersBounds.getCoordinateReferenceSystem());
+                    new ReferencedEnvelope(-10, 10, -20, 20, layersBounds.getCoordinateReferenceSystem());
             layerGroup.setBounds(layerGroupBounds);
             catalog.save(layerGroup);
             // perform a get capabilities request targeting only the created workspace
-            Document document =
-                    getAsDOM(
-                            "NON_ADVERTISED/wms?service=WMS&request=getCapabilities&version=1.3.0",
-                            true);
+            Document document = getAsDOM("NON_ADVERTISED/wms?service=WMS&request=getCapabilities&version=1.3.0", true);
             checkGlobalBoundingBox(layersBounds, document);
             // make layers non advertised
             layer1.setAdvertised(false);
@@ -809,10 +739,7 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
             catalog.save(layer1);
             catalog.save(layer2);
             // perform a get capabilities request targeting only the created workspace
-            document =
-                    getAsDOM(
-                            "NON_ADVERTISED/wms?service=WMS&request=getCapabilities&version=1.3.0",
-                            true);
+            document = getAsDOM("NON_ADVERTISED/wms?service=WMS&request=getCapabilities&version=1.3.0", true);
             checkGlobalBoundingBox(layerGroupBounds, document);
         } finally {
             // add layer groups back
@@ -853,25 +780,19 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
             createLayerGroup(
                     workspaceA,
                     "LAYER_GROUP_A",
-                    cloneVectorLayerIntoWorkspace(
-                            workspaceA, nameSpaceA, MockData.BUILDINGS.getLocalPart()),
-                    cloneVectorLayerIntoWorkspace(
-                            workspaceA, nameSpaceA, MockData.BRIDGES.getLocalPart()));
+                    cloneVectorLayerIntoWorkspace(workspaceA, nameSpaceA, MockData.BUILDINGS.getLocalPart()),
+                    cloneVectorLayerIntoWorkspace(workspaceA, nameSpaceA, MockData.BRIDGES.getLocalPart()));
             createLayerGroup(
                     workspaceB,
                     "LAYER_GROUP_B",
-                    cloneVectorLayerIntoWorkspace(
-                            workspaceB, nameSpaceB, MockData.BUILDINGS.getLocalPart()),
-                    cloneVectorLayerIntoWorkspace(
-                            workspaceB, nameSpaceB, MockData.BRIDGES.getLocalPart()));
-            globalLayerGroup =
-                    createLayerGroup(
-                            "LAYER_GROUP_C",
-                            catalog.getLayerByName(MockData.BUILDINGS.getLocalPart()),
-                            catalog.getLayerByName(MockData.BRIDGES.getLocalPart()));
+                    cloneVectorLayerIntoWorkspace(workspaceB, nameSpaceB, MockData.BUILDINGS.getLocalPart()),
+                    cloneVectorLayerIntoWorkspace(workspaceB, nameSpaceB, MockData.BRIDGES.getLocalPart()));
+            globalLayerGroup = createLayerGroup(
+                    "LAYER_GROUP_C",
+                    catalog.getLayerByName(MockData.BUILDINGS.getLocalPart()),
+                    catalog.getLayerByName(MockData.BRIDGES.getLocalPart()));
             // perform a get capabilities request targeting the global service
-            Document document =
-                    getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+            Document document = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
             assertXpathEvaluatesTo(
                     "1",
                     "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LG_TEST_WORKSPACE_A:LAYER_GROUP_A'])",
@@ -881,22 +802,13 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
                     "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LG_TEST_WORKSPACE_B:LAYER_GROUP_B'])",
                     document);
             assertXpathEvaluatesTo(
-                    "0",
-                    "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LAYER_GROUP_A'])",
-                    document);
+                    "0", "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LAYER_GROUP_A'])", document);
             assertXpathEvaluatesTo(
-                    "0",
-                    "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LAYER_GROUP_B'])",
-                    document);
+                    "0", "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LAYER_GROUP_B'])", document);
             assertXpathEvaluatesTo(
-                    "1",
-                    "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LAYER_GROUP_C'])",
-                    document);
+                    "1", "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LAYER_GROUP_C'])", document);
             // perform a get capabilities request targeting workspace A service
-            document =
-                    getAsDOM(
-                            "LG_TEST_WORKSPACE_A/wms?service=WMS&request=getCapabilities&version=1.3.0",
-                            true);
+            document = getAsDOM("LG_TEST_WORKSPACE_A/wms?service=WMS&request=getCapabilities&version=1.3.0", true);
             assertXpathEvaluatesTo(
                     "0",
                     "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LG_TEST_WORKSPACE_A:LAYER_GROUP_A'])",
@@ -906,22 +818,13 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
                     "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LG_TEST_WORKSPACE_B:LAYER_GROUP_B'])",
                     document);
             assertXpathEvaluatesTo(
-                    "1",
-                    "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LAYER_GROUP_A'])",
-                    document);
+                    "1", "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LAYER_GROUP_A'])", document);
             assertXpathEvaluatesTo(
-                    "0",
-                    "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LAYER_GROUP_B'])",
-                    document);
+                    "0", "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LAYER_GROUP_B'])", document);
             assertXpathEvaluatesTo(
-                    "0",
-                    "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LAYER_GROUP_C'])",
-                    document);
+                    "0", "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LAYER_GROUP_C'])", document);
             // perform a get capabilities request targeting workspace B service
-            document =
-                    getAsDOM(
-                            "LG_TEST_WORKSPACE_B/wms?service=WMS&request=getCapabilities&version=1.3.0",
-                            true);
+            document = getAsDOM("LG_TEST_WORKSPACE_B/wms?service=WMS&request=getCapabilities&version=1.3.0", true);
             assertXpathEvaluatesTo(
                     "0",
                     "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LG_TEST_WORKSPACE_A:LAYER_GROUP_A'])",
@@ -931,17 +834,11 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
                     "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LG_TEST_WORKSPACE_B:LAYER_GROUP_B'])",
                     document);
             assertXpathEvaluatesTo(
-                    "0",
-                    "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LAYER_GROUP_A'])",
-                    document);
+                    "0", "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LAYER_GROUP_A'])", document);
             assertXpathEvaluatesTo(
-                    "1",
-                    "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LAYER_GROUP_B'])",
-                    document);
+                    "1", "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LAYER_GROUP_B'])", document);
             assertXpathEvaluatesTo(
-                    "0",
-                    "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LAYER_GROUP_C'])",
-                    document);
+                    "0", "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LAYER_GROUP_C'])", document);
         } finally {
             // remove the created workspaces and namespaces
             CascadeDeleteVisitor deleteVisitor = new CascadeDeleteVisitor(catalog);
@@ -981,8 +878,7 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         NodeList nodeList = dom.getElementsByTagName("Layer");
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node node = nodeList.item(i);
-            if (node instanceof Element && node.getLocalName().equals("Layer")) {
-                Element el = (Element) node;
+            if (node instanceof Element el && node.getLocalName().equals("Layer")) {
                 Node title = getFirstElementByTagName(el, "Title");
                 if (title != null
                         && title.getFirstChild() != null
@@ -995,27 +891,23 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
     }
 
     /** Check that the global bounding box matches the expected envelope */
-    private void checkGlobalBoundingBox(
-            ReferencedEnvelope expectedBoundingBox, Document capabilitiesResult) throws Exception {
+    private void checkGlobalBoundingBox(ReferencedEnvelope expectedBoundingBox, Document capabilitiesResult)
+            throws Exception {
         // check that the returned capabilities document contains the correct bounding box
         XpathEngine xpath = newXpathEngine();
         // extract bounding box values from the capabilities document
-        String minX =
-                xpath.evaluate(
-                        "//wms:Capability/wms:Layer/wms:EX_GeographicBoundingBox/wms:westBoundLongitude/text()",
-                        capabilitiesResult);
-        String maxX =
-                xpath.evaluate(
-                        "//wms:Capability/wms:Layer/wms:EX_GeographicBoundingBox/wms:eastBoundLongitude/text()",
-                        capabilitiesResult);
-        String minY =
-                xpath.evaluate(
-                        "//wms:Capability/wms:Layer/wms:EX_GeographicBoundingBox/wms:southBoundLatitude/text()",
-                        capabilitiesResult);
-        String maxY =
-                xpath.evaluate(
-                        "//wms:Capability/wms:Layer/wms:EX_GeographicBoundingBox/wms:northBoundLatitude/text()",
-                        capabilitiesResult);
+        String minX = xpath.evaluate(
+                "//wms:Capability/wms:Layer/wms:EX_GeographicBoundingBox/wms:westBoundLongitude/text()",
+                capabilitiesResult);
+        String maxX = xpath.evaluate(
+                "//wms:Capability/wms:Layer/wms:EX_GeographicBoundingBox/wms:eastBoundLongitude/text()",
+                capabilitiesResult);
+        String minY = xpath.evaluate(
+                "//wms:Capability/wms:Layer/wms:EX_GeographicBoundingBox/wms:southBoundLatitude/text()",
+                capabilitiesResult);
+        String maxY = xpath.evaluate(
+                "//wms:Capability/wms:Layer/wms:EX_GeographicBoundingBox/wms:northBoundLatitude/text()",
+                capabilitiesResult);
         // check bounding box values
         checkNumberSimilar(minX, expectedBoundingBox.getMinX(), 0.0001);
         checkNumberSimilar(maxX, expectedBoundingBox.getMaxX(), 0.0001);
@@ -1024,8 +916,8 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
     }
 
     /**
-     * Helper method that unwraps a layer group making him suitable to be added to the catalog. If
-     * proxyfied the proxy will also be removed.
+     * Helper method that unwraps a layer group making him suitable to be added to the catalog. If proxyfied the proxy
+     * will also be removed.
      */
     private LayerGroupInfo unwrapLayerGroup(LayerGroupInfo layerGroup) {
         // get the original layer group object
@@ -1049,14 +941,13 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
     }
 
     /** Helper method that creates a layer group using the provided name and layers. */
-    private LayerGroupInfo createLayerGroup(String layerGroupName, LayerInfo... layers)
-            throws Exception {
+    private LayerGroupInfo createLayerGroup(String layerGroupName, LayerInfo... layers) throws Exception {
         return createLayerGroup(null, layerGroupName, layers);
     }
 
     /** Helper method that creates a layer group using the provided name, workspace and layers. */
-    private LayerGroupInfo createLayerGroup(
-            WorkspaceInfo workspace, String layerGroupName, LayerInfo... layers) throws Exception {
+    private LayerGroupInfo createLayerGroup(WorkspaceInfo workspace, String layerGroupName, LayerInfo... layers)
+            throws Exception {
         // create a new layer group using the provided name
         LayerGroupInfo layerGroup = getCatalog().getFactory().createLayerGroup();
         layerGroup.setName(layerGroupName);

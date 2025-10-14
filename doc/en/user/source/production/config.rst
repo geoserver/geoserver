@@ -3,6 +3,38 @@
 Configuration Considerations
 ============================
 
+Configuration targets three distinct environments:
+
+* Common Case: The System Administrator and the GeoServer Administrator are the same individual, or the GeoServer Administrator already has console access to perform data management. 
+  
+  In this environment the GeoServer Administrator already has console access, and many settings are available in
+  the Web administration interface to define proxy base url, log file location, or what file directories may be
+  used for storage, that assume general knowledge of the environments and the ability to create folders and
+  adjust file permissions.
+
+  See :ref:`production_config_geoserver_admin`
+    
+* Less common case: The GeoServer Administrator does not have any sort of console access, and the System Administrator
+  define configuration settings using :ref:`application properties <application_properties>`.
+  
+  In this environment the functionality of the Web administration interface is reduced. The GeoServer Administrator
+  may see settings, such as log file location, which are ignored as they have been already specified by the System Administrator.
+  
+  This is most often seen when a system administrator is providing hosting for a GeoServer administrator.
+  It is also seen when GeoServer is used in a container environment where Environmental Variables are
+  used for integration defining settings such proxy base url and log file location.
+  
+  See :ref:`production_config_system_admin`
+
+* Less common case: Configuring GeoServer with Workspace Administrators, where individuals each manage their
+  own workspace contents, and web services.
+  
+  This is often seen when a GeoServer Administrator configures workspaces for different projects or teams. Settings such as :ref:`security_sandbox` to limited directory access are established with this environment in mind.
+
+  See :ref:`production_config_workspace_admin`
+
+.. note:: Not all configuration options can be supplied using the Web administration interface. Some settings, such as the location of the :ref:`GeoServer Data Directory <datadir_setting>`, may only be setup by a System Administrator.
+
 General Guidance
 ----------------
 
@@ -79,6 +111,8 @@ If you would like some users to be able to modify data, set the service level :g
 
 If you would like some users to be able to modify some but not all of your data, set the :guilabel:`Service Level` to ``Transactional`` (or ``Complete``), and use :ref:`security_layer` to limit write access to specific layers. Data security can be used to allow write access based on workspace, datastore, or layer security.
 
+.. _production_config_workspace_admin:
+
 GeoServer Workspace Admin Guidance
 ----------------------------------
 
@@ -95,6 +129,11 @@ Establishing a workspace administrator user is a recommended configuration provi
 
 4. Recommendation: The combination of workspace admin permission and GROUP_ADMIN access provides a effective combination for an individual responsible for a workspace. This provides the ability to both manage and control access to the data products in a workspace.
 
+5. Recommendation: Provide each workspace admin with :ref:`sandbox <security_sandbox>` restricting file system access
+   for data storage.
+
+.. _production_config_geoserver_admin:
+
 GeoServer Administrator Guidance
 --------------------------------
 
@@ -107,6 +146,8 @@ In this workflow the Administration Console is used to adapt the application to 
 * ... and many more :ref:`config_globalsettings`.
 
 Management of a web service using an administration console is a more common practice when running GeoServer as a windows web service.
+
+.. _production_config_system_admin:
 
 System Administrator Guidance
 -----------------------------
@@ -352,9 +393,10 @@ Content-Security-Policy
 '''''''''''''''''''''''
 
 In order to mitigate cross-site scripting and clickjacking attacks GeoServer defaults to setting
-the Content-Security-Policy HTTP header based on rules configured by the administrator. See the
-:ref:`security_csp` page for more details about this header, GeoServer's default configuration and
-how to change the configuration.
+the Content-Security-Policy HTTP header based on rules configured by the administrator.
+
+See the Security :ref:`security_csp` page for more details about this header, GeoServer's default configuration and
+how to change the configuration for different kinds of content.
 
 OWS ServiceException XML mimeType
 '''''''''''''''''''''''''''''''''
@@ -395,6 +437,14 @@ External Entities Resolution
 
 When processing XML documents from service requests (POST requests, and GET requests with FILTER and SLD_BODY parameters) XML entity resolution is used to obtain any referenced documents. This is most commonly seen when the XML request provides the location of an XSD schema location for validation).
 
+For handling ``jar:file:`` and ``vfs:`` (WildFly) entity resolution, GeoServer will attempt to determine the location
+of the webapp's lib directory and restrict entity resolution to that directory. This functionality is particularly
+important when GeoServer is deployed in a Windows operating system. While this functionality has been tested in basic
+Tomcat, Jetty and WildFly installations, it is possible that some installations may experience problems with it.
+
+If necessary, this functionality can be disabled by setting the ``ENTITY_RESOLUTION_UNRESTRICTED_INTERNAL`` application property to ``true``.
+For example with ``-DENTITY_RESOLUTION_UNRESTRICTED_INTERNAL=true`` java system property.
+
 GeoServer provides a number of facilities to control external entity resolution:
 
 * By default `http` and `https` entity resolution is restricted to the following default::
@@ -420,9 +470,10 @@ GeoServer provides a number of facilities to control external entity resolution:
   
   Access to local `file` references remains restricted.
 
-* To turn off all restrictions (allowing ``http``, ``https``, and ``file`` references) use the global setting :ref:`config_globalsettings_external_entities`.
+* To turn off all restrictions (allowing ``http``, ``https``, and ``file`` references) use the application property
+  ``-DENTITY_RESOLUTION_UNRESTRICTED=true``. Doing this is a **security risk**.
   
-  This setting prevents ``ENTITY_RESOLUTION_ALLOWLIST`` from being used.
+  This setting prevents ``ENTITY_RESOLUTION_RESTRICT_INTERNAL`` and ``ENTITY_RESOLUTION_ALLOWLIST`` from being used.
 
 .. _production_config_spring_firewall:
 
@@ -435,12 +486,15 @@ layers, styles, etc.) in URL paths need to contain encoded percent, encoded peri
 The ``GEOSERVER_USE_STRICT_FIREWALL`` property can be set to false either via Java system property, command line argument
 (-D), environment variable or web.xml init parameter to use the more lenient DefaultHttpFirewall.
 
+.. _production_config_static_files:
+
 Static Web Files
 ''''''''''''''''
 
 GeoServer by default allows administrators to serve static files by simply placing them in the ``www``` subdirectory of the
 GeoServer data directory. If this feature is not being used to serve HTML/JavaScript files or is not being used at all, the
 ``GEOSERVER_DISABLE_STATIC_WEB_FILES`` property can be set to true to mitigate potential stored XSS issues with that directory.
+
 See the :ref:`tutorials_staticfiles` page for more details.
 
 Session Management

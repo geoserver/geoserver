@@ -64,12 +64,7 @@ public class ClassBreakInfo {
         this.symbol = symbol;
     }
 
-    public ClassBreakInfo(
-            Double classMinValue,
-            double classMaxValue,
-            String label,
-            String description,
-            Symbol symbol) {
+    public ClassBreakInfo(Double classMinValue, double classMaxValue, String label, String description, Symbol symbol) {
         super();
         this.classMinValue = classMinValue;
         this.classMaxValue = classMaxValue;

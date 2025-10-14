@@ -69,9 +69,7 @@ public final class Filter implements GeoServerFilter, ExtensionPriority {
             resource.addListener(notify -> rules = RulesDao.getRules(resource));
         } else {
             // no rules were loaded
-            Utils.info(
-                    LOGGER,
-                    "No data directory provided, no parameters extractor rules were loaded.");
+            Utils.info(LOGGER, "No data directory provided, no parameters extractor rules were loaded.");
         }
     }
 
@@ -81,13 +79,12 @@ public final class Filter implements GeoServerFilter, ExtensionPriority {
     }
 
     /**
-     * This method is called only when the Filter is used as a standard web container Filter. When
-     * this happens the related instance will be used instead of the one initialized by Spring.
+     * This method is called only when the Filter is used as a standard web container Filter. When this happens the
+     * related instance will be used instead of the one initialized by Spring.
      */
     @Override
     public void init(FilterConfig filterConfig) {
-        GeoServerDataDirectory dataDirectory =
-                GeoServerExtensions.bean(GeoServerDataDirectory.class);
+        GeoServerDataDirectory dataDirectory = GeoServerExtensions.bean(GeoServerDataDirectory.class);
         Utils.info(LOGGER, "Initiating parameters extractor as a standard web container filter.");
         initRules(dataDirectory);
     }
@@ -100,9 +97,7 @@ public final class Filter implements GeoServerFilter, ExtensionPriority {
             if (!httpServletRequest.getRequestURI().contains("web/wicket")
                     && !httpServletRequest.getRequestURI().contains("geoserver/web")) {
                 UrlTransform urlTransform =
-                        new UrlTransform(
-                                httpServletRequest.getRequestURI(),
-                                httpServletRequest.getParameterMap());
+                        new UrlTransform(httpServletRequest.getRequestURI(), httpServletRequest.getParameterMap());
                 String originalRequest = urlTransform.toString();
                 rules.forEach(rule -> rule.apply(urlTransform));
                 Utils.debug(
@@ -111,25 +106,17 @@ public final class Filter implements GeoServerFilter, ExtensionPriority {
                         originalRequest,
                         rules.size());
                 if (urlTransform.haveChanged()) {
-                    Utils.info(
-                            LOGGER,
-                            "Request '%s' transformed to '%s'.",
-                            originalRequest,
-                            urlTransform.toString());
+                    Utils.info(LOGGER, "Request '%s' transformed to '%s'.", originalRequest, urlTransform.toString());
                     request = new RequestWrapper(urlTransform, httpServletRequest);
                 } else {
                     // no parameters extractor rules matched the url
                     Utils.debug(
-                            LOGGER,
-                            "No parameters extractor rules matched with the request '%s'.",
-                            originalRequest);
+                            LOGGER, "No parameters extractor rules matched with the request '%s'.", originalRequest);
                 }
             } else {
                 // parameters extractor ignored the request
                 Utils.debug(
-                        LOGGER,
-                        "Request '%s' ignored by parameters extractor.",
-                        httpServletRequest.getRequestURI());
+                        LOGGER, "Request '%s' ignored by parameters extractor.", httpServletRequest.getRequestURI());
             }
         } else {
             // parameters extractor is disabled

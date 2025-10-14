@@ -35,11 +35,10 @@ public class LayerGroupTest extends CSWInternalTestSupport {
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
-        id_forestsandstreams =
-                addLayerGroup(
-                        NAME_FORESTSANDSTREAMS,
-                        getCatalog().getLayerByName("Forests"),
-                        getCatalog().getLayerByName("Streams"));
+        id_forestsandstreams = addLayerGroup(
+                NAME_FORESTSANDSTREAMS,
+                getCatalog().getLayerByName("Forests"),
+                getCatalog().getLayerByName("Streams"));
         addKeywordsToLayerGroup(NAME_FORESTSANDSTREAMS);
         addLayerGroup(
                 NAME_BUILDINGSANDBRIDGES,
@@ -49,9 +48,8 @@ public class LayerGroupTest extends CSWInternalTestSupport {
 
     @Test
     public void testRecords() throws Exception {
-        String request =
-                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record"
-                        + "&resultType=results&elementSetName=full&maxRecords=100";
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record"
+                + "&resultType=results&elementSetName=full&maxRecords=100";
         Document d = getAsDOM(request);
         // print(d);
         checkValidationErrors(d, new CSWConfiguration());
@@ -67,8 +65,7 @@ public class LayerGroupTest extends CSWInternalTestSupport {
     @Test
     public void testRecordById() throws Exception {
         String request =
-                "csw?service=CSW&version=2.0.2&request=GetRecordById&typeNames=csw:Record&id="
-                        + id_forestsandstreams;
+                "csw?service=CSW&version=2.0.2&request=GetRecordById&typeNames=csw:Record&id=" + id_forestsandstreams;
         Document d = getAsDOM(request);
         // print(d);
         checkValidationErrors(d);

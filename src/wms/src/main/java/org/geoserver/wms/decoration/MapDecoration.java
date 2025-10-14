@@ -13,18 +13,18 @@ import org.geoserver.wms.WMSMapContent;
 import org.geotools.api.filter.expression.Expression;
 
 /**
- * The MapDecoration class encapsulates the rendering code for an overlay to be used to enhance a
- * WMS response. Decorations know how to determine their appropriate size, and how to render into a
- * given area, but leave the actual layout calculations to the {MapDecorationLayout} class.
+ * The MapDecoration class encapsulates the rendering code for an overlay to be used to enhance a WMS response.
+ * Decorations know how to determine their appropriate size, and how to render into a given area, but leave the actual
+ * layout calculations to the {MapDecorationLayout} class.
  *
- * @author David Winslow <dwinslow@opengeo.org>
+ * @author David Winslow
  */
 public interface MapDecoration {
     /**
-     * Load in configuration parameters from a map. All subsequent paint operations should use the
-     * provided parameters. Implementations do not need to respect multiple calls to this method.
+     * Load in configuration parameters from a map. All subsequent paint operations should use the provided parameters.
+     * Implementations do not need to respect multiple calls to this method.
      *
-     * @param options a Map<String,Expression> containing the configuration parameters
+     * @param options a Map &lt;String,Expression&gt; containing the configuration parameters
      * @throws Exception if required parameters are missing from the configuration
      */
     public void loadOptions(Map<String, Expression> options) throws Exception;
@@ -34,19 +34,18 @@ public interface MapDecoration {
      *
      * @param g2d the Graphics2D context in which this Decoration will be rendered
      * @param mapContent the map context for the request
-     * @throws InvalidStateException if loadOptions() has not been called yet
+     * @throws Exception if loadOptions() has not been called yet
      */
     public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent) throws Exception;
 
     /**
-     * Render the contents of this decoration onto the provided graphics object within the specified
-     * bounds. The WMSMapContext object can be used to provide additional info about the map for
-     * context-sensitive decorations.
+     * Render the contents of this decoration onto the provided graphics object within the specified bounds. The
+     * WMSMapContext object can be used to provide additional info about the map for context-sensitive decorations.
      *
      * @param g2d the Graphics2D object onto which the decoration should be drawn
      * @param paintArea the bounds within the graphics object where the decoration should be drawn
      * @param context the mapContent for the image being rendered
-     * @throws InvalidStateException if loadOptions() has not been called yet
+     * @throws Exception if loadOptions() has not been called yet
      */
     public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContent context) throws Exception;
 }

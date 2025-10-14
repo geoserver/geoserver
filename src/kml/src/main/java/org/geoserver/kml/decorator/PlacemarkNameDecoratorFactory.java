@@ -25,8 +25,7 @@ import org.geotools.util.logging.Logging;
 public class PlacemarkNameDecoratorFactory implements KmlDecoratorFactory {
 
     @Override
-    public KmlDecorator getDecorator(
-            Class<? extends Feature> featureClass, KmlEncodingContext context) {
+    public KmlDecorator getDecorator(Class<? extends Feature> featureClass, KmlEncodingContext context) {
         if (Placemark.class.isAssignableFrom(featureClass) && context.isDescriptionEnabled()) {
             return new PlacemarkNameDecorator();
         } else {
@@ -61,8 +60,8 @@ public class PlacemarkNameDecoratorFactory implements KmlDecoratorFactory {
                 if (context.getCurrentSymbolizers() != null) {
                     StringBuffer label = new StringBuffer();
                     for (Symbolizer sym : context.getCurrentSymbolizers()) {
-                        if (sym instanceof TextSymbolizer) {
-                            Expression e = SLD.textLabel((TextSymbolizer) sym);
+                        if (sym instanceof TextSymbolizer symbolizer) {
+                            Expression e = SLD.textLabel(symbolizer);
                             if (e != null) {
                                 String value = e.evaluate(sf, String.class);
 

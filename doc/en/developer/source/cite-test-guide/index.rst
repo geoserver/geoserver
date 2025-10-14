@@ -1,6 +1,6 @@
 .. _cite_test_guide:
 
-Cite Test Guide
+CITE Test Guide
 ===============
 
 A step by step guide to the GeoServer Compliance Interoperability Test Engine (CITE).
@@ -129,14 +129,19 @@ automate all the commands, and the second one is running the test through WebUI:
 
      .. note::
 
-        Valid values for the suite parameter are:
+        Valid values for the suite parameter are:    
           * wcs10
           * wcs11
+          * wcs20
           * wfs10
           * wfs11
+          * wfs20
           * wms11
           * wms13
+          * wmts10
           * ogcapi-features10
+          * geotiff11
+          * gpkg12
 
    - Build the ``geoserver.war`` file to test against :
 
@@ -274,11 +279,11 @@ Requirements:
 
      createuser cite;
 
-   - Create a database named "cite", owned by the "cite" user:
+   - Create a database named "cite_wfs10", owned by the "cite" user:
 
    .. code:: sql
 
-     createdb cite own by cite;
+     createdb cite_wfs10 own by cite;
 
    - enter the database and enable the postgis extension:
 
@@ -348,11 +353,11 @@ Requirements:
 
      createuser cite;
 
-   - Create a database named "cite", owned by the "cite" user:
+   - Create a database named "cite_wfs11", owned by the "cite" user:
 
    .. code:: sql
 
-     createdb cite own by cite;
+     createdb cite_wfs11 own by cite;
 
    - enter to the database and enable the postgis extension:
 
@@ -708,9 +713,78 @@ to stop the docker composition and clean up the ``logs/`` directory, or
 
     make stop
 
-to just shut down the docker composition wihtout cleaning up the ``logs/`` directory.
+to just shut down the docker composition without cleaning up the ``logs/`` directory.
 
 .. _commandline:
 
 .. _teamengine:
 
+
+GitHub Actions
+==============
+
+In order to keep up to date, a `CITE Tests workflow <https://github.com/geoserver/geoserver/actions/workflows/cite.yml>`_  runs automatically on each PR.
+
+CITE Certification
+==================
+
+Shortly before a major (2.xx.0) release, the following process should be followed in order to obtain CITE Certification for the major release.
+
+.. note:: We appreciate OSGeo providing hosting services for this purpose.
+
+#. Log into cite.geoserver.org via hop, then
+
+   .. code-block:: shell
+
+    cd /home/cite
+
+#. Create a local docker image tagged ``geoserver-docker.osgeo.org/geoserver:2.27.x`` from the latest nightly build at https://build.geoserver.org/geoserver/2.27.x using the build steps from https://github.com/geoserver/docker.git
+
+   .. code-block:: shell
+
+    cd geoserver-docker/build && git pull && ./release.sh build 2.27-SNAPSHOT
+    docker image ls
+
+#. Checkout the latest CITE tests from https://github.com/geoserver/geoserver.git and change the GeoServer Admin password
+
+   .. code-block:: shell
+
+    cd geoserver-main/build/cite && git pull  
+    vim docker-compose.yml  
+    :%s/____password____/new_password/
+
+#.  Start up the Docker services (PostgreSQL & 7x GeoServer instances) against an empty database directory
+
+   .. code-block:: shell
+
+    rm -rf /home/cite/postgis-data/wfs
+    docker-compose -f docker-compose.yml up
+
+This will spin up a PostgreSQL service which will be populated with 3 different WFS databases if the database is empty (using the cite init-scripts in build/cite/wfsxx/).
+
+It will also spin up 7 GeoServer services, typically 1 data directory per CITE test (e.g. wfs20), although it is noted that features10, wmts10, wms11 and wms13 all run off the same wms13 data directory, and wcs20 and geotiff11 use the wcs11 data directory.
+
+#. Log into https://cite.opengeospatial.org/teamengine and if necessary create Test Sessions for all the tests that GeoServer should pass:
+
+    #. OGC API - Features	1.0	https://g1.cite.geoserver.org/geoserver/cite/ogc/features/v1
+    #. Web Map Tile Service (WMTS)	1.0.0	https://g1.cite.geoserver.org/geoserver/gwc/service/wmts?service=WMTS&request=GetCapabilities&AcceptVersions=1.0.0 `**`
+    #. Web Map Service (WMS)	1.3.0	https://g1.cite.geoserver.org/geoserver/cite/wms?service=wms&request=GetCapabilities&version=1.3.0
+    #. Web Map Service (WMS)	1.1.1	https://g1.cite.geoserver.org/geoserver/cite/wms?service=wms&request=GetCapabilities&version=1.1.1
+    #. Web Feature Service (WFS)	2.0	https://g2.cite.geoserver.org/geoserver/wfs?service=wfs&request=GetCapabilities&version=2.0.0
+    #. Web Feature Service (WFS)	1.1.0	https://g3.cite.geoserver.org/geoserver/wfs?service=wfs&request=GetCapabilities&version=1.1.0
+    #. Web Feature Service (WFS)	1.0.0	https://g4.cite.geoserver.org/geoserver/wfs?service=wfs&request=GetCapabilities&version=1.0.0
+    #. Web Coverage Service (WCS)	2.0.1	https://g5.cite.geoserver.org/geoserver/wcs?service=WCS&request=GetCapabilities&version=2.0.1 (yes, uppercase WCS is needed) `**`
+    #. Web Coverage Service (WCS)	1.1.1	https://g5.cite.geoserver.org/geoserver/wcs?service=wcs&request=GetCapabilities&version=1.1.1
+    #. Web Coverage Service (WCS)	1.0.0	https://g6.cite.geoserver.org/geoserver/wcs?service=wcs&request=GetCapabilities&version=1.0.0
+    #. GeoPackage	1.2	https://g7.cite.geoserver.org/geoserver/topp/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=topp:states&outputFormat=application/geopackage%2bsqlite3
+    #. GeoTiff	1.1	https://g5.cite.geoserver.org/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=topp:tazbm&bbox=146.49999999999477,-44.49999999999785,147.99999999999474,-42.99999999999787&width=767&height=768&srs=EPSG:4326&styles=&format=image/geotiff
+    
+    Follow the Run xxx tests instructions above for all the tests settings.  Run them one at a time, it should take less than 1 hour to complete, sometimes with manual visual checks (WMS).
+	
+	`**` These ones are currently still failing.
+
+#. Note all the test sessions that passed (hopefully all of them!) and provide these to our OSGeo contact (currently kalxas), along with your TE username and password (yes, ridiculous!)
+
+#. On https://portal.ogc.org/public_ogc/implementing, he will create a new product ``GeoServer 2.27``, link the test sessions to the product (and for each: Request Consideration for Reference Implementation), and then submit the product to OGC for certification, which should take xx days.
+
+#. Include the certification badges in the release notes.

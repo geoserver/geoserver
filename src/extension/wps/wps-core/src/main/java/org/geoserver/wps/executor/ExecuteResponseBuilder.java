@@ -84,8 +84,7 @@ public class ExecuteResponseBuilder {
 
     WPSResourceManager resourceManager;
 
-    public ExecuteResponseBuilder(
-            ExecuteType request, ApplicationContext context, ExecutionStatus status) {
+    public ExecuteResponseBuilder(ExecuteType request, ApplicationContext context, ExecutionStatus status) {
         this.request = request;
         this.context = context;
         this.resourceManager = context.getBean(WPSResourceManager.class);
@@ -109,11 +108,8 @@ public class ExecuteResponseBuilder {
         ExecuteResponseType response = f.createExecuteResponseType();
         response.setLang("en");
         if (request.getBaseUrl() != null) {
-            response.setServiceInstance(
-                    ResponseUtils.appendQueryString(
-                            ResponseUtils.buildURL(
-                                    request.getBaseUrl(), "ows", null, URLType.SERVICE),
-                            ""));
+            response.setServiceInstance(ResponseUtils.appendQueryString(
+                    ResponseUtils.buildURL(request.getBaseUrl(), "ows", null, URLType.SERVICE), ""));
         }
 
         // process
@@ -123,8 +119,7 @@ public class ExecuteResponseBuilder {
         response.setProcess(process);
         // damn blasted EMF changes the state of request if we set its identifier on
         // another object! (I guess, following some strict ownership rule...)
-        process.setIdentifier(
-                (CodeType) EMFUtils.clone(request.getIdentifier(), Ows11Factory.eINSTANCE, true));
+        process.setIdentifier((CodeType) EMFUtils.clone(request.getIdentifier(), Ows11Factory.eINSTANCE, true));
         process.setProcessVersion(pf.getVersion(processName));
         process.setTitle(Ows11Util.languageString(pf.getTitle(processName)));
         process.setAbstract(Ows11Util.languageString(pf.getDescription(processName)));
@@ -138,8 +133,7 @@ public class ExecuteResponseBuilder {
                 response.getStatus().setProcessSucceeded("Process succeeded.");
             }
         } else {
-            XMLGregorianCalendar gc =
-                    Converters.convert(status.getCreationTime(), XMLGregorianCalendar.class);
+            XMLGregorianCalendar gc = Converters.convert(status.getCreationTime(), XMLGregorianCalendar.class);
             response.getStatus().setCreationTime(gc);
             if (status.getPhase() == ProcessState.QUEUED) {
                 response.getStatus().setProcessAccepted("Process accepted.");
@@ -147,12 +141,10 @@ public class ExecuteResponseBuilder {
                 ProcessStartedType startedType = f.createProcessStartedType();
                 int progressPercent = Math.round(status.getProgress());
                 if (progressPercent < 0) {
-                    LOGGER.warning(
-                            "Progress reported is below zero, fixing it to 0: " + progressPercent);
+                    LOGGER.warning("Progress reported is below zero, fixing it to 0: " + progressPercent);
                     progressPercent = 0;
                 } else if (progressPercent > 100) {
-                    LOGGER.warning(
-                            "Progress reported is above 100, fixing it to 100: " + progressPercent);
+                    LOGGER.warning("Progress reported is above 100, fixing it to 100: " + progressPercent);
                     progressPercent = 100;
                 }
                 startedType.setPercentCompleted(new BigInteger(String.valueOf(progressPercent)));
@@ -175,8 +167,7 @@ public class ExecuteResponseBuilder {
             kvp.put("version", "1.0.0");
             kvp.put("request", "GetExecutionStatus");
             kvp.put("executionId", status.getExecutionId());
-            response.setStatusLocation(
-                    ResponseUtils.buildURL(request.getBaseUrl(), "ows", kvp, URLType.SERVICE));
+            response.setStatusLocation(ResponseUtils.buildURL(request.getBaseUrl(), "ows", kvp, URLType.SERVICE));
         }
 
         // lineage, should be included only if requested, the response should contain it
@@ -187,7 +178,8 @@ public class ExecuteResponseBuilder {
         // *If lineage is "false" then/ these elements shall be omitted from the response
         if (helper.isLineageRequested()) {
             // inputs
-            if (request.getDataInputs() != null && !request.getDataInputs().getInput().isEmpty()) {
+            if (request.getDataInputs() != null
+                    && !request.getDataInputs().getInput().isEmpty()) {
                 response.setDataInputs(f.createDataInputsType1());
                 for (Object o : request.getDataInputs().getInput()) {
                     InputType input = (InputType) o;
@@ -230,15 +222,11 @@ public class ExecuteResponseBuilder {
                     Parameter<?> outputParam = resultInfo.get(key);
                     if (outputParam == null) {
                         throw new WPSException(
-                                "Unknown output "
-                                        + key
-                                        + " possible values are: "
-                                        + resultInfo.keySet());
+                                "Unknown output " + key + " possible values are: " + resultInfo.keySet());
                     }
 
                     String mimeType = odt.getMimeType();
-                    OutputDataType output =
-                            encodeOutput(key, outputParam, mimeType, odt.isAsReference(), listener);
+                    OutputDataType output = encodeOutput(key, outputParam, mimeType, odt.isAsReference(), listener);
                     processOutputs.getOutput().add(output);
                 }
             } else {
@@ -260,11 +248,7 @@ public class ExecuteResponseBuilder {
 
     @SuppressWarnings("unchecked") // EMF model without generics
     OutputDataType encodeOutput(
-            String key,
-            Parameter<?> outputParam,
-            String mimeType,
-            boolean reference,
-            ProgressListener listener) {
+            String key, Parameter<?> outputParam, String mimeType, boolean reference, ProgressListener listener) {
         Wps10Factory f = Wps10Factory.eINSTANCE;
         OutputDataType output = f.createOutputDataType();
         output.setIdentifier(Ows11Util.code(key));
@@ -277,42 +261,34 @@ public class ExecuteResponseBuilder {
         ProcessParameterIO ppio = ProcessParameterIO.find(outputParam, context, mimeType);
 
         if (ppio == null) {
-            throw new WPSException(
-                    "Don't know how to encode output " + key + " in mime type " + mimeType);
+            throw new WPSException("Don't know how to encode output " + key + " in mime type " + mimeType);
         }
 
         try {
-            if (reference && ppio instanceof ComplexPPIO) {
+            if (reference && ppio instanceof ComplexPPIO cppio) {
                 // encode as reference
                 OutputReferenceType outputReference = f.createOutputReferenceType();
                 output.setReference(outputReference);
-
-                ComplexPPIO cppio = (ComplexPPIO) ppio;
                 String name = key + "." + cppio.getFileExtension(o);
-                Resource outputResource =
-                        resourceManager.getOutputResource(status.getExecutionId(), name);
+                Resource outputResource = resourceManager.getOutputResource(status.getExecutionId(), name);
 
                 // write out the output, wrapping the output stream and other well known
                 // object in classes that will fail upon cancellation
                 try (OutputStream os = new CancellingOutputStream(outputResource.out(), listener)) {
-                    if (o instanceof FeatureCollection) {
-                        o =
-                                CancellingFeatureCollectionBuilder.wrap(
-                                        (FeatureCollection) o, listener);
+                    if (o instanceof FeatureCollection collection) {
+                        o = CancellingFeatureCollectionBuilder.wrap(collection, listener);
                     }
                     cppio.encode(o, os);
                 }
 
                 String mime;
-                if (o instanceof RawData) {
-                    RawData rawData = (RawData) o;
+                if (o instanceof RawData rawData) {
                     mime = rawData.getMimeType();
                 } else {
                     mime = cppio.getMimeType();
                 }
                 String url =
-                        resourceManager.getOutputResourceUrl(
-                                status.getExecutionId(), name, request.getBaseUrl(), mime);
+                        resourceManager.getOutputResourceUrl(status.getExecutionId(), name, request.getBaseUrl(), mime);
                 outputReference.setHref(url);
                 outputReference.setMimeType(mime);
             } else {
@@ -320,19 +296,17 @@ public class ExecuteResponseBuilder {
                 DataType data = f.createDataType();
                 output.setData(data);
 
-                if (ppio instanceof LiteralPPIO) {
+                if (ppio instanceof LiteralPPIO iO4) {
                     LiteralDataType literal = f.createLiteralDataType();
                     data.setLiteralData(literal);
 
-                    literal.setValue(((LiteralPPIO) ppio).encode(o));
-                } else if (ppio instanceof BoundingBoxPPIO) {
-                    BoundingBoxType bbox = ((BoundingBoxPPIO) ppio).encode(o);
+                    literal.setValue(iO4.encode(o));
+                } else if (ppio instanceof BoundingBoxPPIO iO3) {
+                    BoundingBoxType bbox = iO3.encode(o);
                     data.setBoundingBoxData(bbox);
-                } else if (ppio instanceof ComplexPPIO) {
+                } else if (ppio instanceof ComplexPPIO cppio) {
                     ComplexDataType complex = f.createComplexDataType();
                     data.setComplexData(complex);
-
-                    ComplexPPIO cppio = (ComplexPPIO) ppio;
                     complex.setMimeType(cppio.getMimeType());
 
                     if (o == null) {
@@ -342,17 +316,16 @@ public class ExecuteResponseBuilder {
                         complex.setMimeType(rawData.getMimeType());
                         complex.setEncoding("base64");
                         complex.getData().add(new RawDataEncoderDelegate(rawData));
-                    } else if (cppio instanceof XMLPPIO) {
+                    } else if (cppio instanceof XMLPPIO iO2) {
                         // encode directly
-                        complex.getData().add(new XMLEncoderDelegate((XMLPPIO) cppio, o));
-                    } else if (cppio instanceof CDataPPIO) {
-                        complex.getData().add(new CDataEncoderDelegate((CDataPPIO) cppio, o));
-                    } else if (cppio instanceof BinaryPPIO) {
+                        complex.getData().add(new XMLEncoderDelegate(iO2, o));
+                    } else if (cppio instanceof CDataPPIO iO1) {
+                        complex.getData().add(new CDataEncoderDelegate(iO1, o));
+                    } else if (cppio instanceof BinaryPPIO iO) {
                         complex.setEncoding("base64");
-                        complex.getData().add(new BinaryEncoderDelegate((BinaryPPIO) cppio, o));
+                        complex.getData().add(new BinaryEncoderDelegate(iO, o));
                     } else {
-                        throw new WPSException(
-                                "Don't know how to encode an output whose PPIO is " + cppio);
+                        throw new WPSException("Don't know how to encode an output whose PPIO is " + cppio);
                     }
                 }
             }
@@ -365,8 +338,7 @@ public class ExecuteResponseBuilder {
     void setResponseFailed(ExecuteResponseType response, ServiceException reportException) {
         Wps10Factory f = Wps10Factory.eINSTANCE;
         ProcessFailedType failedType = f.createProcessFailedType();
-        ExceptionReportType report =
-                Ows11Util.exceptionReport(reportException, verboseExceptions, "1.1.0");
+        ExceptionReportType report = Ows11Util.exceptionReport(reportException, verboseExceptions, "1.1.0");
         failedType.setExceptionReport(report);
         response.getStatus().setProcessFailed(failedType);
     }

@@ -34,13 +34,17 @@ public class ImportTool {
 
     private static final Logger LOGGER = Logging.getLogger(ImportTool.class);
 
-    @Autowired private TaskManagerDao dao;
+    @Autowired
+    private TaskManagerDao dao;
 
-    @Autowired private TaskManagerDataUtil dataUtil;
+    @Autowired
+    private TaskManagerDataUtil dataUtil;
 
-    @Autowired private TaskManagerTaskUtil taskUtil;
+    @Autowired
+    private TaskManagerTaskUtil taskUtil;
 
-    @Autowired private BatchJobService bjService;
+    @Autowired
+    private BatchJobService bjService;
 
     private static final String SPLIT_BY = ";";
 
@@ -94,19 +98,17 @@ public class ImportTool {
                     }
 
                     for (Map.Entry<String, String> entry : record.entrySet()) {
-                        dataUtil.setConfigurationAttribute(
-                                config, entry.getKey(), entry.getValue());
+                        dataUtil.setConfigurationAttribute(config, entry.getKey(), entry.getValue());
                     }
 
                     if (validate) {
                         List<ValidationError> errors = taskUtil.validate(config);
                         if (!errors.isEmpty()) {
                             for (ValidationError error : errors) {
-                                LOGGER.severe(
-                                        "Failed to import configuration "
-                                                + config.getName()
-                                                + ", validation error: "
-                                                + error.toString());
+                                LOGGER.severe("Failed to import configuration "
+                                        + config.getName()
+                                        + ", validation error: "
+                                        + error.toString());
                                 success = false;
                             }
                         } else {
@@ -114,10 +116,7 @@ public class ImportTool {
                             try {
                                 bjService.saveAndSchedule(config);
                             } catch (Exception e) {
-                                LOGGER.log(
-                                        Level.SEVERE,
-                                        "Failed to import configuration " + config.getName(),
-                                        e);
+                                LOGGER.log(Level.SEVERE, "Failed to import configuration " + config.getName(), e);
                                 success = false;
                             }
                         }
@@ -125,10 +124,7 @@ public class ImportTool {
                         try {
                             bjService.saveAndSchedule(config);
                         } catch (Exception e) {
-                            LOGGER.log(
-                                    Level.SEVERE,
-                                    "Failed to import configuration " + config.getName(),
-                                    e);
+                            LOGGER.log(Level.SEVERE, "Failed to import configuration " + config.getName(), e);
                             success = false;
                         }
                     }

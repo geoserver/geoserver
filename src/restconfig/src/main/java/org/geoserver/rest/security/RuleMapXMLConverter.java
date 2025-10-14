@@ -39,8 +39,7 @@ public class RuleMapXMLConverter extends MapXMLConverter {
     }
 
     /**
-     * Generate the JDOM element needed to represent an access control rule and insert it into the
-     * parent element given.
+     * Generate the JDOM element needed to represent an access control rule and insert it into the parent element given.
      *
      * @param elem , the root elment
      */
@@ -61,10 +60,10 @@ public class RuleMapXMLConverter extends MapXMLConverter {
     }
 
     /**
-     * Interpret XML and convert it back to a Map<String,String>
+     * Interpret XML and convert it back to a {@code Map<String,String>}
      *
      * @param elem a JDOM element
-     * @return the Map<String,String> produced by interpreting the XML
+     * @return the {@code Map<String,String>} produced by interpreting the XML
      */
     @Override
     protected Map<String, String> convert(Element elem) {
@@ -72,8 +71,7 @@ public class RuleMapXMLConverter extends MapXMLConverter {
         NodeList children = elem.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
             Node n = children.item(i);
-            if (n instanceof Element) {
-                Element ruleElement = (Element) n;
+            if (n instanceof Element ruleElement) {
                 String resource = ruleElement.getAttribute(RESOURCEATTR);
                 ruleMap.put(resource, ruleElement.getTextContent());
             }

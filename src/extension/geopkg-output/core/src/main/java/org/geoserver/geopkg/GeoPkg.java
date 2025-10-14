@@ -29,12 +29,10 @@ public class GeoPkg {
     public static final String LEGACY_MIME_TYPE = "application/x-gpkg";
 
     public static final String MIME_TYPE = "application/geopackage+sqlite3";
-    public static final Collection<String> MIME_TYPES =
-            Lists.newArrayList(MIME_TYPE, LEGACY_MIME_TYPE);
+    public static final Collection<String> MIME_TYPES = Lists.newArrayList(MIME_TYPE, LEGACY_MIME_TYPE);
 
     /** names/aliases for the format */
-    public static final Collection<String> NAMES =
-            Lists.newArrayList("geopackage", "geopkg", "gpkg");
+    public static final Collection<String> NAMES = Lists.newArrayList("geopackage", "geopkg", "gpkg");
 
     /**
      * Initialize a GeoPackage connection with top speed for single user writing

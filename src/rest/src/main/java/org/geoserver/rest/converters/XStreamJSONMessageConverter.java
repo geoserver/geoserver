@@ -40,8 +40,7 @@ public class XStreamJSONMessageConverter extends XStreamMessageConverter<Object>
     protected boolean supports(Class<?> clazz) {
         // this converter is actually used for classes that are not RestWrapper, but we need to
         // exclude OGC API Objects that need to be managed by the Jackson converter
-        return clazz != null
-                && (RestWrapper.class.isAssignableFrom(clazz) || !isOGCAPIObject(clazz));
+        return clazz != null && (RestWrapper.class.isAssignableFrom(clazz) || !isOGCAPIObject(clazz));
     }
 
     private boolean isOGCAPIObject(Class<?> clazz) {
@@ -56,8 +55,8 @@ public class XStreamJSONMessageConverter extends XStreamMessageConverter<Object>
             throws IOException, HttpMessageNotReadableException {
         XStreamPersister p = xpf.createJSONPersister();
         p.setCatalog(catalog);
-        if (inputMessage instanceof RestHttpInputWrapper) {
-            ((RestHttpInputWrapper) inputMessage).configurePersister(p, this);
+        if (inputMessage instanceof RestHttpInputWrapper wrapper) {
+            wrapper.configurePersister(p, this);
         }
         return p.load(inputMessage.getBody(), clazz);
     }
@@ -80,9 +79,9 @@ public class XStreamJSONMessageConverter extends XStreamMessageConverter<Object>
         xmlPersister.setCatalog(catalog);
         xmlPersister.setReferenceByName(true);
         xmlPersister.setExcludeIds();
-        if (o instanceof RestWrapper) {
-            ((RestWrapper<?>) o).configurePersister(xmlPersister, this);
-            o = ((RestWrapper<?>) o).getObject();
+        if (o instanceof RestWrapper<?> wrapper) {
+            wrapper.configurePersister(xmlPersister, this);
+            o = wrapper.getObject();
         }
         xmlPersister.save(o, outputMessage.getBody());
     }

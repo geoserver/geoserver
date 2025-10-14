@@ -19,11 +19,10 @@ public interface WMSStoreInfo extends HTTPStoreInfo {
     /**
      * Returns the underlying {@link WebMapServer}
      *
-     * <p>This method does I/O and is potentially blocking. The <tt>listener</tt> may be used to
-     * report the progress of loading the datastore and also to report any errors or warnings that
-     * occur.
+     * <p>This method does I/O and is potentially blocking. The <tt>listener</tt> may be used to report the progress of
+     * loading the datastore and also to report any errors or warnings that occur.
      *
-     * @param listener A progress listener, may be <code>null</code>.
+     * @param listener A progress listener, may be {@code null}.
      * @return The datastore.
      * @throws IOException Any I/O problems.
      */

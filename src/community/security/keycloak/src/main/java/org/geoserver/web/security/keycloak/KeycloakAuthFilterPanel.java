@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.security.keycloak;
 
+import java.io.Serial;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -15,15 +16,14 @@ import org.geoserver.web.wicket.HelpLink;
 import org.geotools.util.logging.Logging;
 
 /**
- * UI for configuring Keycloak auth filters. contains just a single text-field, since the Keycloak
- * server will generally provide correctly-formatted JSON to copy-paste into this box. No cause to
- * over-complicate the UI.
+ * UI for configuring Keycloak auth filters. contains just a single text-field, since the Keycloak server will generally
+ * provide correctly-formatted JSON to copy-paste into this box. No cause to over-complicate the UI.
  */
-public class KeycloakAuthFilterPanel
-        extends PreAuthenticatedUserNameFilterPanel<GeoServerKeycloakFilterConfig> {
+public class KeycloakAuthFilterPanel extends PreAuthenticatedUserNameFilterPanel<GeoServerKeycloakFilterConfig> {
 
     private static final Logger LOG = Logging.getLogger(KeycloakAuthFilterPanel.class);
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public KeycloakAuthFilterPanel(String id, IModel<GeoServerKeycloakFilterConfig> model) {

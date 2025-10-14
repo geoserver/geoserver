@@ -46,8 +46,7 @@ import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpStatus;
 
 /**
- * Maps properties in the source template to public sortables. For a property to be sortable it
- * must:
+ * Maps properties in the source template to public sortables. For a property to be sortable it must:
  *
  * <ul>
  *   <li>Map to a single source property, without expressions
@@ -71,9 +70,7 @@ public class STACSortablesMapper {
      * @param queryablesBuilder the queryables builder to use get a configurable list of attributes
      */
     public STACSortablesMapper(
-            TemplateBuilder template,
-            FeatureType itemsSchema,
-            STACQueryablesBuilder queryablesBuilder) {
+            TemplateBuilder template, FeatureType itemsSchema, STACQueryablesBuilder queryablesBuilder) {
         this(template, itemsSchema, null, queryablesBuilder);
     }
 
@@ -86,10 +83,7 @@ public class STACSortablesMapper {
      * @param queryablesBuilder the queryables builder to use get a configurable list of attributes
      */
     public STACSortablesMapper(
-            TemplateBuilder template,
-            FeatureType itemsSchema,
-            String id,
-            STACQueryablesBuilder queryablesBuilder) {
+            TemplateBuilder template, FeatureType itemsSchema, String id, STACQueryablesBuilder queryablesBuilder) {
         this.id = id;
         this.template = template;
         this.itemsSchema = itemsSchema;
@@ -120,14 +114,13 @@ public class STACSortablesMapper {
             TemplateBuilder itemTemplate,
             String id)
             throws IOException {
-        STACQueryablesBuilder stacQueryablesBuilder =
-                new STACQueryablesBuilder(
-                        null,
-                        templates.getItemTemplate(collectionId),
-                        sampleFeatures.getSchema(),
-                        sampleFeatures.getSample(collectionId),
-                        collectionsCache.getCollection(collectionId),
-                        geoServer.getService(OSEOInfo.class));
+        STACQueryablesBuilder stacQueryablesBuilder = new STACQueryablesBuilder(
+                null,
+                templates.getItemTemplate(collectionId),
+                sampleFeatures.getSchema(),
+                sampleFeatures.getSample(collectionId),
+                collectionsCache.getCollection(collectionId),
+                geoServer.getService(OSEOInfo.class));
         return new STACSortablesMapper(itemTemplate, itemsSchema, id, stacQueryablesBuilder);
     }
     /**
@@ -150,14 +143,13 @@ public class STACSortablesMapper {
             FeatureType itemsSchema,
             GeoServer geoServer)
             throws IOException {
-        STACQueryablesBuilder stacQueryablesBuilder =
-                new STACQueryablesBuilder(
-                        null,
-                        templates.getItemTemplate(collectionId),
-                        sampleFeatures.getSchema(),
-                        sampleFeatures.getSample(collectionId),
-                        collectionsCache.getCollection(collectionId),
-                        geoServer.getService(OSEOInfo.class));
+        STACQueryablesBuilder stacQueryablesBuilder = new STACQueryablesBuilder(
+                null,
+                templates.getItemTemplate(collectionId),
+                sampleFeatures.getSchema(),
+                sampleFeatures.getSample(collectionId),
+                collectionsCache.getCollection(collectionId),
+                geoServer.getService(OSEOInfo.class));
         TemplateBuilder builder = templates.getItemTemplate(collectionId);
         return new STACSortablesMapper(builder, itemsSchema, stacQueryablesBuilder);
     }
@@ -176,17 +168,12 @@ public class STACSortablesMapper {
         result.getProperties().put("collection", getSchema(String.class));
         result.getProperties().put("datetime", getSchema(Date.class));
 
-        TemplateBuilder properties =
-                TemplateBuilderUtils.getBuilderFor(template, "features", "properties");
+        TemplateBuilder properties = TemplateBuilderUtils.getBuilderFor(template, "features", "properties");
         if (properties != null) {
-            TemplatePropertyVisitor visitor =
-                    new TemplatePropertyVisitor(
-                            properties,
-                            null,
-                            (path, vb) -> {
-                                if (isSortable(vb) && queryables.getProperties().containsKey(path))
-                                    result.getProperties().put(path, getSchema(getClass(vb)));
-                            });
+            TemplatePropertyVisitor visitor = new TemplatePropertyVisitor(properties, null, (path, vb) -> {
+                if (isSortable(vb) && queryables.getProperties().containsKey(path))
+                    result.getProperties().put(path, getSchema(getClass(vb)));
+            });
             visitor.visit();
         }
 
@@ -197,44 +184,37 @@ public class STACSortablesMapper {
     public Map<String, String> getSortablesMap() throws IOException {
         Queryables queryables = queryablesBuilder.getQueryables();
         Map<String, String> result = new HashMap<>();
-        TemplateBuilder properties =
-                TemplateBuilderUtils.getBuilderFor(template, "features", "properties");
+        TemplateBuilder properties = TemplateBuilderUtils.getBuilderFor(template, "features", "properties");
         FilterAttributeExtractor extractor = new FilterAttributeExtractor();
         if (properties != null) {
-            TemplatePropertyVisitor visitor =
-                    new TemplatePropertyVisitor(
-                            properties,
-                            null, // no sample feature, cannot sort on a jsonPointer anyways
-                            (path, vb) -> {
-                                if (isSortable(vb)
-                                        && queryables.getProperties().containsKey(path)) {
-                                    if (vb.getXpath() != null) {
-                                        result.put(path, vb.getXpath().getPropertyName());
-                                    } else if (vb.getCql() != null) {
-                                        vb.getCql().accept(extractor, null);
-                                        Set<PropertyName> propertiesNames =
-                                                extractor.getPropertyNameSet();
-                                        // if there is more than one property name in the
-                                        // expression, we cannot determine which to use
-                                        if (propertiesNames.size() == 1) {
-                                            result.put(
-                                                    path,
-                                                    propertiesNames
-                                                            .iterator()
-                                                            .next()
-                                                            .getPropertyName());
-                                        } else {
-                                            LOGGER.log(
-                                                    Level.WARNING,
-                                                    "Cannot determine the property name to use for sorting on "
-                                                            + path
-                                                            + " because the expression "
-                                                            + vb.getCql()
-                                                            + " contains more than one property name");
-                                        }
-                                    }
+            TemplatePropertyVisitor visitor = new TemplatePropertyVisitor(
+                    properties,
+                    null, // no sample feature, cannot sort on a jsonPointer anyways
+                    (path, vb) -> {
+                        if (isSortable(vb) && queryables.getProperties().containsKey(path)) {
+                            if (vb.getXpath() != null) {
+                                result.put(path, vb.getXpath().getPropertyName());
+                            } else if (vb.getCql() != null) {
+                                vb.getCql().accept(extractor, null);
+                                Set<PropertyName> propertiesNames = extractor.getPropertyNameSet();
+                                // if there is more than one property name in the
+                                // expression, we cannot determine which to use
+                                if (propertiesNames.size() == 1) {
+                                    result.put(
+                                            path,
+                                            propertiesNames.iterator().next().getPropertyName());
+                                } else {
+                                    LOGGER.log(
+                                            Level.WARNING,
+                                            "Cannot determine the property name to use for sorting on "
+                                                    + path
+                                                    + " because the expression "
+                                                    + vb.getCql()
+                                                    + " contains more than one property name");
                                 }
-                            });
+                            }
+                        }
+                    });
             visitor.visit();
         }
         // force in the extra well known sortables
@@ -250,8 +230,7 @@ public class STACSortablesMapper {
         if (xpath != null) {
             if (!xpath.getPropertyName().contains("/")) {
                 Object result = xpath.evaluate(itemsSchema);
-                if (result instanceof PropertyDescriptor) {
-                    PropertyDescriptor pd = (PropertyDescriptor) result;
+                if (result instanceof PropertyDescriptor pd) {
                     return pd.getType().getBinding();
                 }
             }
@@ -273,19 +252,20 @@ public class STACSortablesMapper {
     /** Maps a SortBy[] using public sortables back to source property names */
     public SortBy[] map(SortBy[] sortby) throws IOException {
         Map<String, String> sortables = getSortablesMap();
-        return Arrays.stream(sortby)
-                .map(sb -> mapSortable(sb, sortables))
-                .toArray(n -> new SortBy[n]);
+        return Arrays.stream(sortby).map(sb -> mapSortable(sb, sortables)).toArray(n -> new SortBy[n]);
     }
 
     private Object mapSortable(SortBy sb, Map<String, String> sortables) {
         String sortable = sb.getPropertyName().getPropertyName();
         String sourceName = sortables.get(sortable);
+        // STAC refers to properties as properties.<name>, for properties that are not top level (top level properties
+        // seem to be a STAC invention), so we need to map them back to the source property name, the GeoTools feature
+        // model has no such concept, all properties are at the same level
+        if (sourceName == null && sortable.startsWith("properties."))
+            sourceName = sortables.get(sortable.substring(11));
         if (sourceName == null)
             throw new APIException(
-                    APIException.INVALID_PARAMETER_VALUE,
-                    "Unknown sortable: " + sortable,
-                    HttpStatus.NOT_FOUND);
+                    APIException.INVALID_PARAMETER_VALUE, "Unknown sortable: " + sortable, HttpStatus.NOT_FOUND);
         return STACService.FF.sort(sourceName, sb.getSortOrder());
     }
 }

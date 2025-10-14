@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.web.csp;
 
+import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -26,6 +27,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 /** Page for creating/modifying {@link CSPPolicy} objects. */
 public class CSPPolicyPage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = -5200150783568375701L;
 
     private TextField<String> nameField;
@@ -45,24 +47,24 @@ public class CSPPolicyPage extends GeoServerSecuredPage {
         form.add(new TextArea<>("description", new PropertyModel<>(model, "description")));
         form.add(new CheckBox("enabled", new PropertyModel<>(model, "enabled")));
         form.add(new CSPRulePanel("rules", this.policy));
-        form.add(
-                new SubmitLink("save", form) {
-                    private static final long serialVersionUID = -5897975410833363747L;
+        form.add(new SubmitLink("save", form) {
+            @Serial
+            private static final long serialVersionUID = -5897975410833363747L;
 
-                    @Override
-                    public void onSubmit() {
-                        savePolicy();
-                    }
-                });
-        form.add(
-                new Button("cancel") {
-                    private static final long serialVersionUID = 4579381111420468326L;
+            @Override
+            public void onSubmit() {
+                savePolicy();
+            }
+        });
+        form.add(new Button("cancel") {
+            @Serial
+            private static final long serialVersionUID = 4579381111420468326L;
 
-                    @Override
-                    public void onSubmit() {
-                        doReturn();
-                    }
-                });
+            @Override
+            public void onSubmit() {
+                doReturn();
+            }
+        });
         add(form);
     }
 
@@ -83,15 +85,14 @@ public class CSPPolicyPage extends GeoServerSecuredPage {
 
     private class NameValidator implements IValidator<String> {
 
+        @Serial
         private static final long serialVersionUID = 2516642715001094366L;
 
         @Override
         public void validate(IValidatable<String> validatable) {
             String name = validatable.getValue();
-            if (CSPPolicyPage.this.nameField.isEnabled()
-                    && CSPPolicyPage.this.config.getPolicyByName(name) != null) {
-                ParamResourceModel message =
-                        new ParamResourceModel("duplicatePolicy", CSPPolicyPage.this, name);
+            if (CSPPolicyPage.this.nameField.isEnabled() && CSPPolicyPage.this.config.getPolicyByName(name) != null) {
+                ParamResourceModel message = new ParamResourceModel("duplicatePolicy", CSPPolicyPage.this, name);
                 validatable.error(new ValidationError(message.getString()));
             }
         }

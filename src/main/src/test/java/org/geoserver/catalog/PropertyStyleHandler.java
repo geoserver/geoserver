@@ -57,10 +57,7 @@ public class PropertyStyleHandler extends StyleHandler {
 
     @Override
     public StyledLayerDescriptor parse(
-            Object input,
-            Version version,
-            ResourceLocator resourceLocator,
-            EntityResolver enityResolver)
+            Object input, Version version, ResourceLocator resourceLocator, EntityResolver enityResolver)
             throws IOException {
         Properties p = new Properties();
         try (Reader reader = toReader(input)) {
@@ -73,9 +70,7 @@ public class PropertyStyleHandler extends StyleHandler {
         String type = p.getProperty("type");
         if ("line".equalsIgnoreCase(type)) {
             LineSymbolizer ls = styleFactory.createLineSymbolizer();
-            ls.setStroke(
-                    styleFactory.createStroke(
-                            filterFactory.literal(color), filterFactory.literal(2)));
+            ls.setStroke(styleFactory.createStroke(filterFactory.literal(color), filterFactory.literal(2)));
 
             sym = ls;
         } else if ("polygon".equalsIgnoreCase(type)) {
@@ -126,8 +121,7 @@ public class PropertyStyleHandler extends StyleHandler {
     }
 
     @Override
-    public void encode(
-            StyledLayerDescriptor sld, Version version, boolean pretty, OutputStream output)
+    public void encode(StyledLayerDescriptor sld, Version version, boolean pretty, OutputStream output)
             throws IOException {
         Properties props = new Properties();
         for (Symbolizer sym : SLD.symbolizers(Styles.style(sld))) {
@@ -146,8 +140,7 @@ public class PropertyStyleHandler extends StyleHandler {
     }
 
     @Override
-    public List<Exception> validate(Object input, Version version, EntityResolver entityResolver)
-            throws IOException {
+    public List<Exception> validate(Object input, Version version, EntityResolver entityResolver) throws IOException {
         return Collections.emptyList();
     }
 

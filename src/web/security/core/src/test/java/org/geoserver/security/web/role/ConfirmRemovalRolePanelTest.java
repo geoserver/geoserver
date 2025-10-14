@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.web.role;
 
+import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
@@ -15,32 +16,31 @@ import org.geoserver.web.FormTestPage;
 import org.junit.Test;
 
 public class ConfirmRemovalRolePanelTest extends AbstractConfirmRemovalPanelTest<GeoServerRole> {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Override
     protected void setupPanel(final List<GeoServerRole> roots) {
 
-        tester.startPage(
-                new FormTestPage(
-                        new ComponentBuilder() {
-                            private static final long serialVersionUID = 1L;
+        tester.startPage(new FormTestPage(new ComponentBuilder() {
+            @Serial
+            private static final long serialVersionUID = 1L;
 
-                            @Override
-                            public Component buildComponent(String id) {
-                                return new ConfirmRemovalRolePanel(
-                                        id, roots.toArray(new GeoServerRole[roots.size()])) {
-                                    @Override
-                                    protected IModel<String> canRemove(GeoServerRole data) {
-                                        SelectionRoleRemovalLink link =
-                                                new SelectionRoleRemovalLink(
-                                                        getRoleServiceName(), "XXX", null, null);
-                                        return link.canRemove(data);
-                                    }
+            @Override
+            public Component buildComponent(String id) {
+                return new ConfirmRemovalRolePanel(id, roots.toArray(new GeoServerRole[roots.size()])) {
+                    @Override
+                    protected IModel<String> canRemove(GeoServerRole data) {
+                        SelectionRoleRemovalLink link =
+                                new SelectionRoleRemovalLink(getRoleServiceName(), "XXX", null, null);
+                        return link.canRemove(data);
+                    }
 
-                                    private static final long serialVersionUID = 1L;
-                                };
-                            }
-                        }));
+                    @Serial
+                    private static final long serialVersionUID = 1L;
+                };
+            }
+        }));
     }
 
     @Test

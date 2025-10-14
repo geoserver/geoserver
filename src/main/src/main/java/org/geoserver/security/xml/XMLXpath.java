@@ -34,7 +34,7 @@ public abstract class XMLXpath {
      * @author christian
      */
     @SuppressWarnings("unchecked") // Java 8 and Java 11 interfaces differ
-    public class NamespaceContextImpl implements NamespaceContext {
+    public static class NamespaceContextImpl implements NamespaceContext {
         private Map<String, String> prefix_ns_Map = new HashMap<>();
         private Map<String, String> ns_prefix_Map = new HashMap<>();
 
@@ -84,8 +84,7 @@ public abstract class XMLXpath {
     }
 
     /** Creates a relatvie XPathExpression for a XML attribute, needs name space prefix */
-    protected XPathExpression compileRelativeAttribute(
-            XPath xpath, String attrName, String prefix) {
+    protected XPathExpression compileRelativeAttribute(XPath xpath, String attrName, String prefix) {
         // return compile(xpath,"@"+prefix+":"+attrName);
         return compile(xpath, "@" + attrName);
     }

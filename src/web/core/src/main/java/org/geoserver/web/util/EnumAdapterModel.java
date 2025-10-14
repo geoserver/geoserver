@@ -8,8 +8,7 @@ package org.geoserver.web.util;
 import org.apache.wicket.model.IModel;
 
 /**
- * A Model that can wrap another model returning eventually a String and map it to the specified
- * Enum value.
+ * A Model that can wrap another model returning eventually a String and map it to the specified Enum value.
  *
  * @param <T>
  */
@@ -28,8 +27,7 @@ public class EnumAdapterModel<T extends Enum> implements IModel<T> {
     @SuppressWarnings("unchecked") // casts to T
     public T getObject() {
         Object object = delegate.getObject();
-        if (object instanceof String) {
-            String text = (String) object;
+        if (object instanceof String text) {
             if (text.isEmpty()) {
                 return null;
             }

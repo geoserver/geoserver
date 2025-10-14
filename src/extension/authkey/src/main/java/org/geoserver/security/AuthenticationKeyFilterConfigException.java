@@ -6,6 +6,7 @@
 
 package org.geoserver.security;
 
+import java.io.Serial;
 import org.geoserver.security.validation.FilterConfigException;
 
 /**
@@ -15,6 +16,7 @@ import org.geoserver.security.validation.FilterConfigException;
  */
 public class AuthenticationKeyFilterConfigException extends FilterConfigException {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public AuthenticationKeyFilterConfigException(String errorId, Object... args) {
@@ -29,6 +31,5 @@ public class AuthenticationKeyFilterConfigException extends FilterConfigExceptio
     public static final String AUTH_KEY_MAPPER_NAME_REQUIRED = "AUTH_KEY_MAPPER_NAME_REQUIRED";
     public static final String AUTH_KEY_MAPPER_NOT_FOUND_$1 = "AUTH_KEY_MAPPER_NOT_FOUND";
     public static final String INVALID_AUTH_KEY_MAPPER_$2 = "INVALID_AUTH_KEY_MAPPER";
-    public static final String INVALID_AUTH_KEY_MAPPER_PARAMETER_$3 =
-            "INVALID_AUTH_KEY_MAPPER_PARAMETER";
+    public static final String INVALID_AUTH_KEY_MAPPER_PARAMETER_$3 = "INVALID_AUTH_KEY_MAPPER_PARAMETER";
 }

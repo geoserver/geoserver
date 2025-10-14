@@ -43,20 +43,44 @@ import org.geotools.util.logging.Logging;
  *
  * @author Richard Gould, Refractions Research, Inc.
  * @author $Author: cholmesny $ (last modification)
- * @version $Id$
  */
 public abstract class DataStoreUtils {
 
     /** logger */
     static Logger LOGGER = Logging.getLogger("org.geoserver.data");
 
+    /** A cache of available data access factories, used to avoid the cost of looking them up every time. */
+    enum DataAccessFactoryCache {
+        INSTANCE;
+
+        private List<DataAccessFactory> factories;
+
+        DataAccessFactoryCache() {
+            factories = new ArrayList<>();
+            Iterator<DataAccessFactory> it = DataAccessFinder.getAvailableDataStores();
+            while (it.hasNext()) {
+                factories.add(it.next());
+            }
+            for (DataAccessFactoryProducer producer : GeoServerExtensions.extensions(DataAccessFactoryProducer.class)) {
+                try {
+                    factories.addAll(producer.getDataStoreFactories());
+                } catch (Throwable t) {
+                    LOGGER.log(Level.WARNING, "Error occurred loading data access factories. Ignoring producer", t);
+                }
+            }
+        }
+
+        public List<DataAccessFactory> getFactories() {
+            return factories;
+        }
+    }
+
     /**
-     * Looks up the {@link DataAccess} using the given params, verbatim, and then eventually wraps
-     * it into a renaming wrapper so that feature type names are good ones from the wfs point of
-     * view (that is, no ":" in the type names)
+     * Looks up the {@link DataAccess} using the given params, verbatim, and then eventually wraps it into a renaming
+     * wrapper so that feature type names are good ones from the wfs point of view (that is, no ":" in the type names)
      */
-    public static DataAccess<? extends FeatureType, ? extends Feature> getDataAccess(
-            Map<String, Serializable> params) throws IOException {
+    public static DataAccess<? extends FeatureType, ? extends Feature> getDataAccess(Map<String, Serializable> params)
+            throws IOException {
         DataAccessFactory factory = aquireFactory(params);
         if (factory == null) {
             return null;
@@ -66,23 +90,22 @@ public abstract class DataStoreUtils {
     }
 
     /**
-     * Creates a {@link DataAccess} using the given params and factory, verbatim, and then
-     * eventually wraps it into a renaming wrapper so that feature type names are good ones from the
-     * wfs point of view (that is, no ":" in the type names)
+     * Creates a {@link DataAccess} using the given params and factory, verbatim, and then eventually wraps it into a
+     * renaming wrapper so that feature type names are good ones from the wfs point of view (that is, no ":" in the type
+     * names)
      */
     public static DataAccess<? extends FeatureType, ? extends Feature> getDataAccess(
             DataAccessFactory factory, Map<String, Serializable> params) throws IOException {
-        DataAccess<? extends FeatureType, ? extends Feature> store =
-                factory.createDataStore(params);
+        DataAccess<? extends FeatureType, ? extends Feature> store = factory.createDataStore(params);
         if (store == null) {
             return null;
         }
 
-        if (store instanceof DataStore) {
+        if (store instanceof DataStore dataStore) {
             try {
-                String[] names = ((DataStore) store).getTypeNames();
+                String[] names = dataStore.getTypeNames();
                 for (String name : names) {
-                    if (name.indexOf(":") >= 0) return new RetypingDataStore((DataStore) store);
+                    if (name.indexOf(":") >= 0) return new RetypingDataStore(dataStore);
                 }
             } catch (IOException | RuntimeException e) {
                 // in case of exception computing the feature types make sure we clean up the store
@@ -140,8 +163,8 @@ public abstract class DataStoreUtils {
     }
 
     /**
-     * Initializes a newly created data store factory by processing the {@link
-     * DataStoreFactoryInitializer} extension point.
+     * Initializes a newly created data store factory by processing the {@link DataStoreFactoryInitializer} extension
+     * point.
      */
     @SuppressWarnings("unchecked")
     static DataAccessFactory initializeDataStoreFactory(DataAccessFactory factory) {
@@ -153,8 +176,8 @@ public abstract class DataStoreUtils {
                     initer.initialize(factory);
                 } catch (Throwable t) {
                     final Logger LOGGER2 = Logging.getLogger("org.geoserver.platform");
-                    String msg =
-                            "Error occured processing extension: " + initer.getClass().getName();
+                    String msg = "Error occured processing extension: "
+                            + initer.getClass().getName();
                     LOGGER2.log(Level.WARNING, msg, t);
                 }
             }
@@ -232,8 +255,8 @@ public abstract class DataStoreUtils {
      *
      * @return Map with real values that may be acceptable to Factory
      */
-    public static Map<String, Object> toConnectionParams(
-            DataAccessFactory factory, Map<String, ?> params) throws IOException {
+    public static Map<String, Object> toConnectionParams(DataAccessFactory factory, Map<String, ?> params)
+            throws IOException {
         Map<String, Object> map = new HashMap<>(params.size());
 
         Param[] info = factory.getParametersInfo();
@@ -251,24 +274,7 @@ public abstract class DataStoreUtils {
     }
 
     public static Collection<DataAccessFactory> getAvailableDataStoreFactories() {
-        List<DataAccessFactory> factories = new ArrayList<>();
-        Iterator<DataAccessFactory> it = DataAccessFinder.getAvailableDataStores();
-        while (it.hasNext()) {
-            factories.add(it.next());
-        }
-
-        for (DataAccessFactoryProducer producer :
-                GeoServerExtensions.extensions(DataAccessFactoryProducer.class)) {
-            try {
-                factories.addAll(producer.getDataStoreFactories());
-            } catch (Throwable t) {
-                LOGGER.log(
-                        Level.WARNING,
-                        "Error occured loading data access factories. " + "Ignoring producer",
-                        t);
-            }
-        }
-
+        List<DataAccessFactory> factories = DataAccessFactoryCache.INSTANCE.getFactories();
         return factories;
     }
 
@@ -284,12 +290,11 @@ public abstract class DataStoreUtils {
             Name nativeName = new NameImpl(featureType.getNativeName());
 
             org.geotools.data.wfs.internal.FeatureTypeInfo info =
-                    (org.geotools.data.wfs.internal.FeatureTypeInfo)
-                            featureType
-                                    .getStore()
-                                    .getDataStore(null)
-                                    .getFeatureSource(nativeName)
-                                    .getInfo();
+                    (org.geotools.data.wfs.internal.FeatureTypeInfo) featureType
+                            .getStore()
+                            .getDataStore(null)
+                            .getFeatureSource(nativeName)
+                            .getInfo();
             // read all identifiers of this CRS into a an comma seperated string
             if (info.getOtherSRS() != null) {
                 return info.getOtherSRS();
@@ -316,9 +321,7 @@ public abstract class DataStoreUtils {
             return otherSRS;
         } catch (IOException e) {
             LOGGER.log(
-                    Level.SEVERE,
-                    "Error while reading other SRS from WMS Layer :" + wmsLayerInfo.getNativeName(),
-                    e);
+                    Level.SEVERE, "Error while reading other SRS from WMS Layer :" + wmsLayerInfo.getNativeName(), e);
         }
         // default to legacy behavior on failure
         return Collections.emptyList();
@@ -331,14 +334,10 @@ public abstract class DataStoreUtils {
             Layer wmtsLayer = wmtsLayerInfo.getWMTSLayer(new NullProgressListener());
             Set<String> supportedSRS = wmtsLayer.getSrs();
             // do we have additional srs?
-            if (!(supportedSRS.size() == 1))
-                otherSRS = supportedSRS.stream().collect(Collectors.toList());
+            if (!(supportedSRS.size() == 1)) otherSRS = supportedSRS.stream().collect(Collectors.toList());
         } catch (IOException e) {
             LOGGER.log(
-                    Level.SEVERE,
-                    "Error while reading other SRS from WMS Layer :"
-                            + wmtsLayerInfo.getNativeName(),
-                    e);
+                    Level.SEVERE, "Error while reading other SRS from WMS Layer :" + wmtsLayerInfo.getNativeName(), e);
         }
 
         return otherSRS;

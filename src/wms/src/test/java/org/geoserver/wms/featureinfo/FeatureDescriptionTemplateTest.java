@@ -7,12 +7,9 @@ package org.geoserver.wms.featureinfo;
 
 import static org.junit.Assert.assertNotNull;
 
-import freemarker.template.Configuration;
 import freemarker.template.Template;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
-import org.geoserver.template.FeatureWrapper;
-import org.geoserver.template.TemplateUtils;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.data.DataUtilities;
@@ -25,29 +22,18 @@ public class FeatureDescriptionTemplateTest {
 
     @Test
     public void testTemplate() throws Exception {
-        Configuration cfg = TemplateUtils.getSafeConfiguration();
-        cfg.setObjectWrapper(new FeatureWrapper());
-        cfg.setClassForTemplateLoading(FeatureTemplate.class, "");
-
-        Template template = cfg.getTemplate("description.ftl");
+        Template template = FeatureTemplate.templateConfig.getTemplate("description.ftl");
         assertNotNull(template);
 
         // create some data
         GeometryFactory gf = new GeometryFactory();
         SimpleFeatureType featureType =
-                DataUtilities.createType(
-                        "testType", "string:String,int:Integer,double:Double,geom:Point");
+                DataUtilities.createType("testType", "string:String,int:Integer,double:Double,geom:Point");
 
-        SimpleFeature f =
-                SimpleFeatureBuilder.build(
-                        featureType,
-                        new Object[] {
-                            "three",
-                            Integer.valueOf(3),
-                            Double.valueOf(3.3),
-                            gf.createPoint(new Coordinate(3, 3))
-                        },
-                        "fid.3");
+        SimpleFeature f = SimpleFeatureBuilder.build(
+                featureType,
+                new Object[] {"three", Integer.valueOf(3), Double.valueOf(3.3), gf.createPoint(new Coordinate(3, 3))},
+                "fid.3");
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         template.process(f, new OutputStreamWriter(output));

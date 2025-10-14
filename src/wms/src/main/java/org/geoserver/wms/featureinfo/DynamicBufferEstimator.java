@@ -24,8 +24,8 @@ import org.geotools.styling.AbstractStyleVisitor;
 import org.geotools.util.logging.Logging;
 
 /**
- * Evaluates a meta-buffer against the specified feature. Can be called with multiple subsequent
- * features and will accumulate the largest available buffer.
+ * Evaluates a meta-buffer against the specified feature. Can be called with multiple subsequent features and will
+ * accumulate the largest available buffer.
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -70,8 +70,7 @@ public class DynamicBufferEstimator extends AbstractStyleVisitor {
 
             // no fixed size, proceed
             for (GraphicalSymbol gs : gr.graphicalSymbols()) {
-                if (gs instanceof ExternalGraphic) {
-                    ExternalGraphic eg = (ExternalGraphic) gs;
+                if (gs instanceof ExternalGraphic eg) {
                     Icon icon = null;
                     if (eg.getInlineContent() != null) {
                         icon = eg.getInlineContent();
@@ -80,16 +79,12 @@ public class DynamicBufferEstimator extends AbstractStyleVisitor {
                         // expand embedded cql expression
                         Expression expanded = ExpressionExtractor.extractCqlExpressions(location);
 
-                        Iterator<ExternalGraphicFactory> it =
-                                DynamicSymbolFactoryFinder.getExternalGraphicFactories();
+                        Iterator<ExternalGraphicFactory> it = DynamicSymbolFactoryFinder.getExternalGraphicFactories();
                         while (it.hasNext()) {
                             try {
                                 icon = it.next().getIcon(feature, expanded, eg.getFormat(), -1);
                             } catch (Exception e) {
-                                LOGGER.log(
-                                        Level.FINE,
-                                        "Error occurred evaluating external graphic",
-                                        e);
+                                LOGGER.log(Level.FINE, "Error occurred evaluating external graphic", e);
                             }
                         }
                     }
@@ -113,8 +108,7 @@ public class DynamicBufferEstimator extends AbstractStyleVisitor {
         } catch (Exception e) {
             LOGGER.log(
                     Level.INFO,
-                    "Error occured during the graphic size estimation, "
-                            + "meta buffer estimate cannot be performed",
+                    "Error occured during the graphic size estimation, " + "meta buffer estimate cannot be performed",
                     e);
         }
     }

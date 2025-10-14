@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.store.panel;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder;
@@ -19,15 +20,13 @@ import org.geoserver.web.data.store.PasswordTextFieldWriteOnlyModel;
  */
 public class PasswordParamPanel extends Panel implements ParamPanel<String> {
 
+    @Serial
     private static final long serialVersionUID = -7801141820174575611L;
 
     private final PasswordTextField passwordField;
 
     public PasswordParamPanel(
-            final String id,
-            final IModel<String> model,
-            final IModel<String> paramLabelModel,
-            final boolean required) {
+            final String id, final IModel<String> model, final IModel<String> paramLabelModel, final boolean required) {
         super(id, model);
         String requiredMark = required ? " *" : "";
         add(new Label("paramName", paramLabelModel.getObject() + requiredMark));
@@ -38,8 +37,7 @@ public class PasswordParamPanel extends Panel implements ParamPanel<String> {
         // "Parameter 'paramValue' is required"
         passwordField.setLabel(paramLabelModel);
 
-        FormComponentFeedbackBorder requiredFieldFeedback =
-                new FormComponentFeedbackBorder("border");
+        FormComponentFeedbackBorder requiredFieldFeedback = new FormComponentFeedbackBorder("border");
 
         requiredFieldFeedback.add(passwordField);
 

@@ -42,15 +42,20 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class BatchJobServiceTest extends AbstractTaskManagerTest {
 
-    @Autowired private TaskManagerDao dao;
+    @Autowired
+    private TaskManagerDao dao;
 
-    @Autowired private TaskManagerFactory fac;
+    @Autowired
+    private TaskManagerFactory fac;
 
-    @Autowired private TaskManagerDataUtil util;
+    @Autowired
+    private TaskManagerDataUtil util;
 
-    @Autowired private BatchJobService bjService;
+    @Autowired
+    private BatchJobService bjService;
 
-    @Autowired private Scheduler scheduler;
+    @Autowired
+    private Scheduler scheduler;
 
     private Configuration config;
 
@@ -163,16 +168,12 @@ public class BatchJobServiceTest extends AbstractTaskManagerTest {
     @Test
     public void testBulkScheduleWithCallback() throws SchedulerException {
         Set<String> calledbackBatches = new HashSet<>();
-        bjService.scheduleNow(
-                Lists.newArrayList(batch, otherBatch),
-                0,
-                0,
-                new Consumer<Batch>() {
-                    @Override
-                    public void accept(Batch batch) {
-                        calledbackBatches.add(batch.getName());
-                    }
-                });
+        bjService.scheduleNow(Lists.newArrayList(batch, otherBatch), 0, 0, new Consumer<Batch>() {
+            @Override
+            public void accept(Batch batch) {
+                calledbackBatches.add(batch.getName());
+            }
+        });
 
         JobKey jobKey = new JobKey(batch.getId().toString());
         JobKey otherJobKey = new JobKey(otherBatch.getId().toString());

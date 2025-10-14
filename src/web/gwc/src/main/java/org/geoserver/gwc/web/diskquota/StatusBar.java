@@ -5,6 +5,7 @@
  */
 package org.geoserver.gwc.web.diskquota;
 
+import java.io.Serial;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.OnLoadHeaderItem;
@@ -16,6 +17,7 @@ import org.apache.wicket.request.resource.PackageResourceReference;
 
 public class StatusBar extends Panel {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private final String script;
@@ -48,17 +50,16 @@ public class StatusBar extends Panel {
             excessPercentage = 0;
         }
 
-        this.script =
-                ""
-                        + "document.getElementsByClassName('statusBarProgress')[0].style.width = '"
-                        + usedPercentage
-                        + "px';\n"
-                        + "document.getElementsByClassName('statusBarExcess')[0].style.width = '"
-                        + excessPercentage
-                        + "px';\n"
-                        + "document.getElementsByClassName('statusBarExcess')[0].style.left = '"
-                        + (5 + usedPercentage)
-                        + "px';";
+        this.script = ""
+                + "document.getElementsByClassName('statusBarProgress')[0].style.width = '"
+                + usedPercentage
+                + "px';\n"
+                + "document.getElementsByClassName('statusBarExcess')[0].style.width = '"
+                + excessPercentage
+                + "px';\n"
+                + "document.getElementsByClassName('statusBarExcess')[0].style.left = '"
+                + (5 + usedPercentage)
+                + "px';";
 
         add(usageBar);
         add(excessBar);
@@ -71,9 +72,7 @@ public class StatusBar extends Panel {
     @Override
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
-        response.render(
-                CssHeaderItem.forReference(
-                        new PackageResourceReference(StatusBar.class, "statusbar.css")));
+        response.render(CssHeaderItem.forReference(new PackageResourceReference(StatusBar.class, "statusbar.css")));
         response.render(OnLoadHeaderItem.forScript(this.script));
     }
 }

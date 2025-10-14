@@ -4,6 +4,8 @@
  */
 package org.geoserver.geofence.server.web;
 
+import java.io.Serial;
+import java.sql.Date;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -33,11 +35,13 @@ import org.locationtech.jts.geom.MultiPolygon;
  */
 public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
 
-    private static final long serialVersionUID = 478867886089304837L;
+    @Serial
+    private static final long serialVersionUID = 380017886089304837L;
 
     /** Makes columns that are unsortable and display "*" instead of empty when null */
     public static class RuleBeanProperty<T> extends BeanProperty<T> {
-        private static final long serialVersionUID = 483799722644223446L;
+        @Serial
+        private static final long serialVersionUID = 380019722644223446L;
 
         public RuleBeanProperty(String key, String propertyPath) {
             super(key, propertyPath);
@@ -52,6 +56,7 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
         @SuppressWarnings("unchecked")
         public IModel getModel(IModel<T> itemModel) { // replace null by *
             return new PropertyModel<>(itemModel, getPropertyPath()) {
+                @Serial
                 private static final long serialVersionUID = 1L;
 
                 @Override
@@ -73,18 +78,18 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
 
     public static final Property<ShortRule> REQUEST = new RuleBeanProperty<>("request", "request");
 
-    public static final Property<ShortRule> SUBFIELD =
-            new RuleBeanProperty<>("subfield", "subfield");
+    public static final Property<ShortRule> SUBFIELD = new RuleBeanProperty<>("subfield", "subfield");
 
-    public static final Property<ShortRule> WORKSPACE =
-            new RuleBeanProperty<>("workspace", "workspace");
+    public static final Property<ShortRule> WORKSPACE = new RuleBeanProperty<>("workspace", "workspace");
 
     public static final Property<ShortRule> LAYER = new RuleBeanProperty<>("layer", "layer");
 
     public static final Property<ShortRule> ACCESS = new RuleBeanProperty<>("access", "access");
 
-    public static final Property<ShortRule> ADDRESS_RANGE =
-            new RuleBeanProperty<>("addressRange", "addressRange");
+    public static final Property<ShortRule> ADDRESS_RANGE = new RuleBeanProperty<>("addressRange", "addressRange");
+
+    public static final Property<ShortRule> VALID_AFTER = new RuleBeanProperty<>("validAfter", "validAfter");
+    public static final Property<ShortRule> VALID_BEFORE = new RuleBeanProperty<>("validBefore", "validBefore");
 
     public static final Property<ShortRule> BUTTONS = new PropertyPlaceholder<>("buttons");
 
@@ -92,9 +97,7 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
         return (RuleAdminService) GeoServerApplication.get().getBean("ruleAdminService");
     }
 
-    /**
-     * We will keep local copy, always sorted on priority to support the up and down arrows easily
-     */
+    /** We will keep local copy, always sorted on priority to support the up and down arrows easily */
     protected List<ShortRule> rules;
 
     public GeofenceRulesModel() {
@@ -110,9 +113,7 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
     @Override
     public void setSort(Object property, SortOrder order) {
         super.setSort(property, order);
-        Collections.sort(
-                rules,
-                super.getComparator(new SortParam<>(property, order == SortOrder.ASCENDING)));
+        Collections.sort(rules, super.getComparator(new SortParam<>(property, order == SortOrder.ASCENDING)));
     }
 
     @Override
@@ -123,8 +124,7 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
     }
 
     @Override
-    protected List<org.geoserver.web.wicket.GeoServerDataProvider.Property<ShortRule>>
-            getProperties() {
+    protected List<org.geoserver.web.wicket.GeoServerDataProvider.Property<ShortRule>> getProperties() {
         return Arrays.asList(
                 PRIORITY,
                 ROLE,
@@ -134,8 +134,10 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
                 SUBFIELD,
                 WORKSPACE,
                 LAYER,
-                ACCESS,
+                VALID_AFTER,
+                VALID_BEFORE,
                 ADDRESS_RANGE,
+                ACCESS,
                 BUTTONS);
     }
 
@@ -248,10 +250,7 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
     }
 
     public void save(
-            Long ruleId,
-            MultiPolygon allowedArea,
-            SpatialFilterType spatialFilterType,
-            CatalogMode catalogMode) {
+            Long ruleId, MultiPolygon allowedArea, SpatialFilterType spatialFilterType, CatalogMode catalogMode) {
         Rule rule = adminService().get(ruleId);
         RuleLimits ruleLimits = rule.getRuleLimits();
         if (ruleLimits == null) {
@@ -290,9 +289,9 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
         rule.setAccess(shortRule.getAccess());
 
         rule.setAddressRange(
-                shortRule.getAddressRange() != null
-                        ? new IPAddressRange(shortRule.getAddressRange())
-                        : null);
+                shortRule.getAddressRange() != null ? new IPAddressRange(shortRule.getAddressRange()) : null);
+        rule.setValidAfter(shortRule.getValidAfter() == null ? null : Date.valueOf(shortRule.getValidAfter()));
+        rule.setValidBefore(shortRule.getValidBefore() == null ? null : Date.valueOf(shortRule.getValidBefore()));
     }
 
     public LayerDetails getDetails(Long ruleId) {

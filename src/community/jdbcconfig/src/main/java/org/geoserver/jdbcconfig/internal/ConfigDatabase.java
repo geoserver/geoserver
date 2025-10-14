@@ -102,7 +102,7 @@ import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.CoverageAccessInfoImpl;
 import org.geoserver.config.impl.GeoServerInfoImpl;
-import org.geoserver.config.impl.JAIInfoImpl;
+import org.geoserver.config.impl.ImageProcessingInfoImpl;
 import org.geoserver.jdbcloader.JDBCLoaderProperties;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.ExtensionPriority;
@@ -136,22 +136,20 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 /**
- * Stores and retrieves actual {@link CatalogInfo} and {@link ServiceInfo} from the underlying
- * database, with an in memory cache for both objects.
+ * Stores and retrieves actual {@link CatalogInfo} and {@link ServiceInfo} from the underlying database, with an in
+ * memory cache for both objects.
  *
- * <p><b>Important implementation notes</b> This bean is annotated with {@link Transactional} in all
- * write methods and all exposed read methods. The write methods are obvious, the read ones less so.
- * The reads load XML from the database and use XStream to decode it. This can cause references to
- * object related objects to be resolved, which happen by calling again onto the catalog, the facade
- * and eventually again this class. Using a read only transaction around the read methods ensures
- * that a single connection is used in this process, which prevents deadlock at the connection pool
- * level. Also, methods returning a {@link CloseableIterator} of info objects just look up the
- * identifier, and resolve them to full objects during the iteration. This lazy loading also needs
- * to be protected by transactional loading, which is tricky. A trivial implementation would just
- * call itself, which ends up bypassing the transaction annotations (which are implemented as a
- * proxy around the object). To avoid deadlocks there, the {@link ConfigDatabase} also loads itself
- * from the application context, with full transactional proxying, and uses that instance for
- * deferred loading while iterating.
+ * <p><b>Important implementation notes</b> This bean is annotated with {@link Transactional} in all write methods and
+ * all exposed read methods. The write methods are obvious, the read ones less so. The reads load XML from the database
+ * and use XStream to decode it. This can cause references to object related objects to be resolved, which happen by
+ * calling again onto the catalog, the facade and eventually again this class. Using a read only transaction around the
+ * read methods ensures that a single connection is used in this process, which prevents deadlock at the connection pool
+ * level. Also, methods returning a {@link CloseableIterator} of info objects just look up the identifier, and resolve
+ * them to full objects during the iteration. This lazy loading also needs to be protected by transactional loading,
+ * which is tricky. A trivial implementation would just call itself, which ends up bypassing the transaction annotations
+ * (which are implemented as a proxy around the object). To avoid deadlocks there, the {@link ConfigDatabase} also loads
+ * itself from the application context, with full transactional proxying, and uses that instance for deferred loading
+ * while iterating.
  */
 public class ConfigDatabase implements ApplicationContextAware {
 
@@ -201,10 +199,7 @@ public class ConfigDatabase implements ApplicationContextAware {
         //
     }
 
-    public ConfigDatabase(
-            JDBCLoaderProperties properties,
-            DataSource dataSource,
-            XStreamInfoSerialBinding binding) {
+    public ConfigDatabase(JDBCLoaderProperties properties, DataSource dataSource, XStreamInfoSerialBinding binding) {
         this(properties, dataSource, binding, null);
     }
 
@@ -253,10 +248,7 @@ public class ConfigDatabase implements ApplicationContextAware {
 
     private void runInitScript(Resource resource) throws IOException {
 
-        LOGGER.info(
-                "------------- Running catalog database init script "
-                        + resource.path()
-                        + " ------------");
+        LOGGER.info("------------- Running catalog database init script " + resource.path() + " ------------");
 
         try (InputStream in = resource.in()) {
             Util.runScript(in, template.getJdbcOperations(), LOGGER);
@@ -270,8 +262,8 @@ public class ConfigDatabase implements ApplicationContextAware {
     }
 
     /**
-     * CatalogClearingListener listener will be added to CatalogImpl when CatalogImpl is set, and
-     * CatalogImpl's addListener method will sort the listener
+     * CatalogClearingListener listener will be added to CatalogImpl when CatalogImpl is set, and CatalogImpl's
+     * addListener method will sort the listener
      *
      * @param catalog
      */
@@ -301,7 +293,8 @@ public class ConfigDatabase implements ApplicationContextAware {
 
     public <T extends CatalogInfo> int count(final Class<T> of, final Filter filter) {
 
-        QueryBuilder<T> sqlBuilder = QueryBuilder.forCount(dialect, of, dbMappings).filter(filter);
+        QueryBuilder<T> sqlBuilder =
+                QueryBuilder.forCount(dialect, of, dbMappings).filter(filter);
 
         final String sql = sqlBuilder.build();
         final int count;
@@ -311,8 +304,7 @@ public class ConfigDatabase implements ApplicationContextAware {
 
             count = template.queryForObject(sql, namedParameters, Integer.class);
         } else {
-            LOGGER.fine(
-                    "Filter is not fully supported, doing scan of supported part to return the number of matches");
+            LOGGER.fine("Filter is not fully supported, doing scan of supported part to return the number of matches");
             // going the expensive route, filtering as much as possible
             CloseableIterator<T> iterator = query(of, filter, null, null, (SortBy) null);
             try {
@@ -357,34 +349,33 @@ public class ConfigDatabase implements ApplicationContextAware {
         checkArgument(offset == null || offset.intValue() >= 0);
         checkArgument(limit == null || limit.intValue() >= 0);
 
-        QueryBuilder<T> sqlBuilder =
-                QueryBuilder.forIds(dialect, of, dbMappings)
-                        .filter(filter)
-                        .offset(offset)
-                        .limit(limit)
-                        .sortOrder(sortOrder);
+        QueryBuilder<T> sqlBuilder = QueryBuilder.forIds(dialect, of, dbMappings)
+                .filter(filter)
+                .offset(offset)
+                .limit(limit)
+                .sortOrder(sortOrder);
         final String sql = sqlBuilder.build();
 
         List<String> ids = null;
 
         final SimplifyingFilterVisitor filterSimplifier = new SimplifyingFilterVisitor();
-        final Filter simplifiedFilter =
-                (Filter) sqlBuilder.getSupportedFilter().accept(filterSimplifier, null);
-        if (simplifiedFilter instanceof PropertyIsEqualTo) {
-            PropertyIsEqualTo isEqualTo = (PropertyIsEqualTo) simplifiedFilter;
+        final Filter simplifiedFilter = (Filter) sqlBuilder.getSupportedFilter().accept(filterSimplifier, null);
+        if (simplifiedFilter instanceof PropertyIsEqualTo isEqualTo) {
             if (isEqualTo.getExpression1() instanceof PropertyName
                     && isEqualTo.getExpression2() instanceof Literal
-                    && ((PropertyName) isEqualTo.getExpression1()).getPropertyName().equals("id")) {
-                ids =
-                        Collections.singletonList(
-                                ((Literal) isEqualTo.getExpression2()).getValue().toString());
+                    && ((PropertyName) isEqualTo.getExpression1())
+                            .getPropertyName()
+                            .equals("id")) {
+                ids = Collections.singletonList(
+                        ((Literal) isEqualTo.getExpression2()).getValue().toString());
             }
             if (isEqualTo.getExpression2() instanceof PropertyName
                     && isEqualTo.getExpression1() instanceof Literal
-                    && ((PropertyName) isEqualTo.getExpression2()).getPropertyName().equals("id")) {
-                ids =
-                        Collections.singletonList(
-                                ((Literal) isEqualTo.getExpression1()).getValue().toString());
+                    && ((PropertyName) isEqualTo.getExpression2())
+                            .getPropertyName()
+                            .equals("id")) {
+                ids = Collections.singletonList(
+                        ((Literal) isEqualTo.getExpression1()).getValue().toString());
             }
         }
 
@@ -395,43 +386,29 @@ public class ConfigDatabase implements ApplicationContextAware {
             Stopwatch sw = Stopwatch.createStarted();
             // the oracle offset/limit implementation returns a two column result set
             // with rownum in the 2nd - queryForList will throw an exception
-            ids =
-                    template.query(
-                            sql,
-                            namedParameters,
-                            new RowMapper<String>() {
-                                @Override
-                                public String mapRow(ResultSet rs, int rowNum) throws SQLException {
-                                    return rs.getString(1);
-                                }
-                            });
+            ids = template.query(sql, namedParameters, new RowMapper<String>() {
+                @Override
+                public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return rs.getString(1);
+                }
+            });
             sw.stop();
             if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine(
-                        Joiner.on("")
-                                .join(
-                                        "query returned ",
-                                        ids.size(),
-                                        " records in ",
-                                        sw.toString()));
+                LOGGER.fine(Joiner.on("").join("query returned ", ids.size(), " records in ", sw.toString()));
             }
         }
 
-        List<T> lazyTransformed =
-                Lists.transform(
-                        ids,
-                        new Function<String, T>() {
-                            @Nullable
-                            @Override
-                            public T apply(String id) {
-                                return getById(id, of);
-                            }
-                        });
+        List<T> lazyTransformed = Lists.transform(ids, new Function<String, T>() {
+            @Nullable
+            @Override
+            public T apply(String id) {
+                return getById(id, of);
+            }
+        });
 
         CloseableIterator<T> result;
         Iterator<T> iterator =
-                Iterators.filter(
-                        lazyTransformed.iterator(), com.google.common.base.Predicates.notNull());
+                Iterators.filter(lazyTransformed.iterator(), com.google.common.base.Predicates.notNull());
 
         if (sqlBuilder.isFullySupported()) {
             result = new CloseableIteratorAdapter<T>(iterator);
@@ -451,13 +428,13 @@ public class ConfigDatabase implements ApplicationContextAware {
             transactionManager = "jdbcConfigTransactionManager",
             propagation = Propagation.REQUIRED,
             readOnly = true)
-    public <T extends Info> CloseableIterator<String> queryIds(
-            final Class<T> of, final Filter filter) {
+    public <T extends Info> CloseableIterator<String> queryIds(final Class<T> of, final Filter filter) {
 
         checkNotNull(of);
         checkNotNull(filter);
 
-        QueryBuilder<T> sqlBuilder = QueryBuilder.forIds(dialect, of, dbMappings).filter(filter);
+        QueryBuilder<T> sqlBuilder =
+                QueryBuilder.forIds(dialect, of, dbMappings).filter(filter);
 
         final String sql = sqlBuilder.build();
         final Map<String, Object> namedParameters = sqlBuilder.getNamedParameters();
@@ -466,24 +443,19 @@ public class ConfigDatabase implements ApplicationContextAware {
         Stopwatch sw = Stopwatch.createStarted();
         // the oracle offset/limit implementation returns a two column result set
         // with rownum in the 2nd - queryForList will throw an exception
-        List<String> ids =
-                template.query(
-                        sql,
-                        namedParameters,
-                        new RowMapper<String>() {
-                            @Override
-                            public String mapRow(ResultSet rs, int rowNum) throws SQLException {
-                                return rs.getString(1);
-                            }
-                        });
+        List<String> ids = template.query(sql, namedParameters, new RowMapper<String>() {
+            @Override
+            public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return rs.getString(1);
+            }
+        });
         sw.stop();
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("query returned " + ids.size() + " records in " + sw);
         }
 
         CloseableIterator<String> result;
-        Iterator<String> iterator =
-                Iterators.filter(ids.iterator(), com.google.common.base.Predicates.notNull());
+        Iterator<String> iterator = Iterators.filter(ids.iterator(), com.google.common.base.Predicates.notNull());
 
         if (sqlBuilder.isFullySupported()) {
             result = new CloseableIteratorAdapter<String>(iterator);
@@ -513,11 +485,7 @@ public class ConfigDatabase implements ApplicationContextAware {
             propagation = Propagation.REQUIRED,
             readOnly = true)
     public <T extends Info> List<T> queryAsList(
-            final Class<T> of,
-            final Filter filter,
-            Integer offset,
-            Integer count,
-            SortBy sortOrder) {
+            final Class<T> of, final Filter filter, Integer offset, Integer count, SortBy sortOrder) {
 
         CloseableIterator<T> iterator = query(of, filter, offset, count, sortOrder);
         List<T> list;
@@ -565,18 +533,12 @@ public class ConfigDatabase implements ApplicationContextAware {
         final Integer typeId = dbMappings.getTypeId(interf);
 
         Map<String, ?> params = params("type_id", typeId, "id", id, "blob", blob);
-        final String statement =
-                String.format(
-                        "INSERT INTO object (oid, type_id, id, blob) VALUES (%s, :type_id, :id, :blob)",
-                        dialect.nextVal("seq_OBJECT"));
+        final String statement = "INSERT INTO object (oid, type_id, id, blob) VALUES (%s, :type_id, :id, :blob)"
+                .formatted(dialect.nextVal("seq_OBJECT"));
         logStatement(statement, params);
         KeyHolder keyHolder = new GeneratedKeyHolder();
         int updateCount =
-                template.update(
-                        statement,
-                        new MapSqlParameterSource(params),
-                        keyHolder,
-                        new String[] {"oid"});
+                template.update(statement, new MapSqlParameterSource(params), keyHolder, new String[] {"oid"});
         checkState(updateCount == 1, "Insert statement failed");
         // looks like some db's return the pk different than others, so lets try both ways
         Number key = (Number) keyHolder.getKeys().get("oid");
@@ -600,8 +562,7 @@ public class ConfigDatabase implements ApplicationContextAware {
 
         for (Property prop : properties) {
             if (LOGGER.isLoggable(Level.FINEST)) {
-                LOGGER.finest(
-                        "Adding property " + prop.getPropertyName() + "='" + prop.getValue() + "'");
+                LOGGER.finest("Adding property " + prop.getPropertyName() + "='" + prop.getValue() + "'");
             }
 
             final List<?> values = valueList(prop);
@@ -632,8 +593,7 @@ public class ConfigDatabase implements ApplicationContextAware {
                     relatedOid = null;
                     relatedPropertyType = null;
                 }
-                addAttribute(
-                        info, infoPk, prop, colIndex, storedValue, relatedOid, relatedPropertyType);
+                addAttribute(info, infoPk, prop, colIndex, storedValue, relatedOid, relatedPropertyType);
             }
         }
     }
@@ -647,37 +607,34 @@ public class ConfigDatabase implements ApplicationContextAware {
             Integer relatedOid,
             Integer relatedPropertyType) {
 
-        final String insertPropertySQL =
-                "INSERT INTO object_property "
-                        + "(oid, property_type, related_oid, related_property_type, colindex, value, id) "
-                        + "VALUES (:object_id, :property_type, :related_oid, :related_property_type, :colindex, :value, :id)";
+        final String insertPropertySQL = "INSERT INTO object_property "
+                + "(oid, property_type, related_oid, related_property_type, colindex, value, id) "
+                + "VALUES (:object_id, :property_type, :related_oid, :related_property_type, :colindex, :value, :id)";
         final Number propertyType = prop.getPropertyType().getOid();
         final String id = info.getId();
 
-        Map<String, ?> params =
-                params(
-                        "object_id",
-                        infoPk,
-                        "property_type",
-                        propertyType,
-                        "related_oid",
-                        relatedOid,
-                        "related_property_type",
-                        relatedPropertyType,
-                        "colindex",
-                        colIndex,
-                        "value",
-                        storedValue,
-                        "id",
-                        id);
+        Map<String, ?> params = params(
+                "object_id",
+                infoPk,
+                "property_type",
+                propertyType,
+                "related_oid",
+                relatedOid,
+                "related_property_type",
+                relatedPropertyType,
+                "colindex",
+                colIndex,
+                "value",
+                storedValue,
+                "id",
+                id);
 
         logStatement(insertPropertySQL, params);
         template.update(insertPropertySQL, params);
     }
 
     /** */
-    private Info lookUpRelatedObject(
-            final Info info, final Property prop, @Nullable Integer collectionIndex) {
+    private Info lookUpRelatedObject(final Info info, final Property prop, @Nullable Integer collectionIndex) {
 
         checkArgument(collectionIndex == 0 || prop.isCollectionProperty());
 
@@ -700,8 +657,7 @@ public class ConfigDatabase implements ApplicationContextAware {
             String backPropName = Arrays.stream(steps).limit(len).collect(Collectors.joining("."));
             Object backProp = ff.property(backPropName).evaluate(info);
             if (backProp != null) {
-                if (prop.isCollectionProperty()
-                        && (backProp instanceof Set || backProp instanceof List)) {
+                if (prop.isCollectionProperty() && (backProp instanceof Set || backProp instanceof List)) {
                     List<?> list;
                     if (backProp instanceof Set) {
                         list = asValueList(backProp);
@@ -710,20 +666,16 @@ public class ConfigDatabase implements ApplicationContextAware {
                                 && targetType.isAssignableFrom(list.get(0).getClass())) {
                             String targetPropertyName = targetPropertyType.getPropertyName();
                             final PropertyName expr = ff.property(targetPropertyName);
-                            Collections.sort(
-                                    list,
-                                    new Comparator<Object>() {
-                                        @Override
-                                        public int compare(Object o1, Object o2) {
-                                            Object v1 = expr.evaluate(o1);
-                                            Object v2 = expr.evaluate(o2);
-                                            String m1 = marshalValue(v1);
-                                            String m2 = marshalValue(v2);
-                                            return m1 == null
-                                                    ? (m2 == null ? 0 : -1)
-                                                    : (m2 == null ? 1 : m1.compareTo(m2));
-                                        }
-                                    });
+                            Collections.sort(list, new Comparator<Object>() {
+                                @Override
+                                public int compare(Object o1, Object o2) {
+                                    Object v1 = expr.evaluate(o1);
+                                    Object v2 = expr.evaluate(o2);
+                                    String m1 = marshalValue(v1);
+                                    String m2 = marshalValue(v2);
+                                    return m1 == null ? (m2 == null ? 0 : -1) : (m2 == null ? 1 : m1.compareTo(m2));
+                                }
+                            });
                         }
                     } else {
                         list = (List<?>) backProp;
@@ -749,10 +701,10 @@ public class ConfigDatabase implements ApplicationContextAware {
 
     private List<?> asValueList(final Object value) {
         final List<?> values;
-        if (value instanceof List) {
-            values = (List<?>) value;
-        } else if (value instanceof Collection) {
-            values = Lists.newArrayList((Collection<?>) value);
+        if (value instanceof List<?> list) {
+            values = list;
+        } else if (value instanceof Collection<?> collection) {
+            values = Lists.newArrayList(collection);
         } else {
             values = Lists.newArrayList(value);
         }
@@ -787,11 +739,7 @@ public class ConfigDatabase implements ApplicationContextAware {
         int updateCount = template.update(deleteObject, params);
         if (updateCount != 1) {
             LOGGER.warning(
-                    "Requested to delete "
-                            + info
-                            + " ("
-                            + info.getId()
-                            + ") but nothing happened on the database.");
+                    "Requested to delete " + info + " (" + info.getId() + ") but nothing happened on the database.");
         }
         params = params("oid", oid);
         logStatement(deleteRelatedProperties, params);
@@ -820,24 +768,19 @@ public class ConfigDatabase implements ApplicationContextAware {
         final Iterable<Property> changedProperties = dbMappings.changedProperties(oldObject, info);
 
         // see HACK block bellow
-        final boolean updateResouceLayersName =
-                info instanceof ResourceInfo
-                        && modificationProxy.getPropertyNames().contains("name");
-        final boolean updateResouceLayersAdvertised =
-                info instanceof ResourceInfo
-                        && modificationProxy.getPropertyNames().contains("advertised");
-        final boolean updateResourceLayersEnabled =
-                info instanceof ResourceInfo
-                        && modificationProxy.getPropertyNames().contains("enabled");
+        final boolean updateResouceLayersName = info instanceof ResourceInfo
+                && modificationProxy.getPropertyNames().contains("name");
+        final boolean updateResouceLayersAdvertised = info instanceof ResourceInfo
+                && modificationProxy.getPropertyNames().contains("advertised");
+        final boolean updateResourceLayersEnabled = info instanceof ResourceInfo
+                && modificationProxy.getPropertyNames().contains("enabled");
         final boolean updateResourceLayersKeywords =
-                CollectionUtils.exists(
-                        modificationProxy.getPropertyNames(),
-                        new Predicate() {
-                            @Override
-                            public boolean evaluate(Object input) {
-                                return ((String) input).contains("keyword");
-                            }
-                        });
+                CollectionUtils.exists(modificationProxy.getPropertyNames(), new Predicate() {
+                    @Override
+                    public boolean evaluate(Object input) {
+                        return ((String) input).contains("keyword");
+                    }
+                });
 
         modificationProxy.commit();
 
@@ -861,26 +804,19 @@ public class ConfigDatabase implements ApplicationContextAware {
         // we're explicitly changing the resourceinfo's layer name property here because
         // LayerInfo.getName() is a derived property. This can be removed once LayerInfo.name become
         // a regular JavaBean property
-        if (info instanceof ResourceInfo) {
+        if (info instanceof ResourceInfo resourceInfo) {
             if (updateResouceLayersName) {
-                updateResourceLayerProperty(
-                        (ResourceInfo) info, "name", ((ResourceInfo) info).getName());
-                updateResourceLayerProperty(
-                        (ResourceInfo) info, "prefixedName", ((ResourceInfo) info).prefixedName());
+                updateResourceLayerProperty(resourceInfo, "name", resourceInfo.getName());
+                updateResourceLayerProperty(resourceInfo, "prefixedName", resourceInfo.prefixedName());
             }
             if (updateResouceLayersAdvertised) {
-                updateResourceLayerProperty(
-                        (ResourceInfo) info, "advertised", ((ResourceInfo) info).isAdvertised());
+                updateResourceLayerProperty(resourceInfo, "advertised", resourceInfo.isAdvertised());
             }
             if (updateResourceLayersEnabled) {
-                updateResourceLayerProperty(
-                        (ResourceInfo) info, "enabled", ((ResourceInfo) info).isEnabled());
+                updateResourceLayerProperty(resourceInfo, "enabled", resourceInfo.isEnabled());
             }
             if (updateResourceLayersKeywords) {
-                updateResourceLayerProperty(
-                        (ResourceInfo) info,
-                        "resource.keywords.value",
-                        ((ResourceInfo) info).getKeywords());
+                updateResourceLayerProperty(resourceInfo, "resource.keywords.value", resourceInfo.getKeywords());
             }
         }
         // / </HACK>
@@ -888,14 +824,12 @@ public class ConfigDatabase implements ApplicationContextAware {
         return getById(id, clazz);
     }
 
-    private <T> void updateResourceLayerProperty(
-            ResourceInfo info, String propertyPath, Object newValue) {
+    private <T> void updateResourceLayerProperty(ResourceInfo info, String propertyPath, Object newValue) {
         Filter filter = Predicates.equal("resource.id", info.getId());
         List<LayerInfo> resourceLayers;
         resourceLayers = this.queryAsList(LayerInfo.class, filter, null, null, null);
         for (LayerInfo layer : resourceLayers) {
-            Set<PropertyType> propertyTypes =
-                    dbMappings.getPropertyTypes(LayerInfo.class, propertyPath);
+            Set<PropertyType> propertyTypes = dbMappings.getPropertyTypes(LayerInfo.class, propertyPath);
             PropertyType propertyType = propertyTypes.iterator().next();
             Property changedProperty = new Property(propertyType, newValue);
             Integer layerOid = findObjectId(layer);
@@ -921,25 +855,23 @@ public class ConfigDatabase implements ApplicationContextAware {
         InfoRowMapper<Info> mapper = new InfoRowMapper<Info>(Info.class, binding, 2);
         String sql = "SELECT oid, blob FROM object";
         logStatement(sql, null);
-        template.query(
-                sql,
-                new ResultSetExtractor<Void>() {
+        template.query(sql, new ResultSetExtractor<Void>() {
 
-                    @Override
-                    public Void extractData(ResultSet rs) throws SQLException, DataAccessException {
-                        while (rs.next()) {
-                            Integer oid = rs.getInt(1);
-                            Info info = mapper.mapRow(rs, rs.getRow());
-                            if (info instanceof CatalogInfo) {
-                                info = resolveCatalog((CatalogInfo) info);
-                            } else if (info instanceof ServiceInfo) {
-                                resolveTransient((ServiceInfo) info);
-                            }
-                            updateQueryableProperties(info, oid, dbMappings.allProperties(info));
-                        }
-                        return null;
+            @Override
+            public Void extractData(ResultSet rs) throws SQLException, DataAccessException {
+                while (rs.next()) {
+                    Integer oid = rs.getInt(1);
+                    Info info = mapper.mapRow(rs, rs.getRow());
+                    if (info instanceof CatalogInfo catalogInfo) {
+                        info = resolveCatalog(catalogInfo);
+                    } else if (info instanceof ServiceInfo serviceInfo) {
+                        resolveTransient(serviceInfo);
                     }
-                });
+                    updateQueryableProperties(info, oid, dbMappings.allProperties(info));
+                }
+                return null;
+            }
+        });
     }
 
     private void updateQueryableProperties(
@@ -990,76 +922,56 @@ public class ConfigDatabase implements ApplicationContextAware {
                     relatedOid = null;
                     relatedPropertyType = null;
                 }
-                String sql =
-                        "UPDATE object_property SET "
-                                + "related_oid = :related_oid, "
-                                + "related_property_type = :related_property_type, "
-                                + "value = :value "
-                                + "WHERE oid = :oid AND property_type = :property_type AND colindex = :colindex";
-                params =
-                        params(
-                                "related_oid",
-                                relatedOid,
-                                "related_property_type",
-                                relatedPropertyType,
-                                "value",
-                                storedValue,
-                                "oid",
-                                oid,
-                                "property_type",
-                                propertyType,
-                                "colindex",
-                                colIndex);
+                String sql = "UPDATE object_property SET "
+                        + "related_oid = :related_oid, "
+                        + "related_property_type = :related_property_type, "
+                        + "value = :value "
+                        + "WHERE oid = :oid AND property_type = :property_type AND colindex = :colindex";
+                params = params(
+                        "related_oid",
+                        relatedOid,
+                        "related_property_type",
+                        relatedPropertyType,
+                        "value",
+                        storedValue,
+                        "oid",
+                        oid,
+                        "property_type",
+                        propertyType,
+                        "colindex",
+                        colIndex);
 
                 logStatement(sql, params);
                 final int updateCnt = template.update(sql, params);
 
                 if (updateCnt == 0) {
-                    addAttribute(
-                            info,
-                            oid,
-                            changedProp,
-                            colIndex,
-                            storedValue,
-                            relatedOid,
-                            relatedPropertyType);
+                    addAttribute(info, oid, changedProp, colIndex, storedValue, relatedOid, relatedPropertyType);
                 } else {
                     // prop existed already, lets update any related property that points to its old
                     // value
-                    String updateRelated =
-                            "UPDATE object_property SET value = :value "
-                                    + "WHERE related_oid = :oid AND related_property_type = :property_type AND colindex = :colindex";
-                    params =
-                            params(
-                                    "value",
-                                    storedValue,
-                                    "oid",
-                                    oid,
-                                    "property_type",
-                                    propertyType,
-                                    "colindex",
-                                    colIndex);
+                    String updateRelated = "UPDATE object_property SET value = :value "
+                            + "WHERE related_oid = :oid AND related_property_type = :property_type AND colindex = :colindex";
+                    params = params(
+                            "value", storedValue, "oid", oid, "property_type", propertyType, "colindex", colIndex);
                     logStatement(updateRelated, params);
                     int relatedUpdateCnt = template.update(updateRelated, params);
                     if (LOGGER.isLoggable(Level.FINER)) {
-                        LOGGER.finer(
-                                "Updated "
-                                        + relatedUpdateCnt
-                                        + " back pointer properties to "
-                                        + changedProp.getPropertyName()
-                                        + " of "
-                                        + info.getClass().getSimpleName()
-                                        + "["
-                                        + info.getId()
-                                        + "]");
+                        LOGGER.finer("Updated "
+                                + relatedUpdateCnt
+                                + " back pointer properties to "
+                                + changedProp.getPropertyName()
+                                + " of "
+                                + info.getClass().getSimpleName()
+                                + "["
+                                + info.getId()
+                                + "]");
                     }
                 }
             }
             if (changedProp.isCollectionProperty()) {
                 // delete any remaining collection value that's no longer in the value list
-                String sql =
-                        "DELETE FROM object_property WHERE oid = :oid AND property_type = :property_type "
-                                + "AND colindex > :maxIndex";
+                String sql = "DELETE FROM object_property WHERE oid = :oid AND property_type = :property_type "
+                        + "AND colindex > :maxIndex";
                 Integer maxIndex = Integer.valueOf(values.size());
                 params = params("oid", oid, "property_type", propertyType, "maxIndex", maxIndex);
                 logStatement(sql, params);
@@ -1134,10 +1046,10 @@ public class ConfigDatabase implements ApplicationContextAware {
         if (info == null) {
             return null;
         }
-        if (info instanceof CatalogInfo) {
-            info = resolveCatalog((CatalogInfo) info);
-        } else if (info instanceof ServiceInfo) {
-            resolveTransient((ServiceInfo) info);
+        if (info instanceof CatalogInfo catalogInfo) {
+            info = resolveCatalog(catalogInfo);
+        } else if (info instanceof ServiceInfo serviceInfo) {
+            resolveTransient(serviceInfo);
         }
 
         if (type.isAssignableFrom(info.getClass())) {
@@ -1151,8 +1063,7 @@ public class ConfigDatabase implements ApplicationContextAware {
         return null;
     }
 
-    public <T extends Info> String getIdByIdentity(
-            final Class<T> type, final String... identityMappings) {
+    public <T extends Info> String getIdByIdentity(final Class<T> type, final String... identityMappings) {
         Assert.notNull(identityMappings, "id");
         int length = identityMappings.length / 2;
         String[] descriptor = new String[length];
@@ -1182,8 +1093,7 @@ public class ConfigDatabase implements ApplicationContextAware {
             transactionManager = "jdbcConfigTransactionManager",
             propagation = Propagation.REQUIRED,
             readOnly = true)
-    public ServiceInfo getService(
-            final WorkspaceInfo ws, final Class<? extends ServiceInfo> clazz) {
+    public ServiceInfo getService(final WorkspaceInfo ws, final Class<? extends ServiceInfo> clazz) {
         Assert.notNull(clazz, "clazz");
 
         ServiceInfo info = null;
@@ -1252,15 +1162,12 @@ public class ConfigDatabase implements ApplicationContextAware {
             return;
         }
         real = ModificationProxy.unwrap(real);
-        if (real instanceof StyleInfoImpl
-                || real instanceof StoreInfoImpl
-                || real instanceof ResourceInfoImpl) {
+        if (real instanceof StyleInfoImpl || real instanceof StoreInfoImpl || real instanceof ResourceInfoImpl) {
             OwsUtils.set(real, "catalog", catalog);
         }
-        if (real instanceof ResourceInfoImpl) {
-            resolveTransient(((ResourceInfoImpl) real).getStore());
-        } else if (real instanceof LayerInfo) {
-            LayerInfo layer = (LayerInfo) real;
+        if (real instanceof ResourceInfoImpl impl) {
+            resolveTransient(impl.getStore());
+        } else if (real instanceof LayerInfo layer) {
             resolveTransient(layer.getDefaultStyle());
             // avoids concurrent modification exceptions on the list contents
             synchronized (layer) {
@@ -1271,11 +1178,11 @@ public class ConfigDatabase implements ApplicationContextAware {
                 }
             }
             resolveTransient(layer.getResource());
-        } else if (real instanceof LayerGroupInfo) {
-            for (PublishedInfo p : ((LayerGroupInfo) real).getLayers()) {
+        } else if (real instanceof LayerGroupInfo info) {
+            for (PublishedInfo p : info.getLayers()) {
                 resolveTransient(p);
             }
-            for (StyleInfo s : ((LayerGroupInfo) real).getStyles()) {
+            for (StyleInfo s : info.getStyles()) {
                 resolveTransient(s);
             }
         }
@@ -1307,18 +1214,14 @@ public class ConfigDatabase implements ApplicationContextAware {
             LOGGER.fine("query returned " + ids.size() + " records in " + sw);
         }
 
-        List<T> transformed =
-                Lists.transform(
-                        ids,
-                        new Function<String, T>() {
-                            @Nullable
-                            @Override
-                            public T apply(String input) {
-                                return getById(input, clazz);
-                            }
-                        });
-        Iterable<T> filtered =
-                Iterables.filter(transformed, com.google.common.base.Predicates.notNull());
+        List<T> transformed = Lists.transform(ids, new Function<String, T>() {
+            @Nullable
+            @Override
+            public T apply(String input) {
+                return getById(input, clazz);
+            }
+        });
+        Iterable<T> filtered = Iterables.filter(transformed, com.google.common.base.Predicates.notNull());
         return ImmutableList.copyOf(filtered);
     }
 
@@ -1426,12 +1329,11 @@ public class ConfigDatabase implements ApplicationContextAware {
     public String loadIdentity(InfoIdentity identity) {
         Filter filter = Filter.INCLUDE;
         for (int i = 0; i < identity.getDescriptor().length; i++) {
-            filter =
-                    and(
-                            filter,
-                            identity.getValues()[i] == null
-                                    ? isNull(identity.getDescriptor()[i])
-                                    : equal(identity.getDescriptor()[i], identity.getValues()[i]));
+            filter = and(
+                    filter,
+                    identity.getValues()[i] == null
+                            ? isNull(identity.getDescriptor()[i])
+                            : equal(identity.getDescriptor()[i], identity.getValues()[i]));
         }
 
         try {
@@ -1489,15 +1391,13 @@ public class ConfigDatabase implements ApplicationContextAware {
     private <T extends ServiceInfo> CloseableIterator<T> filterService(
             final Class<T> clazz, CloseableIterator<ServiceInfo> it) {
         return (CloseableIterator<T>)
-                CloseableIteratorAdapter.filter(
-                        it,
-                        new com.google.common.base.Predicate<ServiceInfo>() {
+                CloseableIteratorAdapter.filter(it, new com.google.common.base.Predicate<ServiceInfo>() {
 
-                            @Override
-                            public boolean apply(@Nullable ServiceInfo input) {
-                                return clazz.isAssignableFrom(input.getClass());
-                            }
-                        });
+                    @Override
+                    public boolean apply(@Nullable ServiceInfo input) {
+                        return clazz.isAssignableFrom(input.getClass());
+                    }
+                });
     }
 
     private final class ServiceLoader implements Callable<ServiceInfo> {
@@ -1523,9 +1423,7 @@ public class ConfigDatabase implements ApplicationContextAware {
             // per
             // workspace, this shouldn't be a significant performance problem.
             CloseableIterator<? extends ServiceInfo> it =
-                    filterService(
-                            id.getClazz(),
-                            query(ServiceInfo.class, filter, null, null, (SortBy) null));
+                    filterService(id.getClazz(), query(ServiceInfo.class, filter, null, null, (SortBy) null));
 
             ServiceInfo service;
             if (it.hasNext()) {
@@ -1533,21 +1431,13 @@ public class ConfigDatabase implements ApplicationContextAware {
             } else {
                 if (LOGGER.isLoggable(Level.FINE))
                     LOGGER.log(
-                            Level.FINE,
-                            "Could not find service of type "
-                                    + id.getClazz()
-                                    + " in "
-                                    + id.getWorkspace());
+                            Level.FINE, "Could not find service of type " + id.getClazz() + " in " + id.getWorkspace());
                 return null;
             }
 
             if (it.hasNext()) {
                 LOGGER.log(
-                        Level.WARNING,
-                        "Found multiple services of type "
-                                + id.getClass()
-                                + " in "
-                                + id.getWorkspace());
+                        Level.WARNING, "Found multiple services of type " + id.getClass() + " in " + id.getWorkspace());
                 return null;
             }
             return service;
@@ -1596,20 +1486,20 @@ public class ConfigDatabase implements ApplicationContextAware {
             if (global.getCoverageAccess() == null) {
                 global.setCoverageAccess(new CoverageAccessInfoImpl());
             }
-            if (global.getJAI() == null) {
-                global.setJAI(new JAIInfoImpl());
+            if (global.getImageProcessing() == null) {
+                global.setImageProcessing(new ImageProcessingInfoImpl());
             }
         }
-        if (info instanceof ServiceInfo) {
-            ((ServiceInfo) info).setGeoServer(geoServer);
+        if (info instanceof ServiceInfo serviceInfo) {
+            serviceInfo.setGeoServer(geoServer);
         }
 
         return info;
     }
 
     /**
-     * @return whether there exists a property named {@code propertyName} for the given type of
-     *     object, and hence native sorting can be done over it.
+     * @return whether there exists a property named {@code propertyName} for the given type of object, and hence native
+     *     sorting can be done over it.
      */
     public boolean canSort(Class<? extends CatalogInfo> type, String propertyName) {
         Set<PropertyType> propertyTypes = dbMappings.getPropertyTypes(type, propertyName);
@@ -1659,15 +1549,13 @@ public class ConfigDatabase implements ApplicationContextAware {
             readOnly = true)
     public <T extends Info> T get(Class<T> type, Filter filter) throws IllegalArgumentException {
 
-        CloseableIterator<T> it =
-                query(type, filter, null, 2, (org.geotools.api.filter.sort.SortBy) null);
+        CloseableIterator<T> it = query(type, filter, null, 2, (org.geotools.api.filter.sort.SortBy) null);
         T result = null;
         try {
             if (it.hasNext()) {
                 result = it.next();
                 if (it.hasNext()) {
-                    throw new IllegalArgumentException(
-                            "Specified query predicate resulted in more than one object");
+                    throw new IllegalArgumentException("Specified query predicate resulted in more than one object");
                 }
             }
         } finally {
@@ -1680,8 +1568,7 @@ public class ConfigDatabase implements ApplicationContextAware {
             transactionManager = "jdbcConfigTransactionManager",
             propagation = Propagation.REQUIRED,
             readOnly = true)
-    public <T extends Info> String getId(Class<T> type, Filter filter)
-            throws IllegalArgumentException {
+    public <T extends Info> String getId(Class<T> type, Filter filter) throws IllegalArgumentException {
 
         CloseableIterator<String> it = queryIds(type, filter);
         String result = null;
@@ -1689,8 +1576,7 @@ public class ConfigDatabase implements ApplicationContextAware {
             if (it.hasNext()) {
                 result = it.next();
                 if (it.hasNext()) {
-                    throw new IllegalArgumentException(
-                            "Specified query predicate resulted in more than one object");
+                    throw new IllegalArgumentException("Specified query predicate resulted in more than one object");
                 }
             }
         } finally {
@@ -1703,10 +1589,9 @@ public class ConfigDatabase implements ApplicationContextAware {
         Semaphore lock = locks.computeIfAbsent(id, x -> new Semaphore(1));
         try {
             if (!lock.tryAcquire(LOCK_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
-                LOGGER.severe(
-                        "Time-out waiting for lock on "
-                                + id
-                                + ", assuming it was abandoned and moving on. This shouldn't happen!");
+                LOGGER.severe("Time-out waiting for lock on "
+                        + id
+                        + ", assuming it was abandoned and moving on. This shouldn't happen!");
             }
         } catch (InterruptedException e) {
 
@@ -1737,8 +1622,7 @@ public class ConfigDatabase implements ApplicationContextAware {
 
     /**
      * Listens to catalog events clearing cache entires when resources are modified. Copied from
-     * org.geoserver.catalog.ResourcePool upgrade CatalogClearingListener clear old source default
-     * priority is 100
+     * org.geoserver.catalog.ResourcePool upgrade CatalogClearingListener clear old source default priority is 100
      *
      * @see CatalogImpl#addListener(CatalogListener)
      */
@@ -1753,8 +1637,8 @@ public class ConfigDatabase implements ApplicationContextAware {
         public void handleModifyEvent(CatalogModifyEvent event) {
             // make sure that cache is not refilled before commit
             if (event.getSource() instanceof ResourceInfo) {
-                String liId =
-                        getIdByIdentity(LayerInfo.class, "resource.id", event.getSource().getId());
+                String liId = getIdByIdentity(
+                        LayerInfo.class, "resource.id", event.getSource().getId());
                 acquireWriteLock(liId);
                 clearCacheIfPresent(liId);
             }
@@ -1767,8 +1651,8 @@ public class ConfigDatabase implements ApplicationContextAware {
             updateCache(event.getSource());
             releaseWriteLock(event.getSource().getId());
             if (event.getSource() instanceof ResourceInfo) {
-                String liId =
-                        getIdByIdentity(LayerInfo.class, "resource.id", event.getSource().getId());
+                String liId = getIdByIdentity(
+                        LayerInfo.class, "resource.id", event.getSource().getId());
                 releaseWriteLock(liId);
             }
         }
@@ -1801,10 +1685,7 @@ public class ConfigDatabase implements ApplicationContextAware {
 
         @Override
         public void handleGlobalChange(
-                GeoServerInfo global,
-                List<String> propertyNames,
-                List<Object> oldValues,
-                List<Object> newValues) {
+                GeoServerInfo global, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
             // make sure that cache is not refilled before commit
             acquireWriteLock(global.getId());
             clearCache(global);
@@ -1818,10 +1699,7 @@ public class ConfigDatabase implements ApplicationContextAware {
 
         @Override
         public void handleSettingsModified(
-                SettingsInfo settings,
-                List<String> propertyNames,
-                List<Object> oldValues,
-                List<Object> newValues) {
+                SettingsInfo settings, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
             // make sure that cache is not refilled before commit
             acquireWriteLock(settings.getId());
             clearCache(settings);
@@ -1835,10 +1713,7 @@ public class ConfigDatabase implements ApplicationContextAware {
 
         @Override
         public void handleLoggingChange(
-                LoggingInfo logging,
-                List<String> propertyNames,
-                List<Object> oldValues,
-                List<Object> newValues) {
+                LoggingInfo logging, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
             // make sure that cache is not refilled before commit
             acquireWriteLock(logging.getId());
             clearCache(logging);
@@ -1852,10 +1727,7 @@ public class ConfigDatabase implements ApplicationContextAware {
 
         @Override
         public void handleServiceChange(
-                ServiceInfo service,
-                List<String> propertyNames,
-                List<Object> oldValues,
-                List<Object> newValues) {
+                ServiceInfo service, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
             // make sure that cache is not refilled before commit
             acquireWriteLock(service.getId());
             clearCache(service);
@@ -1914,8 +1786,7 @@ public class ConfigDatabase implements ApplicationContextAware {
 
         public void visitResource(ResourceInfo resourceInfo) {
             if (resourceInfo.getNamespace() != null) {
-                resourceInfo.setNamespace(
-                        getById(resourceInfo.getNamespace().getId(), NamespaceInfo.class));
+                resourceInfo.setNamespace(getById(resourceInfo.getNamespace().getId(), NamespaceInfo.class));
             }
             resourceInfo.setStore(getById(resourceInfo.getStore().getId(), StoreInfo.class));
         }
@@ -1949,8 +1820,7 @@ public class ConfigDatabase implements ApplicationContextAware {
             // not null.
             synchronized (layer) {
                 if (layer.getDefaultStyle() != null && layer.getDefaultStyle().getId() != null) {
-                    layer.setDefaultStyle(
-                            getById(layer.getDefaultStyle().getId(), StyleInfo.class));
+                    layer.setDefaultStyle(getById(layer.getDefaultStyle().getId(), StyleInfo.class));
                 }
                 Set<StyleInfo> newStyles = new HashSet<>();
                 for (StyleInfo style : new ArrayList<>(layer.getStyles())) {
@@ -1973,23 +1843,17 @@ public class ConfigDatabase implements ApplicationContextAware {
         @Override
         public void visit(LayerGroupInfo layerGroup) {
             if (layerGroup.getWorkspace() != null) {
-                layerGroup.setWorkspace(
-                        getById(layerGroup.getWorkspace().getId(), WorkspaceInfo.class));
+                layerGroup.setWorkspace(getById(layerGroup.getWorkspace().getId(), WorkspaceInfo.class));
             }
             for (int i = 0; i < layerGroup.getLayers().size(); i++) {
                 if (layerGroup.getLayers().get(i) != null) {
                     layerGroup
                             .getLayers()
-                            .set(
-                                    i,
-                                    getById(
-                                            layerGroup.getLayers().get(i).getId(),
-                                            PublishedInfo.class));
+                            .set(i, getById(layerGroup.getLayers().get(i).getId(), PublishedInfo.class));
                 }
             }
             if (layerGroup.getRootLayer() != null) {
-                layerGroup.setRootLayer(
-                        getById(layerGroup.getRootLayer().getId(), LayerInfo.class));
+                layerGroup.setRootLayer(getById(layerGroup.getRootLayer().getId(), LayerInfo.class));
             }
             if (layerGroup.getRootLayerStyle() != null) {
                 layerGroup.setRootLayerStyle(
@@ -1999,11 +1863,7 @@ public class ConfigDatabase implements ApplicationContextAware {
                 if (layerGroup.getStyles().get(i) != null) {
                     layerGroup
                             .getStyles()
-                            .set(
-                                    i,
-                                    getById(
-                                            layerGroup.getStyles().get(i).getId(),
-                                            StyleInfo.class));
+                            .set(i, getById(layerGroup.getStyles().get(i).getId(), StyleInfo.class));
                 }
             }
         }

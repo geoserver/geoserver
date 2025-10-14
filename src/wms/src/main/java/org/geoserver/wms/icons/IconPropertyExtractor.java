@@ -30,8 +30,7 @@ import org.geotools.renderer.style.ExpressionExtractor;
 import org.geotools.util.logging.Logging;
 
 /**
- * Utility to extract the values of dynamic properties from a style when applied to a particular
- * feature.
+ * Utility to extract the values of dynamic properties from a style when applied to a particular feature.
  *
  * @see IconPropertyInjector
  * @author David Winslow, OpenGeo
@@ -51,8 +50,7 @@ public final class IconPropertyExtractor {
         return new FeatureProperties(feature).properties();
     }
 
-    public static IconProperties extractProperties(
-            List<List<MiniRule>> style, SimpleFeature feature) {
+    public static IconProperties extractProperties(List<List<MiniRule>> style, SimpleFeature feature) {
         return new IconPropertyExtractor(style).propertiesFor(feature);
     }
 
@@ -63,32 +61,32 @@ public final class IconPropertyExtractor {
     /** Extracts a Graphic object from the given symbolizer */
     public static Graphic getGraphic(Symbolizer symbolizer, boolean includeNonPointGraphics) {
         // try point first
-        if (symbolizer instanceof PointSymbolizer) {
-            return ((PointSymbolizer) symbolizer).getGraphic();
+        if (symbolizer instanceof PointSymbolizer pointSymbolizer) {
+            return pointSymbolizer.getGraphic();
         }
         if (!includeNonPointGraphics) {
             return null;
         }
         // try in other symbolizers
-        if (symbolizer instanceof PolygonSymbolizer) {
-            final Fill fill = ((PolygonSymbolizer) symbolizer).getFill();
+        if (symbolizer instanceof PolygonSymbolizer polygonSymbolizer) {
+            final Fill fill = polygonSymbolizer.getFill();
             if (fill != null && fill.getGraphicFill() != null) {
                 return fill.getGraphicFill();
             }
-            final Stroke stroke = ((PolygonSymbolizer) symbolizer).getStroke();
+            final Stroke stroke = polygonSymbolizer.getStroke();
             if (stroke != null) {
                 return stroke.getGraphicStroke();
             }
-        } else if (symbolizer instanceof LineSymbolizer) {
-            final Stroke stroke = ((LineSymbolizer) symbolizer).getStroke();
+        } else if (symbolizer instanceof LineSymbolizer lineSymbolizer) {
+            final Stroke stroke = lineSymbolizer.getStroke();
             if (stroke != null) {
                 if (stroke.getGraphicStroke() != null) return stroke.getGraphicStroke();
                 if (stroke.getGraphicFill() != null) {
                     return stroke.getGraphicFill();
                 }
             }
-        } else if (symbolizer instanceof TextSymbolizer) {
-            return ((TextSymbolizer) symbolizer).getGraphic();
+        } else if (symbolizer instanceof TextSymbolizer textSymbolizer) {
+            return textSymbolizer.getGraphic();
         }
 
         return null;
@@ -127,16 +125,13 @@ public final class IconPropertyExtractor {
             try {
                 @SuppressWarnings("unchecked")
                 T value = (T) expression.evaluate(feature, defaultValue.getClass());
-                if (value == null || (value instanceof Double && Double.isNaN((Double) value))) {
+                if (value == null || (value instanceof Double double1 && Double.isNaN(double1))) {
                     return defaultValue;
                 }
                 return value;
             } catch (Exception e) {
                 if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.log(
-                            Level.FINE,
-                            "Failed to evaluate " + expression + ", will use default value",
-                            e);
+                    LOGGER.log(Level.FINE, "Failed to evaluate " + expression + ", will use default value", e);
                 }
                 return defaultValue;
             }
@@ -158,9 +153,7 @@ public final class IconPropertyExtractor {
 
                 for (MiniRule rule : rules) {
                     final boolean applicable =
-                            (rule.isElseFilter && !applied)
-                                    || (rule.filter == null)
-                                    || (rule.filter.evaluate(feature));
+                            (rule.isElseFilter && !applied) || (rule.filter == null) || (rule.filter.evaluate(feature));
                     if (applicable) {
                         if (singleRule == null) {
                             singleRule = rule;
@@ -197,9 +190,8 @@ public final class IconPropertyExtractor {
                 Double size = 1d * Icons.getExternalSize(exGraphic, feature);
                 if (size != null) size = size / Icons.DEFAULT_SYMBOL_SIZE;
                 Double rotation = evaluate(g.getRotation(), feature, 0.0);
-                Expression urlExpression =
-                        ExpressionExtractor.extractCqlExpressions(
-                                exGraphic.getLocation().toExternalForm());
+                Expression urlExpression = ExpressionExtractor.extractCqlExpressions(
+                        exGraphic.getLocation().toExternalForm());
                 return IconProperties.externalReference(
                         opacity, size, rotation, urlExpression.evaluate(feature, String.class));
             } catch (MalformedURLException e) {
@@ -274,8 +266,7 @@ public final class IconPropertyExtractor {
                 props.put(prefix + OPACITY, String.valueOf(evaluate(g.getOpacity(), feature, 1d)));
             }
             if (g.getRotation() != null && !isStatic(g.getRotation())) {
-                props.put(
-                        prefix + ROTATION, String.valueOf(evaluate(g.getRotation(), feature, 0d)));
+                props.put(prefix + ROTATION, String.valueOf(evaluate(g.getRotation(), feature, 0d)));
             }
             if (g.getSize() != null && !isStatic(g.getSize())) {
                 props.put(prefix + SIZE, String.valueOf(evaluate(g.getSize(), feature, 16d)));
@@ -285,7 +276,8 @@ public final class IconPropertyExtractor {
                     Mark mark = (Mark) g.graphicalSymbols().get(0);
                     addMarkProperties(prefix, mark, props);
                 } else if (g.graphicalSymbols().get(0) instanceof ExternalGraphic) {
-                    ExternalGraphic exGraphic = (ExternalGraphic) g.graphicalSymbols().get(0);
+                    ExternalGraphic exGraphic =
+                            (ExternalGraphic) g.graphicalSymbols().get(0);
                     addExternalGraphicProperties(prefix, exGraphic, props);
                 }
             }
@@ -308,8 +300,7 @@ public final class IconPropertyExtractor {
                 props.put(prefix + COLOR, evaluate(fill.getColor(), feature, "0xAAAAAA"));
             }
             if (fill.getOpacity() != null && !isStatic(fill.getOpacity())) {
-                props.put(
-                        prefix + OPACITY, String.valueOf(evaluate(fill.getOpacity(), feature, 1d)));
+                props.put(prefix + OPACITY, String.valueOf(evaluate(fill.getOpacity(), feature, 1d)));
             }
             if (fill.getGraphicFill() != null) {
                 addGraphicProperties(prefix + GRAPHIC, fill.getGraphicFill(), props);
@@ -321,9 +312,7 @@ public final class IconPropertyExtractor {
                 props.put(prefix + COLOR, evaluate(stroke.getColor(), feature, "0x000000"));
             }
             if (stroke.getDashOffset() != null && !isStatic(stroke.getDashOffset())) {
-                props.put(
-                        prefix + DASHOFFSET,
-                        String.valueOf(evaluate(stroke.getDashOffset(), feature, 0d)));
+                props.put(prefix + DASHOFFSET, String.valueOf(evaluate(stroke.getDashOffset(), feature, 0d)));
             }
             if (stroke.getLineCap() != null && !isStatic(stroke.getLineCap())) {
                 props.put(prefix + LINECAP, evaluate(stroke.getLineCap(), feature, "butt"));
@@ -332,9 +321,7 @@ public final class IconPropertyExtractor {
                 props.put(prefix + LINEJOIN, evaluate(stroke.getLineJoin(), feature, "miter"));
             }
             if (stroke.getOpacity() != null && !isStatic(stroke.getOpacity())) {
-                props.put(
-                        prefix + OPACITY,
-                        String.valueOf(evaluate(stroke.getOpacity(), feature, 1d)));
+                props.put(prefix + OPACITY, String.valueOf(evaluate(stroke.getOpacity(), feature, 1d)));
             }
             if (stroke.getWidth() != null && !isStatic(stroke.getWidth())) {
                 props.put(prefix + WIDTH, String.valueOf(evaluate(stroke.getWidth(), feature, 1d)));
@@ -347,12 +334,10 @@ public final class IconPropertyExtractor {
             }
         }
 
-        public void addExternalGraphicProperties(
-                String prefix, ExternalGraphic exGraphic, Map<String, String> props) {
+        public void addExternalGraphicProperties(String prefix, ExternalGraphic exGraphic, Map<String, String> props) {
             try {
-                Expression ex =
-                        ExpressionExtractor.extractCqlExpressions(
-                                exGraphic.getLocation().toExternalForm());
+                Expression ex = ExpressionExtractor.extractCqlExpressions(
+                        exGraphic.getLocation().toExternalForm());
                 if (!isStatic(ex)) {
                     props.put(prefix + URL, ex.evaluate(feature, String.class));
                 }

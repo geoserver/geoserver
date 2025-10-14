@@ -5,6 +5,7 @@
  */
 package org.geoserver.wfs.xml;
 
+import static java.util.Collections.emptyList;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 import static org.geoserver.ows.util.ResponseUtils.params;
 
@@ -24,9 +25,11 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.xsd.XSDAnnotation;
 import org.eclipse.xsd.XSDComplexTypeDefinition;
 import org.eclipse.xsd.XSDCompositor;
+import org.eclipse.xsd.XSDConstrainingFacet;
 import org.eclipse.xsd.XSDDerivationMethod;
 import org.eclipse.xsd.XSDElementDeclaration;
 import org.eclipse.xsd.XSDFactory;
@@ -38,6 +41,7 @@ import org.eclipse.xsd.XSDNamedComponent;
 import org.eclipse.xsd.XSDParticle;
 import org.eclipse.xsd.XSDSchema;
 import org.eclipse.xsd.XSDSchemaContent;
+import org.eclipse.xsd.XSDSimpleTypeDefinition;
 import org.eclipse.xsd.XSDTypeDefinition;
 import org.eclipse.xsd.impl.XSDSchemaImpl;
 import org.eclipse.xsd.util.XSDConstants;
@@ -64,6 +68,7 @@ import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.feature.type.Name;
 import org.geotools.api.feature.type.PropertyDescriptor;
 import org.geotools.api.feature.type.Schema;
+import org.geotools.api.filter.Filter;
 import org.geotools.api.util.InternationalString;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.type.Types;
@@ -136,14 +141,12 @@ public abstract class FeatureTypeSchemaBuilder {
         return build(featureTypeInfos, baseUrl, true);
     }
 
-    public XSDSchema build(
-            FeatureTypeInfo[] featureTypeInfos, String baseUrl, int resolveAppSchemaImports)
+    public XSDSchema build(FeatureTypeInfo[] featureTypeInfos, String baseUrl, int resolveAppSchemaImports)
             throws IOException {
         return build(featureTypeInfos, baseUrl, resolveAppSchemaImports != 0, true);
     }
 
-    public XSDSchema build(
-            FeatureTypeInfo[] featureTypeInfos, String baseUrl, boolean scheduleSchemaCleanup)
+    public XSDSchema build(FeatureTypeInfo[] featureTypeInfos, String baseUrl, boolean scheduleSchemaCleanup)
             throws IOException {
         return build(featureTypeInfos, baseUrl, false, scheduleSchemaCleanup);
     }
@@ -163,8 +166,7 @@ public abstract class FeatureTypeSchemaBuilder {
     }
 
     public final XSDSchema buildSchemaInternal(
-            FeatureTypeInfo[] featureTypeInfos, String baseUrl, boolean resolveAppSchemaImports)
-            throws IOException {
+            FeatureTypeInfo[] featureTypeInfos, String baseUrl, boolean resolveAppSchemaImports) throws IOException {
 
         XSDFactory factory = XSDFactory.eINSTANCE;
         XSDSchema schema = factory.createXSDSchema();
@@ -226,24 +228,17 @@ public abstract class FeatureTypeSchemaBuilder {
                         // set of schemaLocations used to prevent duplicate includes
                         Set<String> includes = new HashSet<>();
                         for (String namespace : schemaURIs.keySet()) {
-                            addReference(
-                                    schema,
-                                    factory,
-                                    namespace,
-                                    schemaURIs.get(namespace),
-                                    imports,
-                                    includes);
+                            addReference(schema, factory, namespace, schemaURIs.get(namespace), imports, includes);
                         }
                     }
                     return schema;
                 }
             } catch (IOException e) {
-                logger.warning(
-                        "Unable to get schema location for feature type '"
-                                + featureTypeInfos[0].prefixedName()
-                                + "'. Reason: '"
-                                + e.getMessage()
-                                + "'. Building the schema manually instead.");
+                logger.warning("Unable to get schema location for feature type '"
+                        + featureTypeInfos[0].prefixedName()
+                        + "'. Reason: '"
+                        + e.getMessage()
+                        + "'. Building the schema manually instead.");
             }
 
             // user didn't define schema location
@@ -257,10 +252,7 @@ public abstract class FeatureTypeSchemaBuilder {
                 try {
                     buildSchemaContent(featureTypeInfo, schema, factory, baseUrl);
                 } catch (Exception e) {
-                    logger.log(
-                            Level.WARNING,
-                            "Could not build xml schema for type: " + featureTypeInfo.getName(),
-                            e);
+                    logger.log(Level.WARNING, "Could not build xml schema for type: " + featureTypeInfo.getName(), e);
                 }
             }
         } else {
@@ -284,8 +276,7 @@ public abstract class FeatureTypeSchemaBuilder {
             Map<String, String> imports = new HashMap<>();
             // set of schemaLocations used to prevent duplicate includes
             Set<String> includes = new HashSet<>();
-            for (Map.Entry<String, List<FeatureTypeInfo>> stringListEntry :
-                    ns2featureTypeInfos.entrySet()) {
+            for (Map.Entry<String, List<FeatureTypeInfo>> stringListEntry : ns2featureTypeInfos.entrySet()) {
                 String prefix = stringListEntry.getKey();
                 List<FeatureTypeInfo> types = stringListEntry.getValue();
 
@@ -297,17 +288,10 @@ public abstract class FeatureTypeSchemaBuilder {
                         // should always be a Map.. set in AppSchemaDataAccessConfigurator
                         // impose iteration order
                         @SuppressWarnings("unchecked")
-                        Map<String, String> schemaURIs =
-                                new TreeMap<>((Map<String, String>) schemaUri);
+                        Map<String, String> schemaURIs = new TreeMap<>((Map<String, String>) schemaUri);
                         // schema is supplied by the user.. just import the specified location
                         for (String namespace : schemaURIs.keySet()) {
-                            addReference(
-                                    schema,
-                                    factory,
-                                    namespace,
-                                    schemaURIs.get(namespace),
-                                    imports,
-                                    includes);
+                            addReference(schema, factory, namespace, schemaURIs.get(namespace), imports, includes);
                         }
                     } else {
                         typeNames.append(type.prefixedName()).append(",");
@@ -339,11 +323,7 @@ public abstract class FeatureTypeSchemaBuilder {
                             featureTypes.add(catalog.getFeatureTypeByName(typeName));
                         }
 
-                        resolved =
-                                build(
-                                        featureTypes.toArray(
-                                                new FeatureTypeInfo[featureTypes.size()]),
-                                        baseUrl);
+                        resolved = build(featureTypes.toArray(new FeatureTypeInfo[featureTypes.size()]), baseUrl);
 
                         // ensure we declare the wfs and gml namespaces as well
                         schema.getQNamePrefixToNamespaceMap().put("gml", gmlNamespace);
@@ -383,10 +363,7 @@ public abstract class FeatureTypeSchemaBuilder {
             final List<NamespaceInfo> catalogNamespaces = catalog.getNamespaces();
             for (FeatureTypeInfo featureTypeInfo : featureTypeInfos) {
                 Object mapObject =
-                        featureTypeInfo
-                                .getFeatureType()
-                                .getUserData()
-                                .get(Types.DECLARED_NAMESPACES_MAP);
+                        featureTypeInfo.getFeatureType().getUserData().get(Types.DECLARED_NAMESPACES_MAP);
                 if (!(mapObject instanceof Map)) continue;
                 @SuppressWarnings("unchecked")
                 final Map<String, String> featureTypeNamespaces = (Map<String, String>) mapObject;
@@ -395,10 +372,9 @@ public abstract class FeatureTypeSchemaBuilder {
                     // check if URI is already taken
                     if (schemaNamespacesMap.containsValue(uri)) continue;
                     // exists a prefix available in catalog for this URI?
-                    final Optional<NamespaceInfo> nsFromCatalog =
-                            catalogNamespaces.stream()
-                                    .filter(nsi -> Objects.equals(nsi.getURI(), uri))
-                                    .findFirst();
+                    final Optional<NamespaceInfo> nsFromCatalog = catalogNamespaces.stream()
+                            .filter(nsi -> Objects.equals(nsi.getURI(), uri))
+                            .findFirst();
                     final String prefix =
                             nsFromCatalog.map(NamespaceInfo::getPrefix).orElse(entry.getKey());
                     schemaNamespacesMap.put(prefix, uri);
@@ -406,14 +382,11 @@ public abstract class FeatureTypeSchemaBuilder {
             }
             // Check if xlink namespace was added, otherwise add it, it is a required namespace
             if (!schemaNamespacesMap.containsValue(XLINK.NAMESPACE)) {
-                Optional<NamespaceInfo> xlinkNSFromCatalog =
-                        catalogNamespaces.stream()
-                                .filter(x -> XLINK.NAMESPACE.equals(x.getURI()))
-                                .findFirst();
+                Optional<NamespaceInfo> xlinkNSFromCatalog = catalogNamespaces.stream()
+                        .filter(x -> XLINK.NAMESPACE.equals(x.getURI()))
+                        .findFirst();
                 schemaNamespacesMap.put(
-                        xlinkNSFromCatalog
-                                .map(NamespaceInfo::getPrefix)
-                                .orElse(WFSXmlUtils.XLINK_DEFAULT_PREFIX),
+                        xlinkNSFromCatalog.map(NamespaceInfo::getPrefix).orElse(WFSXmlUtils.XLINK_DEFAULT_PREFIX),
                         XLINK.NAMESPACE);
             }
         } catch (IOException e) {
@@ -450,8 +423,8 @@ public abstract class FeatureTypeSchemaBuilder {
     }
 
     /**
-     * Add a schema reference using include or import. Duplicate conflicting imports are not allowed
-     * (warning is logged).
+     * Add a schema reference using include or import. Duplicate conflicting imports are not allowed (warning is
+     * logged).
      *
      * @param schema schema to which the reference is being added
      * @param factory used to make stuff
@@ -476,8 +449,7 @@ public abstract class FeatureTypeSchemaBuilder {
                  *
                  * Not that this does not break DescribeFeatureType because it uses WFS 1.1.
                  */
-                schema.getQNamePrefixToNamespaceMap()
-                        .put("wfs", getWfsSchema().getTargetNamespace());
+                schema.getQNamePrefixToNamespaceMap().put("wfs", getWfsSchema().getTargetNamespace());
                 XSDImport wfsImport = factory.createXSDImport();
                 wfsImport.setNamespace(getWfsSchema().getTargetNamespace());
                 wfsImport.setSchemaLocation(getWfsSchema().getSchemaLocation());
@@ -487,17 +459,15 @@ public abstract class FeatureTypeSchemaBuilder {
                 synchronized (wfsSchema.eAdapters()) {
                     wfsSchema.imported(wfsImport);
                 }
-                imports.put(
-                        getWfsSchema().getTargetNamespace(), getWfsSchema().getSchemaLocation());
+                imports.put(getWfsSchema().getTargetNamespace(), getWfsSchema().getSchemaLocation());
             }
         }
         if (namespace.equals(schema.getTargetNamespace())) {
             if (includes.contains(schemaLocation)) {
-                logger.finer(
-                        "Skipped generation of duplicate include for  schemaLocation=\""
-                                + schemaLocation
-                                + " while generating schema for "
-                                + schema.getTargetNamespace());
+                logger.finer("Skipped generation of duplicate include for  schemaLocation=\""
+                        + schemaLocation
+                        + " while generating schema for "
+                        + schema.getTargetNamespace());
             } else {
                 addInclude(schema, factory, schemaLocation);
                 includes.add(schemaLocation);
@@ -505,22 +475,20 @@ public abstract class FeatureTypeSchemaBuilder {
         } else {
             if (imports.get(namespace) != null) {
                 if (imports.get(namespace).equals(schemaLocation)) {
-                    logger.finer(
-                            "Skipped generation of duplicate import for namespace=\""
-                                    + namespace
-                                    + "\" schemaLocation=\""
-                                    + schemaLocation
-                                    + " while generating schema for "
-                                    + schema.getTargetNamespace());
+                    logger.finer("Skipped generation of duplicate import for namespace=\""
+                            + namespace
+                            + "\" schemaLocation=\""
+                            + schemaLocation
+                            + " while generating schema for "
+                            + schema.getTargetNamespace());
                 } else {
-                    logger.warning(
-                            "Skipped generation of conflicting import for namespace=\""
-                                    + namespace
-                                    + "\" schemaLocation=\""
-                                    + schemaLocation
-                                    + " while generating schema for "
-                                    + schema.getTargetNamespace()
-                                    + " (some XML processors will ignore all imports for a namespace after the first)");
+                    logger.warning("Skipped generation of conflicting import for namespace=\""
+                            + namespace
+                            + "\" schemaLocation=\""
+                            + schemaLocation
+                            + " while generating schema for "
+                            + schema.getTargetNamespace()
+                            + " (some XML processors will ignore all imports for a namespace after the first)");
                 }
             } else {
                 addImport(schema, factory, namespace, schemaLocation);
@@ -550,8 +518,7 @@ public abstract class FeatureTypeSchemaBuilder {
      * @param namespace Import name space
      * @param schemaLocation The schema to be imported
      */
-    private void addImport(
-            XSDSchema schema, XSDFactory factory, String namespace, String schemaLocation) {
+    private void addImport(XSDSchema schema, XSDFactory factory, String namespace, String schemaLocation) {
         synchronized (Schemas.class) {
             XSDImport xsdImport = factory.createXSDImport();
             xsdImport.setNamespace(namespace);
@@ -561,8 +528,7 @@ public abstract class FeatureTypeSchemaBuilder {
     }
 
     /**
-     * Return any additional WFS XSDSchema that the GML version might require, or null if not
-     * required.
+     * Return any additional WFS XSDSchema that the GML version might require, or null if not required.
      *
      * @return the WFS schema, or null if none
      */
@@ -610,15 +576,13 @@ public abstract class FeatureTypeSchemaBuilder {
     }
 
     @SuppressWarnings("unchecked") // EMF model without generics
-    boolean findTypeInSchema(FeatureTypeInfo featureTypeMeta, XSDSchema schema, XSDFactory factory)
-            throws IOException {
+    boolean findTypeInSchema(FeatureTypeInfo featureTypeMeta, XSDSchema schema, XSDFactory factory) throws IOException {
         // look if the schema for the type is already defined
         String ws = featureTypeMeta.getStore().getWorkspace().getName();
         String ds = featureTypeMeta.getStore().getName();
         String name = featureTypeMeta.getName();
 
-        Resource schemaFile =
-                resourceLoader.get("workspaces/" + ws + "/" + ds + "/" + name + "/schema.xsd");
+        Resource schemaFile = resourceLoader.get("workspaces/" + ws + "/" + ds + "/" + name + "/schema.xsd");
 
         if (schemaFile.getType() == Type.RESOURCE) {
             if (logger.isLoggable(Level.FINE)) {
@@ -626,28 +590,31 @@ public abstract class FeatureTypeSchemaBuilder {
             }
 
             // schema file found, parse it and lookup the complex type
-            List<XSDSchemaLocationResolver> resolvers =
-                    Schemas.findSchemaLocationResolvers(xmlConfiguration);
+            List<XSDSchemaLocationResolver> resolvers = Schemas.findSchemaLocationResolvers(xmlConfiguration);
             List<XSDSchemaLocator> locators = new ArrayList<>();
-            locators.add(
-                    new XSDSchemaLocator() {
-                        @Override
-                        public XSDSchema locateSchema(
-                                XSDSchema schema,
-                                String namespaceURI,
-                                String rawSchemaLocationURI,
-                                String resolvedSchemaLocationURI) {
+            locators.add(new XSDSchemaLocator() {
+                @Override
+                public XSDSchema locateSchema(
+                        XSDSchema schema,
+                        String namespaceURI,
+                        String rawSchemaLocationURI,
+                        String resolvedSchemaLocationURI) {
 
-                            if (gmlNamespace.equals(namespaceURI)) {
-                                return gmlSchema();
-                            }
-                            return null;
-                        }
-                    });
+                    if (gmlNamespace.equals(namespaceURI)) {
+                        return gmlSchema();
+                    }
+                    return null;
+                }
+            });
 
             XSDSchema ftSchema = null;
             try {
-                ftSchema = Schemas.parse(schemaFile.file().getAbsolutePath(), locators, resolvers);
+                ftSchema = Schemas.parse(
+                        schemaFile.file().getAbsolutePath(),
+                        locators,
+                        resolvers,
+                        emptyList(),
+                        catalog.getResourcePool().getEntityResolver());
             } catch (IOException e) {
                 logger.log(
                         Level.WARNING,
@@ -673,8 +640,7 @@ public abstract class FeatureTypeSchemaBuilder {
                     content.setElement(null);
 
                     // check for import of gml, skip over since we already imported it
-                    if (content instanceof XSDImport) {
-                        XSDImport imprt = (XSDImport) content;
+                    if (content instanceof XSDImport imprt) {
                         if (gmlNamespace.equals(imprt.getNamespace())) {
                             i.remove();
                         }
@@ -682,25 +648,20 @@ public abstract class FeatureTypeSchemaBuilder {
 
                     // check for duplicated elements and types
 
-                    if (content instanceof XSDElementDeclaration) {
-                        if (contains(
-                                (XSDNamedComponent) content, schema.getElementDeclarations())) {
+                    if (content instanceof XSDElementDeclaration declaration) {
+                        if (contains(declaration, schema.getElementDeclarations())) {
                             i.remove();
                         }
-                    } else if (content instanceof XSDTypeDefinition) {
-                        if (contains((XSDNamedComponent) content, schema.getTypeDefinitions())) {
+                    } else if (content instanceof XSDTypeDefinition definition) {
+                        if (contains(definition, schema.getTypeDefinitions())) {
                             i.remove();
                         }
                     }
 
                     // check for element
-                    if (!hasElement && content instanceof XSDElementDeclaration) {
-                        XSDElementDeclaration element = (XSDElementDeclaration) content;
+                    if (!hasElement && content instanceof XSDElementDeclaration element) {
                         if (name.equals(element.getName())
-                                && featureTypeMeta
-                                        .getNamespace()
-                                        .getURI()
-                                        .equals(element.getTargetNamespace())) {
+                                && featureTypeMeta.getNamespace().getURI().equals(element.getTargetNamespace())) {
                             hasElement = true;
                         }
                     }
@@ -718,13 +679,12 @@ public abstract class FeatureTypeSchemaBuilder {
                     // find the type of the element
                     List<XSDComplexTypeDefinition> candidates = new ArrayList<>();
                     for (XSDTypeDefinition type : ftSchema.getTypeDefinitions()) {
-                        if (type instanceof XSDComplexTypeDefinition) {
+                        if (type instanceof XSDComplexTypeDefinition definition) {
                             XSDTypeDefinition base = type.getBaseType();
                             while (base != null) {
-                                if (baseType.equals(base.getName())
-                                        && gmlNamespace.equals(base.getTargetNamespace())) {
+                                if (baseType.equals(base.getName()) && gmlNamespace.equals(base.getTargetNamespace())) {
 
-                                    candidates.add((XSDComplexTypeDefinition) type);
+                                    candidates.add(definition);
                                     break;
                                 }
                                 if (base.equals(base.getBaseType())) {
@@ -736,9 +696,8 @@ public abstract class FeatureTypeSchemaBuilder {
                     }
 
                     if (candidates.size() != 1) {
-                        throw new IllegalStateException(
-                                "Could not determine feature type for "
-                                        + "generated element. Must specify explicitly in schema.xsd.");
+                        throw new IllegalStateException("Could not determine feature type for "
+                                + "generated element. Must specify explicitly in schema.xsd.");
                     }
 
                     element.setTypeDefinition(candidates.get(0));
@@ -760,8 +719,7 @@ public abstract class FeatureTypeSchemaBuilder {
         if (featureSubGroupElement == null) {
             synchronized (this) {
                 if (featureSubGroupElement == null) {
-                    featureSubGroupElement =
-                            gmlSchema().resolveElementDeclaration(gmlNamespace, substitutionGroup);
+                    featureSubGroupElement = gmlSchema().resolveElementDeclaration(gmlNamespace, substitutionGroup);
                 }
             }
         }
@@ -769,16 +727,14 @@ public abstract class FeatureTypeSchemaBuilder {
     }
 
     private void buildSchemaContent(
-            FeatureTypeInfo featureTypeMeta, XSDSchema schema, XSDFactory factory, String baseUrl)
-            throws IOException {
+            FeatureTypeInfo featureTypeMeta, XSDSchema schema, XSDFactory factory, String baseUrl) throws IOException {
         if (!findTypeInSchema(featureTypeMeta, schema, factory)) {
             // build the type manually
             FeatureType featureType = featureTypeMeta.getFeatureType();
             if (featureTypeMeta.isCircularArcPresent() && this.getClass().equals(GML3.class)) {
                 featureType = new CurveTypeWrapper(featureType);
             }
-            XSDComplexTypeDefinition xsdComplexType =
-                    buildComplexSchemaContent(featureType, schema, factory);
+            XSDComplexTypeDefinition xsdComplexType = buildComplexSchemaContent(featureType, schema, factory);
 
             XSDElementDeclaration element = factory.createXSDElementDeclaration();
             element.setName(featureTypeMeta.getName());
@@ -798,8 +754,8 @@ public abstract class FeatureTypeSchemaBuilder {
     /**
      * Construct an XSD type definition for a ComplexType.
      *
-     * <p>A side-effect of calling this method is that the constructed type and any concrete nested
-     * complex types are added to the schema.
+     * <p>A side-effect of calling this method is that the constructed type and any concrete nested complex types are
+     * added to the schema.
      */
     private XSDComplexTypeDefinition buildComplexSchemaContent(
             ComplexType complexType, XSDSchema schema, XSDFactory factory) {
@@ -807,8 +763,7 @@ public abstract class FeatureTypeSchemaBuilder {
         xsdComplexType.setName(complexType.getName().getLocalPart() + "Type");
 
         xsdComplexType.setDerivationMethod(XSDDerivationMethod.EXTENSION_LITERAL);
-        xsdComplexType.setBaseTypeDefinition(
-                resolveTypeInSchema(schema, new NameImpl(gmlNamespace, baseType)));
+        xsdComplexType.setBaseTypeDefinition(resolveTypeInSchema(schema, new NameImpl(gmlNamespace, baseType)));
         // adding the type to the schema and the particle to the group up here
         // because the schema linkage is required before createUserInformation is called to populate
         // the annotation
@@ -816,9 +771,9 @@ public abstract class FeatureTypeSchemaBuilder {
         group.setCompositor(XSDCompositor.SEQUENCE_LITERAL);
 
         Map<XSDElementDeclaration, InternationalString> annotationCache = new HashMap<>();
+        Map<XSDElementDeclaration, List<Filter>> restrictionsCache = new HashMap<>();
         for (PropertyDescriptor pd : complexType.getDescriptors()) {
-            if (pd instanceof AttributeDescriptor) {
-                AttributeDescriptor attribute = (AttributeDescriptor) pd;
+            if (pd instanceof AttributeDescriptor attribute) {
 
                 if (filterAttributeType(attribute)) {
                     GMLInfo gml = getGMLConfig(gs.getService(WFSInfo.class));
@@ -840,32 +795,26 @@ public abstract class FeatureTypeSchemaBuilder {
                 // first matching one, so it doesn't go through all profiles.
                 if (!(typeName.getLocalPart().equals(XS.ANYTYPE.getLocalPart())
                         && typeName.getNamespaceURI().equals(XS.NAMESPACE))) {
-                    if (attributeType instanceof ComplexType) {
+                    if (attributeType instanceof ComplexType type) {
                         // If non-simple complex property not in schema, recurse.
                         // Note that abstract types will of course not be resolved; these must be
                         // configured at global level, so they can be found by the
                         // encoder.
-                        if (schema.resolveTypeDefinition(
-                                        typeName.getNamespaceURI(), typeName.getLocalPart())
-                                == null) {
-                            buildComplexSchemaContent((ComplexType) attributeType, schema, factory);
+                        if (schema.resolveTypeDefinition(typeName.getNamespaceURI(), typeName.getLocalPart()) == null) {
+                            buildComplexSchemaContent(type, schema, factory);
                         }
                     } else {
                         Class<?> binding = attributeType.getBinding();
                         typeName = findTypeName(binding);
                         if (typeName == null) {
                             // Fallback on String
-                            logger.finer(
-                                    "Fallback mapping: attribute "
-                                            + attribute.getName()
-                                            + " to String");
+                            logger.finer("Fallback mapping: attribute " + attribute.getName() + " to String");
                             typeName = findTypeName(String.class);
                             if (typeName == null) {
-                                throw new NullPointerException(
-                                        "Could not find a type for property: "
-                                                + attribute.getName()
-                                                + " of type: "
-                                                + binding.getName());
+                                throw new NullPointerException("Could not find a type for property: "
+                                        + attribute.getName()
+                                        + " of type: "
+                                        + binding.getName());
                             }
                         }
                     }
@@ -882,6 +831,10 @@ public abstract class FeatureTypeSchemaBuilder {
                 if (attributeType.getDescription() != null) {
                     annotationCache.put(element, attributeType.getDescription());
                 }
+
+                if (attributeType.getRestrictions() != null) {
+                    restrictionsCache.put(element, attributeType.getRestrictions());
+                }
             }
         }
 
@@ -896,19 +849,47 @@ public abstract class FeatureTypeSchemaBuilder {
         // schema. This is much faster than adding the elements in the schema earlier and
         // adding the annotation during the pass above, as early add causes many "patch" operations
         // in the schema itself, much to detriment of performance.
-        annotationCache.forEach(
-                (element, description) -> {
-                    XSDAnnotation annotation = factory.createXSDAnnotation();
-                    element.setAnnotation(annotation);
-                    Element documentation = annotation.createUserInformation(null);
-                    documentation.appendChild(
-                            documentation
-                                    .getOwnerDocument()
-                                    .createTextNode(description.toString()));
-                    annotation.getElement().appendChild(documentation);
-                });
+        annotationCache.forEach((element, description) -> {
+            XSDAnnotation annotation = factory.createXSDAnnotation();
+            element.setAnnotation(annotation);
+            Element documentation = annotation.createUserInformation(null);
+            documentation.appendChild(documentation.getOwnerDocument().createTextNode(description.toString()));
+            annotation.getElement().appendChild(documentation);
+        });
+
+        RestrictionToXSDConstrainingFacetVisitor restrictionsVisitor =
+                new RestrictionToXSDConstrainingFacetVisitor(factory);
+        restrictionsCache.forEach((element, restrictions) -> {
+            if (!restrictions.isEmpty()) {
+
+                XSDSimpleTypeDefinition simple = factory.createXSDSimpleTypeDefinition();
+                simple.setBaseTypeDefinition(element.getTypeDefinition().getSimpleType());
+                EList<XSDConstrainingFacet> facets = simple.getFacetContents();
+                restrictions.stream()
+                        .map(filter -> facetsFromFilter(filter, restrictionsVisitor))
+                        .forEach(facets::addAll);
+
+                if (!facets.isEmpty()) {
+                    element.setAnonymousTypeDefinition(simple);
+                }
+            }
+        });
 
         return xsdComplexType;
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<XSDConstrainingFacet> facetsFromFilter(
+            Filter filter, RestrictionToXSDConstrainingFacetVisitor restrictionsVisitor) {
+
+        Object visitedFilter = filter.accept(restrictionsVisitor, new ArrayList<>());
+
+        if (filter.equals(visitedFilter)) {
+            /* the filter do not have a matching facet */
+            return List.of();
+        }
+
+        return (List<XSDConstrainingFacet>) visitedFilter;
     }
 
     XSDTypeDefinition resolveTypeInSchema(XSDSchema schema, Name typeName) {
@@ -921,9 +902,7 @@ public abstract class FeatureTypeSchemaBuilder {
             }
         }
         if (type == null) {
-            type =
-                    schema.resolveTypeDefinition(
-                            typeName.getNamespaceURI(), typeName.getLocalPart());
+            type = schema.resolveTypeDefinition(typeName.getNamespaceURI(), typeName.getLocalPart());
         }
         return type;
     }
@@ -948,10 +927,9 @@ public abstract class FeatureTypeSchemaBuilder {
     Name findTypeName(Class<?> binding) {
         for (Object profile : profiles) {
             Name name = null;
-            if (profile instanceof TypeMappingProfile) {
-                name = ((TypeMappingProfile) profile).name(binding);
-            } else if (profile instanceof Schema) {
-                Schema schema = (Schema) profile;
+            if (profile instanceof TypeMappingProfile mappingProfile) {
+                name = mappingProfile.name(binding);
+            } else if (profile instanceof Schema schema) {
                 for (Map.Entry<Name, AttributeType> e : schema.entrySet()) {
                     AttributeType at = e.getValue();
                     if (at.getBinding() != null && at.getBinding().equals(binding)) {
@@ -1000,8 +978,7 @@ public abstract class FeatureTypeSchemaBuilder {
             gmlSchemaLocation = "gml/2.1.2/feature.xsd";
             baseType = "AbstractFeatureType";
             substitutionGroup = "_Feature";
-            describeFeatureTypeParams =
-                    params("request", "DescribeFeatureType", "version", "1.0.0", "service", "WFS");
+            describeFeatureTypeParams = params("request", "DescribeFeatureType", "version", "1.0.0", "service", "WFS");
             gmlPrefix = "gml";
             xmlConfiguration = new GMLConfiguration();
         }
@@ -1040,8 +1017,7 @@ public abstract class FeatureTypeSchemaBuilder {
             gmlSchemaLocation = "gml/3.1.1/base/gml.xsd";
             baseType = "AbstractFeatureType";
             substitutionGroup = "_Feature";
-            describeFeatureTypeParams =
-                    params("request", "DescribeFeatureType", "version", "1.1.0", "service", "WFS");
+            describeFeatureTypeParams = params("request", "DescribeFeatureType", "version", "1.1.0", "service", "WFS");
 
             gmlPrefix = "gml";
             xmlConfiguration = new org.geotools.gml3.GMLConfiguration();
@@ -1093,16 +1069,15 @@ public abstract class FeatureTypeSchemaBuilder {
             gmlSchemaLocation = "gml/3.2.1/gml.xsd";
             baseType = "AbstractFeatureType";
             substitutionGroup = "AbstractFeature";
-            describeFeatureTypeParams =
-                    params(
-                            "request",
-                            "DescribeFeatureType",
-                            "version",
-                            "2.0.0",
-                            "service",
-                            "WFS",
-                            "outputFormat",
-                            "application/gml+xml; version=3.2");
+            describeFeatureTypeParams = params(
+                    "request",
+                    "DescribeFeatureType",
+                    "version",
+                    "2.0.0",
+                    "service",
+                    "WFS",
+                    "outputFormat",
+                    "application/gml+xml; version=3.2");
             xmlConfiguration = new org.geotools.gml3.v3_2.GMLConfiguration();
         }
 
@@ -1140,15 +1115,15 @@ public abstract class FeatureTypeSchemaBuilder {
                     imprt = factory.createXSDImport();
                     imprt.setNamespace(gmlNamespace);
                     // imprt.setNamespace( WFS.getInstance().getSchema().getTargetNamespace() );
-                    imprt.setSchemaLocation(
-                            ResponseUtils.buildSchemaURL(baseUrl, gmlSchemaLocation));
+                    imprt.setSchemaLocation(ResponseUtils.buildSchemaURL(baseUrl, gmlSchemaLocation));
                     // imprt.setResolvedSchema(WFS.getInstance().getSchema());
                     imprt.setResolvedSchema(GML.getInstance().getSchema());
                     schema.getContents().add(imprt);
 
                     schema.getQNamePrefixToNamespaceMap().put("wfs", WFS.NAMESPACE);
                     // imprt = Schemas.importSchema(schema, WFS.getInstance().getSchema());
-                    final XSDSchemaImpl xsdSchema = (XSDSchemaImpl) WFS.getInstance().getSchema();
+                    final XSDSchemaImpl xsdSchema =
+                            (XSDSchemaImpl) WFS.getInstance().getSchema();
                     synchronized (xsdSchema.eAdapters()) {
                         xsdSchema.imported(imprt);
                     }
@@ -1169,8 +1144,8 @@ public abstract class FeatureTypeSchemaBuilder {
         }
 
         /**
-         * GML 3.2 responses require the WFS 2.0 schema to define WFS 2.0 FeatureCollection, which
-         * is used as the root element.
+         * GML 3.2 responses require the WFS 2.0 schema to define WFS 2.0 FeatureCollection, which is used as the root
+         * element.
          *
          * @see org.geoserver.wfs.xml.FeatureTypeSchemaBuilder#getWfsSchema()
          */
@@ -1185,11 +1160,10 @@ public abstract class FeatureTypeSchemaBuilder {
     }
 
     /**
-     * Derived from {@link GML32}, the only difference is that {@link #getWfsSchema()} is overridden
-     * to make it always return {@code null}.
+     * Derived from {@link GML32}, the only difference is that {@link #getWfsSchema()} is overridden to make it always
+     * return {@code null}.
      *
-     * <p>Useful when encoding DescribeFeatureType responses, as they don't need to import the WFS
-     * schema.
+     * <p>Useful when encoding DescribeFeatureType responses, as they don't need to import the WFS schema.
      */
     public static final class GML32NoWfsSchemaImport extends GML32 {
 

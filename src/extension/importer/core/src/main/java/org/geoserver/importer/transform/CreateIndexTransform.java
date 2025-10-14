@@ -5,6 +5,7 @@
  */
 package org.geoserver.importer.transform;
 
+import java.io.Serial;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -17,9 +18,9 @@ import org.geotools.api.data.Transaction;
 import org.geotools.jdbc.JDBCDataStore;
 
 /** @author Ian Schneider <ischneider@opengeo.org> */
-public class CreateIndexTransform extends AbstractTransform
-        implements PostTransform, VectorTransform {
+public class CreateIndexTransform extends AbstractTransform implements PostTransform, VectorTransform {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private String field;
@@ -40,11 +41,10 @@ public class CreateIndexTransform extends AbstractTransform
     public void apply(ImportTask task, ImportData data) throws Exception {
         DataStoreInfo storeInfo = (DataStoreInfo) task.getStore();
         DataAccess store = storeInfo.getDataStore(null);
-        if (store instanceof JDBCDataStore) {
-            createIndex(task, (JDBCDataStore) store);
+        if (store instanceof JDBCDataStore dataStore) {
+            createIndex(task, dataStore);
         } else {
-            task.addMessage(
-                    Level.WARNING, "Cannot create index on non database target. Not a big deal.");
+            task.addMessage(Level.WARNING, "Cannot create index on non database target. Not a big deal.");
         }
     }
 

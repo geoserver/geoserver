@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.data.dto.impl;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.metadata.data.dto.AttributeConfiguration;
@@ -12,13 +13,13 @@ import org.geoserver.metadata.data.dto.AttributeTypeConfiguration;
 /**
  * Object that matches yaml structure.
  *
- * <p>The part describes a complex object. The complex object contains a list of mappings that make
- * the object.
+ * <p>The part describes a complex object. The complex object contains a list of mappings that make the object.
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
 public class AttributeTypeConfigurationImpl implements AttributeTypeConfiguration {
 
+    @Serial
     private static final long serialVersionUID = 7617959011871570119L;
 
     String typename;

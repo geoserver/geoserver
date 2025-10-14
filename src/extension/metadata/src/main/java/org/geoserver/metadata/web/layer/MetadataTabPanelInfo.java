@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.web.layer;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.model.IModel;
@@ -16,6 +17,7 @@ import org.geoserver.web.publish.PublishedEditTabPanelInfo;
 
 public class MetadataTabPanelInfo extends PublishedEditTabPanelInfo<LayerInfo> {
 
+    @Serial
     private static final long serialVersionUID = 7092956796960461825L;
 
     @Override
@@ -26,13 +28,12 @@ public class MetadataTabPanelInfo extends PublishedEditTabPanelInfo<LayerInfo> {
     @Override
     public IModel<?> createOwnModel(IModel<? extends LayerInfo> model, boolean isNew) {
         MetadataTemplateService service =
-                GeoServerApplication.get()
-                        .getApplicationContext()
-                        .getBean(MetadataTemplateService.class);
+                GeoServerApplication.get().getApplicationContext().getBean(MetadataTemplateService.class);
 
         List<MetadataTemplate> selectedTemplates = new ArrayList<>();
         for (MetadataTemplate template : service.list()) {
-            if (template.getLinkedLayers().contains(model.getObject().getResource().getId())) {
+            if (template.getLinkedLayers()
+                    .contains(model.getObject().getResource().getId())) {
                 selectedTemplates.add(template);
             }
         }

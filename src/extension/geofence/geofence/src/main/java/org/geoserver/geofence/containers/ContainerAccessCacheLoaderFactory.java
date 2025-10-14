@@ -38,15 +38,13 @@ public class ContainerAccessCacheLoaderFactory {
         return new ProcessingResultLoader();
     }
 
-    protected class ProcessingResultLoader
-            extends CacheLoader<ResolveParams, ContainerLimitResolver.ProcessingResult> {
+    protected class ProcessingResultLoader extends CacheLoader<ResolveParams, ContainerLimitResolver.ProcessingResult> {
 
         private ProcessingResultLoader() {}
 
         @Override
         public ContainerLimitResolver.ProcessingResult load(ResolveParams params) throws Exception {
-            if (LOGGER.isLoggable(Level.FINE))
-                LOGGER.log(Level.FINE, "Loading results for {0}", params.layer);
+            if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Loading results for {0}", params.layer);
 
             return resolver.getContainerResolverResult(
                     params.resourceInfo,
@@ -61,22 +59,19 @@ public class ContainerAccessCacheLoaderFactory {
 
         @Override
         public ListenableFuture<ContainerLimitResolver.ProcessingResult> reload(
-                final ResolveParams params, ContainerLimitResolver.ProcessingResult result)
-                throws Exception {
-            if (LOGGER.isLoggable(Level.FINE))
-                LOGGER.log(Level.FINE, "Reloading {0}", params.layer);
+                final ResolveParams params, ContainerLimitResolver.ProcessingResult result) throws Exception {
+            if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Reloading {0}", params.layer);
 
             // this is a sync implementation
-            ContainerLimitResolver.ProcessingResult ret =
-                    resolver.getContainerResolverResult(
-                            params.resourceInfo,
-                            params.layer,
-                            params.workspace,
-                            params.configuration,
-                            params.callerIp,
-                            params.user,
-                            params.containers,
-                            params.summaries);
+            ContainerLimitResolver.ProcessingResult ret = resolver.getContainerResolverResult(
+                    params.resourceInfo,
+                    params.layer,
+                    params.workspace,
+                    params.configuration,
+                    params.callerIp,
+                    params.user,
+                    params.containers,
+                    params.summaries);
 
             return Futures.immediateFuture(ret);
         }

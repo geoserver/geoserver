@@ -59,9 +59,7 @@ public class SimpleAttributeFeatureChainWfsTest extends AbstractAppSchemaTestSup
                 "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gsml:shape/gml:Point/gml:pos",
                 doc);
         assertXpathEvaluatesTo(
-                "2",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gsml:shape/gml:Point/@srsDimension",
-                doc);
+                "2", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gsml:shape/gml:Point/@srsDimension", doc);
         assertXpathEvaluatesTo(
                 "http://www.opengis.net/gml/srs/epsg.xml#4326",
                 "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gsml:shape/gml:Point/@srsName",
@@ -75,9 +73,7 @@ public class SimpleAttributeFeatureChainWfsTest extends AbstractAppSchemaTestSup
                 "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gsml:shape/gml:Point/gml:pos",
                 doc);
         assertXpathEvaluatesTo(
-                "2",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gsml:shape/gml:Point/@srsDimension",
-                doc);
+                "2", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gsml:shape/gml:Point/@srsDimension", doc);
         assertXpathEvaluatesTo(
                 "http://www.opengis.net/gml/srs/epsg.xml#4326",
                 "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gsml:shape/gml:Point/@srsName",
@@ -119,12 +115,9 @@ public class SimpleAttributeFeatureChainWfsTest extends AbstractAppSchemaTestSup
     /** Test reprojecting with feature chained geometry. */
     @Test
     public void testReprojecting() {
-        String path =
-                "wfs?request=GetFeature&version=1.1.0&typeName=gsml:MappedFeature&srsName=EPSG:4326";
+        String path = "wfs?request=GetFeature&version=1.1.0&typeName=gsml:MappedFeature&srsName=EPSG:4326";
         Document doc = getAsDOM(path);
-        LOGGER.info(
-                "Reprojected MappedFeature with name feature chained Response:\n"
-                        + prettyString(doc));
+        LOGGER.info("Reprojected MappedFeature with name feature chained Response:\n" + prettyString(doc));
         assertXpathEvaluatesTo("4", "/wfs:FeatureCollection/@numberOfFeatures", doc);
         assertXpathCount(4, "//gsml:MappedFeature", doc);
 
@@ -136,9 +129,7 @@ public class SimpleAttributeFeatureChainWfsTest extends AbstractAppSchemaTestSup
                 "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gsml:shape/gml:Point/gml:pos",
                 doc);
         assertXpathEvaluatesTo(
-                "2",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gsml:shape/gml:Point/@srsDimension",
-                doc);
+                "2", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gsml:shape/gml:Point/@srsDimension", doc);
         assertXpathEvaluatesTo(
                 "http://www.opengis.net/gml/srs/epsg.xml#4326",
                 "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gsml:shape/gml:Point/@srsName",
@@ -152,9 +143,7 @@ public class SimpleAttributeFeatureChainWfsTest extends AbstractAppSchemaTestSup
                 "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gsml:shape/gml:Point/gml:pos",
                 doc);
         assertXpathEvaluatesTo(
-                "2",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gsml:shape/gml:Point/@srsDimension",
-                doc);
+                "2", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gsml:shape/gml:Point/@srsDimension", doc);
         assertXpathEvaluatesTo(
                 "http://www.opengis.net/gml/srs/epsg.xml#4326",
                 "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gsml:shape/gml:Point/@srsName",
@@ -254,9 +243,7 @@ public class SimpleAttributeFeatureChainWfsTest extends AbstractAppSchemaTestSup
                 "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gsml:shape/gml:Point/gml:pos",
                 doc);
         assertXpathEvaluatesTo(
-                "2",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gsml:shape/gml:Point/@srsDimension",
-                doc);
+                "2", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gsml:shape/gml:Point/@srsDimension", doc);
         assertXpathEvaluatesTo(
                 "http://www.opengis.net/gml/srs/epsg.xml#4326",
                 "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gsml:shape/gml:Point/@srsName",
@@ -287,9 +274,7 @@ public class SimpleAttributeFeatureChainWfsTest extends AbstractAppSchemaTestSup
                 "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gsml:shape/gml:Point/gml:pos",
                 doc);
         assertXpathEvaluatesTo(
-                "2",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gsml:shape/gml:Point/@srsDimension",
-                doc);
+                "2", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gsml:shape/gml:Point/@srsDimension", doc);
         assertXpathEvaluatesTo(
                 "http://www.opengis.net/gml/srs/epsg.xml#4326",
                 "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gsml:shape/gml:Point/@srsName",
@@ -418,12 +403,10 @@ public class SimpleAttributeFeatureChainWfsTest extends AbstractAppSchemaTestSup
         /*
          * test filter by name coming from child table
          */
-        PropertyIsEqualTo propertyIsEqualTo =
-                ff.equals(ff.property("gml:name[2]"), ff.literal("nameone 4"));
+        PropertyIsEqualTo propertyIsEqualTo = ff.equals(ff.property("gml:name[2]"), ff.literal("nameone 4"));
 
         // Filter involving single nested attribute --> can be encoded
-        ComplexFilterSplitter splitter =
-                new ComplexFilterSplitter(store.getFilterCapabilities(), rootMapping);
+        ComplexFilterSplitter splitter = new ComplexFilterSplitter(store.getFilterCapabilities(), rootMapping);
         splitter.visit(propertyIsEqualTo, null);
         Filter preFilter = splitter.getFilterPre();
         Filter postFilter = splitter.getFilterPost();
@@ -451,12 +434,10 @@ public class SimpleAttributeFeatureChainWfsTest extends AbstractAppSchemaTestSup
         /*
          * test filter on attribute of root feature type
          */
-        PropertyIsEqualTo ordinaryFilter =
-                ff.equals(ff.property("gml:name[1]"), ff.literal("GUNTHORPE FORMATION"));
+        PropertyIsEqualTo ordinaryFilter = ff.equals(ff.property("gml:name[1]"), ff.literal("GUNTHORPE FORMATION"));
 
         // Filter involving direct attribute of root feature type --> can be encoded
-        ComplexFilterSplitter splitter2 =
-                new ComplexFilterSplitter(store.getFilterCapabilities(), rootMapping);
+        ComplexFilterSplitter splitter2 = new ComplexFilterSplitter(store.getFilterCapabilities(), rootMapping);
         splitter2.visit(ordinaryFilter, null);
         preFilter = splitter2.getFilterPre();
         postFilter = splitter2.getFilterPost();
@@ -478,12 +459,10 @@ public class SimpleAttributeFeatureChainWfsTest extends AbstractAppSchemaTestSup
         /*
          * test filter matching multiple mappings
          */
-        PropertyIsEqualTo multipleFilter =
-                ff.equals(ff.property("gml:name"), ff.literal("GUNTHORPE FORMATION"));
+        PropertyIsEqualTo multipleFilter = ff.equals(ff.property("gml:name"), ff.literal("GUNTHORPE FORMATION"));
 
         // Filter involves multiple nested attributes --> CANNOT be encoded
-        ComplexFilterSplitter splitter3 =
-                new ComplexFilterSplitter(store.getFilterCapabilities(), rootMapping);
+        ComplexFilterSplitter splitter3 = new ComplexFilterSplitter(store.getFilterCapabilities(), rootMapping);
         splitter3.visit(multipleFilter, null);
         preFilter = splitter3.getFilterPre();
         postFilter = splitter3.getFilterPost();
@@ -502,15 +481,12 @@ public class SimpleAttributeFeatureChainWfsTest extends AbstractAppSchemaTestSup
         /*
          * test combined filter, i.e. a filter composed of a "regular" filter, and a nested filter
          */
-        PropertyIsEqualTo regularFilter =
-                ff.equals(ff.property("gml:name[1]"), ff.literal("GUNTHORPE FORMATION"));
-        PropertyIsEqualTo nestedFilter =
-                ff.equals(ff.property("gml:name[2]"), ff.literal("nameone 4"));
+        PropertyIsEqualTo regularFilter = ff.equals(ff.property("gml:name[1]"), ff.literal("GUNTHORPE FORMATION"));
+        PropertyIsEqualTo nestedFilter = ff.equals(ff.property("gml:name[2]"), ff.literal("nameone 4"));
         Or combined = ff.or(regularFilter, nestedFilter);
 
         // Filter can be encoded!
-        ComplexFilterSplitter splitterCombined =
-                new ComplexFilterSplitter(store.getFilterCapabilities(), rootMapping);
+        ComplexFilterSplitter splitterCombined = new ComplexFilterSplitter(store.getFilterCapabilities(), rootMapping);
         splitterCombined.visit(combined, null);
         preFilter = splitterCombined.getFilterPre();
         postFilter = splitterCombined.getFilterPost();
@@ -536,24 +512,20 @@ public class SimpleAttributeFeatureChainWfsTest extends AbstractAppSchemaTestSup
         assertTrue(encodedCombined.matches("^\\(.*GUNTHORPE FORMATION.*OR.*EXISTS.*\\)$"));
         assertContainsFeatures(fs.getFeatures(combined), "mf1", "mf3");
         // test UNION improvement off
-        AppSchemaDataAccessRegistry.getAppSchemaProperties()
-                .setProperty("app-schema.orUnionReplace", "false");
+        AppSchemaDataAccessRegistry.getAppSchemaProperties().setProperty("app-schema.orUnionReplace", "false");
         try {
             assertContainsFeatures(fs.getFeatures(combined), "mf1", "mf3");
         } finally {
-            AppSchemaDataAccessRegistry.getAppSchemaProperties()
-                    .setProperty("app-schema.orUnionReplace", "true");
+            AppSchemaDataAccessRegistry.getAppSchemaProperties().setProperty("app-schema.orUnionReplace", "true");
         }
 
         /*
          * test filter comparing multiple nested attributes
          */
-        PropertyIsNotEqualTo notEquals =
-                ff.notEqual(ff.property("gml:name[2]"), ff.property("gml:name[3]"));
+        PropertyIsNotEqualTo notEquals = ff.notEqual(ff.property("gml:name[2]"), ff.property("gml:name[3]"));
 
         // Filter involves multiple nested attributes --> CANNOT be encoded
-        ComplexFilterSplitter splitterNotEquals =
-                new ComplexFilterSplitter(store.getFilterCapabilities(), rootMapping);
+        ComplexFilterSplitter splitterNotEquals = new ComplexFilterSplitter(store.getFilterCapabilities(), rootMapping);
         splitterNotEquals.visit(notEquals, null);
         preFilter = splitterNotEquals.getFilterPre();
         postFilter = splitterNotEquals.getFilterPost();
@@ -583,22 +555,18 @@ public class SimpleAttributeFeatureChainWfsTest extends AbstractAppSchemaTestSup
         FilterFactoryImplNamespaceAware ff = new FilterFactoryImplNamespaceAware();
         ff.setNamepaceContext(rootMapping.getNamespaces());
 
-        PropertyIsEqualTo regularFilter =
-                ff.equals(ff.property("gml:name[2]"), ff.literal("nameone 2"));
-        PropertyIsEqualTo nestedFilter =
-                ff.equals(ff.property("gml:name[2]"), ff.literal("nameone 4"));
+        PropertyIsEqualTo regularFilter = ff.equals(ff.property("gml:name[2]"), ff.literal("nameone 2"));
+        PropertyIsEqualTo nestedFilter = ff.equals(ff.property("gml:name[2]"), ff.literal("nameone 4"));
         Or combined = ff.or(regularFilter, nestedFilter);
 
         assertContainsFeatures(fs.getFeatures(combined), "mf2", "mf3");
         // set improvement to off
-        AppSchemaDataAccessRegistry.getAppSchemaProperties()
-                .setProperty("app-schema.orUnionReplace", "false");
+        AppSchemaDataAccessRegistry.getAppSchemaProperties().setProperty("app-schema.orUnionReplace", "false");
         try {
             FeatureSource fs1 = ftInfo.getFeatureSource(new NullProgressListener(), null);
             assertContainsFeatures(fs1.getFeatures(combined), "mf2", "mf3");
         } finally {
-            AppSchemaDataAccessRegistry.getAppSchemaProperties()
-                    .setProperty("app-schema.orUnionReplace", "true");
+            AppSchemaDataAccessRegistry.getAppSchemaProperties().setProperty("app-schema.orUnionReplace", "true");
         }
     }
 
@@ -606,34 +574,20 @@ public class SimpleAttributeFeatureChainWfsTest extends AbstractAppSchemaTestSup
         assertXpathCount(4, "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gml:name", doc);
         // gml:name with values coming from the main table
         assertXpathEvaluatesTo(
-                "GUNTHORPE FORMATION",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gml:name[1]",
-                doc);
+                "GUNTHORPE FORMATION", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gml:name[1]", doc);
         // gml:name with values coming from another table(MappedFeatureNameOne)
-        assertXpathEvaluatesTo(
-                "nameone 1",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gml:name[2]",
-                doc);
+        assertXpathEvaluatesTo("nameone 1", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gml:name[2]", doc);
         // client property coming from another table(MappedFeatureNameOne)
         assertXpathEvaluatesTo(
-                "some uri 1",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gml:name[2]/@codeSpace",
-                doc);
+                "some uri 1", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gml:name[2]/@codeSpace", doc);
         // gml:name with values coming from another table(MappedFeatureNameTwo)
-        assertXpathEvaluatesTo(
-                "nametwo 1",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gml:name[3]",
-                doc);
+        assertXpathEvaluatesTo("nametwo 1", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gml:name[3]", doc);
         // client property coming from the parent table
         assertXpathEvaluatesTo(
-                "some:uri:mf1",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gml:name[3]/@codeSpace",
-                doc);
+                "some:uri:mf1", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gml:name[3]/@codeSpace", doc);
         // gml:name as xlink:href from another table(MappedFeatureNameTwo)
         assertXpathEvaluatesTo(
-                "some:uri:1",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gml:name[4]/@xlink:href",
-                doc);
+                "some:uri:1", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gml:name[4]/@xlink:href", doc);
     }
 
     private void checkMf2(Document doc) {
@@ -641,125 +595,71 @@ public class SimpleAttributeFeatureChainWfsTest extends AbstractAppSchemaTestSup
         assertXpathCount(7, "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gml:name", doc);
         // gml:name with values coming from the main table
         assertXpathEvaluatesTo(
-                "MERCIA MUDSTONE GROUP",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gml:name[1]",
-                doc);
+                "MERCIA MUDSTONE GROUP", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gml:name[1]", doc);
         // gml:name with values coming from another table(MappedFeatureNameOne)
-        assertXpathEvaluatesTo(
-                "nameone 2",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gml:name[2]",
-                doc);
+        assertXpathEvaluatesTo("nameone 2", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gml:name[2]", doc);
         // client property coming from another table(MappedFeatureNameOne)
         assertXpathEvaluatesTo(
-                "some uri 2",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gml:name[2]/@codeSpace",
-                doc);
+                "some uri 2", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gml:name[2]/@codeSpace", doc);
         // gml:name with values coming from another table(MappedFeatureNameOne)
-        assertXpathEvaluatesTo(
-                "nameone 3",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gml:name[3]",
-                doc);
+        assertXpathEvaluatesTo("nameone 3", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gml:name[3]", doc);
         // client property coming from another table(MappedFeatureNameOne)
         assertXpathEvaluatesTo(
-                "some uri 3",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gml:name[3]/@codeSpace",
-                doc);
+                "some uri 3", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gml:name[3]/@codeSpace", doc);
         // gml:name with values coming from another table(MappedFeatureNameTwo)
-        assertXpathEvaluatesTo(
-                "nametwo 2",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gml:name[4]",
-                doc);
+        assertXpathEvaluatesTo("nametwo 2", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gml:name[4]", doc);
         // client property coming from the parent table
         assertXpathEvaluatesTo(
-                "some:uri:mf2",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gml:name[4]/@codeSpace",
-                doc);
+                "some:uri:mf2", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gml:name[4]/@codeSpace", doc);
         // gml:name with values coming from another table(MappedFeatureNameTwo)
-        assertXpathEvaluatesTo(
-                "nametwo 3",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gml:name[5]",
-                doc);
+        assertXpathEvaluatesTo("nametwo 3", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gml:name[5]", doc);
         // client property coming from the parent table
         assertXpathEvaluatesTo(
-                "some:uri:mf2",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gml:name[5]/@codeSpace",
-                doc);
+                "some:uri:mf2", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gml:name[5]/@codeSpace", doc);
         // gml:name as xlink:href from another table(MappedFeatureNameTwo)
         assertXpathEvaluatesTo(
-                "some:uri:2",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gml:name[6]/@xlink:href",
-                doc);
+                "some:uri:2", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gml:name[6]/@xlink:href", doc);
         assertXpathEvaluatesTo(
-                "some:uri:3",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gml:name[7]/@xlink:href",
-                doc);
+                "some:uri:3", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gml:name[7]/@xlink:href", doc);
     }
 
     private void checkMf3(Document doc) {
         assertXpathCount(4, "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf3']/gml:name", doc);
         // gml:name with values coming from the main table
         assertXpathEvaluatesTo(
-                "CLIFTON FORMATION",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf3']/gml:name[1]",
-                doc);
+                "CLIFTON FORMATION", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf3']/gml:name[1]", doc);
         // gml:name with values coming from another table(MappedFeatureNameOne)
-        assertXpathEvaluatesTo(
-                "nameone 4",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf3']/gml:name[2]",
-                doc);
+        assertXpathEvaluatesTo("nameone 4", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf3']/gml:name[2]", doc);
         // client property coming from another table(MappedFeatureNameOne)
         assertXpathEvaluatesTo(
-                "some uri 4",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf3']/gml:name[2]/@codeSpace",
-                doc);
+                "some uri 4", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf3']/gml:name[2]/@codeSpace", doc);
         // gml:name with values coming from another table(MappedFeatureNameTwo)
-        assertXpathEvaluatesTo(
-                "nametwo 4",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf3']/gml:name[3]",
-                doc);
+        assertXpathEvaluatesTo("nametwo 4", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf3']/gml:name[3]", doc);
         // client property coming from the parent table
         assertXpathEvaluatesTo(
-                "some:uri:mf3",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf3']/gml:name[3]/@codeSpace",
-                doc);
+                "some:uri:mf3", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf3']/gml:name[3]/@codeSpace", doc);
         // gml:name as xlink:href from another table(MappedFeatureNameTwo)
         assertXpathEvaluatesTo(
-                "some:uri:4",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf3']/gml:name[4]/@xlink:href",
-                doc);
+                "some:uri:4", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf3']/gml:name[4]/@xlink:href", doc);
     }
 
     private void checkMf4(Document doc) {
         assertXpathCount(4, "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf4']/gml:name", doc);
         // gml:name with values coming from the main table
         assertXpathEvaluatesTo(
-                "MURRADUC BASALT",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf4']/gml:name[1]",
-                doc);
+                "MURRADUC BASALT", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf4']/gml:name[1]", doc);
         // gml:name with values coming from another table(MappedFeatureNameOne)
-        assertXpathEvaluatesTo(
-                "nameone 5",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf4']/gml:name[2]",
-                doc);
+        assertXpathEvaluatesTo("nameone 5", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf4']/gml:name[2]", doc);
         // client property coming from another table(MappedFeatureNameOne)
         assertXpathEvaluatesTo(
-                "some uri 5",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf4']/gml:name[2]/@codeSpace",
-                doc);
+                "some uri 5", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf4']/gml:name[2]/@codeSpace", doc);
         // gml:name with values coming from another table(MappedFeatureNameTwo)
-        assertXpathEvaluatesTo(
-                "nametwo 5",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf4']/gml:name[3]",
-                doc);
+        assertXpathEvaluatesTo("nametwo 5", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf4']/gml:name[3]", doc);
         // client property coming from the parent table
         assertXpathEvaluatesTo(
-                "some:uri:mf4",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf4']/gml:name[3]/@codeSpace",
-                doc);
+                "some:uri:mf4", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf4']/gml:name[3]/@codeSpace", doc);
         // gml:name as xlink:href from another table(MappedFeatureNameTwo)
         assertXpathEvaluatesTo(
-                "some:uri:5",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf4']/gml:name[4]/@xlink:href",
-                doc);
+                "some:uri:5", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf4']/gml:name[4]/@xlink:href", doc);
     }
 }

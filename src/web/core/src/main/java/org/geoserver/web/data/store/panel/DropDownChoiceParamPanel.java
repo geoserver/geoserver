@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.store.panel;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
@@ -18,6 +19,7 @@ import org.geoserver.web.wicket.Select2DropDownChoice;
 /** A DataStore parameter panel that presents a dropdown choice */
 public class DropDownChoiceParamPanel extends Panel implements ParamPanel<Serializable> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private DropDownChoice<Serializable> choice;
@@ -56,8 +58,8 @@ public class DropDownChoiceParamPanel extends Panel implements ParamPanel<Serial
     }
 
     /**
-     * Select2 javascript code needs a unique HTML id for each component. This method generates a
-     * unique id for the component using the component's markup id and a random UUID.
+     * Select2 javascript code needs a unique HTML id for each component. This method generates a unique id for the
+     * component using the component's markup id and a random UUID.
      */
     private String select2UniqueIdentifier() {
         UUID randomUUID = UUID.randomUUID();

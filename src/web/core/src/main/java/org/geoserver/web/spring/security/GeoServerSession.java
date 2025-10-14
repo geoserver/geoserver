@@ -15,11 +15,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * Holds information about the user session with GeoServer, {@link #get()} to access user session
- * for the current thread.
+ * Holds information about the user session with GeoServer, {@link #get()} to access user session for the current
+ * thread.
  *
- * <p>This session object acts as a facade providing access to authentication, username and user's
- * admin privileges.
+ * <p>This session object acts as a facade providing access to authentication, username and user's admin privileges.
  */
 @SuppressWarnings("serial")
 public class GeoServerSession extends WebSession {
@@ -40,8 +39,8 @@ public class GeoServerSession extends WebSession {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null
                 && auth.getAuthorities().size() == 1
-                && "ROLE_ANONYMOUS".equals(auth.getAuthorities().iterator().next().getAuthority()))
-            return null;
+                && "ROLE_ANONYMOUS"
+                        .equals(auth.getAuthorities().iterator().next().getAuthority())) return null;
 
         return auth;
     }
@@ -66,9 +65,7 @@ public class GeoServerSession extends WebSession {
      */
     public boolean isAdmin() {
         Authentication auth = getAuthentication();
-        if (auth == null
-                || !auth.isAuthenticated()
-                || auth instanceof AnonymousAuthenticationToken) {
+        if (auth == null || !auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken) {
             return false;
         } else {
             GeoServerSecurityManager securityManager =

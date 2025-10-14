@@ -5,17 +5,19 @@
  */
 package org.geoserver.catalog.impl;
 
+import java.io.Serial;
 import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geotools.util.Utilities;
 
 /**
- * Realization of {@link LayerIdentifierInfo}; being a "data type" there's no {@code
- * createAuthorityURL()} method in {@code CatalogFactory}, instead directly instantiate this class.
+ * Realization of {@link LayerIdentifierInfo}; being a "data type" there's no {@code createAuthorityURL()} method in
+ * {@code CatalogFactory}, instead directly instantiate this class.
  *
  * @author groldan
  */
 public class LayerIdentifier implements LayerIdentifierInfo {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private String authority;
@@ -48,8 +50,7 @@ public class LayerIdentifier implements LayerIdentifierInfo {
             return false;
         }
         LayerIdentifierInfo o2 = (LayerIdentifierInfo) o;
-        return Utilities.equals(authority, o2.getAuthority())
-                && Utilities.equals(identifier, o2.getIdentifier());
+        return Utilities.equals(authority, o2.getAuthority()) && Utilities.equals(identifier, o2.getIdentifier());
     }
 
     @Override

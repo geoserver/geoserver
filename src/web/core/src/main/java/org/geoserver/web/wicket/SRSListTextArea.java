@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,6 +23,7 @@ import org.geotools.referencing.CRS;
 
 public class SRSListTextArea extends TextArea<List<String>> {
 
+    @Serial
     private static final long serialVersionUID = -4851891710707750564L;
 
     public SRSListTextArea(String id, IModel<List<String>> model) {
@@ -41,7 +43,9 @@ public class SRSListTextArea extends TextArea<List<String>> {
     }
 
     private static class SRSListConverter implements IConverter<List<String>> {
+        @Serial
         private static final long serialVersionUID = 6381056789141754260L;
+
         static final Pattern COMMA_SEPARATED = Pattern.compile("\\s*,\\s*", Pattern.MULTILINE);
 
         @Override
@@ -65,27 +69,25 @@ public class SRSListTextArea extends TextArea<List<String>> {
 
     private static class SRSListValidator implements IValidator<List<String>> {
 
+        @Serial
         private static final long serialVersionUID = -6376260926391668771L;
 
         @Override
         public void validate(IValidatable<List<String>> validatable) {
             List<String> srsList = validatable.getValue();
             List<String> invalid = new ArrayList<>();
-            srsList.stream()
-                    .forEach(
-                            (srs) -> {
-                                try {
-                                    CRS.decode("EPSG:" + srs);
-                                } catch (Exception e) {
-                                    invalid.add(srs);
-                                }
-                            });
+            srsList.stream().forEach((srs) -> {
+                try {
+                    CRS.decode("EPSG:" + srs);
+                } catch (Exception e) {
+                    invalid.add(srs);
+                }
+            });
 
             if (!invalid.isEmpty()) {
-                IValidationError err =
-                        new ValidationError("SRSListTextArea.unknownEPSGCodes")
-                                .addKey("SRSListTextArea.unknownEPSGCodes")
-                                .setVariable("codes", invalid.toString());
+                IValidationError err = new ValidationError("SRSListTextArea.unknownEPSGCodes")
+                        .addKey("SRSListTextArea.unknownEPSGCodes")
+                        .setVariable("codes", invalid.toString());
                 validatable.error(err);
             }
         }

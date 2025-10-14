@@ -42,8 +42,7 @@ import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 
 /**
- * JUnit Theory test class for Resource invariants. Subclasses should provide representative
- * DataPoints to test.
+ * JUnit Theory test class for Resource invariants. Subclasses should provide representative DataPoints to test.
  *
  * @author Kevin Smith, Boundless
  */

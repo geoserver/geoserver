@@ -15,6 +15,7 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -34,6 +35,7 @@ import org.geotools.util.logging.Logging;
 
 public abstract class AbstractS3FileServiceImpl implements FileService {
 
+    @Serial
     private static final long serialVersionUID = 7307573394786434849L;
 
     private static String ENCODING = "aws-chunked";
@@ -91,9 +93,7 @@ public abstract class AbstractS3FileServiceImpl implements FileService {
             FileUtils.copyInputStreamToFile(content, scratchFile);
 
             if (doPrepare && prepareScript != null) {
-                Process p =
-                        Runtime.getRuntime()
-                                .exec(prepareScript + " " + scratchFile.getAbsolutePath());
+                Process p = Runtime.getRuntime().exec(prepareScript + " " + scratchFile.getAbsolutePath());
                 LOGGER.info(new String(IOUtils.toByteArray(p.getInputStream())));
                 LOGGER.warning(new String(IOUtils.toByteArray(p.getErrorStream())));
                 try {
@@ -108,8 +108,7 @@ public abstract class AbstractS3FileServiceImpl implements FileService {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentEncoding(ENCODING);
 
-            PutObjectRequest putObjectRequest =
-                    new PutObjectRequest(rootFolder, filePath, scratchFile);
+            PutObjectRequest putObjectRequest = new PutObjectRequest(rootFolder, filePath, scratchFile);
 
             putObjectRequest.withMetadata(metadata);
 
@@ -193,9 +192,7 @@ public abstract class AbstractS3FileServiceImpl implements FileService {
 
         SortedSet<Integer> set = new TreeSet<Integer>();
         Pattern pattern =
-                Pattern.compile(
-                        Pattern.quote(filePath)
-                                .replace(FileService.PLACEHOLDER_VERSION, "\\E(.*)\\Q"));
+                Pattern.compile(Pattern.quote(filePath).replace(FileService.PLACEHOLDER_VERSION, "\\E(.*)\\Q"));
 
         ObjectListing listing = getS3Client().listObjects(rootFolder, filePath.substring(0, index));
         for (S3ObjectSummary summary : listing.getObjectSummaries()) {
@@ -204,10 +201,7 @@ public abstract class AbstractS3FileServiceImpl implements FileService {
                 try {
                     set.add(Integer.parseInt(matcher.group(1)));
                 } catch (NumberFormatException e) {
-                    LOGGER.log(
-                            Level.WARNING,
-                            "could not parse version in versioned file " + summary.getKey(),
-                            e);
+                    LOGGER.log(Level.WARNING, "could not parse version in versioned file " + summary.getKey(), e);
                 }
             }
         }

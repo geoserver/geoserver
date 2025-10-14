@@ -31,8 +31,8 @@ public class Icons {
     static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.wms.icons");
 
     /**
-     * Render symbols this much bigger than they should be then shrink them down in the KML. This
-     * makes for nicer looking symbols when they undergo further transformations in Google Earth
+     * Render symbols this much bigger than they should be then shrink them down in the KML. This makes for nicer
+     * looking symbols when they undergo further transformations in Google Earth
      */
     public static final int RENDER_SCALE_FACTOR = 4;
     /** The default size to use for symbols if none is specified */
@@ -47,8 +47,7 @@ public class Icons {
      * @param rotation the angle to rotate in degrees. {@code null} is treated as no rotation.
      * @return the size of a square big enough to contain the rotated image
      */
-    public static @Nullable Integer rotationScale(
-            @Nullable Integer size, @Nullable Double rotation) {
+    public static @Nullable Integer rotationScale(@Nullable Integer size, @Nullable Double rotation) {
         if (size == null) return null;
         if (rotation == null || rotation % 90 == 0) return size; // Save us some trig functions
         return (int) Math.ceil(rotationScaleFactor(rotation) * size);
@@ -72,8 +71,7 @@ public class Icons {
      * @param rotation the angle in degrees
      */
     public static double rotationScaleFactor(double rotation) {
-        return Math.abs(Math.sin(Math.toRadians(rotation)))
-                + Math.abs(Math.cos(Math.toRadians(rotation)));
+        return Math.abs(Math.sin(Math.toRadians(rotation))) + Math.abs(Math.cos(Math.toRadians(rotation)));
     }
 
     /** Get the rotation of the given graphic when applied to the given feature */
@@ -100,9 +98,9 @@ public class Icons {
         if (i == null) {
             Expression location;
             try {
-                location = ExpressionExtractor.extractCqlExpressions(eg.getLocation().toString());
-                Iterator<ExternalGraphicFactory> it =
-                        DynamicSymbolFactoryFinder.getExternalGraphicFactories();
+                location = ExpressionExtractor.extractCqlExpressions(
+                        eg.getLocation().toString());
+                Iterator<ExternalGraphicFactory> it = DynamicSymbolFactoryFinder.getExternalGraphicFactories();
                 while (i == null && it.hasNext()) {
                     try {
                         ExternalGraphicFactory fact = it.next();
@@ -131,12 +129,10 @@ public class Icons {
     /**
      * Get the size of a symbolizer graphic
      *
-     * @param rotation Treat the graphic as a square and rotate it, then find a square big enough to
-     *     accomodate the rotated square. If {@code null} the rotation will be calculated based on
-     *     the feature.
+     * @param rotation Treat the graphic as a square and rotate it, then find a square big enough to accomodate the
+     *     rotated square. If {@code null} the rotation will be calculated based on the feature.
      */
-    public static @Nullable Double graphicSize(
-            Graphic g, @Nullable Double rotation, @Nullable Feature f) {
+    public static @Nullable Double graphicSize(Graphic g, @Nullable Double rotation, @Nullable Feature f) {
         Double size = getSpecifiedSize(g, f);
 
         double border = 0;
@@ -147,8 +143,8 @@ public class Icons {
 
         GraphicalSymbol gs = g.graphicalSymbols().iterator().next();
 
-        if (gs instanceof Mark) {
-            Stroke stroke = ((Mark) gs).getStroke();
+        if (gs instanceof Mark mark) {
+            Stroke stroke = mark.getStroke();
             if (stroke != null && stroke.getWidth() != null) {
                 Double width = stroke.getWidth().evaluate(f, Double.class);
                 if (width != null) {
@@ -158,8 +154,8 @@ public class Icons {
         }
 
         if (size == null) {
-            if (gs instanceof ExternalGraphic) {
-                size = (double) getExternalSize((ExternalGraphic) gs, f);
+            if (gs instanceof ExternalGraphic graphic) {
+                size = (double) getExternalSize(graphic, f);
             } else {
                 size = DEFAULT_SYMBOL_SIZE;
             }
@@ -175,9 +171,8 @@ public class Icons {
     /**
      * Get the scale factor to put in the KML
      *
-     * @param f rotation Treat the graphic as a square and rotate it, then find a square big enough
-     *     to accomodate the rotated square. If {@code null} the rotation will be calculated based
-     *     on the feature.
+     * @param f rotation Treat the graphic as a square and rotate it, then find a square big enough to accomodate the
+     *     rotated square. If {@code null} the rotation will be calculated based on the feature.
      */
     public static @Nullable Double graphicScale(Graphic g, @Nullable Feature f) {
         Double size = graphicSize(g, null, f);

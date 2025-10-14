@@ -6,8 +6,10 @@
 package org.geoserver.web.data.layergroup;
 
 import static org.geoserver.catalog.Predicates.sortBy;
+import static org.geoserver.config.CatalogModificationUserUpdater.TRACK_USER;
 
 import com.google.common.collect.Streams;
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -19,6 +21,8 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.config.SettingsInfo;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geotools.api.filter.Filter;
@@ -26,36 +30,34 @@ import org.geotools.api.filter.sort.SortBy;
 import org.springframework.lang.Nullable;
 
 /**
- * {@link GeoServerDataProvider} providing a table model for listing {@link LayerGroupInfo layer
- * groups} available in the {@link Catalog}.
+ * {@link GeoServerDataProvider} providing a table model for listing {@link LayerGroupInfo layer groups} available in
+ * the {@link Catalog}.
  *
- * @implNote This class overrides the following methods in order to leverage the Catalog filtering
- *     and paging support:
+ * @implNote This class overrides the following methods in order to leverage the Catalog filtering and paging support:
  *     <ul>
- *       <li>{@link #size()}: in order to call {@link Catalog#count(Class, Filter)} with any filter
- *           criteria set on the page
- *       <li>{@link #fullSize()}: in order to call {@link Catalog#count(Class, Filter)} with {@link
- *           Predicates#acceptAll()}
- *       <li>{@link #iterator}: in order to ask the catalog for paged and sorted contents directly
- *           through {@link Catalog#list(Class, Filter, Integer, Integer, SortBy)}
- *       <li>{@link #getItems()} throws an unsupported operation exception, as given the above it
- *           should not be called
+ *       <li>{@link #size()}: in order to call {@link Catalog#count(Class, Filter)} with any filter criteria set on the
+ *           page
+ *       <li>{@link #fullSize()}: in order to call {@link Catalog#count(Class, Filter)} with
+ *           {@link Predicates#acceptAll()}
+ *       <li>{@link #iterator}: in order to ask the catalog for paged and sorted contents directly through
+ *           {@link Catalog#list(Class, Filter, Integer, Integer, SortBy)}
+ *       <li>{@link #getItems()} throws an unsupported operation exception, as given the above it should not be called
  *     </ul>
  */
 public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
 
+    @Serial
     private static final long serialVersionUID = 4806818198949114395L;
 
     public static Property<LayerGroupInfo> NAME = new BeanProperty<>("name", "name");
 
-    public static Property<LayerGroupInfo> WORKSPACE =
-            new BeanProperty<>("workspace", "workspace.name");
+    public static Property<LayerGroupInfo> WORKSPACE = new BeanProperty<>("workspace", "workspace.name");
 
-    static final Property<LayerGroupInfo> MODIFIED_TIMESTAMP =
-            new BeanProperty<>("datemodfied", "dateModified");
+    static final Property<LayerGroupInfo> MODIFIED_TIMESTAMP = new BeanProperty<>("datemodfied", "dateModified");
 
-    static final Property<LayerGroupInfo> CREATED_TIMESTAMP =
-            new BeanProperty<>("datecreated", "dateCreated");
+    static final Property<LayerGroupInfo> CREATED_TIMESTAMP = new BeanProperty<>("datecreated", "dateCreated");
+
+    static final Property<LayerGroupInfo> MODIFIED_BY = new BeanProperty<>("modifiedby", "modifiedBy");
 
     public static Property<LayerGroupInfo> ENABLED = new BeanProperty<>("enabled", "enabled");
 
@@ -85,8 +87,8 @@ public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
     }
 
     /**
-     * This method shouldn't be called at all due to the overloading of {@link #size()}, {@link
-     * #fullSize()}, and {@link #iterator(long, long)}
+     * This method shouldn't be called at all due to the overloading of {@link #size()}, {@link #fullSize()}, and
+     * {@link #iterator(long, long)}
      */
     @Override
     protected List<LayerGroupInfo> getItems() {
@@ -100,16 +102,19 @@ public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
         List<Property<LayerGroupInfo>> modifiedPropertiesList =
                 PROPERTIES.stream().map(c -> c).collect(Collectors.toList());
         // check geoserver properties
-        if (GeoServerApplication.get()
-                .getGeoServer()
-                .getSettings()
-                .isShowCreatedTimeColumnsInAdminList())
-            modifiedPropertiesList.add(CREATED_TIMESTAMP);
-        if (GeoServerApplication.get()
-                .getGeoServer()
-                .getSettings()
-                .isShowModifiedTimeColumnsInAdminList())
-            modifiedPropertiesList.add(MODIFIED_TIMESTAMP);
+        SettingsInfo settings = GeoServerApplication.get().getGeoServer().getSettings();
+        if (settings.isShowCreatedTimeColumnsInAdminList()) modifiedPropertiesList.add(CREATED_TIMESTAMP);
+        if (settings.isShowModifiedTimeColumnsInAdminList()) modifiedPropertiesList.add(MODIFIED_TIMESTAMP);
+
+        String trackUser = GeoServerExtensions.getProperty(TRACK_USER);
+        if (trackUser == null
+                        && GeoServerApplication.get()
+                                .getGeoServer()
+                                .getSettings()
+                                .isShowModifiedUserInAdminList()
+                || Boolean.parseBoolean(trackUser)) {
+            modifiedPropertiesList.add(MODIFIED_BY);
+        }
         return modifiedPropertiesList;
     }
 
@@ -119,20 +124,15 @@ public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
     }
 
     /**
-     * Query the {@link Catalog#list(Class, Filter, Integer, Integer, SortBy)} streaming API and
-     * adapt it to a {@link Stream}; note {@link Stream} is {@link AutoCloseable} and hence the
-     * returned stream shall be used in a try-with-resources block.
+     * Query the {@link Catalog#list(Class, Filter, Integer, Integer, SortBy)} streaming API and adapt it to a
+     * {@link Stream}; note {@link Stream} is {@link AutoCloseable} and hence the returned stream shall be used in a
+     * try-with-resources block.
      */
-    @SuppressWarnings("PMD.CloseResource")
     private Stream<LayerGroupInfo> query(
-            Filter filter,
-            @Nullable Integer first,
-            @Nullable Integer count,
-            @Nullable SortBy sortOrder) {
+            Filter filter, @Nullable Integer first, @Nullable Integer count, @Nullable SortBy sortOrder) {
         Catalog catalog = getCatalog();
 
-        CloseableIterator<LayerGroupInfo> items =
-                catalog.list(LayerGroupInfo.class, filter, first, count, sortOrder);
+        CloseableIterator<LayerGroupInfo> items = catalog.list(LayerGroupInfo.class, filter, first, count, sortOrder);
 
         Stream<LayerGroupInfo> stream = Streams.stream(items);
         return stream.onClose(items::close);

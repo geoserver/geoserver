@@ -84,7 +84,7 @@ The :guilabel:`Settings` section contains configuration settings that apply to t
 
 * The :ref:`Global Settings <config_globalsettings>` page configures messaging, logging, character and proxy settings for the entire server.
 
-* The :ref:`JAI` page configures several JAI parameters, used by both WMS and WCS operations.
+* The :ref:`Image Processing <image-processing>` page configures several image processing parameters, used by both WMS and WCS operations.
 
 * The :ref:`Coverage Access <config_converageaccess>` page configures settings related to loading and publishing coverages.
 
@@ -148,12 +148,20 @@ Navigation
 
 A navigation menu is provided along the left-hand-side of the screen listing configuration pages.
 
-To return to the main :ref:`welcome` click on the GeoServer logo at the top of the navigation menu.
- 
+.. figure:: images/menu.png
+
+   Application Menu
+
+To return to the main :ref:`welcome` page click on the GeoServer logo at the top of the navigation menu.
+
 User login
 ^^^^^^^^^^
 
 The upper right of the web administration interface provides options to :ref:`login <logging_in>`.
+
+.. figure:: images/login.png
+   
+   Application Login
 
 GeoServer will share only the web services and layers available to the current user.
 
@@ -164,5 +172,21 @@ The administration interface is displayed using the browser's preferred language
 otherwise it will fall back to English.
 The drop-down chooser on the side of the login/logout button allows selection of a different language.
 
+.. figure:: images/language-en.png
+   
+   Language Chooser en
+   
+.. figure:: images/language-fr.png
+   
+   Language Chooser fr
+   
 The language choice is saved in the session, as well as in a cookie, to retain the language
 choice across user sessions.
+
+Troubleshooing
+^^^^^^^^^^^^^^
+
+Please see:
+
+* :ref:`wicket_error`
+* :ref:`csp_strict`

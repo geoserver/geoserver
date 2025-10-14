@@ -29,29 +29,23 @@ public class DGGSAPIBuilder extends OpenAPIBuilder<DGGSInfo> {
         // adjust path output formats
         declareGetResponseFormats(api, "/", OpenAPI.class);
         declareGetResponseFormats(api, "/conformance", ConformanceDocument.class);
-        declareGetResponseFormats(
-                api, "/collections", org.geoserver.ogcapi.v1.features.CollectionsDocument.class);
+        declareGetResponseFormats(api, "/collections", org.geoserver.ogcapi.v1.features.CollectionsDocument.class);
         declareGetResponseFormats(api, "/collections/{collectionId}", CollectionsDocument.class);
         declareGetResponseFormats(api, "/collections/{collectionId}/zones", FeaturesResponse.class);
-        declareGetResponseFormats(
-                api, "/collections/{collectionId}/neighbors", FeaturesResponse.class);
-        declareGetResponseFormats(
-                api, "/collections/{collectionId}/parents", FeaturesResponse.class);
-        declareGetResponseFormats(
-                api, "/collections/{collectionId}/children", FeaturesResponse.class);
+        declareGetResponseFormats(api, "/collections/{collectionId}/neighbors", FeaturesResponse.class);
+        declareGetResponseFormats(api, "/collections/{collectionId}/parents", FeaturesResponse.class);
+        declareGetResponseFormats(api, "/collections/{collectionId}/children", FeaturesResponse.class);
         declareGetResponseFormats(api, "/collections/{collectionId}/point", FeaturesResponse.class);
-        declareGetResponseFormats(
-                api, "/collections/{collectionId}/polygon", FeaturesResponse.class);
+        declareGetResponseFormats(api, "/collections/{collectionId}/polygon", FeaturesResponse.class);
 
         // provide a list of valid values for collectionId
         Map<String, Parameter> parameters = api.getComponents().getParameters();
         Parameter collectionId = parameters.get("collectionId");
         Catalog catalog = service.getGeoServer().getCatalog();
-        List<String> validCollectionIds =
-                catalog.getFeatureTypes().stream()
-                        .filter(ft -> DGGSService.isDGGSType(ft))
-                        .map(ft -> ft.prefixedName())
-                        .collect(Collectors.toList());
+        List<String> validCollectionIds = catalog.getFeatureTypes().stream()
+                .filter(ft -> DGGSService.isDGGSType(ft))
+                .map(ft -> ft.prefixedName())
+                .collect(Collectors.toList());
         collectionId.getSchema().setEnum(validCollectionIds);
 
         return api;

@@ -80,12 +80,9 @@ public class CapabilitiesRootLayerTest extends WMSTestSupport {
             Document dom = getAsDOM("lakes_and_places/wms?request=GetCapabilities&version=1.3.0");
             // print(dom);
 
+            assertXpathEvaluatesTo("", "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Name", dom);
             assertXpathEvaluatesTo(
-                    "", "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Name", dom);
-            assertXpathEvaluatesTo(
-                    "lakes_and_places",
-                    "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Name",
-                    dom);
+                    "lakes_and_places", "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Name", dom);
         } finally {
             if (group != null) {
                 catalog.remove(group);
@@ -105,10 +102,7 @@ public class CapabilitiesRootLayerTest extends WMSTestSupport {
             Document dom = getAsDOM("lakes_and_places/wms?request=GetCapabilities&version=1.3.0");
             // print(dom);
 
-            assertXpathEvaluatesTo(
-                    "lakes_and_places",
-                    "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Name",
-                    dom);
+            assertXpathEvaluatesTo("lakes_and_places", "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Name", dom);
         } finally {
             if (group != null) {
                 catalog.remove(group);
@@ -128,8 +122,7 @@ public class CapabilitiesRootLayerTest extends WMSTestSupport {
             Document dom = getAsDOM("cite/Lakes/wms?request=GetCapabilities&version=1.3.0");
             // print(dom);
 
-            assertXpathEvaluatesTo(
-                    "Lakes", "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Name", dom);
+            assertXpathEvaluatesTo("Lakes", "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Name", dom);
         } finally {
             layer.getMetadata().remove(PublishedInfo.ROOT_IN_CAPABILITIES);
             catalog.save(layer);
@@ -143,15 +136,10 @@ public class CapabilitiesRootLayerTest extends WMSTestSupport {
         LayerGroupInfo group = null;
         try {
             group = createLakesPlacesLayerGroup(catalog, LayerGroupInfo.Mode.NAMED, null);
-            Document dom =
-                    getAsDOM(
-                            "lakes_and_places/wms?request=GetCapabilities&version=1.3.0&rootLayer=false");
+            Document dom = getAsDOM("lakes_and_places/wms?request=GetCapabilities&version=1.3.0&rootLayer=false");
             // print(dom);
 
-            assertXpathEvaluatesTo(
-                    "lakes_and_places",
-                    "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Name",
-                    dom);
+            assertXpathEvaluatesTo("lakes_and_places", "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Name", dom);
         } finally {
             if (group != null) {
                 catalog.remove(group);
@@ -169,17 +157,12 @@ public class CapabilitiesRootLayerTest extends WMSTestSupport {
         try {
             group = createLakesPlacesLayerGroup(catalog, LayerGroupInfo.Mode.NAMED, null);
             group.getMetadata().put(PublishedInfo.ROOT_IN_CAPABILITIES, true);
-            Document dom =
-                    getAsDOM(
-                            "lakes_and_places/wms?request=GetCapabilities&version=1.3.0&rootLayer=true");
+            Document dom = getAsDOM("lakes_and_places/wms?request=GetCapabilities&version=1.3.0&rootLayer=true");
             // print(dom);
 
+            assertXpathEvaluatesTo("", "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Name", dom);
             assertXpathEvaluatesTo(
-                    "", "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Name", dom);
-            assertXpathEvaluatesTo(
-                    "lakes_and_places",
-                    "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Name",
-                    dom);
+                    "lakes_and_places", "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Name", dom);
         } finally {
             if (group != null) {
                 catalog.remove(group);
@@ -201,12 +184,9 @@ public class CapabilitiesRootLayerTest extends WMSTestSupport {
             Document dom = getAsDOM("lakes_and_places/wms?request=GetCapabilities&version=1.3.0");
             // print(dom);
 
+            assertXpathEvaluatesTo("", "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Name", dom);
             assertXpathEvaluatesTo(
-                    "", "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Name", dom);
-            assertXpathEvaluatesTo(
-                    "lakes_and_places",
-                    "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Name",
-                    dom);
+                    "lakes_and_places", "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Name", dom);
         } finally {
             if (group != null) {
                 catalog.remove(group);
@@ -225,15 +205,10 @@ public class CapabilitiesRootLayerTest extends WMSTestSupport {
         LayerGroupInfo group = null;
         try {
             group = createLakesPlacesLayerGroup(catalog, LayerGroupInfo.Mode.NAMED, null);
-            Document dom =
-                    getAsDOM(
-                            "lakes_and_places/wms?service=WMS&request=getCapabilities&version=1.3.0");
+            Document dom = getAsDOM("lakes_and_places/wms?service=WMS&request=getCapabilities&version=1.3.0");
             // print(dom);
 
-            assertXpathEvaluatesTo(
-                    "lakes_and_places",
-                    "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Name",
-                    dom);
+            assertXpathEvaluatesTo("lakes_and_places", "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Name", dom);
         } finally {
             if (group != null) {
                 catalog.remove(group);
@@ -258,8 +233,7 @@ public class CapabilitiesRootLayerTest extends WMSTestSupport {
             Document dom = getAsDOM("cite/wms?request=GetCapabilities&version=1.3.0");
             // print(dom);
 
-            assertXpathEvaluatesTo(
-                    "Lakes", "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Name", dom);
+            assertXpathEvaluatesTo("Lakes", "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Name", dom);
         } finally {
             layer.getMetadata().remove(PublishedInfo.ROOT_IN_CAPABILITIES);
             catalog.save(layer);

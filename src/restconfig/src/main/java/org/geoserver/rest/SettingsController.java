@@ -11,7 +11,7 @@ import org.geoserver.config.ContactInfo;
 import org.geoserver.config.CoverageAccessInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
-import org.geoserver.config.JAIInfo;
+import org.geoserver.config.ImageProcessingInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.rest.converters.XStreamMessageConverter;
@@ -45,11 +45,7 @@ public class SettingsController extends AbstractGeoServerController {
     }
 
     @GetMapping(
-            produces = {
-                MediaType.APPLICATION_JSON_VALUE,
-                MediaType.APPLICATION_XML_VALUE,
-                MediaType.TEXT_HTML_VALUE
-            })
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
     public RestWrapper<GeoServerInfo> settingsGet() {
         return wrapObject(geoServer.getGlobal(), GeoServerInfo.class);
     }
@@ -69,11 +65,7 @@ public class SettingsController extends AbstractGeoServerController {
 
     @GetMapping(
             value = "/contact",
-            produces = {
-                MediaType.APPLICATION_JSON_VALUE,
-                MediaType.APPLICATION_XML_VALUE,
-                MediaType.TEXT_HTML_VALUE
-            })
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
     public RestWrapper<ContactInfo> contactGet() {
         if (geoServer.getSettings().getContact() == null) {
             throw new ResourceNotFoundException("No contact information available");
@@ -98,17 +90,14 @@ public class SettingsController extends AbstractGeoServerController {
 
     @Override
     public boolean supports(
-            MethodParameter methodParameter,
-            Type targetType,
-            Class<? extends HttpMessageConverter<?>> converterType) {
+            MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return ContactInfo.class.isAssignableFrom(methodParameter.getParameterType())
                 || GeoServerInfo.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
     @Override
     protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
-        return new ObjectToMapWrapper<>(
-                clazz, Arrays.asList(JAIInfo.class, CoverageAccessInfo.class));
+        return new ObjectToMapWrapper<>(clazz, Arrays.asList(ImageProcessingInfo.class, CoverageAccessInfo.class));
     }
 
     @Override

@@ -6,6 +6,7 @@
 package org.geoserver.security.web.auth;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -28,6 +29,7 @@ import org.geoserver.web.wicket.HelpLink;
  */
 public class SecurityVariableFilterChainPage extends SecurityFilterChainPage {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /** logger */
@@ -38,51 +40,41 @@ public class SecurityVariableFilterChainPage extends SecurityFilterChainPage {
 
         VariableFilterChainWrapper wrapper = new VariableFilterChainWrapper(chain);
 
-        Form<VariableFilterChainWrapper> theForm =
-                new Form<>("form", new CompoundPropertyModel<>(wrapper));
+        Form<VariableFilterChainWrapper> theForm = new Form<>("form", new CompoundPropertyModel<>(wrapper));
 
         super.initialize(chain, secMgrConfig, isNew, theForm, wrapper);
 
         List<String> filterNames = new ArrayList<>();
         try {
-            filterNames.addAll(
-                    getSecurityManager().listFilters(GeoServerExceptionTranslationFilter.class));
+            filterNames.addAll(getSecurityManager().listFilters(GeoServerExceptionTranslationFilter.class));
             for (GeoServerExceptionTranslationFilter filter :
                     GeoServerExtensions.extensions(GeoServerExceptionTranslationFilter.class)) {
                 filterNames.add(filter.getName());
             }
-            form.add(
-                    new DropDownChoice<>(
-                            "exceptionTranslationName",
-                            new PropertyModel<>(
-                                    chainWrapper.getChain(), "exceptionTranslationName"),
-                            filterNames));
+            form.add(new DropDownChoice<>(
+                    "exceptionTranslationName",
+                    new PropertyModel<>(chainWrapper.getChain(), "exceptionTranslationName"),
+                    filterNames));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
         filterNames = new ArrayList<>();
         try {
-            filterNames.addAll(
-                    getSecurityManager().listFilters(GeoServerSecurityInterceptorFilter.class));
+            filterNames.addAll(getSecurityManager().listFilters(GeoServerSecurityInterceptorFilter.class));
             for (GeoServerSecurityInterceptorFilter filter :
                     GeoServerExtensions.extensions(GeoServerSecurityInterceptorFilter.class)) {
                 filterNames.add(filter.getName());
             }
-            form.add(
-                    new DropDownChoice<>(
-                            "interceptorName",
-                            new PropertyModel<>(chainWrapper.getChain(), "interceptorName"),
-                            filterNames));
+            form.add(new DropDownChoice<>(
+                    "interceptorName", new PropertyModel<>(chainWrapper.getChain(), "interceptorName"), filterNames));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
         form.add(
-                palette =
-                        new AuthFilterChainPalette(
-                                "authFilterChain",
-                                new AuthFilterNamesModel(getVariableFilterChainWrapper())));
+                palette = new AuthFilterChainPalette(
+                        "authFilterChain", new AuthFilterNamesModel(getVariableFilterChainWrapper())));
         palette.setOutputMarkupId(true);
         palette.setChain(getVariableFilterChainWrapper().getVariableFilterChain());
 
@@ -95,7 +87,9 @@ public class SecurityVariableFilterChainPage extends SecurityFilterChainPage {
 
     class AuthFilterNamesModel implements IModel<List<String>> {
 
+        @Serial
         private static final long serialVersionUID = 1L;
+
         VariableFilterChainWrapper chainModel;
 
         AuthFilterNamesModel(VariableFilterChainWrapper chainModel) {

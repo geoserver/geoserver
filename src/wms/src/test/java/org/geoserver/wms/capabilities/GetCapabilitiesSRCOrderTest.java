@@ -27,7 +27,6 @@ import org.w3c.dom.Element;
  * Unit test suite for {@link GetCapabilitiesResponse}.
  *
  * @author Antonio Cerciello - Geocat
- * @version $Id$
  */
 public class GetCapabilitiesSRCOrderTest extends WMSTestSupport {
 
@@ -75,8 +74,7 @@ public class GetCapabilitiesSRCOrderTest extends WMSTestSupport {
         info.getGeoServer().save(info);
 
         Capabilities_1_3_0_Transformer tr =
-                new Capabilities_1_3_0_Transformer(
-                        wms, BASE_URL, wms.getAllowedMapFormats(), new HashSet<>());
+                new Capabilities_1_3_0_Transformer(wms, BASE_URL, wms.getAllowedMapFormats(), new HashSet<>());
         GetCapabilitiesRequest req = new GetCapabilitiesRequest();
         req.setBaseUrl(BASE_URL);
         req.setVersion(WMS.VERSION_1_3_0.toString());

@@ -5,11 +5,13 @@
  */
 package org.geoserver.cluster;
 
+import java.io.Serial;
 import java.util.Properties;
 
 /** Configuration properties for clustered configuration/catalog. */
 public class ClusterConfig extends Properties {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /** @return is clustering enabled */
@@ -28,8 +30,7 @@ public class ClusterConfig extends Properties {
     }
 
     /**
-     * @return milliseconds to wait for node ack notifications upon sending a config change event.
-     *     Defaults to 2000ms.
+     * @return milliseconds to wait for node ack notifications upon sending a config change event. Defaults to 2000ms.
      */
     public int getAckTimeoutMillis() {
         return Integer.parseInt(getProperty("acktimeout", "2000"));

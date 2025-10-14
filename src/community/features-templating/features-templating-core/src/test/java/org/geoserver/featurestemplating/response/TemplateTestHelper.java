@@ -1,3 +1,7 @@
+/* (c) 2025 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.featurestemplating.response;
 
 import com.google.common.base.Charsets;
@@ -24,14 +28,7 @@ public class TemplateTestHelper {
             FeatureTypeInfo ft)
             throws IOException {
         setUpTemplate(
-                cqlRuleCondition,
-                null,
-                outputFormat,
-                templateFileName,
-                templateName,
-                templateExtension,
-                workspace,
-                ft);
+                cqlRuleCondition, null, outputFormat, templateFileName, templateName, templateExtension, workspace, ft);
     }
 
     public void setUpTemplate(
@@ -43,15 +40,7 @@ public class TemplateTestHelper {
             String workspace,
             FeatureTypeInfo ft)
             throws IOException {
-        setUpTemplate(
-                cqlRuleCondition,
-                null,
-                outputFormat,
-                template,
-                templateName,
-                templateExtension,
-                workspace,
-                ft);
+        setUpTemplate(cqlRuleCondition, null, outputFormat, template, templateName, templateExtension, workspace, ft);
     }
 
     public void setUpTemplate(
@@ -65,15 +54,7 @@ public class TemplateTestHelper {
             FeatureTypeInfo ft)
             throws IOException {
         InputStream is = getClass().getResourceAsStream(templateFileName);
-        setUpTemplate(
-                cqlRuleCondition,
-                profile,
-                outputFormat,
-                is,
-                templateName,
-                templateExtension,
-                workspace,
-                ft);
+        setUpTemplate(cqlRuleCondition, profile, outputFormat, is, templateName, templateExtension, workspace, ft);
     }
 
     public void setUpTemplate(

@@ -30,8 +30,7 @@ public class RawProcess {
                             meta = {"mimeTypes=application/json,text/xml"})
                     final RawData input,
             @DescribeParameter(name = "outputMimeType", min = 0) final String outputMimeType,
-            @DescribeParameter(name = "returnNull", min = 0, defaultValue = "false")
-                    final boolean returnNull) {
+            @DescribeParameter(name = "returnNull", min = 0, defaultValue = "false") final boolean returnNull) {
         if (returnNull) {
             return null;
         }

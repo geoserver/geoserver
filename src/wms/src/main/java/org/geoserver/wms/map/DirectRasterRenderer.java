@@ -11,11 +11,6 @@ import static org.geoserver.wms.map.RenderedImageMapOutputFormat.getFormatOption
 import static org.geoserver.wms.map.RenderedImageMapOutputFormat.toInterpolationObject;
 import static org.geotools.renderer.lite.gridcoverage2d.ChannelSelectionUpdateStyleVisitor.getBandIndicesFromSelectionChannels;
 
-import it.geosolutions.jaiext.lookup.LookupTable;
-import it.geosolutions.jaiext.lookup.LookupTableFactory;
-import it.geosolutions.jaiext.range.Range;
-import it.geosolutions.jaiext.vectorbin.ROIGeometry;
-import it.geosolutions.rendered.viewer.RenderedImageBrowser;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -36,16 +31,21 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import javax.media.jai.ImageLayout;
-import javax.media.jai.Interpolation;
-import javax.media.jai.InterpolationNearest;
-import javax.media.jai.JAI;
-import javax.media.jai.PlanarImage;
-import javax.media.jai.ROI;
-import javax.media.jai.ROIShape;
-import javax.media.jai.RasterFactory;
-import javax.media.jai.operator.ConstantDescriptor;
-import javax.media.jai.operator.MosaicDescriptor;
+import org.eclipse.imagen.ImageLayout;
+import org.eclipse.imagen.ImageN;
+import org.eclipse.imagen.Interpolation;
+import org.eclipse.imagen.InterpolationNearest;
+import org.eclipse.imagen.PlanarImage;
+import org.eclipse.imagen.ROI;
+import org.eclipse.imagen.ROIShape;
+import org.eclipse.imagen.RasterFactory;
+import org.eclipse.imagen.media.lookup.LookupTable;
+import org.eclipse.imagen.media.lookup.LookupTableFactory;
+import org.eclipse.imagen.media.mosaic.MosaicDescriptor;
+import org.eclipse.imagen.media.range.Range;
+import org.eclipse.imagen.media.vectorbin.ROIGeometry;
+import org.eclipse.imagen.media.viewer.RenderedImageBrowser;
+import org.eclipse.imagen.operator.ConstantDescriptor;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.platform.ServiceException;
@@ -165,8 +165,7 @@ class DirectRasterRenderer {
         FeatureType featureType = layer.getFeatureSource().getSchema();
         Style style = layer.getStyle();
 
-        RasterSymbolizerVisitor visitor =
-                new RasterSymbolizerVisitor(scaleDenominator, featureType);
+        RasterSymbolizerVisitor visitor = new RasterSymbolizerVisitor(scaleDenominator, featureType);
         style.accept(visitor);
 
         List<RasterSymbolizer> symbolizers = visitor.getRasterSymbolizers();
@@ -220,12 +219,11 @@ class DirectRasterRenderer {
     }
 
     /**
-     * Renders a single coverage as the final RenderedImage to be encoded, skipping all of the
-     * Java2D machinery and using a pure JAI chain of transformations instead. This considerably
-     * improves both scalability and performance
+     * Renders a single coverage as the final RenderedImage to be encoded, skipping all of the Java2D machinery and
+     * using a pure ImageN chain of transformations instead. This considerably improves both scalability and performance
      *
-     * @return the result of rendering the coverage, or null if there was no coverage, or the
-     *     coverage could not be renderer for some reason
+     * @return the result of rendering the coverage, or null if there was no coverage, or the coverage could not be
+     *     renderer for some reason
      */
     public RenderedImage render() throws FactoryException {
         // if the symbolizer was not extracted in the contructor, we cannot proceed
@@ -241,15 +239,12 @@ class DirectRasterRenderer {
         final ReadingContext context = new ReadingContext();
         RenderedImage image = null;
         GridCoverage2D coverage = null;
-        RenderingHints interpolationHints =
-                new RenderingHints(JAI.KEY_INTERPOLATION, interpolation);
+        RenderingHints interpolationHints = new RenderingHints(ImageN.KEY_INTERPOLATION, interpolation);
         try {
             final Color readerBgColor = transparent ? null : bgColor;
             CoordinateReferenceSystem mapCRS = mapEnvelope.getCoordinateReferenceSystem();
-            boolean advancedProjectionHandling =
-                    wms.isAdvancedProjectionHandlingEnabled()
-                            && getFormatOptionAsBoolean(
-                                    mapContent.getRequest(), ADV_PROJECTION_HANDLING_FORMAT_OPTION);
+            boolean advancedProjectionHandling = wms.isAdvancedProjectionHandlingEnabled()
+                    && getFormatOptionAsBoolean(mapContent.getRequest(), ADV_PROJECTION_HANDLING_FORMAT_OPTION);
             if (transformation == null && advancedProjectionHandling) {
                 image = readWithProjectionHandling(interpolationHints, readerBgColor, mapCRS);
             } else {
@@ -264,10 +259,9 @@ class DirectRasterRenderer {
                     Object result = readAndTransform(interpolationHints, coverageCRS, readGG);
                     if (result == null) {
                         coverage = null;
-                    } else if (result instanceof GridCoverage2D) {
-                        coverage = (GridCoverage2D) result;
-                        symbolizer =
-                                updateSymbolizerForBandSelection(context, symbolizer, bandIndices);
+                    } else if (result instanceof GridCoverage2D coverage2D) {
+                        coverage = coverage2D;
+                        symbolizer = updateSymbolizerForBandSelection(context, symbolizer, bandIndices);
                     } else {
                         // we don't know how to handle this case, we'll let streaming renderer fall
                         // back on this one
@@ -285,25 +279,17 @@ class DirectRasterRenderer {
                 // GridCoverageRenderer
                 if (image == null) {
                     // apply the grid coverage renderer
-                    final GridCoverageRenderer gcr =
-                            new GridCoverageRenderer(
-                                    mapCRS,
-                                    ReferencedEnvelope.reference(readGG.getEnvelope()),
-                                    readGG.getGridRange2D(),
-                                    worldToScreen,
-                                    interpolationHints);
+                    final GridCoverageRenderer gcr = new GridCoverageRenderer(
+                            mapCRS,
+                            ReferencedEnvelope.reference(readGG.getEnvelope()),
+                            readGG.getGridRange2D(),
+                            worldToScreen,
+                            interpolationHints);
                     gcr.setAdvancedProjectionHandlingEnabled(false);
 
                     // create a solid color empty image
                     // use null background, background is handled separately
-                    image =
-                            gcr.renderImage(
-                                    coverage,
-                                    symbolizer,
-                                    interpolation,
-                                    null,
-                                    tileSizeX,
-                                    tileSizeY);
+                    image = gcr.renderImage(coverage, symbolizer, interpolation, null, tileSizeX, tileSizeY);
                 }
             }
         } catch (Throwable e) {
@@ -365,9 +351,8 @@ class DirectRasterRenderer {
 
         // in case of index color model we try to preserve it, so that output
         // formats that can work with it can enjoy its extra compactness
-        if (cm instanceof IndexColorModel) {
+        if (cm instanceof IndexColorModel icm) {
             final ImageWorker worker = new ImageWorker(image);
-            IndexColorModel icm = (IndexColorModel) cm;
             // try to find the index that matches the requested background color
             final int bgColorIndex;
             if (transparent) {
@@ -384,8 +369,7 @@ class DirectRasterRenderer {
                         cm = icm;
                         ImageLayout ilColorModel = new ImageLayout(image);
                         ilColorModel.setColorModel(icm);
-                        RenderingHints hints =
-                                new RenderingHints(JAI.KEY_IMAGE_LAYOUT, ilColorModel);
+                        RenderingHints hints = new RenderingHints(ImageN.KEY_IMAGE_LAYOUT, ilColorModel);
                         worker.setRenderingHints(hints);
                         worker.format(image.getSampleModel().getDataType());
                         image = worker.getRenderedImage();
@@ -400,12 +384,7 @@ class DirectRasterRenderer {
             if (bgColorIndex == -1) {
                 // we need to expand the image to RGB
                 bgValues =
-                        new double[] {
-                            bgColor.getRed(),
-                            bgColor.getGreen(),
-                            bgColor.getBlue(),
-                            transparent ? 0 : 255
-                        };
+                        new double[] {bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), transparent ? 0 : 255};
                 worker.setBackground(bgValues);
                 image = worker.forceComponentColorModel().getRenderedImage();
                 if (transparent && !image.getColorModel().hasAlpha()) {
@@ -438,9 +417,8 @@ class DirectRasterRenderer {
 
         // in case of component color model
         boolean noDataTransparencyApplied = false;
-        if (cm instanceof ComponentColorModel) {
+        if (cm instanceof ComponentColorModel ccm) {
             // convert to RGB if necessary
-            ComponentColorModel ccm = (ComponentColorModel) cm;
             boolean hasAlpha = cm.hasAlpha();
 
             // if we have a grayscale image see if we have to expand to RGB
@@ -456,19 +434,17 @@ class DirectRasterRenderer {
                         // get first band
                         final RenderedImage gray =
                                 new ImageWorker(image).retainFirstBand().getRenderedImage();
-                        image =
-                                new ImageWorker(gray)
-                                        .bandMerge(3)
-                                        .addBand(alpha, false)
-                                        .forceComponentColorModel()
-                                        .forceColorSpaceRGB()
-                                        .getRenderedImage();
+                        image = new ImageWorker(gray)
+                                .bandMerge(3)
+                                .addBand(alpha, false)
+                                .forceComponentColorModel()
+                                .forceColorSpaceRGB()
+                                .getRenderedImage();
                     } else {
-                        image =
-                                iw.bandMerge(3)
-                                        .forceComponentColorModel()
-                                        .forceColorSpaceRGB()
-                                        .getRenderedImage();
+                        image = iw.bandMerge(3)
+                                .forceComponentColorModel()
+                                .forceColorSpaceRGB()
+                                .getRenderedImage();
                     }
                 } else if (!hasAlpha) {
                     // no transparency in the original data, so no need to expand to RGB
@@ -513,15 +489,9 @@ class DirectRasterRenderer {
                     alphaChannels = new PlanarImage[] {PlanarImage.wrapRenderedImage(alpha)};
 
                     if (transparent) {
-                        bgValues =
-                                new double[] {
-                                    bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), 0
-                                };
+                        bgValues = new double[] {bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), 0};
                     } else {
-                        bgValues =
-                                new double[] {
-                                    bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), 255
-                                };
+                        bgValues = new double[] {bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), 255};
                     }
                 } else {
                     if (transparent) {
@@ -542,10 +512,7 @@ class DirectRasterRenderer {
                         // We cannot use ImageWorker as is because it basically seems to assume
                         // component -> 3 band in forceComponentColorModel()
                         // but I guess we'll need to turn the image into a 3 band RGB one.
-                        bgValues =
-                                new double[] {
-                                    bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue()
-                                };
+                        bgValues = new double[] {bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue()};
                     }
                 }
             }
@@ -559,23 +526,21 @@ class DirectRasterRenderer {
                 || transparencyType != Transparency.OPAQUE
                 || iw.getNoData() != null
                 || roiCandidate instanceof ROI) {
-            image =
-                    applyBackgroundTransparency(
-                            mapRasterArea,
-                            image,
-                            intersection,
-                            layout,
-                            bgValues,
-                            alphaChannels,
-                            transparencyType,
-                            iw,
-                            roiCandidate,
-                            noDataTransparencyApplied);
+            image = applyBackgroundTransparency(
+                    mapRasterArea,
+                    image,
+                    intersection,
+                    layout,
+                    bgValues,
+                    alphaChannels,
+                    transparencyType,
+                    iw,
+                    roiCandidate,
+                    noDataTransparencyApplied);
         } else {
             // Check if we need to crop a subset of the produced image, else return it right away
             if (imageBounds.contains(mapRasterArea)
-                    && !imageBounds.equals(
-                            mapRasterArea)) { // the produced image does not need a final mosaicking
+                    && !imageBounds.equals(mapRasterArea)) { // the produced image does not need a final mosaicking
                 // operation but a crop!
                 iw.setBackground(bgValues);
                 iw.crop(0, 0, mapWidth, mapHeight);
@@ -597,14 +562,19 @@ class DirectRasterRenderer {
         return image;
     }
 
-    private GridCoverage2D readCoverage(
-            ReadingContext context, Color readerBgColor, GridGeometry2D readGG) throws IOException {
+    private GridCoverage2D readCoverage(ReadingContext context, Color readerBgColor, GridGeometry2D readGG)
+            throws IOException {
         GridCoverage2D coverage;
         //
         // Get the reader
         //
-        final Feature feature =
-                mapContent.layers().get(0).getFeatureSource().getFeatures().features().next();
+        final Feature feature = mapContent
+                .layers()
+                .get(0)
+                .getFeatureSource()
+                .getFeatures()
+                .features()
+                .next();
         final GridCoverage2DReader reader =
                 (GridCoverage2DReader) feature.getProperty("grid").getValue();
         // render via grid coverage renderer, that will apply the advanced projection
@@ -612,53 +582,40 @@ class DirectRasterRenderer {
         final Object params = feature.getProperty("params").getValue();
         context.reader = reader;
         context.params = params;
-        coverage =
-                readBestCoverage(
-                        context,
-                        ReferencedEnvelope.reference(readGG.getEnvelope()),
-                        readGG.getGridRange2D(),
-                        interpolation,
-                        readerBgColor,
-                        bandIndices);
+        coverage = readBestCoverage(
+                context,
+                ReferencedEnvelope.reference(readGG.getEnvelope()),
+                readGG.getGridRange2D(),
+                interpolation,
+                readerBgColor,
+                bandIndices);
 
         symbolizer = updateSymbolizerForBandSelection(context, symbolizer, bandIndices);
         return coverage;
     }
 
     private Object readAndTransform(
-            RenderingHints interpolationHints,
-            CoordinateReferenceSystem coverageCRS,
-            GridGeometry2D readGG)
+            RenderingHints interpolationHints, CoordinateReferenceSystem coverageCRS, GridGeometry2D readGG)
             throws IOException, SchemaException, TransformException, FactoryException {
 
-        boolean advancedProjectionHandling =
-                wms.isAdvancedProjectionHandlingEnabled()
-                        && getFormatOptionAsBoolean(
-                                mapContent.getRequest(), ADV_PROJECTION_HANDLING_FORMAT_OPTION);
-        boolean continuousMapWrapping =
-                wms.isContinuousMapWrappingEnabled()
-                        && getFormatOptionAsBoolean(
-                                mapContent.getRequest(), MAP_WRAPPING_FORMAT_OPTION);
-        RenderingTransformationHelper helper =
-                new GCRRenderingTransformationHelper(
-                        mapContent,
-                        interpolation,
-                        advancedProjectionHandling,
-                        continuousMapWrapping);
-        Object result =
-                helper.applyRenderingTransformation(
-                        transformation,
-                        layer.getFeatureSource(),
-                        layer.getQuery(),
-                        Query.ALL,
-                        readGG,
-                        coverageCRS,
-                        interpolationHints);
+        boolean advancedProjectionHandling = wms.isAdvancedProjectionHandlingEnabled()
+                && getFormatOptionAsBoolean(mapContent.getRequest(), ADV_PROJECTION_HANDLING_FORMAT_OPTION);
+        boolean continuousMapWrapping = wms.isContinuousMapWrappingEnabled()
+                && getFormatOptionAsBoolean(mapContent.getRequest(), MAP_WRAPPING_FORMAT_OPTION);
+        RenderingTransformationHelper helper = new GCRRenderingTransformationHelper(
+                mapContent, interpolation, advancedProjectionHandling, continuousMapWrapping);
+        Object result = helper.applyRenderingTransformation(
+                transformation,
+                layer.getFeatureSource(),
+                layer.getQuery(),
+                Query.ALL,
+                readGG,
+                coverageCRS,
+                interpolationHints);
         return result;
     }
 
-    private GridGeometry2D getReadGeometry(
-            CoordinateReferenceSystem mapCRS, CoordinateReferenceSystem coverageCRS)
+    private GridGeometry2D getReadGeometry(CoordinateReferenceSystem mapCRS, CoordinateReferenceSystem coverageCRS)
             throws IOException {
         final GridGeometry2D readGG;
         boolean useGutter = !DISABLE_GUTTER;
@@ -666,9 +623,8 @@ class DirectRasterRenderer {
             final boolean equalsMetadata = CRS.equalsIgnoreMetadata(mapCRS, coverageCRS);
             boolean sameCRS;
             try {
-                sameCRS =
-                        equalsMetadata
-                                || CRS.findMathTransform(mapCRS, coverageCRS, true).isIdentity();
+                sameCRS = equalsMetadata
+                        || CRS.findMathTransform(mapCRS, coverageCRS, true).isIdentity();
             } catch (FactoryException e1) {
                 final IOException ioe = new IOException();
                 ioe.initCause(e1);
@@ -687,19 +643,17 @@ class DirectRasterRenderer {
             // enlarge raster area
             Rectangle bufferedTargetArea = (Rectangle) mapRasterArea.clone();
             bufferedTargetArea.add(
-                    mapRasterArea.x + mapRasterArea.width + 10,
-                    mapRasterArea.y + mapRasterArea.height + 10);
+                    mapRasterArea.x + mapRasterArea.width + 10, mapRasterArea.y + mapRasterArea.height + 10);
             bufferedTargetArea.add(mapRasterArea.x - 10, mapRasterArea.y - 10);
 
             // now create the final envelope accordingly
             try {
-                readGG =
-                        new GridGeometry2D(
-                                new GridEnvelope2D(bufferedTargetArea),
-                                PixelInCell.CELL_CORNER,
-                                new AffineTransform2D(worldToScreen.createInverse()),
-                                mapCRS,
-                                null);
+                readGG = new GridGeometry2D(
+                        new GridEnvelope2D(bufferedTargetArea),
+                        PixelInCell.CELL_CORNER,
+                        new AffineTransform2D(worldToScreen.createInverse()),
+                        mapCRS,
+                        null);
             } catch (Exception e) {
                 throw new IOException(e);
             }
@@ -708,16 +662,13 @@ class DirectRasterRenderer {
     }
 
     private RenderedImage readWithProjectionHandling(
-            RenderingHints interpolationHints,
-            Color readerBgColor,
-            CoordinateReferenceSystem mapCRS)
-            throws IOException, TransformException, NoninvertibleTransformException,
-                    FactoryException {
+            RenderingHints interpolationHints, Color readerBgColor, CoordinateReferenceSystem mapCRS)
+            throws IOException, TransformException, NoninvertibleTransformException, FactoryException {
         //
         // Get the reader
         //
-        final Feature feature =
-                DataUtilities.first(mapContent.layers().get(0).getFeatureSource().getFeatures());
+        final Feature feature = DataUtilities.first(
+                mapContent.layers().get(0).getFeatureSource().getFeatures());
         if (feature == null || feature.getProperty("grid") == null) {
             return null;
         }
@@ -729,24 +680,14 @@ class DirectRasterRenderer {
         GeneralParameterValue[] readParameters =
                 getReadParameters(params, null, null, interpolation, readerBgColor, bandIndices);
         final GridCoverageRenderer gcr =
-                new GridCoverageRenderer(
-                        mapCRS, mapEnvelope, mapRasterArea, worldToScreen, interpolationHints);
+                new GridCoverageRenderer(mapCRS, mapEnvelope, mapRasterArea, worldToScreen, interpolationHints);
         gcr.setAdvancedProjectionHandlingEnabled(true);
-        boolean continuousMapWrappingEnabled =
-                wms.isContinuousMapWrappingEnabled()
-                        && getFormatOptionAsBoolean(
-                                mapContent.getRequest(), MAP_WRAPPING_FORMAT_OPTION);
+        boolean continuousMapWrappingEnabled = wms.isContinuousMapWrappingEnabled()
+                && getFormatOptionAsBoolean(mapContent.getRequest(), MAP_WRAPPING_FORMAT_OPTION);
         gcr.setWrapEnabled(continuousMapWrappingEnabled);
         // use null background here, background color is handled afterwards
         RenderedImage image =
-                gcr.renderImage(
-                        reader,
-                        readParameters,
-                        symbolizer,
-                        interpolation,
-                        null,
-                        tileSizeX,
-                        tileSizeY);
+                gcr.renderImage(reader, readParameters, symbolizer, interpolation, null, tileSizeX, tileSizeY);
         if (image == null) {
             // we're outside of the coverage definition area, return an empty space
             image = createBkgImage(mapWidth, mapHeight, bgColor, null);
@@ -797,11 +738,9 @@ class DirectRasterRenderer {
 
     private static boolean isVectorSource(Expression tranformation) {
         // instanceof is sufficient for null check
-        if (tranformation instanceof ProcessFunction) {
-            ProcessFunction processFunction = (ProcessFunction) tranformation;
+        if (tranformation instanceof ProcessFunction processFunction) {
             Name processName = processFunction.getProcessName();
-            Map<String, org.geotools.api.data.Parameter<?>> params =
-                    Processors.getParameterInfo(processName);
+            Map<String, org.geotools.api.data.Parameter<?>> params = Processors.getParameterInfo(processName);
             for (org.geotools.api.data.Parameter<?> param : params.values()) {
                 if (SimpleFeatureCollection.class.isAssignableFrom(param.getType())) {
                     return true;
@@ -811,8 +750,7 @@ class DirectRasterRenderer {
         return false;
     }
 
-    private ReferencedEnvelope getEastNorthEnvelope(ReferencedEnvelope envelope)
-            throws FactoryException {
+    private ReferencedEnvelope getEastNorthEnvelope(ReferencedEnvelope envelope) throws FactoryException {
         CoordinateReferenceSystem crs = envelope.getCoordinateReferenceSystem();
         if (CRS.getAxisOrder(crs) != CRS.AxisOrder.NORTH_EAST) {
             return envelope;
@@ -821,21 +759,13 @@ class DirectRasterRenderer {
         if (code == null) {
             return envelope;
         } else {
-            CoordinateReferenceSystem eastNorthCrs =
-                    CRS.decode(SrsSyntax.AUTH_CODE.getSRS(code), true);
+            CoordinateReferenceSystem eastNorthCrs = CRS.decode(SrsSyntax.AUTH_CODE.getSRS(code), true);
             return new ReferencedEnvelope(
-                    envelope.getMinY(),
-                    envelope.getMaxY(),
-                    envelope.getMinX(),
-                    envelope.getMaxX(),
-                    eastNorthCrs);
+                    envelope.getMinY(), envelope.getMaxY(), envelope.getMinX(), envelope.getMaxX(), eastNorthCrs);
         }
     }
 
-    /**
-     * Reads the best matching grid out of a grid coverage applying sub-sampling and using overviews
-     * as necessary
-     */
+    /** Reads the best matching grid out of a grid coverage applying sub-sampling and using overviews as necessary */
     private static GridCoverage2D readBestCoverage(
             final ReadingContext context,
             final ReferencedEnvelope envelope,
@@ -849,8 +779,7 @@ class DirectRasterRenderer {
         final Object params = context.params;
 
         GeneralParameterValue[] readParams =
-                getReadParameters(
-                        params, envelope, requestedRasterArea, interpolation, bgColor, bandIndices);
+                getReadParameters(params, envelope, requestedRasterArea, interpolation, bgColor, bandIndices);
 
         GridCoverage2D coverage = reader.read(readParams);
         context.params = readParams;
@@ -871,9 +800,7 @@ class DirectRasterRenderer {
             // if we have any supplied by a user.
             // //
             // first I created the correct ReadGeometry
-            readGG =
-                    (Parameter<GridGeometry2D>)
-                            AbstractGridFormat.READ_GRIDGEOMETRY2D.createValue();
+            readGG = (Parameter<GridGeometry2D>) AbstractGridFormat.READ_GRIDGEOMETRY2D.createValue();
             readGG.setValue(new GridGeometry2D(new GridEnvelope2D(requestedRasterArea), envelope));
         }
 
@@ -913,10 +840,12 @@ class DirectRasterRenderer {
             // also have a READ_GRIDGEOMETRY2D. In such case we just
             // override it with the one we just build for this
             // request.
-            final String readGGName = AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString();
+            final String readGGName =
+                    AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString();
             final String readInterpolationName =
                     ImageMosaicFormat.INTERPOLATION.getName().toString();
-            final String bgColorName = AbstractGridFormat.BACKGROUND_COLOR.getName().toString();
+            final String bgColorName =
+                    AbstractGridFormat.BACKGROUND_COLOR.getName().toString();
             final String bandsListName = AbstractGridFormat.BANDS.getName().toString();
             int i = 0;
             boolean foundInterpolation = false;
@@ -941,10 +870,7 @@ class DirectRasterRenderer {
             }
 
             // did we find anything?
-            if (!foundGG
-                    || !foundInterpolation
-                    || !(foundBgColor && bgColor != null)
-                    || !foundBandIndices) {
+            if (!foundGG || !foundInterpolation || !(foundBgColor && bgColor != null) || !foundBandIndices) {
                 // add the correct read geometry to the supplied
                 // params since we did not find anything
                 List<GeneralParameterValue> paramList = new ArrayList<>();
@@ -992,8 +918,7 @@ class DirectRasterRenderer {
             Object roiCandidate,
             boolean preProcessedWithTransparency) {
         ROI roi;
-        if (roiCandidate instanceof ROI) {
-            ROI imageROI = (ROI) roiCandidate;
+        if (roiCandidate instanceof ROI imageROI) {
             try {
                 roi = new ROIGeometry(mapRasterArea).intersect(imageROI);
             } catch (IllegalArgumentException e) {
@@ -1004,9 +929,7 @@ class DirectRasterRenderer {
                 // memory boundness concerns
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.log(
-                            Level.FINE,
-                            "Failed to intersect image ROI with target bounds, returning empty result",
-                            e);
+                            Level.FINE, "Failed to intersect image ROI with target bounds, returning empty result", e);
                 }
                 return null;
             }
@@ -1016,15 +939,14 @@ class DirectRasterRenderer {
         ROI[] rois = (!preProcessedWithTransparency) ? new ROI[] {roi} : null;
 
         // build the transparency thresholds
-        double[][] thresholds =
-                (!preProcessedWithTransparency)
-                        ? new double[][] {
-                            {ColorUtilities.getThreshold(image.getSampleModel().getDataType())}
-                        }
-                        : null;
+        double[][] thresholds = (!preProcessedWithTransparency)
+                ? new double[][] {
+                    {ColorUtilities.getThreshold(image.getSampleModel().getDataType())}
+                }
+                : null;
         // apply the mosaic
 
-        iw.setRenderingHint(JAI.KEY_IMAGE_LAYOUT, layout);
+        iw.setRenderingHint(ImageN.KEY_IMAGE_LAYOUT, layout);
         iw.setBackground(bgValues);
         iw.mosaic(
                 new RenderedImage[] {image},
@@ -1108,29 +1030,37 @@ class DirectRasterRenderer {
     /** Creates an alpha band, ready to be added to the specified image */
     private RenderedImage buildAlphaBand(RenderedImage image) {
         final ImageLayout tempLayout = new ImageLayout(image);
-        tempLayout
-                .unsetValid(ImageLayout.COLOR_MODEL_MASK)
-                .unsetValid(ImageLayout.SAMPLE_MODEL_MASK);
+        tempLayout.unsetValid(ImageLayout.COLOR_MODEL_MASK).unsetValid(ImageLayout.SAMPLE_MODEL_MASK);
         int width = image.getWidth();
         int height = image.getHeight();
 
         // in case of ROI, create an alpha band that is transparent where the ROI is zero,
         // and solid where the ROI is one. The most efficient way is to use a Lookup
         Object roiCandidate = image.getProperty("ROI");
-        if (roiCandidate instanceof ROI) {
-            PlanarImage roiImage = ((ROI) roiCandidate).getAsImage();
+        if (roiCandidate instanceof ROI oI) {
+            PlanarImage roiImage = oI.getAsImage();
             ImageWorker iw = new ImageWorker(roiImage);
             byte[] lookup = new byte[256];
             Arrays.fill(lookup, (byte) 255);
             lookup[0] = 0;
+            final int roiWidth = roiImage.getWidth();
+            final int roiHeight = roiImage.getHeight();
             LookupTable lookupTable = LookupTableFactory.create(lookup);
             SampleModel sm =
-                    RasterFactory.createPixelInterleavedSampleModel(
-                            DataBuffer.TYPE_BYTE, width, height, 1);
+                    RasterFactory.createPixelInterleavedSampleModel(DataBuffer.TYPE_BYTE, roiWidth, roiHeight, 1);
             ColorModel cm = PlanarImage.createColorModel(sm);
             tempLayout.setSampleModel(sm);
             tempLayout.setColorModel(cm);
-            iw.setRenderingHints(new RenderingHints(JAI.KEY_IMAGE_LAYOUT, tempLayout));
+            // (sometimes ROI and image are slightly misaligned)
+            // Lookup should be aligned with the ROI
+            // Otherwise it will throw an exception reporting that
+            // The user-supplied image bounds is not within
+            // the intersection of all the source bounds
+            tempLayout.setMinX(roiImage.getMinX());
+            tempLayout.setMinY(roiImage.getMinY());
+            tempLayout.setHeight(roiHeight);
+            tempLayout.setWidth(roiWidth);
+            iw.setRenderingHints(new RenderingHints(ImageN.KEY_IMAGE_LAYOUT, tempLayout));
             iw.lookup(lookupTable);
             return iw.getRenderedImage();
         }
@@ -1140,12 +1070,12 @@ class DirectRasterRenderer {
                 Float.valueOf(width),
                 Float.valueOf(height),
                 new Byte[] {Byte.valueOf((byte) 255)},
-                new RenderingHints(JAI.KEY_IMAGE_LAYOUT, tempLayout));
+                new RenderingHints(ImageN.KEY_IMAGE_LAYOUT, tempLayout));
     }
 
     /**
-     * Given a one band (plus eventual alpha) color model and the red part of a gray color returns
-     * the appropriate background color to be used in the mosaic operation
+     * Given a one band (plus eventual alpha) color model and the red part of a gray color returns the appropriate
+     * background color to be used in the mosaic operation
      */
     double mapToGrayColor(Color gray, ComponentColorModel cm) {
         double[] rescaleFactors = new double[DataBuffer.TYPE_UNDEFINED + 1];
@@ -1177,10 +1107,7 @@ class DirectRasterRenderer {
             float width, float height, Color bgColor, RenderingHints renderingHints) {
         // prepare bands for constant image if needed
         final Byte[] bands = {
-            (byte) bgColor.getRed(),
-            (byte) bgColor.getGreen(),
-            (byte) bgColor.getBlue(),
-            (byte) bgColor.getAlpha()
+            (byte) bgColor.getRed(), (byte) bgColor.getGreen(), (byte) bgColor.getBlue(), (byte) bgColor.getAlpha()
         };
         return ConstantDescriptor.create(width, height, bands, renderingHints);
     }
@@ -1204,41 +1131,35 @@ class DirectRasterRenderer {
         }
 
         @Override
-        protected GridCoverage2D readCoverage(
-                GridCoverage2DReader reader, Object readParams, GridGeometry2D readGG)
+        protected GridCoverage2D readCoverage(GridCoverage2DReader reader, Object readParams, GridGeometry2D readGG)
                 throws IOException {
-            RenderingHints interpolationHints =
-                    new RenderingHints(JAI.KEY_INTERPOLATION, interpolation);
+            RenderingHints interpolationHints = new RenderingHints(ImageN.KEY_INTERPOLATION, interpolation);
             final GridCoverageRenderer gcr;
 
             try {
                 final int mapWidth = mapContent.getMapWidth();
                 final int mapHeight = mapContent.getMapHeight();
-                final ReferencedEnvelope mapEnvelope =
-                        getEastNorthEnvelope(mapContent.getRenderingArea());
+                final ReferencedEnvelope mapEnvelope = getEastNorthEnvelope(mapContent.getRenderingArea());
                 final Rectangle mapRasterArea = new Rectangle(0, 0, mapWidth, mapHeight);
                 final AffineTransform worldToScreen =
                         RendererUtilities.worldToScreenTransform(mapEnvelope, mapRasterArea);
 
-                gcr =
-                        new GridCoverageRenderer(
-                                mapEnvelope.getCoordinateReferenceSystem(),
-                                mapEnvelope,
-                                mapRasterArea,
-                                worldToScreen,
-                                interpolationHints);
+                gcr = new GridCoverageRenderer(
+                        mapEnvelope.getCoordinateReferenceSystem(),
+                        mapEnvelope,
+                        mapRasterArea,
+                        worldToScreen,
+                        interpolationHints);
                 gcr.setAdvancedProjectionHandlingEnabled(advancedProjectionHandling);
                 gcr.setWrapEnabled(mapWrapping);
                 GeneralParameterValue[] readingParams =
                         setInterpolation(interpolation, (GeneralParameterValue[]) readParams);
 
-                RenderedImage ri =
-                        gcr.renderImage(reader, readingParams, null, interpolation, null, 256, 256);
+                RenderedImage ri = gcr.renderImage(reader, readingParams, null, interpolation, null, 256, 256);
                 if (ri != null) {
                     PlanarImage pi = PlanarImage.wrapRenderedImage(ri);
                     GridCoverage2D gc2d =
-                            (GridCoverage2D)
-                                    pi.getProperty(GridCoverageRenderer.PARENT_COVERAGE_PROPERTY);
+                            (GridCoverage2D) pi.getProperty(GridCoverageRenderer.PARENT_COVERAGE_PROPERTY);
                     return gc2d;
                 }
                 return null;
@@ -1252,10 +1173,9 @@ class DirectRasterRenderer {
             if (interpolation != null) {
                 List<GeneralParameterValue> paramList = new ArrayList<>();
                 if (readParams != null) {
-                    paramList =
-                            Arrays.stream(readParams)
-                                    .filter(param -> notInterpolation(param))
-                                    .collect(Collectors.toList());
+                    paramList = Arrays.stream(readParams)
+                            .filter(param -> notInterpolation(param))
+                            .collect(Collectors.toList());
                 }
                 final Parameter<Interpolation> readInterpolation =
                         (Parameter<Interpolation>) ImageMosaicFormat.INTERPOLATION.createValue();

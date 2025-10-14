@@ -5,11 +5,12 @@
  */
 package org.geoserver.security.ldap;
 
+import java.io.Serial;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
 
-public class LDAPSecurityServiceConfig extends LDAPBaseSecurityServiceConfig
-        implements SecurityAuthProviderConfig {
+public class LDAPSecurityServiceConfig extends LDAPBaseSecurityServiceConfig implements SecurityAuthProviderConfig {
 
+    @Serial
     private static final long serialVersionUID = 6093735229286602599L;
 
     // extract user data using a distinguished name

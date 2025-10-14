@@ -13,8 +13,8 @@ import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
 
 /**
- * This listener keeps the workspaces and namespaces consistent with each other. TODO: remove once
- * namespaces become a separate entity than workspaces
+ * This listener keeps the workspaces and namespaces consistent with each other. TODO: remove once namespaces become a
+ * separate entity than workspaces
  *
  * @author Andrea Aime - OpenGeo
  */
@@ -34,9 +34,7 @@ public class NamespaceWorkspaceConsistencyListener implements CatalogListener {
     @Override
     public synchronized void handleModifyEvent(CatalogModifyEvent event) throws CatalogException {
         List<String> properties = event.getPropertyNames();
-        if (event.getSource() instanceof NamespaceInfo
-                && !editing
-                && properties.contains("prefix")) {
+        if (event.getSource() instanceof NamespaceInfo && !editing && properties.contains("prefix")) {
             int prefixIdx = properties.indexOf("prefix");
             String oldPrefix = (String) event.getOldValues().get(prefixIdx);
             String newPrefix = (String) event.getNewValues().get(prefixIdx);
@@ -50,12 +48,8 @@ public class NamespaceWorkspaceConsistencyListener implements CatalogListener {
                     editing = false;
                 }
             }
-        } else if (event.getSource() instanceof Catalog
-                && properties.contains("defaultNamespace")
-                && !editing) {
-            NamespaceInfo newDefault =
-                    (NamespaceInfo)
-                            event.getNewValues().get(properties.indexOf("defaultNamespace"));
+        } else if (event.getSource() instanceof Catalog && properties.contains("defaultNamespace") && !editing) {
+            NamespaceInfo newDefault = (NamespaceInfo) event.getNewValues().get(properties.indexOf("defaultNamespace"));
             if (newDefault != null) {
                 WorkspaceInfo ws = catalog.getWorkspaceByName(newDefault.getPrefix());
                 if (ws != null && !catalog.getDefaultWorkspace().equals(ws)) {
@@ -67,9 +61,7 @@ public class NamespaceWorkspaceConsistencyListener implements CatalogListener {
                     }
                 }
             }
-        } else if (event.getSource() instanceof WorkspaceInfo
-                && !editing
-                && properties.contains("name")) {
+        } else if (event.getSource() instanceof WorkspaceInfo && !editing && properties.contains("name")) {
             int nameIdx = properties.indexOf("name");
             String oldName = (String) event.getOldValues().get(nameIdx);
             String newName = (String) event.getNewValues().get(nameIdx);
@@ -83,12 +75,8 @@ public class NamespaceWorkspaceConsistencyListener implements CatalogListener {
                     editing = false;
                 }
             }
-        } else if (event.getSource() instanceof Catalog
-                && properties.contains("defaultWorkspace")
-                && !editing) {
-            WorkspaceInfo newDefault =
-                    (WorkspaceInfo)
-                            event.getNewValues().get(properties.indexOf("defaultWorkspace"));
+        } else if (event.getSource() instanceof Catalog && properties.contains("defaultWorkspace") && !editing) {
+            WorkspaceInfo newDefault = (WorkspaceInfo) event.getNewValues().get(properties.indexOf("defaultWorkspace"));
             if (newDefault != null) {
                 NamespaceInfo ns = catalog.getNamespaceByPrefix(newDefault.getName());
                 if (ns != null && !catalog.getDefaultNamespace().equals(ns)) {
@@ -152,27 +140,25 @@ public class NamespaceWorkspaceConsistencyListener implements CatalogListener {
     }
 
     /**
-     * If post modify event catalog object is a namespace or an workspace this method will make sure
-     * both have the same isolation.
+     * If post modify event catalog object is a namespace or an workspace this method will make sure both have the same
+     * isolation.
      *
-     * <p>The namespaces or the workspace will only be saved if the isolation is not the same,
-     * avoiding infinite loops.
+     * <p>The namespaces or the workspace will only be saved if the isolation is not the same, avoiding infinite loops.
      *
      * @param info catalog object associate to the event
      */
     private void syncIsolation(CatalogInfo info) {
-        if (info instanceof WorkspaceInfo) {
+        if (info instanceof WorkspaceInfo workspaceInfo) {
             // an workspace was modified or added, let's try to sync the namespace
-            syncNamespaceIsolation((WorkspaceInfo) info);
-        } else if (info instanceof NamespaceInfo) {
+            syncNamespaceIsolation(workspaceInfo);
+        } else if (info instanceof NamespaceInfo namespaceInfo) {
             // a namespace was modified or added, let's try to sync the workspace
-            syncWorkspaceIsolation((NamespaceInfo) info);
+            syncWorkspaceIsolation(namespaceInfo);
         }
     }
 
     /**
-     * Helper method that will make sure that the namespace associated to the provided workspace has
-     * the same isolation.
+     * Helper method that will make sure that the namespace associated to the provided workspace has the same isolation.
      *
      * <p>If the associated namespace doesn't exists nothing will be done.
      *
@@ -189,8 +175,7 @@ public class NamespaceWorkspaceConsistencyListener implements CatalogListener {
     }
 
     /**
-     * Helper method that will make sure that the workspace associated to the provided namespace has
-     * the same isolation.
+     * Helper method that will make sure that the workspace associated to the provided namespace has the same isolation.
      *
      * <p>If the associated namespace doesn't exists nothing will be done.
      *

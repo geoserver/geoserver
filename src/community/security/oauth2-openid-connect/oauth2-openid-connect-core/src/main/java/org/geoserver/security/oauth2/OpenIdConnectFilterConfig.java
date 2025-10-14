@@ -5,25 +5,25 @@
 package org.geoserver.security.oauth2;
 
 import java.util.Optional;
+import org.apache.commons.lang.SerializationUtils;
 import org.geoserver.config.GeoServer;
+import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.config.RoleSource;
+import org.geoserver.security.config.SecurityConfig;
 import org.geoserver.security.oauth2.pkce.PKCEAuthenticationEntryPoint;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-/**
- * Filter configuration for OpenId Connect. This is completely freeform, so adding only the basic
- * bits in here.
- */
+/** Filter configuration for OpenId Connect. This is completely freeform, so adding only the basic bits in here. */
 public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
 
     /**
-     * Constant used to setup the proxy base in tests that are running without a GeoServer instance
-     * or an actual HTTP request context. The value of the variable is set-up in the pom.xml, as a
-     * system property for surefire, in order to avoid hard-coding the value in the code.
+     * Constant used to setup the proxy base in tests that are running without a GeoServer instance or an actual HTTP
+     * request context. The value of the variable is set-up in the pom.xml, as a system property for surefire, in order
+     * to avoid hard-coding the value in the code.
      */
     public static final String OPENID_TEST_GS_PROXY_BASE = "OPENID_TEST_GS_PROXY_BASE";
 
@@ -36,6 +36,7 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
     boolean allowBearerTokens = true;
     boolean usePKCE = false;
     boolean enforceTokenValidation = true;
+    private boolean cacheAuthentication;
 
     /** Supports extraction of roles among the token claims */
     public static enum OpenIdRoleSource implements RoleSource {
@@ -59,19 +60,19 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
         this.forceUserAuthorizationUriHttps = true;
         this.loginEndpoint = "/j_spring_oauth2_openid_connect_login";
         this.logoutEndpoint = "/j_spring_oauth2_openid_connect_logout";
-    };
+    }
+    ;
 
     /**
-     * we add "/" at the end since not having it will SOMETIME cause issues. This will either use
-     * the proxyBaseURL (if set), or from ServletUriComponentsBuilder.fromCurrentContextPath().
+     * we add "/" at the end since not having it will SOMETIME cause issues. This will either use the proxyBaseURL (if
+     * set), or from ServletUriComponentsBuilder.fromCurrentContextPath().
      *
      * @return
      */
     String baseRedirectUri() {
-        Optional<String> proxbaseUrl =
-                Optional.ofNullable(GeoServerExtensions.bean(GeoServer.class))
-                        .map(gs -> gs.getSettings())
-                        .map(s -> s.getProxyBaseUrl());
+        Optional<String> proxbaseUrl = Optional.ofNullable(GeoServerExtensions.bean(GeoServer.class))
+                .map(gs -> gs.getSettings())
+                .map(s -> s.getProxyBaseUrl());
         if (proxbaseUrl.isPresent() && StringUtils.hasText(proxbaseUrl.get())) {
             return proxbaseUrl + "/";
         }
@@ -153,6 +154,16 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
         this.enforceTokenValidation = enforceTokenValidation;
     }
 
+    /** Whether or not the authentication should be cached based on the access token <code>exp</code> attribute. */
+    public boolean isCacheAuthentication() {
+        return cacheAuthentication;
+    }
+
+    /** Sets whether or not the authentication should be cached based on the access token <code>exp</code> attribute. */
+    public void setCacheAuthentication(boolean cacheAuthentication) {
+        this.cacheAuthentication = cacheAuthentication;
+    }
+
     @Override
     public StringBuilder buildAuthorizationUrl() {
         StringBuilder sb = super.buildAuthorizationUrl();
@@ -192,5 +203,28 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
         } else {
             return super.getAuthenticationEntryPoint();
         }
+    }
+
+    @Override
+    public SecurityConfig clone(boolean allowEnvParametrization) {
+        OpenIdConnectFilterConfig target = (OpenIdConnectFilterConfig) SerializationUtils.clone(this);
+
+        if (target != null) {
+            // Resolve GeoServer Environment placeholders
+            final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
+            if (allowEnvParametrization) {
+                super.parametrizedConfiguration(target, gsEnvironment);
+                parametrizedConfiguration(target, gsEnvironment);
+            }
+        }
+        return target;
+    }
+
+    protected void parametrizedConfiguration(OpenIdConnectFilterConfig target, GeoServerEnvironment gsEnvironment) {
+        target.setPrincipalKey(resolveValueFromEnv(gsEnvironment, target.getPrincipalKey()));
+        target.setJwkURI(resolveValueFromEnv(gsEnvironment, target.getJwkURI()));
+        target.setTokenRolesClaim(resolveValueFromEnv(gsEnvironment, target.getTokenRolesClaim()));
+        target.setResponseMode(resolveValueFromEnv(gsEnvironment, target.getResponseMode()));
+        target.setPostLogoutRedirectUri(resolveValueFromEnv(gsEnvironment, target.getPostLogoutRedirectUri()));
     }
 }

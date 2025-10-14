@@ -10,8 +10,7 @@ import org.apache.wicket.util.crypt.NoCrypt;
 import org.geoserver.security.GeoServerSecurityManager;
 
 /**
- * Returns an ICrypt that actually encrypts the urls, or not, depending on the security manager
- * settings
+ * Returns an ICrypt that actually encrypts the urls, or not, depending on the security manager settings
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -42,7 +41,8 @@ class GeoServerCryptProvider implements Supplier<ICrypt> {
             synchronized (this) {
                 if (theCrypt == null) {
                     GeoServerApplication application = GeoServerApplication.get();
-                    theCrypt = application.getSecuritySettings().getCryptFactory().newCrypt();
+                    theCrypt =
+                            application.getSecuritySettings().getCryptFactory().newCrypt();
                 }
             }
         }

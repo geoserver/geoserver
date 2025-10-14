@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.web.service;
 
+import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
@@ -15,8 +16,8 @@ import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.FormTestPage;
 import org.junit.Test;
 
-public class ConfirmRemovalServicePanelTest
-        extends AbstractConfirmRemovalPanelTest<ServiceAccessRule> {
+public class ConfirmRemovalServicePanelTest extends AbstractConfirmRemovalPanelTest<ServiceAccessRule> {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Test
@@ -27,25 +28,24 @@ public class ConfirmRemovalServicePanelTest
 
     @Override
     protected void setupPanel(final List<ServiceAccessRule> roots) {
-        tester.startPage(
-                new FormTestPage(
-                        new ComponentBuilder() {
-                            private static final long serialVersionUID = 1L;
+        tester.startPage(new FormTestPage(new ComponentBuilder() {
+            @Serial
+            private static final long serialVersionUID = 1L;
 
-                            @Override
-                            public Component buildComponent(String id) {
-                                return new ConfirmRemovalServicePanel(id, roots) {
-                                    @Override
-                                    protected IModel<String> canRemove(ServiceAccessRule data) {
-                                        SelectionServiceRemovalLink link =
-                                                new SelectionServiceRemovalLink("XXX", null, null);
-                                        return link.canRemove(data);
-                                    }
+            @Override
+            public Component buildComponent(String id) {
+                return new ConfirmRemovalServicePanel(id, roots) {
+                    @Override
+                    protected IModel<String> canRemove(ServiceAccessRule data) {
+                        SelectionServiceRemovalLink link = new SelectionServiceRemovalLink("XXX", null, null);
+                        return link.canRemove(data);
+                    }
 
-                                    private static final long serialVersionUID = 1L;
-                                };
-                            }
-                        }));
+                    @Serial
+                    private static final long serialVersionUID = 1L;
+                };
+            }
+        }));
     }
 
     @Override
@@ -69,12 +69,6 @@ public class ConfirmRemovalServicePanelTest
     @Override
     protected String getRemoveableObjectRegExp() throws Exception {
         ServiceAccessRule rule = getRemoveableObject();
-        return ".*"
-                + rule.getService()
-                + ".*"
-                + rule.getMethod()
-                + ".*"
-                + "ROLE_AUTHENTICATED"
-                + ".*";
+        return ".*" + rule.getService() + ".*" + rule.getMethod() + ".*" + "ROLE_AUTHENTICATED" + ".*";
     }
 }

@@ -18,8 +18,7 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 
-public class HzSynchronizerInitializer
-        implements GeoServerInitializer, ApplicationListener<ApplicationEvent> {
+public class HzSynchronizerInitializer implements GeoServerInitializer, ApplicationListener<ApplicationEvent> {
 
     protected static Logger LOGGER = Logging.getLogger("org.geoserver.cluster.hazelcast");
 
@@ -58,10 +57,9 @@ public class HzSynchronizerInitializer
     }
 
     /**
-     * Enables processing of config change events when a {@link ContextLoadedEvent} is received, and
-     * disables it when a {@link ContextClosedEvent} is received, in order to avoid the hazelcast
-     * synchronizer to try to dispatch events to an stale {@link Catalog} or one that's in an
-     * inconsistent state.
+     * Enables processing of config change events when a {@link ContextLoadedEvent} is received, and disables it when a
+     * {@link ContextClosedEvent} is received, in order to avoid the hazelcast synchronizer to try to dispatch events to
+     * an stale {@link Catalog} or one that's in an inconsistent state.
      */
     @Override
     public void onApplicationEvent(ApplicationEvent event) {

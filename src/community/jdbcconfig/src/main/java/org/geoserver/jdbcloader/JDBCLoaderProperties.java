@@ -7,6 +7,7 @@ package org.geoserver.jdbcloader;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import java.io.IOException;
+import java.io.Serial;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
@@ -16,6 +17,7 @@ import org.geoserver.platform.resource.Resources;
 
 public class JDBCLoaderProperties extends Properties {
 
+    @Serial
     private static final long serialVersionUID = -6758388267074914346L;
 
     // maintain order of keys to prevent writing out in random order
@@ -68,8 +70,7 @@ public class JDBCLoaderProperties extends Properties {
         }
 
         Resource resource = Resources.fromPath(initScript, factory.getDataDir());
-        Preconditions.checkState(
-                Resources.exists(resource), "Init script does not exist: " + resource.path());
+        Preconditions.checkState(Resources.exists(resource), "Init script does not exist: " + resource.path());
 
         return resource;
     }
@@ -87,9 +88,7 @@ public class JDBCLoaderProperties extends Properties {
     }
 
     String fillInPlaceholders(String value) {
-        return value != null
-                ? value.replace("${GEOSERVER_DATA_DIR}", factory.getDataDirStr())
-                : value;
+        return value != null ? value.replace("${GEOSERVER_DATA_DIR}", factory.getDataDirStr()) : value;
     }
 
     public Optional<String> getJndiName() {

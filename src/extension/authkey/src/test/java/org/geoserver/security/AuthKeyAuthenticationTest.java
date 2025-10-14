@@ -51,7 +51,7 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 
 public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTest {
 
-    class TestHttpClient extends AbstractHttpClient {
+    static class TestHttpClient extends AbstractHttpClient {
 
         private String authkey;
 
@@ -257,9 +257,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         try {
             validator.validateFilterConfig(config);
         } catch (FilterConfigException ex) {
-            assertEquals(
-                    AuthenticationKeyFilterConfigException.INVALID_AUTH_KEY_MAPPER_PARAMETER_$3,
-                    ex.getId());
+            assertEquals(AuthenticationKeyFilterConfigException.INVALID_AUTH_KEY_MAPPER_PARAMETER_$3, ex.getId());
             assertEquals(1, ex.getArgs().length);
             assertEquals("param3", ex.getArgs()[0]);
             LOGGER.info(ex.getMessage());
@@ -290,8 +288,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         GeoServerAuthenticationKeyFilter filter =
                 (GeoServerAuthenticationKeyFilter) getSecurityManager().loadFilter(filterName);
 
-        PropertyAuthenticationKeyMapper mapper =
-                (PropertyAuthenticationKeyMapper) filter.getMapper();
+        PropertyAuthenticationKeyMapper mapper = (PropertyAuthenticationKeyMapper) filter.getMapper();
         mapper.synchronize();
 
         prepareFilterChain(pattern, filterName);
@@ -326,12 +323,8 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         getProxy().doFilter(request, response, chain);
         assertNotEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
 
-        SecurityContext ctx =
-                (SecurityContext)
-                        request.getSession(false)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        SecurityContext ctx = (SecurityContext) request.getSession(false)
+                .getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNotNull(ctx);
         Authentication auth = ctx.getAuthentication();
         assertNotNull(auth);
@@ -378,8 +371,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         GeoServerAuthenticationKeyFilter filter =
                 (GeoServerAuthenticationKeyFilter) getSecurityManager().loadFilter(filterName);
 
-        PropertyAuthenticationKeyMapper mapper =
-                (PropertyAuthenticationKeyMapper) filter.getMapper();
+        PropertyAuthenticationKeyMapper mapper = (PropertyAuthenticationKeyMapper) filter.getMapper();
         mapper.synchronize();
 
         prepareFilterChain(pattern, filterName);
@@ -458,8 +450,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         GeoServerAuthenticationKeyFilter filter =
                 (GeoServerAuthenticationKeyFilter) getSecurityManager().loadFilter(filterName);
 
-        UserPropertyAuthenticationKeyMapper mapper =
-                (UserPropertyAuthenticationKeyMapper) filter.getMapper();
+        UserPropertyAuthenticationKeyMapper mapper = (UserPropertyAuthenticationKeyMapper) filter.getMapper();
         // Force to reload the property file
         mapper.synchronize();
 
@@ -478,10 +469,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
 
         // test success
         GeoServerUser user =
-                (GeoServerUser)
-                        getSecurityManager()
-                                .loadUserGroupService("ug1")
-                                .loadUserByUsername(testUserName);
+                (GeoServerUser) getSecurityManager().loadUserGroupService("ug1").loadUserByUsername(testUserName);
         // Force to reload the property file
         mapper.synchronize();
         // Make sure the cache is cleared
@@ -540,8 +528,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         GeoServerAuthenticationKeyFilter filter =
                 (GeoServerAuthenticationKeyFilter) getSecurityManager().loadFilter(filterName);
 
-        UserPropertyAuthenticationKeyMapper mapper =
-                (UserPropertyAuthenticationKeyMapper) filter.getMapper();
+        UserPropertyAuthenticationKeyMapper mapper = (UserPropertyAuthenticationKeyMapper) filter.getMapper();
         // Force to reload the property file
         mapper.synchronize();
 
@@ -563,10 +550,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
 
         // test success
         GeoServerUser user =
-                (GeoServerUser)
-                        getSecurityManager()
-                                .loadUserGroupService("ug1")
-                                .loadUserByUsername(testUserName);
+                (GeoServerUser) getSecurityManager().loadUserGroupService("ug1").loadUserByUsername(testUserName);
 
         String authKey = user.getProperties().getProperty(mapper.getUserPropertyName());
         assertNotNull(authKey);
@@ -607,17 +591,17 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         ugstore.addUser(u2);
         ugstore.store();
 
-        WebServiceAuthenticationKeyMapper propMapper =
-                GeoServerExtensions.extensions(WebServiceAuthenticationKeyMapper.class)
-                        .iterator()
-                        .next();
+        WebServiceAuthenticationKeyMapper propMapper = GeoServerExtensions.extensions(
+                        WebServiceAuthenticationKeyMapper.class)
+                .iterator()
+                .next();
         propMapper.setUserGroupServiceName("testWebServiceAuthKey");
         propMapper.setSecurityManager(getSecurityManager());
         propMapper.setWebServiceUrl("http://service/{key}");
         propMapper.setHttpClient(new TestHttpClient("testkey", "user1"));
         GeoServerUser user = propMapper.getUser("testkey");
         assertNotNull(user);
-        assertEquals(user.getUsername(), "user1");
+        assertEquals("user1", user.getUsername());
         boolean error = false;
         try {
             user = propMapper.getUser("wrongkey");
@@ -637,29 +621,26 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         ugstore.addUser(u2);
         ugstore.store();
 
-        WebServiceAuthenticationKeyMapper propMapper =
-                GeoServerExtensions.extensions(WebServiceAuthenticationKeyMapper.class)
-                        .iterator()
-                        .next();
+        WebServiceAuthenticationKeyMapper propMapper = GeoServerExtensions.extensions(
+                        WebServiceAuthenticationKeyMapper.class)
+                .iterator()
+                .next();
         propMapper.setUserGroupServiceName("testWebServiceAuthKey2");
         propMapper.setSecurityManager(getSecurityManager());
         propMapper.setWebServiceUrl("http://service/{key}");
         propMapper.setSearchUser("^.*?\"user\"\\s*:\\s*\"([^\"]+)\".*$");
         propMapper.setHttpClient(
-                new TestHttpClient(
-                        "testkey", "{\n    \"user\": \"user1\", \"detail\": \"mydetail\"\n   }"));
+                new TestHttpClient("testkey", "{\n    \"user\": \"user1\", \"detail\": \"mydetail\"\n   }"));
         GeoServerUser user = propMapper.getUser("testkey");
         assertNotNull(user);
-        assertEquals(user.getUsername(), "user1");
+        assertEquals("user1", user.getUsername());
 
         propMapper.setSearchUser("^.*?<username>(.*?)</username>.*$");
-        propMapper.setHttpClient(
-                new TestHttpClient(
-                        "testkey",
-                        "<root>\n<userdetail>\n<username>user1</username>\n</userdetail>\n</root>"));
+        propMapper.setHttpClient(new TestHttpClient(
+                "testkey", "<root>\n<userdetail>\n<username>user1</username>\n</userdetail>\n</root>"));
         user = propMapper.getUser("testkey");
         assertNotNull(user);
-        assertEquals(user.getUsername(), "user1");
+        assertEquals("user1", user.getUsername());
 
         user = propMapper.getUser("wrongkey");
         assertNull(user);
@@ -667,8 +648,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
 
     @Test
     public void testWebServiceAuthKeyBodyResponseUGS() throws Exception {
-        WebServiceBodyResponseUserGroupServiceConfig config =
-                new WebServiceBodyResponseUserGroupServiceConfig();
+        WebServiceBodyResponseUserGroupServiceConfig config = new WebServiceBodyResponseUserGroupServiceConfig();
         config.setName("testWebServiceAuthKey3");
         config.setClassName(WebServiceBodyResponseUserGroupService.class.getName());
         config.setPasswordEncoderName(getPBEPasswordEncoder().getName());
@@ -682,21 +662,20 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
 
         assertNotNull(webServiceAuthKeyBodyResponseUGS);
 
-        WebServiceAuthenticationKeyMapper propMapper =
-                GeoServerExtensions.extensions(WebServiceAuthenticationKeyMapper.class)
-                        .iterator()
-                        .next();
+        WebServiceAuthenticationKeyMapper propMapper = GeoServerExtensions.extensions(
+                        WebServiceAuthenticationKeyMapper.class)
+                .iterator()
+                .next();
         propMapper.setUserGroupServiceName("testWebServiceAuthKey3");
         propMapper.setSecurityManager(getSecurityManager());
         propMapper.setWebServiceUrl("http://service/{key}");
         propMapper.setSearchUser("^.*?\"user\"\\s*:\\s*\"([^\"]+)\".*$");
-        propMapper.setHttpClient(
-                new TestHttpClient(
-                        "testkey",
-                        "{\n    \"user\": \"user1\", \"detail\": \"mydetail\", \"roles\": \"myrole_1, myrole_2\"\n   }"));
+        propMapper.setHttpClient(new TestHttpClient(
+                "testkey",
+                "{\n    \"user\": \"user1\", \"detail\": \"mydetail\", \"roles\": \"myrole_1, myrole_2\"\n   }"));
         GeoServerUser user = propMapper.getUser("testkey");
         assertNotNull(user);
-        assertEquals(user.getUsername(), "user1");
+        assertEquals("user1", user.getUsername());
 
         assertNotNull(user.getAuthorities());
         assertEquals(2, user.getAuthorities().size());
@@ -721,15 +700,15 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         ugstore.addUser(u2);
         ugstore.store();
 
-        PropertyAuthenticationKeyMapper propMapper =
-                GeoServerExtensions.extensions(PropertyAuthenticationKeyMapper.class)
-                        .iterator()
-                        .next();
+        PropertyAuthenticationKeyMapper propMapper = GeoServerExtensions.extensions(
+                        PropertyAuthenticationKeyMapper.class)
+                .iterator()
+                .next();
 
-        UserPropertyAuthenticationKeyMapper userpropMapper =
-                GeoServerExtensions.extensions(UserPropertyAuthenticationKeyMapper.class)
-                        .iterator()
-                        .next();
+        UserPropertyAuthenticationKeyMapper userpropMapper = GeoServerExtensions.extensions(
+                        UserPropertyAuthenticationKeyMapper.class)
+                .iterator()
+                .next();
 
         propMapper.setSecurityManager(getSecurityManager());
         propMapper.setUserGroupServiceName("testAuthKey");
@@ -799,8 +778,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         // user property mapper
         assertEquals(1, userpropMapper.synchronize());
         u2 = (GeoServerUser) ugservice.loadUserByUsername("user2");
-        assertEquals(
-                user2KeyB, u2.getProperties().getProperty(userpropMapper.getUserPropertyName()));
+        assertEquals(user2KeyB, u2.getProperties().getProperty(userpropMapper.getUserPropertyName()));
         u3 = (GeoServerUser) ugservice.loadUserByUsername("user3");
         String user3KeyB = u3.getProperties().getProperty(userpropMapper.getUserPropertyName());
 
@@ -866,8 +844,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
 
     @Test
     public void testWebServiceAuthKeyBodyResponseNoRoleMatchingRegex() throws Exception {
-        WebServiceBodyResponseUserGroupServiceConfig config =
-                new WebServiceBodyResponseUserGroupServiceConfig();
+        WebServiceBodyResponseUserGroupServiceConfig config = new WebServiceBodyResponseUserGroupServiceConfig();
         config.setName("testWebServiceAuthKey4");
         config.setClassName(WebServiceBodyResponseUserGroupService.class.getName());
         config.setPasswordEncoderName(getPBEPasswordEncoder().getName());
@@ -881,21 +858,20 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
 
         assertNotNull(webServiceAuthKeyBodyResponseUGS);
 
-        WebServiceAuthenticationKeyMapper propMapper =
-                GeoServerExtensions.extensions(WebServiceAuthenticationKeyMapper.class)
-                        .iterator()
-                        .next();
+        WebServiceAuthenticationKeyMapper propMapper = GeoServerExtensions.extensions(
+                        WebServiceAuthenticationKeyMapper.class)
+                .iterator()
+                .next();
         propMapper.setUserGroupServiceName("testWebServiceAuthKey4");
         propMapper.setSecurityManager(getSecurityManager());
         propMapper.setWebServiceUrl("http://service/{key}");
         propMapper.setSearchUser("^.*?\"user\"\\s*:\\s*\"([^\"]+)\".*$");
-        propMapper.setHttpClient(
-                new TestHttpClient(
-                        "testkey",
-                        "{\n    \"user\": \"user1\", \"detail\": \"mydetail\", \"roles\": \"myrole_1, myrole_2\"\n   }"));
+        propMapper.setHttpClient(new TestHttpClient(
+                "testkey",
+                "{\n    \"user\": \"user1\", \"detail\": \"mydetail\", \"roles\": \"myrole_1, myrole_2\"\n   }"));
         GeoServerUser user = propMapper.getUser("testkey");
         assertNotNull(user);
-        assertEquals(user.getUsername(), "user1");
+        assertEquals("user1", user.getUsername());
 
         assertNotNull(user.getAuthorities());
         assertEquals(1, user.getAuthorities().size());
@@ -928,8 +904,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
                 (GeoServerAuthenticationKeyFilter) getSecurityManager().loadFilter(filterName);
 
         // Configure the mapper to return a user for a specific auth key
-        UserPropertyAuthenticationKeyMapper mapper =
-                (UserPropertyAuthenticationKeyMapper) filter.getMapper();
+        UserPropertyAuthenticationKeyMapper mapper = (UserPropertyAuthenticationKeyMapper) filter.getMapper();
         mapper.synchronize();
 
         // Prepare the filter chain
@@ -938,10 +913,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
 
         // test success
         GeoServerUser user =
-                (GeoServerUser)
-                        getSecurityManager()
-                                .loadUserGroupService("ug1")
-                                .loadUserByUsername(testUserName);
+                (GeoServerUser) getSecurityManager().loadUserGroupService("ug1").loadUserByUsername(testUserName);
         // Make sure the cache is cleared
         mapper.resetUserCache();
         String authKey = user.getProperties().getProperty(mapper.getUserPropertyName());
@@ -957,8 +929,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         // Set a valid existing authentication in the SecurityContext
         List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_ANONYMOUS"));
         SecurityContextHolder.getContext()
-                .setAuthentication(
-                        new AnonymousAuthenticationToken("test", "anonymous", authorities));
+                .setAuthentication(new AnonymousAuthenticationToken("test", "anonymous", authorities));
 
         // Perform the request
         getProxy().doFilter(request, response, chain);
@@ -967,14 +938,11 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         // authKey
         Authentication resultAuth =
                 getSecurityManager().getAuthenticationCache().get(filterName, authKey);
-        resultAuth =
-                resultAuth != null
-                        ? resultAuth
-                        : SecurityContextHolder.getContext().getAuthentication();
+        resultAuth = resultAuth != null
+                ? resultAuth
+                : SecurityContextHolder.getContext().getAuthentication();
         if (resultAuth != null) {
-            assertEquals(
-                    "user1",
-                    resultAuth.getPrincipal()); // Assuming "user1" is returned by the mapper
+            assertEquals("user1", resultAuth.getPrincipal()); // Assuming "user1" is returned by the mapper
 
             // Reconfigure the filter with allowChallengeAnonymousSessions = false
             config.setAllowChallengeAnonymousSessions(false);
@@ -992,8 +960,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
             // Set an existing valid authentication in the SecurityContext
             getSecurityManager().getAuthenticationCache().removeAll();
             SecurityContextHolder.getContext()
-                    .setAuthentication(
-                            new AnonymousAuthenticationToken("test", "validUser", authorities));
+                    .setAuthentication(new AnonymousAuthenticationToken("test", "validUser", authorities));
 
             // Perform the request
             getProxy().doFilter(request, response, chain);
@@ -1001,17 +968,15 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
             // Verify that the filter used the existing authentication and did not retrieve the user
             // using authKey
             resultAuth = getSecurityManager().getAuthenticationCache().get(filterName, authKey);
-            resultAuth =
-                    resultAuth != null
-                            ? resultAuth
-                            : SecurityContextHolder.getContext().getAuthentication();
+            resultAuth = resultAuth != null
+                    ? resultAuth
+                    : SecurityContextHolder.getContext().getAuthentication();
             assertNotNull(resultAuth);
             assertEquals("user1", resultAuth.getPrincipal());
         }
     }
 
-    private void loadPropFile(File authKeyFile, Properties props)
-            throws FileNotFoundException, IOException {
+    private void loadPropFile(File authKeyFile, Properties props) throws FileNotFoundException, IOException {
         try (FileInputStream propFile = new FileInputStream(authKeyFile)) {
             props.load(propFile);
         }

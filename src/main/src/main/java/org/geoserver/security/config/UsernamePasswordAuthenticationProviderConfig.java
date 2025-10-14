@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.config;
 
+import java.io.Serial;
 import org.geoserver.security.auth.UsernamePasswordAuthenticationProvider;
 
 /**
@@ -15,14 +16,14 @@ import org.geoserver.security.auth.UsernamePasswordAuthenticationProvider;
 public class UsernamePasswordAuthenticationProviderConfig extends BaseSecurityNamedServiceConfig
         implements SecurityAuthProviderConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     String userGroupServiceName;
 
     public UsernamePasswordAuthenticationProviderConfig() {}
 
-    public UsernamePasswordAuthenticationProviderConfig(
-            UsernamePasswordAuthenticationProviderConfig other) {
+    public UsernamePasswordAuthenticationProviderConfig(UsernamePasswordAuthenticationProviderConfig other) {
         super(other);
         userGroupServiceName = other.getUserGroupServiceName();
     }

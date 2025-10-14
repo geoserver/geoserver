@@ -6,9 +6,9 @@
 package org.geoserver.web.data.store;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.logging.Level;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.markup.html.form.Form;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -28,13 +28,13 @@ import org.geotools.data.util.NullProgressListener;
  */
 public class DataAccessNewPage extends AbstractDataAccessPage {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
      * Creates a new datastore configuration page to create a new datastore of the given type
      *
-     * @param dataStoreFactDisplayName the type of datastore to create, given by its factory display
-     *     name
+     * @param dataStoreFactDisplayName the type of datastore to create, given by its factory display name
      */
     public DataAccessNewPage(final String dataStoreFactDisplayName) {
         super();
@@ -57,14 +57,12 @@ public class DataAccessNewPage extends AbstractDataAccessPage {
     }
 
     /**
-     * Callback method called when the submit button have been pressed and the parameters validation
-     * has succeed.
+     * Callback method called when the submit button have been pressed and the parameters validation has succeeded.
      *
-     * @see AbstractDataAccessPage#onSaveDataStore(Form)
+     * @see AbstractDataAccessPage#onSaveDataStore(DataStoreInfo, AjaxRequestTarget, boolean)
      */
     @Override
-    protected final void onSaveDataStore(
-            final DataStoreInfo info, AjaxRequestTarget target, boolean doReturn)
+    protected final void onSaveDataStore(final DataStoreInfo info, AjaxRequestTarget target, boolean doReturn)
             throws IllegalArgumentException {
         if (!storeEditPanel.onSave()) {
             return;
@@ -104,9 +102,7 @@ public class DataAccessNewPage extends AbstractDataAccessPage {
             catalog.add(savedStore);
         } catch (FileSandboxEnforcer.SandboxException e) {
             // this one is non recoverable, give up and inform the user
-            error(
-                    new ParamResourceModel("sandboxError", this, e.getFile().getAbsolutePath())
-                            .getString());
+            error(new ParamResourceModel("sandboxError", this, e.getFile().getAbsolutePath()).getString());
             return; // do not exit
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error adding data store to catalog", e);
@@ -115,8 +111,7 @@ public class DataAccessNewPage extends AbstractDataAccessPage {
                 message = e.getCause().getMessage();
             }
 
-            throw new IllegalArgumentException(
-                    "Error creating data store with the provided parameters: " + message);
+            throw new IllegalArgumentException("Error creating data store with the provided parameters: " + message);
         }
 
         final NewLayerPage newLayerPage;

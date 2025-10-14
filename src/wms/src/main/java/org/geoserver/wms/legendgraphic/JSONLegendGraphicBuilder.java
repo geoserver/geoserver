@@ -278,16 +278,14 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
 
             gt2Style = resizeForDPI(request, gt2Style);
 
-            final FeatureTypeStyle[] ftStyles =
-                    gt2Style.featureTypeStyles().toArray(new FeatureTypeStyle[0]);
+            final FeatureTypeStyle[] ftStyles = gt2Style.featureTypeStyles().toArray(new FeatureTypeStyle[0]);
             final double scaleDenominator = request.getScale();
 
             Rule[] applicableRules;
             if (ruleName != null) {
                 Rule rule = LegendUtils.getRule(ftStyles, ruleName);
                 if (rule == null) {
-                    throw new ServiceException(
-                            "Specified style does not contains a rule named " + ruleName);
+                    throw new ServiceException("Specified style does not contains a rule named " + ruleName);
                 }
                 applicableRules = new Rule[] {rule};
             } else {
@@ -301,16 +299,14 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             }
 
             ArrayList<JSONObject> jRules = new ArrayList<>();
-            if (legend instanceof CascadedLegendRequest) {
-                CascadedLegendRequest cascadedLegend = (CascadedLegendRequest) legend;
+            if (legend instanceof CascadedLegendRequest cascadedLegend) {
 
                 JSONArray cascadedRules = cascadedLegend.getCascadedJSONRules();
 
                 // if null or empty..go back to default behavior
                 if (cascadedRules != null) {
                     if (!cascadedRules.isEmpty()) {
-                        for (int i = 0; i < cascadedRules.size(); i++)
-                            jRules.add(cascadedRules.getJSONObject(i));
+                        for (int i = 0; i < cascadedRules.size(); i++) jRules.add(cascadedRules.getJSONObject(i));
                         // we have all the rules from cascaded JSON request
                         // no need to loop
                         layerName = cascadedLegend.getLayer();
@@ -358,13 +354,8 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
                 org.geotools.api.style.GraphicLegend l = rule.getLegend();
                 if (l != null) {
                     for (GraphicalSymbol g : l.graphicalSymbols()) {
-                        String href =
-                                IconPropertyExtractor.extractProperties(
-                                                gt2Style, (SimpleFeature) feature)
-                                        .href(
-                                                request.getBaseUrl(),
-                                                legend.getLayer(),
-                                                legend.getStyleName());
+                        String href = IconPropertyExtractor.extractProperties(gt2Style, (SimpleFeature) feature)
+                                .href(request.getBaseUrl(), null, legend.getStyleName());
 
                         JSONObject jGraphicSymb = processGraphicalSymbol(g, href);
                         jGraphicSymb.element("url", href);
@@ -395,8 +386,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
         return response;
     }
 
-    protected Rule[] updateRuleTitles(
-            FeatureCountProcessor processor, LegendRequest legend, Rule[] applicableRules) {
+    protected Rule[] updateRuleTitles(FeatureCountProcessor processor, LegendRequest legend, Rule[] applicableRules) {
         // skip rules with RasterSymbolizers, as they are not counted
         Rule[] rasterRules = rasterRules(applicableRules);
         Rule[] nonRasterRules = nonRasterRules(applicableRules);
@@ -441,7 +431,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             Object value = exp.evaluate(feature, type);
             if (value != null && type.equals(Color.class)) {
                 Color c = (Color) value;
-                return String.format("#%02X%02X%02X", c.getRed(), c.getGreen(), c.getBlue());
+                return "#%02X%02X%02X".formatted(c.getRed(), c.getGreen(), c.getBlue());
             } else if (value != null && type.isAssignableFrom(Number.class)) {
                 Number n = (Number) value;
                 if (!Double.isNaN(n.doubleValue()) && !Double.isInfinite(n.doubleValue())) {
@@ -462,17 +452,13 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
         JSONArray entries = new JSONArray();
         for (ColorMapEntry entry : colorMap.getColorMapEntries()) {
             JSONObject ent = new JSONObject();
-            final Double qty = entry.getQuantity().evaluate(null, Double.class);
-            if (colorMap.getType() == ColorMap.TYPE_INTERVALS
-                    && first
-                    && qty < 0
-                    && Double.isInfinite(qty)) {
+            final double qty = LegendUtils.getQuantity(entry);
+            if (colorMap.getType() == ColorMap.TYPE_INTERVALS && first && qty < 0 && Double.isInfinite(qty)) {
                 continue;
             }
             first = false;
-            ent.element(LABEL, entry.getLabel());
+            ent.element(LABEL, LegendUtils.getLabel(entry));
             ent.element(QUANTITY, toJSONValue(entry.getQuantity(), Number.class));
-
             ent.element(COLOR, toJSONValue(entry.getColor(), Color.class));
 
             Expression opac = entry.getOpacity();
@@ -529,10 +515,9 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
         }
         Catalog catalog = wms.getCatalog();
         StyleInfo styleByName = catalog.getStyleByName(styleName);
-        String wsName = null;
+        WorkspaceInfo workspaceInfo = null;
         if (styleByName != null) {
-            WorkspaceInfo ws = styleByName.getWorkspace();
-            if (ws != null) wsName = ws.getName();
+            workspaceInfo = styleByName.getWorkspace();
         }
         List<List<MiniRule>> newStyle = new ArrayList<>();
         List<Integer> origRuleNo = new ArrayList<>();
@@ -553,18 +538,21 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             newStyle.add(newRules);
         }
 
-        IconProperties props =
-                IconPropertyExtractor.extractProperties(newStyle, (SimpleFeature) feature);
+        IconProperties props = IconPropertyExtractor.extractProperties(newStyle, (SimpleFeature) feature);
 
-        String iconUrl = props.href(baseURL, wsName, styleName);
+        String iconUrl;
+        if (workspaceInfo != null) {
+            iconUrl = props.href(baseURL, workspaceInfo, styleByName.getName());
+        } else {
+            iconUrl = props.href(baseURL, null, styleName);
+        }
         int index = iconUrl.indexOf('?');
         if (index >= 0) {
             String base = iconUrl.substring(0, index + 1);
             String[] refs = iconUrl.substring(index + 1).split("&");
             for (String s : refs) {
                 if (s.matches("(\\d\\.)\\d(\\.\\d[\\.\\w+]*=[\\d.]*)")) {
-                    String ref =
-                            s.replaceAll("(\\d\\.)\\d(\\.\\d=)", "$1" + origRuleNo.get(0) + "$2");
+                    String ref = s.replaceAll("(\\d\\.)\\d(\\.\\d=)", "$1" + origRuleNo.get(0) + "$2");
                     String[] split = s.split("\\.");
                     int symCount = Integer.parseInt(split[2].replaceAll("=", ""));
                     if (symbolizerCount == symCount) base += ref + "&";
@@ -624,8 +612,8 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
     private JSONObject processGraphicalSymbol(GraphicalSymbol g, String iconUrl) {
         JSONObject jGraphic = new JSONObject();
 
-        if (g instanceof Mark) {
-            Mark m = ((Mark) g);
+        if (g instanceof Mark mark) {
+            Mark m = mark;
             Expression wkn = m.getWellKnownName();
             if (wkn != null) {
                 jGraphic.element(MARK, toJSONValue(wkn, String.class));
@@ -654,8 +642,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
                 }
                 jGraphic.element(FORMAT, em.getFormat());
             }
-        } else if (g instanceof ExternalGraphic) {
-            ExternalGraphic eg = (ExternalGraphic) g;
+        } else if (g instanceof ExternalGraphic eg) {
             try {
                 URL url = eg.getOnlineResource().getLinkage().toURL();
                 if (url.getProtocol().equals("file")) {
@@ -677,9 +664,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
     private JSONObject processLineSymbolizer(JSONObject ret, LineSymbolizer symbolizer) {
         ret = processStroke(ret, symbolizer.getStroke());
         if (symbolizer.getPerpendicularOffset() != null) {
-            ret.element(
-                    PERPENDICULAR_OFFSET,
-                    toJSONValue(symbolizer.getPerpendicularOffset(), Number.class));
+            ret.element(PERPENDICULAR_OFFSET, toJSONValue(symbolizer.getPerpendicularOffset(), Number.class));
         }
         return ret;
     }
@@ -707,8 +692,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
         return ret;
     }
     /** */
-    private JSONObject processContrastEnhancement(
-            JSONObject ret, ContrastEnhancement contrastEnhancement) {
+    private JSONObject processContrastEnhancement(JSONObject ret, ContrastEnhancement contrastEnhancement) {
         if (contrastEnhancement != null) {
             JSONObject ce = new JSONObject();
             Expression gammaValue = contrastEnhancement.getGammaValue();
@@ -825,16 +809,16 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
         if (geometry != null) {
             ret.element(GEOMETRY, toJSONValue(geometry, Geometry.class));
         }
-        if (symbolizer instanceof PointSymbolizer) {
-            ret = processPointSymbolizer(ret, (PointSymbolizer) symbolizer);
-        } else if (symbolizer instanceof LineSymbolizer) {
-            ret = processLineSymbolizer(ret, (LineSymbolizer) symbolizer);
-        } else if (symbolizer instanceof PolygonSymbolizer) {
-            ret = processPolygonSymbolizer(ret, (PolygonSymbolizer) symbolizer);
-        } else if (symbolizer instanceof RasterSymbolizer) {
-            ret = processRasterSymbolizer(ret, (RasterSymbolizer) symbolizer);
-        } else if (symbolizer instanceof TextSymbolizer) {
-            ret = processTextSymbolizer(ret, (TextSymbolizer) symbolizer);
+        if (symbolizer instanceof PointSymbolizer pointSymbolizer) {
+            ret = processPointSymbolizer(ret, pointSymbolizer);
+        } else if (symbolizer instanceof LineSymbolizer lineSymbolizer) {
+            ret = processLineSymbolizer(ret, lineSymbolizer);
+        } else if (symbolizer instanceof PolygonSymbolizer polygonSymbolizer) {
+            ret = processPolygonSymbolizer(ret, polygonSymbolizer);
+        } else if (symbolizer instanceof RasterSymbolizer rasterSymbolizer) {
+            ret = processRasterSymbolizer(ret, rasterSymbolizer);
+        } else if (symbolizer instanceof TextSymbolizer textSymbolizer) {
+            ret = processTextSymbolizer(ret, textSymbolizer);
         } else {
             LOGGER.warning("unknown symbolizer type " + symbolizer.getClass().getName());
         }
@@ -851,8 +835,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
 
             for (Entry<String, ?> opt : map.entrySet()) {
                 if (opt.getValue() instanceof Expression) {
-                    vendorOpts.element(
-                            opt.getKey(), toJSONValue((Expression) opt.getValue(), Object.class));
+                    vendorOpts.element(opt.getKey(), toJSONValue((Expression) opt.getValue(), Object.class));
                 } else {
                     vendorOpts.element(opt.getKey(), opt.getValue());
                 }
@@ -889,8 +872,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
         }
         JSONObject jPlacement = new JSONObject();
         LabelPlacement placement = symbolizer.getLabelPlacement();
-        if (placement instanceof PointPlacement) {
-            PointPlacement pplacement = (PointPlacement) placement;
+        if (placement instanceof PointPlacement pplacement) {
 
             AnchorPoint ap = pplacement.getAnchorPoint();
             if (ap != null) {
@@ -900,17 +882,12 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             jPlacement.element(ROTATION, toJSONValue(pplacement.getRotation(), Number.class));
             Displacement displacement = pplacement.getDisplacement();
             if (displacement != null) {
-                jPlacement.element(
-                        X_DISPLACEMENT, toJSONValue(displacement.getDisplacementX(), Number.class));
-                jPlacement.element(
-                        Y_DISPLACEMENT, toJSONValue(displacement.getDisplacementY(), Number.class));
+                jPlacement.element(X_DISPLACEMENT, toJSONValue(displacement.getDisplacementX(), Number.class));
+                jPlacement.element(Y_DISPLACEMENT, toJSONValue(displacement.getDisplacementY(), Number.class));
             }
         }
-        if (placement instanceof LinePlacement) {
-            LinePlacement lPlacement = (LinePlacement) placement;
-            jPlacement.element(
-                    PERPENDICULAR_OFFSET,
-                    toJSONValue(lPlacement.getPerpendicularOffset(), String.class));
+        if (placement instanceof LinePlacement lPlacement) {
+            jPlacement.element(PERPENDICULAR_OFFSET, toJSONValue(lPlacement.getPerpendicularOffset(), String.class));
         }
         ret.element(LABEL_PLACEMENT, jPlacement);
         Halo halo = symbolizer.getHalo();

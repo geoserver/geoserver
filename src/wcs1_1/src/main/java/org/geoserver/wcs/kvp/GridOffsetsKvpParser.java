@@ -38,9 +38,7 @@ public class GridOffsetsKvpParser extends KvpParser {
                 offsets[i] = Double.valueOf((String) values.get(i));
             } catch (NumberFormatException e) {
                 throw new WcsException(
-                        "Invalid offset " + offsets[i],
-                        WcsExceptionCode.InvalidParameterValue,
-                        "GridOffsets");
+                        "Invalid offset " + offsets[i], WcsExceptionCode.InvalidParameterValue, "GridOffsets");
             }
         }
 

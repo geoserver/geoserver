@@ -36,8 +36,8 @@ import org.locationtech.jts.geom.Geometry;
 import org.springframework.context.ApplicationContext;
 
 /**
- * The class that does the real work of checking if we are exceeeding the download limits for vector
- * data. Also this class writes the features in the output file.
+ * The class that does the real work of checking if we are exceeeding the download limits for vector data. Also this
+ * class writes the features in the output file.
  *
  * @author Simone Giannecchini, GeoSolutions SAS
  */
@@ -56,22 +56,18 @@ class VectorDownload {
     /**
      * Constructor, takes a {@link DownloadServiceConfiguration} and a {@link WPSResourceManager}.
      *
-     * @param limits the {@link DownloadServiceConfiguration} to check for not exceeding the
-     *     download limits.
+     * @param limits the {@link DownloadServiceConfiguration} to check for not exceeding the download limits.
      * @param resourceManager the {@link WPSResourceManager} to handle generated resources
      */
     public VectorDownload(
-            DownloadServiceConfiguration limits,
-            WPSResourceManager resourceManager,
-            ApplicationContext context) {
+            DownloadServiceConfiguration limits, WPSResourceManager resourceManager, ApplicationContext context) {
         this.limits = limits;
         this.resourceManager = resourceManager;
         this.context = context;
     }
 
     /**
-     * Extract vector data to a file, given the provided mime-type. This method does the following
-     * operations:
+     * Extract vector data to a file, given the provided mime-type. This method does the following operations:
      *
      * <ul>
      *   <li>Reads and filter the features (if needed)
@@ -125,8 +121,7 @@ class VectorDownload {
 
         // access feature source and collection of features
         final SimpleFeatureSource featureSource =
-                (SimpleFeatureSource)
-                        resourceInfo.getFeatureSource(null, GeoTools.getDefaultHints());
+                (SimpleFeatureSource) resourceInfo.getFeatureSource(null, GeoTools.getDefaultHints());
 
         // basic filter preparation
         Filter ra = Filter.INCLUDE;
@@ -144,11 +139,9 @@ class VectorDownload {
             }
             final String dataGeomName =
                     featureSource.getSchema().getGeometryDescriptor().getLocalName();
-            final Intersects intersectionFilter =
-                    FeatureUtilities.DEFAULT_FILTER_FACTORY.intersects(
-                            FeatureUtilities.DEFAULT_FILTER_FACTORY.property(dataGeomName),
-                            FeatureUtilities.DEFAULT_FILTER_FACTORY.literal(
-                                    roiManager.getSafeRoiInNativeCRS()));
+            final Intersects intersectionFilter = FeatureUtilities.DEFAULT_FILTER_FACTORY.intersects(
+                    FeatureUtilities.DEFAULT_FILTER_FACTORY.property(dataGeomName),
+                    FeatureUtilities.DEFAULT_FILTER_FACTORY.literal(roiManager.getSafeRoiInNativeCRS()));
             ra = FeatureUtilities.DEFAULT_FILTER_FACTORY.and(ra, intersectionFilter);
         }
 
@@ -177,8 +170,7 @@ class VectorDownload {
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.log(Level.FINE, "Reprojecting features");
                 }
-                reprojectedFeatures =
-                        new ReprojectingFeatureCollection(originalFeatures, targetCRS);
+                reprojectedFeatures = new ReprojectingFeatureCollection(originalFeatures, targetCRS);
             } else {
                 reprojectedFeatures = originalFeatures;
                 DownloadUtilities.checkIsEmptyFeatureCollection(reprojectedFeatures);
@@ -199,9 +191,7 @@ class VectorDownload {
                 LOGGER.log(Level.FINE, "Clipping features");
             }
             final ClipProcess clipProcess = new ClipProcess(); // TODO avoid unnecessary creation
-            clippedFeatures =
-                    clipProcess.execute(
-                            reprojectedFeatures, roiManager.getSafeRoiInTargetCRS(), true);
+            clippedFeatures = clipProcess.execute(reprojectedFeatures, roiManager.getSafeRoiInTargetCRS(), true);
 
             // checks
             DownloadUtilities.checkIsEmptyFeatureCollection(clippedFeatures);
@@ -227,20 +217,15 @@ class VectorDownload {
      * @param mimeType mimetype of the result
      * @return a {@link File} containing the written features
      */
-    private Resource writeVectorOutput(
-            final SimpleFeatureCollection features, final String name, final String mimeType)
+    private Resource writeVectorOutput(final SimpleFeatureCollection features, final String name, final String mimeType)
             throws Exception {
 
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.log(Level.FINE, "Writing features");
         }
         // Search a proper PPIO
-        ProcessParameterIO ppio_ =
-                DownloadUtilities.find(
-                        new Parameter<>("fakeParam", SimpleFeatureCollection.class),
-                        context,
-                        mimeType,
-                        false);
+        ProcessParameterIO ppio_ = DownloadUtilities.find(
+                new Parameter<>("fakeParam", SimpleFeatureCollection.class), context, mimeType, false);
         if (ppio_ == null) {
             throw new ProcessException("Don't know how to encode in mime type " + mimeType);
         } else if (!(ppio_ instanceof ComplexPPIO)) {
@@ -264,8 +249,8 @@ class VectorDownload {
         // Get fileName
         //
         String extension = "";
-        if (ppio_ instanceof ComplexPPIO) {
-            extension = "." + ((ComplexPPIO) ppio_).getFileExtension();
+        if (ppio_ instanceof ComplexPPIO iO) {
+            extension = "." + iO.getFileExtension();
         }
 
         // create output file
@@ -277,8 +262,8 @@ class VectorDownload {
         // write checking limits
         try (OutputStream os = getResourceOutputStream(output, limit)) {
             // write with PPIO
-            if (ppio_ instanceof ComplexPPIO) {
-                ((ComplexPPIO) ppio_).encode(features, os);
+            if (ppio_ instanceof ComplexPPIO iO) {
+                iO.encode(features, os);
             }
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Flushing stream");
@@ -298,17 +283,14 @@ class VectorDownload {
         // by the close method invoked on the wrapping OutputStream
         final BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(output.out());
         if (limit > DownloadServiceConfiguration.NO_LIMIT) {
-            os =
-                    new LimitedOutputStream(bufferedOutputStream, limit) {
+            os = new LimitedOutputStream(bufferedOutputStream, limit) {
 
-                        @Override
-                        protected void raiseError(long pSizeMax, long pCount) throws IOException {
-                            IOException ioe =
-                                    new IOException(
-                                            "Download Exceeded the maximum HARD allowed size!");
-                            throw ioe;
-                        }
-                    };
+                @Override
+                protected void raiseError(long pSizeMax, long pCount) throws IOException {
+                    IOException ioe = new IOException("Download Exceeded the maximum HARD allowed size!");
+                    throw ioe;
+                }
+            };
 
         } else {
             os = bufferedOutputStream;

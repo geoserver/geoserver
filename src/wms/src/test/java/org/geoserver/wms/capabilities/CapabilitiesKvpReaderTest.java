@@ -44,10 +44,7 @@ public class CapabilitiesKvpReaderTest {
         assertNull(read.getNamespace());
     }
 
-    /**
-     * 1.0 "WMTVER" parameter supplied instead of "VERSION"? Version negotiation should agree on
-     * 1.1.1
-     */
+    /** 1.0 "WMTVER" parameter supplied instead of "VERSION"? Version negotiation should agree on 1.1.1 */
     @SuppressWarnings("unchecked")
     @Test
     public void testWMTVER() throws Exception {

@@ -8,8 +8,8 @@ import io.swagger.v3.oas.models.OpenAPI;
 import org.springframework.http.MediaType;
 
 /**
- * Generic API service landing page for Jackson to easily translate to JSON/YAML (also used as a
- * Freemarker template model).
+ * Generic API service landing page for Jackson to easily translate to JSON/YAML (also used as a Freemarker template
+ * model).
  *
  * @author bradh
  */
@@ -18,8 +18,7 @@ public class AbstractLandingPageDocumentNoConformance extends AbstractDocument {
     final String title;
     final String description;
 
-    public AbstractLandingPageDocumentNoConformance(
-            String title, String description, String serviceBase) {
+    public AbstractLandingPageDocumentNoConformance(String title, String description, String serviceBase) {
 
         // self and alternate representations of landing page
         addSelfLinks(serviceBase + "/");
@@ -29,12 +28,11 @@ public class AbstractLandingPageDocumentNoConformance extends AbstractDocument {
                 .title("API definition for this endpoint as ")
                 .rel(Link.REL_SERVICE_DESC)
                 .classification("api")
-                .updater(
-                        (format, link) -> {
-                            if (MediaType.TEXT_HTML.equals(format)) {
-                                link.setRel(Link.REL_SERVICE_DOC);
-                            }
-                        })
+                .updater((format, link) -> {
+                    if (MediaType.TEXT_HTML.equals(format)) {
+                        link.setRel(Link.REL_SERVICE_DOC);
+                    }
+                })
                 .add(this);
         this.title = title;
         this.description = description;

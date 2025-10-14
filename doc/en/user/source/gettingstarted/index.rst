@@ -13,5 +13,7 @@ This section contains short tutorials for common tasks in GeoServer to get new u
    image-quickstart/index.rst
    group-quickstart/index.rst
    style-quickstart/index.rst
+   preflight-quickstart/index.rst
    shapefile-quickstart/index.rst
    postgis-quickstart/index.rst
+

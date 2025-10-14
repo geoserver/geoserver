@@ -25,7 +25,7 @@ import org.geoserver.ows.util.RequestUtils;
 /**
  * Filter to log requests for debugging or statistics-gathering purposes.
  *
- * @author David Winslow <dwinslow@openplans.org>
+ * @author David Winslow dwinslow@openplans.org
  */
 public class LoggingFilter implements GeoServerFilter {
     protected Logger logger = org.geotools.util.logging.Logging.getLogger("org.geoserver.filters");
@@ -53,8 +53,7 @@ public class LoggingFilter implements GeoServerFilter {
     /**
      * Check if body can be logged, or is it a known binary type.
      *
-     * <p>At the time of writing used to suppress application/zip logging (which would render the
-     * console unusable).
+     * <p>At the time of writing used to suppress application/zip logging (which would render the console unusable).
      *
      * @param contentType
      * @return
@@ -64,15 +63,14 @@ public class LoggingFilter implements GeoServerFilter {
             return true;
         }
         int sub = contentType.indexOf('/');
-        String mimeType = sub == -1 ? contentType : contentType.substring(0, sub).toLowerCase();
+        String mimeType =
+                sub == -1 ? contentType : contentType.substring(0, sub).toLowerCase();
         String subType = sub == -1 ? "" : contentType.substring(sub + 1).toLowerCase();
 
         if (mimeType.equals("image") && !subType.contains("svg")) {
             return true;
         } else if ("application".equals(mimeType)
-                && !(subType.contains("xml")
-                        || subType.contains("json")
-                        || subType.contains("gml"))) {
+                && !(subType.contains("xml") || subType.contains("json") || subType.contains("gml"))) {
             return true;
         } else {
             return false; // assume text by default
@@ -84,27 +82,22 @@ public class LoggingFilter implements GeoServerFilter {
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
             throws IOException, ServletException {
         // Pulling setting from global settings object
-        boolean geoServerHasMetadata =
-                (geoServer != null
-                        && geoServer.getGlobal() != null
-                        && geoServer.getGlobal().getMetadata() != null);
+        boolean geoServerHasMetadata = (geoServer != null
+                && geoServer.getGlobal() != null
+                && geoServer.getGlobal().getMetadata() != null);
 
         if (geoServerHasMetadata) {
             MetadataMap metadataMap = geoServer.getGlobal().getMetadata();
-            enabled =
-                    (metadataMap.containsKey(LOG_REQUESTS_ENABLED)
-                            && metadataMap.get(LOG_REQUESTS_ENABLED, Boolean.class));
+            enabled = (metadataMap.containsKey(LOG_REQUESTS_ENABLED)
+                    && metadataMap.get(LOG_REQUESTS_ENABLED, Boolean.class));
             logBodies =
-                    (metadataMap.containsKey(LOG_BODIES_ENABLED)
-                            && metadataMap.get(LOG_BODIES_ENABLED, Boolean.class));
-            logHeaders =
-                    (metadataMap.containsKey(LOG_HEADERS_ENABLED)
-                            && metadataMap.get(LOG_HEADERS_ENABLED, Boolean.class));
+                    (metadataMap.containsKey(LOG_BODIES_ENABLED) && metadataMap.get(LOG_BODIES_ENABLED, Boolean.class));
+            logHeaders = (metadataMap.containsKey(LOG_HEADERS_ENABLED)
+                    && metadataMap.get(LOG_HEADERS_ENABLED, Boolean.class));
             // Grabbed from global directly, not metadatamap for backwards compatibility
-            requestLogBufferSize =
-                    geoServer.getGlobal().getXmlPostRequestLogBufferSize() != null
-                            ? geoServer.getGlobal().getXmlPostRequestLogBufferSize()
-                            : REQUEST_LOG_BUFFER_SIZE_DEFAULT;
+            requestLogBufferSize = geoServer.getGlobal().getXmlPostRequestLogBufferSize() != null
+                    ? geoServer.getGlobal().getXmlPostRequestLogBufferSize()
+                    : REQUEST_LOG_BUFFER_SIZE_DEFAULT;
         }
 
         String message = "";
@@ -112,15 +105,9 @@ public class LoggingFilter implements GeoServerFilter {
         String path = "";
 
         if (enabled) {
-            if (req instanceof HttpServletRequest) {
-                HttpServletRequest hreq = (HttpServletRequest) req;
+            if (req instanceof HttpServletRequest hreq) {
 
-                path =
-                        RequestUtils.getRemoteAddr(hreq)
-                                + " \""
-                                + hreq.getMethod()
-                                + " "
-                                + hreq.getRequestURI();
+                path = RequestUtils.getRemoteAddr(hreq) + " \"" + hreq.getMethod() + " " + hreq.getRequestURI();
                 if (hreq.getQueryString() != null) {
                     path += "?" + hreq.getQueryString();
                 }
@@ -161,8 +148,7 @@ public class LoggingFilter implements GeoServerFilter {
                     try {
                         charset = Charset.forName(encoding);
                     } catch (IllegalCharsetNameException icn) {
-                        logger.info(
-                                "Request character set not recognized, using default character set");
+                        logger.info("Request character set not recognized, using default character set");
                     }
                     float maxBytesPerCharacter = charset.newEncoder().maxBytesPerChar();
                     int byteSize = (int) (requestLogBufferSize * maxBytesPerCharacter);

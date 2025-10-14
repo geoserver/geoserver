@@ -34,8 +34,7 @@ public class GeoFenceControllerTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testGetInfo() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(RestBaseController.ROOT_PATH + "/geofence/info");
+        MockHttpServletResponse response = getAsServletResponse(RestBaseController.ROOT_PATH + "/geofence/info");
         assertEquals(200, response.getStatus());
         assertContentType(MediaType.TEXT_PLAIN_VALUE, response);
         String content = response.getContentAsString();

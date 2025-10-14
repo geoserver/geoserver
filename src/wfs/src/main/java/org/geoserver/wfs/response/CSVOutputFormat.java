@@ -48,8 +48,8 @@ import org.geotools.feature.type.DateUtil;
 import org.geotools.xsd.EMFUtils;
 
 /**
- * WFS output format for a GetFeature operation in which the outputFormat is "csv". The refence
- * specification for this format can be found in this RFC: http://www.rfc-editor.org/rfc/rfc4180.txt
+ * WFS output format for a GetFeature operation in which the outputFormat is "csv". The refence specification for this
+ * format can be found in this RFC: http://www.rfc-editor.org/rfc/rfc4180.txt
  *
  * @author Justin Deoliveira, OpenGeo, jdeolive@opengeo.org
  * @author Sebastian Benthall, OpenGeo, seb@opengeo.org
@@ -87,8 +87,7 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
 
     /** @see WFSGetFeatureOutputFormat#write(Object, OutputStream, Operation) */
     @Override
-    protected void write(
-            FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
+    protected void write(FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
             throws IOException, ServiceException {
         // write out content here
 
@@ -98,9 +97,8 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
         CSV_ESCAPES = Pattern.compile("[\"\n\r\t" + csvSeparator + "]");
 
         // create a writer
-        BufferedWriter w =
-                new BufferedWriter(
-                        new OutputStreamWriter(output, gs.getGlobal().getSettings().getCharset()));
+        BufferedWriter w = new BufferedWriter(
+                new OutputStreamWriter(output, gs.getGlobal().getSettings().getCharset()));
 
         // get the feature collection
         FeatureCollection<?, ?> fc = featureCollection.getFeature().get(0);
@@ -134,10 +132,9 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
                     }
                     String elName = att.getName().toString();
                     Object xsd = att.getUserData().get(XSDElementDeclaration.class);
-                    if (xsd instanceof XSDElementDeclaration) {
+                    if (xsd instanceof XSDElementDeclaration xsdEl) {
                         // get the prefixed name if possible
                         // otherwise defaults to the full name with namespace URI
-                        XSDElementDeclaration xsdEl = (XSDElementDeclaration) xsd;
                         elName = xsdEl.getQName();
                     }
                     elName = resolveNamespacePrefixName(elName);
@@ -165,15 +162,15 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
                 // dump fid
                 w.write(prepCSVField(f.getIdentifier().getID()));
                 w.write(csvSeparator);
-                if (f instanceof SimpleFeature) {
+                if (f instanceof SimpleFeature feature) {
                     // dump attributes
-                    for (int j = 0; j < ((SimpleFeature) f).getAttributeCount(); j++) {
-                        Object att = ((SimpleFeature) f).getAttribute(j);
+                    for (int j = 0; j < feature.getAttributeCount(); j++) {
+                        Object att = feature.getAttribute(j);
                         if (att != null) {
                             String value = formatters[j].format(att);
                             w.write(value);
                         }
-                        if (j < ((SimpleFeature) f).getAttributeCount() - 1) {
+                        if (j < feature.getAttributeCount() - 1) {
                             w.write(csvSeparator);
                         }
                     }
@@ -232,8 +229,7 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
 
         String separator = null;
         if (EMFUtils.has((EObject) o, "formatOptions")) {
-            HashMap<String, String> hashMap =
-                    (HashMap<String, String>) EMFUtils.get((EObject) o, "formatOptions");
+            HashMap<String, String> hashMap = (HashMap<String, String>) EMFUtils.get((EObject) o, "formatOptions");
             separator = hashMap.get("CSVSEPARATOR");
         }
 
@@ -252,16 +248,13 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
         return separator;
     }
 
-    @SuppressWarnings("PMD.UnnecessaryCast")
     private AttrFormatter[] getFormatters(FeatureType schema) {
-        if (schema instanceof SimpleFeatureType) {
+        if (schema instanceof SimpleFeatureType sft) {
             // prepare the formatter for numbers
             NumberFormat coordFormatter = NumberFormat.getInstance(Locale.US);
             coordFormatter.setMaximumFractionDigits(
                     getInfo().getGeoServer().getSettings().getNumDecimals());
             coordFormatter.setGroupingUsed(false);
-
-            SimpleFeatureType sft = (SimpleFeatureType) schema;
             AttrFormatter[] formatters = new AttrFormatter[sft.getAttributeCount()];
             int i = 0;
             for (AttributeDescriptor attributeDescriptor : sft.getAttributeDescriptors()) {
@@ -273,11 +266,10 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
                 } else if (java.sql.Time.class.isAssignableFrom(binding)) {
                     formatters[i] = sqlTimeFormatter;
                 } else if (java.util.Date.class.isAssignableFrom(binding)) {
-                    formatters[i] =
-                            Optional.ofNullable(gs.getService(WFSInfo.class))
-                                    .map(WFSInfo::getCsvDateFormat)
-                                    .map(format -> (AttrFormatter) new CustomDateFormatter(format))
-                                    .orElse(juDateFormatter);
+                    formatters[i] = Optional.ofNullable(gs.getService(WFSInfo.class))
+                            .map(WFSInfo::getCsvDateFormat)
+                            .map(format -> (AttrFormatter) new CustomDateFormatter(format))
+                            .orElse(juDateFormatter);
                 } else {
                     formatters[i] = defaultFormatter;
                 }
@@ -368,10 +360,8 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
             value = coordFormatter.format(att);
         } else if (att instanceof Date) {
             // serialize dates in ISO format
-            if (att instanceof java.sql.Date)
-                value = DateUtil.serializeSqlDate((java.sql.Date) att);
-            else if (att instanceof java.sql.Time)
-                value = DateUtil.serializeSqlTime((java.sql.Time) att);
+            if (att instanceof java.sql.Date date) value = DateUtil.serializeSqlDate(date);
+            else if (att instanceof java.sql.Time time) value = DateUtil.serializeSqlTime(time);
             else value = DateUtil.serializeDateTime((Date) att);
         } else {
             // everything else we just "toString"
@@ -414,24 +404,21 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
     }
 
     /**
-     * Checks if the used namespace prefix is available on GeoServer namespaces, and replace the
-     * namespace URI with the prefix name found.
+     * Checks if the used namespace prefix is available on GeoServer namespaces, and replace the namespace URI with the
+     * prefix name found.
      *
      * @param attributeName the current attribute name
      * @return the fixed prefixed name, of the original attribute name if no namespace is found
      */
     String resolveNamespacePrefixName(String attributeName) {
-        if (StringUtils.isBlank(attributeName)
-                || !attributeName.contains(":")
-                || attributeName.endsWith(":")) {
+        if (StringUtils.isBlank(attributeName) || !attributeName.contains(":") || attributeName.endsWith(":")) {
             return attributeName;
         }
         int lastIndexOfSeparator = attributeName.lastIndexOf(":");
         String namespaceUri = attributeName.substring(0, lastIndexOfSeparator);
         NamespaceInfo namespace = this.gs.getCatalog().getNamespaceByURI(namespaceUri);
         if (namespace != null) {
-            String localName =
-                    attributeName.substring(lastIndexOfSeparator + 1, attributeName.length());
+            String localName = attributeName.substring(lastIndexOfSeparator + 1, attributeName.length());
             return namespace.getPrefix() + ":" + localName;
         }
         return attributeName;

@@ -4,26 +4,11 @@
   <wicket:link>
     <link rel="stylesheet" type="text/css" href="style.css"/>
   </wicket:link>
-  
- <style type="text/css">
-   fieldset {
-     margin-top: 3em;
-   }
-   
-   #sources li {
-     margin: 0;
-     padding: 0;
-   }
-   
-   #sources li:first-child {
-     margin: 0.3em 0 0;
-   }
- </style>
- </wicket:head>
+</wicket:head>
 </head>
 <body>
 <wicket:extend>
-  <form wicket:id="form">
+  <form wicket:id="form" class="fieldset-margins">
     <fieldset>
       <legend class="border-0">1. <wicket:message key="chooseDataSource">chooseDataSource</wicket:message></legend>
       <div wicket:id="sources" id="sources">

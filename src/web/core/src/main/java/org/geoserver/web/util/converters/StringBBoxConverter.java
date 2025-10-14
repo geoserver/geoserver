@@ -18,19 +18,16 @@ public class StringBBoxConverter implements Converter {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T convert(Object source, Class<T> target) throws Exception {
-        if (source instanceof ReferencedEnvelope) {
+        if (source instanceof ReferencedEnvelope envelope) {
             if (String.class.isAssignableFrom(target)) {
                 try {
-                    ReferencedEnvelope envelope = (ReferencedEnvelope) source;
 
                     StringBuilder str = new StringBuilder();
                     str.append(envelope.getMinimum(0)).append(SEPARATOR);
                     str.append(envelope.getMaximum(0)).append(SEPARATOR);
                     str.append(envelope.getMinimum(1)).append(SEPARATOR);
                     str.append(envelope.getMaximum(1)).append(SEPARATOR);
-                    str.append(
-                            ResourcePool.lookupIdentifier(
-                                    envelope.getCoordinateReferenceSystem(), true));
+                    str.append(ResourcePool.lookupIdentifier(envelope.getCoordinateReferenceSystem(), true));
 
                     return (T) str.toString();
                 } catch (Exception e) {
@@ -42,14 +39,13 @@ public class StringBBoxConverter implements Converter {
                 String text = (String) source;
                 String[] parsed = text.split("\\s*" + SEPARATOR + "\\s*");
                 try {
-                    return (T)
-                            (new ReferencedEnvelope(
-                                    new Envelope(
-                                            Double.valueOf(parsed[0]),
-                                            Double.valueOf(parsed[1]),
-                                            Double.valueOf(parsed[2]),
-                                            Double.valueOf(parsed[3])),
-                                    CRS.decode(parsed[4])));
+                    return (T) (new ReferencedEnvelope(
+                            new Envelope(
+                                    Double.valueOf(parsed[0]),
+                                    Double.valueOf(parsed[1]),
+                                    Double.valueOf(parsed[2]),
+                                    Double.valueOf(parsed[3])),
+                            CRS.decode(parsed[4])));
                 } catch (Exception e) {
                     return null;
                 }

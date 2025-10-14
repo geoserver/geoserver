@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.web.auth;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.security.RequestFilterChain;
@@ -27,6 +28,7 @@ public class SecurityFilterChainProvider extends GeoServerDataProvider<RequestFi
         this.config = config;
     }
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /** name of the config */
@@ -35,38 +37,33 @@ public class SecurityFilterChainProvider extends GeoServerDataProvider<RequestFi
     public static Property<RequestFilterChain> POSITION = new PropertyPlaceholder<>("position");
     public static Property<RequestFilterChain> REMOVE = new PropertyPlaceholder<>("remove");
 
-    public static final Property<RequestFilterChain> DISABLED =
-            new BeanProperty<>("disabled", "disabled");
+    public static final Property<RequestFilterChain> DISABLED = new BeanProperty<>("disabled", "disabled");
     public static final Property<RequestFilterChain> ALLOWSESSIONCREATION =
             new BeanProperty<>("allowSessionCreation", "allowSessionCreation");
-    public static final Property<RequestFilterChain> REQUIRESSL =
-            new BeanProperty<>("requireSSL", "requireSSL");
+    public static final Property<RequestFilterChain> REQUIRESSL = new BeanProperty<>("requireSSL", "requireSSL");
     public static final Property<RequestFilterChain> MATCHHTTPMETHOD =
             new BeanProperty<>("matchHTTPMethod", "matchHTTPMethod");
 
-    public static final Property<RequestFilterChain> PATTERNS =
-            new AbstractProperty<>("patternString") {
-                @Override
-                public Object getPropertyValue(RequestFilterChain item) {
-                    return StringUtils.collectionToCommaDelimitedString(item.getPatterns());
-                }
-            };
+    public static final Property<RequestFilterChain> PATTERNS = new AbstractProperty<>("patternString") {
+        @Override
+        public Object getPropertyValue(RequestFilterChain item) {
+            return StringUtils.collectionToCommaDelimitedString(item.getPatterns());
+        }
+    };
 
-    public static final Property<RequestFilterChain> HTTPMETHODS =
-            new AbstractProperty<>("httpMethods") {
-                @Override
-                public Object getPropertyValue(RequestFilterChain item) {
-                    return StringUtils.collectionToCommaDelimitedString(item.getHttpMethods());
-                }
-            };
+    public static final Property<RequestFilterChain> HTTPMETHODS = new AbstractProperty<>("httpMethods") {
+        @Override
+        public Object getPropertyValue(RequestFilterChain item) {
+            return StringUtils.collectionToCommaDelimitedString(item.getHttpMethods());
+        }
+    };
 
-    public static final Property<RequestFilterChain> HASROLEFILTER =
-            new AbstractProperty<>("hasRoleFilter") {
-                @Override
-                public Object getPropertyValue(RequestFilterChain item) {
-                    return StringUtils.hasLength(item.getRoleFilterName());
-                }
-            };
+    public static final Property<RequestFilterChain> HASROLEFILTER = new AbstractProperty<>("hasRoleFilter") {
+        @Override
+        public Object getPropertyValue(RequestFilterChain item) {
+            return StringUtils.hasLength(item.getRoleFilterName());
+        }
+    };
 
     @Override
     protected List<Property<RequestFilterChain>> getProperties() {

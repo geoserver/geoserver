@@ -92,26 +92,23 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
 
         // workspace chooser
         workspace = new WorkspaceModel<WorkspaceInfo>(backupRestoreFileResource, null);
-        workspaceChoice =
-                new DropDownChoice<WorkspaceInfo>(
-                        "workspace",
-                        workspace,
-                        new BackupRestoreWorkspacesIndexModel(backupRestoreFileResource),
-                        new WorkspaceChoiceRenderer());
+        workspaceChoice = new DropDownChoice<WorkspaceInfo>(
+                "workspace",
+                workspace,
+                new BackupRestoreWorkspacesIndexModel(backupRestoreFileResource),
+                new WorkspaceChoiceRenderer());
         workspaceChoice.setOutputMarkupId(true);
-        workspaceChoice.add(
-                new AjaxFormComponentUpdatingBehavior("change") {
+        workspaceChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        updateTargetWorkspace(target);
-                    }
-                });
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                updateTargetWorkspace(target);
+            }
+        });
         workspaceChoice.setNullValid(true);
         add(workspaceChoice);
 
-        WebMarkupContainer workspaceNameContainer =
-                new WebMarkupContainer("workspaceNameContainer");
+        WebMarkupContainer workspaceNameContainer = new WebMarkupContainer("workspaceNameContainer");
         workspaceNameContainer.setOutputMarkupId(true);
 
         add(workspaceNameContainer);
@@ -135,20 +132,18 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
 
                     @Override
                     protected String getNullValidKey() {
-                        return BackupRestoreDataPage.class.getSimpleName()
-                                + "."
-                                + super.getNullValidKey();
-                    };
+                        return BackupRestoreDataPage.class.getSimpleName() + "." + super.getNullValidKey();
+                    }
+                    ;
                 };
         storeChoice.setOutputMarkupId(true);
-        storeChoice.add(
-                new AjaxFormComponentUpdatingBehavior("change") {
+        storeChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        updateTargetStore(target);
-                    }
-                });
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                updateTargetStore(target);
+            }
+        });
         storeChoice.setNullValid(true);
         add(storeChoice);
 
@@ -163,20 +158,18 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
 
                     @Override
                     protected String getNullValidKey() {
-                        return BackupRestoreDataPage.class.getSimpleName()
-                                + "."
-                                + super.getNullValidKey();
-                    };
+                        return BackupRestoreDataPage.class.getSimpleName() + "." + super.getNullValidKey();
+                    }
+                    ;
                 };
         layerChoice.setOutputMarkupId(true);
-        layerChoice.add(
-                new AjaxFormComponentUpdatingBehavior("change") {
+        layerChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        updateTargetLayer(target);
-                    }
-                });
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                updateTargetLayer(target);
+            }
+        });
         layerChoice.setNullValid(true);
         add(layerChoice);
 
@@ -196,7 +189,6 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
         add(dialog = new GeoServerDialog("dialog"));
         dialog.setInitialWidth(600);
         dialog.setInitialHeight(400);
-        dialog.setMinimalHeight(150);
     }
 
     /** @param target */
@@ -246,180 +238,152 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
         form.add(new CheckBox("backupOptBestEffort", new Model<Boolean>(true)));
         form.add(new CheckBox("backupOptCleanTemp", new Model<Boolean>(true)));
         form.add(statusLabel = new Label("status", new Model()).setOutputMarkupId(true));
-        form.add(
-                new AjaxSubmitLink("newBackupStart", form) {
+        form.add(new AjaxSubmitLink("newBackupStart", form) {
+            @Override
+            protected void disableLink(ComponentTag tag) {
+                super.disableLink(tag);
+                tag.setName("a");
+                tag.addBehavior(AttributeModifier.replace("class", "disabled"));
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target) {
+                addFeedbackPanels(target);
+            }
+
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+
+                // update status to indicate we are working
+                statusLabel.add(AttributeModifier.replace("class", "working-link"));
+                statusLabel.setDefaultModelObject("Working");
+                target.add(statusLabel);
+
+                // enable cancel and disable this
+                Component cancel = form.get("cancel");
+                cancel.setEnabled(true);
+                target.add(cancel);
+
+                setEnabled(false);
+                target.add(this);
+
+                final AjaxSubmitLink self = this;
+
+                final Long jobid;
+                try {
+                    jobid = launchBackupExecution(form);
+                } catch (Exception e) {
+                    error(e);
+                    LOGGER.log(Level.WARNING, "Error starting a new Backup", e);
+                    return;
+                } finally {
+                    // update the button back to original state
+                    resetButtons(form, target, "newBackupStart");
+
+                    addFeedbackPanels(target);
+                }
+
+                cancel.setDefaultModelObject(jobid);
+                this.add(new AbstractAjaxTimerBehavior(Duration.milliseconds(100)) {
                     @Override
-                    protected void disableLink(ComponentTag tag) {
-                        super.disableLink(tag);
-                        tag.setName("a");
-                        tag.addBehavior(AttributeModifier.replace("class", "disabled"));
-                    }
-
-                    @Override
-                    protected void onError(AjaxRequestTarget target) {
-                        addFeedbackPanels(target);
-                    }
-
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-
-                        // update status to indicate we are working
-                        statusLabel.add(AttributeModifier.replace("class", "working-link"));
-                        statusLabel.setDefaultModelObject("Working");
-                        target.add(statusLabel);
-
-                        // enable cancel and disable this
-                        Component cancel = form.get("cancel");
-                        cancel.setEnabled(true);
-                        target.add(cancel);
-
-                        setEnabled(false);
-                        target.add(this);
-
-                        final AjaxSubmitLink self = this;
-
-                        final Long jobid;
-                        try {
-                            jobid = launchBackupExecution(form);
-                        } catch (Exception e) {
-                            error(e);
-                            LOGGER.log(Level.WARNING, "Error starting a new Backup", e);
-                            return;
-                        } finally {
-                            // update the button back to original state
-                            resetButtons(form, target, "newBackupStart");
-
-                            addFeedbackPanels(target);
-                        }
-
-                        cancel.setDefaultModelObject(jobid);
-                        this.add(
-                                new AbstractAjaxTimerBehavior(Duration.milliseconds(100)) {
-                                    @Override
-                                    protected void onTimer(AjaxRequestTarget target) {
-                                        Backup backupFacade = BackupRestoreWebUtils.backupFacade();
-                                        BackupExecutionAdapter exec =
-                                                backupFacade.getBackupExecutions().get(jobid);
-
-                                        if (!exec.isRunning()) {
-                                            try {
-                                                if (exec.getAllFailureExceptions() != null
-                                                        && !exec.getAllFailureExceptions()
-                                                                .isEmpty()) {
-                                                    getSession()
-                                                            .error(
-                                                                    exec.getAllFailureExceptions()
-                                                                            .get(0));
-                                                    setResponsePage(BackupRestoreDataPage.class);
-                                                } else if (exec.isStopping()) {
-                                                    // do nothing
-                                                } else {
-                                                    PageParameters pp = new PageParameters();
-                                                    pp.add("id", exec.getId());
-                                                    pp.add(
-                                                            "clazz",
-                                                            BackupExecutionAdapter.class
-                                                                    .getSimpleName());
-
-                                                    setResponsePage(BackupRestorePage.class, pp);
-                                                }
-                                            } catch (Exception e) {
-                                                error(e);
-                                                LOGGER.log(Level.WARNING, "", e);
-                                            } finally {
-                                                stop(null);
-
-                                                // update the button back to original state
-                                                resetButtons(form, target, "newBackupStart");
-
-                                                addFeedbackPanels(target);
-                                            }
-                                            return;
-                                        }
-
-                                        String msg =
-                                                exec != null
-                                                        ? exec.getStatus().toString()
-                                                        : "Working";
-
-                                        statusLabel.setDefaultModelObject(msg);
-                                        target.add(statusLabel);
-                                    };
-
-                                    @Override
-                                    public boolean canCallListener(Component component) {
-                                        if (self.equals(component)) {
-                                            return true;
-                                        }
-                                        return super.canCallListener(component);
-                                    }
-                                });
-                    }
-
-                    private Long launchBackupExecution(Form<?> form) throws Exception {
-                        Resource archiveFile = getBackupRestoreArchiveResource(true);
-                        Filter wsFilter = null;
-                        Filter siFilter = null;
-                        Filter liFilter = null;
-                        WorkspaceInfo ws = (WorkspaceInfo) workspace.getObject();
-                        StoreInfo si = (StoreInfo) store.getObject();
-                        LayerInfo li = (LayerInfo) layer.getObject();
-                        if (ws != null) {
-                            wsFilter =
-                                    or(
-                                            equal("name", ws.getName()),
-                                            equal("workspace.name", ws.getName()),
-                                            equal("resource.store.workspace.name", ws.getName()));
-                        }
-                        if (si != null) {
-                            siFilter =
-                                    or(
-                                            equal("name", si.getName()),
-                                            equal("resource.store.name", si.getName()));
-                        }
-                        if (li != null) {
-                            liFilter =
-                                    or(
-                                            equal("name", li.getName()),
-                                            equal("resource.name", li.getResource().getName()));
-                        }
-
-                        Hints hints = new Hints(new HashMap(2));
-
-                        Boolean backupOptOverwirte =
-                                ((CheckBox) form.get("backupOptOverwirte")).getModelObject();
-                        Boolean backupOptBestEffort =
-                                ((CheckBox) form.get("backupOptBestEffort")).getModelObject();
-                        Boolean backupOptCleanTemp =
-                                ((CheckBox) form.get("backupOptCleanTemp")).getModelObject();
-
-                        if (backupOptBestEffort) {
-                            hints.add(
-                                    new Hints(
-                                            new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE),
-                                            Backup.PARAM_BEST_EFFORT_MODE));
-                        }
-
-                        if (backupOptCleanTemp) {
-                            hints.add(
-                                    new Hints(
-                                            new Hints.OptionKey(Backup.PARAM_CLEANUP_TEMP),
-                                            Backup.PARAM_CLEANUP_TEMP));
-                        }
-
+                    protected void onTimer(AjaxRequestTarget target) {
                         Backup backupFacade = BackupRestoreWebUtils.backupFacade();
+                        BackupExecutionAdapter exec =
+                                backupFacade.getBackupExecutions().get(jobid);
 
-                        return backupFacade
-                                .runBackupAsync(
-                                        archiveFile,
-                                        backupOptOverwirte,
-                                        wsFilter,
-                                        siFilter,
-                                        liFilter,
-                                        hints)
-                                .getId();
+                        if (!exec.isRunning()) {
+                            try {
+                                if (exec.getAllFailureExceptions() != null
+                                        && !exec.getAllFailureExceptions().isEmpty()) {
+                                    getSession()
+                                            .error(exec.getAllFailureExceptions()
+                                                    .get(0));
+                                    setResponsePage(BackupRestoreDataPage.class);
+                                } else if (exec.isStopping()) {
+                                    // do nothing
+                                } else {
+                                    PageParameters pp = new PageParameters();
+                                    pp.add("id", exec.getId());
+                                    pp.add("clazz", BackupExecutionAdapter.class.getSimpleName());
+
+                                    setResponsePage(BackupRestorePage.class, pp);
+                                }
+                            } catch (Exception e) {
+                                error(e);
+                                LOGGER.log(Level.WARNING, "", e);
+                            } finally {
+                                stop(null);
+
+                                // update the button back to original state
+                                resetButtons(form, target, "newBackupStart");
+
+                                addFeedbackPanels(target);
+                            }
+                            return;
+                        }
+
+                        String msg = exec != null ? exec.getStatus().toString() : "Working";
+
+                        statusLabel.setDefaultModelObject(msg);
+                        target.add(statusLabel);
+                    }
+                    ;
+
+                    @Override
+                    public boolean canCallListener(Component component) {
+                        if (self.equals(component)) {
+                            return true;
+                        }
+                        return super.canCallListener(component);
                     }
                 });
+            }
+
+            private Long launchBackupExecution(Form<?> form) throws Exception {
+                Resource archiveFile = getBackupRestoreArchiveResource(true);
+                Filter wsFilter = null;
+                Filter siFilter = null;
+                Filter liFilter = null;
+                WorkspaceInfo ws = (WorkspaceInfo) workspace.getObject();
+                StoreInfo si = (StoreInfo) store.getObject();
+                LayerInfo li = (LayerInfo) layer.getObject();
+                if (ws != null) {
+                    wsFilter = or(
+                            equal("name", ws.getName()),
+                            equal("workspace.name", ws.getName()),
+                            equal("resource.store.workspace.name", ws.getName()));
+                }
+                if (si != null) {
+                    siFilter = or(equal("name", si.getName()), equal("resource.store.name", si.getName()));
+                }
+                if (li != null) {
+                    liFilter = or(
+                            equal("name", li.getName()),
+                            equal("resource.name", li.getResource().getName()));
+                }
+
+                Hints hints = new Hints(new HashMap(2));
+
+                Boolean backupOptOverwirte = ((CheckBox) form.get("backupOptOverwirte")).getModelObject();
+                Boolean backupOptBestEffort = ((CheckBox) form.get("backupOptBestEffort")).getModelObject();
+                Boolean backupOptCleanTemp = ((CheckBox) form.get("backupOptCleanTemp")).getModelObject();
+
+                if (backupOptBestEffort) {
+                    hints.add(new Hints(
+                            new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
+                }
+
+                if (backupOptCleanTemp) {
+                    hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_CLEANUP_TEMP), Backup.PARAM_CLEANUP_TEMP));
+                }
+
+                Backup backupFacade = BackupRestoreWebUtils.backupFacade();
+
+                return backupFacade
+                        .runBackupAsync(archiveFile, backupOptOverwirte, wsFilter, siFilter, liFilter, hints)
+                        .getId();
+            }
+        });
 
         form.add(
                 new AjaxLink<Long>("cancel", new Model<Long>()) {
@@ -428,7 +392,8 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                         super.disableLink(tag);
                         tag.setName("a");
                         tag.addBehavior(AttributeModifier.replace("class", "disabled"));
-                    };
+                    }
+                    ;
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
@@ -438,8 +403,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                             try {
                                 BackupRestoreWebUtils.backupFacade().stopExecution(jobid);
                                 setResponsePage(BackupRestoreDataPage.class);
-                            } catch (NoSuchJobExecutionException
-                                    | JobExecutionNotRunningException e) {
+                            } catch (NoSuchJobExecutionException | JobExecutionNotRunningException e) {
                                 LOGGER.log(Level.WARNING, "", e);
                             }
                         }
@@ -459,14 +423,14 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                                             org.geoserver.web.wicket.GeoServerDataProvider.Property<
                                                     AbstractExecutionAdapter>>
                                     getProperties() {
-                                return Arrays.asList(
-                                        ID, STATE, STARTED, PROGRESS, ARCHIVEFILE, OPTIONS);
+                                return Arrays.asList(ID, STATE, STARTED, PROGRESS, ARCHIVEFILE, OPTIONS);
                             }
                         },
                         true,
                         BackupExecutionAdapter.class) {
                     @Override
-                    protected void onSelectionUpdate(AjaxRequestTarget target) {};
+                    protected void onSelectionUpdate(AjaxRequestTarget target) {}
+                    ;
                 };
         backupRestoreExecutionsTable.setOutputMarkupId(true);
         backupRestoreExecutionsTable.setFilterable(false);
@@ -481,196 +445,171 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
         form.add(new CheckBox("restoreOptBestEffort", new Model<Boolean>(false)));
         form.add(new CheckBox("restoreOptCleanTemp", new Model<Boolean>(true)));
         form.add(statusLabel = new Label("status", new Model()).setOutputMarkupId(true));
-        form.add(
-                new AjaxSubmitLink("newRestoreStart", form) {
+        form.add(new AjaxSubmitLink("newRestoreStart", form) {
+            @Override
+            protected void disableLink(ComponentTag tag) {
+                super.disableLink(tag);
+                tag.setName("a");
+                tag.addBehavior(AttributeModifier.replace("class", "disabled"));
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target) {
+                addFeedbackPanels(target);
+            }
+
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+
+                // update status to indicate we are working
+                statusLabel.add(AttributeModifier.replace("class", "working-link"));
+                statusLabel.setDefaultModelObject("Working");
+                target.add(statusLabel);
+
+                // enable cancel and disable this
+                Component cancel = form.get("cancel");
+                cancel.setEnabled(true);
+                target.add(cancel);
+
+                setEnabled(false);
+                target.add(this);
+
+                final AjaxSubmitLink self = this;
+
+                final Long jobid;
+                try {
+                    jobid = launchRestoreExecution(form);
+                } catch (Exception e) {
+                    error(e);
+                    LOGGER.log(Level.WARNING, "Error starting a new Restore", e);
+                    return;
+                } finally {
+                    // update the button back to original state
+                    resetButtons(form, target, "newRestoreStart");
+
+                    addFeedbackPanels(target);
+                }
+
+                cancel.setDefaultModelObject(jobid);
+                this.add(new AbstractAjaxTimerBehavior(Duration.milliseconds(100)) {
                     @Override
-                    protected void disableLink(ComponentTag tag) {
-                        super.disableLink(tag);
-                        tag.setName("a");
-                        tag.addBehavior(AttributeModifier.replace("class", "disabled"));
-                    }
-
-                    @Override
-                    protected void onError(AjaxRequestTarget target) {
-                        addFeedbackPanels(target);
-                    }
-
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-
-                        // update status to indicate we are working
-                        statusLabel.add(AttributeModifier.replace("class", "working-link"));
-                        statusLabel.setDefaultModelObject("Working");
-                        target.add(statusLabel);
-
-                        // enable cancel and disable this
-                        Component cancel = form.get("cancel");
-                        cancel.setEnabled(true);
-                        target.add(cancel);
-
-                        setEnabled(false);
-                        target.add(this);
-
-                        final AjaxSubmitLink self = this;
-
-                        final Long jobid;
-                        try {
-                            jobid = launchRestoreExecution(form);
-                        } catch (Exception e) {
-                            error(e);
-                            LOGGER.log(Level.WARNING, "Error starting a new Restore", e);
-                            return;
-                        } finally {
-                            // update the button back to original state
-                            resetButtons(form, target, "newRestoreStart");
-
-                            addFeedbackPanels(target);
-                        }
-
-                        cancel.setDefaultModelObject(jobid);
-                        this.add(
-                                new AbstractAjaxTimerBehavior(Duration.milliseconds(100)) {
-                                    @Override
-                                    protected void onTimer(AjaxRequestTarget target) {
-                                        Backup backupFacade = BackupRestoreWebUtils.backupFacade();
-                                        RestoreExecutionAdapter exec =
-                                                backupFacade.getRestoreExecutions().get(jobid);
-
-                                        if (!exec.isRunning()) {
-                                            try {
-                                                if (exec.getAllFailureExceptions() != null
-                                                        && !exec.getAllFailureExceptions()
-                                                                .isEmpty()) {
-                                                    getSession()
-                                                            .error(
-                                                                    exec.getAllFailureExceptions()
-                                                                            .get(0));
-                                                    setResponsePage(BackupRestoreDataPage.class);
-                                                } else if (exec.isStopping()) {
-                                                    // do nothing
-                                                } else {
-                                                    PageParameters pp = new PageParameters();
-                                                    pp.add("id", exec.getId());
-                                                    pp.add(
-                                                            "clazz",
-                                                            RestoreExecutionAdapter.class
-                                                                    .getSimpleName());
-
-                                                    setResponsePage(BackupRestorePage.class, pp);
-                                                }
-                                            } catch (Exception e) {
-                                                error(e);
-                                                LOGGER.log(Level.WARNING, "", e);
-                                            } finally {
-                                                stop(null);
-
-                                                // update the button back to original state
-                                                resetButtons(form, target, "newRestoreStart");
-
-                                                addFeedbackPanels(target);
-                                            }
-                                            return;
-                                        }
-
-                                        String msg =
-                                                exec != null
-                                                        ? exec.getStatus().toString()
-                                                        : "Working";
-
-                                        statusLabel.setDefaultModelObject(msg);
-                                        target.add(statusLabel);
-                                    };
-
-                                    @Override
-                                    public boolean canCallListener(Component component) {
-                                        if (self.equals(component)) {
-                                            return true;
-                                        }
-                                        return super.canCallListener(component);
-                                    }
-                                });
-                    }
-
-                    private Long launchRestoreExecution(Form<?> form) throws Exception {
-                        Resource archiveFile = getBackupRestoreArchiveResource(false);
-
-                        Filter wsFilter = null;
-                        Filter siFilter = null;
-                        Filter liFilter = null;
-                        WorkspaceInfo ws = (WorkspaceInfo) workspace.getObject();
-                        StoreInfo si = (StoreInfo) store.getObject();
-                        LayerInfo li = (LayerInfo) layer.getObject();
-                        if (ws != null) {
-                            wsFilter =
-                                    or(
-                                            equal("name", ws.getName()),
-                                            equal("workspace.name", ws.getName()),
-                                            equal("resource.store.workspace.name", ws.getName()));
-                        }
-                        if (si != null) {
-                            siFilter =
-                                    or(
-                                            equal("name", si.getName()),
-                                            equal("resource.store.name", si.getName()));
-                        }
-                        if (li != null) {
-                            liFilter =
-                                    or(
-                                            equal("name", li.getName()),
-                                            equal("resource.name", li.getResource().getName()));
-                        }
-
-                        if (wsFilter == null && backupRestoreFileResource.wsFilter != null) {
-                            wsFilter = backupRestoreFileResource.wsFilter;
-                        }
-
-                        if (siFilter == null && backupRestoreFileResource.siFilter != null) {
-                            siFilter = backupRestoreFileResource.siFilter;
-                        }
-
-                        if (liFilter == null && backupRestoreFileResource.liFilter != null) {
-                            liFilter = backupRestoreFileResource.liFilter;
-                        }
-
-                        Hints hints = new Hints(new HashMap(2));
-
-                        Boolean restoreOptDryRun =
-                                ((CheckBox) form.get("restoreOptDryRun")).getModelObject();
-
-                        if (restoreOptDryRun) {
-                            hints.add(
-                                    new Hints(
-                                            new Hints.OptionKey(Backup.PARAM_DRY_RUN_MODE),
-                                            Backup.PARAM_DRY_RUN_MODE));
-                        }
-
-                        Boolean restoreOptBestEffort =
-                                ((CheckBox) form.get("restoreOptBestEffort")).getModelObject();
-
-                        if (restoreOptBestEffort) {
-                            hints.add(
-                                    new Hints(
-                                            new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE),
-                                            Backup.PARAM_BEST_EFFORT_MODE));
-                        }
-
-                        Boolean restoreOptCleanTemp =
-                                ((CheckBox) form.get("restoreOptCleanTemp")).getModelObject();
-
-                        if (restoreOptCleanTemp) {
-                            hints.add(
-                                    new Hints(
-                                            new Hints.OptionKey(Backup.PARAM_CLEANUP_TEMP),
-                                            Backup.PARAM_CLEANUP_TEMP));
-                        }
-
+                    protected void onTimer(AjaxRequestTarget target) {
                         Backup backupFacade = BackupRestoreWebUtils.backupFacade();
+                        RestoreExecutionAdapter exec =
+                                backupFacade.getRestoreExecutions().get(jobid);
 
-                        return backupFacade
-                                .runRestoreAsync(archiveFile, wsFilter, siFilter, liFilter, hints)
-                                .getId();
+                        if (!exec.isRunning()) {
+                            try {
+                                if (exec.getAllFailureExceptions() != null
+                                        && !exec.getAllFailureExceptions().isEmpty()) {
+                                    getSession()
+                                            .error(exec.getAllFailureExceptions()
+                                                    .get(0));
+                                    setResponsePage(BackupRestoreDataPage.class);
+                                } else if (exec.isStopping()) {
+                                    // do nothing
+                                } else {
+                                    PageParameters pp = new PageParameters();
+                                    pp.add("id", exec.getId());
+                                    pp.add("clazz", RestoreExecutionAdapter.class.getSimpleName());
+
+                                    setResponsePage(BackupRestorePage.class, pp);
+                                }
+                            } catch (Exception e) {
+                                error(e);
+                                LOGGER.log(Level.WARNING, "", e);
+                            } finally {
+                                stop(null);
+
+                                // update the button back to original state
+                                resetButtons(form, target, "newRestoreStart");
+
+                                addFeedbackPanels(target);
+                            }
+                            return;
+                        }
+
+                        String msg = exec != null ? exec.getStatus().toString() : "Working";
+
+                        statusLabel.setDefaultModelObject(msg);
+                        target.add(statusLabel);
+                    }
+                    ;
+
+                    @Override
+                    public boolean canCallListener(Component component) {
+                        if (self.equals(component)) {
+                            return true;
+                        }
+                        return super.canCallListener(component);
                     }
                 });
+            }
+
+            private Long launchRestoreExecution(Form<?> form) throws Exception {
+                Resource archiveFile = getBackupRestoreArchiveResource(false);
+
+                Filter wsFilter = null;
+                Filter siFilter = null;
+                Filter liFilter = null;
+                WorkspaceInfo ws = (WorkspaceInfo) workspace.getObject();
+                StoreInfo si = (StoreInfo) store.getObject();
+                LayerInfo li = (LayerInfo) layer.getObject();
+                if (ws != null) {
+                    wsFilter = or(
+                            equal("name", ws.getName()),
+                            equal("workspace.name", ws.getName()),
+                            equal("resource.store.workspace.name", ws.getName()));
+                }
+                if (si != null) {
+                    siFilter = or(equal("name", si.getName()), equal("resource.store.name", si.getName()));
+                }
+                if (li != null) {
+                    liFilter = or(
+                            equal("name", li.getName()),
+                            equal("resource.name", li.getResource().getName()));
+                }
+
+                if (wsFilter == null && backupRestoreFileResource.wsFilter != null) {
+                    wsFilter = backupRestoreFileResource.wsFilter;
+                }
+
+                if (siFilter == null && backupRestoreFileResource.siFilter != null) {
+                    siFilter = backupRestoreFileResource.siFilter;
+                }
+
+                if (liFilter == null && backupRestoreFileResource.liFilter != null) {
+                    liFilter = backupRestoreFileResource.liFilter;
+                }
+
+                Hints hints = new Hints(new HashMap(2));
+
+                Boolean restoreOptDryRun = ((CheckBox) form.get("restoreOptDryRun")).getModelObject();
+
+                if (restoreOptDryRun) {
+                    hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_DRY_RUN_MODE), Backup.PARAM_DRY_RUN_MODE));
+                }
+
+                Boolean restoreOptBestEffort = ((CheckBox) form.get("restoreOptBestEffort")).getModelObject();
+
+                if (restoreOptBestEffort) {
+                    hints.add(new Hints(
+                            new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
+                }
+
+                Boolean restoreOptCleanTemp = ((CheckBox) form.get("restoreOptCleanTemp")).getModelObject();
+
+                if (restoreOptCleanTemp) {
+                    hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_CLEANUP_TEMP), Backup.PARAM_CLEANUP_TEMP));
+                }
+
+                Backup backupFacade = BackupRestoreWebUtils.backupFacade();
+
+                return backupFacade
+                        .runRestoreAsync(archiveFile, wsFilter, siFilter, liFilter, hints)
+                        .getId();
+            }
+        });
 
         form.add(
                 new AjaxLink<Long>("cancel", new Model<Long>()) {
@@ -679,7 +618,8 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                         super.disableLink(tag);
                         tag.setName("a");
                         tag.addBehavior(AttributeModifier.replace("class", "disabled"));
-                    };
+                    }
+                    ;
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
@@ -689,8 +629,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                             try {
                                 BackupRestoreWebUtils.backupFacade().stopExecution(jobid);
                                 setResponsePage(BackupRestoreDataPage.class);
-                            } catch (NoSuchJobExecutionException
-                                    | JobExecutionNotRunningException e) {
+                            } catch (NoSuchJobExecutionException | JobExecutionNotRunningException e) {
                                 LOGGER.log(Level.WARNING, "", e);
                             }
                         }
@@ -710,14 +649,14 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                                             org.geoserver.web.wicket.GeoServerDataProvider.Property<
                                                     AbstractExecutionAdapter>>
                                     getProperties() {
-                                return Arrays.asList(
-                                        ID, STATE, STARTED, PROGRESS, ARCHIVEFILE, OPTIONS);
+                                return Arrays.asList(ID, STATE, STARTED, PROGRESS, ARCHIVEFILE, OPTIONS);
                             }
                         },
                         true,
                         RestoreExecutionAdapter.class) {
                     @Override
-                    protected void onSelectionUpdate(AjaxRequestTarget target) {};
+                    protected void onSelectionUpdate(AjaxRequestTarget target) {}
+                    ;
                 };
         restoreExecutionsTable.setOutputMarkupId(true);
         restoreExecutionsTable.setFilterable(false);
@@ -738,8 +677,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                 || (!isBackup && !Resources.exists(archiveFile))
                 || archiveFile.getType() == Type.DIRECTORY
                 || FilenameUtils.getExtension(archiveFile.name()).isEmpty()) {
-            throw new Exception(
-                    "Archive File is Mandatory, must exist and should not be a Directory or URI.");
+            throw new Exception("Archive File is Mandatory, must exist and should not be a Directory or URI.");
         }
         return archiveFile;
     }

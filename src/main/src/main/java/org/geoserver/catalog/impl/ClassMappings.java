@@ -120,12 +120,7 @@ public enum ClassMappings {
         @Override
         @SuppressWarnings("unchecked")
         public Class<? extends CatalogInfo>[] concreteInterfaces() {
-            return new Class[] {
-                CoverageStoreInfo.class,
-                DataStoreInfo.class,
-                WMSStoreInfo.class,
-                WMTSStoreInfo.class
-            };
+            return new Class[] {CoverageStoreInfo.class, DataStoreInfo.class, WMSStoreInfo.class, WMTSStoreInfo.class};
         }
     },
 
@@ -188,9 +183,7 @@ public enum ClassMappings {
         @Override
         @SuppressWarnings("unchecked")
         public Class<? extends CatalogInfo>[] concreteInterfaces() {
-            return new Class[] {
-                CoverageInfo.class, FeatureTypeInfo.class, WMSLayerInfo.class, WMTSLayerInfo.class
-            };
+            return new Class[] {CoverageInfo.class, FeatureTypeInfo.class, WMSLayerInfo.class, WMTSLayerInfo.class};
         }
     },
     PUBLISHED {

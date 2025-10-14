@@ -58,8 +58,7 @@ public class JSONLDWriterTest {
 
     private JSONObject writeJSONLD(EncodingHints hints) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        JSONLDWriter writer =
-                new JSONLDWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8));
+        JSONLDWriter writer = new JSONLDWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8));
         writer.startTemplateOutput(hints);
         writer.endTemplateOutput(hints);
         writer.close();

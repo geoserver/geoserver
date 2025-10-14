@@ -7,6 +7,7 @@ package org.geoserver.ows;
 
 import java.io.BufferedReader;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
@@ -15,9 +16,8 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 
 /**
- * A collection of the informations collected and parsed by the {@link Dispatcher} while doing its
- * dispatching work. In case of dispatching exceptions some fields may be left blank, depending how
- * far the dispatching went.
+ * A collection of the informations collected and parsed by the {@link Dispatcher} while doing its dispatching work. In
+ * case of dispatching exceptions some fields may be left blank, depending how far the dispatching went.
  *
  * @author Justin DeOliveira
  * @author Andrea Aime
@@ -51,12 +51,15 @@ public class Request {
     /** XML root element name as parsed from a POST request with an xml request body */
     protected String postRequestElementName;
 
-    /** OWS protocol version (combined with service and request) */
+    /** OWS protocol version (combined with service and request). Can be the result of negotiation */
     protected String version;
 
+    /** OWS acceptVersions parameter, if present */
+    protected List<String> acceptVersions;
+
     /**
-     * xml namespace used in request body, only relevant for post requests and when request body
-     * content is namespace qualified
+     * xml namespace used in request body, only relevant for post requests and when request body content is namespace
+     * qualified
      */
     protected String namespace;
 
@@ -78,8 +81,8 @@ public class Request {
     protected Date timestamp;
 
     /**
-     * The Operation used to call the service code. Available only after dispatching is done, it
-     * will give access to the current service object, and the parsed request
+     * The Operation used to call the service code. Available only after dispatching is done, it will give access to the
+     * current service object, and the parsed request
      */
     protected Operation operation;
 
@@ -153,8 +156,8 @@ public class Request {
     }
 
     /**
-     * The input as read from the http request. The {@link Dispatcher} will perform some preventive
-     * reading on the input so never use the raw {@link HttpServletRequest} one
+     * The input as read from the http request. The {@link Dispatcher} will perform some preventive reading on the input
+     * so never use the raw {@link HttpServletRequest} one
      */
     public BufferedReader getInput() {
         return input;
@@ -175,6 +178,11 @@ public class Request {
         return version;
     }
 
+    /** The OWS acceptVersions parameter, if present */
+    public List<String> getAcceptVersions() {
+        return acceptVersions;
+    }
+
     /** The request namespace */
     public String getNamespace() {
         return namespace;
@@ -191,8 +199,8 @@ public class Request {
     }
 
     /**
-     * The Operation used to call the service code. Available only after dispatching is done, it
-     * provides access to the current service object, and the parsed request
+     * The Operation used to call the service code. Available only after dispatching is done, it provides access to the
+     * current service object, and the parsed request
      */
     public Operation getOperation() {
         return operation;
@@ -247,8 +255,7 @@ public class Request {
     /**
      * Allows callbacks to change the parsed KVP map
      *
-     * <p>Clients should consider calling {@link #setOrAppendKvp(java.util.Map)} to retain the
-     * existing kvp map.
+     * <p>Clients should consider calling {@link #setOrAppendKvp(java.util.Map)} to retain the existing kvp map.
      *
      * @param kvp Parsed kvp values.
      */
@@ -306,18 +313,18 @@ public class Request {
     }
 
     /**
-     * The xml root element name (e.g. {@code GetMap}, {@code GetFeature}, {@code
-     * StyledLayerDescriptor}. etc.), as pre-parsed during a Dispatcher POST request initialization,
-     * since it may differ from the final {@link #getRequest() request name}
+     * The xml root element name (e.g. {@code GetMap}, {@code GetFeature}, {@code StyledLayerDescriptor}. etc.), as
+     * pre-parsed during a Dispatcher POST request initialization, since it may differ from the final
+     * {@link #getRequest() request name}
      */
     String getPostRequestElementName() {
         return postRequestElementName;
     }
 
     /**
-     * The xml root element name (e.g. {@code GetMap}, {@code GetFeature}, {@code
-     * StyledLayerDescriptor}. etc.), as pre-parsed during a Dispatcher POST request initialization,
-     * since it may differ from the final {@link #getRequest() request name}
+     * The xml root element name (e.g. {@code GetMap}, {@code GetFeature}, {@code StyledLayerDescriptor}. etc.), as
+     * pre-parsed during a Dispatcher POST request initialization, since it may differ from the final
+     * {@link #getRequest() request name}
      */
     void setPostRequestElementName(String rootXmlElementName) {
         this.postRequestElementName = rootXmlElementName;
@@ -330,6 +337,15 @@ public class Request {
      */
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    /**
+     * Sets the accepts version list (used by the Dispatcher when acceptVersions is present in the request)
+     *
+     * @param acceptVersions OWS acceptVersions
+     */
+    public void setAcceptVersions(List<String> acceptVersions) {
+        this.acceptVersions = acceptVersions;
     }
 
     /** Sets the request namespace */

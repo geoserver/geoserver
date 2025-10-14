@@ -102,13 +102,10 @@ public class RoleHierarchyHelper {
             throw new RuntimeException("Not extistend role: " + roleName);
     }
 
-    /**
-     * Throws a {@link RuntimeException} due to a cyclic parent relationship between the two roles
-     */
+    /** Throws a {@link RuntimeException} due to a cyclic parent relationship between the two roles */
     protected void cycleDetected(String roleName1, String roleName2) {
         if (roleName2 == null) throw new RuntimeException("Cycle detected for " + roleName1);
-        else
-            throw new RuntimeException("Cycle detected between " + roleName1 + " and " + roleName2);
+        else throw new RuntimeException("Cycle detected between " + roleName1 + " and " + roleName2);
     }
 
     /** Check if the role is a root role */

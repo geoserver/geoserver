@@ -15,8 +15,8 @@ import org.geotools.api.coverage.grid.GridCoverage;
 /**
  * Web Coverage Services interface.
  *
- * <p>Each of the methods on this class corresponds to an operation as defined by the Web Coverage
- * Specification. See {@link "http://www.opengeospatial.org/standards/wcs"} for more details.
+ * <p>Each of the methods on this class corresponds to an operation as defined by the Web Coverage Specification. See <a
+ * href="http://www.opengeospatial.org/standards/wcs">WCS Standard</a> for more details.
  *
  * @author Andrea Aime, TOPP
  * @author Alessio Fabiani, GeoSolutions

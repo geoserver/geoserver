@@ -73,44 +73,27 @@ public class GetFeaturePagingTest extends WFSTestSupport {
 
     void doTestSingleType(String typeName) throws Exception {
 
-        Document doc =
-                getAsDOM(
-                        "/wfs?request=GetFeature&version=1.0.0&service=wfs&"
-                                + "typename="
-                                + typeName
-                                + "&startIndex=10");
+        Document doc = getAsDOM(
+                "/wfs?request=GetFeature&version=1.0.0&service=wfs&" + "typename=" + typeName + "&startIndex=10");
         XMLAssert.assertXpathEvaluatesTo("5", "count(//" + typeName + ")", doc);
 
-        doc =
-                getAsDOM(
-                        "/wfs?request=GetFeature&version=1.0.0&service=wfs&"
-                                + "typename="
-                                + typeName
-                                + "&startIndex=16");
+        doc = getAsDOM(
+                "/wfs?request=GetFeature&version=1.0.0&service=wfs&" + "typename=" + typeName + "&startIndex=16");
         XMLAssert.assertXpathEvaluatesTo("0", "count(//" + typeName + ")", doc);
 
-        doc =
-                getAsDOM(
-                        "/wfs?request=GetFeature&version=1.0.0&service=wfs&"
-                                + "typename="
-                                + typeName
-                                + "&startIndex=0");
+        doc = getAsDOM("/wfs?request=GetFeature&version=1.0.0&service=wfs&" + "typename=" + typeName + "&startIndex=0");
         XMLAssert.assertXpathEvaluatesTo("15", "count(//" + typeName + ")", doc);
 
-        doc =
-                getAsDOM(
-                        "/wfs?request=GetFeature&version=1.0.0&service=wfs&"
-                                + "typename="
-                                + typeName
-                                + "&startIndex=1&maxFeatures=1");
+        doc = getAsDOM("/wfs?request=GetFeature&version=1.0.0&service=wfs&"
+                + "typename="
+                + typeName
+                + "&startIndex=1&maxFeatures=1");
         XMLAssert.assertXpathEvaluatesTo("1", "count(//" + typeName + ")", doc);
 
-        doc =
-                getAsDOM(
-                        "/wfs?request=GetFeature&version=1.0.0&service=wfs&"
-                                + "typename="
-                                + typeName
-                                + "&startIndex=16&maxFeatures=1");
+        doc = getAsDOM("/wfs?request=GetFeature&version=1.0.0&service=wfs&"
+                + "typename="
+                + typeName
+                + "&startIndex=16&maxFeatures=1");
         XMLAssert.assertXpathEvaluatesTo("0", "count(//" + typeName + ")", doc);
     }
 
@@ -140,9 +123,7 @@ public class GetFeaturePagingTest extends WFSTestSupport {
 
     String startIndexSimpleXML(String typeName, int startIndex, int maxFeatures) {
         String xml =
-                "<GetFeature version='1.0.0' xmlns:gml=\"http://www.opengis.net/gml\" startIndex='"
-                        + startIndex
-                        + "'";
+                "<GetFeature version='1.0.0' xmlns:gml=\"http://www.opengis.net/gml\" startIndex='" + startIndex + "'";
         if (maxFeatures > -1) {
             xml += " maxFeatures='" + maxFeatures + "'";
         }
@@ -160,49 +141,33 @@ public class GetFeaturePagingTest extends WFSTestSupport {
 
     public void doTestStartIndexMultipleTypes(String fifteen, String seven) throws Exception {
         String typeNames = fifteen + "," + seven;
-        Document doc =
-                getAsDOM(
-                        "/wfs?request=GetFeature&version=1.0.0&service=wfs&"
-                                + "typename="
-                                + typeNames
-                                + "&startIndex=10");
+        Document doc = getAsDOM(
+                "/wfs?request=GetFeature&version=1.0.0&service=wfs&" + "typename=" + typeNames + "&startIndex=10");
         // print(doc);
         XMLAssert.assertXpathEvaluatesTo("5", "count(//" + fifteen + ")", doc);
         XMLAssert.assertXpathEvaluatesTo("7", "count(//" + seven + ")", doc);
 
-        doc =
-                getAsDOM(
-                        "/wfs?request=GetFeature&version=1.0.0&service=wfs&"
-                                + "typename="
-                                + typeNames
-                                + "&startIndex=16");
+        doc = getAsDOM(
+                "/wfs?request=GetFeature&version=1.0.0&service=wfs&" + "typename=" + typeNames + "&startIndex=16");
         XMLAssert.assertXpathEvaluatesTo("0", "count(//" + fifteen + ")", doc);
         XMLAssert.assertXpathEvaluatesTo("6", "count(//" + seven + ")", doc);
 
-        doc =
-                getAsDOM(
-                        "/wfs?request=GetFeature&version=1.0.0&service=wfs&"
-                                + "typename="
-                                + typeNames
-                                + "&startIndex=10&maxfeatures=5");
+        doc = getAsDOM("/wfs?request=GetFeature&version=1.0.0&service=wfs&"
+                + "typename="
+                + typeNames
+                + "&startIndex=10&maxfeatures=5");
         XMLAssert.assertXpathEvaluatesTo("5", "count(//" + fifteen + ")", doc);
         XMLAssert.assertXpathEvaluatesTo("0", "count(//" + seven + ")", doc);
 
-        doc =
-                getAsDOM(
-                        "/wfs?request=GetFeature&version=1.0.0&service=wfs&"
-                                + "typename="
-                                + typeNames
-                                + "&startIndex=10&maxfeatures=6");
+        doc = getAsDOM("/wfs?request=GetFeature&version=1.0.0&service=wfs&"
+                + "typename="
+                + typeNames
+                + "&startIndex=10&maxfeatures=6");
         XMLAssert.assertXpathEvaluatesTo("5", "count(//" + fifteen + ")", doc);
         XMLAssert.assertXpathEvaluatesTo("1", "count(//" + seven + ")", doc);
 
-        doc =
-                getAsDOM(
-                        "/wfs?request=GetFeature&version=1.0.0&service=wfs&"
-                                + "typename="
-                                + typeNames
-                                + "&startIndex=25");
+        doc = getAsDOM(
+                "/wfs?request=GetFeature&version=1.0.0&service=wfs&" + "typename=" + typeNames + "&startIndex=25");
         XMLAssert.assertXpathEvaluatesTo("0", "count(//" + fifteen + ")", doc);
         XMLAssert.assertXpathEvaluatesTo("0", "count(//" + seven + ")", doc);
     }
@@ -238,24 +203,22 @@ public class GetFeaturePagingTest extends WFSTestSupport {
     }
 
     String startIndexMultiXML(String fifteen, String seven, int startIndex, int maxFeatures) {
-        String xml =
-                "<GetFeature version=\"1.0.0\" xmlns:gml=\"http://www.opengis.net/gml\" startIndex='"
-                        + startIndex
-                        + "'";
+        String xml = "<GetFeature version=\"1.0.0\" xmlns:gml=\"http://www.opengis.net/gml\" startIndex='"
+                + startIndex
+                + "'";
         if (maxFeatures > -1) {
             xml += " maxFeatures='" + maxFeatures + "'";
         }
-        xml +=
-                ">"
-                        + " <Query typeName='"
-                        + fifteen
-                        + "'>"
-                        + " </Query>"
-                        + " <Query typeName='"
-                        + seven
-                        + "'>"
-                        + " </Query>"
-                        + "</GetFeature>";
+        xml += ">"
+                + " <Query typeName='"
+                + fifteen
+                + "'>"
+                + " </Query>"
+                + " <Query typeName='"
+                + seven
+                + "'>"
+                + " </Query>"
+                + "</GetFeature>";
         return xml;
     }
 
@@ -266,56 +229,45 @@ public class GetFeaturePagingTest extends WFSTestSupport {
     }
 
     public void doTestWithFilter(String typeName) throws Exception {
-        Document doc =
-                getAsDOM(
-                        "/wfs?request=GetFeature&version=1.1.0&service=wfs&"
-                                + "typename="
-                                + typeName
-                                + "&startIndex=10");
+        Document doc = getAsDOM(
+                "/wfs?request=GetFeature&version=1.1.0&service=wfs&" + "typename=" + typeName + "&startIndex=10");
         // print(doc);
         XMLAssert.assertXpathEvaluatesTo("5", "count(//" + typeName + ")", doc);
 
-        doc =
-                getAsDOM(
-                        "/wfs?request=GetFeature&version=1.1.0&service=wfs&"
-                                + "typename="
-                                + typeName
-                                + "&startIndex=10&maxfeatures=4");
+        doc = getAsDOM("/wfs?request=GetFeature&version=1.1.0&service=wfs&"
+                + "typename="
+                + typeName
+                + "&startIndex=10&maxfeatures=4");
         XMLAssert.assertXpathEvaluatesTo("4", "count(//" + typeName + ")", doc);
 
-        String xml =
-                String.format(
-                        "<GetFeature version='1.1.0' xmlns:gml='http://www.opengis.net/gml' "
-                                + "startIndex='%d' maxFeatures='%d'>"
-                                + "<Query typeName = '%s'/>"
-                                + "</GetFeature>",
-                        10, 100, typeName);
+        String xml = String.format(
+                "<GetFeature version='1.1.0' xmlns:gml='http://www.opengis.net/gml' "
+                        + "startIndex='%d' maxFeatures='%d'>"
+                        + "<Query typeName = '%s'/>"
+                        + "</GetFeature>",
+                10, 100, typeName);
 
         doc = postAsDOM("wfs", xml);
         XMLAssert.assertXpathEvaluatesTo("5", "count(//" + typeName + ")", doc);
 
-        xml =
-                String.format(
-                        "<GetFeature version='1.1.0' xmlns:gml='http://www.opengis.net/gml' "
-                                + "xmlns:ogc='http://www.opengis.net/ogc' startIndex='%d' maxFeatures='%d'>"
-                                + "<Query typeName = '%s'>"
-                                + "  <ogc:Filter>"
-                                + "   <ogc:FeatureId fid='%s'></ogc:FeatureId>"
-                                + "   <ogc:FeatureId fid='%s'></ogc:FeatureId>"
-                                + "   <ogc:FeatureId fid='%s'></ogc:FeatureId>"
-                                + "  </ogc:Filter>"
-                                + "</Query>"
-                                + "</GetFeature>",
-                        1, 100, typeName, "Fifteen.3", "Fifteen.4", "Fifteen.5");
+        xml = String.format(
+                "<GetFeature version='1.1.0' xmlns:gml='http://www.opengis.net/gml' "
+                        + "xmlns:ogc='http://www.opengis.net/ogc' startIndex='%d' maxFeatures='%d'>"
+                        + "<Query typeName = '%s'>"
+                        + "  <ogc:Filter>"
+                        + "   <ogc:FeatureId fid='%s'></ogc:FeatureId>"
+                        + "   <ogc:FeatureId fid='%s'></ogc:FeatureId>"
+                        + "   <ogc:FeatureId fid='%s'></ogc:FeatureId>"
+                        + "  </ogc:Filter>"
+                        + "</Query>"
+                        + "</GetFeature>",
+                1, 100, typeName, "Fifteen.3", "Fifteen.4", "Fifteen.5");
 
         doc = postAsDOM("wfs", xml);
 
         XMLAssert.assertXpathEvaluatesTo("2", "count(//" + typeName + ")", doc);
-        XMLAssert.assertXpathEvaluatesTo(
-                "0", "count(//" + typeName + "[@gml:id='Fifteen.3'])", doc);
-        XMLAssert.assertXpathEvaluatesTo(
-                "1", "count(//" + typeName + "[@gml:id='Fifteen.4'])", doc);
-        XMLAssert.assertXpathEvaluatesTo(
-                "1", "count(//" + typeName + "[@gml:id='Fifteen.5'])", doc);
+        XMLAssert.assertXpathEvaluatesTo("0", "count(//" + typeName + "[@gml:id='Fifteen.3'])", doc);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//" + typeName + "[@gml:id='Fifteen.4'])", doc);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//" + typeName + "[@gml:id='Fifteen.5'])", doc);
     }
 }

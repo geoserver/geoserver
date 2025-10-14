@@ -4,6 +4,7 @@
  */
 package org.geoserver.security;
 
+import java.io.Serial;
 import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
 
@@ -16,14 +17,14 @@ public class WebServiceBodyResponseSecurityProviderConfig extends BaseSecurityNa
         implements SecurityAuthProviderConfig {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = -784422971183238680L;
 
     String userGroupServiceName;
 
     public WebServiceBodyResponseSecurityProviderConfig() {}
 
-    public WebServiceBodyResponseSecurityProviderConfig(
-            WebServiceBodyResponseSecurityProviderConfig other) {
+    public WebServiceBodyResponseSecurityProviderConfig(WebServiceBodyResponseSecurityProviderConfig other) {
         super(other);
         userGroupServiceName = other.getUserGroupServiceName();
     }

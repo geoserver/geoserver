@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.data.dto.impl;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.metadata.data.dto.AttributeMappingConfiguration;
@@ -12,13 +13,14 @@ import org.geoserver.metadata.data.dto.AttributeTypeMappingConfiguration;
 /**
  * Object that matches yaml structure.
  *
- * <p>The part describes one mapping for an object. The object mapping is made from a list of
- * mappings for each attribute.
+ * <p>The part describes one mapping for an object. The object mapping is made from a list of mappings for each
+ * attribute.
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
 public class AttributeTypeMappingConfigurationImpl implements AttributeTypeMappingConfiguration {
 
+    @Serial
     private static final long serialVersionUID = 8056316409852056776L;
 
     String typename;

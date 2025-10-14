@@ -42,16 +42,16 @@ import org.springframework.web.context.request.RequestContextHolder;
 /**
  * Catalog decorator handling cases when a {@link LocalWorkspace} is set.
  *
- * <p>This wrapper handles some additional cases that {@link LocalWorkspaceCatalogFilter} can not
- * handle by simple filtering, like de-qualifying layers.
+ * <p>This wrapper handles some additional cases that {@link LocalWorkspaceCatalogFilter} can not handle by simple
+ * filtering, like de-qualifying layers.
  *
  * @author Justin Deoliveira, OpenGeo
  */
 public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements Catalog {
 
     /**
-     * Set this flag to true in the Spring {@link RequestContextHolder} at {@link
-     * RequestAttributes#SCOPE_REQUEST} level to enable dequalifying
+     * Set this flag to true in the Spring {@link RequestContextHolder} at {@link RequestAttributes#SCOPE_REQUEST} level
+     * to enable dequalifying
      */
     public static String DEQUALIFY_ALL = "LOCAL_WORKSPACE_DEQUALIFY_ALL";
 
@@ -173,9 +173,7 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
 
     public List<CoverageInfo> wrapCoverageListIfNeeded(List<CoverageInfo> coverages) {
         if (coverages != null && useNameDequalifyingProxyForAll()) {
-            return coverages.stream()
-                    .map(ft -> wrap(ft, CoverageInfo.class))
-                    .collect(Collectors.toList());
+            return coverages.stream().map(ft -> wrap(ft, CoverageInfo.class)).collect(Collectors.toList());
         }
         return coverages;
     }
@@ -276,8 +274,8 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
     }
 
     /**
-     * Returns true if the {@link NameDequalifyingProxy} should be used, that is, if there is a
-     * local workspace and the settings do not ask for workspace prefixes to be included
+     * Returns true if the {@link NameDequalifyingProxy} should be used, that is, if there is a local workspace and the
+     * settings do not ask for workspace prefixes to be included
      */
     private boolean useNameDequalifyingProxy() {
         WorkspaceInfo workspaceInfo = LocalWorkspace.get();
@@ -288,9 +286,9 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
     }
 
     /**
-     * Returns true if {@link #useNameDequalifyingProxy()} returns true and the DEQUALIFY_ALL flag
-     * has been raised in the Spring request context (used for example in the context of local
-     * workspace services for the OGC API based services)
+     * Returns true if {@link #useNameDequalifyingProxy()} returns true and the DEQUALIFY_ALL flag has been raised in
+     * the Spring request context (used for example in the context of local workspace services for the OGC API based
+     * services)
      */
     private boolean useNameDequalifyingProxyForAll() {
         if (!useNameDequalifyingProxy()) {
@@ -299,8 +297,7 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
 
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         if (requestAttributes == null) return false;
-        return Boolean.TRUE.equals(
-                requestAttributes.getAttribute(DEQUALIFY_ALL, RequestAttributes.SCOPE_REQUEST));
+        return Boolean.TRUE.equals(requestAttributes.getAttribute(DEQUALIFY_ALL, RequestAttributes.SCOPE_REQUEST));
     }
 
     @Override
@@ -374,8 +371,7 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
      */
     LayerGroupInfo check(LayerGroupInfo layerGroup) {
         if (LocalWorkspace.get() != null) {
-            if (layerGroup.getWorkspace() != null
-                    && !LocalWorkspace.get().equals(layerGroup.getWorkspace())) {
+            if (layerGroup.getWorkspace() != null && !LocalWorkspace.get().equals(layerGroup.getWorkspace())) {
                 return null;
             }
         }
@@ -492,19 +488,18 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
         private Object wrapNested(Object result) {
             // need to test type by type to build the right type of proxy
             // (would have otherwise tested for CatalogInfo instead)
-            if (result instanceof FeatureTypeInfo) {
-                return create((FeatureTypeInfo) result, FeatureTypeInfo.class);
-            } else if (result instanceof LayerInfo) {
-                return create((LayerInfo) result, LayerInfo.class);
-            } else if (result instanceof StyleInfo) {
-                return create((StyleInfo) result, StyleInfo.class);
-            } else if (result instanceof LayerGroupInfo) {
-                return create((LayerGroupInfo) result, LayerGroupInfo.class);
+            if (result instanceof FeatureTypeInfo info3) {
+                return create(info3, FeatureTypeInfo.class);
+            } else if (result instanceof LayerInfo info2) {
+                return create(info2, LayerInfo.class);
+            } else if (result instanceof StyleInfo info1) {
+                return create(info1, StyleInfo.class);
+            } else if (result instanceof LayerGroupInfo info) {
+                return create(info, LayerGroupInfo.class);
             }
 
             // when grabbing styles from layers, or layers and styles inside a group
-            if (result instanceof Collection) {
-                Collection<?> collection = (Collection<?>) result;
+            if (result instanceof Collection<?> collection) {
                 if (collection.stream().anyMatch(i -> i instanceof CatalogInfo)) {
                     return collection.stream()
                             .map(i -> wrapNested(i))
@@ -559,8 +554,7 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
     }
 
     @Override
-    public <T extends CatalogInfo> T get(Class<T> type, Filter filter)
-            throws IllegalArgumentException {
+    public <T extends CatalogInfo> T get(Class<T> type, Filter filter) throws IllegalArgumentException {
         return wrap(delegate.get(type, filter), type);
     }
 
@@ -570,20 +564,16 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
     }
 
     /**
-     * Returns a decorating iterator over the one returned by the delegate that wraps every object
-     * it returns, if possible.
+     * Returns a decorating iterator over the one returned by the delegate that wraps every object it returns, if
+     * possible.
      *
      * @see #wrap(Object, Class)
-     * @see org.geoserver.catalog.Catalog#list(java.lang.Class, org.geoserver.catalog.Predicate,
-     *     java.lang.Integer, java.lang.Integer, org.geoserver.catalog.OrderBy)
+     * @see org.geoserver.catalog.Catalog#list(java.lang.Class, org.geoserver.catalog.Predicate, java.lang.Integer,
+     *     java.lang.Integer, org.geoserver.catalog.OrderBy)
      */
     @Override
     public <T extends CatalogInfo> CloseableIterator<T> list(
-            final Class<T> of,
-            final Filter filter,
-            final Integer offset,
-            final Integer count,
-            final SortBy sortBy) {
+            final Class<T> of, final Filter filter, final Integer offset, final Integer count, final SortBy sortBy) {
 
         CloseableIterator<T> iterator = delegate.list(of, filter, offset, count, sortBy);
         if (iterator.hasNext() && useNameDequalifyingProxy()) {

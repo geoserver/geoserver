@@ -128,3 +128,17 @@ Access GeoServer front page
 
 * After a few seconds, GeoServer should be accessible at: `<http://localhost:8080/geoserver>`_
 * The default ``admin`` password is ``geoserver``.
+
+Development Environment
+-----------------------
+
+Code formatting
+^^^^^^^^^^^^^^^
+
+GeoServer uses the [palantir-java-format](https://github.com/palantir/palantir-java-format?tab=readme-ov-file#palantir-java-format) which is a fork of the google-java-format AOSP style updated Lamda expressions and 120 columns.
+
+The formatter plugin is embedded in the build and will reformat the code at each build, matching the coding conventions. Please always build locally before committing!
+
+The `palantir-java-format <https://github.com/palantir/palantir-java-format>`__ project offers a [plugin](https://plugins.jetbrains.com/plugin/13180-palantir-java-format) for IntelliJ.
+
+Code formatting is covered by our build :ref:`Quality Assurance <spotless>` checks.

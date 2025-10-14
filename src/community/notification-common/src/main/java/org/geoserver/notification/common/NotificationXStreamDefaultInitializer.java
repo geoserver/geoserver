@@ -20,16 +20,14 @@ public class NotificationXStreamDefaultInitializer implements NotificationXStrea
         xs.alias("notificationConfiguration", NotificationConfiguration.class);
         xs.alias("notificator", Notificator.class);
         xs.alias("genericProcessor", NotificationProcessor.class);
-        xs.addDefaultImplementation(
-                DefaultNotificationProcessor.class, NotificationProcessor.class);
+        xs.addDefaultImplementation(DefaultNotificationProcessor.class, NotificationProcessor.class);
         xs.addImplicitCollection(NotificationConfiguration.class, "notificators");
-        xs.allowTypes(
-                new Class[] {
-                    NotificationConfiguration.class,
-                    Notificator.class,
-                    NotificationProcessor.class,
-                    NotificationEncoder.class,
-                    NotificationSender.class
-                });
+        xs.allowTypes(new Class[] {
+            NotificationConfiguration.class,
+            Notificator.class,
+            NotificationProcessor.class,
+            NotificationEncoder.class,
+            NotificationSender.class
+        });
     }
 }

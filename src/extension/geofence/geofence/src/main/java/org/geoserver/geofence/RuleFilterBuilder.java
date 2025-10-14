@@ -23,6 +23,7 @@ public class RuleFilterBuilder {
 
     private Request owsRequest;
     private String ipAddress;
+    private String date;
     private String workspace;
     private String layer;
     private Authentication user;
@@ -53,6 +54,17 @@ public class RuleFilterBuilder {
      */
     public RuleFilterBuilder withIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
+        return this;
+    }
+
+    /**
+     * Set the date.
+     *
+     * @param date the date of the request in format yyyy-mm-dd
+     * @return this builder.
+     */
+    public RuleFilterBuilder withDate(String date) {
+        this.date = date;
         return this;
     }
 
@@ -133,6 +145,12 @@ public class RuleFilterBuilder {
             LOGGER.log(Level.WARNING, "No source IP address found");
             ruleFilter.setSourceAddress(RuleFilter.SpecialFilterType.DEFAULT);
         }
+        if (date != null) {
+            ruleFilter.setDate(date);
+        } else {
+            LOGGER.log(Level.WARNING, "No date found");
+            ruleFilter.setDate(RuleFilter.SpecialFilterType.DEFAULT);
+        }
 
         LOGGER.log(Level.FINE, "ResourceInfo filter: {0}", ruleFilter);
 
@@ -166,17 +184,13 @@ public class RuleFilterBuilder {
             }
 
             if (LOGGER.isLoggable(Level.FINE)) {
-                String authList =
-                        user.getAuthorities().stream()
-                                .map(a -> a.getAuthority())
-                                .collect(Collectors.joining(",", "[", "]"));
+                String authList = user.getAuthorities().stream()
+                        .map(a -> a.getAuthority())
+                        .collect(Collectors.joining(",", "[", "]"));
                 LOGGER.log(
-                        Level.FINE,
-                        "Authorizations found for user {0}: {1}",
-                        new Object[] {user.getName(), authList});
+                        Level.FINE, "Authorizations found for user {0}: {1}", new Object[] {user.getName(), authList});
 
-                String allowedAuth =
-                        config.getRoles().stream().collect(Collectors.joining(",", "[", "]"));
+                String allowedAuth = config.getRoles().stream().collect(Collectors.joining(",", "[", "]"));
                 LOGGER.log(Level.FINE, "Authorizations allowed: {0}", new Object[] {allowedAuth});
             }
         }
@@ -198,11 +212,10 @@ public class RuleFilterBuilder {
 
     public List<String> getFilteredRoles() {
         boolean getAllRoles = config.getRoles().contains("*");
-        Set<String> excluded =
-                config.getRoles().stream()
-                        .filter(r -> r.startsWith("-"))
-                        .map(r -> r.substring(1))
-                        .collect(Collectors.toSet());
+        Set<String> excluded = config.getRoles().stream()
+                .filter(r -> r.startsWith("-"))
+                .map(r -> r.substring(1))
+                .collect(Collectors.toSet());
 
         return getFilteredRoles(getAllRoles, excluded);
     }

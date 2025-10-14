@@ -21,9 +21,8 @@ import org.geotools.jdbc.JDBCTestSetup;
 import org.geotools.referencing.CRS;
 
 /**
- * Base class that initialise and provides the methods for online test to take place. Other tests
- * that intends to run their unit test online should extend from this class and implement the
- * abstract methods.
+ * Base class that initialise and provides the methods for online test to take place. Other tests that intends to run
+ * their unit test online should extend from this class and implement the abstract methods.
  *
  * @author Victor Tey, CSIRO Earth Science and Resource Engineering
  */
@@ -38,8 +37,8 @@ public abstract class AbstractReferenceDataSetup extends JDBCTestSetup {
     protected Logger LOGGER = Logger.getLogger(AbstractReferenceDataSetup.class);
 
     /**
-     * A static map which tracks which fixture files can not be found. This prevents continually
-     * looking up the file and reporting it not found to the user.
+     * A static map which tracks which fixture files can not be found. This prevents continually looking up the file and
+     * reporting it not found to the user.
      */
     protected static Map<String, Boolean> found = new HashMap<>();
 
@@ -49,7 +48,6 @@ public abstract class AbstractReferenceDataSetup extends JDBCTestSetup {
 
     // Setup the data.
     @Override
-    @SuppressWarnings("PMD.JUnit4TestShouldUseBeforeAnnotation")
     public abstract void setUp() throws Exception;
 
     @Override
@@ -98,9 +96,7 @@ public abstract class AbstractReferenceDataSetup extends JDBCTestSetup {
                         // geopkg in the tests
                         if (fixtureId.equals("geopkg")) {
                             fixture.setProperty(
-                                    "url",
-                                    fixture.getProperty("url").substring(0, 11)
-                                            + geopkgDir.substring(4));
+                                    "url", fixture.getProperty("url").substring(0, 11) + geopkgDir.substring(4));
                         }
                         found.put(fixtureFile.getCanonicalPath(), true);
                         System.setProperty("app-schema.properties", fixtureFile.getPath());
@@ -110,8 +106,7 @@ public abstract class AbstractReferenceDataSetup extends JDBCTestSetup {
                         if (profile == null) {
                             Properties exampleFixture = createExampleFixture();
                             if (exampleFixture != null) {
-                                File exFixtureFile =
-                                        new File(fixtureFile.getAbsolutePath() + ".example");
+                                File exFixtureFile = new File(fixtureFile.getAbsolutePath() + ".example");
                                 if (!exFixtureFile.exists()) {
                                     createExampleFixture(exFixtureFile, exampleFixture);
                                 }

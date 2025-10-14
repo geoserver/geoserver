@@ -26,10 +26,10 @@ import org.geotools.xsd.EMFUtils;
 public abstract class GetFeatureRequest extends RequestObject {
 
     public static GetFeatureRequest adapt(Object request) {
-        if (request instanceof GetFeatureType) {
-            return new WFS11((EObject) request);
-        } else if (request instanceof net.opengis.wfs20.GetFeatureType) {
-            return new WFS20((EObject) request);
+        if (request instanceof GetFeatureType type) {
+            return new WFS11(type);
+        } else if (request instanceof net.opengis.wfs20.GetFeatureType type) {
+            return new WFS20(type);
         }
         return null;
     }
@@ -171,14 +171,12 @@ public abstract class GetFeatureRequest extends RequestObject {
 
         @Override
         public LockFeatureRequest createLockRequest() {
-            return new LockFeatureRequest.WFS11(
-                    ((WfsFactory) getFactory()).createLockFeatureType());
+            return new LockFeatureRequest.WFS11(((WfsFactory) getFactory()).createLockFeatureType());
         }
 
         @Override
         public FeatureCollectionResponse createResponse() {
-            return new FeatureCollectionResponse.WFS11(
-                    ((WfsFactory) getFactory()).createFeatureCollectionType());
+            return new FeatureCollectionResponse.WFS11(((WfsFactory) getFactory()).createFeatureCollectionType());
         }
 
         @Override
@@ -222,8 +220,7 @@ public abstract class GetFeatureRequest extends RequestObject {
 
         @Override
         public boolean isQueryTypeNamesUnset() {
-            return EMFUtils.isUnset(
-                    eGet(adaptee, "abstractQueryExpression", List.class), "typeNames");
+            return EMFUtils.isUnset(eGet(adaptee, "abstractQueryExpression", List.class), "typeNames");
         }
 
         @Override
@@ -272,14 +269,12 @@ public abstract class GetFeatureRequest extends RequestObject {
 
         @Override
         public LockFeatureRequest createLockRequest() {
-            return new LockFeatureRequest.WFS20(
-                    ((Wfs20Factory) getFactory()).createLockFeatureType());
+            return new LockFeatureRequest.WFS20(((Wfs20Factory) getFactory()).createLockFeatureType());
         }
 
         @Override
         public FeatureCollectionResponse createResponse() {
-            return new FeatureCollectionResponse.WFS20(
-                    ((Wfs20Factory) getFactory()).createFeatureCollectionType());
+            return new FeatureCollectionResponse.WFS20(((Wfs20Factory) getFactory()).createFeatureCollectionType());
         }
 
         @Override

@@ -23,10 +23,10 @@ import org.junit.Test;
 
 public class SecuredWMTSLayerTest {
 
-    @Rule public TestHttpClientRule clientMocker = new TestHttpClientRule();
+    @Rule
+    public TestHttpClientRule clientMocker = new TestHttpClientRule();
 
-    protected final WrapperPolicy policy =
-            WrapperPolicy.readOnlyHide(new AccessLimits(CatalogMode.HIDE));
+    protected final WrapperPolicy policy = WrapperPolicy.readOnlyHide(new AccessLimits(CatalogMode.HIDE));
 
     // First layer in nasa.getcapa.xml
     protected static final String LAYER_TITLE = "Snow Water Equivalent (AMSR2, GCOM-W1)";
@@ -42,22 +42,17 @@ public class SecuredWMTSLayerTest {
     @Test
     public void testCoverageReader() throws IOException, ServiceException {
         String capabilitiesURL =
-                clientMocker.getServer()
-                        + "/geoserver/gwc?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS";
+                clientMocker.getServer() + "/geoserver/gwc?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS";
         URL serverURL = new URL(capabilitiesURL);
         MockHttpClient mockClient = new MockHttpClient();
         mockClient.expectGet(
-                serverURL,
-                new MockHttpResponse(
-                        WMTSStoreInfoImpl.class.getResource("nasa.getcapa.xml"), "text/xml"));
+                serverURL, new MockHttpResponse(WMTSStoreInfoImpl.class.getResource("nasa.getcapa.xml"), "text/xml"));
         TestHttpClientProvider.bind(mockClient, serverURL);
         HTTPClient client = TestHttpClientProvider.get(capabilitiesURL);
 
-        WebMapTileServer wmts =
-                new SecuredWebMapTileServer(new WebMapTileServer(serverURL, client));
-        WMTSLayer layer =
-                new SecuredWMTSLayer(
-                        wmts.getCapabilities().getLayerList().iterator().next(), policy);
+        WebMapTileServer wmts = new SecuredWebMapTileServer(new WebMapTileServer(serverURL, client));
+        WMTSLayer layer = new SecuredWMTSLayer(
+                wmts.getCapabilities().getLayerList().iterator().next(), policy);
 
         // the test is to create this
         new WMTSCoverageReader(wmts, layer);

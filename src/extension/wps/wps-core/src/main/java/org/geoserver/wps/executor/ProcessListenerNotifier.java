@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.geoserver.wps.ProcessDismissedException;
 import org.geoserver.wps.ProcessEvent;
 import org.geoserver.wps.ProcessListener;
@@ -40,10 +40,7 @@ public class ProcessListenerNotifier {
     ExecuteRequest request;
 
     public ProcessListenerNotifier(
-            ExecutionStatus status,
-            ExecuteRequest request,
-            LazyInputMap inputs,
-            List<ProcessListener> listeners) {
+            ExecutionStatus status, ExecuteRequest request, LazyInputMap inputs, List<ProcessListener> listeners) {
         this.status = status;
         this.request = request;
         this.progressListener = new WPSProgressListener();
@@ -60,7 +57,7 @@ public class ProcessListenerNotifier {
     }
 
     public void fireProgress(float progress, String task) {
-        if (progress > status.progress || StringUtils.equals(task, status.task)) {
+        if (progress > status.progress || Strings.CS.equals(task, status.task)) {
             if (status.getPhase() == ProcessState.QUEUED) {
                 status.setPhase(ProcessState.RUNNING);
             }
@@ -74,9 +71,7 @@ public class ProcessListenerNotifier {
                 long timeElapsedMillis =
                         (new Date().getTime() - status.getCreationTime().getTime());
                 int estimatedCompletionMillis =
-                        (int)
-                                ((timeElapsedMillis / progress) * timeElapsedMillis
-                                        + timeElapsedMillis);
+                        (int) ((timeElapsedMillis / progress) * timeElapsedMillis + timeElapsedMillis);
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(status.getCreationTime());
                 calendar.add(Calendar.MILLISECOND, estimatedCompletionMillis);
@@ -205,10 +200,7 @@ public class ProcessListenerNotifier {
         public void warningOccurred(String source, String location, String warning) {
             LOGGER.log(
                     Level.WARNING,
-                    "Got a warning during process execution "
-                            + status.getExecutionId()
-                            + ": "
-                            + warning);
+                    "Got a warning during process execution " + status.getExecutionId() + ": " + warning);
             // force process to just exit immediately
             checkDismissed();
         }

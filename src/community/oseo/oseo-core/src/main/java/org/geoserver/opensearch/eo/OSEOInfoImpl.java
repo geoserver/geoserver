@@ -4,12 +4,14 @@
  */
 package org.geoserver.opensearch.eo;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.config.impl.ServiceInfoImpl;
 
 public class OSEOInfoImpl extends ServiceInfoImpl implements OSEOInfo {
 
+    @Serial
     private static final long serialVersionUID = -6834845955630638054L;
 
     String openSearchAccessStoreId;
@@ -27,6 +29,8 @@ public class OSEOInfoImpl extends ServiceInfoImpl implements OSEOInfo {
     String attribution;
 
     List<String> globalQueryables = new ArrayList<>();
+
+    boolean skipNumberMatched = false;
 
     @Override
     public int getRecordsPerPage() {
@@ -104,5 +108,14 @@ public class OSEOInfoImpl extends ServiceInfoImpl implements OSEOInfo {
     @Override
     public void setAggregatesCacheTTLUnit(String aggregatesCacheTTLUnit) {
         this.aggregatesCacheTTLUnit = aggregatesCacheTTLUnit;
+    }
+
+    public boolean isSkipNumberMatched() {
+        return skipNumberMatched;
+    }
+
+    @Override
+    public void setSkipNumberMatched(boolean skipNumberMatched) {
+        this.skipNumberMatched = skipNumberMatched;
     }
 }

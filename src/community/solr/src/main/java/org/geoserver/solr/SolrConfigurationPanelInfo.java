@@ -5,26 +5,25 @@
 
 package org.geoserver.solr;
 
+import java.io.Serial;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.web.data.resource.ResourceConfigurationPanelInfo;
 
 /**
- * Implements ResourceConfigurationPanelInfo extension point to add SOLR attribute configuration
- * link on resource page. <br>
- * Priority is reduced under standard {@link ExtensionPriority.LOWEST} to shows the SOLR link after
- * other panels.
+ * Implements ResourceConfigurationPanelInfo extension point to add SOLR attribute configuration link on resource page.
+ * <br>
+ * Priority is reduced under standard {@link ExtensionPriority.LOWEST} to shows the SOLR link after other panels.
  */
-public class SolrConfigurationPanelInfo extends ResourceConfigurationPanelInfo
-        implements ExtensionPriority {
+public class SolrConfigurationPanelInfo extends ResourceConfigurationPanelInfo implements ExtensionPriority {
 
+    @Serial
     private static final long serialVersionUID = 1485404586629946126L;
 
     @Override
     public boolean canHandle(Object obj) {
         boolean canHandle = false;
-        if (obj instanceof FeatureTypeInfo) {
-            FeatureTypeInfo fti = (FeatureTypeInfo) obj;
+        if (obj instanceof FeatureTypeInfo fti) {
             for (String st : getSupportedTypes()) {
                 if (fti.getStore().getType().equals(st)) {
                     canHandle = true;

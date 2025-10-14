@@ -16,18 +16,13 @@ public class SRSPanelTest extends GeoServerWicketTestSupport implements Serializ
 
     @Test
     public void testLoad() {
-        tester.startPage(
-                new FormTestPage(
-                        (ComponentBuilder)
-                                id ->
-                                        new SRSListPanel(id) {
+        tester.startPage(new FormTestPage((ComponentBuilder) id -> new SRSListPanel(id) {
 
-                                            @Override
-                                            protected void onCodeClicked(
-                                                    AjaxRequestTarget target, String epsgCode) {
-                                                // do nothing
-                                            }
-                                        }));
+            @Override
+            protected void onCodeClicked(AjaxRequestTarget target, String epsgCode) {
+                // do nothing
+            }
+        }));
 
         tester.assertRenderedPage(FormTestPage.class);
         tester.assertNoErrorMessage();

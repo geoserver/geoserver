@@ -31,7 +31,8 @@ public class NewCachedLayerPageTest extends GeoServerWicketTestSupport {
     public void testSerializable() throws IOException {
         login();
         NewCachedLayerPage page = new NewCachedLayerPage();
-        ISerializer serializer = getGeoServerApplication().getFrameworkSettings().getSerializer();
+        ISerializer serializer =
+                getGeoServerApplication().getFrameworkSettings().getSerializer();
         // this would only result in an ERROR level log
         serializer.serialize(page);
 

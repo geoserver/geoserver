@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -22,14 +23,13 @@ import org.apache.wicket.model.Model;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.KeywordInfo;
 
-/**
- * Form component to edit a List<String> that makes up the keywords field of various catalog
- * objects.
- */
+/** Form component to edit a List<String> that makes up the keywords field of various catalog objects. */
 // TODO WICKET8 - Verify this page works OK
 public class KeywordsEditor extends FormComponentPanel<List<KeywordInfo>> {
 
+    @Serial
     private static final long serialVersionUID = 1L;
+
     ListMultipleChoice<KeywordInfo> choices;
     TextField<String> newKeyword;
     TextField<String> vocabTextField;
@@ -43,26 +43,23 @@ public class KeywordsEditor extends FormComponentPanel<List<KeywordInfo>> {
     public KeywordsEditor(String id, final IModel<List<KeywordInfo>> keywords) {
         super(id, keywords);
 
-        choices =
-                new ListMultipleChoice<>(
-                        "keywords",
-                        new Model<>(),
-                        new ArrayList<>(keywords.getObject()),
-                        new ChoiceRenderer<>() {
-                            private static final long serialVersionUID = 1L;
+        choices = new ListMultipleChoice<>(
+                "keywords", new Model<>(), new ArrayList<>(keywords.getObject()), new ChoiceRenderer<>() {
+                    @Serial
+                    private static final long serialVersionUID = 1L;
 
-                            @Override
-                            public Object getDisplayValue(KeywordInfo kw) {
-                                StringBuffer sb = new StringBuffer(kw.getValue());
-                                if (kw.getLanguage() != null) {
-                                    sb.append(" (").append(kw.getLanguage()).append(")");
-                                }
-                                if (kw.getVocabulary() != null) {
-                                    sb.append(" [").append(kw.getVocabulary()).append("]");
-                                }
-                                return sb.toString();
-                            }
-                        });
+                    @Override
+                    public Object getDisplayValue(KeywordInfo kw) {
+                        StringBuffer sb = new StringBuffer(kw.getValue());
+                        if (kw.getLanguage() != null) {
+                            sb.append(" (").append(kw.getLanguage()).append(")");
+                        }
+                        if (kw.getVocabulary() != null) {
+                            sb.append(" [").append(kw.getVocabulary()).append("]");
+                        }
+                        return sb.toString();
+                    }
+                });
         choices.setOutputMarkupId(true);
         add(choices);
         add(removeKeywordsButton());
@@ -70,24 +67,21 @@ public class KeywordsEditor extends FormComponentPanel<List<KeywordInfo>> {
         newKeyword.setOutputMarkupId(true);
         add(newKeyword);
 
-        langChoice =
-                new DropDownChoice<>(
-                        "lang",
-                        new Model<>(),
-                        Arrays.asList(Locale.getISOLanguages()),
-                        new ChoiceRenderer<>() {
-                            private static final long serialVersionUID = 1L;
+        langChoice = new DropDownChoice<>(
+                "lang", new Model<>(), Arrays.asList(Locale.getISOLanguages()), new ChoiceRenderer<>() {
+                    @Serial
+                    private static final long serialVersionUID = 1L;
 
-                            @Override
-                            public String getDisplayValue(String object) {
-                                return new Locale(object).getDisplayLanguage();
-                            }
+                    @Override
+                    public String getDisplayValue(String object) {
+                        return new Locale(object).getDisplayLanguage();
+                    }
 
-                            @Override
-                            public String getIdValue(String object, int index) {
-                                return object;
-                            }
-                        });
+                    @Override
+                    public String getIdValue(String object, int index) {
+                        return object;
+                    }
+                });
 
         langChoice.setNullValid(true);
         langChoice.setOutputMarkupId(true);
@@ -102,64 +96,64 @@ public class KeywordsEditor extends FormComponentPanel<List<KeywordInfo>> {
     }
 
     private AjaxButton addKeywordsButton() {
-        AjaxButton button =
-                new AjaxButton("addKeyword") {
-                    private static final long serialVersionUID = 1L;
+        AjaxButton button = new AjaxButton("addKeyword") {
+            @Serial
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    public void onSubmit(AjaxRequestTarget target) {
-                        String value = newKeyword.getInput();
-                        String lang = langChoice.getInput();
-                        String vocab = vocabTextField.getInput();
+            @Override
+            public void onSubmit(AjaxRequestTarget target) {
+                String value = newKeyword.getInput();
+                String lang = langChoice.getInput();
+                String vocab = vocabTextField.getInput();
 
-                        KeywordInfo keyword = new Keyword(value);
-                        if (lang != null && !"".equals(lang.trim())) {
-                            keyword.setLanguage(lang);
-                        }
-                        if (vocab != null && !"".equals(vocab.trim())) {
-                            keyword.setVocabulary(vocab);
-                        }
+                KeywordInfo keyword = new Keyword(value);
+                if (lang != null && !"".equals(lang.trim())) {
+                    keyword.setLanguage(lang);
+                }
+                if (vocab != null && !"".equals(vocab.trim())) {
+                    keyword.setVocabulary(vocab);
+                }
 
-                        @SuppressWarnings("unchecked")
-                        List<KeywordInfo> choiceList = (List<KeywordInfo>) choices.getChoices();
-                        choiceList.add(keyword);
-                        choices.setChoices(choiceList);
+                @SuppressWarnings("unchecked")
+                List<KeywordInfo> choiceList = (List<KeywordInfo>) choices.getChoices();
+                choiceList.add(keyword);
+                choices.setChoices(choiceList);
 
-                        langChoice.setModelObject(null);
-                        langChoice.modelChanged();
+                langChoice.setModelObject(null);
+                langChoice.modelChanged();
 
-                        vocabTextField.setModelObject(null);
-                        vocabTextField.modelChanged();
+                vocabTextField.setModelObject(null);
+                vocabTextField.modelChanged();
 
-                        target.add(newKeyword);
-                        target.add(langChoice);
-                        target.add(vocabTextField);
-                        target.add(choices);
-                    }
-                };
+                target.add(newKeyword);
+                target.add(langChoice);
+                target.add(vocabTextField);
+                target.add(choices);
+            }
+        };
         button.setDefaultFormProcessing(false);
         return button;
     }
 
     private AjaxButton removeKeywordsButton() {
-        AjaxButton button =
-                new AjaxButton("removeKeywords") {
+        AjaxButton button = new AjaxButton("removeKeywords") {
 
-                    private static final long serialVersionUID = 1L;
+            @Serial
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    public void onSubmit(AjaxRequestTarget target) {
-                        Collection<KeywordInfo> selection = choices.getModelObject();
-                        @SuppressWarnings("unchecked")
-                        List<KeywordInfo> keywords = (List<KeywordInfo>) choices.getChoices();
-                        for (KeywordInfo selected : selection) {
-                            keywords.remove(selected);
-                        }
-                        choices.setChoices(keywords);
-                        choices.modelChanged();
-                        target.add(choices);
-                    }
-                };
+            @Override
+            public void onSubmit(AjaxRequestTarget target) {
+                Collection<KeywordInfo> selection = choices.getModelObject();
+                @SuppressWarnings("unchecked")
+                List<KeywordInfo> keywords = (List<KeywordInfo>) choices.getChoices();
+                for (KeywordInfo selected : selection) {
+                    keywords.remove(selected);
+                }
+                choices.setChoices(keywords);
+                choices.modelChanged();
+                target.add(choices);
+            }
+        };
         // button.setDefaultFormProcessing(false);
         return button;
     }

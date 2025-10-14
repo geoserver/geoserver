@@ -13,8 +13,7 @@ import org.junit.Test;
 public class TokenAudienceValidatorTest {
 
     /**
-     * simple test - the access token has an "azp" claim that is "live-key2". - We test that the
-     * token has this value.
+     * simple test - the access token has an "azp" claim that is "live-key2". - We test that the token has this value.
      *
      * @throws Exception
      */
@@ -34,8 +33,8 @@ public class TokenAudienceValidatorTest {
     }
 
     /**
-     * simple test - the access token has an "azp" claim that is "live-key2". - We test that the
-     * token has a different value (i.e. fail). - We expect an exception
+     * simple test - the access token has an "azp" claim that is "live-key2". - We test that the token has a different
+     * value (i.e. fail). - We expect an exception
      *
      * @throws Exception
      */

@@ -54,17 +54,13 @@ public class RegexParameterFilterSubformTest extends GeoServerWicketTestSupport 
         startPage();
 
         AbstractTextComponent<String> defaultValue =
-                (AbstractTextComponent<String>)
-                        tester.getComponentFromLastRenderedPage("form:panel:defaultValue");
+                (AbstractTextComponent<String>) tester.getComponentFromLastRenderedPage("form:panel:defaultValue");
         AbstractTextComponent<String> regex =
-                (AbstractTextComponent<String>)
-                        tester.getComponentFromLastRenderedPage("form:panel:regex");
+                (AbstractTextComponent<String>) tester.getComponentFromLastRenderedPage("form:panel:regex");
         AbstractSingleSelectChoice<Case> kase =
-                (AbstractSingleSelectChoice<Case>)
-                        tester.getComponentFromLastRenderedPage("form:panel:normalize:case");
-        AbstractSingleSelectChoice<Locale> locale =
-                (AbstractSingleSelectChoice<Locale>)
-                        tester.getComponentFromLastRenderedPage("form:panel:normalize:locale");
+                (AbstractSingleSelectChoice<Case>) tester.getComponentFromLastRenderedPage("form:panel:normalize:case");
+        AbstractSingleSelectChoice<Locale> locale = (AbstractSingleSelectChoice<Locale>)
+                tester.getComponentFromLastRenderedPage("form:panel:normalize:locale");
 
         assertThat(defaultValue.getValue(), equalTo(""));
         assertThat(regex.getValue(), equalTo(""));
@@ -81,17 +77,13 @@ public class RegexParameterFilterSubformTest extends GeoServerWicketTestSupport 
         startPage();
 
         AbstractTextComponent<String> defaultValue =
-                (AbstractTextComponent<String>)
-                        tester.getComponentFromLastRenderedPage("form:panel:defaultValue");
+                (AbstractTextComponent<String>) tester.getComponentFromLastRenderedPage("form:panel:defaultValue");
         AbstractTextComponent<String> regex =
-                (AbstractTextComponent<String>)
-                        tester.getComponentFromLastRenderedPage("form:panel:regex");
+                (AbstractTextComponent<String>) tester.getComponentFromLastRenderedPage("form:panel:regex");
         AbstractSingleSelectChoice<Case> kase =
-                (AbstractSingleSelectChoice<Case>)
-                        tester.getComponentFromLastRenderedPage("form:panel:normalize:case");
-        AbstractSingleSelectChoice<Locale> locale =
-                (AbstractSingleSelectChoice<Locale>)
-                        tester.getComponentFromLastRenderedPage("form:panel:normalize:locale");
+                (AbstractSingleSelectChoice<Case>) tester.getComponentFromLastRenderedPage("form:panel:normalize:case");
+        AbstractSingleSelectChoice<Locale> locale = (AbstractSingleSelectChoice<Locale>)
+                tester.getComponentFromLastRenderedPage("form:panel:normalize:locale");
 
         assertThat(defaultValue.getValue(), equalTo("testDefault"));
         assertThat(regex.getValue(), equalTo("testRegex"));
@@ -114,21 +106,18 @@ public class RegexParameterFilterSubformTest extends GeoServerWicketTestSupport 
         assertThat(pf.getRegex(), equalTo("testRegex"));
         assertThat(
                 pf.getNormalize(),
-                both(hasProperty("case", is(Case.UPPER)))
-                        .and(hasProperty("locale", is(Locale.CANADA))));
+                both(hasProperty("case", is(Case.UPPER))).and(hasProperty("locale", is(Locale.CANADA))));
     }
 
     private void startPage() {
-        tester.startPage(
-                new FormTestPage(
-                        new ComponentBuilder() {
-                            /** serialVersionUID */
-                            private static final long serialVersionUID = 1L;
+        tester.startPage(new FormTestPage(new ComponentBuilder() {
+            /** serialVersionUID */
+            private static final long serialVersionUID = 1L;
 
-                            @Override
-                            public Component buildComponent(final String id) {
-                                return new RegexParameterFilterSubform(id, model);
-                            }
-                        }));
+            @Override
+            public Component buildComponent(final String id) {
+                return new RegexParameterFilterSubform(id, model);
+            }
+        }));
     }
 }

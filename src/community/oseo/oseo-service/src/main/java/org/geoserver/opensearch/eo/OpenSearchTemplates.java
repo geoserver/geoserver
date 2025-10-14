@@ -43,8 +43,7 @@ public class OpenSearchTemplates extends AbstractTemplates {
 
     ResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
 
-    public OpenSearchTemplates(GeoServerDataDirectory dd, OpenSearchAccessProvider accessProvider)
-            throws IOException {
+    public OpenSearchTemplates(GeoServerDataDirectory dd, OpenSearchAccessProvider accessProvider) throws IOException {
         super(dd, accessProvider);
     }
 
@@ -55,14 +54,15 @@ public class OpenSearchTemplates extends AbstractTemplates {
         // HTML templates
         copyResources(
                 oseo,
-                "classpath:/"
-                        + AtomSearchResponse.class.getPackage().getName().replace(".", "/")
-                        + "/*.ftl");
+                "classpath:/" + AtomSearchResponse.class.getPackage().getName().replace(".", "/") + "/*.ftl");
         // metadata templates
         copyResources(
                 oseo,
                 "classpath:/"
-                        + DefaultOpenSearchEoService.class.getPackage().getName().replace(".", "/")
+                        + DefaultOpenSearchEoService.class
+                                .getPackage()
+                                .getName()
+                                .replace(".", "/")
                         + "/*.ftl");
     }
 
@@ -90,8 +90,7 @@ public class OpenSearchTemplates extends AbstractTemplates {
             try {
                 reloadProductTemplate(dd, getNamespaces(access.getProductSource()));
             } catch (Exception e) {
-                LOGGER.log(
-                        Level.SEVERE, "Failed to load OpenSearch for EO JSON product templates", e);
+                LOGGER.log(Level.SEVERE, "Failed to load OpenSearch for EO JSON product templates", e);
             } finally {
                 reloadCollectionTemplate(dd, getNamespaces(access.getCollectionSource()));
             }
@@ -115,13 +114,11 @@ public class OpenSearchTemplates extends AbstractTemplates {
         return namespaces;
     }
 
-    private void reloadProductTemplate(GeoServerDataDirectory dd, NamespaceSupport namespaces)
-            throws IOException {
+    private void reloadProductTemplate(GeoServerDataDirectory dd, NamespaceSupport namespaces) throws IOException {
         // setup the items template
         Resource items = dd.get("templates/os-eo/products.json");
         copyDefault(items, "products.json");
-        this.defaultProductsTemplate =
-                new Template(items, new TemplateReaderConfiguration(namespaces));
+        this.defaultProductsTemplate = new Template(items, new TemplateReaderConfiguration(namespaces));
     }
 
     /** Returns the products template */
@@ -137,11 +134,8 @@ public class OpenSearchTemplates extends AbstractTemplates {
                 template = productsTemplates.get(collectionId);
                 if (template == null) {
                     OpenSearchAccess access = accessProvider.getOpenSearchAccess();
-                    template =
-                            new Template(
-                                    resource,
-                                    new TemplateReaderConfiguration(
-                                            getNamespaces(access.getProductSource())));
+                    template = new Template(
+                            resource, new TemplateReaderConfiguration(getNamespaces(access.getProductSource())));
                     productsTemplates.put(collectionId, template);
                 }
             }
@@ -167,13 +161,11 @@ public class OpenSearchTemplates extends AbstractTemplates {
         return builder;
     }
 
-    private void reloadCollectionTemplate(GeoServerDataDirectory dd, NamespaceSupport namespaces)
-            throws IOException {
+    private void reloadCollectionTemplate(GeoServerDataDirectory dd, NamespaceSupport namespaces) throws IOException {
         // setup the collections template
         Resource items = dd.get("templates/os-eo/collections.json");
         copyDefault(items, "collections.json");
-        this.defaultCollectionsTemplate =
-                new Template(items, new TemplateReaderConfiguration(namespaces));
+        this.defaultCollectionsTemplate = new Template(items, new TemplateReaderConfiguration(namespaces));
     }
 
     /** Returns the collections template */
@@ -189,11 +181,8 @@ public class OpenSearchTemplates extends AbstractTemplates {
                 template = collectionsTemplates.get(collectionId);
                 if (template == null) {
                     OpenSearchAccess access = accessProvider.getOpenSearchAccess();
-                    template =
-                            new Template(
-                                    resource,
-                                    new TemplateReaderConfiguration(
-                                            getNamespaces(access.getProductSource())));
+                    template = new Template(
+                            resource, new TemplateReaderConfiguration(getNamespaces(access.getProductSource())));
                     collectionsTemplates.put(collectionId, template);
                 }
             }

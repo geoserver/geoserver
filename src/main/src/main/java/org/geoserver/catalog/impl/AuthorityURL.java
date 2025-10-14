@@ -5,17 +5,19 @@
  */
 package org.geoserver.catalog.impl;
 
+import java.io.Serial;
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geotools.util.Utilities;
 
 /**
- * Realization of {@link AuthorityURLInfo}; being a "data type" there's no {@code
- * createAuthorityURL()} method in {@code CatalogFactory}, instead directly instantiate this class.
+ * Realization of {@link AuthorityURLInfo}; being a "data type" there's no {@code createAuthorityURL()} method in
+ * {@code CatalogFactory}, instead directly instantiate this class.
  *
  * @author groldan
  */
 public class AuthorityURL implements AuthorityURLInfo {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private String name;

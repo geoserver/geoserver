@@ -26,7 +26,7 @@ public class ElevationKvpParserTest {
         final ElevationKvpParser parser = new ElevationKvpParser("ELEVATION");
         @SuppressWarnings("unchecked")
         List<Double> elements = new ArrayList<>((Collection<Double>) parser.parse("1/100/1"));
-        Assert.assertTrue(elements.get(0) instanceof Double);
+        Assert.assertNotNull(elements.get(0));
         Assert.assertEquals(100, elements.size());
         Assert.assertEquals(1.0, elements.get(0), 0d);
     }
@@ -35,8 +35,7 @@ public class ElevationKvpParserTest {
     @SuppressWarnings("unchecked")
     public void testMixed() throws ParseException {
         final ElevationKvpParser parser = new ElevationKvpParser("ELEVATION");
-        List<Object> elements =
-                new ArrayList<>((Collection<Object>) parser.parse("5,3,4,1,2,8.9,1/9"));
+        List<Object> elements = new ArrayList<>((Collection<Object>) parser.parse("5,3,4,1,2,8.9,1/9"));
         Assert.assertTrue(elements.get(0) instanceof NumberRange);
         Assert.assertEquals(1.0, ((NumberRange<Double>) elements.get(0)).getMinimum(), 0d);
         Assert.assertEquals(9.0, ((NumberRange<Double>) elements.get(0)).getMaximum(), 0d);
@@ -72,11 +71,8 @@ public class ElevationKvpParserTest {
     public void testInfiniteLoopZeroInterval() {
         String value = "0/0/0";
         ServiceException e =
-                Assert.assertThrows(
-                        ServiceException.class,
-                        () -> new ElevationKvpParser("ELEVATION").parse(value));
-        Assert.assertEquals(
-                "Exceeded 100 iterations parsing elevations, bailing out.", e.getMessage());
+                Assert.assertThrows(ServiceException.class, () -> new ElevationKvpParser("ELEVATION").parse(value));
+        Assert.assertEquals("Exceeded 100 iterations parsing elevations, bailing out.", e.getMessage());
         Assert.assertEquals(ServiceException.INVALID_PARAMETER_VALUE, e.getCode());
         Assert.assertEquals("elevation", e.getLocator());
     }
@@ -85,11 +81,8 @@ public class ElevationKvpParserTest {
     public void testInfiniteLoopPositiveInfinity() {
         String value = "Infinity/Infinity/1";
         ServiceException e =
-                Assert.assertThrows(
-                        ServiceException.class,
-                        () -> new ElevationKvpParser("ELEVATION").parse(value));
-        Assert.assertEquals(
-                "Exceeded 100 iterations parsing elevations, bailing out.", e.getMessage());
+                Assert.assertThrows(ServiceException.class, () -> new ElevationKvpParser("ELEVATION").parse(value));
+        Assert.assertEquals("Exceeded 100 iterations parsing elevations, bailing out.", e.getMessage());
         Assert.assertEquals(ServiceException.INVALID_PARAMETER_VALUE, e.getCode());
         Assert.assertEquals("elevation", e.getLocator());
     }
@@ -98,11 +91,8 @@ public class ElevationKvpParserTest {
     public void testInfiniteLoopNegativeInfinity() {
         String value = "-Infinity/-Infinity/1";
         ServiceException e =
-                Assert.assertThrows(
-                        ServiceException.class,
-                        () -> new ElevationKvpParser("ELEVATION").parse(value));
-        Assert.assertEquals(
-                "Exceeded 100 iterations parsing elevations, bailing out.", e.getMessage());
+                Assert.assertThrows(ServiceException.class, () -> new ElevationKvpParser("ELEVATION").parse(value));
+        Assert.assertEquals("Exceeded 100 iterations parsing elevations, bailing out.", e.getMessage());
         Assert.assertEquals(ServiceException.INVALID_PARAMETER_VALUE, e.getCode());
         Assert.assertEquals("elevation", e.getLocator());
     }

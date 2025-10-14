@@ -94,12 +94,9 @@ public class ChangeSet {
         this.checkpoint = checkpoint;
         this.tilesMime = tilesMime;
         this.filterParameters = filterParameters;
-        this.summaryOfChangedItems.add(
-                new ChangedItem(Priority.medium, modifiedTiles.getModifiedTiles()));
+        this.summaryOfChangedItems.add(new ChangedItem(Priority.medium, modifiedTiles.getModifiedTiles()));
         this.extentOfChangedItems =
-                extentOfChangedItems.stream()
-                        .map(re -> new BoundsAndCRS(re))
-                        .collect(Collectors.toList());
+                extentOfChangedItems.stream().map(re -> new BoundsAndCRS(re)).collect(Collectors.toList());
         this.modifiedTiles = modifiedTiles;
     }
 
@@ -128,8 +125,7 @@ public class ChangeSet {
     }
 
     public void setScaleOfChangedItems(NumberRange<Double> scales) {
-        this.scaleOfChangedItems =
-                new ScaleOfChangedItems(scales.getMinimum(), scales.getMaximum());
+        this.scaleOfChangedItems = new ScaleOfChangedItems(scales.getMinimum(), scales.getMaximum());
     }
 
     public void setScaleOfChangedItems(ScaleOfChangedItems scaleOfChangedItems) {

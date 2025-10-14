@@ -6,6 +6,7 @@
 package org.geoserver.web.publish;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -45,20 +46,19 @@ import org.geoserver.web.security.LayerAccessDataRulePanel;
 /**
  * Page allowing to configure a layer(group) (and its resource).
  *
- * <p>The page is completely pluggable, the UI will be made up by scanning the Spring context for
- * implementations of {@link ResourceConfigurationPanel} and {@link PublishedConfigurationPanel}.
+ * <p>The page is completely pluggable, the UI will be made up by scanning the Spring context for implementations of
+ * {@link ResourceConfigurationPanel} and {@link PublishedConfigurationPanel}.
  *
- * <p>WARNING: one crucial aspect of this page is its ability to not loose edits when one switches
- * from one tab to the other. I did not find any effective way to unit test this, so _please_, if
- * you do modify anything in this class (especially the models), manually retest that the edits are
- * not lost on tab switch.
+ * <p>WARNING: one crucial aspect of this page is its ability to not loose edits when one switches from one tab to the
+ * other. I did not find any effective way to unit test this, so _please_, if you do modify anything in this class
+ * (especially the models), manually retest that the edits are not lost on tab switch.
  *
  * @author Niels Charlier
  */
 // TODO WICKET8 - Verify this page works OK
-public abstract class PublishedConfigurationPage<T extends PublishedInfo>
-        extends GeoServerSecuredPage {
+public abstract class PublishedConfigurationPage<T extends PublishedInfo> extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = 7870938096047218989L;
 
     public static final String NAME = "name";
@@ -72,14 +72,12 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
     protected TabbedPanel<ITab> tabbedPanel;
 
     /**
-     * {@link PublishedEditTabPanel} contributions may need to edit something different than the
-     * LayerInfo and ResourceInfo this page holds models to. In such cases {@link
-     * PublishedEditTabPanelInfo#createOwnModel} will return a non null model and well pass it back
-     * to the concrete LayerEditTabPanel constructor. This is so because LayerEditTabPanel are
-     * re-created everytime the user switches tabs.
+     * {@link PublishedEditTabPanel} contributions may need to edit something different than the LayerInfo and
+     * ResourceInfo this page holds models to. In such cases {@link PublishedEditTabPanelInfo#createOwnModel} will
+     * return a non null model and well pass it back to the concrete LayerEditTabPanel constructor. This is so because
+     * LayerEditTabPanel are re-created everytime the user switches tabs.
      */
-    private LinkedHashMap<Class<? extends PublishedEditTabPanel<T>>, IModel<?>>
-            tabPanelCustomModels;
+    private LinkedHashMap<Class<? extends PublishedEditTabPanel<T>>, IModel<?>> tabPanelCustomModels;
 
     private boolean inputEnabled = true;
 
@@ -94,10 +92,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
 
     @SuppressWarnings("unchecked")
     protected void setupPublished(T info) {
-        setupPublished(
-                info instanceof LayerInfo
-                        ? (IModel<T>) new LayerModel((LayerInfo) info)
-                        : new Model<>(info));
+        setupPublished(info instanceof LayerInfo li ? (IModel<T>) new LayerModel(li) : new Model<>(info));
     }
 
     protected void setupPublished(IModel<T> infoModel) {
@@ -112,43 +107,38 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
         add(new Label("publishedinfoname", getPublishedInfo().prefixedName()));
         Form<T> theForm = new Form<>("publishedinfo", myModel);
         add(theForm);
-        theForm.add(
-                new IFormValidator() {
-                    @Override
-                    public FormComponent<?>[] getDependentFormComponents() {
-                        return new FormComponent[0];
-                    }
+        theForm.add(new IFormValidator() {
+            @Override
+            public FormComponent<?>[] getDependentFormComponents() {
+                return new FormComponent[0];
+            }
 
-                    @Override
-                    public void validate(Form<?> form) {}
-                });
+            @Override
+            public void validate(Form<?> form) {}
+        });
 
         List<ITab> tabs = new ArrayList<>();
 
         // add the "well known" tabs
-        tabs.add(
-                new AbstractTab(
-                        new org.apache.wicket.model.ResourceModel(
-                                "ResourceConfigurationPage.Data")) {
-                    private static final long serialVersionUID = 1L;
+        tabs.add(new AbstractTab(new org.apache.wicket.model.ResourceModel("ResourceConfigurationPage.Data")) {
+            @Serial
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    public Panel getPanel(String panelID) {
-                        return createMainTab(panelID).setInputEnabled(inputEnabled);
-                    }
-                });
+            @Override
+            public Panel getPanel(String panelID) {
+                return createMainTab(panelID).setInputEnabled(inputEnabled);
+            }
+        });
 
-        tabs.add(
-                new AbstractTab(
-                        new org.apache.wicket.model.ResourceModel(
-                                "ResourceConfigurationPage.Publishing")) {
-                    private static final long serialVersionUID = 1L;
+        tabs.add(new AbstractTab(new org.apache.wicket.model.ResourceModel("ResourceConfigurationPage.Publishing")) {
+            @Serial
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    public Panel getPanel(String panelID) {
-                        return new PublishingEditTabPanel(panelID).setInputEnabled(inputEnabled);
-                    }
-                });
+            @Override
+            public Panel getPanel(String panelID) {
+                return new PublishingEditTabPanel(panelID).setInputEnabled(inputEnabled);
+            }
+        });
 
         // add the tabs contributed via extension point
         List<PublishedEditTabPanelInfo> tabPanels = tabPanelsExtensions();
@@ -159,8 +149,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
             if (ttabPanelInfo.supports(getPublishedInfo())) {
 
                 @SuppressWarnings("unchecked")
-                PublishedEditTabPanelInfo<T> tabPanelInfo =
-                        (PublishedEditTabPanelInfo<T>) ttabPanelInfo;
+                PublishedEditTabPanelInfo<T> tabPanelInfo = (PublishedEditTabPanelInfo<T>) ttabPanelInfo;
 
                 String titleKey = tabPanelInfo.getTitleKey();
                 IModel<String> titleModel = null;
@@ -173,47 +162,46 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
                 final Class<PublishedEditTabPanel<T>> panelClass = tabPanelInfo.getComponentClass();
                 IModel<?> panelCustomModel = tabPanelInfo.createOwnModel(myModel, isNew);
                 tabPanelCustomModels.put(panelClass, panelCustomModel);
-                tabs.add(
-                        new AbstractTab(titleModel) {
-                            private static final long serialVersionUID = -6637277497986497791L;
+                tabs.add(new AbstractTab(titleModel) {
+                    @Serial
+                    private static final long serialVersionUID = -6637277497986497791L;
 
-                            @Override
-                            public Panel getPanel(String panelId) {
-                                PublishedEditTabPanel<?> tabPanel;
-                                final IModel<?> panelCustomModel =
-                                        tabPanelCustomModels.get(panelClass);
-                                tabPanel = createTabPanel(panelId, panelCustomModel, panelClass);
-                                return tabPanel;
-                            }
-                        });
+                    @Override
+                    public Panel getPanel(String panelId) {
+                        PublishedEditTabPanel<?> tabPanel;
+                        final IModel<?> panelCustomModel = tabPanelCustomModels.get(panelClass);
+                        tabPanel = createTabPanel(panelId, panelCustomModel, panelClass);
+                        return tabPanel;
+                    }
+                });
             }
         }
 
         // we need to override with submit links so that the various form
         // element
         // will validate and write down into their
-        tabbedPanel =
-                new TabbedPanel<>("tabs", tabs) {
+        tabbedPanel = new TabbedPanel<>("tabs", tabs) {
+            @Serial
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            protected WebMarkupContainer newLink(String linkId, final int index) {
+                return new SubmitLink(linkId) {
+                    @Serial
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    protected WebMarkupContainer newLink(String linkId, final int index) {
-                        return new SubmitLink(linkId) {
-                            private static final long serialVersionUID = 1L;
-
-                            @Override
-                            public void onSubmit() {
-                                WebMarkupContainer panel =
-                                        tabs.get(index).getPanel("dataAccessPanel");
-                                if (myModel.getObject() instanceof LayerGroupInfo
-                                        && panel instanceof LayerAccessDataRulePanel) {
-                                    ((LayerAccessDataRulePanel) panel).reloadOwnModel();
-                                }
-                                setSelectedTab(index);
-                            }
-                        };
+                    public void onSubmit() {
+                        WebMarkupContainer panel = tabs.get(index).getPanel("dataAccessPanel");
+                        if (myModel.getObject() instanceof LayerGroupInfo
+                                && panel instanceof LayerAccessDataRulePanel rulePanel) {
+                            rulePanel.reloadOwnModel();
+                        }
+                        setSelectedTab(index);
                     }
                 };
+            }
+        };
         theForm.add(tabbedPanel);
         theForm.add(saveLink());
         theForm.add(applyLink());
@@ -221,23 +209,17 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
     }
 
     private PublishedEditTabPanel<?> createTabPanel(
-            String panelId,
-            IModel<?> panelCustomModel,
-            Class<PublishedEditTabPanel<T>> panelClass) {
+            String panelId, IModel<?> panelCustomModel, Class<PublishedEditTabPanel<T>> panelClass) {
         PublishedEditTabPanel<?> tabPanel;
         try {
             // if this tab needs a custom model instead of just our layer
             // model, then let it create it once
             if (panelCustomModel == null) {
-                tabPanel =
-                        panelClass
-                                .getConstructor(String.class, IModel.class)
-                                .newInstance(panelId, myModel);
+                tabPanel = panelClass.getConstructor(String.class, IModel.class).newInstance(panelId, myModel);
             } else {
-                tabPanel =
-                        panelClass
-                                .getConstructor(String.class, IModel.class, IModel.class)
-                                .newInstance(panelId, myModel, panelCustomModel);
+                tabPanel = panelClass
+                        .getConstructor(String.class, IModel.class, IModel.class)
+                        .newInstance(panelId, myModel, panelCustomModel);
             }
         } catch (Exception e) {
             throw new WicketRuntimeException(e);
@@ -246,14 +228,12 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
     }
 
     private void sortTabPanels(List<PublishedEditTabPanelInfo> tabPanels) {
-        Collections.sort(
-                tabPanels,
-                (o1, o2) -> {
-                    Integer order1 = o1.getOrder() >= 0 ? o1.getOrder() : Integer.MAX_VALUE;
-                    Integer order2 = o2.getOrder() >= 0 ? o2.getOrder() : Integer.MAX_VALUE;
+        Collections.sort(tabPanels, (o1, o2) -> {
+            Integer order1 = o1.getOrder() >= 0 ? o1.getOrder() : Integer.MAX_VALUE;
+            Integer order2 = o2.getOrder() >= 0 ? o2.getOrder() : Integer.MAX_VALUE;
 
-                    return order1.compareTo(order2);
-                });
+            return order1.compareTo(order2);
+        });
     }
 
     private List<PublishedEditTabPanelInfo> tabPanelsExtensions() {
@@ -266,8 +246,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
 
     public void setSelectedTab(Class<? extends PublishedEditTabPanel<?>> selectedTabClass) {
         // relying on LinkedHashMap here
-        int selectedTabIndex =
-                new ArrayList<>(tabPanelCustomModels.keySet()).indexOf(selectedTabClass);
+        int selectedTabIndex = new ArrayList<>(tabPanelCustomModels.keySet()).indexOf(selectedTabClass);
         if (selectedTabIndex > -1) {
             // add differential to match index of tabPanelCustomModels with total tabs count
             int diff = (tabbedPanel.getTabs().size() - tabPanelCustomModels.size());
@@ -290,6 +269,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
     private SubmitLink saveLink() {
         return new SubmitLink("save") {
 
+            @Serial
             private static final long serialVersionUID = 4615460713943555026L;
 
             @Override
@@ -306,28 +286,31 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
             protected void onSubmitInternal(AjaxRequestTarget target) {
                 doSave(false);
             }
+
+            @Override
+            protected void onError(AjaxRequestTarget target) {
+                super.onError(target);
+            }
         };
     }
 
     /**
      * Performs the necessary operation on save.
      *
-     * <p>This implementation adds the necessary objects to the catalog, respecting the isNew flag,
-     * and calls {@link #onSuccessfulSave()} upon success.
+     * <p>This implementation adds the necessary objects to the catalog, respecting the isNew flag, and calls
+     * {@link #onSuccessfulSave(boolean)} upon success.
      */
     protected void doSave(boolean doReturn) {
         try {
-            for (Entry<Class<? extends PublishedEditTabPanel<T>>, IModel<?>> e :
-                    tabPanelCustomModels.entrySet()) {
+            for (Entry<Class<? extends PublishedEditTabPanel<T>>, IModel<?>> e : tabPanelCustomModels.entrySet()) {
                 Class<? extends PublishedEditTabPanel<T>> panelClass = e.getKey();
                 IModel<?> customModel = e.getValue();
                 if (customModel == null) {
                     continue;
                 }
-                PublishedEditTabPanel<?> tabPanel =
-                        panelClass
-                                .getConstructor(String.class, IModel.class, IModel.class)
-                                .newInstance("temp", myModel, customModel);
+                PublishedEditTabPanel<?> tabPanel = panelClass
+                        .getConstructor(String.class, IModel.class, IModel.class)
+                        .newInstance("temp", myModel, customModel);
                 tabPanel.beforeSave();
             }
 
@@ -336,17 +319,15 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
                 return;
             }
 
-            for (Entry<Class<? extends PublishedEditTabPanel<T>>, IModel<?>> e :
-                    tabPanelCustomModels.entrySet()) {
+            for (Entry<Class<? extends PublishedEditTabPanel<T>>, IModel<?>> e : tabPanelCustomModels.entrySet()) {
                 Class<? extends PublishedEditTabPanel<T>> panelClass = e.getKey();
                 IModel<?> customModel = e.getValue();
                 if (customModel == null) {
                     continue;
                 }
-                PublishedEditTabPanel<?> tabPanel =
-                        panelClass
-                                .getConstructor(String.class, IModel.class, IModel.class)
-                                .newInstance("temp", myModel, customModel);
+                PublishedEditTabPanel<?> tabPanel = panelClass
+                        .getConstructor(String.class, IModel.class, IModel.class)
+                        .newInstance("temp", myModel, customModel);
                 tabPanel.save();
             }
 
@@ -359,6 +340,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
 
     private Link<?> cancelLink() {
         return new Link<>("cancel") {
+            @Serial
             private static final long serialVersionUID = -9007727127569731882L;
 
             @Override
@@ -369,8 +351,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
     }
 
     @SuppressWarnings("unchecked")
-    private List<PublishedConfigurationPanelInfo<T>> filterPublishedPanels(
-            List<PublishedConfigurationPanelInfo> list) {
+    private List<PublishedConfigurationPanelInfo<T>> filterPublishedPanels(List<PublishedConfigurationPanelInfo> list) {
         List<PublishedConfigurationPanelInfo<T>> result = new ArrayList<>();
         for (PublishedConfigurationPanelInfo info : list) {
             if (info.canHandle(getPublishedInfo())) {
@@ -403,6 +384,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
 
     protected abstract class ListEditTabPanel extends PublishedEditTabPanel<T> {
 
+        @Serial
         private static final long serialVersionUID = -7279044666531992361L;
 
         public ListEditTabPanel(String id) {
@@ -420,6 +402,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
     }
 
     protected class PublishingEditTabPanel extends ListEditTabPanel {
+        @Serial
         private static final long serialVersionUID = -6575960326680386479L;
 
         public PublishingEditTabPanel(String id) {
@@ -428,32 +411,27 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
 
         @Override
         public ListView<PublishedConfigurationPanelInfo<T>> createList(String id) {
-            List<PublishedConfigurationPanelInfo<T>> pubPanels =
-                    filterPublishedPanels(
-                            getGeoServerApplication()
-                                    .getBeansOfType(PublishedConfigurationPanelInfo.class));
-            ListView<PublishedConfigurationPanelInfo<T>> pubPanelList =
-                    new ListView<>(id, pubPanels) {
-                        private static final long serialVersionUID = 1L;
+            List<PublishedConfigurationPanelInfo<T>> pubPanels = filterPublishedPanels(
+                    getGeoServerApplication().getBeansOfType(PublishedConfigurationPanelInfo.class));
+            ListView<PublishedConfigurationPanelInfo<T>> pubPanelList = new ListView<>(id, pubPanels) {
+                @Serial
+                private static final long serialVersionUID = 1L;
 
-                        @Override
-                        protected void populateItem(
-                                ListItem<PublishedConfigurationPanelInfo<T>> item) {
-                            PublishedConfigurationPanelInfo<T> panelInfo = item.getModelObject();
-                            try {
-                                PublishedConfigurationPanel<T> panel =
-                                        panelInfo
-                                                .getComponentClass()
-                                                .getConstructor(String.class, IModel.class)
-                                                .newInstance("content", myModel);
-                                panel.setOutputMarkupId(true); // allow cross panel ajax updates
-                                item.add(panel);
-                            } catch (Exception e) {
-                                throw new WicketRuntimeException(
-                                        "Failed to add pluggable layer configuration panels", e);
-                            }
-                        }
-                    };
+                @Override
+                protected void populateItem(ListItem<PublishedConfigurationPanelInfo<T>> item) {
+                    PublishedConfigurationPanelInfo<T> panelInfo = item.getModelObject();
+                    try {
+                        PublishedConfigurationPanel<T> panel = panelInfo
+                                .getComponentClass()
+                                .getConstructor(String.class, IModel.class)
+                                .newInstance("content", myModel);
+                        panel.setOutputMarkupId(true); // allow cross panel ajax updates
+                        item.add(panel);
+                    } catch (Exception e) {
+                        throw new WicketRuntimeException("Failed to add pluggable layer configuration panels", e);
+                    }
+                }
+            };
             return pubPanelList;
         }
     }

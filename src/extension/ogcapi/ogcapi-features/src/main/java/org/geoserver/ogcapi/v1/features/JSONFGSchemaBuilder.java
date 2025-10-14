@@ -42,15 +42,14 @@ public class JSONFGSchemaBuilder {
     private final FeatureType featureType;
     private final String schemaId;
 
-    private List<Class<?>> KNOWN_GEOMETRY_TYPES =
-            List.of(
-                    Point.class,
-                    LineString.class,
-                    Polygon.class,
-                    MultiPoint.class,
-                    MultiLineString.class,
-                    MultiPolygon.class,
-                    GeometryCollection.class);
+    private List<Class<?>> KNOWN_GEOMETRY_TYPES = List.of(
+            Point.class,
+            LineString.class,
+            Polygon.class,
+            MultiPoint.class,
+            MultiLineString.class,
+            MultiPolygon.class,
+            GeometryCollection.class);
 
     public JSONFGSchemaBuilder(FeatureType featureType, String schemaId) {
         this.featureType = featureType;
@@ -61,10 +60,7 @@ public class JSONFGSchemaBuilder {
         // sanity check
         String fileName = "schema/" + schemaId + ".json";
         if (getClass().getResource(fileName) == null) {
-            throw new APIException(
-                    APIException.NOT_FOUND,
-                    "No schema found for " + schemaId,
-                    HttpStatus.NOT_FOUND);
+            throw new APIException(APIException.NOT_FOUND, "No schema found for " + schemaId, HttpStatus.NOT_FOUND);
         }
 
         // load the schema from the classpath as a string
@@ -93,11 +89,10 @@ public class JSONFGSchemaBuilder {
             place.put("type", "null");
         } else {
             Class<?> binding = featureType.getGeometryDescriptor().getType().getBinding();
-            Optional<String> type =
-                    KNOWN_GEOMETRY_TYPES.stream()
-                            .filter(t -> t.isAssignableFrom(binding))
-                            .map(t -> t.getSimpleName())
-                            .findFirst();
+            Optional<String> type = KNOWN_GEOMETRY_TYPES.stream()
+                    .filter(t -> t.isAssignableFrom(binding))
+                    .map(t -> t.getSimpleName())
+                    .findFirst();
             if (type.isPresent()) {
                 addSingleGeometryType(geometry, place, type.get());
             } else {
@@ -106,19 +101,16 @@ public class JSONFGSchemaBuilder {
         }
 
         // handle the other properties
-        ObjectNode propertiesObject =
-                (ObjectNode) root.get("properties").get("properties").get("oneOf").get(1);
+        ObjectNode propertiesObject = (ObjectNode)
+                root.get("properties").get("properties").get("oneOf").get(1);
         featureType.getDescriptors().stream()
                 // want to skip the default geometry, unclear how to handle other geometry
                 // properties
                 .filter(d -> !(d instanceof GeometryDescriptor))
-                .forEach(
-                        d ->
-                                propertiesObject.set(
-                                        d.getName().getLocalPart(),
-                                        MAPPER.valueToTree(
-                                                QueryablesBuilder.getAlphanumericSchema(
-                                                        d.getType().getBinding()))));
+                .forEach(d -> propertiesObject.set(
+                        d.getName().getLocalPart(),
+                        MAPPER.valueToTree(QueryablesBuilder.getAlphanumericSchema(
+                                d.getType().getBinding()))));
 
         return MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(root);
     }

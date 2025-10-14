@@ -24,8 +24,7 @@ import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.renderer.lite.StreamingRenderer;
 
 /**
- * Extends DefaultMapContext to provide the whole set of request parameters a WMS GetMap request can
- * have.
+ * Extends DefaultMapContext to provide the whole set of request parameters a WMS GetMap request can have.
  *
  * <p>In particular, adds holding for the following parameter values:
  *
@@ -38,7 +37,6 @@ import org.geotools.renderer.lite.StreamingRenderer;
  *
  * @author Gabriel Roldan
  * @author Simone Giannecchini - GeoSolutions SAS
- * @version $Id$
  */
 public class WMSMapContent extends MapContent {
     /** requested map image width in output units (pixels) */
@@ -71,10 +69,7 @@ public class WMSMapContent extends MapContent {
         this.tileSize = tileSize;
     }
 
-    /**
-     * the rendering buffer used to avoid issues with tiled rendering and big strokes that may cross
-     * tile boundaries
-     */
+    /** the rendering buffer used to avoid issues with tiled rendering and big strokes that may cross tile boundaries */
     private int buffer;
 
     /** The {@link IndexColorModel} the user required for the resulting map */
@@ -219,10 +214,7 @@ public class WMSMapContent extends MapContent {
         }
     }
 
-    /**
-     * Returns the transformation going from the map area space to the screen space taking into
-     * account map rotation
-     */
+    /** Returns the transformation going from the map area space to the screen space taking into account map rotation */
     public AffineTransform getRenderingTransform() {
         Rectangle paintArea = new Rectangle(0, 0, getMapWidth(), getMapHeight());
         ReferencedEnvelope dataArea = getViewport().getBounds();
@@ -239,10 +231,7 @@ public class WMSMapContent extends MapContent {
         return tx;
     }
 
-    /**
-     * Returns the actual area that should be drawn taking into account the map rotation account map
-     * rotation
-     */
+    /** Returns the actual area that should be drawn taking into account the map rotation account map rotation */
     public ReferencedEnvelope getRenderingArea() {
         ReferencedEnvelope dataArea = getViewport().getBounds();
         if (getAngle() == 0) return dataArea;
@@ -253,19 +242,15 @@ public class WMSMapContent extends MapContent {
         tx.translate(offsetX, offsetY);
         tx.rotate(Math.toRadians(getAngle()));
         tx.translate(-offsetX, -offsetY);
-        Rectangle2D dataAreaShape =
-                new Rectangle2D.Double(
-                        dataArea.getMinX(),
-                        dataArea.getMinY(),
-                        dataArea.getWidth(),
-                        dataArea.getHeight());
+        Rectangle2D dataAreaShape = new Rectangle2D.Double(
+                dataArea.getMinX(), dataArea.getMinY(), dataArea.getWidth(), dataArea.getHeight());
         Rectangle2D transformedBounds = tx.createTransformedShape(dataAreaShape).getBounds2D();
         return new ReferencedEnvelope(transformedBounds, dataArea.getCoordinateReferenceSystem());
     }
 
     /**
-     * Get the contact information associated with this context, returns an empty string if
-     * contactInformation has not been set.
+     * Get the contact information associated with this context, returns an empty string if contactInformation has not
+     * been set.
      *
      * @return the ContactInformation or an empty string if not present
      */
@@ -284,9 +269,8 @@ public class WMSMapContent extends MapContent {
     }
 
     /**
-     * Get an array of keywords associated with this context, returns an empty array if no keywords
-     * have been set. The array returned is a copy, changes to the returned array won't influence
-     * the MapContextState
+     * Get an array of keywords associated with this context, returns an empty array if no keywords have been set. The
+     * array returned is a copy, changes to the returned array won't influence the MapContextState
      *
      * @return array of keywords
      */
@@ -294,11 +278,9 @@ public class WMSMapContent extends MapContent {
         Object obj = getUserData().get("keywords");
         if (obj == null) {
             return new String[0];
-        } else if (obj instanceof String) {
-            String keywords = (String) obj;
+        } else if (obj instanceof String keywords) {
             return keywords.split(",");
-        } else if (obj instanceof String[]) {
-            String[] keywords = (String[]) obj;
+        } else if (obj instanceof String[] keywords) {
             String[] copy = new String[keywords.length];
             System.arraycopy(keywords, 0, copy, 0, keywords.length);
             return copy;
@@ -321,8 +303,7 @@ public class WMSMapContent extends MapContent {
     }
 
     /**
-     * Get the abstract which describes this interface, returns an empty string if this has not been
-     * set yet.
+     * Get the abstract which describes this interface, returns an empty string if this has not been set yet.
      *
      * @return The Abstract or an empty string if not present
      */
@@ -371,11 +352,9 @@ public class WMSMapContent extends MapContent {
         } else {
             AffineTransform at = getRenderingTransform();
             if (Math.abs(XAffineTransform.getRotation(at)) != 0.0) {
-                return RendererUtilities.calculateOGCScaleAffine(
-                        getCoordinateReferenceSystem(), at, hints);
+                return RendererUtilities.calculateOGCScaleAffine(getCoordinateReferenceSystem(), at, hints);
             } else {
-                return RendererUtilities.calculateOGCScale(
-                        getViewport().getBounds(), getMapWidth(), hints);
+                return RendererUtilities.calculateOGCScale(getViewport().getBounds(), getMapWidth(), hints);
             }
         }
     }
@@ -390,9 +369,8 @@ public class WMSMapContent extends MapContent {
     }
 
     /**
-     * Generic map attached to the map content, can be used to persist information around the life
-     * cycle when the {@link WebMap} is not appropriate, or to persist state across the various
-     * response callbacks
+     * Generic map attached to the map content, can be used to persist information around the life cycle when the
+     * {@link WebMap} is not appropriate, or to persist state across the various response callbacks
      */
     public Map<String, Object> getMetadata() {
         return metadata;

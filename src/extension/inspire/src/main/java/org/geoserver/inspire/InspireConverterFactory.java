@@ -17,8 +17,8 @@ import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 
 /**
- * Marshals {@link UniqueResourceIdentifiers} to and from String for including in the {@link
- * WFSInfo} {@link MetadataMap}
+ * Marshals {@link UniqueResourceIdentifiers} to and from String for including in the {@link WFSInfo}
+ * {@link MetadataMap}
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -27,11 +27,9 @@ public class InspireConverterFactory implements ConverterFactory {
 
     @Override
     public Converter createConverter(Class<?> source, Class<?> target, Hints hints) {
-        if (String.class.isAssignableFrom(source)
-                && UniqueResourceIdentifiers.class.isAssignableFrom(target)) {
+        if (String.class.isAssignableFrom(source) && UniqueResourceIdentifiers.class.isAssignableFrom(target)) {
             return new SpatialDatasetIdentifiersConverter();
-        } else if (String.class.isAssignableFrom(target)
-                && UniqueResourceIdentifiers.class.isAssignableFrom(source)) {
+        } else if (String.class.isAssignableFrom(target) && UniqueResourceIdentifiers.class.isAssignableFrom(source)) {
             return new SpatialDatasetIdentifiersConverter();
         }
         return null;
@@ -41,9 +39,9 @@ public class InspireConverterFactory implements ConverterFactory {
 
         @Override
         public <T> T convert(Object source, Class<T> target) throws Exception {
-            if (source instanceof String && UniqueResourceIdentifiers.class.equals(target)) {
+            if (source instanceof String string && UniqueResourceIdentifiers.class.equals(target)) {
                 UniqueResourceIdentifiers identifiers = new UniqueResourceIdentifiers();
-                String[] values = ((String) source).split("\\s*;\\s*");
+                String[] values = string.split("\\s*;\\s*");
                 for (String value : values) {
                     String[] elements = value.split("\\s*,\\s*");
                     if (elements.length == 0) {
@@ -51,9 +49,7 @@ public class InspireConverterFactory implements ConverterFactory {
                     }
                     String code = elements[0];
                     if ("".equals(code)) {
-                        LOGGER.warning(
-                                "Skipping InspireDatasetIdentifier because code is empty: "
-                                        + value);
+                        LOGGER.warning("Skipping InspireDatasetIdentifier because code is empty: " + value);
                         continue;
                     }
                     String namespace = null;
@@ -89,13 +85,11 @@ public class InspireConverterFactory implements ConverterFactory {
                             continue;
                         }
                     }
-                    UniqueResourceIdentifier id =
-                            new UniqueResourceIdentifier(code, namespace, metadataURL);
+                    UniqueResourceIdentifier id = new UniqueResourceIdentifier(code, namespace, metadataURL);
                     identifiers.add(id);
                 }
                 return target.cast(identifiers);
-            } else if (source instanceof UniqueResourceIdentifiers && String.class.equals(target)) {
-                UniqueResourceIdentifiers ids = (UniqueResourceIdentifiers) source;
+            } else if (source instanceof UniqueResourceIdentifiers ids && String.class.equals(target)) {
                 if (!ids.isEmpty()) {
                     StringBuilder sb = new StringBuilder();
                     for (UniqueResourceIdentifier id : ids) {

@@ -4,12 +4,14 @@
  */
 package org.geoserver.taskmanager.web.panel;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 
 public class ImportPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -1829729746678003578L;
 
     public ImportPanel(String id) {

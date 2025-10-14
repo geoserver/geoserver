@@ -28,8 +28,7 @@ import org.geotools.filter.expression.InternalVolatileFunction;
 import org.geotools.util.decorate.Wrapper;
 
 /**
- * Filters the resources that are not in the current workspace (used only if virtual services are
- * active)
+ * Filters the resources that are not in the current workspace (used only if virtual services are active)
  *
  * @author Justin DeOliveira
  */
@@ -40,7 +39,7 @@ public class LocalWorkspaceCatalogFilter extends AbstractCatalogFilter {
 
     public LocalWorkspaceCatalogFilter(Catalog catalog) {
         // unwrap it just to be sure
-        while (catalog instanceof Wrapper && ((Wrapper) catalog).isWrapperFor(Catalog.class)) {
+        while (catalog instanceof Wrapper w && w.isWrapperFor(Catalog.class)) {
             Catalog unwrapped = ((Wrapper) catalog).unwrap(Catalog.class);
             if (unwrapped == catalog || unwrapped == null) {
                 break;
@@ -58,8 +57,7 @@ public class LocalWorkspaceCatalogFilter extends AbstractCatalogFilter {
             return false;
         } else if (local instanceof LayerInfo) {
             return !local.equals(layer);
-        } else if (local instanceof LayerGroupInfo) {
-            LayerGroupInfo lg = (LayerGroupInfo) local;
+        } else if (local instanceof LayerGroupInfo lg) {
             Request request = Dispatcher.REQUEST.get();
             if (request != null
                     && "WMS".equalsIgnoreCase(request.getService())
@@ -125,8 +123,7 @@ public class LocalWorkspaceCatalogFilter extends AbstractCatalogFilter {
     public boolean hideLayerGroup(LayerGroupInfo layerGroup) {
         PublishedInfo local = LocalPublished.get();
         if (local != null) {
-            if (local instanceof LayerGroupInfo) {
-                LayerGroupInfo lg = (LayerGroupInfo) local;
+            if (local instanceof LayerGroupInfo lg) {
                 Request request = Dispatcher.REQUEST.get();
                 if (request != null
                         && "WMS".equalsIgnoreCase(request.getService())
@@ -149,8 +146,7 @@ public class LocalWorkspaceCatalogFilter extends AbstractCatalogFilter {
                 // name, ie
                 // overrides it
                 if (LocalWorkspace.get() != null) {
-                    if (catalog.getLayerGroupByName(LocalWorkspace.get(), layerGroup.getName())
-                            != null) {
+                    if (catalog.getLayerGroupByName(LocalWorkspace.get(), layerGroup.getName()) != null) {
                         return true;
                     }
                 }
@@ -167,13 +163,13 @@ public class LocalWorkspaceCatalogFilter extends AbstractCatalogFilter {
     protected boolean subLayersHidden(LayerGroupInfo layerGroup) {
         boolean anySublayersVisible = false;
         for (PublishedInfo subLayer : layerGroup.getLayers()) {
-            if (subLayer instanceof LayerInfo) {
-                if (!hideLayer((LayerInfo) subLayer)) {
+            if (subLayer instanceof LayerInfo info1) {
+                if (!hideLayer(info1)) {
                     anySublayersVisible = true;
                     break;
                 }
-            } else if (subLayer instanceof LayerGroupInfo) {
-                if (!hideLayerGroup((LayerGroupInfo) subLayer)) {
+            } else if (subLayer instanceof LayerGroupInfo info) {
+                if (!hideLayerGroup(info)) {
                     anySublayersVisible = true;
                     break;
                 }
@@ -202,8 +198,7 @@ public class LocalWorkspaceCatalogFilter extends AbstractCatalogFilter {
         // If it's a global use the global filter, otherwise check if it's in the local workspace
         return Predicates.or(
                 Predicates.and(Predicates.isNull("workspace.id"), forGlobal),
-                Predicates.and(
-                        Predicates.factory.not(Predicates.isNull("workspace.id")), inWorkspace()));
+                Predicates.and(Predicates.factory.not(Predicates.isNull("workspace.id")), inWorkspace()));
     }
 
     @Override
@@ -235,24 +230,19 @@ public class LocalWorkspaceCatalogFilter extends AbstractCatalogFilter {
                 if (localPublished instanceof LayerInfo) {
                     // TODO Need a well known recursive filter for layer groups instead of using an
                     // InternalVolatileFunction, KS
-                    Function subLayersHidden =
-                            new InternalVolatileFunction() {
-                                @Override
-                                public Boolean evaluate(Object object) {
-                                    return !subLayersHidden((LayerGroupInfo) object);
-                                }
-                            };
+                    Function subLayersHidden = new InternalVolatileFunction() {
+                        @Override
+                        public Boolean evaluate(Object object) {
+                            return !subLayersHidden((LayerGroupInfo) object);
+                        }
+                    };
                     FilterFactory factory = Predicates.factory;
 
                     // hide the layer if its sublayers are hidden
-                    filter =
-                            Predicates.and(
-                                    filter,
-                                    factory.equals(factory.literal(Boolean.TRUE), subLayersHidden));
+                    filter = Predicates.and(filter, factory.equals(factory.literal(Boolean.TRUE), subLayersHidden));
 
                     Predicates.and(filter, Predicates.equal("id", localPublished.getId()));
-                } else if (localPublished instanceof LayerGroupInfo) {
-                    LayerGroupInfo lg = (LayerGroupInfo) localPublished;
+                } else if (localPublished instanceof LayerGroupInfo lg) {
                     List<LayerGroupInfo> groups = new LayerGroupHelper(lg).allGroups();
                     List<Filter> groupIdFilters = new ArrayList<>();
                     for (LayerGroupInfo group : groups) {
@@ -270,8 +260,7 @@ public class LocalWorkspaceCatalogFilter extends AbstractCatalogFilter {
                 return Predicates.acceptAll();
             } else if (localPublished instanceof LayerInfo) {
                 return Predicates.equal("id", localPublished.getId());
-            } else if (localPublished instanceof LayerGroupInfo) {
-                LayerGroupInfo lg = (LayerGroupInfo) localPublished;
+            } else if (localPublished instanceof LayerGroupInfo lg) {
                 Request request = Dispatcher.REQUEST.get();
                 if (request != null
                         && "WMS".equalsIgnoreCase(request.getService())
@@ -292,9 +281,7 @@ public class LocalWorkspaceCatalogFilter extends AbstractCatalogFilter {
                     return Predicates.or(layersIdFilters);
                 }
             } else {
-                throw new RuntimeException(
-                        "Unexpected local published reference of type "
-                                + localPublished.getClass());
+                throw new RuntimeException("Unexpected local published reference of type " + localPublished.getClass());
             }
         } else if (NamespaceInfo.class.isAssignableFrom(clazz)) {
             // TODO

@@ -5,6 +5,7 @@
  */
 package org.geoserver.wms.web.publish;
 
+import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -18,20 +19,18 @@ import org.geoserver.wms.WMSInfo;
 
 public class LayerAuthoritiesAndIdentifiersPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public LayerAuthoritiesAndIdentifiersPanel(
-            final String id,
-            final boolean isRootLayer,
-            final IModel<? extends CatalogInfo> layerModel) {
+            final String id, final boolean isRootLayer, final IModel<? extends CatalogInfo> layerModel) {
 
         super(id);
 
         // authority URLs for the this layer
         IModel<List<AuthorityURLInfo>> authURLsModel =
                 LiveCollectionModel.list(new PropertyModel<>(layerModel, "authorityURLs"));
-        AuthorityURLListEditor authUrlEditor =
-                new AuthorityURLListEditor("authorityurls", authURLsModel);
+        AuthorityURLListEditor authUrlEditor = new AuthorityURLListEditor("authorityurls", authURLsModel);
         add(authUrlEditor);
 
         // Layer Identifiers for this layer

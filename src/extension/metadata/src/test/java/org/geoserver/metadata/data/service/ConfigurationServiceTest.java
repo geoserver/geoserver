@@ -24,7 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class ConfigurationServiceTest extends AbstractMetadataTest {
 
-    @Autowired private ConfigurationService yamlService;
+    @Autowired
+    private ConfigurationService yamlService;
 
     @Test
     public void testFileRegistry() throws IOException {
@@ -40,16 +41,19 @@ public class ConfigurationServiceTest extends AbstractMetadataTest {
 
         assertEquals(
                 "identifier-single",
-                findAttribute(configuration.getAttributes(), "identifier-single").getLabel());
+                findAttribute(configuration.getAttributes(), "identifier-single")
+                        .getLabel());
         assertEquals(
                 "identifier-single",
-                findAttribute(configuration.getAttributes(), "identifier-single").getLabel());
+                findAttribute(configuration.getAttributes(), "identifier-single")
+                        .getLabel());
         assertEquals(
                 "dropdown-field",
                 findAttribute(configuration.getAttributes(), "dropdown-field").getLabel());
         assertEquals(
                 "refsystem as list",
-                findAttribute(configuration.getAttributes(), "refsystem-as-list").getLabel());
+                findAttribute(configuration.getAttributes(), "refsystem-as-list")
+                        .getLabel());
 
         List<AttributeConfiguration> complexAttributes =
                 configuration.findType("referencesystem").getAttributes();
@@ -68,15 +72,13 @@ public class ConfigurationServiceTest extends AbstractMetadataTest {
 
     @Test
     public void testGeonetworkMappingRegistry() throws IOException {
-        GeonetworkMappingConfiguration configuration =
-                yamlService.getGeonetworkMappingConfiguration();
+        GeonetworkMappingConfiguration configuration = yamlService.getGeonetworkMappingConfiguration();
         assertNotNull(configuration);
         assertEquals(10, configuration.getGeonetworkmapping().size());
         assertEquals(2, configuration.getObjectmapping().size());
     }
 
-    private AttributeConfiguration findAttribute(
-            List<AttributeConfiguration> configurations, String key) {
+    private AttributeConfiguration findAttribute(List<AttributeConfiguration> configurations, String key) {
         for (AttributeConfiguration attribute : configurations) {
             if (attribute.getKey().equals(key)) {
                 return attribute;

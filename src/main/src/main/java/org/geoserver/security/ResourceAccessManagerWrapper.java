@@ -54,12 +54,12 @@ public abstract class ResourceAccessManagerWrapper implements ResourceAccessMana
         if (a == null) return b;
         if (b == null) return a;
 
-        if (a instanceof VectorAccessLimits && b instanceof VectorAccessLimits) {
-            return intersection((VectorAccessLimits) a, (VectorAccessLimits) b);
-        } else if (a instanceof CoverageAccessLimits && b instanceof CoverageAccessLimits) {
-            return intersection((CoverageAccessLimits) a, (CoverageAccessLimits) b);
-        } else if (a instanceof WMSAccessLimits && b instanceof WMSAccessLimits) {
-            return intersection((WMSAccessLimits) a, (WMSAccessLimits) b);
+        if (a instanceof VectorAccessLimits limitsa && b instanceof VectorAccessLimits limitsb) {
+            return intersection(limitsa, limitsb);
+        } else if (a instanceof CoverageAccessLimits limitsa && b instanceof CoverageAccessLimits limitsb) {
+            return intersection(limitsa, limitsb);
+        } else if (a instanceof WMSAccessLimits limitsa && b instanceof WMSAccessLimits limitsb) {
+            return intersection(limitsa, limitsb);
         }
 
         throw new IllegalArgumentException(
@@ -75,15 +75,12 @@ public abstract class ResourceAccessManagerWrapper implements ResourceAccessMana
         if (b == null) return a;
 
         CatalogMode mode = intersection(a.getMode(), b.getMode());
-        List<PropertyName> readAttributes =
-                intersection(a.getReadAttributes(), b.getReadAttributes());
+        List<PropertyName> readAttributes = intersection(a.getReadAttributes(), b.getReadAttributes());
         Filter readFilter = intersection(a.getReadFilter(), b.getReadFilter());
-        List<PropertyName> writeAttributes =
-                intersection(a.getReadAttributes(), b.getReadAttributes());
+        List<PropertyName> writeAttributes = intersection(a.getReadAttributes(), b.getReadAttributes());
         Filter writeFilter = intersection(a.getWriteFilter(), b.getWriteFilter());
 
-        return new VectorAccessLimits(
-                mode, readAttributes, readFilter, writeAttributes, writeFilter);
+        return new VectorAccessLimits(mode, readAttributes, readFilter, writeAttributes, writeFilter);
     }
 
     protected CoverageAccessLimits intersection(CoverageAccessLimits a, CoverageAccessLimits b) {
@@ -99,19 +96,15 @@ public abstract class ResourceAccessManagerWrapper implements ResourceAccessMana
             else if (bFilter == null) rasterFilter = aFilter;
             else {
                 Geometry intersection = aFilter.intersection(bFilter);
-                if (intersection instanceof MultiPolygon) {
-                    rasterFilter = (MultiPolygon) intersection;
+                if (intersection instanceof MultiPolygon polygon1) {
+                    rasterFilter = polygon1;
                 } else {
                     final List<Polygon> accum = new ArrayList<>();
-                    intersection.apply(
-                            (GeometryComponentFilter)
-                                    geom -> {
-                                        if (geom instanceof Polygon) accum.add((Polygon) geom);
-                                    });
+                    intersection.apply((GeometryComponentFilter) geom -> {
+                        if (geom instanceof Polygon polygon) accum.add(polygon);
+                    });
 
-                    rasterFilter =
-                            geomFactory.createMultiPolygon(
-                                    accum.toArray(new Polygon[accum.size()]));
+                    rasterFilter = geomFactory.createMultiPolygon(accum.toArray(new Polygon[accum.size()]));
                 }
             }
         }
@@ -161,8 +154,7 @@ public abstract class ResourceAccessManagerWrapper implements ResourceAccessMana
         }
     }
 
-    protected GeneralParameterValue[] intersection(
-            GeneralParameterValue[] a, GeneralParameterValue[] b) {
+    protected GeneralParameterValue[] intersection(GeneralParameterValue[] a, GeneralParameterValue[] b) {
         if (a == null) return b;
         if (b == null) return a;
 
@@ -224,8 +216,7 @@ public abstract class ResourceAccessManagerWrapper implements ResourceAccessMana
     }
 
     @Override
-    public DataAccessLimits getAccessLimits(
-            Authentication user, LayerInfo layer, List<LayerGroupInfo> containers) {
+    public DataAccessLimits getAccessLimits(Authentication user, LayerInfo layer, List<LayerGroupInfo> containers) {
         return delegate.getAccessLimits(user, layer, containers);
     }
 

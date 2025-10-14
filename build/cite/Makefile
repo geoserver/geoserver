@@ -68,6 +68,12 @@ endif
 		echo "$(suite) has no special script to build the ETS docker image."; \
 	fi
 
+.PHONY: geoserver-version
+geoserver-version: ##	Print the version of the GeoServer on the current docker.
+	@echo Getting the full GeoServer/GeoWebCache/Geotools version.
+	@curl -u admin:geoserver "http://localhost:18090/geoserver/rest/about/version.xml"
+	@echo "" ## newline
+
 .PHONY: test
 test: ##	suite=<suite>				Run the Test Suite with teamengine and GeoServer on docker compose.
 ifndef suite
@@ -75,7 +81,7 @@ ifndef suite
 	@$(MAKE) help
 	@exit 1
 endif
-ifeq ($(suite), ogcapi-features10)
+ifneq (,$(filter $(suite),ogcapi-features10 ogcapi-tiles10 wms11 wms13 wmts10 wfs10 wfs20 wcs11 wcs20 geotiff11 gpkg12))
 	@$(MAKE) test-rest suite=$(suite)
 else
 	@$(MAKE) test-cli suite=$(suite)
@@ -136,28 +142,13 @@ endif
 		echo "Error: Using 'host.docker.internal' as the iut value is not supported on Linux. Please use '172.17.0.1'."; \
 		exit 1; \
 	fi
-ifeq ($(suite), ogcapi-features10)
+ifeq ($(filter $(suite), ogcapi-features10 ogcapi-tiles10),$(suite))
 	@echo "Running REST-based tests for suite: $(suite) with iut: $(iut)"
 	@$(MAKE) test-rest suite=$(suite) iut=$(iut)
 else
 	@echo "Running CLI-based tests for suite: $(suite)"
 	@$(MAKE) test-cli suite=$(suite)
 endif
-
-
-.PHONY: version
-version: ### suite=<suite>				Print the version of the GeoServer on the current docker.
-ifndef suite
-	@echo "Error: suite is not specified. Please specify the suite print the version for."
-	@$(MAKE) help
-	@exit 1
-endif
-	@echo Getting the GeoServer version.
-	@docker run -i --rm ogccite/geoserver:$(suite) bash -c \
-	  'cd /usr/local/tomcat/webapps/ && \
-	  if [ -d geoserver ]; then cat geoserver/META-INF/MANIFEST.MF; \
-	  elif [ -f geoserver.war ]; then jar -xf geoserver.war; cat META-INF/MANIFEST.MF; \
-	  fi'
 
 
 .PHONY: ogcapi-features10-localhost
@@ -188,7 +179,7 @@ else
 	@$(MAKE) start suite=$(suite)
 	@$(MAKE) run suite=$(suite)
 endif
-	@$(MAKE) validate-testng-results
+	@$(MAKE) validate-rest-results
 
 # Starts service containers
 # Usage: make start suite=<suite> [services=<services>]
@@ -231,18 +222,41 @@ endif
 # first prints out a human readable report of test failures, if xmlstarlet is installed,
 # and then a summary of passed and failed test counts. This last step will result in a
 # non zero exit code if there are test failures.
-.PHONY: validate-testng-results
-validate-testng-results: $(suite)
-	@./testng-results-report.sh logs/testng-results.xml
-	@./testng-results-validate.sh logs/testng-results.xml
-
+.PHONY: validate-rest-results
+validate-rest-results: $(suite)
+	@if [ -f "logs/testng-results.xml" ]; then \
+		./testng-results-report.sh logs/testng-results.xml; \
+		./testng-results-validate.sh logs/testng-results.xml; \
+    elif [ -f "logs/xml-results.xml" ]; then \
+		./xml-results-report.sh logs/xml-results.xml; \
+		./xml-results-validate.sh logs/xml-results.xml; \
+    else \
+        @result=0; \
+        for file in logs/*-results.xml; do \
+        if [ -f "$$file" ]; then \
+            case "$$file" in \
+            *testng-results.xml) \
+                ./testng-results-report.sh "$$file"; \
+                ./testng-results-validate.sh "$$file" || result=1; \
+                ;; \
+            *xml-results.xml) \
+                ./xml-results-report.sh "$$file"; \
+                ./xml-results-validate.sh "$$file" || result=1; \
+                ;; \
+            esac; \
+        fi; \
+        done; \
+        exit $$result; \
+    fi
 
 .PHONY: print-full-failures
 print-full-failures:
 	@if [ -f "logs/testng-results.xml" ]; then \
 		./testng-results-full-error-report.sh logs/testng-results.xml; \
+    elif [ -f "logs/xml-results.xml" ]; then \
+		./xml-results-full-error-report.sh logs/xml-results.xml; \
 	else \
-		echo "The file logs/testng-results.xml does not exist. Skipping the report generation."; \
+		echo "The files logs/testng-results.xml and logs/xml-results.xml do not exist. Skipping the report generation."; \
 	fi
 
 .PHONY: pull
@@ -253,9 +267,14 @@ pull: $(suite)
 
 .PHONY: build-war
 build-war:
-	@mvn -Pogcapi-features \
-	clean package -f ../../src/pom.xml \
-	-DskipTests  -B -ntp -U -T1C -fae -pl :gs-web-app -am
+	# a single mvn package -pl :gs-web-app -am should work but it seems it doesn't take into account test dependencies
+	# so it fails when the version number changes (e.g. 2.28-SNAPSHOT -> 3.0-SNAPSHOT)
+	@mvn clean install -f ../../src/pom.xml \
+	-Prelease,ogcapi-tiles,geopkg-output,app-schema \
+	-DskipTests  -B -ntp -U -T1C
+	@mvn package -f ../../src/pom.xml \
+	-Pogcapi-features,ogcapi-tiles,geopkg-output \
+	-DskipTests -B -ntp -T1C -pl :gs-web-app -am
 
 .PHONY: copy-war
 copy-war:

@@ -59,16 +59,14 @@ public class NetCDFOutTabPanelTest extends GeoServerWicketTestSupport {
     public void testComponent() {
         login();
         // Opening the selected page
-        tester.startPage(
-                new FormTestPage(
-                        new ComponentBuilder() {
-                            private static final long serialVersionUID = -6705646666953650890L;
+        tester.startPage(new FormTestPage(new ComponentBuilder() {
+            private static final long serialVersionUID = -6705646666953650890L;
 
-                            @Override
-                            public Component buildComponent(final String id) {
-                                return new NetCDFOutTabPanel(id, layerModel, resourceModel);
-                            }
-                        }));
+            @Override
+            public Component buildComponent(final String id) {
+                return new NetCDFOutTabPanel(id, layerModel, resourceModel);
+            }
+        }));
 
         tester.assertComponent("form:panel", NetCDFOutTabPanel.class);
 
@@ -77,66 +75,49 @@ public class NetCDFOutTabPanelTest extends GeoServerWicketTestSupport {
 
         // getting component
         NetCDFOutSettingsEditor editor =
-                (NetCDFOutSettingsEditor)
-                        tester.getComponentFromLastRenderedPage("form:panel:netcdfeditor");
+                (NetCDFOutSettingsEditor) tester.getComponentFromLastRenderedPage("form:panel:netcdfeditor");
 
         // Getting Model Object
         NetCDFLayerSettingsContainer container = editor.getModelObject();
         // Ensure the model is not null
         assertNotNull(container);
         // Ensure the container is equal to the one inside the MetadataMap
-        NetCDFLayerSettingsContainer actualContainer =
-                resourceModel
-                        .getObject()
-                        .getMetadata()
-                        .get(
-                                NetCDFSettingsContainer.NETCDFOUT_KEY,
-                                NetCDFLayerSettingsContainer.class);
+        NetCDFLayerSettingsContainer actualContainer = resourceModel
+                .getObject()
+                .getMetadata()
+                .get(NetCDFSettingsContainer.NETCDFOUT_KEY, NetCDFLayerSettingsContainer.class);
         assertEquals(container, actualContainer);
 
         // Ensure the Shuffle Component value is correct
         tester.assertComponent("form:panel:netcdfeditor:container:shuffle", CheckBox.class);
         CheckBox shuffle =
-                (CheckBox)
-                        tester.getComponentFromLastRenderedPage(
-                                "form:panel:netcdfeditor:container:shuffle");
+                (CheckBox) tester.getComponentFromLastRenderedPage("form:panel:netcdfeditor:container:shuffle");
         assertEquals(shuffle.getModelObject(), container.isShuffle());
 
         // Ensure the Copy Variable Attributes component value is correct
         tester.assertComponent("form:panel:netcdfeditor:container:copyAttributes", CheckBox.class);
         CheckBox copyAttributes =
-                (CheckBox)
-                        tester.getComponentFromLastRenderedPage(
-                                "form:panel:netcdfeditor:container:copyAttributes");
+                (CheckBox) tester.getComponentFromLastRenderedPage("form:panel:netcdfeditor:container:copyAttributes");
         assertEquals(copyAttributes.getModelObject(), container.isCopyAttributes());
 
         // Ensure the Copy Global Attributes component value is correct
-        tester.assertComponent(
-                "form:panel:netcdfeditor:container:copyGlobalAttributes", CheckBox.class);
-        CheckBox copyGlobalAttributes =
-                (CheckBox)
-                        tester.getComponentFromLastRenderedPage(
-                                "form:panel:netcdfeditor:container:copyGlobalAttributes");
+        tester.assertComponent("form:panel:netcdfeditor:container:copyGlobalAttributes", CheckBox.class);
+        CheckBox copyGlobalAttributes = (CheckBox)
+                tester.getComponentFromLastRenderedPage("form:panel:netcdfeditor:container:copyGlobalAttributes");
         assertEquals(copyGlobalAttributes.getModelObject(), container.isCopyGlobalAttributes());
 
         // Ensure the Compression Component value is correct
-        tester.assertComponent(
-                "form:panel:netcdfeditor:container:compressionLevel", TextField.class);
+        tester.assertComponent("form:panel:netcdfeditor:container:compressionLevel", TextField.class);
         @SuppressWarnings("unchecked")
-        TextField<Integer> compressionLevel =
-                (TextField<Integer>)
-                        tester.getComponentFromLastRenderedPage(
-                                "form:panel:netcdfeditor:container:compressionLevel");
+        TextField<Integer> compressionLevel = (TextField<Integer>)
+                tester.getComponentFromLastRenderedPage("form:panel:netcdfeditor:container:compressionLevel");
         assertEquals(compressionLevel.getModelObject().intValue(), container.getCompressionLevel());
 
         // Ensure the DataPacking Component value is correct
-        tester.assertComponent(
-                "form:panel:netcdfeditor:container:dataPacking", DropDownChoice.class);
+        tester.assertComponent("form:panel:netcdfeditor:container:dataPacking", DropDownChoice.class);
         @SuppressWarnings("unchecked")
-        DropDownChoice<DataPacking> dataPacking =
-                (DropDownChoice<DataPacking>)
-                        tester.getComponentFromLastRenderedPage(
-                                "form:panel:netcdfeditor:container:dataPacking");
+        DropDownChoice<DataPacking> dataPacking = (DropDownChoice<DataPacking>)
+                tester.getComponentFromLastRenderedPage("form:panel:netcdfeditor:container:dataPacking");
         assertEquals(dataPacking.getModelObject(), container.getDataPacking());
 
         FormTester formTester = tester.newFormTester("form");
@@ -149,34 +130,32 @@ public class NetCDFOutTabPanelTest extends GeoServerWicketTestSupport {
 
         // add a global attribute
         formTester = tester.newFormTester("form");
-        formTester.setValue(
-                "panel:netcdfeditor:container:newGlobalAttributeKey", "test-global-attribute");
-        formTester.setValue(
-                "panel:netcdfeditor:container:newGlobalAttributeValue", "Test Global Attribute");
+        formTester.setValue("panel:netcdfeditor:container:newGlobalAttributeKey", "test-global-attribute");
+        formTester.setValue("panel:netcdfeditor:container:newGlobalAttributeValue", "Test Global Attribute");
         tester.executeAjaxEvent("form:panel:netcdfeditor:container:addGlobalAttribute", "click");
         formTester.setValue("panel:netcdfeditor:container:compressionLevel", "0");
         formTester.submit();
         tester.assertNoErrorMessage();
         assertEquals(1, actualContainer.getGlobalAttributes().size());
         assertEquals(
-                "test-global-attribute", actualContainer.getGlobalAttributes().get(0).getKey());
+                "test-global-attribute",
+                actualContainer.getGlobalAttributes().get(0).getKey());
         assertEquals(
-                "Test Global Attribute", actualContainer.getGlobalAttributes().get(0).getValue());
+                "Test Global Attribute",
+                actualContainer.getGlobalAttributes().get(0).getValue());
 
         // add a variable attribute
         formTester = tester.newFormTester("form");
-        formTester.setValue(
-                "panel:netcdfeditor:container:newVariableAttributeKey", "test-variable-attribute");
-        formTester.setValue(
-                "panel:netcdfeditor:container:newVariableAttributeValue",
-                "Test Variable Attribute");
+        formTester.setValue("panel:netcdfeditor:container:newVariableAttributeKey", "test-variable-attribute");
+        formTester.setValue("panel:netcdfeditor:container:newVariableAttributeValue", "Test Variable Attribute");
         tester.executeAjaxEvent("form:panel:netcdfeditor:container:addVariableAttribute", "click");
         formTester.setValue("panel:netcdfeditor:container:compressionLevel", "0");
         formTester.submit();
         tester.assertNoErrorMessage();
         assertEquals(1, actualContainer.getVariableAttributes().size());
         assertEquals(
-                "test-variable-attribute", actualContainer.getVariableAttributes().get(0).getKey());
+                "test-variable-attribute",
+                actualContainer.getVariableAttributes().get(0).getKey());
         assertEquals(
                 "Test Variable Attribute",
                 actualContainer.getVariableAttributes().get(0).getValue());
@@ -184,8 +163,7 @@ public class NetCDFOutTabPanelTest extends GeoServerWicketTestSupport {
         // add an extra variable
         formTester = tester.newFormTester("form");
         formTester.setValue("panel:netcdfeditor:container:newExtraVariableSource", "reftime");
-        formTester.setValue(
-                "panel:netcdfeditor:container:newExtraVariableOutput", "forecast_reference_time");
+        formTester.setValue("panel:netcdfeditor:container:newExtraVariableOutput", "forecast_reference_time");
         formTester.setValue("panel:netcdfeditor:container:newExtraVariableDimensions", "time");
         tester.executeAjaxEvent("form:panel:netcdfeditor:container:addExtraVariable", "click");
         formTester.setValue("panel:netcdfeditor:container:compressionLevel", "0");
@@ -194,7 +172,8 @@ public class NetCDFOutTabPanelTest extends GeoServerWicketTestSupport {
         assertEquals(1, actualContainer.getExtraVariables().size());
         assertEquals("reftime", actualContainer.getExtraVariables().get(0).getSource());
         assertEquals(
-                "forecast_reference_time", actualContainer.getExtraVariables().get(0).getOutput());
+                "forecast_reference_time",
+                actualContainer.getExtraVariables().get(0).getOutput());
         assertEquals("time", actualContainer.getExtraVariables().get(0).getDimensions());
     }
 }

@@ -28,8 +28,7 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 
-public class DefaultProcessManager
-        implements ProcessManager, ExtensionPriority, ApplicationListener<ApplicationEvent> {
+public class DefaultProcessManager implements ProcessManager, ExtensionPriority, ApplicationListener<ApplicationEvent> {
 
     ConcurrentHashMap<String, Future<Map<String, Object>>> executions = new ConcurrentHashMap<>();
 
@@ -48,13 +47,12 @@ public class DefaultProcessManager
             // create a fixed size pool. If we allow a delta between core and max
             // the pool will create new threads only if the queue is full, but the linked queue
             // never is
-            asynchService =
-                    new ThreadPoolExecutor(
-                            maxAsynchronousProcesses,
-                            maxAsynchronousProcesses,
-                            0L,
-                            TimeUnit.MILLISECONDS,
-                            new LinkedBlockingQueue<>());
+            asynchService = new ThreadPoolExecutor(
+                    maxAsynchronousProcesses,
+                    maxAsynchronousProcesses,
+                    0L,
+                    TimeUnit.MILLISECONDS,
+                    new LinkedBlockingQueue<>());
         } else {
             // JDK 11 checks the relation between core and max pool size on each set,
             // need to lower core pool size before changing max
@@ -69,13 +67,12 @@ public class DefaultProcessManager
             // create a fixed size pool. If we allow a delta between core and max
             // the pool will create new threads only if the queue is full, but the linked queue
             // never is
-            synchService =
-                    new ThreadPoolExecutor(
-                            maxSynchronousProcesses,
-                            maxSynchronousProcesses,
-                            0L,
-                            TimeUnit.MILLISECONDS,
-                            new LinkedBlockingQueue<>());
+            synchService = new ThreadPoolExecutor(
+                    maxSynchronousProcesses,
+                    maxSynchronousProcesses,
+                    0L,
+                    TimeUnit.MILLISECONDS,
+                    new LinkedBlockingQueue<>());
         } else {
             // JDK 11 checks the relation between core and max pool size on each set,
             // need to lower core pool size before changing max
@@ -93,9 +90,7 @@ public class DefaultProcessManager
         }
     }
 
-    /**
-     * We can handle everything, other process managers will have to use a higher priority than us
-     */
+    /** We can handle everything, other process managers will have to use a higher priority than us */
     @Override
     public boolean canHandle(Name processName) {
         return true;
@@ -103,10 +98,7 @@ public class DefaultProcessManager
 
     @Override
     public Map<String, Object> submitChained(
-            String executionId,
-            Name processName,
-            Map<String, Object> inputs,
-            ProgressListener listener)
+            String executionId, Name processName, Map<String, Object> inputs, ProgressListener listener)
             throws ProcessException {
         // straight execution, no thread pooling, we're already running in the parent process thread
         ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName, true);
@@ -160,10 +152,10 @@ public class DefaultProcessManager
             if (e instanceof ExecutionException && e.getCause() instanceof Exception) {
                 e = (Exception) e.getCause();
             }
-            if (e instanceof ProcessException) {
-                throw (ProcessException) e;
-            } else if (e instanceof WPSException) {
-                throw (WPSException) e;
+            if (e instanceof ProcessException exception1) {
+                throw exception1;
+            } else if (e instanceof WPSException exception) {
+                throw exception;
             } else {
                 throw new ProcessException("Process execution " + executionId + " failed", e);
             }
@@ -188,7 +180,7 @@ public class DefaultProcessManager
         return ExtensionPriority.LOWEST;
     }
 
-    class ProcessCallable implements Callable<Map<String, Object>> {
+    static class ProcessCallable implements Callable<Map<String, Object>> {
 
         Name processName;
 
@@ -198,8 +190,7 @@ public class DefaultProcessManager
 
         ProgressListener listener;
 
-        public ProcessCallable(
-                Name processName, Map<String, Object> inputs, ProgressListener listener) {
+        public ProcessCallable(Name processName, Map<String, Object> inputs, ProgressListener listener) {
             this.processName = processName;
             this.inputs = inputs;
             this.listener = listener;

@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.admin;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -30,12 +31,15 @@ import org.geoserver.web.wicket.ParamResourceModel;
 /** Edits the Coverage configuration parameters */
 // TODO WICKET8 - Verify this page works OK
 public class CoverageAccessPage extends ServerAdminPage {
+    @Serial
     private static final long serialVersionUID = -5028265196560034398L;
+
     private IModel<?> geoServerModel;
     private IModel<CoverageAccessInfo> coverageModel;
 
     class PoolSizeValidator extends AbstractFormValidator {
 
+        @Serial
         private static final long serialVersionUID = -3435198454570572665L;
 
         @Override
@@ -61,7 +65,10 @@ public class CoverageAccessPage extends ServerAdminPage {
             if (maxPoolField != null && corePoolField != null) {
                 final String mp = maxPoolField.getValue();
                 final String cp = corePoolField.getValue();
-                if (!(mp == null || cp == null || mp.trim().isEmpty() || cp.trim().isEmpty())) {
+                if (!(mp == null
+                        || cp == null
+                        || mp.trim().isEmpty()
+                        || cp.trim().isEmpty())) {
                     try {
                         maxPool = Integer.valueOf(mp);
                     } catch (NumberFormatException nfe) {
@@ -93,13 +100,11 @@ public class CoverageAccessPage extends ServerAdminPage {
         coverageModel = getCoverageAccessModel();
 
         // form and submit
-        Form<CoverageAccessInfo> form =
-                new Form<>("form", new CompoundPropertyModel<>(coverageModel));
+        Form<CoverageAccessInfo> form = new Form<>("form", new CompoundPropertyModel<>(coverageModel));
         add(form);
         form.add(new PoolSizeValidator());
         // All the fields
-        NumberTextField<Integer> corePoolSize =
-                new NumberTextField<>("corePoolSize", Integer.class);
+        NumberTextField<Integer> corePoolSize = new NumberTextField<>("corePoolSize", Integer.class);
         corePoolSize.setMinimum(1);
         form.add(corePoolSize);
 
@@ -107,44 +112,40 @@ public class CoverageAccessPage extends ServerAdminPage {
         maxPoolSize.add(RangeValidator.minimum(1));
         form.add(maxPoolSize);
 
-        NumberTextField<Integer> keepAliveTime =
-                new NumberTextField<>("keepAliveTime", Integer.class);
+        NumberTextField<Integer> keepAliveTime = new NumberTextField<>("keepAliveTime", Integer.class);
         keepAliveTime.add(RangeValidator.minimum(1));
         form.add(keepAliveTime);
 
-        final DropDownChoice<QueueType> queueType =
-                new DropDownChoice<>(
-                        "queueType",
-                        Arrays.asList(CoverageAccessInfo.QueueType.values()),
-                        new QueueTypeRenderer());
+        final DropDownChoice<QueueType> queueType = new DropDownChoice<>(
+                "queueType", Arrays.asList(CoverageAccessInfo.QueueType.values()), new QueueTypeRenderer());
         form.add(queueType);
 
         TextField<String> imageIOCacheThreshold = new TextField<>("imageIOCacheThreshold");
         imageIOCacheThreshold.add(RangeValidator.minimum(0l));
         form.add(imageIOCacheThreshold);
 
-        Button submit =
-                new Button("submit") {
-                    private static final long serialVersionUID = 4149741045073254811L;
+        Button submit = new Button("submit") {
+            @Serial
+            private static final long serialVersionUID = 4149741045073254811L;
 
-                    @Override
-                    public void onSubmit() {
-                        save(true);
-                    }
-                };
+            @Override
+            public void onSubmit() {
+                save(true);
+            }
+        };
         form.add(submit);
 
         form.add(applyLink(form));
 
-        Button cancel =
-                new Button("cancel") {
-                    private static final long serialVersionUID = -57093747603810865L;
+        Button cancel = new Button("cancel") {
+            @Serial
+            private static final long serialVersionUID = -57093747603810865L;
 
-                    @Override
-                    public void onSubmit() {
-                        doReturn();
-                    }
-                };
+            @Override
+            public void onSubmit() {
+                doReturn();
+            }
+        };
         form.add(cancel);
     }
 
@@ -180,6 +181,7 @@ public class CoverageAccessPage extends ServerAdminPage {
     /** Display and ID mapping adapter for QueueType. */
     // TODO: consider use of EnumChoiceRenderer<QueueType>
     private class QueueTypeRenderer extends ChoiceRenderer<QueueType> {
+        @Serial
         private static final long serialVersionUID = -702911785346928083L;
 
         @Override

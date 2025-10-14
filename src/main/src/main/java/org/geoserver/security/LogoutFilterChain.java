@@ -7,6 +7,7 @@
 package org.geoserver.security;
 
 import java.io.IOException;
+import java.io.Serial;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,6 +21,7 @@ import org.geoserver.security.filter.GeoServerLogoutFilter;
 public class LogoutFilterChain extends ConstantFilterChain {
 
     /** */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public LogoutFilterChain(String... patterns) {
@@ -27,8 +29,7 @@ public class LogoutFilterChain extends ConstantFilterChain {
     }
 
     /**
-     * Convenience method for {@link GeoServerLogoutFilter#doLogout(HttpServletRequest,
-     * HttpServletResponse, String...)}
+     * Convenience method for {@link GeoServerLogoutFilter#doLogout(HttpServletRequest, HttpServletResponse, String...)}
      */
     public void doLogout(
             GeoServerSecurityManager manager,
@@ -37,11 +38,9 @@ public class LogoutFilterChain extends ConstantFilterChain {
             String... skipHandlerName)
             throws IOException, ServletException {
         GeoServerLogoutFilter filter =
-                (GeoServerLogoutFilter)
-                        manager.loadFilter(GeoServerSecurityFilterChain.FORM_LOGOUT_FILTER);
+                (GeoServerLogoutFilter) manager.loadFilter(GeoServerSecurityFilterChain.FORM_LOGOUT_FILTER);
         if (filter == null) {
-            LOGGER.warning(
-                    "Cannot find filter: " + GeoServerSecurityFilterChain.FORM_LOGOUT_FILTER);
+            LOGGER.warning("Cannot find filter: " + GeoServerSecurityFilterChain.FORM_LOGOUT_FILTER);
             return;
         }
         filter.doLogout(request, response, skipHandlerName);

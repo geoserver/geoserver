@@ -98,10 +98,7 @@ public abstract class AbstractJDBCResourceStoreTest {
 
         // Check that the database has a resources table with a root record
 
-        ResultSet rs =
-                support.getConnection()
-                        .createStatement()
-                        .executeQuery("SELECT * from resources where oid = 0");
+        ResultSet rs = support.getConnection().createStatement().executeQuery("SELECT * from resources where oid = 0");
 
         assertThat(rs.next(), describedAs("found root record", is(true)));
         assertThat(rs.getString("name"), equalTo(""));
@@ -136,9 +133,7 @@ public abstract class AbstractJDBCResourceStoreTest {
             // Check that the database has a resources table with a root record
 
             ResultSet rs =
-                    support.getConnection()
-                            .createStatement()
-                            .executeQuery("SELECT * from resources where oid = 0");
+                    support.getConnection().createStatement().executeQuery("SELECT * from resources where oid = 0");
 
             assertThat(rs.next(), describedAs("found root record", is(true)));
             assertThat(rs.getString("name"), equalTo(""));
@@ -150,11 +145,9 @@ public abstract class AbstractJDBCResourceStoreTest {
         {
             // Check that the database has one of the child nodes
 
-            ResultSet rs =
-                    support.getConnection()
-                            .createStatement()
-                            .executeQuery(
-                                    "SELECT * from resources where parent = 0 and name='FileA'");
+            ResultSet rs = support.getConnection()
+                    .createStatement()
+                    .executeQuery("SELECT * from resources where parent = 0 and name='FileA'");
 
             assertThat(rs.next(), describedAs("found child FileA", is(true)));
             assertThat(rs.getString("name"), equalTo("FileA"));
@@ -167,9 +160,7 @@ public abstract class AbstractJDBCResourceStoreTest {
 
     @Test
     public void testInitializeDatabaseWithIrrelevantTable() throws Exception {
-        support.getConnection()
-                .createStatement()
-                .execute("CREATE TABLE foo (oid INTEGER PRIMARY KEY);");
+        support.getConnection().createStatement().execute("CREATE TABLE foo (oid INTEGER PRIMARY KEY);");
 
         JDBCResourceStoreProperties config = getConfig(true, true);
 
@@ -179,9 +170,7 @@ public abstract class AbstractJDBCResourceStoreTest {
             // Check that the database has a resources table with a root record
 
             ResultSet rs =
-                    support.getConnection()
-                            .createStatement()
-                            .executeQuery("SELECT * from resources where oid = 0");
+                    support.getConnection().createStatement().executeQuery("SELECT * from resources where oid = 0");
 
             assertThat(rs.next(), describedAs("found root record", is(true)));
             assertThat(rs.getString("name"), equalTo(""));
@@ -272,9 +261,7 @@ public abstract class AbstractJDBCResourceStoreTest {
         InputStream in = r.in();
         try {
             byte[] result = new byte[expected.length];
-            assertThat(
-                    in.read(result),
-                    describedAs("file contents same length", equalTo(expected.length)));
+            assertThat(in.read(result), describedAs("file contents same length", equalTo(expected.length)));
             assertThat(result, equalTo(expected));
             assertThat(in.read(), describedAs("stream is empty", equalTo(-1)));
         } finally {
@@ -379,8 +366,7 @@ public abstract class AbstractJDBCResourceStoreTest {
     public void fileEvents() throws Exception {
         standardData();
 
-        ResourceStore store =
-                new JDBCResourceStore(support.getDataSource(), getConfig(false, false));
+        ResourceStore store = new JDBCResourceStore(support.getDataSource(), getConfig(false, false));
 
         TestResourceListener listener = new TestResourceListener();
 
@@ -434,8 +420,7 @@ public abstract class AbstractJDBCResourceStoreTest {
     public void directoryEvents() throws Exception {
         standardData();
 
-        ResourceStore store =
-                new JDBCResourceStore(support.getDataSource(), getConfig(false, false));
+        ResourceStore store = new JDBCResourceStore(support.getDataSource(), getConfig(false, false));
         Resource fileA = store.get("FileA");
         Resource fileD = store.get("DirC/FileD");
 
@@ -488,21 +473,19 @@ public abstract class AbstractJDBCResourceStoreTest {
         store.get(Paths.BASE).removeListener(listener);
     }
 
-    @Rule public TemporaryFolder cache = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder cache = new TemporaryFolder();
 
     @Test
     public void testParsedStyle() throws Exception {
-        ClassPathXmlApplicationContext ctx =
-                new ClassPathXmlApplicationContext(
-                        "GeoServerDataDirectoryTest-applicationContext.xml",
-                        GeoServerDataDirectoryTest.class);
+        ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(
+                "GeoServerDataDirectoryTest-applicationContext.xml", GeoServerDataDirectoryTest.class);
         ctx.refresh();
 
         support.initialize();
         cache.create();
 
-        JDBCResourceStore store =
-                new JDBCResourceStore(support.getDataSource(), getConfig(false, false));
+        JDBCResourceStore store = new JDBCResourceStore(support.getDataSource(), getConfig(false, false));
         store.setCache(new SimpleResourceCache(cache.getRoot()));
 
         GeoServerResourceLoader loader = new GeoServerResourceLoader(store);
@@ -530,7 +513,8 @@ public abstract class AbstractJDBCResourceStoreTest {
 
         Style s = dataDir.parsedStyle(si);
         // Verify style is actually parsed correctly
-        Symbolizer symbolizer = s.featureTypeStyles().get(0).rules().get(0).symbolizers().get(0);
+        Symbolizer symbolizer =
+                s.featureTypeStyles().get(0).rules().get(0).symbolizers().get(0);
         assertTrue(symbolizer instanceof PointSymbolizer);
         GraphicalSymbol graphic =
                 ((PointSymbolizer) symbolizer).getGraphic().graphicalSymbols().get(0);

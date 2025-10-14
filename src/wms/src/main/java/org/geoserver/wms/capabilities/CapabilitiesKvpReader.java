@@ -14,12 +14,11 @@ import org.geoserver.wms.WMS;
 import org.geotools.util.Version;
 
 /**
- * This utility reads in a GetCapabilities KVP request and turns it into an appropriate internal
- * CapabilitiesRequest object, upon request.
+ * This utility reads in a GetCapabilities KVP request and turns it into an appropriate internal CapabilitiesRequest
+ * object, upon request.
  *
  * @author Rob Hranac, TOPP
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class CapabilitiesKvpReader extends KvpRequestReader {
 
@@ -36,6 +35,7 @@ public class CapabilitiesKvpReader extends KvpRequestReader {
         GetCapabilitiesRequest request = (GetCapabilitiesRequest) super.read(req, kvp, rawKvp);
         request.setRawKvp(rawKvp);
 
+        // WMS 1.1 spec: in the case that VERSION and WMTVER are both given, VERSION takes precedence
         String version = request.getVersion();
         if (null == version || version.isEmpty()) {
             version = (String) rawKvp.get("WMTVER");
@@ -65,8 +65,7 @@ public class CapabilitiesKvpReader extends KvpRequestReader {
             request.setRootLayerEnabled(Boolean.valueOf((String) rawKvp.get("ROOTLAYER")));
         }
         String[] acceptLanguages =
-                RequestUtils.getLanguageValue(
-                        rawKvp, InternationalContentHelper.ACCEPTLANGUAGES_PARAM);
+                RequestUtils.getLanguageValue(rawKvp, InternationalContentHelper.ACCEPTLANGUAGES_PARAM);
         if (acceptLanguages != null) request.setAcceptLanguages(acceptLanguages);
         return request;
     }

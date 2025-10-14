@@ -7,6 +7,7 @@ package org.geoserver.web.data.store.panel;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
@@ -19,13 +20,13 @@ import org.geoserver.platform.resource.Paths;
 import org.geotools.util.logging.Logging;
 
 /**
- * Makes sure the file path for files do start with file:// otherwise stuff like /home/user/file.shp
- * won't be recognized as valid. Also, if a path is inside the data directory it will be turned into
- * a relative path
+ * Makes sure the file path for files do start with file:// otherwise stuff like /home/user/file.shp won't be recognized
+ * as valid. Also, if a path is inside the data directory it will be turned into a relative path
  *
  * @author Andrea Aime - GeoSolutions
  */
 public class FileModel implements IModel<String> {
+    @Serial
     private static final long serialVersionUID = 3911203737278340528L;
 
     static final Logger LOGGER = Logging.getLogger(FileModel.class);
@@ -45,8 +46,7 @@ public class FileModel implements IModel<String> {
     @Override
     public String getObject() {
         Object obj = delegate.getObject();
-        if (obj instanceof URL) {
-            URL url = (URL) obj;
+        if (obj instanceof URL url) {
             return url.toExternalForm();
         }
         return (String) obj;

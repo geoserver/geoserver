@@ -8,7 +8,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  MAVEN_OPTS: -Daether.connector.basic.threads=8 -Daether.metadataResolver.threads=8 -Daether.syncContext.named.time=120 -Daether.syncContext.named.factory=file-lock -Daether.syncContext.named.nameMapper=file-gav -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3 -Xmx756m -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dspotless.apply.skip=true
+  MAVEN_OPTS: -Daether.connector.basic.threads=8 -Daether.metadataResolver.threads=8 -Daether.syncContext.named.time=120 -Daether.syncContext.named.factory=file-lock -Daether.syncContext.named.nameMapper=file-gav -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3 -Xmx2g -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dspotless.apply.skip=true
 
 jobs:
   build:
@@ -17,7 +17,7 @@ jobs:
       matrix:
         include:
           - os: ubuntu-22.04
-            jdk: 11
+            jdk: 17
             dist: 'temurin'
     steps:
     - uses: actions/checkout@v4
@@ -40,13 +40,68 @@ jobs:
     - name: Build GeoServer modules and extensions without tests
       run: |
         mvn --version
-        mvn -B -ntp -U -T3 -DskipTests -Prelease -f src/pom.xml install
+        mvn -B -ntp -U -T1C -DskipTests -Prelease -f src/pom.xml install
     - name: Package GeoServer modules and extensions
       run: |
         mvn -B -ntp -nsu -N -f src/pom.xml assembly:single
     - name: Build and package community modules (without tests)
       run: |
-        mvn -B -ntp -nsu -U -T3 -DskipTests -PcommunityRelease,assembly -f src/community/pom.xml install
+        mvn -B -ntp -nsu -U -T1C -DskipTests -PcommunityRelease,assembly -f src/community/pom.xml install
+    - name: Test binary package startup (Jetty 10.x smoke test)
+      run: |
+        # Extract version from Maven project
+        VERSION=$(mvn -f src/pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)
+        echo "Testing GeoServer version: $VERSION"
+
+        # Test endpoint URL
+        TEST_URL="http://localhost:8080/geoserver/wms?request=GetCapabilities&version=1.3.0"
+
+        # Create test directory and extract binary package
+        mkdir -p /tmp/geoserver-test
+        cd /tmp/geoserver-test
+        cp $GITHUB_WORKSPACE/src/target/release/geoserver-${VERSION}-bin.zip .
+        unzip -q geoserver-${VERSION}-bin.zip
+
+        # Start GeoServer in background
+        echo "Starting GeoServer..."
+        bin/startup.sh &
+        GEOSERVER_PID=$!
+
+        # Wait for startup (up to 120 seconds)
+        echo "Waiting for GeoServer to start..."
+        for i in {1..60}; do
+          if curl -f -s -o /dev/null "$TEST_URL"; then
+            echo "✅ GeoServer started successfully after $i attempts"
+            curl -I "$TEST_URL"
+            break
+          fi
+          if [ $i -eq 60 ]; then
+            echo "❌ GeoServer failed to start within 120 seconds"
+            # Show startup logs for debugging
+            echo "=== Startup logs ==="
+            if [ -f logs/geoserver.log ]; then cat logs/geoserver.log; fi
+            kill $GEOSERVER_PID || true
+            exit 1
+          fi
+          echo "Attempt $i: GeoServer not ready yet, waiting 2 seconds..."
+          sleep 2
+        done
+
+        # Verify WMS GetCapabilities returns 200 OK
+        RESPONSE=$(curl -s -w "%{http_code}" -o /dev/null "$TEST_URL")
+        if [ "$RESPONSE" = "200" ]; then
+          echo "✅ WMS GetCapabilities returned HTTP 200 - Binary package test PASSED"
+        else
+          echo "❌ WMS GetCapabilities returned HTTP $RESPONSE - Binary package test FAILED"
+          kill $GEOSERVER_PID || true
+          exit 1
+        fi
+
+        # Clean shutdown
+        kill $GEOSERVER_PID || true
+        sleep 5
+        echo "🎉 Binary package smoke test completed successfully"
     - name: Remove SNAPSHOT jars from repository
+      if: always()
       run: |
         find ~/.m2/repository -name "*SNAPSHOT*" -type d | xargs rm -rf {}

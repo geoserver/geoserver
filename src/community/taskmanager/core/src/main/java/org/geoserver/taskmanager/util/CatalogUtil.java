@@ -25,7 +25,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -70,9 +69,11 @@ public class CatalogUtil {
         CoverageView.COVERAGE_VIEW // coverage view
     };
 
-    @Autowired protected GeoServerDataDirectory geoServerDataDirectory;
+    @Autowired
+    protected GeoServerDataDirectory geoServerDataDirectory;
 
-    @Autowired protected XStreamPersisterFactory persisterFactory;
+    @Autowired
+    protected XStreamPersisterFactory persisterFactory;
 
     private CatalogUtil() {}
 
@@ -98,8 +99,7 @@ public class CatalogUtil {
 
     public GSResourceEncoder syncMetadata(ResourceInfo resource, String name) {
         final GSResourceEncoder re;
-        if (resource instanceof CoverageInfo) {
-            CoverageInfo coverage = (CoverageInfo) resource;
+        if (resource instanceof CoverageInfo coverage) {
             final GSCoverageEncoder coverageEncoder = new GSCoverageEncoder();
             for (String format : coverage.getSupportedFormats()) {
                 coverageEncoder.addSupportedFormats(format);
@@ -135,18 +135,17 @@ public class CatalogUtil {
                     re.addMetadataString(entry.getKey(), (String) entry.getValue());
                 } else if (entry.getValue() != null) {
                     JDomWriter writer = new JDomWriter();
-                    persisterFactory
-                            .createXMLPersister()
-                            .getXStream()
-                            .marshal(entry.getValue(), writer);
-                    re.addMetadata(entry.getKey(), (Element) writer.getTopLevelNodes().get(0));
+                    persisterFactory.createXMLPersister().getXStream().marshal(entry.getValue(), writer);
+                    re.addMetadata(
+                            entry.getKey(), (Element) writer.getTopLevelNodes().get(0));
                 }
             }
         }
         re.setProjectionPolicy(
                 resource.getProjectionPolicy() == null
                         ? ProjectionPolicy.NONE
-                        : ProjectionPolicy.valueOf(resource.getProjectionPolicy().toString()));
+                        : ProjectionPolicy.valueOf(
+                                resource.getProjectionPolicy().toString()));
         if (resource.getNativeBoundingBox() != null) {
             re.setNativeBoundingBox(
                     resource.getNativeBoundingBox().getMinX(),
@@ -165,8 +164,7 @@ public class CatalogUtil {
         }
 
         // dimensions, must happen after setName or strange things happen (gs-man bug)
-        if (resource instanceof CoverageInfo) {
-            CoverageInfo coverage = (CoverageInfo) resource;
+        if (resource instanceof CoverageInfo coverage) {
             for (CoverageDimensionInfo di : coverage.getDimensions()) {
                 ((GSCoverageEncoder) re)
                         .addCoverageDimensionInfo(
@@ -207,40 +205,37 @@ public class CatalogUtil {
             Style parsedStyle = geoServerDataDirectory.parsedStyle(style);
             Resource resStyle = geoServerDataDirectory.style(style);
             Set<String> pictures = new HashSet<String>();
-            parsedStyle.accept(
-                    new AbstractStyleVisitor() {
-                        @Override
-                        public void visit(ExternalGraphic exgr) {
-                            if (exgr.getOnlineResource() == null) {
-                                return;
-                            }
+            parsedStyle.accept(new AbstractStyleVisitor() {
+                @Override
+                public void visit(ExternalGraphic exgr) {
+                    if (exgr.getOnlineResource() == null) {
+                        return;
+                    }
 
-                            URI uri = exgr.getOnlineResource().getLinkage();
-                            if (uri == null) {
-                                return;
-                            }
+                    URI uri = exgr.getOnlineResource().getLinkage();
+                    if (uri == null) {
+                        return;
+                    }
 
-                            String picturePath = null;
-                            try {
-                                picturePath = uriToPath(uri, resStyle);
-                                if (picturePath == null) {
-                                    LOGGER.info(
-                                            "While synchronizing style "
-                                                    + style.getName()
-                                                    + ", ignoring external image URI: "
-                                                    + uri);
-                                } else {
-                                    pictures.add(picturePath);
-                                }
-                            } catch (IllegalArgumentException | MalformedURLException e) {
-                                LOGGER.log(
-                                        Level.WARNING,
-                                        "Error attemping to process SLD resource for style "
-                                                + style.getName(),
-                                        e);
-                            }
+                    String picturePath = null;
+                    try {
+                        picturePath = uriToPath(uri, resStyle);
+                        if (picturePath == null) {
+                            LOGGER.info("While synchronizing style "
+                                    + style.getName()
+                                    + ", ignoring external image URI: "
+                                    + uri);
+                        } else {
+                            pictures.add(picturePath);
                         }
-                    });
+                    } catch (IllegalArgumentException | MalformedURLException e) {
+                        LOGGER.log(
+                                Level.WARNING,
+                                "Error attemping to process SLD resource for style " + style.getName(),
+                                e);
+                    }
+                }
+            });
             if (style.getLegend() != null) {
                 String legendGraphic = style.getLegend().getOnlineResource();
                 try {
@@ -254,7 +249,7 @@ public class CatalogUtil {
             // subdirectories for pictures
             Set<String> dirs = new HashSet<>();
             for (String picturePath : pictures) {
-                Path parent = Paths.get(picturePath).getParent();
+                Path parent = Path.of(picturePath).getParent();
                 if (parent != null) {
                     dirs.add(parent.toString());
                 }
@@ -276,11 +271,10 @@ public class CatalogUtil {
                 for (String picturePath : pictures) {
                     Resource resPicture = resStyle.parent().get(picturePath);
                     if (!Resources.exists(resPicture)) {
-                        LOGGER.warning(
-                                "While synchronizing style "
-                                        + style.getName()
-                                        + ", couldn't find picture : "
-                                        + picturePath);
+                        LOGGER.warning("While synchronizing style "
+                                + style.getName()
+                                + ", couldn't find picture : "
+                                + picturePath);
                     } else {
                         zipEntry = new ZipEntry(picturePath);
                         out.putNextEntry(zipEntry);
@@ -301,8 +295,8 @@ public class CatalogUtil {
         if (uri.getScheme() != null && !uri.getScheme().equals("file")) {
             return null;
         } else {
-            Path styleDirPath = Paths.get(styleRes.parent().dir().getAbsolutePath());
-            Path imagePath = Paths.get(uri);
+            Path styleDirPath = Path.of(styleRes.parent().dir().getAbsolutePath());
+            Path imagePath = Path.of(uri);
             Path result = styleDirPath.relativize(imagePath).normalize();
             if (result.startsWith("..")) {
                 return null;
@@ -312,8 +306,7 @@ public class CatalogUtil {
         }
     }
 
-    public void metadataCustomToNative(GeoServerRESTManager restMan, String layerName)
-            throws TaskException {
+    public void metadataCustomToNative(GeoServerRESTManager restMan, String layerName) throws TaskException {
         GeoServerRESTCustomService metadataService = restMan.getCustomService("rest/metadata");
         if (metadataService.get("customToNative", "layerName", layerName) == null) {
             throw new TaskException("Failed to call customToNative on target geoserver.");

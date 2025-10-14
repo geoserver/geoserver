@@ -175,8 +175,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
         assertEquals(null, request.getParentIdentifier());
         final Query query = request.getQuery();
         assertNotNull(query);
-        final String expectedCql =
-                "BBOX(, 170.0,-90.0,180.0,90.0) OR BBOX(, -180.0,-90.0,-170.0,90.0)";
+        final String expectedCql = "BBOX(, 170.0,-90.0,180.0,90.0) OR BBOX(, -180.0,-90.0,-170.0,90.0)";
         assertEquals(expectedCql, ECQL.toCQL(query.getFilter()));
     }
 
@@ -282,8 +281,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
 
     @Test
     public void testDistanceFromPoint() throws Exception {
-        Map<String, String> map =
-                toMap(GEO_LON.key, "12", GEO_LAT.key, "45", GEO_RADIUS.key, "20000");
+        Map<String, String> map = toMap(GEO_LON.key, "12", GEO_LAT.key, "45", GEO_RADIUS.key, "20000");
         SearchRequest request = parseSearchRequest(map);
         final Query query = request.getQuery();
         assertNotNull(query);
@@ -294,8 +292,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
     @Test
     public void testNegativeDistanceFromPoint() throws Exception {
         try {
-            Map<String, String> map =
-                    toMap(GEO_LON.key, "12", GEO_LAT.key, "45", GEO_RADIUS.key, "-10");
+            Map<String, String> map = toMap(GEO_LON.key, "12", GEO_LAT.key, "45", GEO_RADIUS.key, "-10");
             parseSearchRequest(map);
             fail("Should have failed");
         } catch (OWS20Exception e) {
@@ -356,19 +353,13 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
         Map<String, String> map;
         // intersection behavior, the features must overlap the provided range
         map = toMap(TIME_START.key, "2010-09-01T00:00:00Z");
-        assertEquals(
-                ECQL.toFilter("timeEnd >= 2010-09-01T00:00:00Z OR timeEnd IS NULL"),
-                parseAndGetFilter(map));
+        assertEquals(ECQL.toFilter("timeEnd >= 2010-09-01T00:00:00Z OR timeEnd IS NULL"), parseAndGetFilter(map));
         // intersection behavior again, explicit
         map = toMap(TIME_START.key, "2010-09-01T00:00:00Z", TIME_RELATION.key, "intersects");
-        assertEquals(
-                ECQL.toFilter("timeEnd >= 2010-09-01T00:00:00Z OR timeEnd IS NULL"),
-                parseAndGetFilter(map));
+        assertEquals(ECQL.toFilter("timeEnd >= 2010-09-01T00:00:00Z OR timeEnd IS NULL"), parseAndGetFilter(map));
         // contains (the feature must contain the requested interval)
         map = toMap(TIME_START.key, "2010-09-01T00:00:00Z", TIME_RELATION.key, "contains");
-        assertEquals(
-                ECQL.toFilter("timeStart <= 2010-09-01T00:00:00Z and timeEnd IS NULL"),
-                parseAndGetFilter(map));
+        assertEquals(ECQL.toFilter("timeStart <= 2010-09-01T00:00:00Z and timeEnd IS NULL"), parseAndGetFilter(map));
         // during (the features are inside the requested interval)
         map = toMap(TIME_START.key, "2010-09-01T00:00:00Z", TIME_RELATION.key, "during");
         assertEquals(ECQL.toFilter("timeStart >= 2010-09-01T00:00:00Z"), parseAndGetFilter(map));
@@ -377,9 +368,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
         assertEquals(ECQL.toFilter("timeEnd < 2010-09-01T00:00:00Z"), parseAndGetFilter(map));
         // equal (the features have the same interval of validity
         map = toMap(TIME_START.key, "2010-09-01T00:00:00Z", TIME_RELATION.key, "equals");
-        assertEquals(
-                ECQL.toFilter("timeStart = 2010-09-01T00:00:00Z and timeEnd IS NULL"),
-                parseAndGetFilter(map));
+        assertEquals(ECQL.toFilter("timeStart = 2010-09-01T00:00:00Z and timeEnd IS NULL"), parseAndGetFilter(map));
     }
 
     @Test
@@ -387,19 +376,13 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
         Map<String, String> map;
         // intersection behavior, the features must overlap the provided range
         map = toMap(TIME_END.key, "2010-09-01T00:00:00Z");
-        assertEquals(
-                ECQL.toFilter("timeStart <= 2010-09-01T00:00:00Z OR timeStart IS NULL"),
-                parseAndGetFilter(map));
+        assertEquals(ECQL.toFilter("timeStart <= 2010-09-01T00:00:00Z OR timeStart IS NULL"), parseAndGetFilter(map));
         // intersection behavior again, explicit
         map = toMap(TIME_END.key, "2010-09-01T00:00:00Z", TIME_RELATION.key, "intersects");
-        assertEquals(
-                ECQL.toFilter("timeStart <= 2010-09-01T00:00:00Z OR timeStart IS NULL"),
-                parseAndGetFilter(map));
+        assertEquals(ECQL.toFilter("timeStart <= 2010-09-01T00:00:00Z OR timeStart IS NULL"), parseAndGetFilter(map));
         // contains (the feature must contain the requested interval)
         map = toMap(TIME_END.key, "2010-09-01T00:00:00Z", TIME_RELATION.key, "contains");
-        assertEquals(
-                ECQL.toFilter("timeEnd >= 2010-09-01T00:00:00Z and timeStart IS NULL"),
-                parseAndGetFilter(map));
+        assertEquals(ECQL.toFilter("timeEnd >= 2010-09-01T00:00:00Z and timeStart IS NULL"), parseAndGetFilter(map));
         // during (the features are inside the requested interval)
         map = toMap(TIME_END.key, "2010-09-01T00:00:00Z", TIME_RELATION.key, "during");
         assertEquals(ECQL.toFilter("timeEnd <= 2010-09-01T00:00:00Z"), parseAndGetFilter(map));
@@ -408,9 +391,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
         assertEquals(ECQL.toFilter("timeStart > 2010-09-01T00:00:00Z"), parseAndGetFilter(map));
         // equal (the features have the same interval of validity
         map = toMap(TIME_END.key, "2010-09-01T00:00:00Z", TIME_RELATION.key, "equals");
-        assertEquals(
-                ECQL.toFilter("timeEnd = 2010-09-01T00:00:00Z and timeStart IS NULL"),
-                parseAndGetFilter(map));
+        assertEquals(ECQL.toFilter("timeEnd = 2010-09-01T00:00:00Z and timeStart IS NULL"), parseAndGetFilter(map));
     }
 
     @Test
@@ -423,68 +404,60 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
                         "(timeStart <= 2010-09-01T00:00:00Z or timeStart IS NULL) AND (timeEnd >= 2010-08-01T00:00:00Z or timeEnd IS NULL)"),
                 parseAndGetFilter(map));
         // intersection behavior again, explicit
-        map =
-                toMap(
-                        TIME_START.key,
-                        "2010-08-01T00:00:00Z",
-                        TIME_END.key,
-                        "2010-09-01T00:00:00Z",
-                        TIME_RELATION.key,
-                        "intersects");
+        map = toMap(
+                TIME_START.key,
+                "2010-08-01T00:00:00Z",
+                TIME_END.key,
+                "2010-09-01T00:00:00Z",
+                TIME_RELATION.key,
+                "intersects");
         assertEquals(
                 ECQL.toFilter(
                         "(timeStart <= 2010-09-01T00:00:00Z or timeStart IS NULL) AND (timeEnd >= 2010-08-01T00:00:00Z or timeEnd IS NULL)"),
                 parseAndGetFilter(map));
         // contains (the feature must contain the requested interval)
-        map =
-                toMap(
-                        TIME_START.key,
-                        "2010-08-01T00:00:00Z",
-                        TIME_END.key,
-                        "2010-09-01T00:00:00Z",
-                        TIME_RELATION.key,
-                        "contains");
+        map = toMap(
+                TIME_START.key,
+                "2010-08-01T00:00:00Z",
+                TIME_END.key,
+                "2010-09-01T00:00:00Z",
+                TIME_RELATION.key,
+                "contains");
         assertEquals(
-                ECQL.toFilter(
-                        "timeStart <= 2010-08-01T00:00:00Z and timeEnd >= 2010-09-01T00:00:00Z"),
+                ECQL.toFilter("timeStart <= 2010-08-01T00:00:00Z and timeEnd >= 2010-09-01T00:00:00Z"),
                 parseAndGetFilter(map));
         // during (the features are inside the requested interval)
-        map =
-                toMap(
-                        TIME_START.key,
-                        "2010-08-01T00:00:00Z",
-                        TIME_END.key,
-                        "2010-09-01T00:00:00Z",
-                        TIME_RELATION.key,
-                        "during");
+        map = toMap(
+                TIME_START.key,
+                "2010-08-01T00:00:00Z",
+                TIME_END.key,
+                "2010-09-01T00:00:00Z",
+                TIME_RELATION.key,
+                "during");
         assertEquals(
-                ECQL.toFilter(
-                        "timeStart >= 2010-08-01T00:00:00Z and timeEnd <= 2010-09-01T00:00:00Z"),
+                ECQL.toFilter("timeStart >= 2010-08-01T00:00:00Z and timeEnd <= 2010-09-01T00:00:00Z"),
                 parseAndGetFilter(map));
         // disjoint (the features are outside the requested interval)
-        map =
-                toMap(
-                        TIME_START.key,
-                        "2010-08-01T00:00:00Z",
-                        TIME_END.key,
-                        "2010-09-01T00:00:00Z",
-                        TIME_RELATION.key,
-                        "disjoint");
+        map = toMap(
+                TIME_START.key,
+                "2010-08-01T00:00:00Z",
+                TIME_END.key,
+                "2010-09-01T00:00:00Z",
+                TIME_RELATION.key,
+                "disjoint");
         assertEquals(
                 ECQL.toFilter("timeStart > 2010-09-01T00:00:00Z or timeEnd < 2010-08-01T00:00:00Z"),
                 parseAndGetFilter(map));
         // equal (the features have the same interval of validity
-        map =
-                toMap(
-                        TIME_START.key,
-                        "2010-08-01T00:00:00Z",
-                        TIME_END.key,
-                        "2010-09-01T00:00:00Z",
-                        TIME_RELATION.key,
-                        "equals");
+        map = toMap(
+                TIME_START.key,
+                "2010-08-01T00:00:00Z",
+                TIME_END.key,
+                "2010-09-01T00:00:00Z",
+                TIME_RELATION.key,
+                "equals");
         assertEquals(
-                ECQL.toFilter(
-                        "timeStart = 2010-08-01T00:00:00Z and timeEnd = 2010-09-01T00:00:00Z"),
+                ECQL.toFilter("timeStart = 2010-08-01T00:00:00Z and timeEnd = 2010-09-01T00:00:00Z"),
                 parseAndGetFilter(map));
     }
 
@@ -493,9 +466,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
         Map<String, String> map;
         // intersection behavior, the features must overlap the provided range
         map = toMap(TIME_START.key, "2010-09-01");
-        assertEquals(
-                ECQL.toFilter("timeEnd >= 2010-09-01T00:00:00Z OR timeEnd IS NULL"),
-                parseAndGetFilter(map));
+        assertEquals(ECQL.toFilter("timeEnd >= 2010-09-01T00:00:00Z OR timeEnd IS NULL"), parseAndGetFilter(map));
     }
 
     @Test
@@ -511,8 +482,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
         Map<String, String> map = toMap("sensorType", GS_PRODUCT.getName());
         Filter filter = parseAndGetFilter(map);
         assertThat(filter, instanceOf(PropertyIsEqualTo.class));
-        assertBinaryFilter(
-                filter, OpenSearchAccess.EO_NAMESPACE, "sensorType", GS_PRODUCT.getName());
+        assertBinaryFilter(filter, OpenSearchAccess.EO_NAMESPACE, "sensorType", GS_PRODUCT.getName());
     }
 
     private void assertBinaryFilter(
@@ -536,8 +506,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
         assertEquals(3, children.size());
         assertBinaryFilter(children.get(0), OpenSearchAccess.EO_NAMESPACE, "sensorType", "OPTICAL");
         assertBinaryFilter(children.get(1), OpenSearchAccess.EO_NAMESPACE, "sensorType", "RADAR");
-        assertBinaryFilter(
-                children.get(2), OpenSearchAccess.EO_NAMESPACE, "sensorType", "ALTIMETRIC");
+        assertBinaryFilter(children.get(2), OpenSearchAccess.EO_NAMESPACE, "sensorType", "ALTIMETRIC");
     }
 
     @Test
@@ -558,18 +527,15 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
     }
 
     /**
-     * Checks the filter is an And between a parentId check and another filter, extracts the other
-     * filter
+     * Checks the filter is an And between a parentId check and another filter, extracts the other filter
      *
      * @param filter
      * @param parentId
      * @return
      */
     private Filter getResidualFilter(Filter filter, String parentId) {
-        PropertyIsEqualTo expectedParentFilter =
-                FF.equals(FF.property(PARENT_ID_KEY), FF.literal(parentId));
-        if (filter instanceof And) {
-            And and = (And) filter;
+        PropertyIsEqualTo expectedParentFilter = FF.equals(FF.property(PARENT_ID_KEY), FF.literal(parentId));
+        if (filter instanceof And and) {
             List<Filter> children = and.getChildren();
             assertEquals(expectedParentFilter, children.get(0));
             if (children.size() == 2) return children.get(1);
@@ -651,8 +617,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
         assertBinarySpatialFilter(filter, "", point);
     }
 
-    private void assertBinarySpatialFilter(
-            Filter filter, String expectedName, Object expectedValue) {
+    private void assertBinarySpatialFilter(Filter filter, String expectedName, Object expectedValue) {
         BinarySpatialOperator bso = (BinarySpatialOperator) filter;
         assertThat(bso.getExpression1(), instanceOf(PropertyName.class));
         PropertyName pn = (PropertyName) bso.getExpression1();
@@ -663,17 +628,13 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
 
     @Test
     public void testEopCreationDate() throws Exception {
-        Map<String, String> map =
-                toMap("parentIdentifier", "SENTINEL2", "creationDate", "]2016-01-01");
+        Map<String, String> map = toMap("parentIdentifier", "SENTINEL2", "creationDate", "]2016-01-01");
         Filter filter = parseAndGetFilter(map);
         filter = getResidualFilter(filter, "SENTINEL2");
         BinaryComparisonOperator op = (BinaryComparisonOperator) filter;
         assertThat(op, instanceOf(PropertyIsGreaterThan.class));
         assertBinaryFilter(
-                op,
-                ProductClass.GENERIC.getNamespace(),
-                "creationDate",
-                Converters.convert("2016-01-01", Date.class));
+                op, ProductClass.GENERIC.getNamespace(), "creationDate", Converters.convert("2016-01-01", Date.class));
     }
 
     private Filter parseAndGetFilter(Map<String, String> map) throws Exception {

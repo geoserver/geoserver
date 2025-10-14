@@ -31,21 +31,20 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- * Helper class to apply partial updates to object of type T, setting values coming from an XML or
- * JSON representation. Support settings null values by using <elementName xsi:nil="true"/> for XML
- * or "attribute"=null for JSON.
+ * Helper class to apply partial updates to object of type T, setting values coming from an XML or JSON representation.
+ * Support settings null values by using <elementName xsi:nil="true"/> for XML or "attribute"=null for JSON.
  *
  * @param <T> the type of the object to which apply changes.
  */
-class PatchMergeHandler<T> {
+public class PatchMergeHandler<T> {
 
     private Class<T> patchType;
 
-    PatchMergeHandler(Class<T> patchType) {
+    public PatchMergeHandler(Class<T> patchType) {
         this.patchType = patchType;
     }
 
-    <T> T applyPatch(String patch, T toPatch, String contentType) {
+    public <T> T applyPatch(String patch, T toPatch, String contentType) {
         try {
             if (isJSON(contentType)) patchJSON((JSONObject) JSONSerializer.toJSON(patch), toPatch);
             else patchXML(toXMLDocument(patch), toPatch);
@@ -81,10 +80,10 @@ class PatchMergeHandler<T> {
         PropertyDescriptor[] descriptors = getDescriptors();
         for (Object k : keys) {
             Object o = patch.get(k);
-            if (o instanceof JSONObject) {
-                patchJSON((JSONObject) o, toPatch);
-            } else if (o instanceof JSONArray) {
-                patchJSON((JSONArray) o, toPatch);
+            if (o instanceof JSONObject object) {
+                patchJSON(object, toPatch);
+            } else if (o instanceof JSONArray array) {
+                patchJSON(array, toPatch);
             } else {
                 Optional<PropertyDescriptor> op = beanFieldFromJSON(descriptors, k);
                 if (op.isPresent()) {
@@ -105,8 +104,7 @@ class PatchMergeHandler<T> {
         return toPatch;
     }
 
-    private Optional<PropertyDescriptor> beanFieldFromJSON(
-            PropertyDescriptor[] descriptors, Object fieldName) {
+    private Optional<PropertyDescriptor> beanFieldFromJSON(PropertyDescriptor[] descriptors, Object fieldName) {
         return Stream.of(descriptors).filter(d -> d.getName().equals(fieldName)).findFirst();
     }
 

@@ -47,10 +47,9 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
 
 /**
- * Checks the WGS84 spatial extent in collections from {@code /collections} and {@code
- * /collections/<collection>} documents adhere to the configured number of decimal places, and
- * {@code /collection/<collection>/items} are fully covered by the spatial extent declared in the
- * collection document.
+ * Checks the WGS84 spatial extent in collections from {@code /collections} and {@code /collections/<collection>}
+ * documents adhere to the configured number of decimal places, and {@code /collection/<collection>/items} are fully
+ * covered by the spatial extent declared in the collection document.
  */
 @RunWith(Parameterized.class)
 public class CollectionDocumentBoundsTest extends FeaturesTestSupport {
@@ -60,8 +59,7 @@ public class CollectionDocumentBoundsTest extends FeaturesTestSupport {
     /** Single-point feature dataset with high precision ordinates */
     static QName TIGER_SINGLE_POI = new QName("http://www.census.gov", "single_poi", "tiger");
 
-    static final List<QName> layersFixture =
-            List.of(TIGER_POI, TIGER_SINGLE_POI, CiteTestData.BUILDINGS);
+    static final List<QName> layersFixture = List.of(TIGER_POI, TIGER_SINGLE_POI, CiteTestData.BUILDINGS);
 
     private String collectionId;
     private int numDecimals;
@@ -79,7 +77,7 @@ public class CollectionDocumentBoundsTest extends FeaturesTestSupport {
     @Parameters(name = "{0}: numDecimals: {1}")
     public static Collection<Object[]> data() {
         return layersFixture.stream()
-                .map(qn -> format("%s:%s", qn.getPrefix(), qn.getLocalPart()))
+                .map(qn -> "%s:%s".formatted(qn.getPrefix(), qn.getLocalPart()))
                 .map(CollectionDocumentBoundsTest::testParams)
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
@@ -95,8 +93,8 @@ public class CollectionDocumentBoundsTest extends FeaturesTestSupport {
     }
 
     /**
-     * One-time set up, creates the additional layers in the catalog and sets up precise lat-lon
-     * bounds for each {@link #layersFixture collection to be tested}
+     * One-time set up, creates the additional layers in the catalog and sets up precise lat-lon bounds for each
+     * {@link #layersFixture collection to be tested}
      */
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -107,8 +105,8 @@ public class CollectionDocumentBoundsTest extends FeaturesTestSupport {
     }
 
     /**
-     * Obtain the actual collection bounds and store it in {@link #latLonBbox}, configure number of
-     * decimal places to use for encoding from the {@link #numDecimals} test parameter
+     * Obtain the actual collection bounds and store it in {@link #latLonBbox}, configure number of decimal places to
+     * use for encoding from the {@link #numDecimals} test parameter
      */
     @Before
     public void beforeEach() throws Exception {
@@ -125,7 +123,7 @@ public class CollectionDocumentBoundsTest extends FeaturesTestSupport {
     public void testCollectionBoundsCoversActualBounds() throws Exception {
         assertEquals(this.numDecimals, getGeoServer().getGlobal().getSettings().getNumDecimals());
 
-        String collectionQuery = format("ogc/features/v1/collections/%s", collectionId);
+        String collectionQuery = "ogc/features/v1/collections/%s".formatted(collectionId);
         DocumentContext json = getAsJSONPath(collectionQuery, 200);
 
         ReferencedEnvelope actualBounds = this.latLonBbox;
@@ -139,16 +137,15 @@ public class CollectionDocumentBoundsTest extends FeaturesTestSupport {
     public void testCollectionBoundsCoversItems() throws Exception {
         assertEquals(this.numDecimals, getGeoServer().getGlobal().getSettings().getNumDecimals());
 
-        String collectionQuery = format("ogc/features/v1/collections/%s", collectionId);
+        String collectionQuery = "ogc/features/v1/collections/%s".formatted(collectionId);
         DocumentContext json = getAsJSONPath(collectionQuery, 200);
         final ReferencedEnvelope collectionBounds = parseSpatialExtent(json);
 
-        String itemsQuery = format("ogc/features/v1/collections/%s/items", collectionId);
+        String itemsQuery = "ogc/features/v1/collections/%s/items".formatted(collectionId);
         String fc = super.getAsString(itemsQuery);
         SimpleFeatureCollection parsedFc = GeoJSONReader.parseFeatureCollection(fc);
 
-        SimpleFeature[] features =
-                toArray(new FeatureIteratorIterator<>(parsedFc.features()), SimpleFeature.class);
+        SimpleFeature[] features = toArray(new FeatureIteratorIterator<>(parsedFc.features()), SimpleFeature.class);
         for (SimpleFeature feature : features) {
             assertMaxDecimals(feature, this.numDecimals);
             assertEncodedCollectionBoundsCoversFeature(feature, collectionBounds);
@@ -184,11 +181,10 @@ public class CollectionDocumentBoundsTest extends FeaturesTestSupport {
 
     private void assertEncodedCollectionBoundsCoversActualBounds(
             ReferencedEnvelope original, ReferencedEnvelope encoded) {
-        String msg =
-                format(
-                        "Expected encoded collection bounds %s to fully contain %s%n"
-                                + "encoded extent:\t\t%s %noriginal extent:\t%s",
-                        encoded, original, poly(encoded), poly(original));
+        String msg = format(
+                "Expected encoded collection bounds %s to fully contain %s%n"
+                        + "encoded extent:\t\t%s %noriginal extent:\t%s",
+                encoded, original, poly(encoded), poly(original));
 
         assertTrue(msg, encoded.contains(original));
     }
@@ -199,15 +195,11 @@ public class CollectionDocumentBoundsTest extends FeaturesTestSupport {
         ReferencedEnvelope actualCollectionBounds = this.latLonBbox;
         String fid = feature.getID();
         BoundingBox featureBounds = feature.getBounds();
-        String msg =
-                format(
-                        "Feature %s bounds not covered by collection bounds%n"
-                                + "feature bounds:\t\t%s %ncollection bounds:\t%s%n"
-                                + "real collection bounds:\t%s",
-                        fid,
-                        poly(featureBounds),
-                        poly(encodedCollectionBounds),
-                        poly(actualCollectionBounds));
+        String msg = format(
+                "Feature %s bounds not covered by collection bounds%n"
+                        + "feature bounds:\t\t%s %ncollection bounds:\t%s%n"
+                        + "real collection bounds:\t%s",
+                fid, poly(featureBounds), poly(encodedCollectionBounds), poly(actualCollectionBounds));
 
         assertTrue(msg, encodedCollectionBounds.contains(featureBounds));
     }
@@ -219,8 +211,7 @@ public class CollectionDocumentBoundsTest extends FeaturesTestSupport {
     private void addFeatureTypes(SystemTestData testData, Catalog catalog) throws IOException {
         testData.addWorkspace(TIGER_POI.getPrefix(), TIGER_POI.getNamespaceURI(), catalog);
         testData.addVectorLayer(TIGER_POI, null, "tiger_poi.properties", getClass(), catalog);
-        testData.addVectorLayer(
-                TIGER_SINGLE_POI, null, "tiger_single_poi.properties", getClass(), catalog);
+        testData.addVectorLayer(TIGER_SINGLE_POI, null, "tiger_single_poi.properties", getClass(), catalog);
     }
 
     private void adjustFeatureType(String featureTypeName) {

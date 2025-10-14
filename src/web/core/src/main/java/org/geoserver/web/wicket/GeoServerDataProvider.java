@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,7 +13,6 @@ import java.util.Comparator;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -32,11 +32,10 @@ import org.geotools.api.filter.Filter;
 import org.geotools.util.logging.Logging;
 
 /**
- * GeoServer specific data provider. In addition to the services provided by a SortableDataProvider
- * it can perform keyword based filtering, enum the model properties used for display and sorting.
+ * GeoServer specific data provider. In addition to the services provided by a SortableDataProvider it can perform
+ * keyword based filtering, enum the model properties used for display and sorting.
  *
- * <p>Implementors of providers for editable tables need to remember to raise the {@link #editable}
- * flag.
+ * <p>Implementors of providers for editable tables need to remember to raise the {@link #editable} flag.
  *
  * @param <T>
  */
@@ -45,14 +44,13 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
     /**
      * Matches a search keyword term enclosed by either double or single quotes.
      *
-     * <p>The first matching group captures either a double quote (<code>"</code>) or a single quote
-     * (<code>'</code>). The "keyword" named capturing group matches any sequence of one or more
-     * characters. The backreference (<code>\\1</code>) ensures that the start and end quotes are
-     * the same, maintaining balance.
+     * <p>The first matching group captures either a double quote (<code>"</code>) or a single quote (<code>'</code>).
+     * The "keyword" named capturing group matches any sequence of one or more characters. The backreference (<code>\\1
+     * </code>) ensures that the start and end quotes are the same, maintaining balance.
      */
-    private static final Pattern EXACT_TERM_KEYWORD_PATTERN =
-            Pattern.compile("^([\"'])(?<keyword>.+)\\1$");
+    private static final Pattern EXACT_TERM_KEYWORD_PATTERN = Pattern.compile("^([\"'])(?<keyword>.+)\\1$");
 
+    @Serial
     private static final long serialVersionUID = -6876929036365601443L;
 
     static final Logger LOGGER = Logging.getLogger(GeoServerDataProvider.class);
@@ -64,18 +62,15 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
     private transient Matcher[] matchers;
 
     /**
-     * A cache used to avoid recreating models over and over, this make it possible to make {@link
-     * GeoServerTablePanel} editable
+     * A cache used to avoid recreating models over and over, this make it possible to make {@link GeoServerTablePanel}
+     * editable
      */
-    Map<T, IModel<T>> modelCache = new IdentityHashMap<>();
+    IdentityHashMap<T, IModel<T>> modelCache = new IdentityHashMap<>();
 
     /** Sets the data provider as editable, in that case the models should be preserved */
     boolean editable = false;
 
-    /**
-     * Returns true if this data provider is setup for editing (it will reuse models). Defaults to
-     * false
-     */
+    /** Returns true if this data provider is setup for editing (it will reuse models). Defaults to false */
     public boolean isEditable() {
         return editable;
     }
@@ -97,14 +92,14 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
     }
 
     /**
-     * This method returns an array of regex matchers based on the defined {@link #keywords}, if
-     * any. If no keywords are defined, an empty array is returned.
+     * This method returns an array of regex matchers based on the defined {@link #keywords}, if any. If no keywords are
+     * defined, an empty array is returned.
      *
-     * <p>If a keyword is enclosed in quotes or double-quotes, the regex for that specific search
-     * keyword is created for an exact match (word-bound).
+     * <p>If a keyword is enclosed in quotes or double-quotes, the regex for that specific search keyword is created for
+     * an exact match (word-bound).
      *
-     * @return an array containing a regex matcher for each search keyword. If no keywords are
-     *     present, an empty array is returned.
+     * @return an array containing a regex matcher for each search keyword. If no keywords are present, an empty array
+     *     is returned.
      */
     protected Matcher[] getMatchers() {
         if (matchers != null) {
@@ -183,10 +178,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
         return GeoServerApplication.get();
     }
 
-    /**
-     * Provides catalog access for the provider (cannot be stored as a field, this class is going to
-     * be serialized)
-     */
+    /** Provides catalog access for the provider (cannot be stored as a field, this class is going to be serialized) */
     protected Catalog getCatalog() {
         return getApplication().getCatalog();
     }
@@ -212,8 +204,8 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
     }
 
     /**
-     * Returns a filtered list of items. Subclasses can override if they have a more efficient way
-     * of filtering than in memory keyword comparison
+     * Returns a filtered list of items. Subclasses can override if they have a more efficient way of filtering than in
+     * memory keyword comparison
      */
     protected List<T> getFilteredItems() {
         List<T> items = getItems();
@@ -281,9 +273,8 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
     }
 
     /**
-     * Returns the list of properties served by this provider. The property keys are used to
-     * establish the layer sorting, whilst the Property itself is used to extract the value of the
-     * property from the item.
+     * Returns the list of properties served by this provider. The property keys are used to establish the layer
+     * sorting, whilst the Property itself is used to extract the value of the property from the item.
      */
     protected abstract List<Property<T>> getProperties();
 
@@ -320,8 +311,8 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
     }
 
     /**
-     * This implementation uses the {@link #modelCache} to avoid recreating over and over different
-     * models for the various items, this allows the grid panel to be editable
+     * This implementation uses the {@link #modelCache} to avoid recreating over and over different models for the
+     * various items, this allows the grid panel to be editable
      *
      * @see org.apache.wicket.markup.repeater.data.IDataProvider#model(java.lang.Object)
      */
@@ -340,12 +331,11 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
     }
 
     /**
-     * This method returns a filter based on the defined {@link #keywords} if any, otherwise a
-     * {@link Filter#INCLUDE} is returned.
+     * This method returns a filter based on the defined {@link #keywords} if any, otherwise a {@link Filter#INCLUDE} is
+     * returned.
      *
-     * <p>Multiple keywords are joined with the <i>OR</i> operator. If a keyword is contained in
-     * quotes or double-quotes, the filter for that specific search term is created for the exact
-     * match.
+     * <p>Multiple keywords are joined with the <i>OR</i> operator. If a keyword is contained in quotes or
+     * double-quotes, the filter for that specific search term is created for the exact match.
      *
      * @return a {@link Filter} which uses the defined {@link #keywords}. If no keyword is present,
      *     {@link Filter#INCLUDE} is returned.
@@ -366,19 +356,15 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
         }
     }
 
-    /**
-     * Simply wraps the object into a Model assuming the Object is serializable. Subclasses can
-     * override this
-     */
+    /** Simply wraps the object into a Model assuming the Object is serializable. Subclasses can override this */
     @SuppressWarnings("unchecked")
     protected IModel<T> newModel(T object) {
         return (IModel<T>) new Model<>((Serializable) object);
     }
 
     /**
-     * Simply models the concept of a property in this provider. A property has a key, that
-     * identifies it and can be used for i18n, and can return the value of the property given an
-     * item served by the {@link GeoServerDataProvider}
+     * Simply models the concept of a property in this provider. A property has a key, that identifies it and can be
+     * used for i18n, and can return the value of the property given an item served by the {@link GeoServerDataProvider}
      *
      * @author Andrea Aime - OpenGeo
      * @param <T>
@@ -402,12 +388,11 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
         public boolean isSearchable();
     }
 
-    /**
-     * Base property class. Assumes T is serializable, if it's not, manually override the getModel()
-     * method
-     */
+    /** Base property class. Assumes T is serializable, if it's not, manually override the getModel() method */
     public abstract static class AbstractProperty<T> implements Property<T> {
+        @Serial
         private static final long serialVersionUID = 6286992721731224988L;
+
         String name;
         boolean visible;
 
@@ -426,15 +411,15 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
         }
 
         /**
-         * Returns a model based on the getPropertyValue(...) result. Mind, this is not suitable for
-         * editable tables, if you need to make one you'll have to roll your own getModel()
-         * implementation ( {@link BeanProperty} provides a good example)
+         * Returns a model based on the getPropertyValue(...) result. Mind, this is not suitable for editable tables, if
+         * you need to make one you'll have to roll your own getModel() implementation ( {@link BeanProperty} provides a
+         * good example)
          */
         @Override
         public IModel<?> getModel(IModel<T> itemModel) {
             Object value = getPropertyValue(itemModel.getObject());
-            if (value instanceof IModel) {
-                return (IModel<?>) value;
+            if (value instanceof IModel<?> model) {
+                return model;
             } else {
                 return new Model<>((Serializable) value);
             }
@@ -468,7 +453,9 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
      * @param <T>
      */
     public static class BeanProperty<T> extends AbstractProperty<T> {
+        @Serial
         private static final long serialVersionUID = 5532661316457341748L;
+
         String propertyPath;
 
         public BeanProperty(String key) {
@@ -489,9 +476,9 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
         }
 
         /**
-         * Overrides the base class {@link #getModel(IModel)} to allow for editable tables: uses a
-         * property model against the bean so that writes will hit the bean instead of the possibly
-         * immutable values contained in it (think a String property)
+         * Overrides the base class {@link #getModel(IModel)} to allow for editable tables: uses a property model
+         * against the bean so that writes will hit the bean instead of the possibly immutable values contained in it
+         * (think a String property)
          */
         @Override
         public IModel<T> getModel(IModel<T> itemModel) {
@@ -508,8 +495,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
             } catch (NestedNullException nne) {
                 return null;
             } catch (Exception e) {
-                throw new RuntimeException(
-                        "Could not find property " + propertyPath + " in " + bean.getClass(), e);
+                throw new RuntimeException("Could not find property " + propertyPath + " in " + bean.getClass(), e);
             }
         }
 
@@ -520,15 +506,16 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
     }
 
     /**
-     * Placeholder for a column that does not contain a real property (for example, a column
-     * containing commands instead of data). Will return the item model as the model, and as the
-     * property value.
+     * Placeholder for a column that does not contain a real property (for example, a column containing commands instead
+     * of data). Will return the item model as the model, and as the property value.
      *
      * @author Andrea Aime
      * @param <T>
      */
     public static class PropertyPlaceholder<T> implements Property<T> {
+        @Serial
         private static final long serialVersionUID = -6605207892648199453L;
+
         String name;
 
         public PropertyPlaceholder(String name) {
@@ -574,8 +561,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
     }
 
     /**
-     * Uses {@link Property} to extract the values, and then compares them assuming they are {@link
-     * Comparable}
+     * Uses {@link Property} to extract the values, and then compares them assuming they are {@link Comparable}
      *
      * @param <T>
      */

@@ -27,8 +27,8 @@ import org.geotools.api.filter.Filter;
 import org.junit.Test;
 
 /**
- * Similar to the GetFeatureInfoTest this class runs tests the GetFeatureInfo request for WMS
- * layers. What makes these unit tests unique is that they apply read/write restrictions.
+ * Similar to the GetFeatureInfoTest this class runs tests the GetFeatureInfo request for WMS layers. What makes these
+ * unit tests unique is that they apply read/write restrictions.
  *
  * @author Josh Vote, CSIRO Earth Science and Resource Engineering
  */
@@ -43,14 +43,10 @@ public class GetFeatureInfoRestrictedTest extends WMSTestSupport {
                 .andReturn(new WorkspaceAccessLimits(CatalogMode.HIDE, true, false, false))
                 .anyTimes();
         expect(mockManager.getAccessLimits(anyObject(), (ResourceInfo) anyObject()))
-                .andReturn(
-                        new VectorAccessLimits(
-                                CatalogMode.HIDE, null, Filter.INCLUDE, null, Filter.EXCLUDE))
+                .andReturn(new VectorAccessLimits(CatalogMode.HIDE, null, Filter.INCLUDE, null, Filter.EXCLUDE))
                 .anyTimes();
         expect(mockManager.getAccessLimits(anyObject(), (LayerInfo) anyObject(), anyObject()))
-                .andReturn(
-                        new VectorAccessLimits(
-                                CatalogMode.HIDE, null, Filter.INCLUDE, null, Filter.EXCLUDE))
+                .andReturn(new VectorAccessLimits(CatalogMode.HIDE, null, Filter.INCLUDE, null, Filter.EXCLUDE))
                 .anyTimes();
         replay(mockManager);
 

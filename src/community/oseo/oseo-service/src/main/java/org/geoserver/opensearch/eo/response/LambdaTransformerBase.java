@@ -11,8 +11,8 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
 /**
- * Extends {@link TransformerBase} to provide some extra Java 8 based utilities methods for
- * encoding. Will eventually be merged with {@link TransformerBase}
+ * Extends {@link TransformerBase} to provide some extra Java 8 based utilities methods for encoding. Will eventually be
+ * merged with {@link TransformerBase}
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -28,10 +28,7 @@ abstract class LambdaTransformerBase extends TransformerBase {
         }
 
         public LambdaTranslatorSupport(
-                ContentHandler contentHandler,
-                String prefix,
-                String nsURI,
-                SchemaLocationSupport schemaLocation) {
+                ContentHandler contentHandler, String prefix, String nsURI, SchemaLocationSupport schemaLocation) {
             super(contentHandler, prefix, nsURI, schemaLocation);
         }
 
@@ -39,17 +36,13 @@ abstract class LambdaTransformerBase extends TransformerBase {
             super(contentHandler, prefix, nsURI);
         }
 
-        /**
-         * Encodes an element, delegating encoding its sub-elements to the content encoder, with no
-         * attributes
-         */
+        /** Encodes an element, delegating encoding its sub-elements to the content encoder, with no attributes */
         protected void element(String elementName, Runnable contentsEncoder) {
             element(elementName, contentsEncoder, null);
         }
 
         /** Encodes an element, delegating encoding its sub-elements to the content encoder */
-        protected void element(
-                String elementName, Runnable contentsEncoder, Attributes attributes) {
+        protected void element(String elementName, Runnable contentsEncoder, Attributes attributes) {
             if (attributes != null) {
                 start(elementName, attributes);
             } else {
@@ -72,9 +65,7 @@ abstract class LambdaTransformerBase extends TransformerBase {
             return attributes;
         }
 
-        /**
-         * Builds {@link Attributes} from an array of string pairs, key1, value1, key2, value2, ...
-         */
+        /** Builds {@link Attributes} from an array of string pairs, key1, value1, key2, value2, ... */
         protected AttributesImpl attributes(String... kvp) {
             String[] atts = kvp;
             AttributesImpl attributes = new AttributesImpl();

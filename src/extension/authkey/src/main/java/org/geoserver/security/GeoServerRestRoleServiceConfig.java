@@ -4,6 +4,7 @@
  */
 package org.geoserver.security;
 
+import java.io.Serial;
 import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
 import org.geoserver.security.config.SecurityRoleServiceConfig;
 
@@ -12,6 +13,7 @@ public class GeoServerRestRoleServiceConfig extends BaseSecurityNamedServiceConf
         implements SecurityRoleServiceConfig {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = -8380244566532287415L;
 
     private static final int defaultCacheConcurrencyLevel = 4;
@@ -179,8 +181,8 @@ public class GeoServerRestRoleServiceConfig extends BaseSecurityNamedServiceConf
     }
 
     /**
-     * @return the authApiKey if set, the rest client will create an "X-AUTH" custom header in order
-     *     to send authentication to the backend.
+     * @return the authApiKey if set, the rest client will create an "X-AUTH" custom header in order to send
+     *     authentication to the backend.
      */
     public String getAuthApiKey() {
         return authApiKey;

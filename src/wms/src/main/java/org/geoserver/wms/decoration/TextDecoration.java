@@ -5,12 +5,13 @@
  */
 package org.geoserver.wms.decoration;
 
-import static org.geoserver.template.TemplateUtils.FM_VERSION;
+import static freemarker.ext.beans.BeansWrapper.EXPOSE_NOTHING;
 import static org.geoserver.wms.decoration.MapDecorationLayout.FF;
 import static org.geoserver.wms.decoration.MapDecorationLayout.getOption;
 
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.ext.beans.GenericObjectModel;
+import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateHashModel;
@@ -51,10 +52,11 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 public class TextDecoration implements MapDecoration {
 
     /** A logger for this class. */
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.wms.responses");
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.wms.responses");
 
     private static Font DEFAULT_FONT = new java.awt.Font("Serif", java.awt.Font.PLAIN, 12);
+
+    private static final Configuration templateConfig = TemplateUtils.getSafeConfiguration(null, null, EXPOSE_NOTHING);
 
     String fontFamily;
 
@@ -129,9 +131,7 @@ public class TextDecoration implements MapDecoration {
         if (fontFamily != null) {
             font = FontCache.getDefaultInstance().getFont(fontFamily);
             if (font == null) {
-                LOGGER.log(
-                        Level.WARNING,
-                        "Font " + fontFamily + " not found, falling back on the default");
+                LOGGER.log(Level.WARNING, "Font " + fontFamily + " not found, falling back on the default");
                 font = DEFAULT_FONT;
             }
         }
@@ -160,49 +160,43 @@ public class TextDecoration implements MapDecoration {
         return expandedMessage;
     }
 
-    private String evaluateAsTemplate(WMSMapContent content, String message)
-            throws IOException, TemplateException {
+    private String evaluateAsTemplate(WMSMapContent content, String message) throws IOException, TemplateException {
         final Map env = content.getRequest().getEnv();
-        Template t =
-                new Template(
-                        "name", new StringReader(message), TemplateUtils.getSafeConfiguration());
-        final BeansWrapper bw = new BeansWrapper(FM_VERSION);
-        return FreeMarkerTemplateUtils.processTemplateIntoString(
-                t,
-                new TemplateHashModel() {
+        Template t = new Template("name", new StringReader(message), templateConfig);
+        final BeansWrapper bw = (BeansWrapper) templateConfig.getObjectWrapper();
+        return FreeMarkerTemplateUtils.processTemplateIntoString(t, new TemplateHashModel() {
 
-                    @Override
-                    public boolean isEmpty() throws TemplateModelException {
-                        return env.isEmpty();
-                    }
+            @Override
+            public boolean isEmpty() throws TemplateModelException {
+                return env.isEmpty();
+            }
 
-                    @Override
-                    public TemplateModel get(String key) throws TemplateModelException {
-                        String value = (String) env.get(key);
-                        // also allow using the other request parameters
-                        if (value == null) {
-                            Request request = Dispatcher.REQUEST.get();
-                            if (request != null && request.getRawKvp() != null) {
-                                Object obj = request.getRawKvp().get(key);
-                                value = Converters.convert(obj, String.class);
-                                if (obj != null && value == null) {
-                                    // try also Spring converters as a fallback, can do some thing
-                                    // GT converters
-                                    // cannot do (e.g array -> string). Did not create a bridge to
-                                    // GT converters as it might
-                                    // have global consequences
-                                    DefaultConversionService.getSharedInstance()
-                                            .convert(obj, String.class);
-                                }
-                            }
-                        }
-                        if (value != null) {
-                            return new GenericObjectModel(value, bw);
-                        } else {
-                            return null;
+            @Override
+            public TemplateModel get(String key) throws TemplateModelException {
+                String value = (String) env.get(key);
+                // also allow using the other request parameters
+                if (value == null) {
+                    Request request = Dispatcher.REQUEST.get();
+                    if (request != null && request.getRawKvp() != null) {
+                        Object obj = request.getRawKvp().get(key);
+                        value = Converters.convert(obj, String.class);
+                        if (obj != null && value == null) {
+                            // try also Spring converters as a fallback, can do some thing
+                            // GT converters
+                            // cannot do (e.g array -> string). Did not create a bridge to
+                            // GT converters as it might
+                            // have global consequences
+                            DefaultConversionService.getSharedInstance().convert(obj, String.class);
                         }
                     }
-                });
+                }
+                if (value != null) {
+                    return new GenericObjectModel(value, bw);
+                } else {
+                    return null;
+                }
+            }
+        });
     }
 
     @Override
@@ -218,8 +212,7 @@ public class TextDecoration implements MapDecoration {
     }
 
     @Override
-    public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContent mapContent)
-            throws Exception {
+    public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContent mapContent) throws Exception {
         Font font = getFont();
         String message = evaluateMessage(mapContent);
         Font oldFont = g2d.getFont();
@@ -227,20 +220,16 @@ public class TextDecoration implements MapDecoration {
         Stroke oldStroke = g2d.getStroke();
         try {
             // extract the glyph vector outline (paint like the labelling system does)
-            GlyphVector gv =
-                    font.createGlyphVector(g2d.getFontRenderContext(), message.toCharArray());
-            AffineTransform at =
-                    AffineTransform.getTranslateInstance(
-                            paintArea.x + haloRadius, paintArea.y + paintArea.height - haloRadius);
+            GlyphVector gv = font.createGlyphVector(g2d.getFontRenderContext(), message.toCharArray());
+            AffineTransform at = AffineTransform.getTranslateInstance(
+                    paintArea.x + haloRadius, paintArea.y + paintArea.height - haloRadius);
             Shape outline = gv.getOutline();
             outline = at.createTransformedShape(outline);
 
             // draw the halo if necessary
             if (haloRadius > 0) {
                 g2d.setColor(haloColor);
-                g2d.setStroke(
-                        new BasicStroke(
-                                2 * haloRadius, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                g2d.setStroke(new BasicStroke(2 * haloRadius, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
                 g2d.draw(outline);
             }
 

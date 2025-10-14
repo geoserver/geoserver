@@ -31,10 +31,9 @@ public class PreviewLayerTest extends GeoServerWicketTestSupport {
         lg.getLayers().add(cat.getLayerByName(getLayerId(MockData.PRIMITIVEGEOFEATURE)));
         lg.setBounds(new ReferencedEnvelope(0, 1, 0, 1, CRS.decode("MapML:OSMTILE")));
         PreviewLayer layer = new PreviewLayer(lg);
-        layer.getWmsLink(
-                (r, p) -> {
-                    assertEquals("MapML:OSMTILE", p.get("srs"));
-                    assertEquals("0.0,0.0,1.0,1.0", p.get("bbox"));
-                });
+        layer.getWmsLink((r, p) -> {
+            assertEquals("MapML:OSMTILE", p.get("srs"));
+            assertEquals("0.0,0.0,1.0,1.0", p.get("bbox"));
+        });
     }
 }

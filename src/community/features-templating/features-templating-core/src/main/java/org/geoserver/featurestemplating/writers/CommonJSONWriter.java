@@ -36,19 +36,14 @@ public abstract class CommonJSONWriter extends TemplateOutputWriter {
 
     protected TemplateIdentifier identifier;
 
-    public CommonJSONWriter(
-            com.fasterxml.jackson.core.JsonGenerator generator,
-            TemplateIdentifier templateIdentifier) {
+    public CommonJSONWriter(com.fasterxml.jackson.core.JsonGenerator generator, TemplateIdentifier templateIdentifier) {
         this.generator = generator;
         this.identifier = templateIdentifier;
     }
 
     @Override
-    public void writeStaticContent(String key, Object staticContent, EncodingHints encodingHints)
-            throws IOException {
-        if (staticContent instanceof String
-                || staticContent instanceof Number
-                || staticContent instanceof Date) {
+    public void writeStaticContent(String key, Object staticContent, EncodingHints encodingHints) throws IOException {
+        if (staticContent instanceof String || staticContent instanceof Number || staticContent instanceof Date) {
             if (key == null) {
                 writeValue(staticContent);
             } else {
@@ -62,8 +57,8 @@ public abstract class CommonJSONWriter extends TemplateOutputWriter {
         }
     }
     /**
-     * Write contents from a Json Object. Used with {@link StaticBuilder} to write content as it is
-     * from the json-ld template to the json-ld output
+     * Write contents from a Json Object. Used with {@link StaticBuilder} to write content as it is from the json-ld
+     * template to the json-ld output
      */
     public void writeObjectNode(String nodeName, JsonNode node) throws IOException {
         if (nodeName != null && !nodeName.equals("")) generator.writeFieldName(nodeName);
@@ -85,8 +80,8 @@ public abstract class CommonJSONWriter extends TemplateOutputWriter {
     }
 
     /**
-     * Write contents from a Json Array. Used with {@link StaticBuilder}ù to write content as it is
-     * from the json-ld template to the json-ld output
+     * Write contents from a Json Array. Used with {@link StaticBuilder}ù to write content as it is from the json-ld
+     * template to the json-ld output
      */
     public void writeArrayNode(String nodeName, JsonNode arNode) throws IOException {
         if (nodeName != null && !nodeName.equals("")) generator.writeFieldName(nodeName);
@@ -106,8 +101,8 @@ public abstract class CommonJSONWriter extends TemplateOutputWriter {
     }
 
     /**
-     * Write contents from a Json attribute's value. Used with {@link StaticBuilder} to write
-     * content as it is from the json-ld template to the json-ld output
+     * Write contents from a Json attribute's value. Used with {@link StaticBuilder} to write content as it is from the
+     * json-ld template to the json-ld output
      */
     public void writeValueNode(String entryName, JsonNode valueNode) throws IOException {
         if (entryName != null && !entryName.equals("")) generator.writeFieldName(entryName);
@@ -129,22 +124,22 @@ public abstract class CommonJSONWriter extends TemplateOutputWriter {
     public void writeValue(Object value) throws IOException {
         if (isNull(value)) {
             generator.writeNull();
-        } else if (value instanceof String) {
-            generator.writeString((String) value);
-        } else if (value instanceof Integer) {
-            generator.writeNumber((Integer) value);
-        } else if (value instanceof Double) {
-            generator.writeNumber((Double) value);
-        } else if (value instanceof Float) {
-            generator.writeNumber((Float) value);
-        } else if (value instanceof Long) {
-            generator.writeNumber((Long) value);
-        } else if (value instanceof BigInteger) {
-            generator.writeNumber((BigInteger) value);
-        } else if (value instanceof BigDecimal) {
-            generator.writeNumber((BigDecimal) value);
-        } else if (value instanceof Boolean) {
-            generator.writeBoolean((Boolean) value);
+        } else if (value instanceof String string) {
+            generator.writeString(string);
+        } else if (value instanceof Integer integer1) {
+            generator.writeNumber(integer1);
+        } else if (value instanceof Double double1) {
+            generator.writeNumber(double1);
+        } else if (value instanceof Float float1) {
+            generator.writeNumber(float1);
+        } else if (value instanceof Long long1) {
+            generator.writeNumber(long1);
+        } else if (value instanceof BigInteger integer) {
+            generator.writeNumber(integer);
+        } else if (value instanceof BigDecimal decimal) {
+            generator.writeNumber(decimal);
+        } else if (value instanceof Boolean boolean1) {
+            generator.writeBoolean(boolean1);
         } else if (value instanceof Date) {
             generator.writeString(new ISO8601Formatter().format(value));
         } else if (value.getClass().isArray()) {
@@ -173,47 +168,38 @@ public abstract class CommonJSONWriter extends TemplateOutputWriter {
     }
 
     @Override
-    public void writeElementName(Object elementName, EncodingHints encodingHints)
-            throws IOException {
+    public void writeElementName(Object elementName, EncodingHints encodingHints) throws IOException {
         if (elementName != null) generator.writeFieldName(elementName.toString());
     }
 
-    /**
-     * Write the result of an xpath or cql expression evaluation operated by the {@link
-     * DynamicValueBuilder}
-     */
+    /** Write the result of an xpath or cql expression evaluation operated by the {@link DynamicValueBuilder} */
     @Override
     public void writeElementValue(Object result, EncodingHints encodingHints) throws IOException {
         writeElementNameAndValue(null, result, encodingHints);
     }
 
     /**
-     * Write the key and the result of an xpath or cql expression evaluation operated by the {@link
-     * DynamicValueBuilder}
+     * Write the key and the result of an xpath or cql expression evaluation operated by the {@link DynamicValueBuilder}
      */
     @Override
-    public void writeElementNameAndValue(String key, Object result, EncodingHints encodingHints)
-            throws IOException {
+    public void writeElementNameAndValue(String key, Object result, EncodingHints encodingHints) throws IOException {
         if (result instanceof String || result instanceof Number || result instanceof Boolean) {
             writeElementName(key, null);
             writeValue(result);
-        } else if (result instanceof Date) {
-            Date timeStamp = (Date) result;
+        } else if (result instanceof Date timeStamp) {
             String formatted = new StdDateFormat().withColonInTimeZone(true).format(timeStamp);
             writeElementNameAndValue(key, formatted, encodingHints);
         } else if (result instanceof Geometry) {
             writeElementName(key, encodingHints);
             writeGeometry(result);
-        } else if (result instanceof ComplexAttribute) {
-            ComplexAttribute attr = (ComplexAttribute) result;
+        } else if (result instanceof ComplexAttribute attr) {
             writeElementNameAndValue(key, attr.getValue(), encodingHints);
-        } else if (result instanceof Attribute) {
-            Attribute attr = (Attribute) result;
+        } else if (result instanceof Attribute attr) {
             writeElementNameAndValue(key, attr.getValue(), encodingHints);
         } else if (result instanceof JsonNode) {
             writeStaticContent(key, result, encodingHints);
-        } else if (result instanceof List) {
-            writeList(key, (List) result, encodingHints, false);
+        } else if (result instanceof List list1) {
+            writeList(key, list1, encodingHints, false);
         } else if (result == null) {
             writeElementName(key, encodingHints);
             generator.writeNull();
@@ -319,12 +305,10 @@ public abstract class CommonJSONWriter extends TemplateOutputWriter {
     }
 
     protected boolean skipObjectWriting(EncodingHints encodingHints) {
-        Boolean skipIfSingleFeature =
-                getEncodingHintIfPresent(encodingHints, SKIP_OBJECT_ENCODING, Boolean.class);
+        Boolean skipIfSingleFeature = getEncodingHintIfPresent(encodingHints, SKIP_OBJECT_ENCODING, Boolean.class);
         return skipIfSingleFeature != null
                 && skipIfSingleFeature.booleanValue()
                 && isSingleFeatureRequest()
-                && (identifier.equals(TemplateIdentifier.GEOJSON)
-                        || identifier.equals(TemplateIdentifier.JSONLD));
+                && (identifier.equals(TemplateIdentifier.GEOJSON) || identifier.equals(TemplateIdentifier.JSONLD));
     }
 }

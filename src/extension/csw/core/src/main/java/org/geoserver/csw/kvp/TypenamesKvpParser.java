@@ -8,8 +8,8 @@ package org.geoserver.csw.kvp;
 import org.geoserver.ows.KvpParser;
 
 /**
- * We should not need this, but unfortunately the WFS typeNames parser can hijack the parsing and
- * return a list of strings matched against the catalog, which is something we don't want for CSW
+ * We should not need this, but unfortunately the WFS typeNames parser can hijack the parsing and return a list of
+ * strings matched against the catalog, which is something we don't want for CSW
  *
  * @author Andrea Aime - GeoSolutions
  */

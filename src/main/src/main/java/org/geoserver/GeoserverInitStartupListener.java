@@ -6,8 +6,6 @@
 package org.geoserver;
 
 import com.google.common.collect.Lists;
-import it.geosolutions.concurrent.ConcurrentTileCacheMultiMap;
-import it.geosolutions.jaiext.ConcurrentOperationRegistry;
 import java.beans.Introspector;
 import java.lang.reflect.Method;
 import java.sql.Driver;
@@ -30,17 +28,18 @@ import javax.imageio.spi.IIOServiceProvider;
 import javax.imageio.spi.ImageReaderSpi;
 import javax.imageio.spi.ImageReaderWriterSpi;
 import javax.imageio.spi.ImageWriterSpi;
-import javax.media.jai.JAI;
-import javax.media.jai.OperationRegistry;
-import javax.media.jai.RegistryElementDescriptor;
-import javax.media.jai.RegistryMode;
-import javax.media.jai.remote.SerializableRenderedImage;
-import javax.media.jai.util.ImagingListener;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.LogManager;
+import org.eclipse.imagen.ImageN;
+import org.eclipse.imagen.OperationRegistry;
+import org.eclipse.imagen.RegistryElementDescriptor;
+import org.eclipse.imagen.RegistryMode;
+import org.eclipse.imagen.media.ConcurrentOperationRegistry;
+import org.eclipse.imagen.media.cache.ConcurrentTileCacheMultiMap;
+import org.eclipse.imagen.util.ImagingListener;
 import org.geoserver.config.impl.CoverageAccessInfoImpl;
 import org.geoserver.logging.LoggingUtils;
 import org.geoserver.logging.LoggingUtils.GeoToolsLoggingRedirection;
@@ -51,7 +50,6 @@ import org.geotools.api.referencing.AuthorityFactory;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.image.io.ImageIOExt;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.ReferencingFactoryFinder;
 import org.geotools.referencing.factory.AbstractAuthorityFactory;
@@ -62,8 +60,8 @@ import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 
 /**
- * Listens for GeoServer startup and tries to configure axis order, logging redirection, and a few
- * other things that really need to be set up before anything else starts up
+ * Listens for GeoServer startup and tries to configure axis order, logging redirection, and a few other things that
+ * really need to be set up before anything else starts up
  */
 public class GeoserverInitStartupListener implements ServletContextListener {
     static final String COM_SUN_JPEG2000_PACKAGE = "com.sun.media.imageioimpl.plugins.jpeg2000";
@@ -77,6 +75,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
     private static final double DEFAULT_COMPARISON_TOLERANCE = 1e-8;
 
     @Override
+    @SuppressWarnings("PMD.CloseResource")
     public void contextInitialized(ServletContextEvent sce) {
         // enable JTS overlay-ng unless otherwise set (first thing, before JTS has a chance
         // to initialize itself)
@@ -85,70 +84,28 @@ public class GeoserverInitStartupListener implements ServletContextListener {
         }
 
         // establish logging redirection
-        GeoToolsLoggingRedirection policy =
-                establishLoggingRedirectionPolicy(sce.getServletContext());
+        GeoToolsLoggingRedirection policy = establishLoggingRedirectionPolicy(sce.getServletContext());
 
         LOGGER = Logging.getLogger("org.geoserver.logging");
         LOGGER.config("Logging policy: " + policy);
         GeoTools.init((Hints) null);
 
-        // Custom GeoTools ImagingListener used to ignore common warnings
-        JAI.getDefaultInstance()
-                .setImagingListener(
-                        new ImagingListener() {
-                            final Logger LOGGER = Logging.getLogger("javax.media.jai");
-
-                            @Override
-                            public boolean errorOccurred(
-                                    String message,
-                                    Throwable thrown,
-                                    Object where,
-                                    boolean isRetryable)
-                                    throws RuntimeException {
-                                if (isSerializableRenderedImageFinalization(where, thrown)) {
-                                    LOGGER.log(Level.FINEST, message, thrown);
-                                } else if (message.contains("Continuing in pure Java mode")) {
-                                    LOGGER.log(Level.FINE, message, thrown);
-                                } else {
-                                    LOGGER.log(Level.INFO, message, thrown);
-                                }
-                                return false; // we are not trying to recover
-                            }
-
-                            private boolean isSerializableRenderedImageFinalization(
-                                    Object where, Throwable t) {
-                                if (!(where instanceof SerializableRenderedImage)) {
-                                    return false;
-                                }
-
-                                // check if it's the finalizer
-                                StackTraceElement[] elements = t.getStackTrace();
-                                for (StackTraceElement element : elements) {
-                                    if (element.getMethodName().equals("finalize")
-                                            && element.getClassName()
-                                                    .endsWith("SerializableRenderedImage"))
-                                        return true;
-                                }
-
-                                return false;
-                            }
-                        });
+        initImageNDefaultInstance();
 
         // setup concurrent operation registry
-        JAI jaiDef = JAI.getDefaultInstance();
-        if (!(jaiDef.getOperationRegistry() instanceof ConcurrentOperationRegistry)) {
-            jaiDef.setOperationRegistry(ConcurrentOperationRegistry.initializeRegistry());
+        ImageN imagen = ImageN.getDefaultInstance();
+        if (!(imagen.getOperationRegistry() instanceof ConcurrentOperationRegistry)) {
+            imagen.setOperationRegistry(ConcurrentOperationRegistry.initializeRegistry());
         }
 
         // setup the concurrent tile cache (has proper memory limit handling also for small tiles)
-        if (!(jaiDef.getTileCache() instanceof ConcurrentTileCacheMultiMap)) {
-            jaiDef.setTileCache(new ConcurrentTileCacheMultiMap());
+        if (!(imagen.getTileCache() instanceof ConcurrentTileCacheMultiMap)) {
+            imagen.setTileCache(new ConcurrentTileCacheMultiMap());
         }
 
         // make sure we remember if GeoServer controls logging or not
         String strValue =
-                GeoServerExtensions.getProperty(
-                        LoggingUtils.RELINQUISH_LOG4J_CONTROL, sce.getServletContext());
+                GeoServerExtensions.getProperty(LoggingUtils.RELINQUISH_LOG4J_CONTROL, sce.getServletContext());
         relinquishLoggingControl = Boolean.valueOf(strValue);
 
         // if the server admin did not set it up otherwise, force X/Y axis
@@ -167,20 +124,18 @@ public class GeoserverInitStartupListener implements ServletContextListener {
         // setup the referencing tolerance to make it more tolerant to tiny differences
         // between projections (increases the chance of matching a random prj file content
         // to an actual EPSG code
-        String comparisonToleranceProperty =
-                GeoServerExtensions.getProperty(COMPARISON_TOLERANCE_PROPERTY);
+        String comparisonToleranceProperty = GeoServerExtensions.getProperty(COMPARISON_TOLERANCE_PROPERTY);
         double comparisonTolerance = DEFAULT_COMPARISON_TOLERANCE;
         if (comparisonToleranceProperty != null) {
             try {
                 comparisonTolerance = Double.parseDouble(comparisonToleranceProperty);
             } catch (NumberFormatException nfe) {
                 if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.warning(
-                            "Unable to parse the specified COMPARISON_TOLERANCE "
-                                    + "system property: "
-                                    + comparisonToleranceProperty
-                                    + " which should be a number. Using Default: "
-                                    + DEFAULT_COMPARISON_TOLERANCE);
+                    LOGGER.warning("Unable to parse the specified COMPARISON_TOLERANCE "
+                            + "system property: "
+                            + comparisonToleranceProperty
+                            + " which should be a number. Using Default: "
+                            + DEFAULT_COMPARISON_TOLERANCE);
                 }
             }
         }
@@ -190,9 +145,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
 
         // Initialize GridCoverageFactory so that we don't make a lookup every time a factory is
         // needed
-        Hints.putSystemDefault(
-                Hints.GRID_COVERAGE_FACTORY,
-                CoverageFactoryFinder.getGridCoverageFactory(defHints));
+        Hints.putSystemDefault(Hints.GRID_COVERAGE_FACTORY, CoverageFactoryFinder.getGridCoverageFactory(defHints));
 
         // don't allow the connection to the EPSG database to time out. This is a server app,
         // we can afford keeping the EPSG db always on
@@ -206,11 +159,6 @@ public class GeoserverInitStartupListener implements ServletContextListener {
         // Fix issue with tomcat and JreMemoryLeakPreventionListener causing issues with
         // IIORegistry leading to imageio plugins not being properly initialized
         ImageIO.scanForPlugins();
-
-        // in any case, the native png reader is worse than the pure java ones, so
-        // let's disable it (the native png writer is on the other side faster)...
-        ImageIOExt.allowNativeCodec("png", ImageReaderSpi.class, false);
-        ImageIOExt.allowNativeCodec("png", ImageWriterSpi.class, true);
 
         // remove the ImageIO JPEG200 readers/writes, they are outdated and not quite working
         // GeoTools has the GDAL and Kakadu ones which do work, removing these avoids the
@@ -226,23 +174,47 @@ public class GeoserverInitStartupListener implements ServletContextListener {
         Hints.putSystemDefault(Hints.FEATURE_FACTORY, CommonFactoryFinder.getFeatureFactory(null));
 
         // initialize the default executor service
-        final ThreadPoolExecutor executor =
-                new ThreadPoolExecutor(
-                        CoverageAccessInfoImpl.DEFAULT_CorePoolSize,
-                        CoverageAccessInfoImpl.DEFAULT_MaxPoolSize,
-                        CoverageAccessInfoImpl.DEFAULT_KeepAliveTime,
-                        TimeUnit.MILLISECONDS,
-                        new LinkedBlockingQueue<>());
+        final ThreadPoolExecutor executor = new ThreadPoolExecutor(
+                CoverageAccessInfoImpl.DEFAULT_CorePoolSize,
+                CoverageAccessInfoImpl.DEFAULT_MaxPoolSize,
+                CoverageAccessInfoImpl.DEFAULT_KeepAliveTime,
+                TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<>());
         Hints.putSystemDefault(Hints.EXECUTOR_SERVICE, executor);
     }
 
+    /** Sets a custom ImagingListener used to ignore common warnings */
+    @SuppressWarnings("PMD.CloseResource")
+    public static void initImageNDefaultInstance() {
+        ImageN imagen = ImageN.getDefaultInstance();
+        if (!(imagen.getImagingListener() instanceof GeoServerImagingListener)) {
+            imagen.setImagingListener(new GeoServerImagingListener());
+        }
+    }
+
+    private static final class GeoServerImagingListener implements ImagingListener {
+        private static final Logger LOGGER = Logging.getLogger("org.eclipse.imagen");
+
+        @Override
+        public boolean errorOccurred(String message, Throwable thrown, Object where, boolean isRetryable)
+                throws RuntimeException {
+            if (message.contains("Continuing in pure Java mode")) {
+                LOGGER.log(Level.FINE, message, thrown);
+            } else if (thrown instanceof RuntimeException exception && !(where instanceof OperationRegistry)) {
+                throw exception;
+            } else {
+                LOGGER.log(Level.INFO, message, thrown);
+            }
+            return false; // we are not trying to recover
+        }
+    }
+
     /**
-     * Unregisters providers in the "https://github.com/geosolutions-it/evo-odas/issues/102" for a
-     * given category (reader, writer). ImageIO contains a pure java reader and a writer, but also a
-     * couple based on native libs (if present).
+     * Unregisters providers in the "https://github.com/geosolutions-it/evo-odas/issues/102" for a given category
+     * (reader, writer). ImageIO contains a pure java reader and a writer, but also a couple based on native libs (if
+     * present).
      */
-    private <T extends ImageReaderWriterSpi> void unregisterImageIOJpeg2000Support(
-            Class<T> category) {
+    private <T extends ImageReaderWriterSpi> void unregisterImageIOJpeg2000Support(Class<T> category) {
         IIORegistry registry = IIORegistry.getDefaultInstance();
         Iterator<T> it = registry.getServiceProviders(category, false);
         ArrayList<T> providers = Lists.newArrayList(it);
@@ -254,15 +226,13 @@ public class GeoserverInitStartupListener implements ServletContextListener {
     }
 
     /**
-     * This method tries hard to stop all threads and remove all references to classes in GeoServer
-     * so that we can avoid permgen leaks on application undeploy. What happes is that, if any JDK
-     * class references to one of the classes loaded by the webapp classloader, then the classloader
-     * cannot be collected and neither can all the classes loaded by it (since each class keeps a
-     * back reference to the classloader that loaded it). The same happens for any residual thread
-     * launched by the web app.
+     * This method tries hard to stop all threads and remove all references to classes in GeoServer so that we can avoid
+     * permgen leaks on application undeploy. What happes is that, if any JDK class references to one of the classes
+     * loaded by the webapp classloader, then the classloader cannot be collected and neither can all the classes loaded
+     * by it (since each class keeps a back reference to the classloader that loaded it). The same happens for any
+     * residual thread launched by the web app.
      */
     @Override
-    @SuppressWarnings("PMD.ForLoopCanBeForeach")
     public void contextDestroyed(ServletContextEvent sce) {
         try {
             LOGGER.info("Beginning GeoServer cleanup sequence");
@@ -312,23 +282,19 @@ public class GeoserverInitStartupListener implements ServletContextListener {
 
             // unload all deferred authority factories so that we get rid of the timer tasks in them
             try {
-                disposeAuthorityFactories(
-                        ReferencingFactoryFinder.getCoordinateOperationAuthorityFactories(null));
+                disposeAuthorityFactories(ReferencingFactoryFinder.getCoordinateOperationAuthorityFactories(null));
             } catch (Throwable e) {
-                LOGGER.log(
-                        Level.WARNING, "Error occurred trying to dispose authority factories", e);
+                LOGGER.log(Level.WARNING, "Error occurred trying to dispose authority factories", e);
             }
             try {
                 disposeAuthorityFactories(ReferencingFactoryFinder.getCRSAuthorityFactories(null));
             } catch (Throwable e) {
-                LOGGER.log(
-                        Level.WARNING, "Error occurred trying to dispose authority factories", e);
+                LOGGER.log(Level.WARNING, "Error occurred trying to dispose authority factories", e);
             }
             try {
                 disposeAuthorityFactories(ReferencingFactoryFinder.getCSAuthorityFactories(null));
             } catch (Throwable e) {
-                LOGGER.log(
-                        Level.WARNING, "Error occurred trying to dispose authority factories", e);
+                LOGGER.log(Level.WARNING, "Error occurred trying to dispose authority factories", e);
             }
 
             // kill the threads created by referencing
@@ -354,15 +320,14 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                 }
             }
 
-            // unload everything that JAI ImageIO can still refer to
+            // unload everything that ImageIO can still refer to
             // We need to store them and unregister later to avoid concurrent modification
             // exceptions
             final IIORegistry ioRegistry = IIORegistry.getDefaultInstance();
             Set<IIOServiceProvider> providersToUnload = new HashSet<>();
             for (Iterator<Class<?>> cats = ioRegistry.getCategories(); cats.hasNext(); ) {
                 Class<?> category = cats.next();
-                for (Iterator it = ioRegistry.getServiceProviders(category, false);
-                        it.hasNext(); ) {
+                for (Iterator it = ioRegistry.getServiceProviders(category, false); it.hasNext(); ) {
                     final IIOServiceProvider provider = (IIOServiceProvider) it.next();
                     if (webappClassLoader.equals(provider.getClass().getClassLoader())) {
                         providersToUnload.add(provider);
@@ -374,8 +339,8 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                 LOGGER.fine("Unregistering Image I/O provider " + provider);
             }
 
-            // unload everything that JAI can still refer to
-            final OperationRegistry opRegistry = JAI.getDefaultInstance().getOperationRegistry();
+            // unload everything that ImageN can still refer to
+            final OperationRegistry opRegistry = ImageN.getDefaultInstance().getOperationRegistry();
             for (String mode : RegistryMode.getModeNames()) {
                 for (Iterator descriptors = opRegistry.getDescriptors(mode).iterator();
                         descriptors != null && descriptors.hasNext(); ) {
@@ -393,17 +358,14 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                         if (webappClassLoader.equals(factory.getClass().getClassLoader())) {
                             boolean unregistered = false;
                             // we need to scan against all "products" to unregister the factory
-                            List orderedProductList =
-                                    opRegistry.getOrderedProductList(mode, red.getName());
+                            List orderedProductList = opRegistry.getOrderedProductList(mode, red.getName());
                             if (orderedProductList != null) {
                                 for (Iterator products = orderedProductList.iterator();
                                         products != null && products.hasNext(); ) {
                                     String product = (String) products.next();
                                     try {
-                                        opRegistry.unregisterFactory(
-                                                mode, red.getName(), product, factory);
-                                        LOGGER.fine(
-                                                "Unregistering JAI factory " + factory.getClass());
+                                        opRegistry.unregisterFactory(mode, red.getName(), product, factory);
+                                        LOGGER.fine("Unregistering ImageN factory " + factory.getClass());
                                     } catch (Throwable t) {
                                         // may fail due to the factory not being registered against
                                         // that product
@@ -487,8 +449,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
      */
     GeoToolsLoggingRedirection establishLoggingRedirectionPolicy(ServletContext context) {
         GeoToolsLoggingRedirection policy =
-                GeoToolsLoggingRedirection.findValue(
-                        getProperty(LoggingUtils.GT2_LOGGING_REDIRECTION, context));
+                GeoToolsLoggingRedirection.findValue(getProperty(LoggingUtils.GT2_LOGGING_REDIRECTION, context));
         try {
             // Use string to reference logger factory to protect from init failure
             switch (policy) {
@@ -510,21 +471,17 @@ public class GeoserverInitStartupListener implements ServletContextListener {
         } catch (Exception e) {
             Logging.ALL.setLoggerFactory((org.geotools.util.logging.LoggerFactory) null);
             Logging.getLogger("org.geoserver.logging")
-                    .log(
-                            Level.SEVERE,
-                            "Could not configure log4j logging redirection: '" + policy + "'",
-                            e);
+                    .log(Level.SEVERE, "Could not configure log4j logging redirection: '" + policy + "'", e);
             return null;
         }
         return policy;
     }
 
-    private void disposeAuthorityFactories(Set<? extends AuthorityFactory> factories)
-            throws FactoryException {
+    private void disposeAuthorityFactories(Set<? extends AuthorityFactory> factories) throws FactoryException {
         for (AuthorityFactory af : factories) {
-            if (af instanceof AbstractAuthorityFactory) {
+            if (af instanceof AbstractAuthorityFactory factory) {
                 LOGGER.fine("Disposing referencing factory " + af);
-                ((AbstractAuthorityFactory) af).dispose();
+                factory.dispose();
             }
         }
     }

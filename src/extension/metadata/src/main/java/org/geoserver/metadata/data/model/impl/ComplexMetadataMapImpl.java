@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.data.model.impl;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +18,7 @@ import org.geoserver.metadata.data.model.ComplexMetadataMap;
 
 public class ComplexMetadataMapImpl implements ComplexMetadataMap {
 
+    @Serial
     private static final long serialVersionUID = 1857277796433431947L;
 
     private static final String PATH_SEPARATOR = "/";
@@ -40,9 +42,7 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
     }
 
     protected ComplexMetadataMapImpl(
-            ComplexMetadataMapImpl parent,
-            String[] basePath,
-            ComplexMetadataIndexReference baseIndexRef) {
+            ComplexMetadataMapImpl parent, String[] basePath, ComplexMetadataIndexReference baseIndexRef) {
         this.delegate = parent.getDelegate();
         this.indexes = parent.getIndexes();
         this.basePath = basePath;
@@ -57,12 +57,10 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
     }
 
     @Override
-    public <T extends Serializable> ComplexMetadataAttribute<T> get(
-            Class<T> clazz, String path, int... index) {
+    public <T extends Serializable> ComplexMetadataAttribute<T> get(Class<T> clazz, String path, int... index) {
         String strPath = String.join(PATH_SEPARATOR, concat(basePath, path));
         int[] fullIndex = concat(baseIndexRef.getIndex(), index);
-        return new ComplexMetadataAttributeImpl<>(
-                getDelegate(), strPath, getOrCreateIndex(strPath, fullIndex), clazz);
+        return new ComplexMetadataAttributeImpl<>(getDelegate(), strPath, getOrCreateIndex(strPath, fullIndex), clazz);
     }
 
     @Override
@@ -71,9 +69,7 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
         return new ComplexMetadataMapImpl(
                 this,
                 fullPath,
-                getOrCreateIndex(
-                        String.join(PATH_SEPARATOR, fullPath),
-                        concat(baseIndexRef.getIndex(), index)));
+                getOrCreateIndex(String.join(PATH_SEPARATOR, fullPath), concat(baseIndexRef.getIndex(), index)));
     }
 
     protected ComplexMetadataIndexReference getOrCreateIndex(String strPath, int[] index) {
@@ -165,7 +161,8 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
             if ("".equals(strPath) || key.startsWith(strPath + PATH_SEPARATOR)) {
                 String strippedKey = "".equals(strPath) ? key : key.substring(strPath.length() + 1);
                 newDelegate.put(
-                        strippedKey, dimCopy(get(Serializable.class, strippedKey).getValue()));
+                        strippedKey,
+                        dimCopy(get(Serializable.class, strippedKey).getValue()));
             }
         }
         return new ComplexMetadataMapImpl(newDelegate);
@@ -204,15 +201,13 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
                 while (it.hasNext()) {
                     ComplexMetadataIndexReference item = it.next();
                     if (item.getIndex().length >= index.length) {
-                        int[] rootItemIndex =
-                                Arrays.copyOfRange(item.getIndex(), 0, index.length - 1);
+                        int[] rootItemIndex = Arrays.copyOfRange(item.getIndex(), 0, index.length - 1);
                         int[] rootIndex = Arrays.copyOfRange(index, 0, index.length - 1);
                         if (Arrays.equals(rootIndex, rootItemIndex)) {
                             if (item.getIndex()[index.length - 1] == index[index.length - 1]) {
                                 item.setIndex(null);
                                 it.remove();
-                            } else if (item.getIndex()[index.length - 1]
-                                    > index[index.length - 1]) {
+                            } else if (item.getIndex()[index.length - 1] > index[index.length - 1]) {
                                 item.getIndex()[index.length - 1]--;
                             }
                         }
@@ -244,9 +239,9 @@ public class ComplexMetadataMapImpl implements ComplexMetadataMap {
     }
 
     public static Serializable dimCopy(Serializable source) {
-        if (source instanceof List) {
+        if (source instanceof List<?> list1) {
             ArrayList<Serializable> list = new ArrayList<>();
-            for (Object item : (List<?>) source) {
+            for (Object item : list1) {
                 list.add(dimCopy((Serializable) item));
             }
             return list;

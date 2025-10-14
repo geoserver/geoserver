@@ -5,15 +5,15 @@
  */
 package org.geoserver.security.config;
 
+import java.io.Serial;
 import javax.servlet.http.HttpSession;
 import org.springframework.security.core.Authentication;
 
 /**
  * Configuration for security context persistence
  *
- * <p>if {@link #allowSessionCreation} is <code>true</code>, creation of a {@link HttpSession}
- * object is allowed and an {@link Authentication} object can be stored to avoid re-authentication
- * fore each request
+ * <p>if {@link #allowSessionCreation} is <code>true</code>, creation of a {@link HttpSession} object is allowed and an
+ * {@link Authentication} object can be stored to avoid re-authentication fore each request
  *
  * <p>Should be <code>false</code> for stateless services
  *
@@ -21,7 +21,9 @@ import org.springframework.security.core.Authentication;
  */
 public class SecurityContextPersistenceFilterConfig extends SecurityFilterConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
+
     private boolean allowSessionCreation;
 
     public boolean isAllowSessionCreation() {

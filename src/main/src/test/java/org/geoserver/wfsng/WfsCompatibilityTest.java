@@ -51,14 +51,10 @@ public class WfsCompatibilityTest extends GeoServerSystemTestSupport {
 
         XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
 
-        DataStoreInfo storeInfo =
-                xp.load(getClass().getResourceAsStream("datastore.xml"), DataStoreInfoImpl.class);
+        DataStoreInfo storeInfo = xp.load(getClass().getResourceAsStream("datastore.xml"), DataStoreInfoImpl.class);
         storeInfo.setWorkspace(getCatalog().getDefaultWorkspace());
         getCatalog().add(storeInfo);
-        FeatureTypeInfo ftInfo =
-                xp.load(
-                        getClass().getResourceAsStream("featuretype.xml"),
-                        FeatureTypeInfoImpl.class);
+        FeatureTypeInfo ftInfo = xp.load(getClass().getResourceAsStream("featuretype.xml"), FeatureTypeInfoImpl.class);
         ftInfo.setStore(storeInfo);
         getCatalog().add(ftInfo);
 
@@ -72,9 +68,10 @@ public class WfsCompatibilityTest extends GeoServerSystemTestSupport {
             FeatureType type = ftInfo.getFeatureType();
             assertEquals("sf_archsites", type.getName().getLocalPart());
             assertEquals(
-                    "sf_archsites", ftInfo.getFeatureSource(null, null).getName().getLocalPart());
+                    "sf_archsites",
+                    ftInfo.getFeatureSource(null, null).getName().getLocalPart());
         } catch (IOException e) {
-            String expectedMessage = "Unknown type sf_archsites";
+            String expectedMessage = "Schema 'sf_archsites' does not exist.";
             assertEquals("Exception message must be correct", expectedMessage, e.getMessage());
         }
     }
@@ -82,8 +79,8 @@ public class WfsCompatibilityTest extends GeoServerSystemTestSupport {
     @SuppressWarnings("unchecked")
     private DataAccess<? extends FeatureType, ? extends Feature> unwrap(
             DataAccess<? extends FeatureType, ? extends Feature> store) {
-        if (store instanceof Wrapper) {
-            store = ((Wrapper) store).unwrap(DataAccess.class);
+        if (store instanceof Wrapper wrapper) {
+            store = wrapper.unwrap(DataAccess.class);
         }
         return store;
     }

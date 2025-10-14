@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.netcdf.layer;
 
+import java.io.Serial;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.catalog.CoverageInfo;
@@ -19,6 +20,7 @@ import org.geoserver.web.publish.LayerEditTabPanelInfo;
 public class NetCDFOutEditTabPanelInfo extends LayerEditTabPanelInfo {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Override
@@ -27,8 +29,7 @@ public class NetCDFOutEditTabPanelInfo extends LayerEditTabPanelInfo {
     }
 
     @Override
-    public IModel<CoverageInfo> createOwnModel(
-            IModel<? extends LayerInfo> layerModel, boolean isNew) {
+    public IModel<CoverageInfo> createOwnModel(IModel<? extends LayerInfo> layerModel, boolean isNew) {
         CoverageInfo info = (CoverageInfo) layerModel.getObject().getResource();
         // Check if the MetadataMap already contains the NetCDF Settings
         MetadataMap map = info.getMetadata();
@@ -41,8 +42,7 @@ public class NetCDFOutEditTabPanelInfo extends LayerEditTabPanelInfo {
             GeoServer gs = GeoServerExtensions.bean(GeoServer.class);
             MetadataMap globalMap = gs.getGlobal().getSettings().getMetadata();
             NetCDFSettingsContainer globalContainer =
-                    globalMap.get(
-                            NetCDFSettingsContainer.NETCDFOUT_KEY, NetCDFSettingsContainer.class);
+                    globalMap.get(NetCDFSettingsContainer.NETCDFOUT_KEY, NetCDFSettingsContainer.class);
             // If not present, create a new container
             if (globalContainer == null) {
                 globalContainer = new NetCDFSettingsContainer();

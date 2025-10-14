@@ -1,0 +1,1081 @@
+openapi: 3.0.3
+info:
+  title: 'A sample API conforming to the standard OGC API - Processes - Part 1 : Core'
+  version: 1.0.0
+  description: 'This document is an API definition document provided alongside the
+    OGC API - Processes standard. The
+
+    OGC API - Processes Standard specifies a processing interface to communicate over
+    a RESTful protocol using JavaScript Object Notation (JSON) encodings. The
+
+    specification allows for the wrapping of computational tasks into executable processes
+    that can be offered by a server and be invoked by a client application.'
+  contact:
+    name: Open Geospatial Consortium (OGC)
+    email: standards-team@ogc.org
+    url: https://www.ogc.org/contacts
+  license:
+    name: OGC
+    url: http://www.ogc.org/legal/
+servers:
+  - description: Example server
+    url: http://example.org/ogcapi
+paths:
+  /:
+    get:
+      summary: landing page of this API
+      description: | 
+        'The landing page provides links to the: 
+        * The APIDefinition (no fixed path), 
+        * The Conformance statements (path /conformance), 
+        * The processes metadata (path /processes), 
+        * The endpoint for job monitoring (path /jobs).
+        For more information, see [Section 7.2](https://docs.ogc.org/is/18-062/18-062.html#sc_landing_page).'
+      operationId: getLandingPage
+      parameters:
+        - $ref: '#/components/parameters/f-json-html'
+      tags:
+        - Capabilities
+      responses:
+        200:
+          $ref: '#/components/responses/LandingPageResponse'
+        500:
+          $ref: '#/components/responses/ExceptionResponse'
+  /conformance:
+    get:
+      summary: information about standards that this API conforms to
+      description: A list of all conformance classes, specified in a standard, that the server conforms to.
+      operationId: getConformanceClasses
+      parameters:
+        - $ref: '#/components/parameters/f-json-html'
+      tags:
+        - ConformanceDeclaration
+      responses:
+        200:
+          $ref: '#/components/responses/ConformanceResponse'
+        500:
+          $ref: '#/components/responses/ExceptionResponse'
+  /processes:
+    get:
+      summary: retrieve the list of available processes
+      description: > 
+        The list of processes contains a summary of each process the OGC API - Processes offers,
+        including the link to a more detailed description of the process.
+      operationId: getProcesses
+      parameters:
+        - $ref: '#/components/parameters/f-json-html'
+      tags:
+        - ProcessList
+      responses:
+        200:
+          $ref: '#/components/responses/ProcessesResponse'
+        500:
+          $ref: '#/components/responses/ExceptionResponse'
+  /processes/{processID}:
+    get:
+      summary: retrieve a process description
+      description: >
+        The process description contains information about inputs and
+        outputs and a link to the execution-endpoint for the process. The Core does
+        not mandate the use of a specific process description to specify the interface
+        of a process. That said, the Core requirements class makes the following recommendation:
+        Implementations SHOULD consider supporting the OGC process description.
+      operationId: getProcessDescription
+      parameters:
+        - $ref: '#/components/parameters/f-json-html'
+        - $ref: '#/components/parameters/processID'
+      tags:
+        - ProcessDescription
+      responses:
+        200:
+          $ref: '#/components/responses/ProcessDescriptionResponse'
+        404:
+          $ref: '#/components/responses/NotFoundResponse'
+        500:
+          $ref: '#/components/responses/ExceptionResponse'
+  /processes/{processID}/execution:
+    post:
+      summary: execute a process.
+      description: >
+        Create a new job.
+      operationId: execute
+      tags:
+        - Execute
+      parameters:
+        - $ref: '#/components/parameters/processID'
+      requestBody:
+        description: Mandatory execute request JSON
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExecutionRequestBody'
+      responses:
+        200:
+          $ref: '#/components/responses/SynchronousExecutionResponse'
+        201:
+          $ref: '#/components/responses/AsynchronousExecutionResponse'
+        404:
+          $ref: '#/components/responses/NotFoundResponse'
+        500:
+          $ref: '#/components/responses/ExceptionResponse'
+      callbacks:
+        jobCompleted:
+          '{$request.body#/subscriber/successUri}':
+            post:
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      additionalProperties:
+                        oneOf:
+                          - oneOf:
+                              - type: string
+                              - type: number
+                              - type: integer
+                              - type: boolean
+                              - type: array
+                              - type: string
+                                format: byte
+                              - type: object
+                                required:
+                                  - bbox
+                                properties:
+                                  bbox:
+                                    type: array
+                                    oneOf:
+                                      - minItems: 4
+                                        maxItems: 4
+                                      - minItems: 6
+                                        maxItems: 6
+                                    items:
+                                      type: number
+                                  crs:
+                                    type: string
+                                    format: uri
+                                    default: http://www.opengis.net/def/crs/OGC/1.3/CRS84
+                                    enum:
+                                      - http://www.opengis.net/def/crs/OGC/1.3/CRS84
+                                      - http://www.opengis.net/def/crs/OGC/0/CRS84h
+                          - type: object
+                            required:
+                              - href
+                            properties:
+                              href:
+                                type: string
+                              rel:
+                                type: string
+                                example: service
+                              type:
+                                type: string
+                                example: application/json
+                              hreflang:
+                                type: string
+                                example: en
+                              title:
+                                type: string
+              responses:
+                200:
+                  description: Results received successfully
+  /jobs:
+    get:
+      summary: retrieve the list of jobs.
+      description: Lists available jobs.
+      operationId: getJobs
+      parameters:
+        - $ref: '#/components/parameters/f-json-html'
+      tags:
+        - JobList
+      responses:
+        200:
+          $ref: '#/components/responses/JobListResponse'
+        404:
+          $ref: '#/components/responses/NotFoundResponse'
+  /jobs/{jobId}:
+    get:
+      summary: retrieve the status of a job
+      description: Shows the status of a job.
+      operationId: getStatus
+      tags:
+        - Status
+      parameters:
+        - $ref: '#/components/parameters/jobId'
+        - $ref: '#/components/parameters/f-json-html'          
+      responses:
+        200:
+          $ref: '#/components/responses/JobStatusResponse'
+        404:
+          $ref: '#/components/responses/NotFoundResponse'
+        500:
+          $ref: '#/components/responses/ExceptionResponse'
+    delete:
+      summary: cancel a job execution, remove a finished job
+      description: Cancel a job execution and remove it from the jobs list.
+      operationId: dismiss
+      tags:
+        - Dismiss
+      parameters:
+        - $ref: '#/components/parameters/jobId'
+      responses:
+        200:
+          $ref: '#/components/responses/JobStatusResponse'
+        404:
+          $ref: '#/components/responses/NotFoundResponse'
+        500:
+          $ref: '#/components/responses/ExceptionResponse'
+  /jobs/{jobId}/results:
+    get:
+      summary: retrieve the result(s) of a job
+      description: Lists available results of a job. In case of a failure, lists exceptions instead.
+      operationId: getResult
+      tags:
+        - Result
+      parameters:
+        - $ref: '#/components/parameters/jobId'
+        - $ref: '#/components/parameters/f-json-html'          
+      responses:
+        200:
+          $ref: '#/components/responses/JobResultResponse'
+        404:
+          $ref: '#/components/responses/NotFoundResponse'
+        500:
+          $ref: '#/components/responses/ExceptionResponse'
+components:
+  schemas:
+    LandingPage:
+      type: object
+      required:
+        - links
+      properties:
+        title:
+          type: string
+          example: Example processing server
+        description:
+          type: string
+          example: Example server implementing the OGC API - Processes 1.0 Standard
+        links:
+          type: array
+          items:
+            type: object
+            required:
+              - href
+            properties:
+              href:
+                type: string
+              rel:
+                type: string
+                example: service
+              type:
+                type: string
+                example: application/json
+              hreflang:
+                type: string
+                example: en
+              title:
+                type: string
+    Exception:
+      title: Exception Schema
+      description: JSON schema for exceptions based on RFC 7807
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+      additionalProperties: true
+    Conformance:
+      type: object
+      required:
+        - conformsTo
+      properties:
+        conformsTo:
+          type: array
+          items:
+            type: string
+          example: http://www.opengis.net/spec/ogcapi-processes-1/1.0/conf/core
+    Processes:
+      type: object
+      required:
+        - processes
+        - links
+      properties:
+        processes:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - version
+            properties:
+              title:
+                type: string
+              description:
+                type: string
+              keywords:
+                type: array
+                items:
+                  type: string
+              metadata:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                    role:
+                      type: string
+                    href:
+                      type: string
+              additionalParameters:
+                type: object
+                properties:
+                  title:
+                    type: string
+                  role:
+                    type: string
+                  href:
+                    type: string
+                  parameters:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - name
+                        - value
+                      properties:
+                        name:
+                          type: string
+                        value:
+                          type: array
+                          items:
+                            oneOf:
+                              - type: string
+                              - type: number
+                              - type: integer
+                              - type: array
+                                items: {}
+                              - type: object
+              id:
+                type: string
+              version:
+                type: string
+              jobControlOptions:
+                type: array
+                items:
+                  type: string
+                  enum:
+                    - sync-execute
+                    - async-execute
+                    - dismiss
+              outputTransmission:
+                type: array
+                items:
+                  type: string
+                  enum:
+                    - value
+                    - reference
+                  default: value
+              links:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - href
+                  properties:
+                    href:
+                      type: string
+                    rel:
+                      type: string
+                      example: service
+                    type:
+                      type: string
+                      example: application/json
+                    hreflang:
+                      type: string
+                      example: en
+                    title:
+                      type: string
+        links:
+          type: array
+          items:
+            type: object
+            required:
+              - href
+            properties:
+              href:
+                type: string
+              rel:
+                type: string
+                example: service
+              type:
+                type: string
+                example: application/json
+              hreflang:
+                type: string
+                example: en
+              title:
+                type: string
+    ProcessDescription:
+      type: object
+      required:
+        - id
+        - version
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        keywords:
+          type: array
+          items:
+            type: string
+        metadata:
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+              role:
+                type: string
+              href:
+                type: string
+        additionalParameters:
+          type: object
+          properties:
+            title:
+              type: string
+            role:
+              type: string
+            href:
+              type: string
+            parameters:
+              type: array
+              items:
+                type: object
+                required:
+                  - name
+                  - value
+                properties:
+                  name:
+                    type: string
+                  value:
+                    type: array
+                    items:
+                      oneOf:
+                        - type: string
+                        - type: number
+                        - type: integer
+                        - type: array
+                          items: {}
+                        - type: object
+        id:
+          type: string
+        version:
+          type: string
+        jobControlOptions:
+          type: array
+          items:
+            type: string
+            enum:
+              - sync-execute
+              - async-execute
+              - dismiss
+        outputTransmission:
+          type: array
+          items:
+            type: string
+            enum:
+              - value
+              - reference
+            default: value
+        links:
+          type: array
+          items:
+            type: object
+            required:
+              - href
+            properties:
+              href:
+                type: string
+              rel:
+                type: string
+                example: service
+              type:
+                type: string
+                example: application/json
+              hreflang:
+                type: string
+                example: en
+              title:
+                type: string
+        inputs:
+          additionalProperties:
+            type: object
+            required:
+              - schema
+            properties:
+              minOccurs:
+                type: integer
+                default: 1
+              maxOccurs:
+                oneOf:
+                  - type: integer
+                    default: 1
+                  - type: string
+                    enum:
+                      - unbounded
+              schema:
+                oneOf:
+                  - type: object
+                  - type: object
+        outputs:
+          additionalProperties:
+            type: object
+            required:
+              - schema
+            properties:
+              schema:
+                oneOf:
+                  - type: object
+                  - type: object
+    ExecutionRequestBody:
+      type: object
+      properties:
+        inputs:
+          additionalProperties:
+            oneOf:
+              - oneOf:
+                  - type: string
+                  - type: number
+                  - type: integer
+                  - type: boolean
+                  - type: array
+                  - type: string
+                    format: byte
+                  - type: object
+                    required:
+                      - bbox
+                    properties:
+                      bbox:
+                        type: array
+                        oneOf:
+                          - minItems: 4
+                            maxItems: 4
+                          - minItems: 6
+                            maxItems: 6
+                        items:
+                          type: number
+                      crs:
+                        type: string
+                        format: uri
+                        default: http://www.opengis.net/def/crs/OGC/1.3/CRS84
+                        enum:
+                          - http://www.opengis.net/def/crs/OGC/1.3/CRS84
+                          - http://www.opengis.net/def/crs/OGC/0/CRS84h
+              - type: object
+                required:
+                  - value
+                properties:
+                  mediaType:
+                    type: string
+                  encoding:
+                    type: string
+                  schema:
+                    oneOf:
+                      - type: string
+                        format: url
+                      - type: object
+                  value:
+                    oneOf:
+                      - oneOf:
+                          - type: string
+                          - type: number
+                          - type: integer
+                          - type: boolean
+                          - type: array
+                          - type: string
+                            format: byte
+                          - type: object
+                            required:
+                              - bbox
+                            properties:
+                              bbox:
+                                type: array
+                                oneOf:
+                                  - minItems: 4
+                                    maxItems: 4
+                                  - minItems: 6
+                                    maxItems: 6
+                                items:
+                                  type: number
+                              crs:
+                                type: string
+                                format: uri
+                                default: http://www.opengis.net/def/crs/OGC/1.3/CRS84
+                                enum:
+                                  - http://www.opengis.net/def/crs/OGC/1.3/CRS84
+                                  - http://www.opengis.net/def/crs/OGC/0/CRS84h
+                      - type: object
+              - type: object
+                required:
+                  - href
+                properties:
+                  href:
+                    type: string
+                  rel:
+                    type: string
+                    example: service
+                  type:
+                    type: string
+                    example: application/json
+                  hreflang:
+                    type: string
+                    example: en
+                  title:
+                    type: string
+        outputs:
+          additionalProperties:
+            type: object
+            properties:
+              format:
+                type: object
+                properties:
+                  mediaType:
+                    type: string
+                  encoding:
+                    type: string
+                  schema:
+                    oneOf:
+                      - type: string
+                        format: url
+                      - type: object
+              transmissionMode:
+                type: string
+                enum:
+                  - value
+                  - reference
+                default: value
+        response:
+          type: string
+          enum:
+            - raw
+            - document
+          default: raw
+        subscriber:
+          description: "Optional URIs for callbacks for this job. Support for this\
+            \ \nparameter is not required and the parameter may be removed from the\
+            \ API \ndefinition, if conformance class **'callback'** is not listed\
+            \ in the conformance\ndeclaration under `/conformance`."
+          type: object
+          required:
+            - successUri
+          properties:
+            successUri:
+              type: string
+              format: uri
+            inProgressUri:
+              type: string
+              format: uri
+            failedUri:
+              type: string
+              format: uri
+    SynchronousResponse:
+      oneOf:
+        - type: string
+        - type: number
+        - type: integer
+        - type: object
+          nullable: true
+        - type: array
+        - type: boolean
+        - type: string
+          format: binary
+        - type: object
+          additionalProperties:
+            oneOf:
+              - oneOf:
+                  - type: string
+                  - type: number
+                  - type: integer
+                  - type: boolean
+                  - type: array
+                  - type: string
+                    format: byte
+                  - type: object
+                    required:
+                      - bbox
+                    properties:
+                      bbox:
+                        type: array
+                        oneOf:
+                          - minItems: 4
+                            maxItems: 4
+                          - minItems: 6
+                            maxItems: 6
+                        items:
+                          type: number
+                      crs:
+                        type: string
+                        format: uri
+                        default: http://www.opengis.net/def/crs/OGC/1.3/CRS84
+                        enum:
+                          - http://www.opengis.net/def/crs/OGC/1.3/CRS84
+                          - http://www.opengis.net/def/crs/OGC/0/CRS84h
+              - type: object
+                required:
+                  - href
+                properties:
+                  href:
+                    type: string
+                  rel:
+                    type: string
+                    example: service
+                  type:
+                    type: string
+                    example: application/json
+                  hreflang:
+                    type: string
+                    example: en
+                  title:
+                    type: string
+    AsynchrounousResponse:
+      type: object
+      required:
+        - jobID
+        - status
+        - type
+      properties:
+        processID:
+          type: string
+        type:
+          type: string
+          enum:
+            - process
+        jobID:
+          type: string
+        status:
+          type: string
+          nullable: false
+          enum:
+            - accepted
+            - running
+            - successful
+            - failed
+            - dismissed
+        message:
+          type: string
+        created:
+          type: string
+          format: date-time
+        started:
+          type: string
+          format: date-time
+        finished:
+          type: string
+          format: date-time
+        updated:
+          type: string
+          format: date-time
+        progress:
+          type: integer
+          minimum: 0
+          maximum: 100
+        links:
+          type: array
+          items:
+            type: object
+            required:
+              - href
+            properties:
+              href:
+                type: string
+              rel:
+                type: string
+                example: service
+              type:
+                type: string
+                example: application/json
+              hreflang:
+                type: string
+                example: en
+              title:
+                type: string
+    Resp200_1aa8edb6:
+      type: object
+      required:
+        - jobs
+        - links
+      properties:
+        jobs:
+          type: array
+          items:
+            type: object
+            required:
+              - jobID
+              - status
+              - type
+            properties:
+              processID:
+                type: string
+              type:
+                type: string
+                enum:
+                  - process
+              jobID:
+                type: string
+              status:
+                type: string
+                nullable: false
+                enum:
+                  - accepted
+                  - running
+                  - successful
+                  - failed
+                  - dismissed
+              message:
+                type: string
+              created:
+                type: string
+                format: date-time
+              started:
+                type: string
+                format: date-time
+              finished:
+                type: string
+                format: date-time
+              updated:
+                type: string
+                format: date-time
+              progress:
+                type: integer
+                minimum: 0
+                maximum: 100
+              links:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - href
+                  properties:
+                    href:
+                      type: string
+                    rel:
+                      type: string
+                      example: service
+                    type:
+                      type: string
+                      example: application/json
+                    hreflang:
+                      type: string
+                      example: en
+                    title:
+                      type: string
+        links:
+          type: array
+          items:
+            type: object
+            required:
+              - href
+            properties:
+              href:
+                type: string
+              rel:
+                type: string
+                example: service
+              type:
+                type: string
+                example: application/json
+              hreflang:
+                type: string
+                example: en
+              title:
+                type: string
+    JobResultResponse:
+      type: object
+      additionalProperties:
+        oneOf:
+          - oneOf:
+              - type: string
+              - type: number
+              - type: integer
+              - type: boolean
+              - type: array
+              - type: string
+                format: byte
+              - type: object
+                required:
+                  - bbox
+                properties:
+                  bbox:
+                    type: array
+                    oneOf:
+                      - minItems: 4
+                        maxItems: 4
+                      - minItems: 6
+                        maxItems: 6
+                    items:
+                      type: number
+                  crs:
+                    type: string
+                    format: uri
+                    default: http://www.opengis.net/def/crs/OGC/1.3/CRS84
+                    enum:
+                      - http://www.opengis.net/def/crs/OGC/1.3/CRS84
+                      - http://www.opengis.net/def/crs/OGC/0/CRS84h
+          - type: object
+            required:
+              - href
+            properties:
+              href:
+                type: string
+              rel:
+                type: string
+                example: service
+              type:
+                type: string
+                example: application/json
+              hreflang:
+                type: string
+                example: en
+              title:
+                type: string
+  parameters:
+    f-json-html:
+      name: f
+      in: query
+      required: false
+      description: 'The format of the response. The default is application/json. The
+        value json is equivalent to application/json. The value html is equivalent
+        to text/html.'
+      schema:
+        type: string
+        enum:
+          - json
+          - html
+    processID:
+      name: processID
+      in: path
+      required: true
+      schema:
+        type: string
+    jobId:
+      name: jobId
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    LandingPageResponse:
+      description: The landing page provides links to the API definition (link relations
+        `service-desc` and `service-doc`), the Conformance declaration (path `/conformance`,
+        link relation `http://www.opengis.net/def/rel/ogc/1.0/conformance`), and to
+        other resources.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/LandingPage'
+        text/html:
+          schema:
+            type: string
+    ExceptionResponse:
+      description: A server error occurred.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Exception'
+        text/html:
+          schema:
+            type: string
+    ConformanceResponse:
+      description: > 
+        The URIs of all conformance classes supported by the server. To
+        support "generic" clients that want to access multiple OGC API - Processes
+        implementations - and not "just" a specific API server, the server
+         declares the conformance classes it implements and conforms to.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Conformance'
+          example:
+            conformsTo:
+              - http://www.opengis.net/spec/ogcapi-processes-1/1.0/conf/core
+        text/html:
+          schema:
+            type: string
+    ProcessesResponse:
+      description: Information about the available processes
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Processes'
+    ProcessDescriptionResponse:
+      description: A process description.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProcessDescription'
+        text/html:
+          schema:
+            type: string
+    NotFoundResponse:
+      description: The requested URI was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Exception'
+        text/html:
+          schema:
+            type: string
+    SynchronousExecutionResponse:
+      description: Result of synchronous execution
+      content:
+        '*/*':
+          schema:
+            $ref: '#/components/schemas/SynchronousResponse'
+    AsynchronousExecutionResponse:
+      description: Started asynchronous execution. Created job.
+      headers:
+        Location:
+          schema:
+            type: string
+          description: URL to check the status of the execution/job.
+        Preference-Applied:
+          schema:
+            type: string
+          description: The preference applied to execute the process asynchronously
+            (see RFC 7240).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AsynchrounousResponse'
+    JobListResponse:
+      description: A list of jobs for this process.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Resp200_1aa8edb6'
+    JobStatusResponse:
+      description: The status of a job.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AsynchrounousResponse'
+    JobResultResponse:
+      description: The results of a job.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/JobResultResponse'
+        text/html:
+          schema:
+            type: string

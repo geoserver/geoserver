@@ -28,11 +28,9 @@ public class SpatialReferenceEncoder {
      * @param json a JSONBuilder which the json representation is added to
      */
     public static void toJson(SpatialReference sr, JSONBuilder json) {
-        if (sr instanceof SpatialReferenceWKID) {
-            final SpatialReferenceWKID wkid = (SpatialReferenceWKID) sr;
+        if (sr instanceof SpatialReferenceWKID wkid) {
             json.object().key("wkid").value(wkid.getWkid()).endObject();
-        } else if (sr instanceof SpatialReferenceWKT) {
-            SpatialReferenceWKT wkt = (SpatialReferenceWKT) sr;
+        } else if (sr instanceof SpatialReferenceWKT wkt) {
             json.object().key("wkt").value(wkt.getWkt()).endObject();
         }
     }
@@ -52,8 +50,7 @@ public class SpatialReferenceEncoder {
         if (json.containsKey("uri")) {
             // TODO: I'm not sure how to look these up - need to check out how GeoServer does this
             // for WFS requests.
-            throw new RuntimeException(
-                    "Spatial reference specified as URI - decoding these is not yet implemented.");
+            throw new RuntimeException("Spatial reference specified as URI - decoding these is not yet implemented.");
         }
 
         throw new JSONException("Could not determine spatial reference from JSON: " + json);
@@ -67,8 +64,7 @@ public class SpatialReferenceEncoder {
      */
     public static CoordinateReferenceSystem coordinateReferenceSystemFromJSON(JSON json) {
         if (!(json instanceof JSONObject)) {
-            throw new JSONException(
-                    "Spatial Reference must be encoded as JSON Object: was " + json);
+            throw new JSONException("Spatial Reference must be encoded as JSON Object: was " + json);
         }
         JSONObject obj = (JSONObject) json;
         return coordinateReferenceSystemFromSpatialReference(fromJson(obj));
@@ -80,11 +76,10 @@ public class SpatialReferenceEncoder {
      * @param sr the spatial reference
      * @return the coordinate reference system
      */
-    public static CoordinateReferenceSystem coordinateReferenceSystemFromSpatialReference(
-            SpatialReference sr) {
+    public static CoordinateReferenceSystem coordinateReferenceSystemFromSpatialReference(SpatialReference sr) {
 
-        if (sr instanceof SpatialReferenceWKID) {
-            int wkid = ((SpatialReferenceWKID) sr).getWkid();
+        if (sr instanceof SpatialReferenceWKID iD) {
+            int wkid = iD.getWkid();
 
             try {
                 return CRS.decode("EPSG:" + wkid);
@@ -94,13 +89,12 @@ public class SpatialReferenceEncoder {
             }
         }
 
-        if (sr instanceof SpatialReferenceWKT) {
-            String wkt = ((SpatialReferenceWKT) sr).getWkt();
+        if (sr instanceof SpatialReferenceWKT kT) {
+            String wkt = kT.getWkt();
             try {
                 return CRS.parseWKT(wkt);
             } catch (FactoryException e) {
-                throw new IllegalArgumentException(
-                        "wkt value (" + wkt + ") is not valid well-known text", e);
+                throw new IllegalArgumentException("wkt value (" + wkt + ") is not valid well-known text", e);
             }
         }
         throw new IllegalArgumentException(

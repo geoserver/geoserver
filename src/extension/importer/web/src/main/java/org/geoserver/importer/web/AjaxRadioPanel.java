@@ -5,6 +5,7 @@
  */
 package org.geoserver.importer.web;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import org.apache.wicket.Component;
@@ -25,6 +26,7 @@ import org.apache.wicket.model.Model;
  */
 public abstract class AjaxRadioPanel<T extends Serializable> extends Panel {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     protected abstract void onRadioSelect(AjaxRequestTarget target, T newSelection);
@@ -41,20 +43,20 @@ public abstract class AjaxRadioPanel<T extends Serializable> extends Panel {
     private Component buildContents(List<T> items, T currentSelection) {
 
         final RadioGroup<T> group = new RadioGroup<>("radioGroup", new Model<>(currentSelection));
-        group.add(
-                new ListView<>("radioButtons", items) {
-                    @Override
-                    protected void populateItem(ListItem<T> item) {
-                        item.add(newRadioCell(group, item));
-                        item.add(createLabel("label", item));
-                    }
-                });
+        group.add(new ListView<>("radioButtons", items) {
+            @Override
+            protected void populateItem(ListItem<T> item) {
+                item.add(newRadioCell(group, item));
+                item.add(createLabel("label", item));
+            }
+        });
         return group;
     }
 
     protected AjaxRadio<T> newRadioCell(final RadioGroup<T> group, ListItem<T> item) {
         return new AjaxRadio<>("radio", item.getModel()) {
 
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override

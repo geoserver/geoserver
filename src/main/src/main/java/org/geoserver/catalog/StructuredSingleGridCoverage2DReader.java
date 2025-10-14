@@ -15,8 +15,8 @@ import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.util.factory.Hints;
 
 /**
- * A single coverage wrapper for structured coverage readers. The structured extra operations are
- * not limited to the single coverage though.
+ * A single coverage wrapper for structured coverage readers. The structured extra operations are not limited to the
+ * single coverage though.
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -25,8 +25,7 @@ public class StructuredSingleGridCoverage2DReader extends SingleGridCoverage2DRe
 
     private StructuredGridCoverage2DReader structuredDelegate;
 
-    public StructuredSingleGridCoverage2DReader(
-            StructuredGridCoverage2DReader delegate, String coverageName) {
+    public StructuredSingleGridCoverage2DReader(StructuredGridCoverage2DReader delegate, String coverageName) {
         super(delegate, coverageName);
         this.structuredDelegate = delegate;
     }
@@ -69,8 +68,7 @@ public class StructuredSingleGridCoverage2DReader extends SingleGridCoverage2DRe
     }
 
     @Override
-    public List<DimensionDescriptor> getDimensionDescriptors(String coverageName)
-            throws IOException {
+    public List<DimensionDescriptor> getDimensionDescriptors(String coverageName) throws IOException {
         if (coverageName == null) {
             coverageName = this.coverageName;
         }

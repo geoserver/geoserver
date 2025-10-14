@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.ldap;
 
+import java.io.Serial;
 import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
 
 /**
@@ -14,7 +15,9 @@ import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
  * @author Niels Charlier
  */
 public abstract class LDAPBaseSecurityServiceConfig extends BaseSecurityNamedServiceConfig {
+    @Serial
     private static final long serialVersionUID = -6478665500954608763L;
+
     public static final String ROLE_PREFIX_DEFAULT = "ROLE_";
     public static final boolean CONVERT_ROLE_UPPERCASE_DEFAULT = true;
 
@@ -44,10 +47,7 @@ public abstract class LDAPBaseSecurityServiceConfig extends BaseSecurityNamedSer
     /** Pattern used for nested group filtering */
     private String nestedGroupSearchFilter = "(member={0})";
 
-    /**
-     * bind to the server before extracting groups some LDAP server require this (e.g.
-     * ActiveDirectory)
-     */
+    /** bind to the server before extracting groups some LDAP server require this (e.g. ActiveDirectory) */
     Boolean bindBeforeGroupSearch;
 
     String adminGroup;

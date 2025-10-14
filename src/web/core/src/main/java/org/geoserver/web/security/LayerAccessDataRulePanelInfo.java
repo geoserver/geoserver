@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.security;
 
+import java.io.Serial;
 import java.util.List;
 import java.util.Set;
 import org.apache.wicket.model.IModel;
@@ -15,6 +16,7 @@ import org.geoserver.web.publish.CommonPublishedEditTabPanelInfo;
 
 public class LayerAccessDataRulePanelInfo extends CommonPublishedEditTabPanelInfo {
 
+    @Serial
     private static final long serialVersionUID = -2621468069548681109L;
 
     @Override
@@ -26,14 +28,12 @@ public class LayerAccessDataRulePanelInfo extends CommonPublishedEditTabPanelInf
         String layerName = manager.getLayerName(info);
         Set<String> authorities = manager.getAvailableRoles();
         Set<DataAccessRule> rules = manager.getResourceRule(workspaceName, info);
-        List<DataAccessRuleInfo> modelRules =
-                manager.mapTo(rules, authorities, workspaceName, layerName);
+        List<DataAccessRuleInfo> modelRules = manager.mapTo(rules, authorities, workspaceName, layerName);
         return new ListModel<>(modelRules);
     }
 
     @Override
     public boolean supports(PublishedInfo pi) {
-        return getPublishedInfoClass().isAssignableFrom(pi.getClass())
-                && AccessDataRuleInfoManager.canAccess();
+        return getPublishedInfoClass().isAssignableFrom(pi.getClass()) && AccessDataRuleInfoManager.canAccess();
     }
 }

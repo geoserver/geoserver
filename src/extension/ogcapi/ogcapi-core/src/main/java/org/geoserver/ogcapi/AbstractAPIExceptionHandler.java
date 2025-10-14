@@ -16,10 +16,7 @@ import org.geotools.util.logging.Logging;
 import org.springframework.http.MediaType;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-/**
- * Base class for exception handling. Has support for extracting basic information from common
- * exception types.
- */
+/** Base class for exception handling. Has support for extracting basic information from common exception types. */
 public abstract class AbstractAPIExceptionHandler implements APIExceptionHandler {
     protected static final Logger LOGGER = Logging.getLogger(DefaultAPIExceptionHandler.class);
     protected GeoServer geoServer;
@@ -40,41 +37,34 @@ public abstract class AbstractAPIExceptionHandler implements APIExceptionHandler
         String type = null;
         boolean statusSet = false;
         String title = null;
-        if (t instanceof OWS20Exception) {
-            OWS20Exception ex = (OWS20Exception) t;
+        if (t instanceof OWS20Exception ex) {
             if (ex.getHttpCode() != null) {
                 response.setStatus(ex.getHttpCode());
                 statusSet = true;
             }
-        } else if (t instanceof OWS20Exception) {
-            OWS20Exception t2 = (OWS20Exception) t;
+        } else if (t instanceof OWS20Exception t2) {
             response.setStatus(t2.getHttpCode());
             type = t2.getCode();
             statusSet = true;
-        } else if (t instanceof ServiceException) {
-            type = ((ServiceException) t).getCode();
-            OWS20Exception.OWSExceptionCode o20Code =
-                    OWS20Exception.OWSExceptionCode.getByCode(type);
+        } else if (t instanceof ServiceException exception1) {
+            type = exception1.getCode();
+            OWS20Exception.OWSExceptionCode o20Code = OWS20Exception.OWSExceptionCode.getByCode(type);
             if (o20Code != null) {
                 response.setStatus(o20Code.getHttpCode());
                 statusSet = true;
             }
-        } else if (t instanceof APIException) {
-            APIException ae = (APIException) t;
+        } else if (t instanceof APIException ae) {
             response.setStatus(ae.getStatus().value());
             statusSet = true;
             type = ae.getCode();
-        } else if (t instanceof MethodArgumentTypeMismatchException) {
+        } else if (t instanceof MethodArgumentTypeMismatchException exception) {
             response.setStatus(400);
             statusSet = true;
             type = OWS20Exception.INVALID_PARAMETER_VALUE;
-            title =
-                    "Invalid syntax "
-                            + ((MethodArgumentTypeMismatchException) t).getValue()
-                            + " for parameter "
-                            + ((MethodArgumentTypeMismatchException) t)
-                                    .getParameter()
-                                    .getParameterName();
+            title = "Invalid syntax "
+                    + exception.getValue()
+                    + " for parameter "
+                    + exception.getParameter().getParameterName();
         }
         if (!statusSet) response.setStatus(500);
         if (type == null) type = OWS20Exception.NO_APPLICABLE_CODE;
@@ -83,8 +73,7 @@ public abstract class AbstractAPIExceptionHandler implements APIExceptionHandler
         writeResponse(response, t, type, title);
     }
 
-    protected abstract void writeResponse(
-            HttpServletResponse response, Throwable t, String type, String title);
+    protected abstract void writeResponse(HttpServletResponse response, Throwable t, String type, String title);
 
     protected String getDescription(Throwable t) {
         StringBuffer sb = new StringBuffer();

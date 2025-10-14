@@ -4,27 +4,12 @@
   <wicket:link>
     <link rel="stylesheet" type="text/css" href="style.css"/>
   </wicket:link>
-  
- <style type="text/css">
-   fieldset {
-     margin-top: 3em;
-   }
-   
-   #sources li {
-     margin: 0;
-     padding: 0;
-   }
-   
-   #sources li:first-child {
-     margin: 0.3em 0 0;
-   }
- </style>
  </wicket:head>
 </head>
 <body>
 <wicket:extend>
 
-   <div>
+   <div class="fieldset-margins">
     <fieldset>
       <legend><span><wicket:message key="backupResource">Archive File</wicket:message></span></legend>
 	  <div wicket:id="backupResource"></div>
@@ -38,7 +23,7 @@
 	</fieldset>
   </div>
   
-  <form wicket:id="backupForm">
+  <form wicket:id="backupForm" class="fieldset-margins">
     <h3><span><wicket:message key="issueNewBackup">issueNewBackup</wicket:message></span></h3>
 	<fieldset>
 	    <legend><span><wicket:message key="newBackupOptions">Backup Options</wicket:message></span></legend>
@@ -81,7 +66,7 @@
     </fieldset>
   </form>
 
-  <form wicket:id="restoreForm">
+  <form wicket:id="restoreForm" class="fieldset-margins">
     <h3><span><wicket:message key="issueNewRestore">issueNewRestore</wicket:message></span></h3>
 	<fieldset>
 	    <legend><span><wicket:message key="newRestoreOptions">Restore Options</wicket:message></span></legend>

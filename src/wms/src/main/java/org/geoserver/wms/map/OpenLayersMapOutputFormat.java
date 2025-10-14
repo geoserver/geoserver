@@ -33,8 +33,7 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
     private final OpenLayers2MapOutputFormat ol2Format;
     private final OpenLayers3MapOutputFormat ol3Format;
 
-    public OpenLayersMapOutputFormat(
-            OpenLayers2MapOutputFormat ol2Format, OpenLayers3MapOutputFormat ol3Format) {
+    public OpenLayersMapOutputFormat(OpenLayers2MapOutputFormat ol2Format, OpenLayers3MapOutputFormat ol3Format) {
         this.ol2Format = ol2Format;
         this.ol3Format = ol3Format;
     }
@@ -70,8 +69,7 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
         GetMapRequest req = mapContent.getRequest();
 
         // check format options
-        Object enableOL3 =
-                Converters.convert(req.getFormatOptions().get(ENABLE_OL3), Boolean.class);
+        Object enableOL3 = Converters.convert(req.getFormatOptions().get(ENABLE_OL3), Boolean.class);
         if (enableOL3 == null) {
             // check system property
             enableOL3 = GeoServerExtensions.getProperty(ENABLE_OL3);

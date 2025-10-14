@@ -31,26 +31,15 @@ public class MultipleMappingTest extends MDTestSupport {
         getCatalog().save(forestInfo);
 
         // copy all mappings into the data directory
-        secondMappingFileIgnore =
-                new File(
-                        testData.getDataDirectoryRoot(),
-                        "csw/MD_Metadata-second.properties.ignore");
-        secondMappingFile =
-                new File(testData.getDataDirectoryRoot(), "csw/MD_Metadata-second.properties");
+        secondMappingFileIgnore = new File(testData.getDataDirectoryRoot(), "csw/MD_Metadata-second.properties.ignore");
+        secondMappingFile = new File(testData.getDataDirectoryRoot(), "csw/MD_Metadata-second.properties");
 
-        secondMappingFileIgnore2 =
-                new File(testData.getDataDirectoryRoot(), "csw/Record-second.properties.ignore");
-        secondMappingFile2 =
-                new File(testData.getDataDirectoryRoot(), "csw/Record-second.properties");
+        secondMappingFileIgnore2 = new File(testData.getDataDirectoryRoot(), "csw/Record-second.properties.ignore");
+        secondMappingFile2 = new File(testData.getDataDirectoryRoot(), "csw/Record-second.properties");
 
         secondqMappingFileIgnore =
-                new File(
-                        testData.getDataDirectoryRoot(),
-                        "csw/MD_Metadata-second.queryables.properties.ignore");
-        secondqMappingFile =
-                new File(
-                        testData.getDataDirectoryRoot(),
-                        "csw/MD_Metadata-second.queryables.properties");
+                new File(testData.getDataDirectoryRoot(), "csw/MD_Metadata-second.queryables.properties.ignore");
+        secondqMappingFile = new File(testData.getDataDirectoryRoot(), "csw/MD_Metadata-second.queryables.properties");
 
         secondMappingFileIgnore.renameTo(secondMappingFile);
         secondMappingFileIgnore2.renameTo(secondMappingFile2);

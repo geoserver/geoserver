@@ -6,8 +6,8 @@
 package org.geoserver.platform;
 
 /**
- * Black lists a bean by class. By default filters out only the object of the specified class, but
- * it can be configured to match an entire inheritance tree
+ * Black lists a bean by class. By default filters out only the object of the specified class, but it can be configured
+ * to match an entire inheritance tree
  *
  * @author Andrea Aime - OpenGeo
  */

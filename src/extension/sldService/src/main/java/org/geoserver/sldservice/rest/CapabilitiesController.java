@@ -47,13 +47,11 @@ public class CapabilitiesController extends BaseSLDServiceController {
         xstream.allowTypes(new Class[] {SldServiceCapabilities.class});
     }
 
-    class CapabilitiesConverter implements Converter {
+    static class CapabilitiesConverter implements Converter {
 
         @Override
         public void marshal(
-                Object o,
-                HierarchicalStreamWriter hierarchicalStreamWriter,
-                MarshallingContext marshallingContext) {
+                Object o, HierarchicalStreamWriter hierarchicalStreamWriter, MarshallingContext marshallingContext) {
             SldServiceCapabilities caps = (SldServiceCapabilities) o;
             List<String> vectorMethods = caps.getVectorClassifications();
             hierarchicalStreamWriter.startNode("vector");
@@ -76,8 +74,7 @@ public class CapabilitiesController extends BaseSLDServiceController {
 
         @Override
         public Object unmarshal(
-                HierarchicalStreamReader hierarchicalStreamReader,
-                UnmarshallingContext unmarshallingContext) {
+                HierarchicalStreamReader hierarchicalStreamReader, UnmarshallingContext unmarshallingContext) {
             return null;
         }
 

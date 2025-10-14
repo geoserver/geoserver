@@ -10,7 +10,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import com.jayway.jsonpath.DocumentContext;
+import java.util.Collections;
 import java.util.List;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ogcapi.FunctionsDocument;
 import org.geoserver.ogcapi.Link;
@@ -116,6 +119,42 @@ public class LandingPageTest extends FeaturesTestSupport {
                 document.select("#htmlApiLink").attr("href"));
     }
 
+    @Test
+    public void testLandingPageHTMLInLayer() throws Exception {
+        org.jsoup.nodes.Document document = getAsJSoup("cite/RoadSegments/ogc/features/v1?f=html");
+        // check a couple of links
+        assertEquals(
+                "http://localhost:8080/geoserver/cite/RoadSegments/ogc/features/v1/collections?f=text%2Fhtml",
+                document.select("#htmlCollectionsLink").attr("href"));
+        assertEquals(
+                "http://localhost:8080/geoserver/cite/RoadSegments/ogc/features/v1/openapi?f=text%2Fhtml",
+                document.select("#htmlApiLink").attr("href"));
+    }
+
+    @Test
+    public void testLandingPageDisabled() throws Exception {
+        LayerInfo layer = getCatalog().getLayerByName("cite:RoadSegments");
+        ResourceInfo resource = layer.getResource();
+        try {
+            // Now you see me
+            org.jsoup.nodes.Document document = getAsJSoup("cite/RoadSegments/ogc/features/v1?f=html");
+            assertEquals(
+                    "http://localhost:8080/geoserver/cite/RoadSegments/ogc/features/v1/collections?f=text%2Fhtml",
+                    document.select("#htmlCollectionsLink").attr("href"));
+
+            // now you don't
+            resource.setServiceConfiguration(true);
+            resource.setDisabledServices(Collections.singletonList("features"));
+            getCatalog().save(resource);
+            MockHttpServletResponse response = getAsServletResponse("cite/RoadSegments/ogc/features/v1?f=html");
+            assertEquals(404, response.getStatus());
+        } finally {
+            resource.setServiceConfiguration(false);
+            resource.setDisabledServices(Collections.emptyList());
+            getCatalog().save(resource);
+        }
+    }
+
     void checkJSONLandingPage(DocumentContext json) {
         assertEquals(15, (int) json.read("links.length()", Integer.class));
         // check landing page links
@@ -142,11 +181,7 @@ public class LandingPageTest extends FeaturesTestSupport {
         // check API with right API mime type
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/features/v1/openapi?f=application%2Fvnd.oai.openapi%2Bjson%3Bversion%3D3.0",
-                readSingle(
-                        json,
-                        "links[?(@.type=='"
-                                + OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE
-                                + "')].href"));
+                readSingle(json, "links[?(@.type=='" + OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE + "')].href"));
         // check conformance links
         assertJSONList(
                 json,
@@ -194,8 +229,7 @@ public class LandingPageTest extends FeaturesTestSupport {
         service.setEnabled(false);
         gs.save(service);
         try {
-            MockHttpServletResponse httpServletResponse =
-                    getAsMockHttpServletResponse("ogc/features/v1", 404);
+            MockHttpServletResponse httpServletResponse = getAsMockHttpServletResponse("ogc/features/v1", 404);
             assertEquals("Service Features is disabled", httpServletResponse.getErrorMessage());
         } finally {
             service.setEnabled(true);

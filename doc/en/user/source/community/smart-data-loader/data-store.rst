@@ -438,3 +438,24 @@ This is the suggested workflow for such a use case:
 * Copy and paste the files contained in that directory to another directory and modify them as needed.
 
 * Delete the Smart Data Loader store, and create a new App-Schema store with a uri parameter pointing to the folder containing the modified files.
+
+Smart Override rules
+--------------------
+
+The Smart Data Loader allows to override the default behavior of the generated mappings by using the Smart Override rules. These rules are defined in the Overrides Rules administration panel and can be used to customize the generated mappings.
+There are two kind of smart override rules:
+- Attribute value expression override: used to override the attribute value expression of an entity attribute.
+- PK column override: used to override the column name used as PK on an entity.
+
+The Smart Override rules are defined using the following parameters on the ``Add Override Rule`` form:
+- Key: The entity attribute expression to be overridden.  The key is defined using the following syntax: ``<entity_name>.<attribute_name>`` for attribute value expression override, or ``<entity_name>`` for PK column override.
+- Expression:  The new OCQL expression to be used for the attribute value override, or the new column name to be used as PK on PK column override.
+
+.. figure:: images/smart-loader-overrides.png
+
+  Smart Overrides configuration panel
+
+Entities prefix
+---------------
+
+The ``Entities prefix`` parameter allows to generate all the mapped feature types adding the configured prefix text.  This is useful to generate an appschema mapping structure with shared feature types from other smart data loader store, but using a different root type and override rules.

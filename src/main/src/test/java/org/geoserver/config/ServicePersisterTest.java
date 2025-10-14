@@ -37,16 +37,13 @@ public class ServicePersisterTest extends GeoServerSystemTestSupport {
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         GeoServer geoServer = getGeoServer();
-        geoServer.addListener(
-                new ServicePersister(
-                        Arrays.asList(new ServiceLoader(getResourceLoader())), geoServer));
+        geoServer.addListener(new ServicePersister(Arrays.asList(new ServiceLoader(getResourceLoader())), geoServer));
     }
 
     @Override
     protected void setUpSpring(List<String> springContextLocations) {
         super.setUpSpring(springContextLocations);
-        springContextLocations.add(
-                "classpath*:/org/geoserver/config/ServicePersisterTest-applicationContext.xml");
+        springContextLocations.add("classpath*:/org/geoserver/config/ServicePersisterTest-applicationContext.xml");
     }
 
     @Before
@@ -130,8 +127,7 @@ public class ServicePersisterTest extends GeoServerSystemTestSupport {
     @Test
     public void testLoadGibberish() throws Exception {
         // we should get a log message, but the startup should continue
-        File service =
-                new File(getDataDirectory().getResourceLoader().getBaseDirectory(), "service.xml");
+        File service = new File(getDataDirectory().getResourceLoader().getBaseDirectory(), "service.xml");
         FileUtils.writeStringToFile(service, "duDaDa", "UTF-8");
         getGeoServer().reload();
         assertEquals(0, geoServer.getServices().size());

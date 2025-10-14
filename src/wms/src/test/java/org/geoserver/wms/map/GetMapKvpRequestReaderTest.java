@@ -14,8 +14,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.sun.net.httpserver.HttpHandler;
@@ -39,20 +42,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.media.jai.InterpolationBicubic;
-import javax.media.jai.InterpolationBilinear;
-import javax.media.jai.InterpolationNearest;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.cache.HttpCacheContext;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HttpContext;
+import org.eclipse.imagen.InterpolationBicubic;
+import org.eclipse.imagen.InterpolationBilinear;
+import org.eclipse.imagen.InterpolationNearest;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -60,7 +68,6 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.config.GeoServer;
-import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.GeoServerLoader;
 import org.geoserver.data.test.MockData;
 import org.geoserver.ows.Dispatcher;
@@ -69,6 +76,7 @@ import org.geoserver.ows.kvp.URIKvpParser;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.test.ows.KvpRequestReaderTestSupport;
+import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wms.CacheConfiguration;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
@@ -86,6 +94,7 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.util.DateRange;
 import org.geotools.util.logging.Logging;
 import org.hamcrest.CoreMatchers;
+import org.junit.After;
 import org.junit.Test;
 
 @SuppressWarnings("unchecked")
@@ -98,14 +107,13 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     WMS wms;
 
     Dispatcher dispatcher;
-    public static final String STATES_SLD =
-            "<StyledLayerDescriptor version=\"1.0.0\">"
-                    + "<UserLayer><Name>sf:states</Name><UserStyle><Name>UserSelection</Name>"
-                    + "<FeatureTypeStyle><Rule><Filter xmlns:gml=\"http://www.opengis.net/gml\">"
-                    + "<PropertyIsEqualTo><PropertyName>STATE_ABBR</PropertyName><Literal>IL</Literal></PropertyIsEqualTo>"
-                    + "</Filter><PolygonSymbolizer><Fill><CssParameter name=\"fill\">#FF0000</CssParameter></Fill>"
-                    + "</PolygonSymbolizer></Rule><Rule><LineSymbolizer><Stroke/></LineSymbolizer></Rule>"
-                    + "</FeatureTypeStyle></UserStyle></UserLayer></StyledLayerDescriptor>";
+    public static final String STATES_SLD = "<StyledLayerDescriptor version=\"1.0.0\">"
+            + "<UserLayer><Name>sf:states</Name><UserStyle><Name>UserSelection</Name>"
+            + "<FeatureTypeStyle><Rule><Filter xmlns:gml=\"http://www.opengis.net/gml\">"
+            + "<PropertyIsEqualTo><PropertyName>STATE_ABBR</PropertyName><Literal>IL</Literal></PropertyIsEqualTo>"
+            + "</Filter><PolygonSymbolizer><Fill><CssParameter name=\"fill\">#FF0000</CssParameter></Fill>"
+            + "</PolygonSymbolizer></Rule><Rule><LineSymbolizer><Stroke/></LineSymbolizer></Rule>"
+            + "</FeatureTypeStyle></UserStyle></UserLayer></StyledLayerDescriptor>";
 
     @Override
     protected void oneTimeSetUp() throws Exception {
@@ -155,49 +163,35 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         WMSInfo wmsInfo = geoserver.getService(WMSInfo.class);
         WMSInfoImpl impl = (WMSInfoImpl) ModificationProxy.unwrap(wmsInfo);
 
-        impl.setAllowedURLsForAuthForwarding(
-                Collections.singletonList("http://localhost/geoserver/rest/sldurl"));
+        impl.setAllowedURLsForAuthForwarding(Collections.singletonList("http://localhost/geoserver/rest/sldurl"));
         wms = new WMS(geoserver);
         reader = new GetMapKvpRequestReader(wms);
+    }
+
+    @After
+    public void clearEntityResolutionUnrestrictedProperty() {
+        System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
     }
 
     @Test
     public void testSldEntityResolver() throws Exception {
         WMS wms = new WMS(getGeoServer());
-        GeoServerInfo geoserverInfo = wms.getGeoServer().getGlobal();
-        try {
-            // enable entities in external SLD files
-            geoserverInfo.setXmlExternalEntitiesEnabled(true);
-            getGeoServer().save(geoserverInfo);
+        // enable entities in external SLD files
+        // test no custom entity resolver will be used
+        System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "true");
+        GetMapKvpRequestReader reader = new GetMapKvpRequestReader(wms);
+        assertNull(reader.getEntityResolverProvider().getEntityResolver());
 
-            // test setting has been saved
-            assertNotNull(wms.getGeoServer().getGlobal().isXmlExternalEntitiesEnabled());
-            assertTrue(wms.getGeoServer().getGlobal().isXmlExternalEntitiesEnabled());
+        // disable entities
+        // since XML entities are disabled for external SLD files
+        // I need an entity resolver which enforce this
+        System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "false");
+        reader = new GetMapKvpRequestReader(wms);
+        assertNotNull(reader.getEntityResolverProvider().getEntityResolver());
 
-            // test no custom entity resolver will be used
-            GetMapKvpRequestReader reader = new GetMapKvpRequestReader(wms);
-            assertNull(reader.getEntityResolverProvider().getEntityResolver());
-
-            // disable entities
-            geoserverInfo.setXmlExternalEntitiesEnabled(false);
-            getGeoServer().save(geoserverInfo);
-
-            // since XML entities are disabled for external SLD files
-            // I need an entity resolver which enforce this
-            reader = new GetMapKvpRequestReader(wms);
-            assertNotNull(reader.getEntityResolverProvider().getEntityResolver());
-
-            // try default value: entities should be disabled
-            geoserverInfo.setXmlExternalEntitiesEnabled(null);
-            getGeoServer().save(geoserverInfo);
-
-            reader = new GetMapKvpRequestReader(wms);
-            assertNotNull(reader.getEntityResolverProvider().getEntityResolver());
-        } finally {
-            // reset to default
-            geoserverInfo.setXmlExternalEntitiesEnabled(null);
-            getGeoServer().save(geoserverInfo);
-        }
+        System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
+        reader = new GetMapKvpRequestReader(wms);
+        assertNotNull(reader.getEntityResolverProvider().getEntityResolver());
     }
 
     @Test
@@ -300,7 +294,8 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         assertEquals(2, request.getStyles().size());
         LayerInfo basicPolygons = getCatalog().getLayerByName(BASIC_POLYGONS.getLocalPart());
         LayerInfo buildings = getCatalog().getLayerByName(MockData.BUILDINGS.getLocalPart());
-        assertEquals(basicPolygons.getDefaultStyle().getStyle(), request.getStyles().get(0));
+        assertEquals(
+                basicPolygons.getDefaultStyle().getStyle(), request.getStyles().get(0));
         assertEquals(buildings.getDefaultStyle().getStyle(), request.getStyles().get(1));
     }
 
@@ -320,11 +315,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
 
         kvp.put(
                 "layers",
-                getLayerId(BASIC_POLYGONS)
-                        + ","
-                        + getLayerId(BASIC_POLYGONS)
-                        + ","
-                        + getLayerId(BASIC_POLYGONS));
+                getLayerId(BASIC_POLYGONS) + "," + getLayerId(BASIC_POLYGONS) + "," + getLayerId(BASIC_POLYGONS));
         kvp.put("interpolations", "bicubic,,bilinear");
         request = reader.createRequest();
         request = reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
@@ -442,7 +433,9 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         assertNotNull(request.getFeatureId());
         assertEquals(1, request.getFeatureId().size());
 
-        assertEquals("foo", request.getFeatureId().get(0));
+        // TODO: request.getFeatureId() returns List<FeatureId> but it's not being parsed and contains Strings instead
+        List<?> featureId = request.getFeatureId();
+        assertEquals("foo", featureId.get(0));
     }
 
     @Test
@@ -555,8 +548,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
             while ((inputLine = in.readLine()) != null) builder.append(inputLine);
         }
 
-        MockHttpClientConnectionManager manager =
-                new MockHttpClientConnectionManager(builder.toString(), true);
+        MockHttpClientConnectionManager manager = new MockHttpClientConnectionManager(builder.toString(), true);
         reader = new GetMapKvpRequestReader(wms, manager);
         // no style name, but the sld has a default for that layer
         HashMap kvp = new HashMap<>();
@@ -568,13 +560,13 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         request = reader.read(request, parseKvp(kvp), kvp);
 
         assertNotNull(request.getSld());
-        assertEquals(manager.getConnections(), 1);
+        assertEquals(1, manager.getConnections());
 
         request = reader.createRequest();
         request = reader.read(request, parseKvp(kvp), kvp);
 
         // no connection is done, the result is taken from cache
-        assertEquals(manager.getConnections(), 1);
+        assertEquals(1, manager.getConnections());
     }
 
     @Test
@@ -592,8 +584,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
             while ((inputLine = in.readLine()) != null) builder.append(inputLine);
         }
 
-        MockHttpClientConnectionManager manager =
-                new MockHttpClientConnectionManager(builder.toString(), false);
+        MockHttpClientConnectionManager manager = new MockHttpClientConnectionManager(builder.toString(), false);
         reader = new GetMapKvpRequestReader(wms, manager);
         // no style name, but the sld has a default for that layer
         HashMap kvp = new HashMap<>();
@@ -605,13 +596,13 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         request = reader.read(request, parseKvp(kvp), kvp);
 
         assertNotNull(request.getSld());
-        assertEquals(manager.getConnections(), 1);
+        assertEquals(1, manager.getConnections());
 
         request = reader.createRequest();
         request = reader.read(request, parseKvp(kvp), kvp);
 
         // new connection is done, the result is NOT taken from cache
-        assertEquals(manager.getConnections(), 2);
+        assertEquals(2, manager.getConnections());
     }
 
     @Test
@@ -749,38 +740,31 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         assertSameHeader(headers, null);
     }
 
-    private void requestWithHeaders(
-            GetMapRequest spyRequest, URL url, Header[] headers, String authHeader)
+    private void requestWithHeaders(GetMapRequest spyRequest, URL url, Header[] headers, String authHeader)
             throws Exception {
         String urlDecoded = URLDecoder.decode(url.toExternalForm(), "UTF-8");
         HashMap kvp = new HashMap<>();
         kvp.put("layers", getLayerId(BASIC_POLYGONS));
         kvp.put("sld", urlDecoded);
 
-        try (InputStream sld =
-                GetMapKvpRequestReader.class.getResourceAsStream(
-                        "BasicPolygonsLibraryNoDefault.sld")) {
+        try (InputStream sld = GetMapKvpRequestReader.class.getResourceAsStream("BasicPolygonsLibraryNoDefault.sld")) {
 
-            GetMapKvpRequestReader reqReader =
-                    new GetMapKvpRequestReader(wms, null) {
+            GetMapKvpRequestReader reqReader = new GetMapKvpRequestReader(wms, null) {
 
-                        @Override
-                        protected CloseableHttpResponse executeRequest(
-                                HttpCacheContext cacheContext, HttpGet httpget) throws IOException {
-                            CloseableHttpResponse response = mock(CloseableHttpResponse.class);
-                            HttpEntity entity = mock(HttpEntity.class);
+                @Override
+                protected CloseableHttpResponse executeRequest(HttpCacheContext cacheContext, HttpGet httpget)
+                        throws IOException {
+                    CloseableHttpResponse response = mock(CloseableHttpResponse.class);
+                    HttpEntity entity = mock(HttpEntity.class);
 
-                            when(response.getEntity()).thenReturn(entity);
-                            when(entity.getContent()).thenReturn(sld);
+                    when(response.getEntity()).thenReturn(entity);
+                    when(entity.getContent()).thenReturn(sld);
 
-                            Header[] httpHeaders =
-                                    httpget.containsHeader(authHeader)
-                                            ? httpget.getHeaders(authHeader)
-                                            : null;
-                            headers[0] = httpHeaders != null ? httpHeaders[0] : null;
-                            return response;
-                        }
-                    };
+                    Header[] httpHeaders = httpget.containsHeader(authHeader) ? httpget.getHeaders(authHeader) : null;
+                    headers[0] = httpHeaders != null ? httpHeaders[0] : null;
+                    return response;
+                }
+            };
             reqReader.read(spyRequest, parseKvp(kvp), caseInsensitiveKvp(kvp));
         }
     }
@@ -791,6 +775,58 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         } else {
             assertEquals(expectedBasicHeader.toString(), headers[0].toString());
         }
+    }
+
+    @Test
+    public void testSldRemoteHttpConcurrency() throws Exception {
+        GetMapRequest request = reader.createRequest();
+        GetMapRequest spyRequest = spy(request);
+
+        CloseableHttpClient client = mock(CloseableHttpClient.class);
+
+        @SuppressWarnings("PMD.CloseResource")
+        CloseableHttpResponse response = mock(CloseableHttpResponse.class);
+        HttpEntity entity = mock(HttpEntity.class);
+
+        when(response.getEntity()).thenReturn(entity);
+        when(client.execute(any(HttpGet.class), any(HttpCacheContext.class))).thenReturn(response);
+        when(entity.getContent())
+                .thenAnswer(invocation ->
+                        GetMapKvpRequestReader.class.getResourceAsStream("BasicPolygonsLibraryNoDefault.sld"));
+
+        GetMapKvpRequestReader reqReader = new GetMapKvpRequestReader(wms, null) {
+            @Override
+            protected CloseableHttpClient createHttpClient(RequestConfig config, CacheConfiguration cacheConfig) {
+                return client;
+            }
+        };
+
+        int numberOfThreads = 10;
+        ExecutorService service = Executors.newFixedThreadPool(numberOfThreads);
+        CountDownLatch latch = new CountDownLatch(numberOfThreads);
+        for (int i = 0; i < numberOfThreads; i++) {
+            service.submit(() -> {
+                try {
+                    URL url = new URL("http://localhost/geoserver/rest/sldurl/sample.sld");
+                    String urlDecoded = URLDecoder.decode(url.toExternalForm(), "UTF-8");
+                    HashMap kvp = new HashMap<>();
+                    kvp.put("layers", getLayerId(BASIC_POLYGONS));
+                    kvp.put("sld", urlDecoded);
+
+                    reqReader.read(spyRequest, parseKvp(kvp), caseInsensitiveKvp(kvp));
+                } catch (Exception e) {
+                    fail();
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await();
+        service.shutdownNow();
+
+        // Assert the same mock HTTP client instance was used by every thread
+        verify(client, times(numberOfThreads)).execute(any(HttpGet.class), any(HttpContext.class));
     }
 
     @Test
@@ -840,9 +876,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         // Specified external SLD is XML that is not SLD
         HashMap kvp = new HashMap<>();
 
-        URL url =
-                GetMapKvpRequestReaderTest.class.getResource(
-                        "WMSPostLayerGroupNonDefaultStyle.xml");
+        URL url = GetMapKvpRequestReaderTest.class.getResource("WMSPostLayerGroupNonDefaultStyle.xml");
 
         kvp.put("sld", URLDecoder.decode(url.toExternalForm(), "UTF-8"));
         kvp.put("layers", getLayerId(BASIC_POLYGONS));
@@ -883,8 +917,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
         assertEquals(1, layer.getLayerFeatureConstraints().length);
         assertEquals(
-                ff.equals(ff.property("ID"), ff.literal("xyz")),
-                layer.getLayerFeatureConstraints()[0].getFilter());
+                ff.equals(ff.property("ID"), ff.literal("xyz")), layer.getLayerFeatureConstraints()[0].getFilter());
     }
 
     @Test
@@ -914,14 +947,10 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
         assertEquals(1, layer.getLayerFeatureConstraints().length);
         assertEquals(
-                ff.equals(ff.property("ID"), ff.literal("xyz")),
-                layer.getLayerFeatureConstraints()[0].getFilter());
+                ff.equals(ff.property("ID"), ff.literal("xyz")), layer.getLayerFeatureConstraints()[0].getFilter());
     }
 
-    /**
-     * One of the cite tests ensures that WMTVER is recognized as VERSION and the server does not
-     * complain
-     */
+    /** One of the cite tests ensures that WMTVER is recognized as VERSION and the server does not complain */
     @Test
     public void testWmtVer() throws Exception {
         dispatcher.setCiteCompliant(true);
@@ -952,7 +981,8 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         assertEquals(new URL(RemoteOWSTestSupport.WFS_SERVER_URL), request.getRemoteOwsURL());
         assertEquals(1, request.getLayers().size());
         assertEquals(
-                PublishedType.REMOTE.getCode().intValue(), request.getLayers().get(0).getType());
+                PublishedType.REMOTE.getCode().intValue(),
+                request.getLayers().get(0).getType());
         assertEquals("topp:states", request.getLayers().get(0).getName());
     }
 
@@ -1007,9 +1037,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         // see GEOS-1818
         final HashMap kvp = new HashMap<>();
         kvp.put("srs", "epsg:4326");
-        kvp.put(
-                "bbox",
-                "124.38035938267053,-58.45445933799711,169.29632161732948,-24.767487662002893");
+        kvp.put("bbox", "124.38035938267053,-58.45445933799711,169.29632161732948,-24.767487662002893");
         kvp.put("width", "640");
         kvp.put("height", "480");
         kvp.put("format", "image/png");
@@ -1064,9 +1092,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         raw.put("width", "800");
         raw.put("request", "GetMap");
         raw.put("service", "wms");
-        raw.put(
-                "viewParams",
-                "where:WHERE PERSONS > 1000000;str:ABCD,where:WHERE PERSONS > 10;str:FOO");
+        raw.put("viewParams", "where:WHERE PERSONS > 1000000;str:ABCD,where:WHERE PERSONS > 10;str:FOO");
 
         GetMapRequest request = reader.createRequest();
         request = reader.read(request, parseKvp(raw), caseInsensitiveKvp(raw));
@@ -1117,9 +1143,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     @Test
     public void testFanOutViewParamsGroupFirst() throws Exception {
         HashMap raw = setupBaseViewParamsRequest();
-        raw.put(
-                "layers",
-                "testGroup2," + getLayerId(BASIC_POLYGONS) + "," + getLayerId(BASIC_POLYGONS));
+        raw.put("layers", "testGroup2," + getLayerId(BASIC_POLYGONS) + "," + getLayerId(BASIC_POLYGONS));
         raw.put("viewParams", "test:123,where:WHERE PERSONS > 1000000,str:ABCD");
 
         GetMapRequest request = reader.createRequest();
@@ -1153,9 +1177,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     @Test
     public void testFanOutViewParamsGroupLast() throws Exception {
         HashMap raw = setupBaseViewParamsRequest();
-        raw.put(
-                "layers",
-                getLayerId(BASIC_POLYGONS) + "," + getLayerId(BASIC_POLYGONS) + ",testGroup2");
+        raw.put("layers", getLayerId(BASIC_POLYGONS) + "," + getLayerId(BASIC_POLYGONS) + ",testGroup2");
         raw.put("viewParams", "where:WHERE PERSONS > 1000000,str:ABCD,test:123");
 
         GetMapRequest request = reader.createRequest();
@@ -1449,8 +1471,8 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
             Dispatcher.REQUEST.set(null);
         }
         assertNotNull("ServiceException not catched", serviceException);
-        assertEquals(serviceException.getLocator(), "viewParamsFormat");
-        assertEquals(serviceException.getCode(), ServiceException.INVALID_PARAMETER_VALUE);
+        assertEquals("viewParamsFormat", serviceException.getLocator());
+        assertEquals(ServiceException.INVALID_PARAMETER_VALUE, serviceException.getCode());
     }
 
     /** Creates a HTTP embedded server with a dynamic port for testing the configures timeout. */
@@ -1461,27 +1483,25 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
                 "Creating a mock http server at port: {0}",
                 server.getAddress().getPort());
         server.createContext("/sld", createLongResponseHandler());
-        ThreadPoolExecutor threadPoolExecutor =
-                (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
+        ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
         server.setExecutor(threadPoolExecutor);
 
         return server;
     }
 
     private HttpHandler createLongResponseHandler() {
-        HttpHandler handler =
-                t -> {
-                    try {
-                        t.sendResponseHeaders(200, 5000000000l);
-                        TimeUnit.SECONDS.sleep(4);
-                        OutputStream outputStream = t.getResponseBody();
-                        outputStream.write("This is a bad style".getBytes());
-                        outputStream.flush();
-                        outputStream.close();
-                    } catch (InterruptedException e) {
-                        LOG.log(Level.INFO, e.getMessage(), e);
-                    }
-                };
+        HttpHandler handler = t -> {
+            try {
+                t.sendResponseHeaders(200, 5000000000l);
+                TimeUnit.SECONDS.sleep(4);
+                OutputStream outputStream = t.getResponseBody();
+                outputStream.write("This is a bad style".getBytes());
+                outputStream.flush();
+                outputStream.close();
+            } catch (InterruptedException e) {
+                LOG.log(Level.INFO, e.getMessage(), e);
+            }
+        };
         return handler;
     }
 }

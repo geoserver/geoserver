@@ -4,6 +4,7 @@
  */
 package org.geoserver.geofence.server.rest.xml;
 
+import java.sql.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -75,7 +76,8 @@ public class JaxbRule extends AbstractPayload {
                     int areaSRID = -1;
                     if (getAllowedArea().startsWith("SRID")) {
                         areaWKT = getAllowedArea().split(";")[1];
-                        areaSRID = Integer.parseInt(getAllowedArea().split(";")[0].split("=")[1]);
+                        areaSRID =
+                                Integer.parseInt(getAllowedArea().split(";")[0].split("=")[1]);
                     }
                     MultiPolygon area = (MultiPolygon) new WKTReader().read(areaWKT);
                     area.setSRID(areaSRID);
@@ -271,7 +273,8 @@ public class JaxbRule extends AbstractPayload {
                     int areaSRID = -1;
                     if (getAllowedArea().startsWith("SRID")) {
                         areaWKT = getAllowedArea().split(";")[1];
-                        areaSRID = Integer.parseInt(getAllowedArea().split(";")[0].split("=")[1]);
+                        areaSRID =
+                                Integer.parseInt(getAllowedArea().split(";")[0].split("=")[1]);
                     }
                     MultiPolygon area = (MultiPolygon) new WKTReader().read(areaWKT);
                     area.setSRID(areaSRID);
@@ -322,6 +325,9 @@ public class JaxbRule extends AbstractPayload {
 
     private String addressRange;
 
+    private String validAfter;
+    private String validBefore;
+
     private String workspace;
 
     private String layer;
@@ -345,8 +351,9 @@ public class JaxbRule extends AbstractPayload {
         priority = rule.getPriority();
         userName = rule.getUsername();
         roleName = rule.getRolename();
-        addressRange =
-                rule.getAddressRange() == null ? null : rule.getAddressRange().getCidrSignature();
+        addressRange = rule.getAddressRangeString();
+        validAfter = rule.getValidAfterString();
+        validBefore = rule.getValidBeforeString();
         workspace = rule.getWorkspace();
         layer = rule.getLayer();
         service = rule.getService() == null ? null : rule.getService().toUpperCase();
@@ -390,8 +397,7 @@ public class JaxbRule extends AbstractPayload {
             layerDetails.setDefaultStyle(otherDetails.getDefaultStyle());
             if (otherDetails.getType() != null)
                 layerDetails.setLayerType(otherDetails.getType().toString());
-            for (org.geoserver.geofence.core.model.LayerAttribute att :
-                    otherDetails.getAttributes()) {
+            for (org.geoserver.geofence.core.model.LayerAttribute att : otherDetails.getAttributes()) {
                 layerDetails.getAttributes().add(new LayerAttribute(att));
             }
         }
@@ -435,6 +441,24 @@ public class JaxbRule extends AbstractPayload {
 
     public void setAddressRange(String addressRange) {
         this.addressRange = addressRange;
+    }
+
+    @XmlElement
+    public String getValidAfter() {
+        return validAfter;
+    }
+
+    public void setValidAfter(String validAfter) {
+        this.validAfter = validAfter;
+    }
+
+    @XmlElement
+    public String getValidBefore() {
+        return validBefore;
+    }
+
+    public void setValidBefore(String validBefore) {
+        this.validBefore = validBefore;
     }
 
     @XmlElement
@@ -516,8 +540,9 @@ public class JaxbRule extends AbstractPayload {
         rule.setAccess(GrantType.valueOf(getAccess()));
         rule.setUsername(getUserName());
         rule.setRolename(getRoleName());
-        rule.setAddressRange(
-                getAddressRange() != null ? new IPAddressRange(getAddressRange()) : null);
+        rule.setAddressRange(getAddressRange() != null ? new IPAddressRange(getAddressRange()) : null);
+        rule.setValidAfter(getValidAfter() != null ? Date.valueOf(getValidAfter()) : null);
+        rule.setValidBefore(getValidBefore() != null ? Date.valueOf(getValidBefore()) : null);
         rule.setService(getService());
         rule.setRequest(getRequest());
         rule.setSubfield(getSubfield());
@@ -542,6 +567,12 @@ public class JaxbRule extends AbstractPayload {
         }
         if (getAddressRange() != null) {
             rule.setAddressRange(new IPAddressRange(getAddressRange()));
+        }
+        if (getValidAfter() != null) {
+            rule.setValidAfter(Date.valueOf(getValidAfter()));
+        }
+        if (getValidBefore() != null) {
+            rule.setValidBefore(Date.valueOf(getValidBefore()));
         }
         if (getService() != null) {
             rule.setService(convertAny(getService()));

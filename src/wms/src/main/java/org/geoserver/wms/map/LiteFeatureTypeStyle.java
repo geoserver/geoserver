@@ -16,27 +16,25 @@ import org.geotools.map.Layer;
 import org.geotools.renderer.crs.ProjectionHandler;
 
 /**
- * Note that this is a copy of the original class from GeoTools
- * org.geotools.renderer.lite.LiteFeatureTypeStyle to support building queries for rendering in
- * formats not using StreamingRenderer
+ * Note that this is a copy of the original class from GeoTools org.geotools.renderer.lite.LiteFeatureTypeStyle to
+ * support building queries for rendering in formats not using StreamingRenderer
  *
  * <p>This is a simple class that contains the information needed to render a layer.
  *
- * <p>Basically, for a SLD, you create one of these for each of the FeatureTypeStyles inside it.
- * LiteRenderer uses this to do the actual renderering.
+ * <p>Basically, for a SLD, you create one of these for each of the FeatureTypeStyles inside it. LiteRenderer uses this
+ * to do the actual renderering.
  *
- * <p>It contains: a. a BufferedImage so lite knows where to do the drawing b. a list of rules
- * (minimal # -- ie. remove the ones that dont apply to this scale) c. "else" rule list
+ * <p>It contains: a. a BufferedImage so lite knows where to do the drawing b. a list of rules (minimal # -- ie. remove
+ * the ones that don't apply to this scale) c. "else" rule list
  *
- * <p>To process this, you would a) foreach FEATURE b) foreach LiteFeatureTypeStyle c) <process
- * rules and draw to the appropriate image> d) combine the images
+ * <p>To process this, you would a) foreach FEATURE b) foreach LiteFeatureTypeStyle c) process rules and draw to the
+ * appropriate image d) combine the images
  *
- * <p>This was setup so you can "parallelize" literenderer in the simple way -- only read data once.
- * The old implementation would re-read the data for each one FeatureTypeStyle.
+ * <p>This was setup so you can "parallelize" literenderer in the simple way -- only read data once. The old
+ * implementation would re-read the data for each one FeatureTypeStyle.
  *
- * <p>NOTE: a) the SLD spec says that each FeatureTypeStyle is rendered in order & independently b)
- * If you have a request like LAYERS=a,a&STYLES=a_style1,a_styel2 then you could optimize to
- * something like this (!!)
+ * <p>NOTE: a) the SLD spec says that each FeatureTypeStyle is rendered in order &amp; independently b) If you have a
+ * request like LAYERS=a,a&amp;STYLES=a_style1,a_styel2 then you could optimize to something like this (!!)
  *
  * <p>NOTE: a) this also sets up the image -- clears it et al.
  *
@@ -65,14 +63,14 @@ public final class LiteFeatureTypeStyle {
     ScreenMap screenMap;
 
     /**
-     * Whether the feature should be generalized in memory, or not (in this case, the store did it
-     * for us). True by default
+     * Whether the feature should be generalized in memory, or not (in this case, the store did it for us). True by
+     * default
      */
     boolean inMemoryGeneralization = true;
 
     /**
-     * The handler that will be called to process the geometries to deal with projections
-     * singularities and dateline wrapping
+     * The handler that will be called to process the geometries to deal with projections singularities and dateline
+     * wrapping
      */
     ProjectionHandler projectionHandler;
 
@@ -82,8 +80,8 @@ public final class LiteFeatureTypeStyle {
     public Map<String, String> options;
 
     /**
-     * use this for only the 1st FTS. We don't actually create an image for it -- we just use the
-     * graphics. WATCH OUT FOR THIS. NOTE: image=null in this case
+     * use this for only the 1st FTS. We don't actually create an image for it -- we just use the graphics. WATCH OUT
+     * FOR THIS. NOTE: image=null in this case
      */
     public LiteFeatureTypeStyle(
             Layer layer,

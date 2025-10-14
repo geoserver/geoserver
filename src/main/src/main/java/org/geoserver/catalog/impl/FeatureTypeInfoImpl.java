@@ -209,15 +209,14 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements FeatureType
             if (otherAttributes == attributes) return true;
 
             ListIterator<AttributeTypeInfo> attributesIterator = attributes.listIterator();
-            ListIterator<AttributeTypeInfo> otherAttributesIterator =
-                    otherAttributes.listIterator();
+            ListIterator<AttributeTypeInfo> otherAttributesIterator = otherAttributes.listIterator();
             while (attributesIterator.hasNext() && otherAttributesIterator.hasNext()) {
                 AttributeTypeInfo attr = attributesIterator.next();
                 AttributeTypeInfo otherAttr = otherAttributesIterator.next();
 
                 if (attr == null) {
                     if (otherAttr != null) return false;
-                } else if (!attr.equalsIngnoreFeatureType(otherAttr)) {
+                } else if (!attr.equalsIgnoreFeatureType(otherAttr)) {
                     return false;
                 }
             }

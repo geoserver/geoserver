@@ -5,6 +5,7 @@
  */
 package org.geoserver.web;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,12 +26,12 @@ import org.geotools.util.logging.Logging;
 /**
  * Component to list services and their connection details (such as GetCapabilities URL).
  *
- * <p>The panel displays a sorted list of ServiceDescription items to group ServiceLinkDescription
- * items.
+ * <p>The panel displays a sorted list of ServiceDescription items to group ServiceLinkDescription items.
  *
  * @author Jody Garnett
  */
 public class ServicesPanel extends Panel {
+    @Serial
     private static final long serialVersionUID = 5536322717819915862L;
 
     public ServicesPanel(
@@ -71,12 +72,8 @@ public class ServicesPanel extends Panel {
                 Locale locale = getLocale();
                 boolean enabled = service.isAdmin() ? admin : true;
 
-                listItem.add(
-                        new Label("title", service.getTitle().toString(locale))
-                                .setEnabled(enabled));
-                listItem.add(
-                        new Label("description", service.getDescription().toString(locale))
-                                .setEnabled(enabled));
+                listItem.add(new Label("title", service.getTitle().toString(locale)).setEnabled(enabled));
+                listItem.add(new Label("description", service.getDescription().toString(locale)).setEnabled(enabled));
 
                 List<ServiceLinkDescription> links = new ArrayList<>();
                 if (enabled) {
@@ -110,9 +107,8 @@ public class ServicesPanel extends Panel {
             String serviceName = service.getServiceType();
             if (serviceMap.containsKey(serviceName)) {
                 // use the "highest priority" service description
-                var otherServiceDescription = serviceMap.get(serviceName);
-                if (service.getDescriptionPriority()
-                        > otherServiceDescription.getDescriptionPriority()) {
+                ServiceDescription otherServiceDescription = serviceMap.get(serviceName);
+                if (service.getDescriptionPriority() > otherServiceDescription.getDescriptionPriority()) {
                     serviceMap.put(serviceName, service);
                 }
             } else {
@@ -129,11 +125,7 @@ public class ServicesPanel extends Panel {
                 // something is inconsistent
                 Logger LOGGER = Logging.getLogger(ServicesPanel.class);
                 if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.fine(
-                            "Service '"
-                                    + serviceName
-                                    + "' created without description to display "
-                                    + link);
+                    LOGGER.fine("Service '" + serviceName + "' created without description to display " + link);
                 }
                 ServiceDescription service = new ServiceDescription(serviceName);
                 serviceMap.put(serviceName, service);

@@ -63,8 +63,7 @@ public class ManifestLoader {
 
         classLoader = loader.getClassLoader();
         if (classLoader == null) {
-            throw new IllegalStateException(
-                    "Could not get the class loader from GeoServerResourceLoader");
+            throw new IllegalStateException("Could not get the class loader from GeoServerResourceLoader");
         }
 
         props = new Properties();
@@ -89,9 +88,7 @@ public class ManifestLoader {
         }
 
         try {
-            resourceNameRegex =
-                    Pattern.compile(
-                            props.getProperty(RESOURCE_NAME_REGEX) + "!/META-INF/MANIFEST.MF");
+            resourceNameRegex = Pattern.compile(props.getProperty(RESOURCE_NAME_REGEX) + "!/META-INF/MANIFEST.MF");
         } catch (PatternSyntaxException e) {
             LOGGER.log(java.util.logging.Level.SEVERE, e.getLocalizedMessage(), e);
             throw e;
@@ -118,8 +115,7 @@ public class ManifestLoader {
      *
      * @throws IllegalArgumentException if arguments are null
      */
-    private static AboutModel getAboutModel(final ClassLoader loader)
-            throws IllegalArgumentException {
+    private static AboutModel getAboutModel(final ClassLoader loader) throws IllegalArgumentException {
 
         if (loader == null) {
             throw new IllegalArgumentException("Unable to run with null arguments");
@@ -127,20 +123,19 @@ public class ManifestLoader {
 
         final AboutModel model = new AboutModel();
         Map<String, Manifest> manifests = loadManifest(loader);
-        Iterator<java.util.Map.Entry<String, Manifest>> it = manifests.entrySet().iterator();
+        Iterator<java.util.Map.Entry<String, Manifest>> it =
+                manifests.entrySet().iterator();
         while (it.hasNext()) {
             java.util.Map.Entry<String, Manifest> entry = it.next();
-            model.add(
-                    ManifestModel.parseManifest(
-                            trimName(entry.getKey()),
-                            entry.getValue(),
-                            new ManifestModel.ExcludeAttributeFilter(resourceAttributeExclusions)));
+            model.add(ManifestModel.parseManifest(
+                    trimName(entry.getKey()),
+                    entry.getValue(),
+                    new ManifestModel.ExcludeAttributeFilter(resourceAttributeExclusions)));
         }
         return model;
     }
 
-    private static Map<String, Manifest> loadManifest(final ClassLoader loader)
-            throws IllegalArgumentException {
+    private static Map<String, Manifest> loadManifest(final ClassLoader loader) throws IllegalArgumentException {
 
         if (loader == null) {
             throw new IllegalArgumentException("Unable to run with null arguments");
@@ -152,8 +147,7 @@ public class ManifestLoader {
             while (resources.hasMoreElements()) {
                 URL resource = resources.nextElement();
 
-                if (LOGGER.isLoggable(Level.FINE))
-                    LOGGER.fine("Loading resources: " + resource.getFile());
+                if (LOGGER.isLoggable(Level.FINE)) LOGGER.fine("Loading resources: " + resource.getFile());
                 try (InputStream is = resource.openStream()) {
                     manifests.put(resource.getPath(), new Manifest(is));
                 } catch (IOException e) {
@@ -165,10 +159,7 @@ public class ManifestLoader {
                 }
             }
         } catch (IOException e) {
-            LOGGER.log(
-                    java.util.logging.Level.SEVERE,
-                    "Error loading resources file: " + e.getLocalizedMessage(),
-                    e);
+            LOGGER.log(java.util.logging.Level.SEVERE, "Error loading resources file: " + e.getLocalizedMessage(), e);
         }
 
         return manifests;
@@ -192,13 +183,9 @@ public class ManifestLoader {
         String resource = "/" + clz.getName().replace(".", "/") + ".class";
         String fullPath = clz.getResource(resource).toString();
         String archivePath = fullPath.substring(0, fullPath.length() - resource.length());
-        if (archivePath.endsWith("\\WEB-INF\\classes")
-                || archivePath.endsWith("/WEB-INF/classes")) {
+        if (archivePath.endsWith("\\WEB-INF\\classes") || archivePath.endsWith("/WEB-INF/classes")) {
             archivePath =
-                    archivePath.substring(
-                            0,
-                            archivePath.length()
-                                    - "/WEB-INF/classes".length()); // Required for wars
+                    archivePath.substring(0, archivePath.length() - "/WEB-INF/classes".length()); // Required for wars
         }
 
         try (InputStream input = new URL(archivePath + "/META-INF/MANIFEST.MF").openStream()) {
@@ -219,24 +206,19 @@ public class ManifestLoader {
         AboutModel model = new AboutModel();
         try {
             // prepare the GeoServer metadata key
-            String geoserverPath =
-                    GeoServer.class
-                            .getProtectionDomain()
-                            .getCodeSource()
-                            .getLocation()
-                            .toURI()
-                            .toString();
+            String geoserverPath = GeoServer.class
+                    .getProtectionDomain()
+                    .getCodeSource()
+                    .getLocation()
+                    .toURI()
+                    .toString();
             geoserverPath = geoserverPath + "!/META-INF/MANIFEST.MF";
 
             Class<GeoServer> geoserver_class = GeoServer.class;
             Manifest manifest = ManifestLoader.getManifest(geoserver_class);
             if (manifest != null) {
-                model.add(
-                        ManifestModel.parseManifest(
-                                "GeoServer",
-                                manifest,
-                                new ManifestModel.IncludeAttributeFilter(
-                                        versionAttributeInclusions)));
+                model.add(ManifestModel.parseManifest(
+                        "GeoServer", manifest, new ManifestModel.IncludeAttributeFilter(versionAttributeInclusions)));
             }
 
         } catch (Exception e) {
@@ -246,25 +228,20 @@ public class ManifestLoader {
 
         try {
             // prepare the GeoTools metadata key
-            String path =
-                    GeoTools.class
-                            .getProtectionDomain()
-                            .getCodeSource()
-                            .getLocation()
-                            .toURI()
-                            .toString();
+            String path = GeoTools.class
+                    .getProtectionDomain()
+                    .getCodeSource()
+                    .getLocation()
+                    .toURI()
+                    .toString();
             path = path + "!/META-INF/MANIFEST.MF";
 
             Class<GeoTools> geoserver_class = GeoTools.class;
             Manifest manifest = ManifestLoader.getManifest(geoserver_class);
 
             if (manifest != null) {
-                model.add(
-                        ManifestModel.parseManifest(
-                                "GeoTools",
-                                manifest,
-                                new ManifestModel.IncludeAttributeFilter(
-                                        versionAttributeInclusions)));
+                model.add(ManifestModel.parseManifest(
+                        "GeoTools", manifest, new ManifestModel.IncludeAttributeFilter(versionAttributeInclusions)));
             }
             // ManifestModel manifest = new ManifestModel("GeoTools");
             // manifest.putEntry("Version", GeoTools.getVersion().toString());
@@ -278,24 +255,19 @@ public class ManifestLoader {
 
         try {
             // prepare the GeoWebCache metadata key
-            String path =
-                    Class.forName("org.geowebcache.GeoWebCache")
-                            .getProtectionDomain()
-                            .getCodeSource()
-                            .getLocation()
-                            .toURI()
-                            .toString();
+            String path = Class.forName("org.geowebcache.GeoWebCache")
+                    .getProtectionDomain()
+                    .getCodeSource()
+                    .getLocation()
+                    .toURI()
+                    .toString();
             path = path + "!/META-INF/MANIFEST.MF";
 
             Class<?> geoserver_class = Class.forName("org.geowebcache.GeoWebCache");
             Manifest manifest = ManifestLoader.getManifest(geoserver_class);
             if (manifest != null) {
-                model.add(
-                        ManifestModel.parseManifest(
-                                "GeoWebCache",
-                                manifest,
-                                new ManifestModel.IncludeAttributeFilter(
-                                        versionAttributeInclusions)));
+                model.add(ManifestModel.parseManifest(
+                        "GeoWebCache", manifest, new ManifestModel.IncludeAttributeFilter(versionAttributeInclusions)));
             }
 
             // Package p = GeoWebCache.class.getPackage();
@@ -347,36 +319,32 @@ public class ManifestLoader {
 
         private AboutModel(NavigableSet<ManifestModel> manifests) throws IllegalArgumentException {
             if (manifests == null) {
-                throw new IllegalArgumentException(
-                        "Unable to initialize model with a null manifests tree");
+                throw new IllegalArgumentException("Unable to initialize model with a null manifests tree");
             }
             this.manifests = new TreeSet<>(manifests);
         }
 
         /**
-         * Filter resources from the used model generating a new one containing only resources
-         * having the name between from and to string.<br>
-         * Note that objects are shared between models so changes to objects in the filtered model
-         * will also affect the current model.
+         * Filter resources from the used model generating a new one containing only resources having the name between
+         * from and to string.<br>
+         * Note that objects are shared between models so changes to objects in the filtered model will also affect the
+         * current model.
          *
          * @return the filtered model
          * @throws IllegalArgumentException if from or to are null
          */
-        public AboutModel filterNameByRange(String from, String to)
-                throws IllegalArgumentException {
+        public AboutModel filterNameByRange(String from, String to) throws IllegalArgumentException {
             if (from == null || to == null) {
                 throw new IllegalArgumentException("Unable to parse from or to are null");
             }
-            return new AboutModel(
-                    getManifests()
-                            .subSet(new ManifestModel(from), true, new ManifestModel(to), true));
+            return new AboutModel(getManifests().subSet(new ManifestModel(from), true, new ManifestModel(to), true));
         }
 
         /**
-         * Filter resources from the used model generating a new one containing only resources
-         * having the name matching the passed regular expression.<br>
-         * Note that objects are shared between models so changes to objects in the filtered model
-         * will also affect the current model.
+         * Filter resources from the used model generating a new one containing only resources having the name matching
+         * the passed regular expression.<br>
+         * Note that objects are shared between models so changes to objects in the filtered model will also affect the
+         * current model.
          *
          * @param regex regular expression
          * @return a filtered model
@@ -400,10 +368,10 @@ public class ManifestLoader {
         }
 
         /**
-         * Filter resources from the used model generating a new one containing only resources
-         * having a key matching the passed string.<br>
-         * Note that objects are shared between models so changes to objects in the filtered model
-         * will also affect the current model.
+         * Filter resources from the used model generating a new one containing only resources having a key matching the
+         * passed string.<br>
+         * Note that objects are shared between models so changes to objects in the filtered model will also affect the
+         * current model.
          *
          * @param key the key to match
          * @return a filtered model
@@ -425,17 +393,16 @@ public class ManifestLoader {
         }
 
         /**
-         * Filter resources from the used model generating a new one containing only resources
-         * having a property matching the passed string.<br>
-         * Note that objects are shared between models so changes to objects in the filtered model
-         * will also affect the current model.
+         * Filter resources from the used model generating a new one containing only resources having a property
+         * matching the passed string.<br>
+         * Note that objects are shared between models so changes to objects in the filtered model will also affect the
+         * current model.
          *
          * @param value the value of the property
          * @return the filtered model
          * @throws IllegalArgumentException if the value is null
          */
-        public AboutModel filterPropertyByValue(final String value)
-                throws IllegalArgumentException {
+        public AboutModel filterPropertyByValue(final String value) throws IllegalArgumentException {
             if (value == null) {
                 throw new IllegalArgumentException("Unable to parse: value is null");
             }
@@ -451,11 +418,10 @@ public class ManifestLoader {
         }
 
         /**
-         * Filter resources from the used model generating a new one containing only resources
-         * having a property key matching the passed key string with a value matching the passed
-         * value string.<br>
-         * Note that objects are shared between models so changes to objects in the filtered model
-         * will also affect the current model.
+         * Filter resources from the used model generating a new one containing only resources having a property key
+         * matching the passed key string with a value matching the passed value string.<br>
+         * Note that objects are shared between models so changes to objects in the filtered model will also affect the
+         * current model.
          *
          * @param value the value of the property
          * @param key the name of the property
@@ -478,8 +444,7 @@ public class ManifestLoader {
             return am;
         }
 
-        private boolean filterPropertyByKeyValue(
-                final ManifestModel tModel, final String key, final String value) {
+        private boolean filterPropertyByKeyValue(final ManifestModel tModel, final String key, final String value) {
             // filter over properties
             for (Entry<String, String> e : tModel.getEntries().entrySet()) {
                 if (e.getKey().matches(key) && e.getValue().matches(value)) {
@@ -518,11 +483,8 @@ public class ManifestLoader {
          * @return true if this set did not already contain the specified name
          */
         public boolean add(final String name, final Manifest manifest) {
-            return manifests.add(
-                    ManifestModel.parseManifest(
-                            name,
-                            manifest,
-                            new ManifestModel.ExcludeAttributeFilter(resourceAttributeExclusions)));
+            return manifests.add(ManifestModel.parseManifest(
+                    name, manifest, new ManifestModel.ExcludeAttributeFilter(resourceAttributeExclusions)));
         }
 
         /**
@@ -600,11 +562,8 @@ public class ManifestLoader {
              * @param manifest the manifest bean to load
              * @return the generated model
              */
-            @SuppressWarnings("PMD.UnusedPrivateMethod") // false positive
             private static ManifestModel parseManifest(
-                    final String name,
-                    final Manifest manifest,
-                    final AttributesFilter<Map<String, String>> filter) {
+                    final String name, final Manifest manifest, final AttributesFilter<Map<String, String>> filter) {
 
                 final ManifestModel m = new ManifestModel(name);
 
@@ -629,8 +588,8 @@ public class ManifestLoader {
             }
 
             /**
-             * Interface used to define Attributes filter in {@link
-             * ManifestModel#parseManifest(String, Manifest, AttributesFilter)}
+             * Interface used to define Attributes filter in {@link ManifestModel#parseManifest(String, Manifest,
+             * AttributesFilter)}
              *
              * @author cancellieri
              * @param <T> the type return for the filter function
@@ -640,14 +599,12 @@ public class ManifestLoader {
             }
 
             /**
-             * INTERSECTION: create a map of properties from an attributes including only those
-             * matching the include array elements<br>
-             * This implementation also supports attribute renaming using into the include array the
-             * pattern:<br>
+             * INTERSECTION: create a map of properties from an attributes including only those matching the include
+             * array elements<br>
+             * This implementation also supports attribute renaming using into the include array the pattern:<br>
              * include= { "attrName1:replaceName1", "attrName2:replaceName2", ...}<br>
              */
-            public static class IncludeAttributeFilter
-                    implements AttributesFilter<Map<String, String>> {
+            public static class IncludeAttributeFilter implements AttributesFilter<Map<String, String>> {
                 private final String[] include;
 
                 public IncludeAttributeFilter(final String[] include) {
@@ -661,15 +618,13 @@ public class ManifestLoader {
                 }
 
                 /** @return a map of properties */
-                private static Map<String, String> filterIncludingAttributes(
-                        final Attributes at, String[] include) {
+                private static Map<String, String> filterIncludingAttributes(final Attributes at, String[] include) {
                     if (at == null) throw new IllegalArgumentException("Null argument");
 
                     Map<String, String> ret = new HashMap<>();
 
                     if (include == null) {
-                        if (LOGGER.isLoggable(Level.FINE))
-                            LOGGER.log(Level.FINE, "No includes: including all");
+                        if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "No includes: including all");
                         final Iterator<java.util.Map.Entry<Object, Object>> it =
                                 at.entrySet().iterator();
                         while (it.hasNext()) {
@@ -704,11 +659,10 @@ public class ManifestLoader {
             }
 
             /**
-             * COMPLEMENT: create a map of properties from an attributes excluding those matching
-             * the exclude array elements
+             * COMPLEMENT: create a map of properties from an attributes excluding those matching the exclude array
+             * elements
              */
-            public static class ExcludeAttributeFilter
-                    implements AttributesFilter<Map<String, String>> {
+            public static class ExcludeAttributeFilter implements AttributesFilter<Map<String, String>> {
 
                 private final String[] exclude;
 
@@ -727,8 +681,7 @@ public class ManifestLoader {
                  * @param exclude the list of properties to exlude
                  * @return a map
                  */
-                private static Map<String, String> filterExcludingAttributes(
-                        final Attributes at, String[] exclude) {
+                private static Map<String, String> filterExcludingAttributes(final Attributes at, String[] exclude) {
                     if (at == null) throw new IllegalArgumentException("Null arguments");
                     if (exclude == null) {
                         if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "No exceptions");

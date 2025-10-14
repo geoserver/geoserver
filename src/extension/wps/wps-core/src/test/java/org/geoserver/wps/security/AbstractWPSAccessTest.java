@@ -73,8 +73,7 @@ public abstract class AbstractWPSAccessTest extends WPSTestSupport {
     /** Enable the Spring Security auth filters */
     @Override
     protected List<javax.servlet.Filter> getFilters() {
-        return Collections.singletonList(
-                (javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
+        return Collections.singletonList((javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
     }
 
     protected abstract CatalogMode getMode();

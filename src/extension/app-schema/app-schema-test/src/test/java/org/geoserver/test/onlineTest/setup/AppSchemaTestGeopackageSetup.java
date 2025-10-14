@@ -35,32 +35,33 @@ public class AppSchemaTestGeopackageSetup extends ReferenceDataGeopackageSetup {
 
     /** Mapping file database parameters */
     public static String DB_PARAMS =
-            "<parameters>"
-                    + "\n<Parameter>\n"
-                    + "<name>dbtype</name>\n"
-                    + "<value>geopkg</value>"
-                    + "\n</Parameter>"
-                    + "\n<Parameter>\n"
-                    + "<name>database</name>\n"
-                    + "<value>PATH_TO_BE_REPLACED</value>\n"
-                    + "</Parameter>\n"
-                    + "<Parameter>\n"
-                    + "<name>Expose primary keys</name>\n"
-                    + "<value>true</value>"
-                    + "\n</Parameter>"
-                    + "</parameters>"; //
+            """
+            <parameters>
+            <Parameter>
+            <name>dbtype</name>
+            <value>geopkg</value>
+            </Parameter>
+            <Parameter>
+            <name>database</name>
+            <value>PATH_TO_BE_REPLACED</value>
+            </Parameter>
+            <Parameter>
+            <name>Expose primary keys</name>
+            <value>true</value>
+            </Parameter>\
+            </parameters>"""; //
 
     private String sql;
 
     /**
-     * Ensure the app-schema properties file is loaded with the database parameters. Also create
-     * corresponding tables on the database based on data from properties files.
+     * Ensure the app-schema properties file is loaded with the database parameters. Also create corresponding tables on
+     * the database based on data from properties files.
      *
      * @param propertyFiles Property file name and its feature type directory map
      * @param geopkgDir geopkg file path
      */
-    public static AppSchemaTestGeopackageSetup getInstance(
-            Map<String, File> propertyFiles, String geopkgDir) throws Exception {
+    public static AppSchemaTestGeopackageSetup getInstance(Map<String, File> propertyFiles, String geopkgDir)
+            throws Exception {
         return new AppSchemaTestGeopackageSetup(propertyFiles, geopkgDir);
     }
 
@@ -70,8 +71,7 @@ public class AppSchemaTestGeopackageSetup extends ReferenceDataGeopackageSetup {
      * @param propertyFiles Property file name and its parent directory map
      * @param geopkgDir geopkg file path
      */
-    public AppSchemaTestGeopackageSetup(Map<String, File> propertyFiles, String geopkgDir)
-            throws Exception {
+    public AppSchemaTestGeopackageSetup(Map<String, File> propertyFiles, String geopkgDir) throws Exception {
         this.geopkgDir = geopkgDir;
         configureFixture();
         createTables(propertyFiles);
@@ -105,8 +105,8 @@ public class AppSchemaTestGeopackageSetup extends ReferenceDataGeopackageSetup {
                 String field;
                 String type;
                 for (PropertyDescriptor desc : schema.getDescriptors()) {
-                    if (desc instanceof GeometryDescriptor) {
-                        geoms.add((GeometryDescriptor) desc);
+                    if (desc instanceof GeometryDescriptor descriptor) {
+                        geoms.add(descriptor);
                     } else {
                         field = "\"" + desc.getName() + "\" ";
                         type = Classes.getShortName(desc.getType().getBinding());
@@ -133,14 +133,7 @@ public class AppSchemaTestGeopackageSetup extends ReferenceDataGeopackageSetup {
                 int count = 0;
                 for (GeometryDescriptor geom : geoms) {
                     String geomColumnName = geom.getName().toString();
-                    buf.append(
-                            "ALTER TABLE "
-                                    + tableName
-                                    + " add "
-                                    + "\""
-                                    + geomColumnName
-                                    + "\""
-                                    + " GEOMETRY;\n");
+                    buf.append("ALTER TABLE " + tableName + " add " + "\"" + geomColumnName + "\"" + " GEOMETRY;\n");
                     // does not support multiple geometry columns in the same table
                     if (count == 0) {
                         addGeometryColumnsToTable(tableName, buf, geomColumnName, geom);
@@ -150,13 +143,12 @@ public class AppSchemaTestGeopackageSetup extends ReferenceDataGeopackageSetup {
 
                 // this block of code exists to not fail from GeopkgDialect.includeTable() function
                 if (geoms.isEmpty()) {
-                    buf.append(
-                            "INSERT INTO gpkg_contents (table_name, data_type, identifier, srs_id) VALUES "
-                                    + "('"
-                                    + tableName
-                                    + "', 'features', '"
-                                    + tableName
-                                    + "', 4326);\n");
+                    buf.append("INSERT INTO gpkg_contents (table_name, data_type, identifier, srs_id) VALUES "
+                            + "('"
+                            + tableName
+                            + "', 'features', '"
+                            + tableName
+                            + "', 4326);\n");
                 }
 
                 // then insert rows
@@ -174,8 +166,7 @@ public class AppSchemaTestGeopackageSetup extends ReferenceDataGeopackageSetup {
                     int valueIndex = 0;
                     for (Property prop : properties) {
                         Object value = prop.getValue();
-                        if (value instanceof Geometry) {
-                            Geometry geom = (Geometry) value;
+                        if (value instanceof Geometry geom) {
 
                             String s = toString(geom);
 
@@ -205,8 +196,7 @@ public class AppSchemaTestGeopackageSetup extends ReferenceDataGeopackageSetup {
     }
 
     /** Since we can add column only to the last index, we need to move other columns too. */
-    private void moveGeometryColumnInFieldNames(
-            List<GeometryDescriptor> geoms, String[] fieldNames) {
+    private void moveGeometryColumnInFieldNames(List<GeometryDescriptor> geoms, String[] fieldNames) {
         int geomIndex;
         ArrayList<String> fieldNamesList = new ArrayList<>(Arrays.asList(fieldNames));
         String geometryName = "";
@@ -231,8 +221,9 @@ public class AppSchemaTestGeopackageSetup extends ReferenceDataGeopackageSetup {
     }
 
     private void moveGeometryValueInValues(String[] values) {
-        Optional<String> optGeomString =
-                Arrays.stream(values).filter(value -> value.startsWith("'GEOM_INDEX")).findFirst();
+        Optional<String> optGeomString = Arrays.stream(values)
+                .filter(value -> value.startsWith("'GEOM_INDEX"))
+                .findFirst();
         if (optGeomString.isPresent()) {
             String geomString = optGeomString.get();
             ArrayList<String> valuesList = new ArrayList<>(Arrays.asList(values));
@@ -254,11 +245,8 @@ public class AppSchemaTestGeopackageSetup extends ReferenceDataGeopackageSetup {
     }
 
     /** Convert geom to a hex string for saving to the DB. */
-    @SuppressWarnings("PMD.StringInstantiation")
     public static String toHexString(byte[] bytes) {
-        final char[] hexArray = {
-            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
-        };
+        final char[] hexArray = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
         char[] hexChars = new char[bytes.length * 2];
         int v;
         for (int j = 0; j < bytes.length; j++) {
@@ -280,45 +268,41 @@ public class AppSchemaTestGeopackageSetup extends ReferenceDataGeopackageSetup {
     private void addGeometryColumnsToTable(
             String tableName, StringBuffer buf, String columnName, GeometryDescriptor geom) {
         int srid = getSrid(geom.getType());
-        buf.append(
-                "INSERT INTO gpkg_contents (table_name, data_type, identifier, srs_id) VALUES "
-                        + "('"
-                        + tableName
-                        + "', 'features', '"
-                        + tableName
-                        + "', "
-                        + srid
-                        + ");\n");
-        buf.append(
-                "INSERT INTO gpkg_geometry_columns VALUES ('"
-                        + tableName
-                        + "', '"
-                        + columnName
-                        + "', 'GEOMETRY', "
-                        + srid
-                        + " , 2, 0);\n");
+        buf.append("INSERT INTO gpkg_contents (table_name, data_type, identifier, srs_id) VALUES "
+                + "('"
+                + tableName
+                + "', 'features', '"
+                + tableName
+                + "', "
+                + srid
+                + ");\n");
+        buf.append("INSERT INTO gpkg_geometry_columns VALUES ('"
+                + tableName
+                + "', '"
+                + columnName
+                + "', 'GEOMETRY', "
+                + srid
+                + " , 2, 0);\n");
 
-        buf.append(
-                "INSERT INTO gpkg_extensions VALUES('"
-                        + tableName
-                        + "', '"
-                        + columnName
-                        + "', 'gpkg_rtree_index', 'http://www.geopackage.org/spec120/#extension_rtree', 'write-only');\n");
+        buf.append("INSERT INTO gpkg_extensions VALUES('"
+                + tableName
+                + "', '"
+                + columnName
+                + "', 'gpkg_rtree_index', 'http://www.geopackage.org/spec120/#extension_rtree', 'write-only');\n");
 
         if (!sridList.contains(srid)) {
-            buf.append(
-                    "INSERT INTO gpkg_spatial_ref_sys VALUES('"
-                            + tableName
-                            + "', '"
-                            + srid
-                            + "', 'EPSG"
-                            + "', '"
-                            + srid
-                            + "', '"
-                            + tableName
-                            + "', '"
-                            + tableName
-                            + "' );\n");
+            buf.append("INSERT INTO gpkg_spatial_ref_sys VALUES('"
+                    + tableName
+                    + "', '"
+                    + srid
+                    + "', 'EPSG"
+                    + "', '"
+                    + srid
+                    + "', '"
+                    + tableName
+                    + "', '"
+                    + tableName
+                    + "' );\n");
         }
     }
 }

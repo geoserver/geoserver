@@ -9,6 +9,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -25,6 +26,8 @@ import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.mapml.tcrs.TiledCRSConstants;
@@ -69,7 +72,8 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
 
         Catalog catalog = getCatalog();
         CatalogBuilder cb = new CatalogBuilder(catalog);
-        ResourceInfo ri = catalog.getLayerByName(MockData.STREAMS.getLocalPart()).getResource();
+        ResourceInfo ri =
+                catalog.getLayerByName(MockData.STREAMS.getLocalPart()).getResource();
 
         cb.setupBounds(ri);
         catalog.save(ri);
@@ -84,8 +88,7 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
 
         // the WFS caps does not have a list of CRS, but we can check the MapML output format
         assertXpathExists(
-                "//wfs:WFS_Capabilities/wfs:Capability/wfs:Request/wfs:GetFeature/wfs:ResultFormat/wfs:MAPML",
-                doc);
+                "//wfs:WFS_Capabilities/wfs:Capability/wfs:Request/wfs:GetFeature/wfs:ResultFormat/wfs:MAPML", doc);
         assertXpathExists(
                 "//wfs:WFS_Capabilities/wfs:Capability/wfs:Request/wfs:GetFeature/wfs:ResultFormat/wfs:MAPML-HTML",
                 doc);
@@ -234,17 +237,13 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
                 doc = getMapML("wfs", vars);
                 assertEquals("mapml-", doc.getDocumentElement().getNodeName());
                 assertXpathEvaluatesTo("1", "count(//html:mapml-)", doc);
-                assertXpathEvaluatesTo(
-                        "1", "count(//html:map-meta[@name='cs'][@content='" + cs + "'])", doc);
+                assertXpathEvaluatesTo("1", "count(//html:map-meta[@name='cs'][@content='" + cs + "'])", doc);
                 assertXpathEvaluatesTo("1", "count(//html:map-meta[@name='projection'])", doc);
                 TiledCRSParams tcrs = TiledCRSConstants.lookupTCRSParams(code);
                 CoordinateReferenceSystem crs = CRS.decode(code);
                 String cite = (crs instanceof GeodeticCRS) ? "MapML:" : "";
                 String proj = tcrs == null ? cite + code : tcrs.getName();
-                assertXpathEvaluatesTo(
-                        "1",
-                        "count(//html:map-meta[@name='projection'][@content='" + proj + "')",
-                        doc);
+                assertXpathEvaluatesTo("1", "count(//html:map-meta[@name='projection'][@content='" + proj + "')", doc);
                 assertXpathEvaluatesTo("1", "count(//html:map-meta[@name='extent'])", doc);
                 String extent = xpath.evaluate("//html:map-meta[@name='extent']/@content", doc);
                 String[] positions = extent.split(",");
@@ -256,9 +255,7 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
                     String[] nameValue = pos.split("=");
                     String name = nameValue[0];
                     String value = nameValue[1];
-                    assertTrue(
-                            name.matches(
-                                    "top-left-.*||top-right-.*||bottom-left-.*||bottom-right-.*"));
+                    assertTrue(name.matches("top-left-.*||top-right-.*||bottom-left-.*||bottom-right-.*"));
                     String axisPattern = ".*-" + axes[0] + "||" + ".*-" + axes[1];
                     assertTrue(name.matches(axisPattern));
                     try {
@@ -302,11 +299,7 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
 
         layerMeta = getFeatureTypeInfo(MockData.STREAMS).getMetadata();
         assertTrue(layerMeta.containsKey("mapml.featureCaption"));
-        assertTrue(
-                layerMeta
-                        .get("mapml.featureCaption")
-                        .toString()
-                        .equalsIgnoreCase(featureCaptionTemplate));
+        assertTrue(layerMeta.get("mapml.featureCaption").toString().equalsIgnoreCase(featureCaptionTemplate));
 
         doc = getMapML("wfs", vars);
         assertEquals("mapml-", doc.getDocumentElement().getNodeName());
@@ -342,11 +335,7 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
 
         layerMeta = getFeatureTypeInfo(MockData.STREAMS).getMetadata();
         assertTrue(layerMeta.containsKey("mapml.featureCaption"));
-        assertTrue(
-                layerMeta
-                        .get("mapml.featureCaption")
-                        .toString()
-                        .equalsIgnoreCase(featureCaptionTemplate));
+        assertTrue(layerMeta.get("mapml.featureCaption").toString().equalsIgnoreCase(featureCaptionTemplate));
 
         doc = getMapML("wfs", vars);
         assertEquals("mapml-", doc.getDocumentElement().getNodeName());
@@ -379,11 +368,7 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
         layerMeta.put("mapml.featureCaption", featureCaptionTemplate);
         getCatalog().save(layerInfo);
         assertTrue(layerMeta.containsKey("mapml.featureCaption"));
-        assertTrue(
-                layerMeta
-                        .get("mapml.featureCaption")
-                        .toString()
-                        .equalsIgnoreCase(featureCaptionTemplate));
+        assertTrue(layerMeta.get("mapml.featureCaption").toString().equalsIgnoreCase(featureCaptionTemplate));
 
         doc = getMapML("wfs", vars);
         assertEquals("mapml-", doc.getDocumentElement().getNodeName());
@@ -421,13 +406,9 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
         print(doc);
         assertEquals("mapml-", doc.getDocumentElement().getNodeName());
         assertXpathEvaluatesTo("1", "count(//html:mapml-)", doc);
-        String coords =
-                xpath.evaluate(
-                        "//html:map-feature[@id='Fifteen.1']//html:map-coordinates/text()", doc);
+        String coords = xpath.evaluate("//html:map-feature[@id='Fifteen.1']//html:map-coordinates/text()", doc);
         assertEquals(
-                "numDecimals unset should return 8 digits of precision",
-                "329290.83733147 -5812472.16880127",
-                coords);
+                "numDecimals unset should return 8 digits of precision", "329290.83733063 -5812472.16877468", coords);
 
         layerInfo = getFeatureTypeInfo(MockData.FIFTEEN);
         layerInfo.setNumDecimals(4);
@@ -436,13 +417,8 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
         doc = getMapML("wfs", vars);
         assertEquals("mapml-", doc.getDocumentElement().getNodeName());
         assertXpathEvaluatesTo("1", "count(//html:mapml-)", doc);
-        coords =
-                xpath.evaluate(
-                        "//html:map-feature[@id='Fifteen.1']//html:map-coordinates/text()", doc);
-        assertEquals(
-                "numDecimals=4 should return 4 digits of precision",
-                "329290.8373 -5812472.1688",
-                coords);
+        coords = xpath.evaluate("//html:map-feature[@id='Fifteen.1']//html:map-coordinates/text()", doc);
+        assertEquals("numDecimals=4 should return 4 digits of precision", "329290.8373 -5812472.1688", coords);
 
         // be really sure
         layerInfo = getFeatureTypeInfo(MockData.FIFTEEN);
@@ -452,13 +428,8 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
         doc = getMapML("wfs", vars);
         assertEquals("mapml-", doc.getDocumentElement().getNodeName());
         assertXpathEvaluatesTo("1", "count(//html:mapml-)", doc);
-        coords =
-                xpath.evaluate(
-                        "//html:map-feature[@id='Fifteen.1']//html:map-coordinates/text()", doc);
-        assertEquals(
-                "numDecimals=2 should return 2 digits of precision",
-                "329290.84 -5812472.17",
-                coords);
+        coords = xpath.evaluate("//html:map-feature[@id='Fifteen.1']//html:map-coordinates/text()", doc);
+        assertEquals("numDecimals=2 should return 2 digits of precision", "329290.84 -5812472.17", coords);
 
         // assure that forcedDecimal has effect
         layerInfo = getFeatureTypeInfo(MockData.FIFTEEN);
@@ -472,26 +443,17 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
         doc = getMapML("wfs", vars);
         assertEquals("mapml-", doc.getDocumentElement().getNodeName());
         assertXpathEvaluatesTo("1", "count(//html:mapml-)", doc);
-        coords =
-                xpath.evaluate(
-                        "//html:map-feature[@id='Fifteen.1']//html:map-coordinates/text()", doc);
+        coords = xpath.evaluate("//html:map-feature[@id='Fifteen.1']//html:map-coordinates/text()", doc);
         assertEquals(
                 "With forcedDecimals=false, very large or very small numbers should be returned as scientific notation",
                 "-1.03526624685E7 504135.1496",
                 coords);
 
         // check links for alternate projections
-        String linkPath =
-                "//html:map-head/html:map-link[@rel='alternate' and @projection='%s']/@href";
-        assertThat(
-                xpath.evaluate(String.format(linkPath, "OSMTILE"), doc),
-                containsString("SRSNAME=MapML:OSMTILE"));
-        assertThat(
-                xpath.evaluate(String.format(linkPath, "CBMTILE"), doc),
-                containsString("SRSNAME=MapML:CBMTILE"));
-        assertThat(
-                xpath.evaluate(String.format(linkPath, "WGS84"), doc),
-                containsString("SRSNAME=MapML:WGS84"));
+        String linkPath = "//html:map-head/html:map-link[@rel='alternate' and @projection='%s']/@href";
+        assertThat(xpath.evaluate(linkPath.formatted("OSMTILE"), doc), containsString("SRSNAME=MapML:OSMTILE"));
+        assertThat(xpath.evaluate(linkPath.formatted("CBMTILE"), doc), containsString("SRSNAME=MapML:CBMTILE"));
+        assertThat(xpath.evaluate(linkPath.formatted("WGS84"), doc), containsString("SRSNAME=MapML:WGS84"));
     }
 
     @Test
@@ -507,9 +469,7 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
         vars.put("service", "wfs");
         vars.put("version", "1.0");
         vars.put("request", "GetFeature");
-        vars.put(
-                "typename",
-                MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
+        vars.put("typename", MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
         vars.put("outputFormat", "MAPML");
         getCatalog().save(layerInfo);
 
@@ -519,10 +479,8 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
         doc = getMapML("wfs", vars);
         assertEquals("mapml-", doc.getDocumentElement().getNodeName());
         assertXpathEvaluatesTo("1", "count(//html:mapml-)", doc);
-        String coords =
-                xpath.evaluate(
-                        "//html:map-feature[@id='BasicPolygons.1107531493630']//html:map-coordinates/text()",
-                        doc);
+        String coords = xpath.evaluate(
+                "//html:map-feature[@id='BasicPolygons.1107531493630']//html:map-coordinates/text()", doc);
         assertEquals(
                 "numDecimals=4 should return 4 digits of precision including padding with zeros",
                 "0.0000 -1.0000 1.0000 0.0000 0.0000 1.0000 -1.0000 0.0000 0.0000 -1.0000",
@@ -536,12 +494,89 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
      * @param query A map representing kvp to be used by the request.
      * @return A result of the request parsed into a dom.
      */
-    protected org.w3c.dom.Document getMapML(final String path, HashMap<String, String> query)
-            throws Exception {
+    protected org.w3c.dom.Document getMapML(final String path, HashMap<String, String> query) throws Exception {
         MockHttpServletRequest request = createRequest(path, query);
         request.setMethod("GET");
         request.setContent(new byte[] {});
         String resp = dispatch(request, "UTF-8").getContentAsString();
         return dom(new ByteArrayInputStream(resp.getBytes()), true);
+    }
+
+    /**
+     * Executes a request using the GET method and returns the raw response string.
+     *
+     * @param path The portion of the request after the context, example:
+     * @param query A map representing kvp to be used by the request.
+     * @return The raw response string.
+     */
+    protected String getMapMLAsString(final String path, HashMap<String, String> query) throws Exception {
+        MockHttpServletRequest request = createRequest(path, query);
+        request.setMethod("GET");
+        request.setContent(new byte[] {});
+        return dispatch(request, "UTF-8").getContentAsString();
+    }
+
+    @Test
+    public void testVerboseSettingPrettyPrint() throws Exception {
+        // Test that output is pretty-printed when global verbose setting is true
+        GeoServer gs = getGeoServer();
+        GeoServerInfo info = gs.getGlobal();
+        // default is unchecked / false
+        info.getSettings().setVerbose(true);
+        gs.save(info);
+
+        HashMap<String, String> vars = new HashMap<>();
+        vars.put("service", "wfs");
+        vars.put("version", "1.0.0");
+        vars.put("request", "GetFeature");
+        vars.put("typename", MockData.STREAMS.getLocalPart());
+        vars.put("outputFormat", "MAPML");
+
+        String response = getMapMLAsString("wfs", vars);
+
+        // Check for pretty-printing indicators
+        assertTrue("Response should contain newlines for pretty-printing", response.contains("\n"));
+        assertTrue("Response should use two spaces before elements for indenting", response.contains("  <"));
+
+        // Verify XML structure is preserved
+        org.w3c.dom.Document doc = dom(new ByteArrayInputStream(response.getBytes()), true);
+        assertEquals("mapml-", doc.getDocumentElement().getNodeName());
+
+        // reset the default false
+        info.getSettings().setVerbose(false);
+        gs.save(info);
+    }
+
+    @Test
+    public void testVerboseSettingDenseOutput() throws Exception {
+        // Test that output is dense when global verbose setting is false
+        GeoServer gs = getGeoServer();
+        GeoServerInfo info = gs.getGlobal();
+        // the default is actually false
+        info.getSettings().setVerbose(false);
+        gs.save(info);
+
+        HashMap<String, String> vars = new HashMap<>();
+        vars.put("service", "wfs");
+        vars.put("version", "1.0.0");
+        vars.put("request", "GetFeature");
+        vars.put("typename", MockData.STREAMS.getLocalPart());
+        vars.put("outputFormat", "MAPML");
+
+        String response = getMapMLAsString("wfs", vars);
+
+        // Check that output is more compact (fewer newlines and no indentation)
+        // Should still have some structure but less whitespace
+        assertFalse(
+                "Dense output should have minimal indentation spaces",
+                response.contains("  <") && response.contains("    <"));
+
+        // Verify XML structure is still valid
+        org.w3c.dom.Document doc = dom(new ByteArrayInputStream(response.getBytes()), true);
+        assertEquals("mapml-", doc.getDocumentElement().getNodeName());
+
+        // the default is actually false
+        info.getSettings().setVerbose(false);
+        gs.save(info);
     }
 }

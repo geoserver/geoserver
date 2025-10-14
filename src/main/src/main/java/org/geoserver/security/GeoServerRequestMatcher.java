@@ -13,8 +13,8 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 /**
  * GeoServer {@link RequestMatcher} implementation.
  *
- * <p>The class is responsible for checking against {@link HTTPMethod} objects and the passed {@link
- * RequestMatcher} objects.
+ * <p>The class is responsible for checking against {@link HTTPMethod} objects and the passed {@link RequestMatcher}
+ * objects.
  *
  * @author christian
  */
@@ -31,9 +31,9 @@ public class GeoServerRequestMatcher implements RequestMatcher {
     }
 
     /**
-     * First, the HTTP method is checked using {@link #matchesHTTPMethod(HttpServletRequest)}. If
-     * <code>true</code>, the request is checked against the {@link RequestMatcher} objects in
-     * {@link #matchers}. The first match returns <code>true</code>.
+     * First, the HTTP method is checked using {@link #matchesHTTPMethod(HttpServletRequest)}. If <code>true</code>, the
+     * request is checked against the {@link RequestMatcher} objects in {@link #matchers}. The first match returns
+     * <code>true</code>.
      *
      * <p>If no match occurs, return <code>false</code>.
      */
@@ -51,7 +51,7 @@ public class GeoServerRequestMatcher implements RequestMatcher {
     }
 
     /**
-     * If {@link #methods} is <code>null</code>, the return value is always <code>true</code>.
+     * If {@link #methods} is {@code null}, the return value is always <code>true</code>.
      *
      * <p>Return <code>true</code> if the HTTP method is contained in {@link #methods}
      */

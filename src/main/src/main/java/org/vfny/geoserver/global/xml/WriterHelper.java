@@ -21,12 +21,11 @@ import org.vfny.geoserver.global.ConfigurationException;
  * <p>
  *
  * @author dzwiers, Refractions Research, Inc.
- * @version $Id$
  */
 public class WriterHelper {
     /**
-     * Will find out if a string contains chars that need to be turned into an xml entity, even if
-     * the string has lineends inside of it (thus the DOTALL flag)
+     * Will find out if a string contains chars that need to be turned into an xml entity, even if the string has
+     * lineends inside of it (thus the DOTALL flag)
      */
     private static final Pattern XML_ENTITIES = Pattern.compile(".*[\"&'<>]+.*", Pattern.DOTALL);
 
@@ -192,8 +191,7 @@ public class WriterHelper {
     /**
      * textTag purpose.
      *
-     * <p>Writes an xml tag with the name, text and attributes specified to the stored output
-     * writer.
+     * <p>Writes an xml tag with the name, text and attributes specified to the stored output writer.
      *
      * @param tagName The tag name to write.
      * @param attributes The tag attributes to write.

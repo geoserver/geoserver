@@ -17,10 +17,10 @@ import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * A response stream that figures out whether or not to compress the output just before the first
- * write. The decision is based on the mimetype set for the output request.
+ * A response stream that figures out whether or not to compress the output just before the first write. The decision is
+ * based on the mimetype set for the output request.
  *
- * @author David Winslow <dwinslow@openplans.org>
+ * @author David Winslow
  */
 public class AlternativesResponseStream extends ServletOutputStream {
     HttpServletResponse myResponse;
@@ -29,8 +29,8 @@ public class AlternativesResponseStream extends ServletOutputStream {
     Logger logger = org.geotools.util.logging.Logging.getLogger("org.geoserver.filters");
     long contentLength;
 
-    public AlternativesResponseStream(
-            HttpServletResponse response, Set compressible, long contentLength) throws IOException {
+    public AlternativesResponseStream(HttpServletResponse response, Set compressible, long contentLength)
+            throws IOException {
         super();
         myResponse = response;
         myCompressibleTypes = compressible;

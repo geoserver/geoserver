@@ -47,8 +47,7 @@ public class CollectionTest extends FeaturesTestSupport {
         super.onSetUp(testData);
 
         // customize metadata and set custom CRS too
-        FeatureTypeInfo basicPolygons =
-                getCatalog().getFeatureTypeByName(getLayerId(MockData.BASIC_POLYGONS));
+        FeatureTypeInfo basicPolygons = getCatalog().getFeatureTypeByName(getLayerId(MockData.BASIC_POLYGONS));
         basicPolygons.setOverridingServiceSRS(true);
         basicPolygons.getResponseSRS().addAll(Arrays.asList("3857", "32632"));
         getCatalog().save(basicPolygons);
@@ -79,15 +78,11 @@ public class CollectionTest extends FeaturesTestSupport {
         assertEquals(-90, json.read("$.extent.spatial.bbox[0][1]", Double.class), 0d);
         assertEquals(180, json.read("$.extent.spatial.bbox[0][2]", Double.class), 0d);
         assertEquals(90, json.read("$.extent.spatial.bbox[0][3]", Double.class), 0d);
-        assertEquals(
-                "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
-                json.read("$.extent.spatial.crs", String.class));
+        assertEquals("http://www.opengis.net/def/crs/OGC/1.3/CRS84", json.read("$.extent.spatial.crs", String.class));
 
         // check we have the expected number of links and they all use the right "rel" relation
         Collection<MediaType> formats = getFeaturesResponseFormats();
-        assertThat(
-                (int) json.read("$.links.length()", Integer.class),
-                Matchers.greaterThanOrEqualTo(formats.size()));
+        assertThat((int) json.read("$.links.length()", Integer.class), Matchers.greaterThanOrEqualTo(formats.size()));
         for (MediaType format : formats) {
             // check title and rel.
             List items = json.read("$.links[?(@.type=='" + format + "')]", List.class);
@@ -100,21 +95,13 @@ public class CollectionTest extends FeaturesTestSupport {
 
         // check the queryables link
         assertThat(
-                readSingle(
-                        json,
-                        "links[?(@.rel=='"
-                                + Queryables.REL
-                                + "' && @.type=='application/schema+json')].href"),
-                equalTo(
-                        "http://localhost:8080/geoserver/ogc/features/v1/collections/cite"
-                                + ":RoadSegments/queryables?f=application%2Fschema%2Bjson"));
+                readSingle(json, "links[?(@.rel=='" + Queryables.REL + "' && @.type=='application/schema+json')].href"),
+                equalTo("http://localhost:8080/geoserver/ogc/features/v1/collections/cite"
+                        + ":RoadSegments/queryables?f=application%2Fschema%2Bjson"));
 
         // check the CRS list, this feature type shares the top level list
         List<String> crs = json.read("crs");
-        assertThat(
-                crs.size(),
-                Matchers.greaterThan(
-                        5000)); // lots... the list is growing, hopefully will stay above 5k
+        assertThat(crs.size(), Matchers.greaterThan(5000)); // lots... the list is growing, hopefully will stay above 5k
         assertThat(
                 crs,
                 hasItems(
@@ -184,17 +171,14 @@ public class CollectionTest extends FeaturesTestSupport {
     @Test
     public void testCollectionVirtualWorkspace() throws Exception {
         String roadSegments = ROAD_SEGMENTS.getLocalPart();
-        DocumentContext json =
-                getAsJSONPath("cite/ogc/features/v1/collections/" + roadSegments, 200);
+        DocumentContext json = getAsJSONPath("cite/ogc/features/v1/collections/" + roadSegments, 200);
 
         assertEquals("RoadSegments", json.read("$.id", String.class));
         assertEquals("RoadSegments", json.read("$.title", String.class));
 
         // check we have the expected number of links and they all use the right "rel" relation
         Collection<MediaType> formats = getFeaturesResponseFormats();
-        assertThat(
-                (int) json.read("$.links.length()", Integer.class),
-                Matchers.greaterThanOrEqualTo(formats.size()));
+        assertThat((int) json.read("$.links.length()", Integer.class), Matchers.greaterThanOrEqualTo(formats.size()));
         for (MediaType format : formats) {
             // check title and rel.
             List items = json.read("$.links[?(@.type=='" + format + "')]", List.class);
@@ -208,18 +192,13 @@ public class CollectionTest extends FeaturesTestSupport {
 
     @Test
     public void testCollectionYaml() throws Exception {
-        getAsString(
-                "ogc/features/v1/collections/" + getLayerId(ROAD_SEGMENTS) + "?f=application/yaml");
+        getAsString("ogc/features/v1/collections/" + getLayerId(ROAD_SEGMENTS) + "?f=application/yaml");
         // System.out.println(yaml);
     }
 
     @Test
     public void testCollectionHTMLRemovedInlineJS() throws Exception {
-        String html =
-                getAsString(
-                        "ogc/features/v1/collections/"
-                                + getLayerId(MockData.ROAD_SEGMENTS)
-                                + "?f=text/html");
+        String html = getAsString("ogc/features/v1/collections/" + getLayerId(MockData.ROAD_SEGMENTS) + "?f=text/html");
         assertThat(
                 html,
                 containsString(
@@ -228,10 +207,7 @@ public class CollectionTest extends FeaturesTestSupport {
                 html,
                 containsString(
                         "<script src=\"http://localhost:8080/geoserver/webresources/ogcapi/features.js\"></script>"));
-        assertThat(
-                html,
-                containsString(
-                        "<input type=\"hidden\" id=\"maxNumberOfFeaturesForPreview\" value=\"50\"/>"));
+        assertThat(html, containsString("<input type=\"hidden\" id=\"maxNumberOfFeaturesForPreview\" value=\"50\"/>"));
         assertThat(html, containsString("form-select-open-basic"));
         assertThat(html, containsString("form-select-open-limit"));
         assertThat(html, not(containsString("onchange")));
@@ -241,15 +217,10 @@ public class CollectionTest extends FeaturesTestSupport {
     public void testCustomLinks() throws Exception {
         FeatureTypeInfo roads = getCatalog().getFeatureTypeByName(getLayerId(ROAD_SEGMENTS));
         LinkInfoImpl link1 =
-                new LinkInfoImpl(
-                        "enclosure",
-                        "application/geopackage+sqlite3",
-                        "http://example.com/roads.gpkg");
-        LinkInfoImpl link2 =
-                new LinkInfoImpl("rasterized", "image/tiff", "http://example.com/roads.tif");
+                new LinkInfoImpl("enclosure", "application/geopackage+sqlite3", "http://example.com/roads.gpkg");
+        LinkInfoImpl link2 = new LinkInfoImpl("rasterized", "image/tiff", "http://example.com/roads.tif");
         link2.setService("Coverages");
-        ArrayList<LinkInfo> links =
-                Stream.of(link1, link2).collect(Collectors.toCollection(ArrayList::new));
+        ArrayList<LinkInfo> links = Stream.of(link1, link2).collect(Collectors.toCollection(ArrayList::new));
         roads.getMetadata().put(LinkInfo.LINKS_METADATA_KEY, links);
         getCatalog().save(roads);
 

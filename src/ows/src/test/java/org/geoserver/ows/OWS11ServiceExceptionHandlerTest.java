@@ -28,31 +28,25 @@ public class OWS11ServiceExceptionHandlerTest {
 
     @BeforeClass
     public static void setupClass() {
-        System.setProperty("ows11.exception.xml.responsetype", XML_TYPE_TEXT);
+        OWS11ServiceExceptionHandler.CONTENT_TYPE = XML_TYPE_TEXT;
     }
 
     @AfterClass
     public static void teardownClass() {
-        System.clearProperty("ows11.exception.xml.responsetype");
+        OWS11ServiceExceptionHandler.CONTENT_TYPE = OWS11ServiceExceptionHandler.DEFAULT_XML_MIME_TYPE;
     }
 
     @Before
     public void setUp() throws Exception {
         HelloWorld helloWorld = new HelloWorld();
-        Service service =
-                new Service(
-                        "hello",
-                        helloWorld,
-                        new Version("1.1.1"),
-                        Collections.singletonList("hello"));
+        Service service = new Service("hello", helloWorld, new Version("1.1.1"), Collections.singletonList("hello"));
 
-        request =
-                new MockHttpServletRequest() {
-                    @Override
-                    public int getServerPort() {
-                        return 8080;
-                    }
-                };
+        request = new MockHttpServletRequest() {
+            @Override
+            public int getServerPort() {
+                return 8080;
+            }
+        };
 
         request.setScheme("http");
         request.setServerName("localhost");

@@ -44,8 +44,8 @@ public class GWCIconFactory implements Serializable {
             new PackageResourceReference(GWCSettingsPage.class, "geowebcache-16.png");
 
     /**
-     * Enum of tile layer type to aid in presenting a type column in the UI without incurring in
-     * heavy resource lookups such as loading feature types from the geoserver catalog.
+     * Enum of tile layer type to aid in presenting a type column in the UI without incurring in heavy resource lookups
+     * such as loading feature types from the geoserver catalog.
      */
     public static enum CachedLayerType {
         VECTOR(PublishedType.VECTOR.getCode()),
@@ -77,8 +77,7 @@ public class GWCIconFactory implements Serializable {
     }
 
     public static CachedLayerType getCachedLayerType(final TileLayer layer) {
-        if (layer instanceof GeoServerTileLayer) {
-            GeoServerTileLayer gsTileLayer = (GeoServerTileLayer) layer;
+        if (layer instanceof GeoServerTileLayer gsTileLayer) {
             PublishedInfo published = gsTileLayer.getPublishedInfo();
             PublishedType publishedType = published.getType();
             return CachedLayerType.valueOf(publishedType.getCode());
@@ -103,11 +102,10 @@ public class GWCIconFactory implements Serializable {
 
     /** Returns the appropriate icon for the specified layer type. */
     public static PackageResourceReference getSpecificLayerIcon(final TileLayer layer) {
-        if (layer instanceof GeoServerTileLayer) {
-            GeoServerTileLayer gsTileLayer = (GeoServerTileLayer) layer;
+        if (layer instanceof GeoServerTileLayer gsTileLayer) {
             PublishedInfo published = gsTileLayer.getPublishedInfo();
-            if (published instanceof LayerInfo) {
-                return CatalogIconFactory.get().getSpecificLayerIcon((LayerInfo) published);
+            if (published instanceof LayerInfo info) {
+                return CatalogIconFactory.get().getSpecificLayerIcon(info);
             }
             return CatalogIconFactory.GROUP_ICON;
         }
@@ -129,18 +127,12 @@ public class GWCIconFactory implements Serializable {
         return UNKNOWN_ICON;
     }
 
-    /**
-     * Returns a reference to a general purpose icon to indicate an enabled/properly configured
-     * resource
-     */
+    /** Returns a reference to a general purpose icon to indicate an enabled/properly configured resource */
     public static PackageResourceReference getEnabledIcon() {
         return ENABLED_ICON;
     }
 
-    /**
-     * Returns a reference to a general purpose icon to indicate a
-     * disabled/misconfigured/unreachable resource
-     */
+    /** Returns a reference to a general purpose icon to indicate a disabled/misconfigured/unreachable resource */
     public static PackageResourceReference getDisabledIcon() {
         return DISABLED_ICON;
     }

@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.cas;
 
+import java.io.Serial;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
 import org.geoserver.security.config.RoleSource;
 
@@ -15,11 +16,12 @@ import org.geoserver.security.config.RoleSource;
  */
 public class CasAuthenticationFilterConfig extends PreAuthenticatedUserNameFilterConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
-     * RoleSource list specific to CAS. To be used in addition to {@link
-     * org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource}
+     * RoleSource list specific to CAS. To be used in addition to
+     * {@link org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource}
      *
      * @author Mauro Bartolomeoli (mauro.bartolomeoli@geo-solutions.it)
      */
@@ -60,10 +62,7 @@ public class CasAuthenticationFilterConfig extends PreAuthenticatedUserNameFilte
      */
     private String urlInCasLogoutPage;
 
-    /**
-     * Name of the custom attribute originating roles when using {@link
-     * CasSpecificRoleSource#CustomAttribute}
-     */
+    /** Name of the custom attribute originating roles when using {@link CasSpecificRoleSource#CustomAttribute} */
     private String customAttributeName;
 
     /** Participate in Single Sign Out. */

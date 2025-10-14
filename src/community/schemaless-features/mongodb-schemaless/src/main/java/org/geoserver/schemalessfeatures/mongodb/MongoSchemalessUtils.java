@@ -25,8 +25,7 @@ public class MongoSchemalessUtils {
     public static Set<String> findIndexedGeometries(MongoCollection collection) {
         @SuppressWarnings("unchecked")
         List<DBObject> indexes =
-                (List<DBObject>)
-                        collection.listIndexes(DBObject.class).into(new ArrayList<DBObject>());
+                (List<DBObject>) collection.listIndexes(DBObject.class).into(new ArrayList<DBObject>());
         return MongoUtil.findIndexedFields(indexes, "2dsphere");
     }
 
@@ -43,12 +42,11 @@ public class MongoSchemalessUtils {
         for (int i = 0; i < splittedPn.length; i++) {
             String xpathStep = splittedPn[i];
             if (xpathStep.indexOf(":") != -1) xpathStep = xpathStep.split(":")[1];
-            String nameCapitalized =
-                    prev != null
-                            ? prev.substring(0, 1).toUpperCase()
-                                    + prev.substring(1)
-                                    + SchemalessPropertyAccessorFactory.NESTED_FEATURE_SUFFIX
-                            : null;
+            String nameCapitalized = prev != null
+                    ? prev.substring(0, 1).toUpperCase()
+                            + prev.substring(1)
+                            + SchemalessPropertyAccessorFactory.NESTED_FEATURE_SUFFIX
+                    : null;
             if (!xpathStep.equals(nameCapitalized)) {
                 sb.append(xpathStep);
                 if (i != splittedPn.length - 1) sb.append(".");

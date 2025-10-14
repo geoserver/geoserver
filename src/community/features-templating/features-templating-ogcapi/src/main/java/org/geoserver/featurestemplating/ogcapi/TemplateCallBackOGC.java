@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
+import org.geootols.filter.text.cql_2.CQL2;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
@@ -48,15 +50,17 @@ import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpHeaders;
 
 /**
- * This {@link DispatcherCallback} implementation OGCAPI compliant that checks on operation
- * dispatched event if a json-ld path has been provided to cql_filter and evaluate it against the
- * {@link TemplateBuilder} tree to get the corresponding {@link Filter}
+ * This {@link DispatcherCallback} implementation OGCAPI compliant that checks on operation dispatched event if a
+ * json-ld path has been provided to cql_filter and evaluate it against the {@link TemplateBuilder} tree to get the
+ * corresponding {@link Filter}
  */
 public class TemplateCallBackOGC extends AbstractDispatcherCallback {
 
     static final FormatOptionsKvpParser PARSER = new FormatOptionsKvpParser("env");
 
     private static final Logger LOGGER = Logging.getLogger(TemplateCallback.class);
+
+    static final String CQL_2_TEXT = "CQL2-TEXT";
 
     private Catalog catalog;
 
@@ -92,16 +96,16 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
                     if (typeInfo == null) return operation;
                     RootBuilder root = configuration.getTemplate(typeInfo, outputFormat);
                     String filterLang = (String) request.getKvp().get("FILTER-LANG");
-                    if (filterLang == null || filterLang.equalsIgnoreCase("CQL-TEXT")) {
-                        String filter = (String) request.getKvp().get("FILTER");
-                        if (filter != null)
-                            replaceTemplatePathWithFilter(filter, root, typeInfo, operation);
+                    String filter = (String) request.getKvp().get("FILTER");
+                    if (filter != null
+                            && (filterLang == null
+                                    || filterLang.equalsIgnoreCase("CQL-TEXT")
+                                    || filterLang.equalsIgnoreCase("CQL2-TEXT"))) {
+                        replaceTemplatePathWithFilter(filter, filterLang, root, typeInfo, operation);
                     }
-                    String envParam =
-                            request.getRawKvp().get("ENV") != null
-                                    ? request.getRawKvp().get("ENV").toString()
-                                    : null;
-
+                    String envParam = request.getRawKvp().get("ENV") != null
+                            ? request.getRawKvp().get("ENV").toString()
+                            : null;
                     setEnvParameter(envParam);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
@@ -126,46 +130,70 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
         FeatureTypeInfo featureType = catalog.getFeatureTypeByName(collectionId);
         if (featureType == null) {
             throw new ServiceException(
-                    "Unknown collection " + collectionId,
-                    ServiceException.INVALID_PARAMETER_VALUE,
-                    "collectionId");
+                    "Unknown collection " + collectionId, ServiceException.INVALID_PARAMETER_VALUE, "collectionId");
         }
         return featureType;
     }
 
-    private TemplateIdentifier getTemplateIdentifier(Request request) {
+    static TemplateIdentifier getTemplateIdentifier(Request request) {
         String accept = request.getHttpRequest().getHeader(HttpHeaders.ACCEPT);
         String format = request.getKvp() != null ? (String) request.getKvp().get("f") : null;
         TemplateIdentifier identifier = null;
         if (format != null) {
             identifier = TemplateIdentifier.fromOutputFormat(format);
         } else if (accept != null) {
-            identifier = TemplateIdentifier.fromOutputFormat(accept);
+            identifier = getTemplateIdentifierFromAcceptString(accept);
         }
         return identifier;
     }
 
+    /**
+     * Get the template identifier from the accept header. The accept header can contain multiple comma separated
+     * values, so we need to check each one.
+     *
+     * @param accept the accept header value
+     * @return the template identifier or null if not found
+     */
+    private static TemplateIdentifier getTemplateIdentifierFromAcceptString(String accept) {
+        if (StringUtils.isBlank(accept)) return null;
+        String[] split = accept.split(",");
+        for (String s : split) {
+            TemplateIdentifier identifier = TemplateIdentifier.fromOutputFormat(s.trim());
+            if (identifier != null) {
+                return identifier;
+            }
+        }
+        return null;
+    }
+
     private void replaceTemplatePathWithFilter(
-            String strFilter, RootBuilder root, FeatureTypeInfo typeInfo, Operation operation)
+            String strFilter, String filterLang, RootBuilder root, FeatureTypeInfo typeInfo, Operation operation)
             throws Exception {
         if (root != null) {
-            replaceFilter(strFilter, root, typeInfo, operation);
+            replaceFilter(strFilter, filterLang, root, typeInfo, operation);
         }
     }
 
     private void replaceFilter(
-            String strFilter, RootBuilder root, FeatureTypeInfo typeInfo, Operation operation)
+            String strFilter, String filterLang, RootBuilder root, FeatureTypeInfo typeInfo, Operation operation)
+            throws IOException, CQLException {
+        // Get filter from string in order to make it accept the visitor
+        boolean isCQL2 = filterLang != null && CQL_2_TEXT.equalsIgnoreCase(filterLang.trim());
+        Filter filter = isCQL2 ? CQL2.toFilter(strFilter) : XCQL.toFilter(strFilter);
+        replaceFilter(filter, isCQL2, root, typeInfo, operation);
+    }
+
+    private void replaceFilter(
+            Filter filter, boolean isCql2, RootBuilder root, FeatureTypeInfo typeInfo, Operation operation)
             throws IOException, CQLException {
         TemplatePathVisitor visitor = new TemplatePathVisitor(typeInfo.getFeatureType());
         // Get filter from string in order to make it accept the visitor
-        Filter old = XCQL.toFilter(strFilter);
-        Filter f = (Filter) old.accept(visitor, root);
-        if (old.equals(f))
-            LOGGER.warning(
-                    "Failed to resolve filter "
-                            + strFilter
-                            + " against the template. If the property name was intended to be a template path, "
-                            + "check that the path specified in the cql filter is correct.");
+        Filter f = (Filter) filter.accept(visitor, root);
+        if (filter.equals(f))
+            LOGGER.warning("Failed to resolve filter "
+                    + filter
+                    + " against the template. If the property name was intended to be a template path, "
+                    + "check that the path specified in the cql filter is correct.");
         List<Filter> templateFilters = new ArrayList<>();
         templateFilters.addAll(visitor.getFilters());
         if (templateFilters != null && templateFilters.size() > 0) {
@@ -174,15 +202,11 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
         }
         // Taking back a string from the Filter cause
         // OGC API get a string cql filter from query string
-        String newFilter = fixPropertyNames(ECQL.toCQL(f));
+        String newFilter = fixPropertyNames(isCql2 ? CQL2.toCQL2(f) : ECQL.toCQL(f));
         newFilter = TemplateCQLManager.quoteXpathAttribute(newFilter);
-        for (int i = 0; i < operation.getParameters().length; i++) {
-            Object p = operation.getParameters()[i];
-            if (p != null && ((String.valueOf(p)).trim().equals(strFilter.trim()))) {
-                operation.getParameters()[i] = newFilter;
-                break;
-            }
-        }
+        // replace the filter in the operation
+        Object[] operationParameters = operation.getParameters();
+        operationParameters[6] = newFilter;
     }
 
     // since the toCQL method quotes the propertynames and that
@@ -205,8 +229,7 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
     }
 
     @Override
-    public Response responseDispatched(
-            Request request, Operation operation, Object result, Response response) {
+    public Response responseDispatched(Request request, Operation operation, Object result, Response response) {
         TemplateIdentifier identifier = getTemplateIdentifier(request);
         // we want to override Features API method that are returning a list of features, and
         // when the output format is JSON or GeoJSON or GML
@@ -216,8 +239,7 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
             FeatureTypeInfo typeInfo = getFeatureType((String) operation.getParameters()[0]);
             if (typeInfo != null) {
                 try {
-                    RootBuilder root =
-                            configuration.getTemplate(typeInfo, identifier.getOutputFormat());
+                    RootBuilder root = configuration.getTemplate(typeInfo, identifier.getOutputFormat());
                     if (root != null) {
                         Response templateResp = getTemplateResponse(operation, result, identifier);
                         if (templateResp != null) response = templateResp;
@@ -230,53 +252,43 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
         return response;
     }
 
-    private Response getTemplateResponse(
-            Operation operation, Object result, TemplateIdentifier identifier) {
+    private Response getTemplateResponse(Operation operation, Object result, TemplateIdentifier identifier) {
         BaseTemplateGetFeatureResponse templatingResp = null;
         switch (identifier) {
             case JSON:
             case GEOJSON:
-                templatingResp =
-                        new GeoJSONTemplateGetFeatureResponse(gs, configuration, identifier) {
-                            @Override
-                            protected void write(
-                                    FeatureCollectionResponse featureCollection,
-                                    OutputStream output,
-                                    Operation getFeature)
-                                    throws ServiceException {
-                                FeaturesResponse fr = (FeaturesResponse) result;
-                                super.write(fr.getResponse(), output, operation);
-                            }
-                        };
+                templatingResp = new GeoJSONTemplateGetFeatureResponse(gs, configuration, identifier) {
+                    @Override
+                    protected void write(
+                            FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
+                            throws ServiceException {
+                        FeaturesResponse fr = (FeaturesResponse) result;
+                        super.write(fr.getResponse(), output, operation);
+                    }
+                };
                 break;
             case GML32:
-                templatingResp =
-                        new GMLTemplateResponse(gs, configuration, identifier) {
-                            @Override
-                            protected void write(
-                                    FeatureCollectionResponse featureCollection,
-                                    OutputStream output,
-                                    Operation getFeature)
-                                    throws ServiceException {
-                                FeaturesResponse fr = (FeaturesResponse) result;
-                                super.write(fr.getResponse(), output, operation);
-                            }
-                        };
+                templatingResp = new GMLTemplateResponse(gs, configuration, identifier) {
+                    @Override
+                    protected void write(
+                            FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
+                            throws ServiceException {
+                        FeaturesResponse fr = (FeaturesResponse) result;
+                        super.write(fr.getResponse(), output, operation);
+                    }
+                };
                 break;
 
             case HTML:
-                templatingResp =
-                        new HTMLTemplateResponse(gs, configuration) {
-                            @Override
-                            protected void write(
-                                    FeatureCollectionResponse featureCollection,
-                                    OutputStream output,
-                                    Operation getFeature)
-                                    throws ServiceException {
-                                FeaturesResponse fr = (FeaturesResponse) result;
-                                super.write(fr.getResponse(), output, operation);
-                            }
-                        };
+                templatingResp = new HTMLTemplateResponse(gs, configuration) {
+                    @Override
+                    protected void write(
+                            FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
+                            throws ServiceException {
+                        FeaturesResponse fr = (FeaturesResponse) result;
+                        super.write(fr.getResponse(), output, operation);
+                    }
+                };
                 break;
         }
 

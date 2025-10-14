@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.Component;
@@ -12,12 +13,13 @@ import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.geotools.util.logging.Logging;
 
 /**
- * A choice renderer assuming the display value of a particular string will be found in the
- * GeoServer i18n files, under the key <code>componentName.rawString</code>.
+ * A choice renderer assuming the display value of a particular string will be found in the GeoServer i18n files, under
+ * the key <code>componentName.rawString</code>.
  *
  * @author Andrea Aime - GeoSolutions
  */
 public class EnumChoiceRenderer extends ChoiceRenderer<Enum<?>> {
+    @Serial
     private static final long serialVersionUID = -8773437372842472840L;
 
     static final Logger LOGGER = Logging.getLogger(EnumChoiceRenderer.class);
@@ -34,10 +36,7 @@ public class EnumChoiceRenderer extends ChoiceRenderer<Enum<?>> {
             ParamResourceModel rm = new ParamResourceModel(object.name(), reference);
             return rm.getString();
         } catch (Exception e) {
-            LOGGER.log(
-                    Level.FINE,
-                    "Failed to locate resource string " + object + " with context: " + reference,
-                    e);
+            LOGGER.log(Level.FINE, "Failed to locate resource string " + object + " with context: " + reference, e);
             return object;
         }
     }

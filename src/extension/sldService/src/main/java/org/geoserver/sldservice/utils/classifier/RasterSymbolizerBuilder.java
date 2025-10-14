@@ -6,13 +6,6 @@ package org.geoserver.sldservice.utils.classifier;
 
 import static java.util.Locale.ENGLISH;
 
-import it.geosolutions.jaiext.JAIExt;
-import it.geosolutions.jaiext.classbreaks.ClassBreaksDescriptor;
-import it.geosolutions.jaiext.classbreaks.ClassBreaksRIF;
-import it.geosolutions.jaiext.classbreaks.Classification;
-import it.geosolutions.jaiext.classbreaks.ClassificationMethod;
-import it.geosolutions.jaiext.stats.Statistics;
-import it.geosolutions.jaiext.stats.Statistics.StatsType;
 import java.awt.Color;
 import java.awt.image.DataBuffer;
 import java.awt.image.RenderedImage;
@@ -24,10 +17,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
-import javax.media.jai.Histogram;
-import javax.media.jai.JAI;
-import javax.media.jai.ParameterBlockJAI;
-import javax.media.jai.RenderedOp;
+import org.eclipse.imagen.Histogram;
+import org.eclipse.imagen.ImageN;
+import org.eclipse.imagen.ParameterBlockImageN;
+import org.eclipse.imagen.RenderedOp;
+import org.eclipse.imagen.media.classbreaks.ClassBreaksDescriptor;
+import org.eclipse.imagen.media.classbreaks.ClassBreaksRIF;
+import org.eclipse.imagen.media.classbreaks.Classification;
+import org.eclipse.imagen.media.classbreaks.ClassificationMethod;
+import org.eclipse.imagen.media.stats.Statistics;
+import org.eclipse.imagen.media.stats.Statistics.StatsType;
 import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.filter.expression.Expression;
 import org.geotools.api.style.ColorMap;
@@ -42,29 +41,21 @@ import org.geotools.util.factory.GeoTools;
 
 public class RasterSymbolizerBuilder {
 
-    private static FilterFactory FF =
-            CommonFactoryFinder.getFilterFactory(GeoTools.getDefaultHints());
+    private static FilterFactory FF = CommonFactoryFinder.getFilterFactory(GeoTools.getDefaultHints());
 
-    private static StyleFactory SF =
-            CommonFactoryFinder.getStyleFactory(GeoTools.getDefaultHints());
+    private static StyleFactory SF = CommonFactoryFinder.getStyleFactory(GeoTools.getDefaultHints());
 
     /** Number of histogram bins, if not specified via system variable */
-    private static final int NUM_HISTOGRAM_BINS =
-            Integer.getInteger("org.geoserver.sldService.histogramBins", 256);
+    private static final int NUM_HISTOGRAM_BINS = Integer.getInteger("org.geoserver.sldService.histogramBins", 256);
+
+    /** Maximum number of values collected by the unique value classifier, if not specified via system variable */
+    static final int MAX_UNIQUE_VALUES = Integer.getInteger("org.geoserver.sldService.maxUniqueRange", 1024);
 
     /**
-     * Maximum number of values collected by the unique value classifier, if not specified via
-     * system variable
+     * Maximum number of pixels read, operations will use subsampling to stay below it. The default value is the pixels
+     * of a 2048*2048 image
      */
-    static final int MAX_UNIQUE_VALUES =
-            Integer.getInteger("org.geoserver.sldService.maxUniqueRange", 1024);
-
-    /**
-     * Maximum number of pixels read, operations will use subsampling to stay below it. The default
-     * value is the pixels of a 2048*2048 image
-     */
-    public static final int DEFAULT_MAX_PIXELS =
-            Integer.getInteger("org.geoserver.sldService.maxPixels", 4194304);
+    public static final int DEFAULT_MAX_PIXELS = Integer.getInteger("org.geoserver.sldService.maxPixels", 4194304);
 
     private long maxPixels;
     private Double standardDeviations;
@@ -72,13 +63,12 @@ public class RasterSymbolizerBuilder {
     private Integer percentagesScale;
 
     /**
-     * Builds the {@link RasterSymbolizerBuilder} with a given pixel reading threshold before
-     * starting to recur to subsampling
+     * Builds the {@link RasterSymbolizerBuilder} with a given pixel reading threshold before starting to recur to
+     * subsampling
      */
     public RasterSymbolizerBuilder(int maxPixels) {
         if (maxPixels <= 0) {
-            throw new IllegalArgumentException(
-                    "The maximum number of pixels to be read should be a positive number");
+            throw new IllegalArgumentException("The maximum number of pixels to be read should be a positive number");
         }
         this.maxPixels = maxPixels;
     }
@@ -98,8 +88,8 @@ public class RasterSymbolizerBuilder {
      * Builds a {@link ColorMap} of type "values" from the unique values in the raster
      *
      * @param image The source image
-     * @param maxIntervals The maximum number of intervals that should be returned, above which an
-     *     exception should be thrown
+     * @param maxIntervals The maximum number of intervals that should be returned, above which an exception should be
+     *     thrown
      */
     public ColorMap uniqueIntervalClassification(RenderedImage image, Integer maxIntervals) {
         int low, high;
@@ -142,9 +132,7 @@ public class RasterSymbolizerBuilder {
             return colorMap;
         }
         // compute the histogram
-        Histogram histogram =
-                iw.getHistogram(
-                        new int[] {high - low + 1}, new double[] {low}, new double[] {high});
+        Histogram histogram = iw.getHistogram(new int[] {high - low + 1}, new double[] {low}, new double[] {high});
         int[] bins = histogram.getBins(0);
         int entries = 0;
         PercentagesRoundHandler roundHandler = new PercentagesRoundHandler(percentagesScale);
@@ -159,11 +147,10 @@ public class RasterSymbolizerBuilder {
                     double total = IntStream.of(bins).sum();
                     double classMembers = bins[i];
                     double percentage = roundHandler.roundDouble((classMembers / total) * 100);
-                    StringBuilder sb =
-                            new StringBuilder(entry.getLabel())
-                                    .append(" (")
-                                    .append(percentage)
-                                    .append("%)");
+                    StringBuilder sb = new StringBuilder(entry.getLabel())
+                            .append(" (")
+                            .append(percentage)
+                            .append("%)");
                     entry.setLabel(sb.toString());
                 }
                 entries++;
@@ -171,18 +158,12 @@ public class RasterSymbolizerBuilder {
         }
         if (maxIntervals != null && entries > maxIntervals && maxIntervals > 0) {
             throw new IllegalArgumentException(
-                    "Found "
-                            + entries
-                            + " unique values, but a maximum of "
-                            + maxIntervals
-                            + " was requested");
+                    "Found " + entries + " unique values, but a maximum of " + maxIntervals + " was requested");
         }
         return colorMap;
     }
 
-    /**
-     * Builds a ImageWorker with subsampling factors suitable to respect the configured max pixels
-     */
+    /** Builds a ImageWorker with subsampling factors suitable to respect the configured max pixels */
     ImageWorker getImageWorker(RenderedImage image) {
         ImageWorker iw = new ImageWorker(image);
 
@@ -200,15 +181,13 @@ public class RasterSymbolizerBuilder {
     }
 
     /**
-     * Builds a {@link ColorMap} based on equal intervals between the min and max value found in the
-     * raster
+     * Builds a {@link ColorMap} based on equal intervals between the min and max value found in the raster
      *
      * @param image The source image
      * @param intervals Number of resulting intervals
      * @param continuous If the resulting ColorMap should be of type interval (discrete) or of type
      */
-    public ColorMap equalIntervalClassification(
-            RenderedImage image, int intervals, boolean open, boolean continuous) {
+    public ColorMap equalIntervalClassification(RenderedImage image, int intervals, boolean open, boolean continuous) {
         ImageWorker iw = getImageWorker(image);
         double min = iw.getMinimums()[0];
         double max = iw.getMaximums()[0];
@@ -229,8 +208,7 @@ public class RasterSymbolizerBuilder {
             }
             if (outputPercentages && !isSingleValue) {
                 percentages = computePercentagesFromHistogram(iw, intervals, low, high);
-                percentages =
-                        new PercentagesRoundHandler(percentagesScale).roundPercentages(percentages);
+                percentages = new PercentagesRoundHandler(percentagesScale).roundPercentages(percentages);
             }
         }
         return getColorMapFromBreaks(breaks, open, continuous, percentages);
@@ -243,18 +221,12 @@ public class RasterSymbolizerBuilder {
      * @param intervals Number of resulting intervals
      * @param continuous If the resulting ColorMap should be of type interval (discrete) or of type
      */
-    public ColorMap quantileClassification(
-            RenderedImage image, Integer intervals, boolean open, boolean continuous) {
-        Classification c =
-                getClassificationBreaks(
-                        image,
-                        continuous ? intervals - 1 : intervals,
-                        ClassificationMethod.QUANTILE,
-                        NUM_HISTOGRAM_BINS);
+    public ColorMap quantileClassification(RenderedImage image, Integer intervals, boolean open, boolean continuous) {
+        Classification c = getClassificationBreaks(
+                image, continuous ? intervals - 1 : intervals, ClassificationMethod.QUANTILE, NUM_HISTOGRAM_BINS);
         double[] percentages = c.getPercentages();
         if (outputPercentages)
-            percentages =
-                    new PercentagesRoundHandler(percentagesScale).roundPercentages(percentages);
+            percentages = new PercentagesRoundHandler(percentagesScale).roundPercentages(percentages);
         return getColorMapFromBreaks(c.getBreaks()[0], open, continuous, percentages);
     }
 
@@ -265,24 +237,17 @@ public class RasterSymbolizerBuilder {
      * @param intervals Number of resulting intervals
      * @param continuous If the resulting ColorMap should be of type interval (discrete) or of type
      */
-    public ColorMap jenksClassification(
-            RenderedImage image, Integer intervals, boolean open, boolean continuous) {
-        Classification c =
-                getClassificationBreaks(
-                        image,
-                        continuous ? intervals - 1 : intervals,
-                        ClassificationMethod.NATURAL_BREAKS,
-                        NUM_HISTOGRAM_BINS);
+    public ColorMap jenksClassification(RenderedImage image, Integer intervals, boolean open, boolean continuous) {
+        Classification c = getClassificationBreaks(
+                image, continuous ? intervals - 1 : intervals, ClassificationMethod.NATURAL_BREAKS, NUM_HISTOGRAM_BINS);
         Number[] breaks = c.getBreaks()[0];
         double[] percentages = c.getPercentages();
         if (outputPercentages)
-            percentages =
-                    new PercentagesRoundHandler(percentagesScale).roundPercentages(percentages);
+            percentages = new PercentagesRoundHandler(percentagesScale).roundPercentages(percentages);
         return getColorMapFromBreaks(breaks, open, continuous, percentages);
     }
 
-    private ColorMap getColorMapFromBreaks(
-            Number[] breaks, boolean open, boolean continuous, double[] percentages) {
+    private ColorMap getColorMapFromBreaks(Number[] breaks, boolean open, boolean continuous, double[] percentages) {
         // turn the histogram into a ColorMap (just values, no colors, those will be added later)
         DecimalFormat format = new DecimalFormat("#.######", new DecimalFormatSymbols(ENGLISH));
 
@@ -297,8 +262,7 @@ public class RasterSymbolizerBuilder {
                 if (isSingleValue) addOpenIntervalEntriesSingleValue(colorMap, breaks, format);
                 else addOpenIntervalEntries(colorMap, breaks, percentages, format);
             } else {
-                if (isSingleValue)
-                    addClosedIntervalEntriesSingleValueRaster(colorMap, breaks, format);
+                if (isSingleValue) addClosedIntervalEntriesSingleValueRaster(colorMap, breaks, format);
                 else addClosedIntervalEntries(colorMap, breaks, percentages, format);
             }
         }
@@ -306,17 +270,15 @@ public class RasterSymbolizerBuilder {
     }
 
     private Classification getClassificationBreaks(
-            RenderedImage image,
-            Integer intervals,
-            ClassificationMethod classificationMethod,
-            int numHistogramBins) {
+            RenderedImage image, Integer intervals, ClassificationMethod classificationMethod, int numHistogramBins) {
         // used to extract some properties from the image
         ImageWorker iw = getImageWorker(image);
-        Double noData =
-                Optional.ofNullable(iw.getNoData()).map(r -> r.getMin().doubleValue()).orElse(null);
+        Double noData = Optional.ofNullable(iw.getNoData())
+                .map(r -> r.getMin().doubleValue())
+                .orElse(null);
 
         // setup the call to the operation and create it
-        ParameterBlock pb = new ParameterBlockJAI("ClassBreaks");
+        ParameterBlock pb = new ParameterBlockImageN("ClassBreaks");
         pb.addSource(image);
         pb.set(intervals, 0);
         pb.set(classificationMethod, 1);
@@ -337,17 +299,15 @@ public class RasterSymbolizerBuilder {
             pb.set(null, 2); /* extrema, no need to precompute for the methods we're using*/
         }
         pb.set(outputPercentages, 10);
-        // direct calls as there are some issues with the JAI op registration, at least in Tomcat
+        // direct calls as there are some issues with the ImageN op registration, at least in Tomcat
         RenderedImage op = new ClassBreaksRIF().create(pb, null);
         // actually extract the classification and its breaks
-        Classification c =
-                (Classification) op.getProperty(ClassBreaksDescriptor.CLASSIFICATION_PROPERTY);
+        Classification c = (Classification) op.getProperty(ClassBreaksDescriptor.CLASSIFICATION_PROPERTY);
         return c;
     }
 
     /** Applies the given color ramp to the color map */
-    public void applyColorRamp(
-            ColorMap colorMap, ColorRamp colorRamp, boolean skipFirst, boolean reverse)
+    public void applyColorRamp(ColorMap colorMap, ColorRamp colorRamp, boolean skipFirst, boolean reverse)
             throws Exception {
 
         Expression opacity = colorMap.getColorMapEntry(0).getOpacity();
@@ -381,8 +341,7 @@ public class RasterSymbolizerBuilder {
         double[] percentages = null;
         if (outputPercentages) {
             percentages = getCustomClassifierPercentages(image, breaks);
-            percentages =
-                    new PercentagesRoundHandler(percentagesScale).roundPercentages(percentages);
+            percentages = new PercentagesRoundHandler(percentagesScale).roundPercentages(percentages);
         }
         return getColorMapFromBreaks(breaks, open, continuous, percentages);
     }
@@ -400,35 +359,28 @@ public class RasterSymbolizerBuilder {
             // Create the parameterBlock
             ParameterBlock pb = new ParameterBlock();
             pb.setSource(iw.getRenderedImage(), 0);
-            if (JAIExt.isJAIExtOperation("Stats")) {
-                StatsType[] stats = {StatsType.MEAN, StatsType.DEV_STD, StatsType.EXTREMA};
+            StatsType[] stats = {StatsType.MEAN, StatsType.DEV_STD, StatsType.EXTREMA};
 
-                // Image parameters
-                pb.set(iw.getXPeriod(), 0); // xPeriod
-                pb.set(iw.getYPeriod(), 1); // yPeriod
-                pb.set(iw.getROI(), 2); // ROI
-                pb.set(iw.getNoData(), 3); // NoData
-                pb.set(stats, 6); // statistic operation
-                final RenderedOp statsImage = JAI.create("Stats", pb, iw.getRenderingHints());
-                // Retrieving the statistics
-                Statistics[][] results =
-                        (Statistics[][]) statsImage.getProperty(Statistics.STATS_PROPERTY);
-                double mean = (double) results[0][0].getResult();
-                double stddev = (double) results[0][1].getResult();
-                double[] extrema = (double[]) results[0][2].getResult();
-                double min = extrema[0];
-                double max = extrema[1];
-                // return a range centered in the mean with the desired number of standard
-                // deviations, but make sure it does not exceed the data minimim and maximums
-                return new NumberRange<>(
-                        Double.class,
-                        Math.max(mean - stddev * standardDeviations, min),
-                        Math.min(mean + stddev * standardDeviations, max));
-            } else {
-                // the op should be unique to jai-ext but best be careful
-                throw new IllegalArgumentException(
-                        "Stats image operation is not backed by JAIExt, please enable JAIExt");
-            }
+            // Image parameters
+            pb.set(iw.getXPeriod(), 0); // xPeriod
+            pb.set(iw.getYPeriod(), 1); // yPeriod
+            pb.set(iw.getROI(), 2); // ROI
+            pb.set(iw.getNoData(), 3); // NoData
+            pb.set(stats, 6); // statistic operation
+            final RenderedOp statsImage = ImageN.create("Stats", pb, iw.getRenderingHints());
+            // Retrieving the statistics
+            Statistics[][] results = (Statistics[][]) statsImage.getProperty(Statistics.STATS_PROPERTY);
+            double mean = (double) results[0][0].getResult();
+            double stddev = (double) results[0][1].getResult();
+            double[] extrema = (double[]) results[0][2].getResult();
+            double min = extrema[0];
+            double max = extrema[1];
+            // return a range centered in the mean with the desired number of standard
+            // deviations, but make sure it does not exceed the data minimim and maximums
+            return new NumberRange<>(
+                    Double.class,
+                    Math.max(mean - stddev * standardDeviations, min),
+                    Math.min(mean + stddev * standardDeviations, max));
         }
     }
 
@@ -443,10 +395,7 @@ public class RasterSymbolizerBuilder {
         double[] classMembersAr = new double[classNum];
         for (int i = 0; i < classNum; i++) {
             double[] low = {(double) breaks[i]};
-            double dHigh =
-                    i != classNum - 1
-                            ? Math.nextDown((double) breaks[i + 1])
-                            : (double) breaks[i + 1];
+            double dHigh = i != classNum - 1 ? Math.nextDown((double) breaks[i + 1]) : (double) breaks[i + 1];
             double[] high = {dHigh};
             Histogram hist = iw.getHistogram(new int[] {1}, low, high);
             classMembersAr[i] = hist.getBins(0)[0];
@@ -461,11 +410,9 @@ public class RasterSymbolizerBuilder {
         return percentages;
     }
 
-    private double[] computePercentagesFromHistogram(
-            ImageWorker iw, int intervals, double low, double high) {
+    private double[] computePercentagesFromHistogram(ImageWorker iw, int intervals, double low, double high) {
         if (low == high) return null;
-        Histogram hist =
-                iw.getHistogram(new int[] {intervals}, new double[] {low}, new double[] {high});
+        Histogram hist = iw.getHistogram(new int[] {intervals}, new double[] {low}, new double[] {high});
         int[] bins = hist.getBins(0);
         double[] percentages = new double[intervals];
         int total = IntStream.of(bins).sum();
@@ -490,22 +437,15 @@ public class RasterSymbolizerBuilder {
                 entry.setQuantity(FF.literal(value));
             }
             if (i == 1) {
-                entry.setLabel(
-                        "< "
-                                + format.format(value)
-                                + getPercentagesLabelPortion(percentages, i - 1));
+                entry.setLabel("< " + format.format(value) + getPercentagesLabelPortion(percentages, i - 1));
             } else if (i == breaks.length - 1) {
-                entry.setLabel(
-                        ">= "
-                                + format.format(prev)
-                                + getPercentagesLabelPortion(percentages, i - 1));
+                entry.setLabel(">= " + format.format(prev) + getPercentagesLabelPortion(percentages, i - 1));
             } else {
-                entry.setLabel(
-                        ">= "
-                                + format.format(prev)
-                                + " AND < "
-                                + format.format(value)
-                                + getPercentagesLabelPortion(percentages, i - 1));
+                entry.setLabel(">= "
+                        + format.format(prev)
+                        + " AND < "
+                        + format.format(value)
+                        + getPercentagesLabelPortion(percentages, i - 1));
             }
 
             prev = value;
@@ -513,8 +453,7 @@ public class RasterSymbolizerBuilder {
         }
     }
 
-    private void addOpenIntervalEntriesSingleValue(
-            ColorMap colorMap, Number[] breaks, DecimalFormat format) {
+    private void addOpenIntervalEntriesSingleValue(ColorMap colorMap, Number[] breaks, DecimalFormat format) {
         // instead of returning a ColorMap with type=values tries to respect user asking for
         // type=intervals.
         // To preserve openess of the interval and colors order the first entry is transparent
@@ -530,8 +469,7 @@ public class RasterSymbolizerBuilder {
         colorMap.addColorMapEntry(entry2);
     }
 
-    private void addContinuousEntries(
-            ColorMap colorMap, Number[] breaks, double[] percentages, DecimalFormat format) {
+    private void addContinuousEntries(ColorMap colorMap, Number[] breaks, double[] percentages, DecimalFormat format) {
         for (int i = 0; i < breaks.length; i++) {
             Number b = breaks[i];
             ColorMapEntry entry = SF.createColorMapEntry();
@@ -584,20 +522,18 @@ public class RasterSymbolizerBuilder {
                 entry.setQuantity(FF.literal(value));
             }
             if (i == breaks.length - 1) {
-                String label =
-                        ">= "
-                                + format.format(prev)
-                                + " AND <= "
-                                + format.format(value)
-                                + getPercentagesLabelPortion(percentages, i - 1);
+                String label = ">= "
+                        + format.format(prev)
+                        + " AND <= "
+                        + format.format(value)
+                        + getPercentagesLabelPortion(percentages, i - 1);
                 entry.setLabel(label);
             } else {
-                entry.setLabel(
-                        ">= "
-                                + format.format(prev)
-                                + " AND < "
-                                + format.format(value)
-                                + getPercentagesLabelPortion(percentages, i - 1));
+                entry.setLabel(">= "
+                        + format.format(prev)
+                        + " AND < "
+                        + format.format(value)
+                        + getPercentagesLabelPortion(percentages, i - 1));
             }
 
             prev = value;
@@ -605,8 +541,7 @@ public class RasterSymbolizerBuilder {
         }
     }
 
-    private void addClosedIntervalEntriesSingleValueRaster(
-            ColorMap colorMap, Number[] breaks, DecimalFormat format) {
+    private void addClosedIntervalEntriesSingleValueRaster(ColorMap colorMap, Number[] breaks, DecimalFormat format) {
         // build a transparenty entry as first
         double first = breaks[0].doubleValue();
         addTransparentEntry(colorMap, first);

@@ -6,6 +6,7 @@ package org.geoserver.web.data.store.cog.panel;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.Serial;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Optional;
@@ -33,8 +34,7 @@ public class CogInput extends Panel {
 
     /**
      * @param controlFlagModel
-     * @param validators any extra validator that should be added to the input field, or {@code
-     *     null}
+     * @param validators any extra validator that should be added to the input field, or {@code null}
      */
     @SafeVarargs
     public CogInput(
@@ -52,24 +52,20 @@ public class CogInput extends Panel {
 
         // the text field, with a decorator for validations
         FileRootsFinder rootsFinder = new FileRootsFinder(false);
-        textField =
-                new AutoCompleteTextField<String>(
-                        "paramValue", getCogFileModel(paramValue, controlFlagModel)) {
-                    @Override
-                    protected Iterator<String> getChoices(String input) {
-                        try {
-                            // do we need to filter files?
-                            FileFilter fileFilter =
-                                    CogInput.this.fileFilter != null
-                                            ? CogInput.this.fileFilter.getObject()
-                                            : null;
+        textField = new AutoCompleteTextField<String>("paramValue", getCogFileModel(paramValue, controlFlagModel)) {
+            @Override
+            protected Iterator<String> getChoices(String input) {
+                try {
+                    // do we need to filter files?
+                    FileFilter fileFilter =
+                            CogInput.this.fileFilter != null ? CogInput.this.fileFilter.getObject() : null;
 
-                            return rootsFinder.getMatches(input, fileFilter).iterator();
-                        } catch (Exception e) {
-                            return Collections.emptyIterator();
-                        }
-                    }
-                };
+                    return rootsFinder.getMatches(input, fileFilter).iterator();
+                } catch (Exception e) {
+                    return Collections.emptyIterator();
+                }
+            }
+        };
         textField.setRequired(required);
         textField.setOutputMarkupId(true);
         // set the label to be the paramLabelModel otherwise a validation error would look like
@@ -88,55 +84,51 @@ public class CogInput extends Panel {
         add(feedback);
     }
 
-    protected IModel<String> getCogFileModel(
-            IModel<String> paramValue, IModel<Boolean> controlFlagValue) {
+    protected IModel<String> getCogFileModel(IModel<String> paramValue, IModel<Boolean> controlFlagValue) {
         return new CogRasterEditPanel.CogModel(paramValue, controlFlagValue);
     }
 
     protected Component chooserButton(final String windowTitle) {
-        AjaxSubmitLink link =
-                new AjaxSubmitLink("chooser") {
+        AjaxSubmitLink link = new AjaxSubmitLink("chooser") {
+
+            @Override
+            public boolean getDefaultFormProcessing() {
+                return false;
+            }
+
+            @Override
+            public void onSubmit(AjaxRequestTarget target) {
+                File file = null;
+                textField.processInput();
+                String input = textField.getConvertedInput();
+                if (input != null && !input.equals("")) {
+                    file = new File(input);
+                }
+
+                GeoServerFileChooser chooser = new GeoServerFileChooser(dialog.getContentId(), new Model<File>(file)) {
+                    @Serial
+                    private static final long serialVersionUID = -7096642192491726498L;
 
                     @Override
-                    public boolean getDefaultFormProcessing() {
-                        return false;
-                    }
-
-                    @Override
-                    public void onSubmit(AjaxRequestTarget target) {
-                        File file = null;
-                        textField.processInput();
-                        String input = textField.getConvertedInput();
-                        if (input != null && !input.equals("")) {
-                            file = new File(input);
+                    protected void fileClicked(File file, Optional<AjaxRequestTarget> target) {
+                        // clear the raw input of the field won't show the new model
+                        // value
+                        textField.clearInput();
+                        textField.setModelObject(file.getAbsolutePath());
+                        if (target.isPresent()) {
+                            target.get().add(textField);
+                            dialog.close(target.get());
                         }
-
-                        GeoServerFileChooser chooser =
-                                new GeoServerFileChooser(
-                                        dialog.getContentId(), new Model<File>(file)) {
-                                    private static final long serialVersionUID =
-                                            -7096642192491726498L;
-
-                                    @Override
-                                    protected void fileClicked(
-                                            File file, Optional<AjaxRequestTarget> target) {
-                                        // clear the raw input of the field won't show the new model
-                                        // value
-                                        textField.clearInput();
-                                        textField.setModelObject(file.getAbsolutePath());
-                                        if (target.isPresent()) {
-                                            target.get().add(textField);
-                                            dialog.close(target.get());
-                                        }
-                                    };
-                                };
-                        chooser.setFileTableHeight(null);
-                        chooser.setFilter(fileFilter);
-                        dialog.setContent(chooser);
-                        dialog.setTitle(windowTitle);
-                        dialog.show(target);
                     }
+                    ;
                 };
+                chooser.setFileTableHeight(null);
+                chooser.setFilter(fileFilter);
+                dialog.setContent(chooser);
+                dialog.setTitle(windowTitle);
+                dialog.show(target);
+            }
+        };
         return link;
     }
 

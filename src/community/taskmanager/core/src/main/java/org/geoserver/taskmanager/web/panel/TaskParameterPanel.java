@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.web.panel;
 
+import java.io.Serial;
 import java.util.stream.Collectors;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -20,6 +21,7 @@ public class TaskParameterPanel extends Panel {
     public static final String CONFIGURATION_NAME = "configurationName";
     public static final String TASK_NAME = "taskName";
 
+    @Serial
     private static final long serialVersionUID = 3902645494421966388L;
 
     private IModel<Task> taskModel;
@@ -38,9 +40,9 @@ public class TaskParameterPanel extends Panel {
 
         // the parameters panel
         GeoServerTablePanel<Parameter> parametersPanel =
-                new GeoServerTablePanel<Parameter>(
-                        "parametersPanel", new ParametersModel(taskModel), true) {
+                new GeoServerTablePanel<Parameter>("parametersPanel", new ParametersModel(taskModel), true) {
 
+                    @Serial
                     private static final long serialVersionUID = -8943273843044917552L;
 
                     @SuppressWarnings("unchecked")

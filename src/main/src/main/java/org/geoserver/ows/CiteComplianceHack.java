@@ -21,8 +21,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 /**
  * Configures the dispatcher to be cite compliant based on the specified service configuration.
  *
- * <p>TODO: Cite compliance should be a server wide thing. This should be addressed when we ( if we
- * ) refactor server configuration. When that happens this class can be retired.
+ * <p>TODO: Cite compliance should be a server wide thing. This should be addressed when we ( if we ) refactor server
+ * configuration. When that happens this class can be retired.
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
@@ -38,11 +38,9 @@ public class CiteComplianceHack implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(
-            HttpServletRequest request, HttpServletResponse response, Object handler)
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-        if (handler instanceof Dispatcher) {
-            Dispatcher dispatcher = (Dispatcher) handler;
+        if (handler instanceof Dispatcher dispatcher) {
             String service = findService(dispatcher, request, response);
             if (service != null
                     && (service.equalsIgnoreCase(getInfo().getId())
@@ -54,8 +52,7 @@ public class CiteComplianceHack implements HandlerInterceptor {
         return true;
     }
 
-    private String findService(
-            Dispatcher dispatcher, HttpServletRequest request, HttpServletResponse response) {
+    private String findService(Dispatcher dispatcher, HttpServletRequest request, HttpServletResponse response) {
         // create a new request instance
         Request req = new Request();
 
@@ -68,28 +65,21 @@ public class CiteComplianceHack implements HandlerInterceptor {
         try {
             return dispatcher.getServiceFromRequest(req);
         } catch (Exception ex1) {
-            LOGGER.log(
-                    Level.FINE, "Exception while looking for the 'Service' from the request", ex1);
+            LOGGER.log(Level.FINE, "Exception while looking for the 'Service' from the request", ex1);
             // load from the context
             try {
                 UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(req.path);
                 if (builder != null
                         && builder.build() != null
                         && builder.build().getPath() != null) {
-                    Service serviceDescriptor =
-                            dispatcher.findService(
-                                    Objects.requireNonNull(builder.build().getPath()),
-                                    req.getVersion(),
-                                    req.getNamespace());
+                    Service serviceDescriptor = dispatcher.findService(
+                            Objects.requireNonNull(builder.build().getPath()), req.getVersion(), req.getNamespace());
                     if (serviceDescriptor != null) {
                         return serviceDescriptor.getId();
                     }
                 }
             } catch (Exception ex2) {
-                LOGGER.log(
-                        Level.FINE,
-                        "Exception while decoding OWS URL " + request.getServletPath(),
-                        ex2);
+                LOGGER.log(Level.FINE, "Exception while decoding OWS URL " + request.getServletPath(), ex2);
             }
             return null;
         }
@@ -97,17 +87,13 @@ public class CiteComplianceHack implements HandlerInterceptor {
 
     @Override
     public void postHandle(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            Object handler,
-            ModelAndView modelAndView)
+            HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView)
             throws Exception {
         // do nothing
     }
 
     @Override
-    public void afterCompletion(
-            HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
             throws Exception {
         // do nothing
     }

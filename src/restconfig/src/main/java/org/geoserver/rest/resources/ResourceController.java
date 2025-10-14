@@ -74,8 +74,7 @@ public class ResourceController extends RestBaseController {
 
     private final DateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S z");
     // TODO: Should we actually be doing this?
-    private final DateFormat FORMAT_HEADER =
-            new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);
+    private final DateFormat FORMAT_HEADER = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);
 
     {
         FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -83,8 +82,7 @@ public class ResourceController extends RestBaseController {
     }
 
     @Autowired
-    public ResourceController(@Qualifier("resourceStore") ResourceStoreFactory factory)
-            throws Exception {
+    public ResourceController(@Qualifier("resourceStore") ResourceStoreFactory factory) throws Exception {
         super();
         this.resources = factory.getObject();
     }
@@ -101,9 +99,7 @@ public class ResourceController extends RestBaseController {
         ContentNegotiationStrategy resourceContentNegotiationStrategy() {
             return webRequest -> {
                 HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-                if (new PatternsRequestCondition("/resource", "/resource/**")
-                                .getMatchingCondition(request)
-                        != null) {
+                if (new PatternsRequestCondition("/resource", "/resource/**").getMatchingCondition(request) != null) {
                     return Collections.singletonList(ResourceController.getFormat(request));
                 }
                 return new ArrayList<>();
@@ -134,11 +130,10 @@ public class ResourceController extends RestBaseController {
             case RESOURCE:
                 // set the mime if known by the servlet container, otherwise default to
                 // application/octet-stream to mitigate potential cross-site scripting
-                MediaType mediaType =
-                        Optional.ofNullable(request.getServletContext())
-                                .map(sc -> sc.getMimeType(resource.name()))
-                                .map(MediaType::valueOf)
-                                .orElse(MediaType.APPLICATION_OCTET_STREAM);
+                MediaType mediaType = Optional.ofNullable(request.getServletContext())
+                        .map(sc -> sc.getMimeType(resource.name()))
+                        .map(MediaType::valueOf)
+                        .orElse(MediaType.APPLICATION_OCTET_STREAM);
                 String mimeType = mediaType.toString().toLowerCase();
                 // force using the static web files directory for html/javascript files to mitigate
                 // stored XSS vulnerabilities
@@ -171,7 +166,7 @@ public class ResourceController extends RestBaseController {
             path = Paths.BASE;
         } else {
             if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine("Undefined resource path: '" + path + "'");
+                LOGGER.fine("Undefined resource path: '" + path.replaceAll("\\.\\.+", "") + "'");
             }
             throw new ResourceNotFoundException("Undefined resource path:");
         }
@@ -181,8 +176,7 @@ public class ResourceController extends RestBaseController {
             path = URLDecoder.decode(path, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             throw new RestException(
-                    "Could not decode the resource URL to UTF-8 format",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+                    "Could not decode the resource URL to UTF-8 format", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return resources.get(path);
     }
@@ -234,8 +228,8 @@ public class ResourceController extends RestBaseController {
     /**
      * Actual get implementation handles a distrubing number of cases.
      *
-     * <p>All the inner Resource classes are data transfer object for representing resource
-     * metadata, this method also can return direct access to resource contents.
+     * <p>All the inner Resource classes are data transfer object for representing resource metadata, this method also
+     * can return direct access to resource contents.
      *
      * <p>Headers:
      *
@@ -246,12 +240,11 @@ public class ResourceController extends RestBaseController {
      *   <li>Last-Modified: Last modifed date (this is a standard header).
      * </ul>
      *
-     * @param request Request indicating resource, parameters indicating {@link
-     *     ResourceController.Operation} and {@link MediaType}.
-     * @param response Response provided allowing us to set headers (content type, content length,
-     *     Resource-Parent, Resource-Type).
-     * @return Returns wrapped info object, or direct access to resource contents depending on
-     *     requested operation
+     * @param request Request indicating resource, parameters indicating {@link ResourceController.Operation} and
+     *     {@link MediaType}.
+     * @param response Response provided allowing us to set headers (content type, content length, Resource-Parent,
+     *     Resource-Type).
+     * @return Returns wrapped info object, or direct access to resource contents depending on requested operation
      */
     @RequestMapping(
             method = {RequestMethod.GET, RequestMethod.HEAD},
@@ -259,19 +252,14 @@ public class ResourceController extends RestBaseController {
     public Object resourceGet(
             HttpServletRequest request,
             HttpServletResponse response,
-            @RequestParam(name = "operation", required = false, defaultValue = "default")
-                    String operationName,
-            @RequestParam(required = false, defaultValue = MediaType.TEXT_HTML_VALUE)
-                    String format) {
+            @RequestParam(name = "operation", required = false, defaultValue = "default") String operationName,
+            @RequestParam(required = false, defaultValue = MediaType.TEXT_HTML_VALUE) String format) {
         Resource resource = resource(request);
         Operation operation = operation(operationName);
         Object result;
 
         if (operation == Operation.METADATA) {
-            result =
-                    wrapObject(
-                            new ResourceMetadataInfo(resource, request),
-                            ResourceMetadataInfo.class);
+            result = wrapObject(new ResourceMetadataInfo(resource, request), ResourceMetadataInfo.class);
             response.setContentType(getFormat(format).toString());
         } else {
             if (resource.getType() == Resource.Type.UNDEFINED) {
@@ -282,19 +270,15 @@ public class ResourceController extends RestBaseController {
                 responseHeaders.setContentType(mediaType);
                 if (resource.getType() == Resource.Type.RESOURCE) {
                     // Use Content-Disposition: attachment to mitigate potential XSS issues
-                    responseHeaders.setContentDisposition(
-                            ContentDisposition.builder("attachment")
-                                    .filename(resource.name())
-                                    .build());
+                    responseHeaders.setContentDisposition(ContentDisposition.builder("attachment")
+                            .filename(resource.name())
+                            .build());
                 }
 
                 if (request.getMethod().equals("HEAD")) {
                     result = new ResponseEntity<>("", responseHeaders, HttpStatus.OK);
                 } else if (resource.getType() == Resource.Type.DIRECTORY) {
-                    result =
-                            wrapObject(
-                                    new ResourceDirectoryInfo(resource, request),
-                                    ResourceDirectoryInfo.class);
+                    result = wrapObject(new ResourceDirectoryInfo(resource, request), ResourceDirectoryInfo.class);
                     response.setContentType(mediaType.toString());
                 } else {
                     result = new ResponseEntity<>(resource.in(), responseHeaders, HttpStatus.OK);
@@ -304,7 +288,8 @@ public class ResourceController extends RestBaseController {
                 if (!"".equals(resource.path())) {
                     response.setHeader("Resource-Parent", href(resource.parent().path()));
                 }
-                response.setHeader("Resource-Type", resource.getType().toString().toLowerCase());
+                response.setHeader(
+                        "Resource-Type", resource.getType().toString().toLowerCase());
             }
         }
         return result;
@@ -315,31 +300,27 @@ public class ResourceController extends RestBaseController {
      * <ul>
      *   <li>{@link Operation#DEFAULT}: update resource contents (creating if needed).
      *   <li>{@link Operation#MOVE}: moves a resource, indicated by request body, to this location.
-     *   <li>{@link Operation#COPY}: duplicates a resource, indicated by request body, to this
-     *       location
+     *   <li>{@link Operation#COPY}: duplicates a resource, indicated by request body, to this location
      * </ul>
      *
      * @paarm request
-     * @param response {@link HttpStatus#CREATED} for a new resource, or {@link HttpStatus#OK} when
-     *     updating existing resource
+     * @param response {@link HttpStatus#CREATED} for a new resource, or {@link HttpStatus#OK} when updating existing
+     *     resource
      */
     @PutMapping(consumes = {MediaType.ALL_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
     public void resourcePut(
             HttpServletRequest request,
             HttpServletResponse response,
-            @RequestParam(name = "operation", required = false, defaultValue = "default")
-                    String operationName) {
+            @RequestParam(name = "operation", required = false, defaultValue = "default") String operationName) {
         Resource resource = resource(request);
 
         if (resource.getType() == Type.DIRECTORY) {
-            throw new RestException(
-                    "Attempting to write data to a directory.", HttpStatus.METHOD_NOT_ALLOWED);
+            throw new RestException("Attempting to write data to a directory.", HttpStatus.METHOD_NOT_ALLOWED);
         }
         Operation operation = operation(operationName);
         if (operation == Operation.METADATA) {
-            throw new RestException(
-                    "Attempting to write data to metadata.", HttpStatus.METHOD_NOT_ALLOWED);
+            throw new RestException("Attempting to write data to metadata.", HttpStatus.METHOD_NOT_ALLOWED);
         }
 
         boolean isNew = resource.getType() == Type.UNDEFINED;
@@ -349,9 +330,7 @@ public class ResourceController extends RestBaseController {
                 path = IOUtils.toString(request.getInputStream());
             } catch (IOException e) {
                 throw new RestException(
-                        "Unable to read content:" + e.getMessage(),
-                        HttpStatus.INTERNAL_SERVER_ERROR,
-                        e);
+                        "Unable to read content:" + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, e);
             }
             if (path.startsWith("/")) {
                 // be-relaxed if resource starts with a slash
@@ -364,19 +343,16 @@ public class ResourceController extends RestBaseController {
             if (operation == Operation.MOVE) {
                 boolean moved = source.renameTo(resource);
                 if (!moved) {
-                    throw new RestException(
-                            "Rename operation failed.", HttpStatus.INTERNAL_SERVER_ERROR);
+                    throw new RestException("Rename operation failed.", HttpStatus.INTERNAL_SERVER_ERROR);
                 }
             } else { // COPY
                 if (source.getType() == Type.DIRECTORY) {
-                    throw new RestException(
-                            "Cannot copy directory.", HttpStatus.METHOD_NOT_ALLOWED);
+                    throw new RestException("Cannot copy directory.", HttpStatus.METHOD_NOT_ALLOWED);
                 }
                 try {
                     IOUtils.copy(source.in(), resource.out());
                 } catch (IOException e) {
-                    throw new RestException(
-                            "Copy operation failed:" + e, HttpStatus.INTERNAL_SERVER_ERROR, e);
+                    throw new RestException("Copy operation failed:" + e, HttpStatus.INTERNAL_SERVER_ERROR, e);
                 }
             }
         } else if (operation == Operation.DEFAULT) {
@@ -410,26 +386,19 @@ public class ResourceController extends RestBaseController {
         }
         boolean removed = resource.delete();
         if (!removed) {
-            throw new RestException(
-                    "Resource '" + resource.path() + "' not removed",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new RestException("Resource '" + resource.path() + "' not removed", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     /** Verifies mime type and use {@link RESTUtils} */
     protected Resource fileUpload(Resource directory, String filename, HttpServletRequest request) {
         if (LOGGER.isLoggable(Level.INFO)) {
-            LOGGER.info(
-                    "PUT file: mimetype="
-                            + request.getContentType()
-                            + ", path="
-                            + directory.path());
+            LOGGER.info("PUT file: mimetype=" + request.getContentType() + ", path=" + directory.path());
         }
         try {
             return RESTUtils.handleBinUpload(filename, directory, false, request);
         } catch (IOException problem) {
-            throw new RestException(
-                    problem.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, problem);
+            throw new RestException(problem.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, problem);
         }
     }
     // @Override
@@ -500,9 +469,7 @@ public class ResourceController extends RestBaseController {
         }
     }
 
-    /**
-     * Lists Resource for html, json, xml output, as the contents of {@link ResourceDirectoryInfo}.
-     */
+    /** Lists Resource for html, json, xml output, as the contents of {@link ResourceDirectoryInfo}. */
     @XStreamAlias("child")
     protected static class ResourceChildInfo {
 
@@ -533,8 +500,7 @@ public class ResourceController extends RestBaseController {
         private Date lastModified;
         private String type;
 
-        public ResourceMetadataInfo(
-                String name, ResourceParentInfo parent, Date lastModified, String type) {
+        public ResourceMetadataInfo(String name, ResourceParentInfo parent, Date lastModified, String type) {
             this.name = name;
             this.parent = parent;
             this.lastModified = lastModified;
@@ -542,19 +508,17 @@ public class ResourceController extends RestBaseController {
         }
 
         /**
-         * Create from resource. The class must be static for serialization, but output is request
-         * dependent so passing on self.
+         * Create from resource. The class must be static for serialization, but output is request dependent so passing
+         * on self.
          */
-        protected ResourceMetadataInfo(
-                Resource resource, HttpServletRequest request, boolean isDir) {
+        protected ResourceMetadataInfo(Resource resource, HttpServletRequest request, boolean isDir) {
             if (!resource.path().isEmpty()) {
-                parent =
-                        new ResourceParentInfo(
-                                resource.parent().path(),
-                                new AtomLink(
-                                        href(resource.parent().path()),
-                                        "alternate",
-                                        getFormat(request).toString()));
+                parent = new ResourceParentInfo(
+                        resource.parent().path(),
+                        new AtomLink(
+                                href(resource.parent().path()),
+                                "alternate",
+                                getFormat(request).toString()));
             }
             lastModified = new Date(resource.lastmodified());
             type = isDir ? null : resource.getType().toString().toLowerCase();
@@ -592,30 +556,27 @@ public class ResourceController extends RestBaseController {
 
         private List<ResourceChildInfo> children = Collections.emptyList();
 
-        public ResourceDirectoryInfo(
-                String name, ResourceParentInfo parent, Date lastModified, String type) {
+        public ResourceDirectoryInfo(String name, ResourceParentInfo parent, Date lastModified, String type) {
             super(name, parent, lastModified, type);
         }
 
         /**
-         * Create from resource. The class must be static for serialization, but output is request
-         * dependent so passing on self.
+         * Create from resource. The class must be static for serialization, but output is request dependent so passing
+         * on self.
          */
         public ResourceDirectoryInfo(Resource resource, HttpServletRequest request) {
             super(resource, request, true);
-            children =
-                    resource.list().stream()
-                            .map(child -> asResourceDirectoryInfo(child, request))
-                            .sorted((c1, c2) -> c1.getName().compareTo(c2.getName()))
-                            .collect(Collectors.toList());
+            children = resource.list().stream()
+                    .map(child -> asResourceDirectoryInfo(child, request))
+                    .sorted((c1, c2) -> c1.getName().compareTo(c2.getName()))
+                    .collect(Collectors.toList());
         }
 
         public List<ResourceChildInfo> getChildren() {
             return children;
         }
 
-        private ResourceChildInfo asResourceDirectoryInfo(
-                Resource child, HttpServletRequest request) {
+        private ResourceChildInfo asResourceDirectoryInfo(Resource child, HttpServletRequest request) {
             return new ResourceChildInfo(
                     child.name(),
                     new AtomLink(

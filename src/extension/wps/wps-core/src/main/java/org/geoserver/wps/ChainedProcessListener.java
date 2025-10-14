@@ -14,8 +14,8 @@ import org.geoserver.wps.executor.ProcessManager;
 public interface ChainedProcessListener {
 
     /**
-     * Called right before the process is submitted into the {@link ProcessManager}. It's called
-     * both for root process and for all internal chained processes.
+     * Called right before the process is submitted into the {@link ProcessManager}. It's called both for root process
+     * and for all internal chained processes.
      */
     void started(String executionId, String processName, boolean chained);
 

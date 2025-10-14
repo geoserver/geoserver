@@ -24,9 +24,7 @@ public class NetCDFCRSOverridingAuthorityFactoryTest extends GeoServerSystemTest
         File projectionFileDir = new File(testData.getDataDirectoryRoot(), "user_projections");
         if (!projectionFileDir.mkdir()) {
             FileUtils.deleteDirectory(projectionFileDir);
-            assertTrue(
-                    "Unable to create projection dir: " + projectionFileDir,
-                    projectionFileDir.mkdir());
+            assertTrue("Unable to create projection dir: " + projectionFileDir, projectionFileDir.mkdir());
         }
         testData.copyTo(
                 getClass().getResourceAsStream(netcdfProjectionsDefinition),

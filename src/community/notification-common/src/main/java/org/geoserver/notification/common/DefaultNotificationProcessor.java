@@ -5,11 +5,13 @@
 
 package org.geoserver.notification.common;
 
+import java.io.Serial;
 import java.io.Serializable;
 import org.geoserver.notification.common.sender.NotificationSender;
 
 public class DefaultNotificationProcessor implements NotificationProcessor, Serializable {
 
+    @Serial
     private static final long serialVersionUID = -981618390262055505L;
 
     private NotificationEncoder encoder;
@@ -21,8 +23,7 @@ public class DefaultNotificationProcessor implements NotificationProcessor, Seri
     }
 
     /**
-     * Process {@link Notification} using an encoder to generate the payload and a sender to
-     * delivery it to destination
+     * Process {@link Notification} using an encoder to generate the payload and a sender to delivery it to destination
      *
      * @param the encoder to transform {@link Notification} to payload
      * @param the sender to deliver the payload

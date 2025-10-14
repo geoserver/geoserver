@@ -29,8 +29,7 @@ public class JMSCatalogRemoveEventHandler extends JMSCatalogEventHandler {
     private final ToggleSwitch producer;
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public JMSCatalogRemoveEventHandler(
-            Catalog catalog, XStream xstream, Class clazz, ToggleSwitch producer) {
+    public JMSCatalogRemoveEventHandler(Catalog catalog, XStream xstream, Class clazz, ToggleSwitch producer) {
         super(xstream, clazz);
         this.catalog = catalog;
         this.producer = producer;
@@ -42,8 +41,8 @@ public class JMSCatalogRemoveEventHandler extends JMSCatalogEventHandler {
             throw new NullPointerException("Incoming object is null");
         }
         try {
-            if (event instanceof CatalogRemoveEvent) {
-                final CatalogRemoveEvent removeEv = ((CatalogRemoveEvent) event);
+            if (event instanceof CatalogRemoveEvent removeEvent) {
+                final CatalogRemoveEvent removeEv = removeEvent;
 
                 // get the source
                 final CatalogInfo info = removeEv.getSource();
@@ -55,15 +54,13 @@ public class JMSCatalogRemoveEventHandler extends JMSCatalogEventHandler {
 
             } else {
                 // incoming object not recognized
-                if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
-                    LOGGER.severe("Unrecognized event type");
+                if (LOGGER.isLoggable(java.util.logging.Level.SEVERE)) LOGGER.severe("Unrecognized event type");
                 return false;
             }
 
         } catch (Exception e) {
             if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
-                LOGGER.severe(
-                        this.getClass() + " is unable to synchronize the incoming event: " + event);
+                LOGGER.severe(this.getClass() + " is unable to synchronize the incoming event: " + event);
             throw e;
         } finally {
             // re enable the producer
@@ -75,54 +72,51 @@ public class JMSCatalogRemoveEventHandler extends JMSCatalogEventHandler {
     private static void remove(final Catalog catalog, CatalogInfo info, Properties options)
             throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 
-        if (info instanceof LayerGroupInfo) {
+        if (info instanceof LayerGroupInfo groupInfo) {
 
-            final LayerGroupInfo deserObject =
-                    CatalogUtils.localizeLayerGroup((LayerGroupInfo) info, catalog);
+            final LayerGroupInfo deserObject = CatalogUtils.localizeLayerGroup(groupInfo, catalog);
             catalog.remove(deserObject);
             // catalog.save(CatalogUtils.getProxy(deserObject));
             // info=CatalogUtils.localizeLayerGroup((LayerGroupInfo) info,
             // catalog);
 
-        } else if (info instanceof LayerInfo) {
+        } else if (info instanceof LayerInfo layerInfo) {
 
-            final LayerInfo layer = CatalogUtils.localizeLayer((LayerInfo) info, catalog);
+            final LayerInfo layer = CatalogUtils.localizeLayer(layerInfo, catalog);
             catalog.remove(layer);
             // catalog.save(CatalogUtils.getProxy(layer));
             // info=CatalogUtils.localizeLayer((LayerInfo) info, catalog);
 
-        } else if (info instanceof MapInfo) {
+        } else if (info instanceof MapInfo mapInfo) {
 
-            final MapInfo localObject = CatalogUtils.localizeMapInfo((MapInfo) info, catalog);
+            final MapInfo localObject = CatalogUtils.localizeMapInfo(mapInfo, catalog);
             catalog.remove(localObject);
             // catalog.save(CatalogUtils.getProxy(localObject));
             // info= CatalogUtils.localizeMapInfo((MapInfo) info,catalog);
 
-        } else if (info instanceof NamespaceInfo) {
+        } else if (info instanceof NamespaceInfo namespaceInfo) {
 
-            final NamespaceInfo namespace =
-                    CatalogUtils.localizeNamespace((NamespaceInfo) info, catalog);
+            final NamespaceInfo namespace = CatalogUtils.localizeNamespace(namespaceInfo, catalog);
             catalog.remove(namespace);
             // catalog.save(CatalogUtils.getProxy(namespace));
             // info =CatalogUtils.localizeNamespace((NamespaceInfo) info,
             // catalog);
-        } else if (info instanceof StoreInfo) {
+        } else if (info instanceof StoreInfo storeInfo) {
 
-            StoreInfo store = CatalogUtils.localizeStore((StoreInfo) info, catalog);
+            StoreInfo store = CatalogUtils.localizeStore(storeInfo, catalog);
             catalog.remove(store);
             // catalog.save(CatalogUtils.getProxy(store));
 
             // info=CatalogUtils.localizeStore((StoreInfo)info,catalog);
-        } else if (info instanceof ResourceInfo) {
+        } else if (info instanceof ResourceInfo resourceInfo) {
 
-            final ResourceInfo resource =
-                    CatalogUtils.localizeResource((ResourceInfo) info, catalog);
+            final ResourceInfo resource = CatalogUtils.localizeResource(resourceInfo, catalog);
             catalog.remove(resource);
             // catalog.save(CatalogUtils.getProxy(resource));
             // info =CatalogUtils.localizeResource((ResourceInfo)info,catalog);
-        } else if (info instanceof StyleInfo) {
+        } else if (info instanceof StyleInfo styleInfo) {
 
-            final StyleInfo style = CatalogUtils.localizeStyle((StyleInfo) info, catalog);
+            final StyleInfo style = CatalogUtils.localizeStyle(styleInfo, catalog);
 
             catalog.remove(style);
 
@@ -141,10 +135,9 @@ public class JMSCatalogRemoveEventHandler extends JMSCatalogEventHandler {
             // catalog.detach(CatalogUtils.getProxy(deserializedObject));
             // info = CatalogUtils.localizeStyle((StyleInfo) info, catalog);
 
-        } else if (info instanceof WorkspaceInfo) {
+        } else if (info instanceof WorkspaceInfo workspaceInfo) {
 
-            final WorkspaceInfo workspace =
-                    CatalogUtils.localizeWorkspace((WorkspaceInfo) info, catalog);
+            final WorkspaceInfo workspace = CatalogUtils.localizeWorkspace(workspaceInfo, catalog);
             catalog.remove(workspace);
             // catalog.detach(workspace);
             // info = CatalogUtils.localizeWorkspace((WorkspaceInfo) info,

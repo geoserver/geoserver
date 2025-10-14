@@ -5,6 +5,7 @@
  */
 package org.geoserver.importer.mosaic;
 
+import java.io.Serial;
 import java.util.Date;
 import org.geoserver.importer.Dates;
 
@@ -27,6 +28,7 @@ public enum TimeMode {
 
         return new TimeHandler() {
 
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -36,8 +38,11 @@ public enum TimeMode {
                         return Dates.matchAndParse(g.getFile().getName());
                     case MANUAL:
                         return g.getTimestamp();
+                    case FILENAME:
+                    case NONE:
+                    default:
+                        return null;
                 }
-                return null;
             }
         };
     }

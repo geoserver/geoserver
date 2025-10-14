@@ -8,6 +8,7 @@ package org.geoserver.metadata.web;
 import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -44,14 +45,14 @@ import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 
 /**
- * Manages the metadata templates. Shows all existing templates,allows to create, edit and delete
- * templates.
+ * Manages the metadata templates. Shows all existing templates,allows to create, edit and delete templates.
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  * @author Niels Charlier
  */
 public class MetadataTemplatesPage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = 2273966783474224452L;
 
     private GeoServerTablePanel<MetadataTemplate> templatesPanel;
@@ -64,9 +65,7 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
 
     public MetadataTemplatesPage() {
         MetadataTemplateService service =
-                GeoServerApplication.get()
-                        .getApplicationContext()
-                        .getBean(MetadataTemplateService.class);
+                GeoServerApplication.get().getApplicationContext().getBean(MetadataTemplateService.class);
         templates = new ListModel<>(service.list());
     }
 
@@ -79,113 +78,97 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
         dialog.setInitialHeight(150);
         ((GSModalWindow) dialog.get("dialog")).showUnloadConfirmation(false);
 
-        add(
-                progressPanel =
-                        new ProgressPanel(
-                                "progress",
-                                new ResourceModel("MetadataTemplatesPage.updatingMetadata")));
+        add(progressPanel = new ProgressPanel("progress", new ResourceModel("MetadataTemplatesPage.updatingMetadata")));
 
-        add(
-                new AjaxLink<>("addNew") {
-                    private static final long serialVersionUID = 3581476968062788921L;
+        add(new AjaxLink<>("addNew") {
+            @Serial
+            private static final long serialVersionUID = 3581476968062788921L;
 
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        setResponsePage(
-                                new MetadataTemplatePage(templates)
-                                        .setReturnPage(MetadataTemplatesPage.this));
-                    }
-                });
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                setResponsePage(new MetadataTemplatePage(templates).setReturnPage(MetadataTemplatesPage.this));
+            }
+        });
 
         // the removal button
-        AjaxLink<Object> remove =
-                new AjaxLink<>("removeSelected") {
-                    private static final long serialVersionUID = 3581476968062788921L;
+        AjaxLink<Object> remove = new AjaxLink<>("removeSelected") {
+            @Serial
+            private static final long serialVersionUID = 3581476968062788921L;
 
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
 
-                        boolean noDelete = false;
-                        for (MetadataTemplate template : templatesPanel.getSelection()) {
-                            if (!template.getLinkedLayers().isEmpty()) {
-                                StringBuilder layers = generateLayerNames(template);
-                                StringResourceModel msg =
-                                        new StringResourceModel("errorIsLinked", templatesPanel)
-                                                .setParameters(template.getName(), layers);
-                                error(msg.getString());
-                                noDelete = true;
-                            }
-                        }
-
-                        if (noDelete) {
-                            addFeedbackPanels(target);
-                        } else {
-                            ParamResourceModel resource =
-                                    new ParamResourceModel(
-                                            "deleteDialog.content", MetadataTemplatesPage.this);
-                            dialog.showOkCancel(
-                                    target,
-                                    new GeoServerDialog.DialogDelegate() {
-
-                                        private static final long serialVersionUID =
-                                                -5552087037163833563L;
-
-                                        @Override
-                                        protected Component getContents(String id) {
-                                            StringBuffer sb = new StringBuffer();
-                                            sb.append(resource.getString());
-                                            for (MetadataTemplate template :
-                                                    templatesPanel.getSelection()) {
-                                                sb.append("\n&nbsp;&nbsp;");
-                                                sb.append(escapeHtml(template.getName()));
-                                            }
-                                            return new MultiLineLabel(id, sb.toString())
-                                                    .setEscapeModelStrings(false);
-                                        }
-
-                                        @Override
-                                        protected boolean onSubmit(
-                                                AjaxRequestTarget target, Component contents) {
-                                            templates
-                                                    .getObject()
-                                                    .removeAll(templatesPanel.getSelection());
-                                            tracker.removeTemplates(templatesPanel.getSelection());
-                                            target.add(templatesPanel);
-                                            return true;
-                                        }
-                                    });
-                        }
+                boolean noDelete = false;
+                for (MetadataTemplate template : templatesPanel.getSelection()) {
+                    if (!template.getLinkedLayers().isEmpty()) {
+                        StringBuilder layers = generateLayerNames(template);
+                        StringResourceModel msg = new StringResourceModel("errorIsLinked", templatesPanel)
+                                .setParameters(template.getName(), layers);
+                        error(msg.getString());
+                        noDelete = true;
                     }
-                };
+                }
+
+                if (noDelete) {
+                    addFeedbackPanels(target);
+                } else {
+                    ParamResourceModel resource =
+                            new ParamResourceModel("deleteDialog.content", MetadataTemplatesPage.this);
+                    dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
+
+                        @Serial
+                        private static final long serialVersionUID = -5552087037163833563L;
+
+                        @Override
+                        protected Component getContents(String id) {
+                            StringBuffer sb = new StringBuffer();
+                            sb.append(resource.getString());
+                            for (MetadataTemplate template : templatesPanel.getSelection()) {
+                                sb.append("\n&nbsp;&nbsp;");
+                                sb.append(escapeHtml(template.getName()));
+                            }
+                            return new MultiLineLabel(id, sb.toString()).setEscapeModelStrings(false);
+                        }
+
+                        @Override
+                        protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                            templates.getObject().removeAll(templatesPanel.getSelection());
+                            tracker.removeTemplates(templatesPanel.getSelection());
+                            target.add(templatesPanel);
+                            return true;
+                        }
+                    });
+                }
+            }
+        };
         remove.setOutputMarkupId(true);
         remove.setEnabled(false);
         add(remove);
 
         // the copy button
-        AjaxLink<Object> copy =
-                new AjaxLink<>("copySelected") {
-                    private static final long serialVersionUID = 3581476968062788921L;
+        AjaxLink<Object> copy = new AjaxLink<>("copySelected") {
+            @Serial
+            private static final long serialVersionUID = 3581476968062788921L;
 
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        MetadataTemplate clone = templatesPanel.getSelection().get(0).clone();
-                        clone.getLinkedLayers().clear();
-                        ((MetadataTemplateImpl) clone).setId(UUID.randomUUID().toString());
-                        clone.setName(null);
-                        setResponsePage(
-                                new MetadataTemplatePage(templates, new Model<>(clone))
-                                        .setReturnPage(MetadataTemplatesPage.this));
-                    }
-                };
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                MetadataTemplate clone = templatesPanel.getSelection().get(0).clone();
+                clone.getLinkedLayers().clear();
+                ((MetadataTemplateImpl) clone).setId(UUID.randomUUID().toString());
+                clone.setName(null);
+                setResponsePage(new MetadataTemplatePage(templates, new Model<>(clone))
+                        .setReturnPage(MetadataTemplatesPage.this));
+            }
+        };
         copy.setOutputMarkupId(true);
         copy.setEnabled(false);
         add(copy);
 
         // the panel
         templatesPanel =
-                new GeoServerTablePanel<>(
-                        "templatesPanel", new MetadataTemplateDataProvider(templates), true) {
+                new GeoServerTablePanel<>("templatesPanel", new MetadataTemplateDataProvider(templates), true) {
 
+                    @Serial
                     private static final long serialVersionUID = -8943273843044917552L;
 
                     @Override
@@ -203,8 +186,8 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
                             IModel<MetadataTemplate> itemModel,
                             GeoServerDataProvider.Property<MetadataTemplate> property) {
                         if (property.equals(MetadataTemplateDataProvider.NAME)) {
-                            return new SimpleAjaxLink<>(
-                                    id, (IModel<String>) property.getModel(itemModel)) {
+                            return new SimpleAjaxLink<>(id, (IModel<String>) property.getModel(itemModel)) {
+                                @Serial
                                 private static final long serialVersionUID = -9184383036056499856L;
 
                                 @Override
@@ -212,9 +195,8 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
                                     getContainer().removeAll();
                                     IModel<MetadataTemplate> model =
                                             new Model<>(itemModel.getObject().clone());
-                                    setResponsePage(
-                                            new MetadataTemplatePage(templates, model)
-                                                    .setReturnPage(MetadataTemplatesPage.this));
+                                    setResponsePage(new MetadataTemplatePage(templates, model)
+                                            .setReturnPage(MetadataTemplatesPage.this));
                                 }
 
                                 private MarkupContainer getContainer() {
@@ -223,8 +205,7 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
                                 }
                             };
                         } else if (property.equals(MetadataTemplateDataProvider.PRIORITY)) {
-                            return new TemplatesPositionPanel(
-                                    id, templates, tracker, itemModel, this);
+                            return new TemplatesPositionPanel(id, templates, tracker, itemModel, this);
                         }
                         return null;
                     }
@@ -232,36 +213,37 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
         templatesPanel.setOutputMarkupId(true);
         add(templatesPanel);
 
-        add(
-                new AjaxLink<>("save") {
-                    private static final long serialVersionUID = 6152685206300932774L;
+        add(new AjaxLink<>("save") {
+            @Serial
+            private static final long serialVersionUID = 6152685206300932774L;
 
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
 
-                        if (tracker.getAffectedResources().isEmpty()) {
-                            save(target);
-                            doReturn();
-                        } else {
+                if (tracker.getAffectedResources().isEmpty()) {
+                    save(target);
+                    doReturn();
+                } else {
 
-                            dialog.showOkCancel(target, saveWarningDialog());
-                        }
-                    }
-                });
-        add(
-                new AjaxLink<>("cancel") {
-                    private static final long serialVersionUID = -2023310159199302483L;
+                    dialog.showOkCancel(target, saveWarningDialog());
+                }
+            }
+        });
+        add(new AjaxLink<>("cancel") {
+            @Serial
+            private static final long serialVersionUID = -2023310159199302483L;
 
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        doReturn();
-                    }
-                });
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                doReturn();
+            }
+        });
     }
 
     private DialogDelegate saveWarningDialog() {
         return new GeoServerDialog.DialogDelegate() {
 
+            @Serial
             private static final long serialVersionUID = 6769706050075583226L;
 
             private boolean ok = false;
@@ -284,42 +266,35 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
                     save(target);
 
                     MetadataTemplateService service =
-                            GeoServerApplication.get()
-                                    .getApplicationContext()
-                                    .getBean(MetadataTemplateService.class);
+                            GeoServerApplication.get().getApplicationContext().getBean(MetadataTemplateService.class);
 
                     GlobalModel<Float> progressModel = new GlobalModel<>(0.0f);
 
                     Collection<String> affectedResources = tracker.getAffectedResources();
 
-                    Executors.newSingleThreadExecutor()
-                            .execute(
-                                    new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            service.update(
-                                                    affectedResources, progressModel.getKey());
-                                        }
-                                    });
+                    Executors.newSingleThreadExecutor().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            service.update(affectedResources, progressModel.getKey());
+                        }
+                    });
 
-                    progressPanel.start(
-                            target,
-                            progressModel,
-                            new ProgressPanel.EventHandler() {
-                                private static final long serialVersionUID = 8967087707332457974L;
+                    progressPanel.start(target, progressModel, new ProgressPanel.EventHandler() {
+                        @Serial
+                        private static final long serialVersionUID = 8967087707332457974L;
 
-                                @Override
-                                public void onFinished(AjaxRequestTarget target) {
-                                    doReturn();
-                                    progressModel.cleanUp();
-                                }
+                        @Override
+                        public void onFinished(AjaxRequestTarget target) {
+                            doReturn();
+                            progressModel.cleanUp();
+                        }
 
-                                @Override
-                                public void onCanceled(AjaxRequestTarget target) {
-                                    doReturn();
-                                    progressModel.cleanUp();
-                                }
-                            });
+                        @Override
+                        public void onCanceled(AjaxRequestTarget target) {
+                            doReturn();
+                            progressModel.cleanUp();
+                        }
+                    });
                 }
             }
 
@@ -355,15 +330,12 @@ public class MetadataTemplatesPage extends GeoServerSecuredPage {
 
     private void save(AjaxRequestTarget target) {
         MetadataTemplateService service =
-                GeoServerApplication.get()
-                        .getApplicationContext()
-                        .getBean(MetadataTemplateService.class);
+                GeoServerApplication.get().getApplicationContext().getBean(MetadataTemplateService.class);
         try {
             service.saveList(templates.getObject());
         } catch (IOException e) {
             Throwable rootCause = ExceptionUtils.getRootCause(e);
-            String message =
-                    rootCause == null ? e.getLocalizedMessage() : rootCause.getLocalizedMessage();
+            String message = rootCause == null ? e.getLocalizedMessage() : rootCause.getLocalizedMessage();
             if (message != null) {
                 error(message);
             }

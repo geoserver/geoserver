@@ -8,8 +8,7 @@ import org.geoserver.smartdataloader.domain.DomainModelVisitor;
 import org.geoserver.smartdataloader.metadata.DataStoreMetadata;
 
 /**
- * Contains the definition of a domain model, the navigation of a domain model should be done
- * thought the visitor API.
+ * Contains the definition of a domain model, the navigation of a domain model should be done thought the visitor API.
  */
 public class DomainModel {
 

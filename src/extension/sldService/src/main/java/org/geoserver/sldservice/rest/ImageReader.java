@@ -49,8 +49,8 @@ import org.locationtech.jts.geom.Polygon;
 import org.springframework.http.HttpStatus;
 
 /**
- * Helper class that reads the best image out of the provided CoverageInfo, taking into account
- * subsampling, overviews, band selection and bounding box restrictions
+ * Helper class that reads the best image out of the provided CoverageInfo, taking into account subsampling, overviews,
+ * band selection and bounding box restrictions
  */
 class ImageReader {
     private static final CoverageProcessor PROCESSOR = CoverageProcessor.getInstance();
@@ -64,11 +64,7 @@ class ImageReader {
     private int maxPixels;
     private GridCoverage2D coverage;
 
-    public ImageReader(
-            CoverageInfo coverageInfo,
-            int selectedBand,
-            int maxPixels,
-            ReferencedEnvelope envelope) {
+    public ImageReader(CoverageInfo coverageInfo, int selectedBand, int maxPixels, ReferencedEnvelope envelope) {
         this.coverageInfo = coverageInfo;
         this.selectedBand = selectedBand;
         this.envelope = envelope;
@@ -76,25 +72,22 @@ class ImageReader {
     }
 
     public ImageReader invoke() throws IOException, TransformException, FactoryException {
-        GridCoverage2DReader reader =
-                (GridCoverage2DReader) coverageInfo.getGridCoverageReader(null, null);
+        GridCoverage2DReader reader = (GridCoverage2DReader) coverageInfo.getGridCoverageReader(null, null);
 
         // use the configured reading parameters
         final ParameterValueGroup readParametersDescriptor = reader.getFormat().getReadParameters();
         final List<GeneralParameterDescriptor> parameterDescriptors =
                 new ArrayList<>(readParametersDescriptor.getDescriptor().descriptors());
         this.readParameters =
-                CoverageUtils.getParameters(
-                        readParametersDescriptor, coverageInfo.getParameters(), false);
+                CoverageUtils.getParameters(readParametersDescriptor, coverageInfo.getParameters(), false);
 
         // grab the raster, for the time being, read fully trying to force deferred loading where
         // possible
-        readParameters =
-                CoverageUtils.mergeParameter(
-                        parameterDescriptors,
-                        readParameters,
-                        true,
-                        AbstractGridFormat.USE_JAI_IMAGEREAD.getName().getCode());
+        readParameters = CoverageUtils.mergeParameter(
+                parameterDescriptors,
+                readParameters,
+                true,
+                AbstractGridFormat.USE_IMAGEN_IMAGEREAD.getName().getCode());
 
         // grab the original grid geometry
         Filter readFilter = getReadFilter(readParameters);
@@ -108,23 +101,19 @@ class ImageReader {
         ReferencedEnvelope readEnvelope = null;
         if (envelope != null) {
             ReferencedEnvelope envelopeInNativeCRS = envelope.transform(crs, true);
-            readEnvelope =
-                    envelopeInNativeCRS.intersection(
-                            ReferencedEnvelope.reference(originalEnvelope));
+            readEnvelope = envelopeInNativeCRS.intersection(ReferencedEnvelope.reference(originalEnvelope));
             if (readEnvelope.isEmpty() || readEnvelope.isNull()) {
                 throw new RestException(
-                        "Specified bounding box does not match the data original envelope "
-                                + originalEnvelope,
+                        "Specified bounding box does not match the data original envelope " + originalEnvelope,
                         HttpStatus.BAD_REQUEST);
             }
 
             GeneralBounds ers = CRS.transform(g2w.inverse(), readEnvelope);
-            GridEnvelope gridToRead =
-                    new GridEnvelope2D(
-                            (int) Math.floor(ers.getMinimum(0)),
-                            (int) Math.floor(ers.getMinimum(1)),
-                            (int) Math.ceil(ers.getSpan(0)),
-                            (int) Math.ceil(ers.getSpan(1)));
+            GridEnvelope gridToRead = new GridEnvelope2D(
+                    (int) Math.floor(ers.getMinimum(0)),
+                    (int) Math.floor(ers.getMinimum(1)),
+                    (int) Math.ceil(ers.getSpan(0)),
+                    (int) Math.ceil(ers.getSpan(1)));
             readGeometry = new GridGeometry2D(gridToRead, PixelInCell.CELL_CORNER, g2w, crs, null);
         }
 
@@ -136,50 +125,42 @@ class ImageReader {
 
             int readWidth = (int) Math.max(1, Math.round(gridRange.getSpan(0) / pixelRatio));
             int readHeight = (int) Math.max(1, Math.round(gridRange.getSpan(1) / pixelRatio));
-            GridEnvelope2D reducedRange =
-                    new GridEnvelope2D(gridRange.x, gridRange.y, readWidth, readHeight);
+            GridEnvelope2D reducedRange = new GridEnvelope2D(gridRange.x, gridRange.y, readWidth, readHeight);
             readGeometry = new GridGeometry2D(reducedRange, readGeometry.getEnvelope());
         }
 
         // if there is a filter, set it back as it might have been simplified (e.g., env var
         // expansion)
         if (readFilter != null) {
-            readParameters =
-                    CoverageUtils.mergeParameter(
-                            parameterDescriptors,
-                            readParameters,
-                            readFilter,
-                            ImageMosaicFormat.FILTER.getName().getCode());
+            readParameters = CoverageUtils.mergeParameter(
+                    parameterDescriptors,
+                    readParameters,
+                    readFilter,
+                    ImageMosaicFormat.FILTER.getName().getCode());
         }
 
         if (!readGeometry.equals(originalGeometry)) {
-            readParameters =
-                    CoverageUtils.mergeParameter(
-                            parameterDescriptors,
-                            readParameters,
-                            readGeometry,
-                            AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().getCode());
+            readParameters = CoverageUtils.mergeParameter(
+                    parameterDescriptors,
+                    readParameters,
+                    readGeometry,
+                    AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().getCode());
         }
 
         // can we delegate band selection to the reader? if so, it can help a lot, especially
         // on coverage views merging bands coming from different sources
         bandSelected = false;
-        if (reader.getFormat()
-                .getReadParameters()
-                .getDescriptor()
-                .descriptors()
-                .contains(AbstractGridFormat.BANDS)) {
+        if (reader.getFormat().getReadParameters().getDescriptor().descriptors().contains(AbstractGridFormat.BANDS)) {
             SampleModel sampleModel = reader.getImageLayout().getSampleModel(null);
             if (sampleModel != null) {
                 verifyBandSelection(selectedBand, sampleModel);
                 if (sampleModel.getNumBands() > 1) {
                     // this param is zero based, the service is like SLD, 1-based
-                    readParameters =
-                            CoverageUtils.mergeParameter(
-                                    parameterDescriptors,
-                                    readParameters,
-                                    new int[] {selectedBand - 1},
-                                    AbstractGridFormat.BANDS.getName().getCode());
+                    readParameters = CoverageUtils.mergeParameter(
+                            parameterDescriptors,
+                            readParameters,
+                            new int[] {selectedBand - 1},
+                            AbstractGridFormat.BANDS.getName().getCode());
                     bandSelected = true;
                 }
             }
@@ -225,17 +206,14 @@ class ImageReader {
         return this;
     }
 
-    private GridGeometry2D getOriginalGridGeometry(GridCoverage2DReader reader, Filter readFilter)
-            throws IOException {
+    private GridGeometry2D getOriginalGridGeometry(GridCoverage2DReader reader, Filter readFilter) throws IOException {
         MathTransform g2w = reader.getOriginalGridToWorld(PixelInCell.CELL_CORNER);
         CoordinateReferenceSystem crs = reader.getCoordinateReferenceSystem();
 
-        if (readFilter != null && reader instanceof StructuredGridCoverage2DReader) {
-            StructuredGridCoverage2DReader sr = (StructuredGridCoverage2DReader) reader;
+        if (readFilter != null && reader instanceof StructuredGridCoverage2DReader sr) {
             String coverageName = reader.getGridCoverageNames()[0];
             GranuleSource granules = sr.getGranules(coverageName, true);
-            SimpleFeatureCollection filteredGranules =
-                    granules.getGranules(new Query(null, readFilter));
+            SimpleFeatureCollection filteredGranules = granules.getGranules(new Query(null, readFilter));
             ReferencedEnvelope bounds = filteredGranules.getBounds();
             if (bounds == null || bounds.isEmpty()) {
                 throw new RestException(
@@ -252,11 +230,10 @@ class ImageReader {
 
     private Filter getReadFilter(GeneralParameterValue[] readParameters) {
         for (GeneralParameterValue readParameter : readParameters) {
-            if (readParameter instanceof ParameterValue
+            if (readParameter instanceof ParameterValue pv
                     && ImageMosaicFormat.FILTER
                             .getName()
                             .equals(readParameter.getDescriptor().getName())) {
-                ParameterValue pv = (ParameterValue) readParameter;
                 Filter filter = (Filter) pv.getValue();
                 if (filter != null) {
                     return (Filter) filter.accept(new SimplifyingFilterVisitor(), null);
@@ -283,8 +260,8 @@ class ImageReader {
     }
 
     /**
-     * Returns true if a band has been selected (and as such, we'll need to add a channel selection
-     * in the raster symbolizer)
+     * Returns true if a band has been selected (and as such, we'll need to add a channel selection in the raster
+     * symbolizer)
      */
     public boolean isBandSelected() {
         return bandSelected;

@@ -21,8 +21,7 @@ public class GeoJSONGetComplexFeaturesResponseAPITest extends TemplateComplexTes
 
     private static final String MF_TEMPLATE_GEO_JSON = "GeoJSONMappedFeature";
 
-    private static final String MF_TEMPLATE_GEO_JSON_RULE_CQL =
-            "requestParam('" + MF_TEMPLATE_GEO_JSON + "')='true'";
+    private static final String MF_TEMPLATE_GEO_JSON_RULE_CQL = "requestParam('" + MF_TEMPLATE_GEO_JSON + "')='true'";
 
     private static final String MF_TEMPLATE_PARAM = "&GeoJSONMappedFeature=true";
 
@@ -39,15 +38,22 @@ public class GeoJSONGetComplexFeaturesResponseAPITest extends TemplateComplexTes
                 ".json",
                 "gsml",
                 mappedFeature);
+        // Set up schema override for queryables
+        setUpSchemaOverride(
+                null,
+                null,
+                SupportedFormat.GEOJSON,
+                "GeoJSONQueryablesSchema.json",
+                "MappedFeatureGeoJSON",
+                ".json",
+                "gsml",
+                mappedFeature);
     }
 
     @Test
     public void testGeoJSONResponseOGCAPI() throws Exception {
         String path =
-                "ogc/features/v1/collections/"
-                        + "gsml:MappedFeature"
-                        + "/items?f=application/json"
-                        + MF_TEMPLATE_PARAM;
+                "ogc/features/v1/collections/" + "gsml:MappedFeature" + "/items?f=application/json" + MF_TEMPLATE_PARAM;
         JSONObject result = (JSONObject) getJson(path);
         JSONArray features = (JSONArray) result.get("features");
         assertEquals(5, features.size());
@@ -60,15 +66,14 @@ public class GeoJSONGetComplexFeaturesResponseAPITest extends TemplateComplexTes
 
     @Test
     public void testGeoJSONQueryOGCAPI() throws Exception {
-        StringBuilder sb =
-                new StringBuilder("ogc/features/v1/collections/")
-                        .append("gsml:MappedFeature")
-                        .append("/items?f=application/json")
-                        .append("&filter-lang=cql-text")
-                        .append(
-                                "&filter= features.gsml:GeologicUnit.gsml:composition.gsml:compositionPart.lithology.name.value")
-                        .append(" = 'name_2' ")
-                        .append(MF_TEMPLATE_PARAM);
+        StringBuilder sb = new StringBuilder("ogc/features/v1/collections/")
+                .append("gsml:MappedFeature")
+                .append("/items?f=application/json")
+                .append("&filter-lang=cql-text")
+                .append(
+                        "&filter= features.gsml:GeologicUnit.gsml:composition.gsml:compositionPart.lithology.name.value")
+                .append(" = 'name_2' ")
+                .append(MF_TEMPLATE_PARAM);
         JSONObject result = (JSONObject) getJson(sb.toString());
         JSONArray features = (JSONArray) result.get("features");
         assertEquals(1, features.size());
@@ -79,11 +84,10 @@ public class GeoJSONGetComplexFeaturesResponseAPITest extends TemplateComplexTes
 
     @Test
     public void testGeoJSONSingleFeature() throws Exception {
-        StringBuilder sb =
-                new StringBuilder("ogc/features/v1/collections/")
-                        .append("gsml:MappedFeature")
-                        .append("/items/mf4?f=application%2Fgeo%2Bjson")
-                        .append(MF_TEMPLATE_PARAM);
+        StringBuilder sb = new StringBuilder("ogc/features/v1/collections/")
+                .append("gsml:MappedFeature")
+                .append("/items/mf4?f=application%2Fgeo%2Bjson")
+                .append(MF_TEMPLATE_PARAM);
         JSONObject result = (JSONObject) getJson(sb.toString());
         assertFalse(result.has("features"));
         assertEquals("mf4", result.getString("@id"));
@@ -93,5 +97,13 @@ public class GeoJSONGetComplexFeaturesResponseAPITest extends TemplateComplexTes
         assertTrue(result.has("gsml:GeologicUnit"));
         assertTrue(result.has("geometry"));
         assertTrue(result.has("links"));
+    }
+
+    @Test
+    public void testGeoJSONQueryablesOverride() throws Exception {
+        String docStr = getAsString(
+                "ogc/features/v1/collections/gsml:MappedFeature/queryables?f=application/json" + MF_TEMPLATE_PARAM,
+                "UTF-8");
+        assertTrue(docStr.contains("testPropertyForSchemaOverrideGeoJSON"));
     }
 }

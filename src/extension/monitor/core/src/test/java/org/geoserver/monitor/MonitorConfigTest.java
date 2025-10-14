@@ -74,9 +74,6 @@ public class MonitorConfigTest {
         req.setRemoteAddr(InetAddress.getLocalHost().getHostAddress());
         dut.run(req, null, null);
         Assert.assertNotNull(req.getRemoteHost());
-        Assert.assertEquals(
-                "maximumSize=0 violated",
-                0,
-                dut.reverseLookupCache.size()); // Still empty as max size=0
+        Assert.assertEquals("maximumSize=0 violated", 0, dut.reverseLookupCache.size()); // Still empty as max size=0
     }
 }

@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.web.panel;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -22,12 +23,12 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
  */
 public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTemplate> {
 
+    @Serial
     private static final long serialVersionUID = -8246320435114536132L;
 
     public static final Property<MetadataTemplate> NAME = new BeanProperty<>("name", "name");
 
-    public static final Property<MetadataTemplate> DESCRIPTION =
-            new BeanProperty<>("description", "description");
+    public static final Property<MetadataTemplate> DESCRIPTION = new BeanProperty<>("description", "description");
 
     private IModel<List<MetadataTemplate>> selectedTemplates;
 
@@ -48,9 +49,7 @@ public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTe
     public void addLink(MetadataTemplate modelObject) {
         selectedTemplates.getObject().add(modelObject);
         MetadataTemplateService service =
-                GeoServerApplication.get()
-                        .getApplicationContext()
-                        .getBean(MetadataTemplateService.class);
+                GeoServerApplication.get().getApplicationContext().getBean(MetadataTemplateService.class);
         selectedTemplates.getObject().sort(new MetadataTemplateComparator(service.list()));
     }
 
@@ -66,16 +65,14 @@ public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTe
     /** The remain values are used in the dropdown. */
     public List<MetadataTemplate> getUnlinkedItems() {
         MetadataTemplateService service =
-                GeoServerApplication.get()
-                        .getApplicationContext()
-                        .getBean(MetadataTemplateService.class);
+                GeoServerApplication.get().getApplicationContext().getBean(MetadataTemplateService.class);
         List<MetadataTemplate> result = new ArrayList<>(service.list());
         result.removeAll(selectedTemplates.getObject());
         result.sort(new MetadataTemplateComparator(service.list()));
         return result;
     }
 
-    private class MetadataTemplateComparator implements Comparator<MetadataTemplate> {
+    private static class MetadataTemplateComparator implements Comparator<MetadataTemplate> {
 
         private List<MetadataTemplate> list;
 

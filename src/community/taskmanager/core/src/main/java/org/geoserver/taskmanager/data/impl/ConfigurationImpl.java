@@ -5,6 +5,7 @@
 package org.geoserver.taskmanager.data.impl;
 
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
+import java.io.Serial;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.persistence.CascadeType;
@@ -35,6 +36,7 @@ import org.hibernate.annotations.FilterDefs;
 })
 public class ConfigurationImpl extends BaseImpl implements Configuration {
 
+    @Serial
     private static final long serialVersionUID = 7562166441281067057L;
 
     @Id
@@ -53,7 +55,8 @@ public class ConfigurationImpl extends BaseImpl implements Configuration {
     @Column(nullable = false)
     private Boolean validated = false;
 
-    @Column private String workspace;
+    @Column
+    private String workspace;
 
     @OneToMany(
             fetch = FetchType.LAZY,
@@ -89,7 +92,8 @@ public class ConfigurationImpl extends BaseImpl implements Configuration {
     @XStreamOmitField
     private Long removeStamp = 0L;
 
-    @Column private String description;
+    @Column
+    private String description;
 
     @Override
     public Long getId() {

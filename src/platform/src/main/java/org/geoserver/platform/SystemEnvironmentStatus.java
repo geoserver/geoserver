@@ -17,9 +17,8 @@ public class SystemEnvironmentStatus implements ModuleStatus {
     private static final Logger LOGGER = Logging.getLogger(SystemEnvironmentStatus.class);
 
     /**
-     * Name of the environment variable that turns on the details (listing of all environment
-     * variables) for this module. "false" = don't show, "true" = show all the environment variables
-     * on the web interface.
+     * Name of the environment variable that turns on the details (listing of all environment variables) for this
+     * module. "false" = don't show, "true" = show all the environment variables on the web interface.
      */
     public static final String SystemEnvironmentStatusEnabledEnvironmentVar =
             "GEOSERVER_MODULE_SYSTEM_ENVIRONMENT_STATUS_ENABLED";
@@ -63,8 +62,8 @@ public class SystemEnvironmentStatus implements ModuleStatus {
      * returns true if the message (list of variables) should be shown
      *
      * <p>Uses environment variable SystemPropertyStatusEnabledEnvironmentVar
-     * ("GEOSERVER_MODULE_SYSTEM_ENVIRONMENT_STATUS_ENABLED") not defined -> false (default) bad
-     * value -> false (default)
+     * ("GEOSERVER_MODULE_SYSTEM_ENVIRONMENT_STATUS_ENABLED") not defined -> false (default) bad value -> false
+     * (default)
      */
     public boolean isShow() {
         String val = getEnvironmentVariable(SystemEnvironmentStatusEnabledEnvironmentVar);
@@ -76,19 +75,17 @@ public class SystemEnvironmentStatus implements ModuleStatus {
         }
         LOGGER.log(
                 Level.WARNING,
-                String.format(
-                        "environment variable '%s' should be 'true' or 'false', but was '%s'",
-                        SystemEnvironmentStatusEnabledEnvironmentVar, val));
+                "environment variable '%s' should be 'true' or 'false', but was '%s'"
+                        .formatted(SystemEnvironmentStatusEnabledEnvironmentVar, val));
         return false; // bad value -> default
     }
 
     @Override
     public Optional<String> getMessage() {
         if (!isShow()) {
-            var message =
-                    String.format(
-                            "Environment variables hidden for security reasons.  Set the environment variable '%s' to 'true' to see them.",
-                            SystemEnvironmentStatusEnabledEnvironmentVar);
+            String message =
+                    "Environment variables hidden for security reasons.  Set the environment variable '%s' to 'true' to see them."
+                            .formatted(SystemEnvironmentStatusEnabledEnvironmentVar);
             return Optional.of(message);
         }
 

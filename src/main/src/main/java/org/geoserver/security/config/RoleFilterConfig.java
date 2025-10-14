@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.config;
 
+import java.io.Serial;
 import org.geoserver.security.filter.GeoServerRoleFilter;
 
 /**
@@ -14,7 +15,9 @@ import org.geoserver.security.filter.GeoServerRoleFilter;
  */
 public class RoleFilterConfig extends SecurityFilterConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
+
     private String httpResponseHeaderAttrForIncludedRoles;
     private String roleConverterName;
 
@@ -22,8 +25,7 @@ public class RoleFilterConfig extends SecurityFilterConfig {
         return httpResponseHeaderAttrForIncludedRoles;
     }
 
-    public void setHttpResponseHeaderAttrForIncludedRoles(
-            String httpResponseHeaderAttrForIncludedRoles) {
+    public void setHttpResponseHeaderAttrForIncludedRoles(String httpResponseHeaderAttrForIncludedRoles) {
         this.httpResponseHeaderAttrForIncludedRoles = httpResponseHeaderAttrForIncludedRoles;
     }
 

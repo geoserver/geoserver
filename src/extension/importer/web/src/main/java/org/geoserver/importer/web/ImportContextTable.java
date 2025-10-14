@@ -34,10 +34,8 @@ public class ImportContextTable extends GeoServerTablePanel<ImportContext> {
         if (ImportContextProvider.ID == property) {
             PageParameters pp = new PageParameters();
             pp.add("id", property.getModel(itemModel).getObject());
-            return new SimpleBookmarkableLink(
-                    id, ImportPage.class, property.getModel(itemModel), pp);
-        } else if (ImportContextProvider.CREATED == property
-                || ImportContextProvider.UPDATED == property) {
+            return new SimpleBookmarkableLink(id, ImportPage.class, property.getModel(itemModel), pp);
+        } else if (ImportContextProvider.CREATED == property || ImportContextProvider.UPDATED == property) {
             Date date = (Date) property.getModel(itemModel).getObject();
             String pretty = PRETTY_TIME.format(date);
             return new Label(id, pretty);

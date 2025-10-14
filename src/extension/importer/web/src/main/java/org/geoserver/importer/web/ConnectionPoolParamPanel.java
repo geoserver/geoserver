@@ -24,19 +24,13 @@ class ConnectionPoolParamPanel extends Panel {
     public ConnectionPoolParamPanel(String id, boolean preparedStatements) {
         super(id);
 
-        add(
-                new TextField<>("minConnection", new PropertyModel<>(this, "minConnection"))
-                        .setRequired(true));
-        add(
-                new TextField<>("maxConnection", new PropertyModel<>(this, "maxConnection"))
-                        .setRequired(true));
+        add(new TextField<>("minConnection", new PropertyModel<>(this, "minConnection")).setRequired(true));
+        add(new TextField<>("maxConnection", new PropertyModel<>(this, "maxConnection")).setRequired(true));
         add(new TextField<>("fetchSize", new PropertyModel<>(this, "fetchSize")).setRequired(true));
         add(new TextField<>("timeout", new PropertyModel<>(this, "timeout")).setRequired(true));
         add(new CheckBox("validate", new PropertyModel<>(this, "validate")));
         WebMarkupContainer psContainer = new WebMarkupContainer("psContainer");
-        psContainer.add(
-                new CheckBox(
-                        "preparedStatements", new PropertyModel<>(this, "preparedStatements")));
+        psContainer.add(new CheckBox("preparedStatements", new PropertyModel<>(this, "preparedStatements")));
         psContainer.setVisible(preparedStatements);
         add(psContainer);
     }

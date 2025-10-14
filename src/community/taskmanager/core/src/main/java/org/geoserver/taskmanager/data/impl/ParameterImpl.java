@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.data.impl;
 
+import java.io.Serial;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,6 +21,7 @@ import org.geoserver.taskmanager.data.Task;
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "task"})})
 public class ParameterImpl extends BaseImpl implements Parameter {
 
+    @Serial
     private static final long serialVersionUID = 2728548577251702332L;
 
     @Id
@@ -30,7 +32,8 @@ public class ParameterImpl extends BaseImpl implements Parameter {
     @Column(nullable = false)
     private String name;
 
-    @Column private String value;
+    @Column
+    private String value;
 
     @ManyToOne
     @JoinColumn(name = "task")

@@ -74,3 +74,8 @@ header a {
 .function-table th {
   background: var(--bs-green);
 }
+
+.bg-process-inputs {
+  background-color: #d3f9d8;
+  color: #0f5132;
+}

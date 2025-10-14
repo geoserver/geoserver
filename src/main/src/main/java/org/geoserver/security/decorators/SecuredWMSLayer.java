@@ -20,8 +20,8 @@ import org.geotools.ows.wms.xml.Dimension;
 import org.geotools.ows.wms.xml.Extent;
 
 /**
- * A {@link Layer} wrapper carrying around the wrapper policy so that {@link SecuredWebMapServer}
- * can apply it while performing the requests
+ * A {@link Layer} wrapper carrying around the wrapper policy so that {@link SecuredWebMapServer} can apply it while
+ * performing the requests
  *
  * @author Andrea Aime - GeoSolutions
  */

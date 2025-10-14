@@ -53,10 +53,8 @@ public class GeoFenceAuthFilter
         }
 
         // BasicAuthenticationFilterConfig authConfig = (BasicAuthenticationFilterConfig) config;
-        SecurityNamedServiceConfig authCfg =
-                securityManager.loadAuthenticationProviderConfig("geofence");
-        GeoFenceAuthenticationProvider geofenceAuthProvider =
-                geofenceAuth.createAuthenticationProvider(authCfg);
+        SecurityNamedServiceConfig authCfg = securityManager.loadAuthenticationProviderConfig("geofence");
+        GeoFenceAuthenticationProvider geofenceAuthProvider = geofenceAuth.createAuthenticationProvider(authCfg);
         BasicAuthenticationFilter filter = new BasicAuthenticationFilter(geofenceAuthProvider, aep);
 
         // if (authConfig.isUseRememberMe()) {
@@ -92,7 +90,7 @@ public class GeoFenceAuthFilter
     }
 
     /** Simple username+password container */
-    class BasicUser {
+    static class BasicUser {
         String name;
 
         String pw;

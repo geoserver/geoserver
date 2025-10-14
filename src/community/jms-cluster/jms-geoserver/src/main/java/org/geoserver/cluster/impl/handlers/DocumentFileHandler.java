@@ -28,8 +28,7 @@ public class DocumentFileHandler extends JMSEventHandler<String, DocumentFile> {
             xstream.toXML(event.getBody(), fout);
             return true;
         } catch (IllegalStateException e) {
-            if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
-                LOGGER.severe(e.getLocalizedMessage());
+            if (LOGGER.isLoggable(java.util.logging.Level.SEVERE)) LOGGER.severe(e.getLocalizedMessage());
             throw e;
         }
     }

@@ -27,7 +27,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource.Type;
@@ -73,17 +73,17 @@ public class Resources {
     }
 
     /**
-     * Test if the file or directory behind the resource is hidden. For file system based resources,
-     * the platform-dependent hidden property is used. For other resource implementations, filenames
-     * starting with a "." are considered hidden, irrespective of the platform.
+     * Test if the file or directory behind the resource is hidden. For file system based resources, the
+     * platform-dependent hidden property is used. For other resource implementations, filenames starting with a "." are
+     * considered hidden, irrespective of the platform.
      *
      * @see File#isHidden()
      * @param resource Resource indicated
      * @return true If resource is hidden
      */
     public static boolean isHidden(Resource resource) {
-        if (resource instanceof SerializableResourceWrapper) {
-            resource = ((SerializableResourceWrapper) resource).delegate;
+        if (resource instanceof SerializableResourceWrapper wrapper) {
+            resource = wrapper.delegate;
         }
         if (resource instanceof FileSystemResourceStore.FileSystemResource
                 || resource instanceof Files.ResourceAdaptor) {
@@ -97,8 +97,8 @@ public class Resources {
     }
 
     /**
-     * Checks {@link Resource#getType()} and returns existing file() or dir() as appropriate, or
-     * null for {@link Resource.Type#UNDEFINED}.
+     * Checks {@link Resource#getType()} and returns existing file() or dir() as appropriate, or null for
+     * {@link Resource.Type#UNDEFINED}.
      *
      * <p>This approach is a reproduction of GeoServerResourceLoader find logic.
      *
@@ -124,18 +124,17 @@ public class Resources {
     }
 
     /**
-     * Checks {@link Resource#getType()} and returns existing file() or dir() as appropriate, or
-     * null for {@link Resource.Type#UNDEFINED}.
+     * Checks {@link Resource#getType()} and returns existing file() or dir() as appropriate, or null for
+     * {@link Resource.Type#UNDEFINED}.
      *
      * <p>This approach is a reproduction of GeoServerResourceLoader find logic.
      *
      * @see Resource#dir()
      * @see Resource#file()
      * @param resource Resource indicated
-     * @param force false to return null for {@link Resource.Type#UNDEFINED}, true to force a File
-     *     to be created.
-     * @return The file if exists, null if {@link Resource.Type#UNDEFINED} and force is false, a
-     *     File with the resource path otherwise
+     * @param force false to return null for {@link Resource.Type#UNDEFINED}, true to force a File to be created.
+     * @return The file if exists, null if {@link Resource.Type#UNDEFINED} and force is false, a File with the resource
+     *     path otherwise
      */
     public static File find(Resource resource, boolean force) {
         if (resource == null) {
@@ -158,16 +157,15 @@ public class Resources {
     }
 
     /**
-     * Checks {@link Resource#getType()} and returns existing dir() if available, or null for {@link
-     * Resource.Type#UNDEFINED} or {@link Resource.Type#RESOURCE}.
+     * Checks {@link Resource#getType()} and returns existing dir() if available, or null for
+     * {@link Resource.Type#UNDEFINED} or {@link Resource.Type#RESOURCE}.
      *
-     * <p>This approach is a reproduction of GeoServerDataDirectory findDataDir logic and will not
-     * create a new directory.
+     * <p>This approach is a reproduction of GeoServerDataDirectory findDataDir logic and will not create a new
+     * directory.
      *
      * @see Resource#dir()
      * @param resource Resource indicated
-     * @return File reference to existing directory, or null for an existing file (or if directory
-     *     does not exist)
+     * @return File reference to existing directory, or null for an existing file (or if directory does not exist)
      */
     public static File directory(Resource resource) {
         return directory(resource, false);
@@ -201,8 +199,7 @@ public class Resources {
      * Checks {@link Resource#getType()} and returns existing file() if available, or null for
      * {@link Resource.Type#UNDEFINED} or {@link Resource.Type#DIRECTORY}.
      *
-     * <p>This approach is a reproduction of GeoServerDataDirectory findDataFile logic and will not
-     * create a new file.
+     * <p>This approach is a reproduction of GeoServerDataDirectory findDataFile logic and will not create a new file.
      *
      * @see Resource#file()
      * @param resource Resource indicated
@@ -237,8 +234,7 @@ public class Resources {
     }
 
     /**
-     * Create a new directory for the provided resource (this will only work for {@link
-     * Resource.Type#UNDEFINED}).
+     * Create a new directory for the provided resource (this will only work for {@link Resource.Type#UNDEFINED}).
      *
      * <p>This approach is a reproduction of GeoServerResourceLoader createNewDirectory logic.
      *
@@ -249,11 +245,9 @@ public class Resources {
     public static File createNewDirectory(Resource resource) throws IOException {
         switch (resource.getType()) {
             case DIRECTORY:
-                throw new IOException(
-                        "New directory " + resource.path() + " already exists as DIRECTORY");
+                throw new IOException("New directory " + resource.path() + " already exists as DIRECTORY");
             case RESOURCE:
-                throw new IOException(
-                        "New directory " + resource.path() + " already exists as RESOURCE");
+                throw new IOException("New directory " + resource.path() + " already exists as RESOURCE");
             case UNDEFINED:
                 return resource.dir(); // will create directory as needed
             default:
@@ -262,8 +256,7 @@ public class Resources {
     }
 
     /**
-     * Create a new file for the provided resource (this will only work for {@link
-     * Resource.Type#UNDEFINED}).
+     * Create a new file for the provided resource (this will only work for {@link Resource.Type#UNDEFINED}).
      *
      * <p>This approach is a reproduction of GeoServerResourceLoader createNewFile logic.
      *
@@ -274,11 +267,9 @@ public class Resources {
     public static File createNewFile(Resource resource) throws IOException {
         switch (resource.getType()) {
             case DIRECTORY:
-                throw new IOException(
-                        "New file " + resource.path() + " already exists as DIRECTORY");
+                throw new IOException("New file " + resource.path() + " already exists as DIRECTORY");
             case RESOURCE:
-                throw new IOException(
-                        "New file " + resource.path() + " already exists as RESOURCE");
+                throw new IOException("New file " + resource.path() + " already exists as RESOURCE");
             case UNDEFINED:
                 return resource.file(); // will create directory as needed
             default:
@@ -327,8 +318,7 @@ public class Resources {
     }
 
     /**
-     * Write the contents of a resource into another resource. Also supports directories
-     * (recursively).
+     * Write the contents of a resource into another resource. Also supports directories (recursively).
      *
      * @param data resource to read
      * @param destination resource to write to
@@ -354,8 +344,7 @@ public class Resources {
      * @param filename file name of the new resource
      * @throws IOException If data could not be copied into indicated location
      */
-    public static void copy(InputStream data, Resource directory, String filename)
-            throws IOException {
+    public static void copy(InputStream data, Resource directory, String filename) throws IOException {
         copy(data, directory.get(filename));
     }
 
@@ -374,8 +363,7 @@ public class Resources {
     }
 
     /**
-     * Renames a resource by reading it and writing to the new resource, then deleting the old one.
-     * This is not atomic.
+     * Renames a resource by reading it and writing to the new resource, then deleting the old one. This is not atomic.
      *
      * @param source Resource to rename
      * @param destination New resource location
@@ -478,20 +466,19 @@ public class Resources {
     }
 
     /**
-     * Creates resource from a path, if the path is relative it will return a resource from the
-     * default resource loader otherwise it will return a file based resource
+     * Creates resource from a path, if the path is relative it will return a resource from the default resource loader
+     * otherwise it will return a file based resource
      *
      * @param path relative or absolute path
      * @return resource
      */
     public static Resource fromPath(String path) {
-        return ((GeoServerResourceLoader) GeoServerExtensions.bean("resourceLoader"))
-                .fromPath(path);
+        return ((GeoServerResourceLoader) GeoServerExtensions.bean("resourceLoader")).fromPath(path);
     }
 
     /**
-     * Creates resource from a path, if the path is relative it will return a resource relative to
-     * the provided directory otherwise it will return a file based resource
+     * Creates resource from a path, if the path is relative it will return a resource relative to the provided
+     * directory otherwise it will return a file based resource
      *
      * @param path relative or absolute path
      * @param relativeDir directory to which relative paths are relative
@@ -508,8 +495,8 @@ public class Resources {
     }
 
     /**
-     * Used to generate resource based on {@link UUID#randomUUID()} with the provided prefix and
-     * suffix (primiarly for test cases).
+     * Used to generate resource based on {@link UUID#randomUUID()} with the provided prefix and suffix (primiarly for
+     * test cases).
      *
      * @param prefix name prefix
      * @param suffix name suffix, often an extension
@@ -517,8 +504,7 @@ public class Resources {
      * @return resouce with randomly generated name
      * @throws IOException
      */
-    public static Resource createRandom(String prefix, String suffix, Resource dir)
-            throws IOException {
+    public static Resource createRandom(String prefix, String suffix, Resource dir) throws IOException {
         // Use only the file name from the supplied prefix
         prefix = (new File(prefix)).getName();
 
@@ -533,12 +519,10 @@ public class Resources {
     }
 
     /**
-     * Used to look up resources based on user provided url (or path) using the Data Directory as
-     * base directory.
+     * Used to look up resources based on user provided url (or path) using the Data Directory as base directory.
      *
-     * <p>This method is used to process a URL provided by a user: <i>Given a path, tries to
-     * interpret it as a file into the data directory, or as an absolute location, and returns the
-     * actual absolute location of the file.</i>
+     * <p>This method is used to process a URL provided by a user: <i>Given a path, tries to interpret it as a file into
+     * the data directory, or as an absolute location, and returns the actual absolute location of the file.</i>
      *
      * <p>Over time this url method has grown in the telling to support:
      *
@@ -546,8 +530,7 @@ public class Resources {
      *   <li>Actual URL to external resource using http or ftp protocol - will return null
      *   <li>Resource URL - will support resources from resource store
      *   <li>File URL - will support absolute file references
-     *   <li>File URL - will support relative file references - this is deprecated, use resource:
-     *       instead
+     *   <li>File URL - will support relative file references - this is deprecated, use resource: instead
      *   <li>Fake URLs - sde://user:pass@server:port - will return null.
      *   <li>path - user supplied file path (operating specific specific)
      * </ul>
@@ -562,9 +545,8 @@ public class Resources {
     /**
      * Used to look up resources based on user provided {@code url} (or path).
      *
-     * <p>This method is used to process a URL provided by a user: <i>given a path, tries to
-     * interpret it as a file into the data directory, or as an absolute location, to return the
-     * actual absolute location of the file.</i>
+     * <p>This method is used to process a URL provided by a user: <i>given a path, tries to interpret it as a file into
+     * the data directory, or as an absolute location, to return the actual absolute location of the file.</i>
      *
      * <p>Over time this url method has grown in the telling to support:
      *
@@ -572,8 +554,8 @@ public class Resources {
      *   <li>Actual URL to external resource using http or ftp protocol - will return null
      *   <li>Resource URL - will support resources from resource store
      *   <li>File URL - will support absolute file references
-     *   <li>File URL - relative file references are interpreted as resource paths - this is
-     *       deprecated, use resource: instead
+     *   <li>File URL - relative file references are interpreted as resource paths - this is deprecated, use resource:
+     *       instead
      *   <li>Fake URLs - sde://user:pass@server:port - will return null.
      *   <li>path - user supplied file path (operating specific specific)
      * </ul>
@@ -586,7 +568,7 @@ public class Resources {
      */
     public static Resource fromURL(Resource baseDirectory, String url) {
         String ss;
-        if (!Objects.equals(url, ss = StringUtils.removeStart(url, "resource:"))) {
+        if (!Objects.equals(url, ss = Strings.CS.removeStart(url, "resource:"))) {
             return baseDirectory.get(ss);
         }
 
@@ -642,8 +624,7 @@ public class Resources {
     }
 
     /**
-     * Used to look up resources based on user provided url, using the Data Directory as base
-     * directory.
+     * Used to look up resources based on user provided url, using the Data Directory as base directory.
      *
      * <p>Supports
      *
@@ -651,8 +632,7 @@ public class Resources {
      *   <li>Actual URL to external resource using http or ftp protocol - will return null
      *   <li>Resource URL - will support resources from resource store
      *   <li>File URL - will support absolute file references
-     *   <li>File URL - will support relative file references - this is deprecated, use resource:
-     *       instead
+     *   <li>File URL - will support relative file references - this is deprecated, use resource: instead
      *   <li>Fake URLs - sde://user:pass@server:port - will return null.
      * </ul>
      *
@@ -672,8 +652,8 @@ public class Resources {
      *   <li>Actual URL to external resource using http or ftp protocol - will return null
      *   <li>Resource URL - will support resources from resource store
      *   <li>File URL - will support absolute file references
-     *   <li>File URL - relative file references are interpreted as resource paths - this is
-     *       deprecated, use resource: instead
+     *   <li>File URL - relative file references are interpreted as resource paths - this is deprecated, use resource:
+     *       instead
      *   <li>Fake URLs - sde://user:pass@server:port - will return null.
      * </ul>
      *
@@ -724,8 +704,8 @@ public class Resources {
                 return res.file().toURI().toURL();
             }
 
-            if (res instanceof URIs.ResourceAdaptor) {
-                return ((URIs.ResourceAdaptor) res).getURL();
+            if (res instanceof URIs.ResourceAdaptor adaptor) {
+                return adaptor.getURL();
             }
 
             return new URL(
@@ -771,8 +751,7 @@ public class Resources {
         private transient Resource delegate;
         private String path;
 
-        private void readObject(ObjectInputStream stream)
-                throws IOException, ClassNotFoundException {
+        private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
             stream.defaultReadObject();
             delegate = Resources.fromPath(path);
         }
@@ -834,9 +813,7 @@ public class Resources {
 
         @Override
         public Resource parent() {
-            return delegate.parent() == null
-                    ? null
-                    : new SerializableResourceWrapper(delegate.parent());
+            return delegate.parent() == null ? null : new SerializableResourceWrapper(delegate.parent());
         }
 
         @Override
@@ -893,8 +870,8 @@ public class Resources {
     }
 
     /**
-     * Determine unique name of the form <code>newName.extension</code>. newName will have a number
-     * appended as required to produce a unique resource name.
+     * Determine unique name of the form <code>newName.extension</code>. newName will have a number appended as required
+     * to produce a unique resource name.
      *
      * @param resource Resource being renamed
      * @param newName proposed name to use as a template
@@ -902,8 +879,7 @@ public class Resources {
      * @return New UNDEFINED resource suitable for use with rename
      * @throws IOException If unique resource cannot be produced
      */
-    public static Resource uniqueResource(Resource resource, String newName, String extension)
-            throws IOException {
+    public static Resource uniqueResource(Resource resource, String newName, String extension) throws IOException {
         Resource target = resource.parent().get(newName + "." + extension);
 
         int i = 0;
@@ -911,17 +887,16 @@ public class Resources {
             target = resource.parent().get(newName + i + "." + extension);
         }
         if (i > MAX_RENAME_ATTEMPTS) {
-            throw new IOException(
-                    "All target files between "
-                            + newName
-                            + "1."
-                            + extension
-                            + " and "
-                            + newName
-                            + MAX_RENAME_ATTEMPTS
-                            + "."
-                            + extension
-                            + " are in use already, giving up");
+            throw new IOException("All target files between "
+                    + newName
+                    + "1."
+                    + extension
+                    + " and "
+                    + newName
+                    + MAX_RENAME_ATTEMPTS
+                    + "."
+                    + extension
+                    + " are in use already, giving up");
         }
         return target;
     }

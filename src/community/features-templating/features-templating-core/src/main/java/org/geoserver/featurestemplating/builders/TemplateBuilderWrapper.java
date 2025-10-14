@@ -37,8 +37,7 @@ public class TemplateBuilderWrapper extends AbstractTemplateBuilder {
     }
 
     @Override
-    public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context)
-            throws IOException {
+    public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context) throws IOException {
         delegate.evaluate(writer, context);
     }
 
@@ -118,14 +117,12 @@ public class TemplateBuilderWrapper extends AbstractTemplateBuilder {
     }
 
     @Override
-    protected void addChildrenEvaluationToEncodingHints(
-            TemplateOutputWriter writer, TemplateBuilderContext context) {
+    protected void addChildrenEvaluationToEncodingHints(TemplateOutputWriter writer, TemplateBuilderContext context) {
         delegate.addChildrenEvaluationToEncodingHints(writer, context);
     }
 
     @Override
-    protected ChildrenEvaluation getChildrenEvaluation(
-            TemplateOutputWriter writer, TemplateBuilderContext context) {
+    protected ChildrenEvaluation getChildrenEvaluation(TemplateOutputWriter writer, TemplateBuilderContext context) {
         return delegate.getChildrenEvaluation(writer, context);
     }
 

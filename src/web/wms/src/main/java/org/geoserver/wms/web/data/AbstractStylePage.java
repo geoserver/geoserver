@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -80,10 +81,9 @@ import org.xml.sax.SAXParseException;
 /**
  * Base page for creating/editing styles
  *
- * <p>WARNING: one crucial aspect of this page is its ability to not loose edits when one switches
- * from one tab to the other. I did not find any effective way to unit test this, so _please_, if
- * you do modify anything in this class (especially the models), manually retest that the edits are
- * not lost on tab switch.
+ * <p>WARNING: one crucial aspect of this page is its ability to not loose edits when one switches from one tab to the
+ * other. I did not find any effective way to unit test this, so _please_, if you do modify anything in this class
+ * (especially the models), manually retest that the edits are not lost on tab switch.
  */
 // TODO WICKET8 - Verify this page works OK
 @SuppressWarnings("serial")
@@ -107,44 +107,38 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         @Override
         public void renderHead(IHeaderResponse response) {
             super.renderHead(response);
+            response.render(CssReferenceHeaderItem.forReference(
+                    new PackageResourceReference(AbstractStylePage.class, "js/spectrum/spectrum.css")));
+            response.render(JavaScriptHeaderItem.forReference(
+                    new PackageResourceReference(AbstractStylePage.class, "js/spectrum/spectrum.js")));
             response.render(
-                    CssReferenceHeaderItem.forReference(
-                            new PackageResourceReference(
-                                    AbstractStylePage.class, "js/spectrum/spectrum.css")));
-            response.render(
-                    JavaScriptHeaderItem.forReference(
-                            new PackageResourceReference(
-                                    AbstractStylePage.class, "js/spectrum/spectrum.js")));
-            response.render(
-                    CssHeaderItem.forReference(
-                            new CssResourceReference(AbstractStylePage.class, "StylePage.css")));
-            String enableSpectrum =
-                    "$(\"#chooser\").spectrum({\n"
-                            + "    color: \""
-                            + StringEscapeUtils.escapeEcmaScript(initialColor)
-                            + "\",\n"
-                            + "    showInput: true,\n"
-                            + "    flat: true,\n"
-                            + "    className: \"full-spectrum\",\n"
-                            + "    showInitial: true,\n"
-                            + "    showPalette: true,\n"
-                            + "    showSelectionPalette: true,\n"
-                            + "    showButtons: false,\n"
-                            + "    preferredFormat: \"hex\",\n"
-                            + "    clickoutFiresChange: true,\n"
-                            + "    palette: [\n"
-                            + "        [\"#000\",\"#444\",\"#666\",\"#999\",\"#ccc\",\"#eee\",\"#f3f3f3\",\"#fff\"],\n"
-                            + "        [\"#f00\",\"#f90\",\"#ff0\",\"#0f0\",\"#0ff\",\"#00f\",\"#90f\",\"#f0f\"],\n"
-                            + "        [\"#f4cccc\",\"#fce5cd\",\"#fff2cc\",\"#d9ead3\",\"#d0e0e3\",\"#cfe2f3\",\"#d9d2e9\",\"#ead1dc\"],\n"
-                            + "        [\"#ea9999\",\"#f9cb9c\",\"#ffe599\",\"#b6d7a8\",\"#a2c4c9\",\"#9fc5e8\",\"#b4a7d6\",\"#d5a6bd\"],\n"
-                            + "        [\"#e06666\",\"#f6b26b\",\"#ffd966\",\"#93c47d\",\"#76a5af\",\"#6fa8dc\",\"#8e7cc3\",\"#c27ba0\"],\n"
-                            + "        [\"#c00\",\"#e69138\",\"#f1c232\",\"#6aa84f\",\"#45818e\",\"#3d85c6\",\"#674ea7\",\"#a64d79\"],\n"
-                            + "        [\"#900\",\"#b45f06\",\"#bf9000\",\"#38761d\",\"#134f5c\",\"#0b5394\",\"#351c75\",\"#741b47\"],\n"
-                            + "        [\"#600\",\"#783f04\",\"#7f6000\",\"#274e13\",\"#0c343d\",\"#073763\",\"#20124d\",\"#4c1130\"]],\n"
-                            + "    move: function (color) {\n"
-                            + "          $(\"#chooser\").spectrum(\"set\", color);\n"
-                            + "    }\n"
-                            + "});";
+                    CssHeaderItem.forReference(new CssResourceReference(AbstractStylePage.class, "StylePage.css")));
+            String enableSpectrum = "$(\"#chooser\").spectrum({\n"
+                    + "    color: \""
+                    + StringEscapeUtils.escapeEcmaScript(initialColor)
+                    + "\",\n"
+                    + "    showInput: true,\n"
+                    + "    flat: true,\n"
+                    + "    className: \"full-spectrum\",\n"
+                    + "    showInitial: true,\n"
+                    + "    showPalette: true,\n"
+                    + "    showSelectionPalette: true,\n"
+                    + "    showButtons: false,\n"
+                    + "    preferredFormat: \"hex\",\n"
+                    + "    clickoutFiresChange: true,\n"
+                    + "    palette: [\n"
+                    + "        [\"#000\",\"#444\",\"#666\",\"#999\",\"#ccc\",\"#eee\",\"#f3f3f3\",\"#fff\"],\n"
+                    + "        [\"#f00\",\"#f90\",\"#ff0\",\"#0f0\",\"#0ff\",\"#00f\",\"#90f\",\"#f0f\"],\n"
+                    + "        [\"#f4cccc\",\"#fce5cd\",\"#fff2cc\",\"#d9ead3\",\"#d0e0e3\",\"#cfe2f3\",\"#d9d2e9\",\"#ead1dc\"],\n"
+                    + "        [\"#ea9999\",\"#f9cb9c\",\"#ffe599\",\"#b6d7a8\",\"#a2c4c9\",\"#9fc5e8\",\"#b4a7d6\",\"#d5a6bd\"],\n"
+                    + "        [\"#e06666\",\"#f6b26b\",\"#ffd966\",\"#93c47d\",\"#76a5af\",\"#6fa8dc\",\"#8e7cc3\",\"#c27ba0\"],\n"
+                    + "        [\"#c00\",\"#e69138\",\"#f1c232\",\"#6aa84f\",\"#45818e\",\"#3d85c6\",\"#674ea7\",\"#a64d79\"],\n"
+                    + "        [\"#900\",\"#b45f06\",\"#bf9000\",\"#38761d\",\"#134f5c\",\"#0b5394\",\"#351c75\",\"#741b47\"],\n"
+                    + "        [\"#600\",\"#783f04\",\"#7f6000\",\"#274e13\",\"#0c343d\",\"#073763\",\"#20124d\",\"#4c1130\"]],\n"
+                    + "    move: function (color) {\n"
+                    + "          $(\"#chooser\").spectrum(\"set\", color);\n"
+                    + "    }\n"
+                    + "});";
             response.render(new OnDomReadyHeaderItem(enableSpectrum));
         }
     }
@@ -190,8 +184,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         if (defaultWs != null) {
             DataStoreInfo defaultStore = catalog.getDefaultDataStore(defaultWs);
             if (defaultStore != null) {
-                List<ResourceInfo> resources =
-                        catalog.getResourcesByStore(defaultStore, ResourceInfo.class);
+                List<ResourceInfo> resources = catalog.getResourcesByStore(defaultStore, ResourceInfo.class);
                 for (ResourceInfo resource : resources) {
                     layers = catalog.getLayers(resource);
                     if (!layers.isEmpty()) {
@@ -227,14 +220,13 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         }
 
         /* init main form */
-        styleForm =
-                new Form<>("styleForm", styleModel) {
-                    @Override
-                    protected void onSubmit() {
-                        onStyleFormSubmit();
-                        super.onSubmit();
-                    }
-                };
+        styleForm = new Form<>("styleForm", styleModel) {
+            @Override
+            protected void onSubmit() {
+                onStyleFormSubmit();
+                super.onSubmit();
+            }
+        };
         add(styleForm);
         styleForm.setMultiPart(true);
 
@@ -245,51 +237,45 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         List<ITab> tabs = new ArrayList<>();
 
         // Well known tabs
-        PanelCachingTab dataTab =
-                new PanelCachingTab(
-                        new AbstractTab(new Model<>("Data")) {
+        PanelCachingTab dataTab = new PanelCachingTab(new AbstractTab(new Model<>("Data")) {
 
-                            @Override
-                            public Panel getPanel(String id) {
-                                return new StyleAdminPanel(id, AbstractStylePage.this);
-                            }
-                        });
+            @Override
+            public Panel getPanel(String id) {
+                return new StyleAdminPanel(id, AbstractStylePage.this);
+            }
+        });
 
-        PanelCachingTab publishingTab =
-                new PanelCachingTab(
-                        new AbstractTab(new Model<>("Publishing")) {
-                            private static final long serialVersionUID = 4184410057835108176L;
+        PanelCachingTab publishingTab = new PanelCachingTab(new AbstractTab(new Model<>("Publishing")) {
+            @Serial
+            private static final long serialVersionUID = 4184410057835108176L;
 
-                            @Override
-                            public Panel getPanel(String id) {
-                                return new LayerAssociationPanel(id, AbstractStylePage.this);
-                            }
-                        });
+            @Override
+            public Panel getPanel(String id) {
+                return new LayerAssociationPanel(id, AbstractStylePage.this);
+            }
+        });
 
-        PanelCachingTab previewTab =
-                new PanelCachingTab(
-                        new AbstractTab(new Model<>("Layer Preview")) {
+        PanelCachingTab previewTab = new PanelCachingTab(new AbstractTab(new Model<>("Layer Preview")) {
 
-                            @Override
-                            public Panel getPanel(String id) {
-                                return new OpenLayersPreviewPanel(id, AbstractStylePage.this);
-                            }
-                        });
+            @Override
+            public Panel getPanel(String id) {
+                return new OpenLayersPreviewPanel(id, AbstractStylePage.this);
+            }
+        });
 
-        PanelCachingTab attributeTab =
-                new PanelCachingTab(
-                        new AbstractTab(new Model<>("Layer Attributes")) {
-                            private static final long serialVersionUID = 4184410057835108176L;
+        PanelCachingTab attributeTab = new PanelCachingTab(new AbstractTab(new Model<>("Layer Attributes")) {
+            @Serial
+            private static final long serialVersionUID = 4184410057835108176L;
 
-                            @Override
-                            public Panel getPanel(String id) {
-                                try {
-                                    return new LayerAttributePanel(id, AbstractStylePage.this);
-                                } catch (IOException e) {
-                                    throw new WicketRuntimeException(e);
-                                }
-                            }
-                        });
+            @Override
+            public Panel getPanel(String id) {
+                try {
+                    return new LayerAttributePanel(id, AbstractStylePage.this);
+                } catch (IOException e) {
+                    throw new WicketRuntimeException(e);
+                }
+            }
+        });
         // If style is null, this is a new style.
         // If so, we want to disable certain tabs
         tabs.add(dataTab);
@@ -300,18 +286,15 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         }
 
         // Dynamic tabs
-        List<StyleEditTabPanelInfo> tabPanels =
-                getGeoServerApplication().getBeansOfType(StyleEditTabPanelInfo.class);
+        List<StyleEditTabPanelInfo> tabPanels = getGeoServerApplication().getBeansOfType(StyleEditTabPanelInfo.class);
 
         // sort the tabs based on order
-        Collections.sort(
-                tabPanels,
-                (o1, o2) -> {
-                    Integer order1 = o1.getOrder() >= 0 ? o1.getOrder() : Integer.MAX_VALUE;
-                    Integer order2 = o2.getOrder() >= 0 ? o2.getOrder() : Integer.MAX_VALUE;
+        Collections.sort(tabPanels, (o1, o2) -> {
+            Integer order1 = o1.getOrder() >= 0 ? o1.getOrder() : Integer.MAX_VALUE;
+            Integer order2 = o2.getOrder() >= 0 ? o2.getOrder() : Integer.MAX_VALUE;
 
-                    return order1.compareTo(order2);
-                });
+            return order1.compareTo(order2);
+        });
         // instantiate tab panels and add to tabs list
         for (StyleEditTabPanelInfo tabPanelInfo : tabPanels) {
             String titleKey = tabPanelInfo.getTitleKey();
@@ -325,25 +308,23 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
                 final Class<StyleEditTabPanel> panelClass = tabPanelInfo.getComponentClass();
 
-                tabs.add(
-                        new AbstractTab(titleModel) {
-                            private static final long serialVersionUID = -6637277497986497791L;
+                tabs.add(new AbstractTab(titleModel) {
+                    @Serial
+                    private static final long serialVersionUID = -6637277497986497791L;
 
-                            @Override
-                            public Panel getPanel(String panelId) {
-                                StyleEditTabPanel tabPanel;
-                                try {
-                                    tabPanel =
-                                            panelClass
-                                                    .getConstructor(
-                                                            String.class, AbstractStylePage.class)
-                                                    .newInstance(panelId, AbstractStylePage.this);
-                                } catch (Exception e) {
-                                    throw new WicketRuntimeException(e);
-                                }
-                                return tabPanel;
-                            }
-                        });
+                    @Override
+                    public Panel getPanel(String panelId) {
+                        StyleEditTabPanel tabPanel;
+                        try {
+                            tabPanel = panelClass
+                                    .getConstructor(String.class, AbstractStylePage.class)
+                                    .newInstance(panelId, AbstractStylePage.this);
+                        } catch (Exception e) {
+                            throw new WicketRuntimeException(e);
+                        }
+                        return tabPanel;
+                    }
+                });
             }
         }
 
@@ -355,11 +336,8 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
         /* init editor */
         styleForm.add(
-                editor =
-                        new CodeMirrorEditor(
-                                "styleEditor",
-                                styleHandler().getCodeMirrorEditMode(),
-                                new PropertyModel<>(this, "rawStyle")));
+                editor = new CodeMirrorEditor(
+                        "styleEditor", styleHandler().getCodeMirrorEditMode(), new PropertyModel<>(this, "rawStyle")));
         // force the id otherwise this blasted thing won't be usable from other forms
         editor.setTextAreaMarkupId("editor");
         editor.setMarkupId("style-editor");
@@ -377,108 +355,93 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                 new InsertImageButton());
 
         editor.addCustomButton(
-                new ParamResourceModel("chooseColor", getPage()).getString(),
-                "button-color",
-                new ChooseColorButton());
+                new ParamResourceModel("chooseColor", getPage()).getString(), "button-color", new ChooseColorButton());
 
         add(validateLink());
-        add(
-                new AjaxSubmitLink("apply", styleForm) {
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        // If we have a new style, go to the edit page
-                        if (style == null) {
-                            StyleInfo s = getStyleInfo();
-                            PageParameters parameters = new PageParameters();
-                            parameters.add(StyleEditPage.NAME, s.getName());
-                            if (s.getWorkspace() != null) {
-                                parameters.add(StyleEditPage.WORKSPACE, s.getWorkspace().getName());
+        add(new AjaxSubmitLink("apply", styleForm) {
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                // If we have a new style, go to the edit page
+                if (style == null) {
+                    StyleInfo s = getStyleInfo();
+                    PageParameters parameters = new PageParameters();
+                    parameters.add(StyleEditPage.NAME, s.getName());
+                    if (s.getWorkspace() != null) {
+                        parameters.add(StyleEditPage.WORKSPACE, s.getWorkspace().getName());
+                    }
+                    getRequestCycle().setResponsePage(StyleEditPage.class, parameters);
+                }
+                addFeedbackPanels(target);
+                // Update preview if we are on the preview tab
+                if (style != null && tabbedPanel.getSelectedTab() == 2) {
+                    tabbedPanel.visitChildren(StyleEditTabPanel.class, (component, visit) -> {
+                        if (component instanceof OpenLayersPreviewPanel previewPanel) {
+                            try {
+                                target.appendJavaScript(previewPanel.getUpdateCommand());
+                            } catch (Exception e) {
+                                LOGGER.log(Level.FINER, e.getMessage(), e);
                             }
-                            getRequestCycle().setResponsePage(StyleEditPage.class, parameters);
                         }
-                        addFeedbackPanels(target);
-                        // Update preview if we are on the preview tab
-                        if (style != null && tabbedPanel.getSelectedTab() == 2) {
-                            tabbedPanel.visitChildren(
-                                    StyleEditTabPanel.class,
-                                    (component, visit) -> {
-                                        if (component instanceof OpenLayersPreviewPanel) {
-                                            OpenLayersPreviewPanel previewPanel =
-                                                    (OpenLayersPreviewPanel) component;
-                                            try {
-                                                target.appendJavaScript(
-                                                        previewPanel.getUpdateCommand());
-                                            } catch (Exception e) {
-                                                LOGGER.log(Level.FINER, e.getMessage(), e);
-                                            }
-                                        }
-                                    });
-                        }
-                    }
+                    });
+                }
+            }
 
-                    @Override
-                    protected void onAfterSubmit(AjaxRequestTarget target) {
-                        // Re-initialize the Legend model object, if it is null.
-                        if (styleModel.getObject().getLegend() == null) {
-                            styleModel
-                                    .getObject()
-                                    .setLegend(getCatalog().getFactory().createLegend());
-                        }
-                    }
+            @Override
+            protected void onAfterSubmit(AjaxRequestTarget target) {
+                // Re-initialize the Legend model object, if it is null.
+                if (styleModel.getObject().getLegend() == null) {
+                    styleModel.getObject().setLegend(getCatalog().getFactory().createLegend());
+                }
+            }
 
-                    @Override
-                    protected void onError(AjaxRequestTarget target) {
-                        addFeedbackPanels(target);
-                    }
+            @Override
+            protected void onError(AjaxRequestTarget target) {
+                addFeedbackPanels(target);
+            }
 
-                    @Override
-                    protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
-                        super.updateAjaxAttributes(attributes);
-                        attributes.getAjaxCallListeners().add(editor.getSaveDecorator());
-                    }
-                });
-        add(
-                new AjaxSubmitLink("save", styleForm) {
-                    @Override
-                    protected void onAfterSubmit(AjaxRequestTarget target) {
-                        if (getForm().hasError()) {
-                            addFeedbackPanels(target);
-                        } else {
-                            doReturn(StylePage.class);
-                        }
-                    }
+            @Override
+            protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                super.updateAjaxAttributes(attributes);
+                attributes.getAjaxCallListeners().add(editor.getSaveDecorator());
+            }
+        });
+        add(new AjaxSubmitLink("save", styleForm) {
+            @Override
+            protected void onAfterSubmit(AjaxRequestTarget target) {
+                if (getForm().hasError()) {
+                    addFeedbackPanels(target);
+                } else {
+                    doReturn(StylePage.class);
+                }
+            }
 
-                    @Override
-                    protected void onError(AjaxRequestTarget target) {
-                        addFeedbackPanels(target);
-                    }
+            @Override
+            protected void onError(AjaxRequestTarget target) {
+                addFeedbackPanels(target);
+            }
 
-                    @Override
-                    protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
-                        super.updateAjaxAttributes(attributes);
-                        attributes.getAjaxCallListeners().add(editor.getSaveDecorator());
-                    }
-                });
-        Link<StylePage> cancelLink =
-                new Link<>("cancel") {
-                    @Override
-                    public void onClick() {
-                        doReturn(StylePage.class);
-                    }
-                };
+            @Override
+            protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                super.updateAjaxAttributes(attributes);
+                attributes.getAjaxCallListeners().add(editor.getSaveDecorator());
+            }
+        });
+        Link<StylePage> cancelLink = new Link<>("cancel") {
+            @Override
+            public void onClick() {
+                doReturn(StylePage.class);
+            }
+        };
         add(cancelLink);
 
         // add additional style components that may be used e.g. by extensions
-        List<StyleComponentInfo> compInfo =
-                getGeoServerApplication().getBeansOfType(StyleComponentInfo.class);
+        List<StyleComponentInfo> compInfo = getGeoServerApplication().getBeansOfType(StyleComponentInfo.class);
         for (StyleComponentInfo comp : compInfo) {
             try {
                 Class<?> component = comp.getComponentClass();
-                Component c =
-                        (Component)
-                                component
-                                        .getConstructor(String.class, AbstractStylePage.class)
-                                        .newInstance(comp.getId(), this);
+                Component c = (Component) component
+                        .getConstructor(String.class, AbstractStylePage.class)
+                        .newInstance(comp.getId(), this);
                 styleForm.add(c);
             } catch (Exception e) {
                 throw new WicketRuntimeException(e);
@@ -521,8 +484,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
     }
 
     private String sldErrorWithLineNo(Exception e) {
-        if (e instanceof SAXParseException) {
-            SAXParseException se = (SAXParseException) e;
+        if (e instanceof SAXParseException se) {
             return "line " + se.getLineNumber() + ": " + e.getLocalizedMessage();
         }
         String message = e.getLocalizedMessage();
@@ -536,19 +498,17 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
     List<Exception> validateSLD() {
         try {
             final String style = editor.getInput();
-            List<Exception> validationErrors =
-                    styleHandler()
-                            .validate(
-                                    new ByteArrayInputStream(style.getBytes()),
-                                    null,
-                                    getCatalog().getResourcePool().getEntityResolver());
-            StyledLayerDescriptor sld =
-                    styleHandler()
-                            .parse(
-                                    new ByteArrayInputStream(style.getBytes()),
-                                    null,
-                                    null,
-                                    getCatalog().getResourcePool().getEntityResolver());
+            List<Exception> validationErrors = styleHandler()
+                    .validate(
+                            new ByteArrayInputStream(style.getBytes()),
+                            null,
+                            getCatalog().getResourcePool().getEntityResolver());
+            StyledLayerDescriptor sld = styleHandler()
+                    .parse(
+                            new ByteArrayInputStream(style.getBytes()),
+                            null,
+                            null,
+                            getCatalog().getResourcePool().getEntityResolver());
             // If there are more than one layers, assume this is a style group and validate
             // accordingly.
             if (sld.getStyledLayers().length > 1) {
@@ -566,8 +526,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
     }
 
     public void setRawStyle(Reader in) throws IOException {
-        try (BufferedReader bin =
-                in instanceof BufferedReader ? (BufferedReader) in : new BufferedReader(in)) {
+        try (BufferedReader bin = in instanceof BufferedReader br ? br : new BufferedReader(in)) {
             StringBuilder builder = new StringBuilder();
             String line = null;
             while ((line = bin.readLine()) != null) {
@@ -580,12 +539,11 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
     }
 
     /**
-     * Check for an original CSS version of the style created by the old CSS extension
-     * (pre-pluggable styles). If a CSS style is found, recover it if the derived SLD has not
-     * subsequently been manually edited.
+     * Check for an original CSS version of the style created by the old CSS extension (pre-pluggable styles). If a CSS
+     * style is found, recover it if the derived SLD has not subsequently been manually edited.
      *
-     * <p>The recovery is accomplished by updating the catalog to point to the original CSS file,
-     * and changing the style's format to "css".
+     * <p>The recovery is accomplished by updating the catalog to point to the original CSS file, and changing the
+     * style's format to "css".
      *
      * @param si The {@link StyleInfo} for which to check for and potentially recover a CSS version.
      */
@@ -649,13 +607,11 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
     /** Called when a configuration change requires updating an inactive tab */
     protected void configurationChanged() {
-        tabbedPanel.visitChildren(
-                StyleEditTabPanel.class,
-                (component, visit) -> {
-                    if (component instanceof StyleEditTabPanel) {
-                        ((StyleEditTabPanel) component).configurationChanged();
-                    }
-                });
+        tabbedPanel.visitChildren(StyleEditTabPanel.class, (component, visit) -> {
+            if (component instanceof StyleEditTabPanel panel) {
+                panel.configurationChanged();
+            }
+        });
     }
 
     /** Subclasses must implement to define the submit behavior */
@@ -727,38 +683,35 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
              * setDefaultFormProcessing(false) is used so that we do not do a full submit
              * (with validation + saving to the catalog)
              */
-            AjaxSubmitLink link =
-                    new AjaxSubmitLink(linkId) {
-                        private static final long serialVersionUID = 1L;
+            AjaxSubmitLink link = new AjaxSubmitLink(linkId) {
+                @Serial
+                private static final long serialVersionUID = 1L;
 
-                        @Override
-                        public void onSubmit(AjaxRequestTarget target) {
-                            if (getLayerInfo() == null || getLayerInfo().getId() == null) {
-                                switch (index) {
-                                    case 1:
-                                        tabbedPanel.error(
-                                                "Cannot show Publishing options: No Layers available.");
-                                        addFeedbackPanels(target);
-                                        return;
-                                    case 2:
-                                        tabbedPanel.error(
-                                                "Cannot show Layer Preview: No Layers available.");
-                                        addFeedbackPanels(target);
-                                        return;
-                                    case 3:
-                                        tabbedPanel.error(
-                                                "Cannot show Attribute Preview: No Layers available.");
-                                        addFeedbackPanels(target);
-                                        return;
-                                    default:
-                                        break;
-                                }
-                            }
-
-                            setSelectedTab(index);
-                            target.add(tabbedPanel);
+                @Override
+                public void onSubmit(AjaxRequestTarget target) {
+                    if (getLayerInfo() == null || getLayerInfo().getId() == null) {
+                        switch (index) {
+                            case 1:
+                                tabbedPanel.error("Cannot show Publishing options: No Layers available.");
+                                addFeedbackPanels(target);
+                                return;
+                            case 2:
+                                tabbedPanel.error("Cannot show Layer Preview: No Layers available.");
+                                addFeedbackPanels(target);
+                                return;
+                            case 3:
+                                tabbedPanel.error("Cannot show Attribute Preview: No Layers available.");
+                                addFeedbackPanels(target);
+                                return;
+                            default:
+                                break;
                         }
-                    };
+                    }
+
+                    setSelectedTab(index);
+                    target.add(tabbedPanel);
+                }
+            };
             link.setDefaultFormProcessing(false);
             return link;
         }
@@ -768,76 +721,65 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         @Override
         public void onClick(AjaxRequestTarget target) {
             String input = editor.getInput();
-            dialog.setTitle(
-                    new ParamResourceModel("insertImage", AbstractStylePage.this.getPage()));
+            dialog.setTitle(new ParamResourceModel("insertImage", AbstractStylePage.this.getPage()));
             dialog.setInitialWidth(385);
             dialog.setInitialHeight(175);
 
-            dialog.showOkCancel(
-                    target,
-                    new GeoServerDialog.DialogDelegate() {
+            dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
-                        private ChooseImagePanel imagePanel;
+                private ChooseImagePanel imagePanel;
 
-                        @Override
-                        protected Component getContents(String id) {
-                            return imagePanel =
-                                    new ChooseImagePanel(
-                                            id,
-                                            styleModel.getObject().getWorkspace(),
-                                            styleHandler().imageExtensions());
+                @Override
+                protected Component getContents(String id) {
+                    return imagePanel = new ChooseImagePanel(
+                            id,
+                            styleModel.getObject().getWorkspace(),
+                            styleHandler().imageExtensions());
+                }
+
+                @Override
+                protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                    String imageFileName = imagePanel.getChoice();
+                    if (Strings.isEmpty(imageFileName)) {
+                        FileUpload fu = imagePanel.getFileUpload();
+                        imageFileName = fu.getClientFileName();
+                        int teller = 0;
+                        GeoServerDataDirectory dd =
+                                GeoServerApplication.get().getBeanOfType(GeoServerDataDirectory.class);
+                        Resource res = dd.getStyles(styleModel.getObject().getWorkspace(), imageFileName);
+                        while (Resources.exists(res)) {
+                            imageFileName = getImageFileName(fu, ++teller);
+                            res = dd.getStyles(styleModel.getObject().getWorkspace(), imageFileName);
                         }
-
-                        @Override
-                        protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
-                            String imageFileName = imagePanel.getChoice();
-                            if (Strings.isEmpty(imageFileName)) {
-                                FileUpload fu = imagePanel.getFileUpload();
-                                imageFileName = fu.getClientFileName();
-                                int teller = 0;
-                                GeoServerDataDirectory dd =
-                                        GeoServerApplication.get()
-                                                .getBeanOfType(GeoServerDataDirectory.class);
-                                Resource res =
-                                        dd.getStyles(
-                                                styleModel.getObject().getWorkspace(),
-                                                imageFileName);
-                                while (Resources.exists(res)) {
-                                    imageFileName = getImageFileName(fu, ++teller);
-                                    res =
-                                            dd.getStyles(
-                                                    styleModel.getObject().getWorkspace(),
-                                                    imageFileName);
-                                }
-                                try (InputStream is = fu.getInputStream()) {
-                                    try (OutputStream os = res.out()) {
-                                        IOUtils.copy(is, os);
-                                    }
-                                } catch (IOException e) {
-                                    error(e.getMessage());
-                                    target.add(imagePanel.getFeedback());
-                                    return false;
-                                }
+                        try (InputStream is = fu.getInputStream()) {
+                            try (OutputStream os = res.out()) {
+                                IOUtils.copy(is, os);
                             }
-                            String code = StringEscapeUtils.escapeEcmaScript(imageFileName);
-                            code = styleHandler().insertImageCode(code, input);
-                            target.appendJavaScript("replaceSelection('" + code + "');");
-                            return true;
-                        }
-
-                        private String getImageFileName(FileUpload fu, int tellerParam) {
-                            return FilenameUtils.getBaseName(fu.getClientFileName())
-                                    + "."
-                                    + tellerParam
-                                    + "."
-                                    + FilenameUtils.getExtension(fu.getClientFileName());
-                        }
-
-                        @Override
-                        public void onError(AjaxRequestTarget target, Form<?> form) {
+                        } catch (IOException e) {
+                            error(e.getMessage());
                             target.add(imagePanel.getFeedback());
+                            return false;
                         }
-                    });
+                    }
+                    String code = StringEscapeUtils.escapeEcmaScript(imageFileName);
+                    code = styleHandler().insertImageCode(code, input);
+                    target.appendJavaScript("replaceSelection('" + code + "');");
+                    return true;
+                }
+
+                private String getImageFileName(FileUpload fu, int tellerParam) {
+                    return FilenameUtils.getBaseName(fu.getClientFileName())
+                            + "."
+                            + tellerParam
+                            + "."
+                            + FilenameUtils.getExtension(fu.getClientFileName());
+                }
+
+                @Override
+                public void onError(AjaxRequestTarget target, Form<?> form) {
+                    target.add(imagePanel.getFeedback());
+                }
+            });
         }
     }
 
@@ -852,40 +794,36 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
             } else {
                 defaultColor = "#000";
             }
-            dialog.setTitle(
-                    new ParamResourceModel("chooseColor", AbstractStylePage.this.getPage()));
+            dialog.setTitle(new ParamResourceModel("chooseColor", AbstractStylePage.this.getPage()));
             dialog.setInitialWidth(410);
             dialog.setInitialHeight(270);
 
-            dialog.showOkCancel(
-                    target,
-                    new GeoServerDialog.DialogDelegate() {
+            dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
-                        private ChooseColorPanel chooserPanel;
+                private ChooseColorPanel chooserPanel;
 
-                        @Override
-                        protected Component getContents(String id) {
-                            return chooserPanel = new ChooseColorPanel(id, defaultColor);
+                @Override
+                protected Component getContents(String id) {
+                    return chooserPanel = new ChooseColorPanel(id, defaultColor);
+                }
+
+                @Override
+                protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                    String chosenColor = chooserPanel.chooser.getModelObject();
+                    if (chosenColor != null) {
+                        // it's easy to double click a color in the editor,
+                        // but it
+                        // won't select the #, work around that to allow a
+                        // seamless
+                        // editing experience
+                        if (HEX_COLOR.matcher("#" + defaultColor).matches() && chosenColor.startsWith("#")) {
+                            chosenColor = chosenColor.substring(1);
                         }
-
-                        @Override
-                        protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
-                            String chosenColor = chooserPanel.chooser.getModelObject();
-                            if (chosenColor != null) {
-                                // it's easy to double click a color in the editor,
-                                // but it
-                                // won't select the #, work around that to allow a
-                                // seamless
-                                // editing experience
-                                if (HEX_COLOR.matcher("#" + defaultColor).matches()
-                                        && chosenColor.startsWith("#")) {
-                                    chosenColor = chosenColor.substring(1);
-                                }
-                                target.appendJavaScript("replaceSelection('" + chosenColor + "');");
-                            }
-                            return true;
-                        }
-                    });
+                        target.appendJavaScript("replaceSelection('" + chosenColor + "');");
+                    }
+                    return true;
+                }
+            });
         }
     }
 }

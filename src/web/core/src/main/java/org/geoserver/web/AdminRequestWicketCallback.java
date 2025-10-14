@@ -32,8 +32,7 @@ public class AdminRequestWicketCallback implements WicketCallback {
     public void onAfterTargetsDetached() {}
 
     @Override
-    public void onRequestTargetSet(
-            RequestCycle cycle, Class<? extends IRequestablePage> requestTarget) {
+    public void onRequestTargetSet(RequestCycle cycle, Class<? extends IRequestablePage> requestTarget) {
         // for non secured page requests we abort the admin request since they are meant to be
         // accessible anonymously, so we don't consider this an admin request
         if (requestTarget == null
@@ -45,8 +44,8 @@ public class AdminRequestWicketCallback implements WicketCallback {
 
     private boolean isAdmin() {
         Session session = Session.get();
-        if (session instanceof GeoServerSession) {
-            return ((GeoServerSession) session).isAdmin();
+        if (session instanceof GeoServerSession serverSession) {
+            return serverSession.isAdmin();
         }
         return false;
     }

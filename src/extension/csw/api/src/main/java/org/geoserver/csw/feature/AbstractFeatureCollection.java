@@ -18,12 +18,11 @@ import org.geotools.feature.collection.DelegateFeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
 /**
- * A derivation of GeoTools {@link org.geotools.feature.collection.AbstractFeatureCollection} that
- * works on top of complex features
+ * A derivation of GeoTools {@link org.geotools.feature.collection.AbstractFeatureCollection} that works on top of
+ * complex features
  *
  * @author Jody Garnett (Refractions Research Inc)
  * @author Andrea Aime - GeoSolutions
- * @source $URL$
  */
 public abstract class AbstractFeatureCollection<T extends FeatureType, F extends Feature>
         implements FeatureCollection<T, F> {
@@ -50,8 +49,8 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
     }
 
     /**
-     * Clean up after any resources associated with this iteartor in a manner similar to JDO
-     * collections. Example (safe) use:
+     * Clean up after any resources associated with this iteartor in a manner similar to JDO collections. Example (safe)
+     * use:
      *
      * <pre>
      * <code>
@@ -92,8 +91,8 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
      * Open a resource based Iterator, we will call close( iterator ).
      *
      * <p>Please subclass to provide your own iterator for the ResourceCollection, note <code>
-     * iterator()</code> is implemented to call <code>open()</code> and track the results in for
-     * later <code>purge()</code>.
+     * iterator()</code> is implemented to call <code>open()</code> and track the results in for later <code>purge()
+     * </code>.
      *
      * @return Iterator based on resource use
      */
@@ -102,22 +101,19 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
     /**
      * Please override to cleanup after your own iterators, and any used resources.
      *
-     * <p>As an example if the iterator was working off a File then the inputstream should be
-     * closed.
+     * <p>As an example if the iterator was working off a File then the inputstream should be closed.
      *
-     * <p>Subclass must call super.close( close ) to allow the list of open iterators to be
-     * adjusted.
+     * <p>Subclass must call super.close( close ) to allow the list of open iterators to be adjusted.
      *
-     * @param close Iterator, will not be <code>null</code>
+     * @param close Iterator, will not be {@code null}
      */
     protected abstract void closeIterator(Iterator<F> close);
 
     /**
      * Close any outstanding resources released by this resources.
      *
-     * <p>This method should be used with great caution, it is however available to allow the use of
-     * the ResourceCollection with algorthims that are unaware of the need to close iterators after
-     * use.
+     * <p>This method should be used with great caution, it is however available to allow the use of the
+     * ResourceCollection with algorthims that are unaware of the need to close iterators after use.
      *
      * <p>Example of using a normal Collections utility method:
      *
@@ -132,8 +128,7 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
     public void purge() {
         for (Iterator i = open.iterator(); i.hasNext(); ) {
             Object resource = i.next();
-            if (resource instanceof Iterator) {
-                Iterator resourceIterator = (Iterator) resource;
+            if (resource instanceof Iterator resourceIterator) {
                 try {
                     closeIterator(resourceIterator);
                 } catch (Throwable e) {
@@ -148,8 +143,7 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
     /**
      * Removes all of the elements from this collection (optional operation).
      *
-     * @throws UnsupportedOperationException if the <tt>clear</tt> method is not supported by this
-     *     collection.
+     * @throws UnsupportedOperationException if the <tt>clear</tt> method is not supported by this collection.
      */
     public void clear() {
         Iterator<F> e = iterator();
@@ -166,8 +160,8 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
     /**
      * Returns <tt>true</tt> if this collection contains the specified element. <tt></tt>.
      *
-     * <p>This implementation iterates over the elements in the collection, checking each element in
-     * turn for equality with the specified element.
+     * <p>This implementation iterates over the elements in the collection, checking each element in turn for equality
+     * with the specified element.
      *
      * @param o object to be checked for containment in this collection.
      * @return <tt>true</tt> if this collection contains the specified element.
@@ -189,14 +183,12 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
     }
 
     /**
-     * Returns <tt>true</tt> if this collection contains all of the elements in the specified
-     * collection.
+     * Returns <tt>true</tt> if this collection contains all of the elements in the specified collection.
      *
      * <p>
      *
      * @param c collection to be checked for containment in this collection.
-     * @return <tt>true</tt> if this collection contains all of the elements in the specified
-     *     collection.
+     * @return <tt>true</tt> if this collection contains all of the elements in the specified collection.
      * @throws NullPointerException if the specified collection is null.
      * @see #contains(Object)
      */
@@ -230,8 +222,7 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
     /**
      * Please implement!
      *
-     * <p>Note: If you return a ResourceIterator, the default implemntation of close( Iterator )
-     * will know what to do.
+     * <p>Note: If you return a ResourceIterator, the default implemntation of close( Iterator ) will know what to do.
      */
     @SuppressWarnings("unchecked")
     public final Iterator<F> iterator() {
@@ -290,8 +281,7 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
 
     @Override
     public void accepts(
-            org.geotools.api.feature.FeatureVisitor visitor,
-            org.geotools.api.util.ProgressListener progress) {
+            org.geotools.api.feature.FeatureVisitor visitor, org.geotools.api.util.ProgressListener progress) {
         Iterator<F> iterator = null;
         if (progress == null) progress = new NullProgressListener();
         try {

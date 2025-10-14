@@ -12,7 +12,7 @@
  * the book and help support the authors, development of more free code,
  * and the JSP/Servlet/J2EE community.
  *
- * Modified by David Winslow <dwinslow@openplans.org> on 2007-12-13.
+ * Modified by David Winslow dwinslow@openplans.org on 2007-12-13.
  */
 
 package org.geoserver.filters;
@@ -37,14 +37,12 @@ public class GZIPFilter implements Filter {
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
             throws IOException, ServletException {
-        if (req instanceof HttpServletRequest) {
-            HttpServletRequest request = (HttpServletRequest) req;
+        if (req instanceof HttpServletRequest request) {
             HttpServletResponse response = (HttpServletResponse) res;
             String ae = request.getHeader("accept-encoding");
             if (ae != null && ae.indexOf("gzip") != -1) {
-                GZIPResponseWrapper wrappedResponse =
-                        new GZIPResponseWrapper(
-                                response, myCompressedTypes, request.getRequestURL().toString());
+                GZIPResponseWrapper wrappedResponse = new GZIPResponseWrapper(
+                        response, myCompressedTypes, request.getRequestURL().toString());
                 chain.doFilter(req, wrappedResponse);
                 wrappedResponse.finishResponse();
                 return;
@@ -58,8 +56,7 @@ public class GZIPFilter implements Filter {
     public void init(FilterConfig filterConfig) {
         try {
             String compressedTypes = filterConfig.getInitParameter("compressed-types");
-            String[] typeNames =
-                    (compressedTypes == null ? new String[0] : compressedTypes.split(","));
+            String[] typeNames = (compressedTypes == null ? new String[0] : compressedTypes.split(","));
             // TODO: Are commas allowed in mimetypes?
             myCompressedTypes = new HashSet<>();
             for (String typeName : typeNames) {

@@ -7,6 +7,7 @@ package org.geoserver.csw.records;
 
 import java.util.Collection;
 import java.util.List;
+import org.geoserver.csw.util.PropertyPath;
 import org.geotools.api.feature.ComplexAttribute;
 import org.geotools.api.feature.Feature;
 import org.geotools.api.feature.Property;
@@ -51,16 +52,15 @@ public class RecordsTest {
     @Test
     public void testBuildCSWRecord() throws Exception {
         CSWRecordBuilder rb = new CSWRecordBuilder();
-        rb.addElement("identifier", "00180e67-b7cf-40a3-861d-b3a09337b195");
-        rb.addElement("title", "Image2000 Product 1 (at1) Multispectral");
-        rb.addElement("modified", "2004-10-04 00:00:00");
+        rb.addElement(PropertyPath.fromDotPath("identifier"), "00180e67-b7cf-40a3-861d-b3a09337b195");
+        rb.addElement(PropertyPath.fromDotPath("title"), "Image2000 Product 1 (at1) Multispectral");
+        rb.addElement(PropertyPath.fromDotPath("modified"), "2004-10-04 00:00:00");
         rb.addElement(
-                "abstract",
+                PropertyPath.fromDotPath("abstract"),
                 "IMAGE2000 product 1 individual orthorectified scenes. IMAGE2000 was  produced from ETM+ Landsat 7 satellite data and provides a consistent European coverage of individual orthorectified scenes in national map projection systems.");
-        rb.addElement("type", "dataset");
-        rb.addElement("subject", "imagery", "baseMaps", "earthCover");
-        rb.addBoundingBox(
-                new ReferencedEnvelope(14.05, 17.24, 46.46, 28.42, DefaultGeographicCRS.WGS84));
+        rb.addElement(PropertyPath.fromDotPath("type"), "dataset");
+        rb.addElement(PropertyPath.fromDotPath("subject"), "imagery", "baseMaps", "earthCover");
+        rb.addBoundingBox(new ReferencedEnvelope(14.05, 17.24, 46.46, 28.42, DefaultGeographicCRS.WGS84));
         Feature f = rb.build(null);
 
         assertRecordElement(f, "identifier", "00180e67-b7cf-40a3-861d-b3a09337b195");
@@ -72,8 +72,7 @@ public class RecordsTest {
                 "IMAGE2000 product 1 individual orthorectified scenes. IMAGE2000 was  produced from ETM+ Landsat 7 satellite data and provides a consistent European coverage of individual orthorectified scenes in national map projection systems.");
         assertRecordElement(f, "type", "dataset");
         assertRecordElement(f, "subject", "imagery", "baseMaps", "earthCover");
-        assertBBox(
-                f, new ReferencedEnvelope(14.05, 17.24, 46.46, 28.42, DefaultGeographicCRS.WGS84));
+        assertBBox(f, new ReferencedEnvelope(14.05, 17.24, 46.46, 28.42, DefaultGeographicCRS.WGS84));
     }
 
     private void assertBBox(Feature f, ReferencedEnvelope... envelopes) throws Exception {
@@ -81,8 +80,7 @@ public class RecordsTest {
         MultiPolygon geometry = (MultiPolygon) p.getValue();
         @SuppressWarnings("unchecked")
         List<ReferencedEnvelope> featureEnvelopes =
-                (List<ReferencedEnvelope>)
-                        p.getUserData().get(GenericRecordBuilder.ORIGINAL_BBOXES);
+                (List<ReferencedEnvelope>) p.getUserData().get(GenericRecordBuilder.ORIGINAL_BBOXES);
         ReferencedEnvelope total = null;
         for (int i = 0; i < envelopes.length; i++) {
             Assert.assertEquals(envelopes[i], featureEnvelopes.get(i));

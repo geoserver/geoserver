@@ -101,8 +101,7 @@ public abstract class AbstractUserGroupService extends AbstractGeoServerSecurity
      * @see org.geoserver.security.GeoserverUserGroupService#createUserObject(java.lang.String, java.lang.String, boolean)
      */
     @Override
-    public GeoServerUser createUserObject(String username, String password, boolean isEnabled)
-            throws IOException {
+    public GeoServerUser createUserObject(String username, String password, boolean isEnabled) throws IOException {
         GeoServerUser user = new GeoServerUser(username);
         user.setEnabled(isEnabled);
         user.setPassword(password);
@@ -113,8 +112,7 @@ public abstract class AbstractUserGroupService extends AbstractGeoServerSecurity
      * @see org.geoserver.security.GeoserverUserGroupService#createGroupObject(java.lang.String, boolean)
      */
     @Override
-    public GeoServerUserGroup createGroupObject(String groupname, boolean isEnabled)
-            throws IOException {
+    public GeoServerUserGroup createGroupObject(String groupname, boolean isEnabled) throws IOException {
         GeoServerUserGroup group = new GeoServerUserGroup(groupname);
         group.setEnabled(isEnabled);
         return group;
@@ -180,8 +178,7 @@ public abstract class AbstractUserGroupService extends AbstractGeoServerSecurity
      * @see org.springframework.security.core.userdetails.UserDetailsService#loadUserByUsername(java.lang.String)
      */
     @Override
-    public UserDetails loadUserByUsername(String username)
-            throws UsernameNotFoundException, DataAccessException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException {
         GeoServerUser user = null;
         try {
             user = getUserByUsername(username);
@@ -231,14 +228,12 @@ public abstract class AbstractUserGroupService extends AbstractGeoServerSecurity
     }
 
     @Override
-    public SortedSet<GeoServerUser> getUsersHavingPropertyValue(String propname, String propvalue)
-            throws IOException {
+    public SortedSet<GeoServerUser> getUsersHavingPropertyValue(String propname, String propvalue) throws IOException {
         return helper.getUsersHavingPropertyValue(propname, propvalue);
     }
 
     @Override
-    public int getUserCountHavingPropertyValue(String propname, String propvalue)
-            throws IOException {
+    public int getUserCountHavingPropertyValue(String propname, String propvalue) throws IOException {
         return helper.getUserCountHavingPropertyValue(propname, propvalue);
     }
 }

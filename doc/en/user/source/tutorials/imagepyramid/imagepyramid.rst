@@ -56,7 +56,7 @@ Once that is done the user will be asked to choose a coverage, which will be nam
 
    *Choosing the coverage for publishing*
 
-Publish the layer, and then setup the layer parameter `USE_JAI_IMAGEREAD` to `false` to get better scalability:
+Publish the layer, and then setup the layer parameter `USE_IMAGEN_IMAGEREAD` to `false` to get better scalability:
 
 .. figure:: layerParams.png
    :align: center

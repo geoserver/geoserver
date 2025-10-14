@@ -52,11 +52,10 @@ import org.geotools.api.style.UserLayer;
 import org.geotools.filter.FilterAttributeExtractor;
 
 /**
- * A style visitor whose purpose is to extract a minimal palette for the provided style. This is to
- * be used when no antialiasing is used, since that would introduce various colors not included in
- * the style. <br>
- * At the moment the palette is extracted only if external graphics aren't referenced (a future
- * version may learn to extract a palette merging the ones of the external graphics).
+ * A style visitor whose purpose is to extract a minimal palette for the provided style. This is to be used when no
+ * antialiasing is used, since that would introduce various colors not included in the style. <br>
+ * At the moment the palette is extracted only if external graphics aren't referenced (a future version may learn to
+ * extract a palette merging the ones of the external graphics).
  */
 public class PaletteExtractor extends FilterAttributeExtractor implements StyleVisitor {
     public static final Color TRANSPARENT = new Color(255, 255, 255, 0);
@@ -82,8 +81,7 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
 
     public boolean canComputePalette() {
         // hard fail conditions
-        if (translucentSymbolizers || externalGraphicsSymbolizers || unknownColors || rasterUsed)
-            return false;
+        if (translucentSymbolizers || externalGraphicsSymbolizers || unknownColors || rasterUsed) return false;
 
         // impossible to devise a palette (0 shuold never happen, but you never know...)
         if (colors.isEmpty() || colors.size() > 256) return false;
@@ -98,11 +96,7 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
         int[] cmap = new int[colors.size()];
         int i = 0;
         for (Color color : colors) {
-            cmap[i++] =
-                    (color.getAlpha() << 24)
-                            | (color.getRed() << 16)
-                            | (color.getGreen() << 8)
-                            | color.getBlue();
+            cmap[i++] = (color.getAlpha() << 24) | (color.getRed() << 16) | (color.getGreen() << 8) | color.getBlue();
         }
 
         // have a nice looking palette
@@ -128,18 +122,16 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
             cmap = temp;
         }
 
-        return new IndexColorModel(
-                bits, cmap.length, cmap, 0, true, transparentIndex, DataBuffer.TYPE_BYTE);
+        return new IndexColorModel(bits, cmap.length, cmap, 0, true, transparentIndex, DataBuffer.TYPE_BYTE);
     }
 
     /**
-     * Checks whether translucency is used in the provided expression. Raises the flag of used
-     * translucency unless it's possible to determine it's not.
+     * Checks whether translucency is used in the provided expression. Raises the flag of used translucency unless it's
+     * possible to determine it's not.
      */
     void handleOpacity(Expression opacity) {
         if (opacity == null) return;
-        if (opacity instanceof Literal) {
-            Literal lo = (Literal) opacity;
+        if (opacity instanceof Literal lo) {
             double value = lo.evaluate(null, Double.class).doubleValue();
             translucentSymbolizers = translucentSymbolizers || value != 1;
         } else {
@@ -149,13 +141,12 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
     }
 
     /**
-     * Adds a color to the color set, and raises the unknown color flag if the color is an
-     * expression other than a literal
+     * Adds a color to the color set, and raises the unknown color flag if the color is an expression other than a
+     * literal
      */
     void handleColor(Expression color) {
         if (color == null) return;
-        if (color instanceof Literal) {
-            Literal lc = (Literal) color;
+        if (color instanceof Literal lc) {
             String rgbColor = lc.evaluate(null, String.class);
             colors.add(Color.decode(rgbColor));
         } else {
@@ -192,10 +183,10 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
         StyledLayer[] layers = sld.getStyledLayers();
 
         for (StyledLayer layer : layers) {
-            if (layer instanceof NamedLayer) {
-                ((NamedLayer) layer).accept(this);
-            } else if (layer instanceof UserLayer) {
-                ((UserLayer) layer).accept(this);
+            if (layer instanceof NamedLayer namedLayer) {
+                namedLayer.accept(this);
+            } else if (layer instanceof UserLayer userLayer) {
+                userLayer.accept(this);
             }
         }
     }
@@ -226,24 +217,24 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
     /** @see org.geotools.api.style.StyleVisitor#visit(org.geotools.api.style.Symbolizer) */
     @Override
     public void visit(Symbolizer sym) {
-        if (sym instanceof PointSymbolizer) {
-            visit((PointSymbolizer) sym);
+        if (sym instanceof PointSymbolizer symbolizer) {
+            visit(symbolizer);
         }
 
-        if (sym instanceof LineSymbolizer) {
-            visit((LineSymbolizer) sym);
+        if (sym instanceof LineSymbolizer symbolizer) {
+            visit(symbolizer);
         }
 
-        if (sym instanceof PolygonSymbolizer) {
-            visit((PolygonSymbolizer) sym);
+        if (sym instanceof PolygonSymbolizer symbolizer) {
+            visit(symbolizer);
         }
 
-        if (sym instanceof TextSymbolizer) {
-            visit((TextSymbolizer) sym);
+        if (sym instanceof TextSymbolizer symbolizer) {
+            visit(symbolizer);
         }
 
-        if (sym instanceof RasterSymbolizer) {
-            visit((RasterSymbolizer) sym);
+        if (sym instanceof RasterSymbolizer symbolizer) {
+            visit(symbolizer);
         }
     }
 

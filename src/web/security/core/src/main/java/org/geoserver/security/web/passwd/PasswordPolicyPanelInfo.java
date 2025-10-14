@@ -10,12 +10,11 @@ import org.geoserver.security.validation.PasswordValidatorImpl;
 import org.geoserver.security.web.SecurityNamedServicePanelInfo;
 
 /**
- * Configuration panel extension for {@link PasswordPolicy}.
+ * Configuration panel extension for {@link PasswordPolicyConfig}.
  *
  * @author Justin Deoliveira, OpenGeo
  */
-public class PasswordPolicyPanelInfo
-        extends SecurityNamedServicePanelInfo<PasswordPolicyConfig, PasswordPolicyPanel> {
+public class PasswordPolicyPanelInfo extends SecurityNamedServicePanelInfo<PasswordPolicyConfig, PasswordPolicyPanel> {
 
     public PasswordPolicyPanelInfo() {
         setComponentClass(PasswordPolicyPanel.class);

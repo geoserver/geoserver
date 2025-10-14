@@ -21,8 +21,8 @@ import org.geoserver.security.web.SecurityNamedServiceTabbedPanel;
  *
  * @author Justin Deoliveira, OpenGeo
  */
-public class RoleServicePanel<T extends SecurityRoleServiceConfig>
-        extends SecurityNamedServicePanel<T> implements SecurityNamedServiceTabbedPanel<T> {
+public class RoleServicePanel<T extends SecurityRoleServiceConfig> extends SecurityNamedServicePanel<T>
+        implements SecurityNamedServiceTabbedPanel<T> {
 
     public RoleServicePanel(String id, IModel<T> model) {
         super(id, model);
@@ -34,13 +34,12 @@ public class RoleServicePanel<T extends SecurityRoleServiceConfig>
     @Override
     public List<ITab> createTabs(final IModel<T> model) {
         List<ITab> tabs = new ArrayList<>();
-        tabs.add(
-                new AbstractTab(new StringResourceModel("roles", this, null)) {
-                    @Override
-                    public Panel getPanel(String panelId) {
-                        return new RolePanel(panelId, model.getObject().getName());
-                    }
-                });
+        tabs.add(new AbstractTab(new StringResourceModel("roles", this, null)) {
+            @Override
+            public Panel getPanel(String panelId) {
+                return new RolePanel(panelId, model.getObject().getName());
+            }
+        });
         return tabs;
     }
 

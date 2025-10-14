@@ -5,18 +5,15 @@
  */
 package org.geoserver.gwc.wms;
 
-import java.util.List;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geowebcache.io.codec.ImageDecoderContainer;
 import org.geowebcache.io.codec.ImageDecoderImpl;
-import org.geowebcache.io.codec.ImageIOInitializer;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
 /**
- * Test class ensuring that the GWC beans stored in the geowebcache-wmsservice-context.xml file are
- * correctly loaded.
+ * Test class ensuring that the GWC beans stored in the geowebcache-wmsservice-context.xml file are correctly loaded.
  *
  * @author Nicola Lagomarsini geosolutions
  */
@@ -27,16 +24,6 @@ public class TestFullWMSBeans extends GeoServerSystemTestSupport {
         // Selection of the test application context
         @SuppressWarnings("PMD.CloseResource")
         ApplicationContext context = applicationContext;
-        // Check that the initializer is present
-        Object obj = context.getBean("ioInitializer");
-        Assert.assertNotNull(obj);
-        Assert.assertTrue(obj instanceof ImageIOInitializer);
-
-        // Ensure that the excluded spis are present
-        ImageIOInitializer init = (ImageIOInitializer) obj;
-        List<String> excluded = init.getExcludedSpis();
-        Assert.assertNotNull(excluded);
-        Assert.assertFalse(excluded.isEmpty());
 
         // Ensure that a decoder is present
         Object obj2 = context.getBean("TIFFDecoder");

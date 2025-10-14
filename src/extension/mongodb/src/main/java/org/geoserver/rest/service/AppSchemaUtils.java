@@ -21,11 +21,9 @@ import org.springframework.http.HttpStatus;
 /** Util methods for AppSchema centric logic. */
 class AppSchemaUtils {
 
-    /**
-     * Returns the internal MongoDB store from the App-Schema data store with the provided store ID.
-     */
-    static MongoDataStore getMongoStoreById(
-            String storeId, final AppSchemaDataAccess appSchemaStore) throws IOException {
+    /** Returns the internal MongoDB store from the App-Schema data store with the provided store ID. */
+    static MongoDataStore getMongoStoreById(String storeId, final AppSchemaDataAccess appSchemaStore)
+            throws IOException {
         MongoDataStore mongoStore = null;
         List<Name> names = appSchemaStore.getNames();
         for (Name ename : names) {
@@ -33,8 +31,7 @@ class AppSchemaUtils {
             if (mapping.getSourceDatastoreId().filter(id -> storeId.equals(id)).isPresent()) {
                 DataAccess internalStore = mapping.getSource().getDataStore();
                 if (!(internalStore instanceof MongoDataStore)) {
-                    throw new RestException(
-                            "Internal Datastore is not a MongoDB one.", HttpStatus.BAD_REQUEST);
+                    throw new RestException("Internal Datastore is not a MongoDB one.", HttpStatus.BAD_REQUEST);
                 }
                 mongoStore = (MongoDataStore) internalStore;
                 break;
@@ -47,8 +44,7 @@ class AppSchemaUtils {
     }
 
     /** Returns the MongoDB schemas in use based on the store id. */
-    static Set<String> extractUsedSchemas(AppSchemaDataAccess appSchemaStore, String storeId)
-            throws IOException {
+    static Set<String> extractUsedSchemas(AppSchemaDataAccess appSchemaStore, String storeId) throws IOException {
         final List<Name> names = appSchemaStore.getNames();
         final Set<String> schemas = new HashSet<>();
         for (Name en : names) {
@@ -63,8 +59,7 @@ class AppSchemaUtils {
     }
 
     /** Returns the store ID for the MongoDataStore provided instance. */
-    static String getStoreId(AppSchemaDataAccess appSchemaStore, MongoDataStore mongoStore)
-            throws IOException {
+    static String getStoreId(AppSchemaDataAccess appSchemaStore, MongoDataStore mongoStore) throws IOException {
         for (Name etn : appSchemaStore.getNames()) {
             FeatureTypeMapping featureTypeMapping = appSchemaStore.getMappingByName(etn);
             if (Objects.equals(mongoStore, featureTypeMapping.getSource().getDataStore()))
@@ -74,23 +69,21 @@ class AppSchemaUtils {
     }
 
     /**
-     * Retrieves the internal MongoDB datastores for the provided mapping names and fills the
-     * provided MongoDataStore Set with the result.
+     * Retrieves the internal MongoDB datastores for the provided mapping names and fills the provided MongoDataStore
+     * Set with the result.
      *
      * @param appSchemaStore the App-Schema data store
      * @param names the Mapping names
      * @param mongoStores the Set to fill with the internal MongoDB datastores found
      */
     static void fillMongoStoresSet(
-            final AppSchemaDataAccess appSchemaStore,
-            List<Name> names,
-            final Set<MongoDataStore> mongoStores)
+            final AppSchemaDataAccess appSchemaStore, List<Name> names, final Set<MongoDataStore> mongoStores)
             throws IOException {
         for (Name ename : names) {
             FeatureTypeMapping mapping = appSchemaStore.getMappingByName(ename);
             DataAccess internalStore = mapping.getSource().getDataStore();
-            if (internalStore instanceof MongoDataStore) {
-                mongoStores.add((MongoDataStore) internalStore);
+            if (internalStore instanceof MongoDataStore store) {
+                mongoStores.add(store);
             }
         }
     }

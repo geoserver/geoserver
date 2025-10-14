@@ -46,23 +46,21 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.core.io.Resource;
 
 /**
- * Base class for the remote clients implementations. Those implementations will be plugged into
- * GeoServer through the Spring app-context.
+ * Base class for the remote clients implementations. Those implementations will be plugged into GeoServer through the
+ * Spring app-context.
  *
  * @author Alessio Fabiani, GeoSolutions
  */
 public abstract class RemoteProcessClient implements DisposableBean, ExtensionPriority {
 
     /** The LOGGER */
-    public static final Logger LOGGER = Logging.getLogger(XMPPClient.class.getPackage().getName());
+    public static final Logger LOGGER =
+            Logging.getLogger(XMPPClient.class.getPackage().getName());
 
     /** Whether this client is enabled or not from configuration */
     private boolean enabled;
 
-    /**
-     * Whenever more instances of the client are available, they should be ordered by ascending
-     * priority
-     */
+    /** Whenever more instances of the client are available, they should be ordered by ascending priority */
     private int priority;
 
     /** The {@link RemoteProcessFactoryConfigurationWatcher} implementation */
@@ -70,13 +68,11 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
 
     /** The registered {@link RemoteProcessFactoryListener} */
     private Set<RemoteProcessFactoryListener> remoteFactoryListeners =
-            Collections.newSetFromMap(
-                    new ConcurrentHashMap<RemoteProcessFactoryListener, Boolean>());
+            Collections.newSetFromMap(new ConcurrentHashMap<RemoteProcessFactoryListener, Boolean>());
 
     /** The registered {@link RemoteProcessClientListener} */
     private Set<RemoteProcessClientListener> remoteClientListeners =
-            Collections.newSetFromMap(
-                    new ConcurrentHashMap<RemoteProcessClientListener, Boolean>());
+            Collections.newSetFromMap(new ConcurrentHashMap<RemoteProcessClientListener, Boolean>());
 
     /** The available Registered Processing Machines */
     protected List<RemoteMachineDescriptor> registeredProcessingMachines =
@@ -149,8 +145,7 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
     }
 
     /** @param registeredProcessingMachines the registeredProcessingMachines to set */
-    public void setRegisteredProcessingMachines(
-            List<RemoteMachineDescriptor> registeredProcessingMachines) {
+    public void setRegisteredProcessingMachines(List<RemoteMachineDescriptor> registeredProcessingMachines) {
         this.registeredProcessingMachines = registeredProcessingMachines;
     }
 
@@ -202,10 +197,7 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
 
     /** Invoke the {@link RemoteProcessClient} execution */
     public abstract String execute(
-            Name name,
-            Map<String, Object> input,
-            Map<String, Object> metadata,
-            ProgressListener monitor)
+            Name name, Map<String, Object> input, Map<String, Object> metadata, ProgressListener monitor)
             throws Exception;
 
     /** Accessor for global geoserver instance from the test application context. */
@@ -223,8 +215,7 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
         // create a datastore to import into
         Catalog cat = getGeoServer().getCatalog();
 
-        WorkspaceInfo ws =
-                wsName != null ? cat.getWorkspaceByName(wsName) : cat.getDefaultWorkspace();
+        WorkspaceInfo ws = wsName != null ? cat.getWorkspaceByName(wsName) : cat.getDefaultWorkspace();
         DataStoreInfo ds = cat.getFactory().createDataStore();
         ds.setWorkspace(ws);
         ds.setName(dsName);
@@ -258,24 +249,21 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
             throws Exception {
         Importer importer = getImporter();
 
-        LOGGER.fine(
-                " - [Remote Process Client - importLayer] Importer Context from Spatial File:"
-                        + file.getAbsolutePath());
+        LOGGER.fine(" - [Remote Process Client - importLayer] Importer Context from Spatial File:"
+                + file.getAbsolutePath());
 
         WorkspaceInfo ws = getGeoServer().getCatalog().getDefaultWorkspace();
         if (targetWorkspace != null) {
             LOGGER.fine(
-                    " - [Remote Process Client - importLayer] Looking for Workspace in the catalog:"
-                            + targetWorkspace);
+                    " - [Remote Process Client - importLayer] Looking for Workspace in the catalog:" + targetWorkspace);
 
             ws = getGeoServer().getCatalog().getWorkspaceByName(targetWorkspace);
         }
 
         final FileData spatialData = FileData.createFromFile(file);
-        ImportContext context =
-                (store != null
-                        ? importer.createContext(spatialData, ws, store)
-                        : importer.createContext(spatialData, ws));
+        ImportContext context = (store != null
+                ? importer.createContext(spatialData, ws, store)
+                : importer.createContext(spatialData, ws));
 
         LayerInfo layer = null;
         if (context.getTasks() != null && context.getTasks().size() > 0) {
@@ -324,8 +312,8 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
                             calculateBounds(resource, getGeoServer().getCatalog());
 
                             // WARNING: The Importer Configures Just The First Layer
-                            if (resource instanceof CoverageInfo) {
-                                CoverageInfo ci = ((CoverageInfo) resource);
+                            if (resource instanceof CoverageInfo info) {
+                                CoverageInfo ci = info;
 
                                 GridCoverageReader reader = null;
                                 try {
@@ -339,22 +327,19 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
                                         ci.setNativeCoverageName(nativeCoverageName);
 
                                         // if(type.equals("application/x-netcdf")) Set Dimensions
-                                        if (reader instanceof StructuredGridCoverage2DReader) {
-                                            StructuredGridCoverage2DReader structuredReader =
-                                                    ((StructuredGridCoverage2DReader) reader);
+                                        if (reader instanceof StructuredGridCoverage2DReader dReader) {
+                                            StructuredGridCoverage2DReader structuredReader = dReader;
 
                                             // Getting dimension descriptors
                                             final List<DimensionDescriptor> dimensionDescriptors =
-                                                    structuredReader.getDimensionDescriptors(
-                                                            nativeCoverageName);
+                                                    structuredReader.getDimensionDescriptors(nativeCoverageName);
                                             DimensionDescriptor timeDimension = null;
                                             DimensionDescriptor elevationDimension = null;
                                             final List<DimensionDescriptor> customDimensions =
                                                     new ArrayList<DimensionDescriptor>();
 
                                             // Collect dimension Descriptor info
-                                            for (DimensionDescriptor dimensionDescriptor :
-                                                    dimensionDescriptors) {
+                                            for (DimensionDescriptor dimensionDescriptor : dimensionDescriptors) {
                                                 if (dimensionDescriptor
                                                         .getName()
                                                         .equalsIgnoreCase(ResourceInfo.TIME)) {
@@ -369,8 +354,7 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
                                             }
 
                                             final boolean defaultTimeNeeded = timeDimension != null;
-                                            final boolean defaultElevationNeeded =
-                                                    elevationDimension != null;
+                                            final boolean defaultElevationNeeded = elevationDimension != null;
 
                                             // Create Default Time Dimension If Needed
                                             if (defaultTimeNeeded) {
@@ -388,8 +372,7 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
                                                 di.setPresentation(DimensionPresentation.LIST);
                                                 di.setUnits("EPSG:5030");
                                                 di.setUnitSymbol("m");
-                                                di.setAttribute(
-                                                        elevationDimension.getStartAttribute());
+                                                di.setAttribute(elevationDimension.getStartAttribute());
                                                 ci.getMetadata().put(ResourceInfo.ELEVATION, di);
                                             }
                                         }
@@ -431,12 +414,10 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
      *     <br>
      *     Otherwise, this method has no effect.<br>
      *     <br>
-     *     If the metadata entry "recalculate-bounds"="true" exists, it will be removed after bounds
-     *     are calculated.<br>
+     *     If the metadata entry "recalculate-bounds"="true" exists, it will be removed after bounds are calculated.<br>
      *     <br>
-     *     This is currently used by csv / kml uploads that have a geometry that may be the result
-     *     of a transform, and by JDBC imports which wait to calculate bounds until after the layers
-     *     that will be imported have been chosen.
+     *     This is currently used by csv / kml uploads that have a geometry that may be the result of a transform, and
+     *     by JDBC imports which wait to calculate bounds until after the layers that will be imported have been chosen.
      *
      * @param resourceInfo The resource to calculate the bounds for
      */
@@ -449,8 +430,7 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
             CatalogBuilder cb = new CatalogBuilder(catalog);
             ReferencedEnvelope nativeBounds = cb.getNativeBounds(resourceInfo);
             resourceInfo.setNativeBoundingBox(nativeBounds);
-            resourceInfo.setLatLonBoundingBox(
-                    cb.getLatLonBounds(nativeBounds, resourceInfo.getCRS()));
+            resourceInfo.setLatLonBoundingBox(cb.getLatLonBounds(nativeBounds, resourceInfo.getCRS()));
             // catalog.save(resourceInfo);
 
             // Do not re-calculate on subsequent imports

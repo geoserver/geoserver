@@ -26,22 +26,20 @@ public class FlushSafeFilterTest {
     public void testRetrieveSameOutputStream() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
-        MockFilterChain chain =
-                new MockFilterChain() {
-                    @Override
-                    public void doFilter(ServletRequest request, ServletResponse response)
-                            throws IOException, ServletException {
-                        // make sure repeated calls to get output stream give us back the same
-                        // output stream,
-                        // e.g., that we're not creating a new wrapper each time
-                        try (ServletOutputStream os1 = response.getOutputStream();
-                                ServletOutputStream os2 = response.getOutputStream()) {
-                            assertSame(os1, os2);
-                            assertTrue(
-                                    os1 instanceof FlushSafeResponse.FlushSafeServletOutputStream);
-                        }
-                    }
-                };
+        MockFilterChain chain = new MockFilterChain() {
+            @Override
+            public void doFilter(ServletRequest request, ServletResponse response)
+                    throws IOException, ServletException {
+                // make sure repeated calls to get output stream give us back the same
+                // output stream,
+                // e.g., that we're not creating a new wrapper each time
+                try (ServletOutputStream os1 = response.getOutputStream();
+                        ServletOutputStream os2 = response.getOutputStream()) {
+                    assertSame(os1, os2);
+                    assertTrue(os1 instanceof FlushSafeResponse.FlushSafeServletOutputStream);
+                }
+            }
+        };
 
         // run the filter
         FlushSafeFilter filter = new FlushSafeFilter();
@@ -53,69 +51,65 @@ public class FlushSafeFilterTest {
     public void testFlushAfterClose() throws ServletException, IOException {
         // prepare request, response, and chain
         MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response =
-                new MockHttpServletResponse() {
+        MockHttpServletResponse response = new MockHttpServletResponse() {
 
-                    ServletOutputStream os;
+            ServletOutputStream os;
 
-                    @Override
-                    @SuppressWarnings("PMD.CloseResource")
-                    public ServletOutputStream getOutputStream() {
-                        if (os == null) {
-                            final ServletOutputStream wrapped = super.getOutputStream();
-                            os =
-                                    new ServletOutputStream() {
-                                        @Override
-                                        public boolean isReady() {
-                                            return wrapped.isReady();
-                                        }
-
-                                        @Override
-                                        public void setWriteListener(WriteListener writeListener) {
-                                            wrapped.setWriteListener(writeListener);
-                                        }
-
-                                        boolean closed;
-
-                                        @Override
-                                        public void write(int b) throws IOException {
-                                            wrapped.write(b);
-                                        }
-
-                                        @Override
-                                        public void close() throws IOException {
-                                            closed = true;
-                                            wrapped.close();
-                                        }
-
-                                        @Override
-                                        public void flush() throws IOException {
-                                            if (closed) {
-                                                // we should never reach this code
-                                                throw new RuntimeException(
-                                                        "Aaarg, I'm already closed, your JVM shall die now!");
-                                            }
-                                            wrapped.flush();
-                                        }
-                                    };
+            @Override
+            @SuppressWarnings("PMD.CloseResource")
+            public ServletOutputStream getOutputStream() {
+                if (os == null) {
+                    final ServletOutputStream wrapped = super.getOutputStream();
+                    os = new ServletOutputStream() {
+                        @Override
+                        public boolean isReady() {
+                            return wrapped.isReady();
                         }
 
-                        return os;
-                    }
-                };
-        MockFilterChain chain =
-                new MockFilterChain() {
-                    @Override
-                    @SuppressWarnings("PMD.CloseResource")
-                    public void doFilter(ServletRequest request, ServletResponse response)
-                            throws IOException, ServletException {
-                        ServletOutputStream os = response.getOutputStream();
-                        os.print("Some random text");
-                        os.close();
-                        // ka-blam! (or not?)
-                        os.flush();
-                    }
-                };
+                        @Override
+                        public void setWriteListener(WriteListener writeListener) {
+                            wrapped.setWriteListener(writeListener);
+                        }
+
+                        boolean closed;
+
+                        @Override
+                        public void write(int b) throws IOException {
+                            wrapped.write(b);
+                        }
+
+                        @Override
+                        public void close() throws IOException {
+                            closed = true;
+                            wrapped.close();
+                        }
+
+                        @Override
+                        public void flush() throws IOException {
+                            if (closed) {
+                                // we should never reach this code
+                                throw new RuntimeException("Aaarg, I'm already closed, your JVM shall die now!");
+                            }
+                            wrapped.flush();
+                        }
+                    };
+                }
+
+                return os;
+            }
+        };
+        MockFilterChain chain = new MockFilterChain() {
+            @Override
+            @SuppressWarnings("PMD.CloseResource")
+            public void doFilter(ServletRequest request, ServletResponse response)
+                    throws IOException, ServletException {
+                ServletOutputStream os = response.getOutputStream();
+                os.print("Some random text");
+                os.close();
+                // ka-blam! (or not?)
+                os.flush();
+            }
+        };
 
         // run the filter
         FlushSafeFilter filter = new FlushSafeFilter();

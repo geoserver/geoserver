@@ -29,7 +29,6 @@ import org.springframework.context.ApplicationContext;
  * Unit test for {@link WMSExtensions}
  *
  * @author Gabriel Roldan (TOPP)
- * @version $Id$
  */
 public class WMSExtensionsTest {
 
@@ -66,8 +65,7 @@ public class WMSExtensionsTest {
         // I'm not so pleasant with this block of code as it implies knowing how
         // the internals of GeoServerExtensions work
         expect(mockContext.getBeanNamesForType(ExtensionFilter.class)).andReturn(new String[0]);
-        expect(mockContext.getBeanNamesForType(GetMapOutputFormat.class))
-                .andReturn(new String[] {});
+        expect(mockContext.getBeanNamesForType(GetMapOutputFormat.class)).andReturn(new String[] {});
         expect(mockContext.getBeanNamesForType(ExtensionProvider.class)).andReturn(new String[0]);
         expect(mockContext.getBeanNamesForType(ExtensionFilter.class)).andReturn(new String[0]);
         expect(mockContext.isSingleton(anyObject())).andReturn(false).anyTimes();
@@ -114,8 +112,7 @@ public class WMSExtensionsTest {
         replay(mockProducer);
 
         // note the lookup shall be case insensitive..
-        GetMapOutputFormat producer =
-                WMSExtensions.findMapProducer("ImaGe/FaKeForMat", mockContext); // call#1
+        GetMapOutputFormat producer = WMSExtensions.findMapProducer("ImaGe/FaKeForMat", mockContext); // call#1
         assertSame(mockProducer, producer);
 
         producer = WMSExtensions.findMapProducer("notARegisteredFormat", mockContext); // call#2

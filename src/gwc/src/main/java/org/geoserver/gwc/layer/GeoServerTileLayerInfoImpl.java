@@ -8,6 +8,7 @@ package org.geoserver.gwc.layer;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import com.google.common.collect.ImmutableSet;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,6 +43,7 @@ import org.geowebcache.util.GWCVars;
 public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLayerInfo {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 8277055420849712230L;
 
     private static final Logger LOGGER = Logging.getLogger(GeoServerTileLayerInfoImpl.class);
@@ -356,9 +358,7 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
     @Override
     public boolean isAutoCacheStyles() {
         ParameterFilter filter = getParameterFilter("STYLES");
-        return filter != null
-                && filter instanceof StyleParameterFilter
-                && ((StyleParameterFilter) filter).getStyles() == null;
+        return filter != null && filter instanceof StyleParameterFilter spf && spf.getStyles() == null;
     }
 
     /** @see org.geoserver.gwc.layer.GeoServerTileLayerInfo#setAutoCacheStyles(boolean) */
@@ -409,8 +409,7 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
 
     @Override
     public boolean addParameterFilter(ParameterFilter parameterFilter) {
-        return parameterFiltersMap.put(parameterFilter.getKey().toUpperCase(), parameterFilter)
-                != null;
+        return parameterFiltersMap.put(parameterFilter.getKey().toUpperCase(), parameterFilter) != null;
     }
 
     @Override

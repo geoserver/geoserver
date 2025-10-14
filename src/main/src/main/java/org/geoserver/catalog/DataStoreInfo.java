@@ -21,16 +21,14 @@ public interface DataStoreInfo extends StoreInfo {
     /**
      * Returns the underlying datastore instance.
      *
-     * <p>This method does I/O and is potentially blocking. The <tt>listener</tt> may be used to
-     * report the progress of loading the datastore and also to report any errors or warnings that
-     * occur.
+     * <p>This method performs I/O and is potentially blocking. The {@code listener} may be used to report the progress
+     * of loading the datastore and also to report any errors or warnings that occur.
      *
-     * @param listener A progress listener, may be <code>null</code>.
+     * @param listener A progress listener, may be {@code null}.
      * @return The datastore.
      * @throws IOException Any I/O problems.
      */
-    DataAccess<? extends FeatureType, ? extends Feature> getDataStore(ProgressListener listener)
-            throws IOException;
+    DataAccess<? extends FeatureType, ? extends Feature> getDataStore(ProgressListener listener) throws IOException;
 
     /**
      * DataStoreInfo equality is based on the following properties:
@@ -39,25 +37,11 @@ public interface DataStoreInfo extends StoreInfo {
      *   <li>{@link StoreInfo#getId()}
      *   <li>{@link StoreInfo#getName()}
      *   <li>{@link StoreInfo#getDescription()}
-     *   <li>{@link StoreInfo#getNamespace()}
+     *   <li>{@link StoreInfo#getWorkspace()}
      *   <li>{@link StoreInfo#isEnabled()}
      *   <li>{@link DataStoreInfo#getConnectionParameters()}
      * </ul>
      */
     @Override
     boolean equals(Object obj);
-
-    /**
-     * Returns the feature resource from the store with the given name.
-     *
-     * <p><tt>listener</tt> is used to report the progress of finding the resource.
-     *
-     * @throws IOException Any I/O problems.
-     */
-    // FeatureResource getResource(String name, ProgressListener listener)
-    //        throws IOException;
-
-    /** Returns the feature resources provided by the store. */
-    // Iterator<FeatureResource> getResources(ProgressListener monitor)
-    //    throws IOException;
 }

@@ -4,6 +4,7 @@
  */
 package org.geoserver.backuprestore.web;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -14,10 +15,11 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.GeoServerApplication;
 
 /** @author aless */
-public class BackupRestoreWorkspacesIndexModel
-        extends LoadableDetachableModel<List<WorkspaceInfo>> {
+public class BackupRestoreWorkspacesIndexModel extends LoadableDetachableModel<List<WorkspaceInfo>> {
 
+    @Serial
     private static final long serialVersionUID = 4052600127151308001L;
+
     private ResourceFilePanel resourceFilePanel;
 
     public BackupRestoreWorkspacesIndexModel(ResourceFilePanel resourceFilePanel) {

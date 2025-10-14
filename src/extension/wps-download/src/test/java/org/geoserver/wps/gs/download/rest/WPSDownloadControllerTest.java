@@ -44,16 +44,16 @@ public class WPSDownloadControllerTest extends GeoServerSystemTestSupport {
     public void testUpdateConfiguration() throws Exception {
         // send over update
         String xml =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DownloadServiceConfiguration>\n"
-                        + "  <maxFeatures>123</maxFeatures>\n"
-                        + "  <rasterSizeLimits>456000</rasterSizeLimits>\n"
-                        + "  <writeLimits>789000</writeLimits>\n"
-                        + "  <hardOutputLimit>123456</hardOutputLimit>\n"
-                        + "  <compressionLevel>8</compressionLevel>\n"
-                        + "  <maxAnimationFrames>56</maxAnimationFrames>\n"
-                        + "</DownloadServiceConfiguration>";
-        MockHttpServletResponse response =
-                putAsServletResponse("/rest/services/wps/download", xml, "text/xml");
+                """
+                <?xml version="1.0" encoding="UTF-8"?><DownloadServiceConfiguration>
+                  <maxFeatures>123</maxFeatures>
+                  <rasterSizeLimits>456000</rasterSizeLimits>
+                  <writeLimits>789000</writeLimits>
+                  <hardOutputLimit>123456</hardOutputLimit>
+                  <compressionLevel>8</compressionLevel>
+                  <maxAnimationFrames>56</maxAnimationFrames>
+                </DownloadServiceConfiguration>""";
+        MockHttpServletResponse response = putAsServletResponse("/rest/services/wps/download", xml, "text/xml");
         assertEquals(200, response.getStatus());
 
         DownloadServiceConfigurationWatcher watcher =
@@ -67,8 +67,7 @@ public class WPSDownloadControllerTest extends GeoServerSystemTestSupport {
         assertEquals(56, config.getMaxAnimationFrames());
     }
 
-    public void checkValue(Document dom, XpathEngine xpath, String attribute, String expected)
-            throws XpathException {
+    public void checkValue(Document dom, XpathEngine xpath, String attribute, String expected) throws XpathException {
         assertEquals(expected, xpath.evaluate("DownloadServiceConfiguration/" + attribute, dom));
     }
 }

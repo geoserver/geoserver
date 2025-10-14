@@ -56,18 +56,11 @@ public class DescribeLayerTest extends WMSTestSupport {
 
     @Test
     public void testWorkspaceQualified() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "cite/wms?service=wms&version=1.1.1&request=DescribeLayer"
-                                + "&layers=PrimitiveGeoFeature",
-                        true);
+        Document dom = getAsDOM(
+                "cite/wms?service=wms&version=1.1.1&request=DescribeLayer" + "&layers=PrimitiveGeoFeature", true);
         assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName());
 
-        dom =
-                getAsDOM(
-                        "sf/wms?service=wms&version=1.1.1&request=DescribeLayer"
-                                + "&layers=PrimitiveGeoFeature",
-                        true);
+        dom = getAsDOM("sf/wms?service=wms&version=1.1.1&request=DescribeLayer" + "&layers=PrimitiveGeoFeature", true);
         // print(dom);
         assertEquals("WMS_DescribeLayerResponse", dom.getDocumentElement().getNodeName());
 
@@ -86,10 +79,7 @@ public class DescribeLayerTest extends WMSTestSupport {
     @Test
     public void testWorkspaceNonQualifiedUrl() throws Exception {
         Document dom =
-                getAsDOM(
-                        "wms?service=wms&version=1.1.1&request=DescribeLayer"
-                                + "&layers=PrimitiveGeoFeature",
-                        true);
+                getAsDOM("wms?service=wms&version=1.1.1&request=DescribeLayer" + "&layers=PrimitiveGeoFeature", true);
         // print(dom);
         assertEquals("WMS_DescribeLayerResponse", dom.getDocumentElement().getNodeName());
 
@@ -107,10 +97,7 @@ public class DescribeLayerTest extends WMSTestSupport {
 
     @Test
     public void testImageWMSLayer() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "wms?service=wms&version=1.1.1&request=DescribeLayer&layers=wcs:World",
-                        true);
+        Document dom = getAsDOM("wms?service=wms&version=1.1.1&request=DescribeLayer&layers=wcs:World", true);
         // print(dom);
         assertEquals("WMS_DescribeLayerResponse", dom.getDocumentElement().getNodeName());
 
@@ -127,10 +114,7 @@ public class DescribeLayerTest extends WMSTestSupport {
 
     @Test
     public void testImageWMSLayerWorkspaceQualified() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "wcs/wms?service=wms&version=1.1.1&request=DescribeLayer&layers=World",
-                        true);
+        Document dom = getAsDOM("wcs/wms?service=wms&version=1.1.1&request=DescribeLayer&layers=World", true);
         // print(dom);
         assertEquals("WMS_DescribeLayerResponse", dom.getDocumentElement().getNodeName());
 

@@ -8,15 +8,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.ServiceInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Service;
 import org.geoserver.web.ServiceDescription;
 import org.geoserver.web.ServiceDescriptionProvider;
 import org.geoserver.web.ServiceLinkDescription;
 import org.geoserver.wfs.WFSInfo;
+import org.geoserver.wfs.WFSResourceVoter;
 import org.geoserver.wfs.WebFeatureService;
 import org.geoserver.wfs.WebFeatureService20;
 import org.geotools.util.logging.Logging;
@@ -33,6 +36,7 @@ public class WFSServiceDescriptionProvider extends ServiceDescriptionProvider {
     Catalog catalog;
 
     public WFSServiceDescriptionProvider(GeoServer gs) {
+        super(SERVICE_TYPE);
         this.geoserver = gs;
         catalog = gs.getCatalog();
     }
@@ -56,13 +60,23 @@ public class WFSServiceDescriptionProvider extends ServiceDescriptionProvider {
     }
 
     @Override
-    public List<ServiceDescription> getServices(
-            WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
+    protected boolean isAvailable(String serviceType, ServiceInfo serviceInfo, PublishedInfo layerInfo) {
+        if (layerInfo != null && layerInfo instanceof LayerInfo info) {
+            WFSResourceVoter voter = new WFSResourceVoter();
+            if (voter.hideService(serviceType, info.getResource())) {
+                return false;
+            }
+        }
+        return super.isAvailable(serviceType, serviceInfo, layerInfo);
+    }
+
+    @Override
+    public List<ServiceDescription> getServices(WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
         List<ServiceDescription> descriptions = new ArrayList<>();
 
         WFSInfo info = info(workspaceInfo, layerInfo);
         if (workspaceInfo != null || geoserver.getGlobal().isGlobalServices()) {
-            descriptions.add(description(SERVICE_TYPE, info, workspaceInfo, layerInfo));
+            descriptions.add(description(serviceType, info, workspaceInfo, layerInfo));
         }
         return descriptions;
     }
@@ -76,8 +90,7 @@ public class WFSServiceDescriptionProvider extends ServiceDescriptionProvider {
     }
 
     @Override
-    public List<ServiceLinkDescription> getServiceLinks(
-            WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
+    public List<ServiceLinkDescription> getServiceLinks(WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
         List<ServiceLinkDescription> links = new ArrayList<>();
 
         if (workspaceInfo == null && !geoserver.getGlobal().isGlobalServices()) {
@@ -97,13 +110,12 @@ public class WFSServiceDescriptionProvider extends ServiceDescriptionProvider {
                 }
 
                 if (link != null) {
-                    links.add(
-                            new ServiceLinkDescription(
-                                    SERVICE_TYPE,
-                                    service.getVersion(),
-                                    link,
-                                    workspaceInfo != null ? workspaceInfo.getName() : null,
-                                    layerInfo != null ? layerInfo.getName() : null));
+                    links.add(new ServiceLinkDescription(
+                            serviceType,
+                            service.getVersion(),
+                            link,
+                            workspaceInfo != null ? workspaceInfo.getName() : null,
+                            layerInfo != null ? layerInfo.getName() : null));
                 }
             }
         }

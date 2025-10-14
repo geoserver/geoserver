@@ -64,8 +64,7 @@ public class DefaultWebProcessingService implements WebProcessingService, Applic
 
     /** @see org.geoserver.wps.WebProcessingService#describeProcess */
     @Override
-    public ProcessDescriptionsType describeProcess(DescribeProcessType request)
-            throws WPSException {
+    public ProcessDescriptionsType describeProcess(DescribeProcessType request) throws WPSException {
         return new DescribeProcess(getServiceInfo(), context).run(request);
     }
 
@@ -77,8 +76,7 @@ public class DefaultWebProcessingService implements WebProcessingService, Applic
 
     /** @see org.geoserver.wps.WebProcessingService#getSchema */
     @Override
-    public void getSchema(HttpServletRequest request, HttpServletResponse response)
-            throws WPSException {
+    public void getSchema(HttpServletRequest request, HttpServletResponse response) throws WPSException {
         new GetSchema(getServiceInfo()).run(request, response);
     }
 

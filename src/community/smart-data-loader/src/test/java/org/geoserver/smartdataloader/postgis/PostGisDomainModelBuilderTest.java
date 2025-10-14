@@ -11,6 +11,6 @@ public class PostGisDomainModelBuilderTest extends DomainModelBuilderTest {
 
     @Override
     protected JDBCTestSetup createTestSetup() {
-        return new MeteoStationsPostGISTestSetUp();
+        return new MeteoStationsPostGISTestSetUp("meteo_int8_db.sql");
     }
 }

@@ -18,7 +18,6 @@ public interface XMPPMessage {
 
     public boolean canHandle(Map<String, String> signalArgs);
 
-    public void handleSignal(
-            XMPPClient xmppClient, Packet packet, Message message, Map<String, String> signalArgs)
+    public void handleSignal(XMPPClient xmppClient, Packet packet, Message message, Map<String, String> signalArgs)
             throws IOException;
 }

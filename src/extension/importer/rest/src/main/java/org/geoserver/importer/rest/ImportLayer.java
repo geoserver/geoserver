@@ -7,8 +7,8 @@ package org.geoserver.importer.rest;
 import org.geoserver.catalog.LayerInfo;
 
 /**
- * Wrapper for {@link org.geoserver.catalog.LayerInfo} to be used when converting the importer JSON
- * representation to a Layer
+ * Wrapper for {@link org.geoserver.catalog.LayerInfo} to be used when converting the importer JSON representation to a
+ * Layer
  */
 public class ImportLayer {
     LayerInfo layer;

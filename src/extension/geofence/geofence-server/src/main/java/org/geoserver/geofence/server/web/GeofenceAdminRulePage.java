@@ -5,6 +5,7 @@
 package org.geoserver.geofence.server.web;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,6 +36,7 @@ import org.springframework.dao.DuplicateKeyException;
 
 public class GeofenceAdminRulePage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = -1652083500548496180L;
 
     protected DropDownChoice<String> userChoice, roleChoice, workspaceChoice;
@@ -49,19 +51,19 @@ public class GeofenceAdminRulePage extends GeoServerSecuredPage {
         form.add(new TextField<Integer>("priority").setRequired(true));
 
         form.add(roleChoice = new DropDownChoice<>("roleName", getRoleNames()));
-        roleChoice.add(
-                new OnChangeAjaxBehavior() {
+        roleChoice.add(new OnChangeAjaxBehavior() {
 
-                    private static final long serialVersionUID = -8846522500239968004L;
+            @Serial
+            private static final long serialVersionUID = -8846522500239968004L;
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        userChoice.setChoices(getUserNames(roleChoice.getConvertedInput()));
-                        form.getModelObject().setUserName(null);
-                        userChoice.modelChanged();
-                        target.add(userChoice);
-                    }
-                });
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                userChoice.setChoices(getUserNames(roleChoice.getConvertedInput()));
+                form.getModelObject().setUserName(null);
+                userChoice.modelChanged();
+                target.add(userChoice);
+            }
+        });
         roleChoice.setNullValid(true);
 
         form.add(userChoice = new DropDownChoice<>("userName", getUserNames(rule.getRoleName())));
@@ -72,31 +74,28 @@ public class GeofenceAdminRulePage extends GeoServerSecuredPage {
         workspaceChoice.setNullValid(true);
 
         form.add(
-                grantTypeChoice =
-                        new DropDownChoice<>(
-                                "access",
-                                Arrays.asList(AdminGrantType.values()),
-                                new AdminGrantTypeRenderer()));
+                grantTypeChoice = new DropDownChoice<>(
+                        "access", Arrays.asList(AdminGrantType.values()), new AdminGrantTypeRenderer()));
         grantTypeChoice.setRequired(true);
 
-        form.add(
-                new SubmitLink("save") {
+        form.add(new SubmitLink("save") {
 
-                    private static final long serialVersionUID = -6524151967046867889L;
+            @Serial
+            private static final long serialVersionUID = -6524151967046867889L;
 
-                    @Override
-                    public void onSubmit() {
-                        ShortAdminRule rule = (ShortAdminRule) getForm().getModelObject();
-                        try {
-                            rules.save(rule);
-                            doReturn(GeofenceServerAdminPage.class);
-                        } catch (DuplicateKeyException e) {
-                            error(new ResourceModel("GeofenceRulePage.duplicate").getObject());
-                        } catch (Exception exception) {
-                            error(exception);
-                        }
-                    }
-                });
+            @Override
+            public void onSubmit() {
+                ShortAdminRule rule = (ShortAdminRule) getForm().getModelObject();
+                try {
+                    rules.save(rule);
+                    doReturn(GeofenceServerAdminPage.class);
+                } catch (DuplicateKeyException e) {
+                    error(new ResourceModel("GeofenceRulePage.duplicate").getObject());
+                } catch (Exception exception) {
+                    error(exception);
+                }
+            }
+        });
         form.add(new BookmarkablePageLink<>("cancel", GeofenceServerPage.class));
     }
 
@@ -149,6 +148,7 @@ public class GeofenceAdminRulePage extends GeoServerSecuredPage {
 
     protected class AdminGrantTypeRenderer extends ChoiceRenderer<AdminGrantType> {
 
+        @Serial
         private static final long serialVersionUID = -7146780173551842734L;
 
         @Override

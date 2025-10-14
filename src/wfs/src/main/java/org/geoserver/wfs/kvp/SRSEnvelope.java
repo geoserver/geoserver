@@ -5,6 +5,7 @@
  */
 package org.geoserver.wfs.kvp;
 
+import java.io.Serial;
 import org.geotools.api.geometry.MismatchedDimensionException;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.NoSuchAuthorityCodeException;
@@ -12,13 +13,15 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 
 /**
- * A {@link ReferencedEnvelope} subclass that keeps the original SRS after the KVP parse, to ensure
- * we are true to the original SRS when building a BBOX filter
+ * A {@link ReferencedEnvelope} subclass that keeps the original SRS after the KVP parse, to ensure we are true to the
+ * original SRS when building a BBOX filter
  *
  * @author Andrea Aime - GeoSolutions
  */
 class SRSEnvelope extends ReferencedEnvelope {
+    @Serial
     private static final long serialVersionUID = 4510785331988235178L;
+
     String srs;
 
     public SRSEnvelope(double x1, double x2, double y1, double y2, String srs)

@@ -20,18 +20,12 @@ public class RESTIntegrationTest extends OSEORestTestSupport {
         createTest123Collection();
 
         DocumentContext json = getAsJSONPath("ogc/stac/v1/collections/TEST123/queryables", 200);
-        assertEquals(
-                "http://localhost:8080/geoserver/ogc/stac/v1/collections/TEST123/queryables",
-                json.read("$.$id"));
+        assertEquals("http://localhost:8080/geoserver/ogc/stac/v1/collections/TEST123/queryables", json.read("$.$id"));
 
         // only has the basic built-ins
-        assertEquals(
-                STACQueryablesBuilder.GEOMETRY_SCHEMA_REF, json.read("properties.geometry.$ref"));
-        assertEquals(
-                STACQueryablesBuilder.DATETIME_SCHEMA_REF, json.read("properties.datetime.$ref"));
-        assertEquals(
-                STACQueryablesBuilder.COLLECTION_SCHEMA_REF,
-                json.read("properties.collection.$ref"));
+        assertEquals(STACQueryablesBuilder.GEOMETRY_SCHEMA_REF, json.read("properties.geometry.$ref"));
+        assertEquals(STACQueryablesBuilder.DATETIME_SCHEMA_REF, json.read("properties.datetime.$ref"));
+        assertEquals(STACQueryablesBuilder.COLLECTION_SCHEMA_REF, json.read("properties.collection.$ref"));
         assertEquals(STACQueryablesBuilder.ID_SCHEMA_REF, json.read("properties.id.$ref"));
     }
 }

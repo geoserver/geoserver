@@ -21,9 +21,12 @@ public class RESTServiceDescriptionProvider extends org.geoserver.web.ServiceDes
     /** Service type to cross-link between service description and service link description. */
     public static final String SERVICE_TYPE = "REST";
 
+    public RESTServiceDescriptionProvider() {
+        super(SERVICE_TYPE);
+    }
+
     @Override
-    public List<ServiceDescription> getServices(
-            WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
+    public List<ServiceDescription> getServices(WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
         List<ServiceDescription> descriptions = new ArrayList<>();
 
         Localizer localizer = GeoServerApplication.get().getResourceSettings().getLocalizer();
@@ -32,50 +35,41 @@ public class RESTServiceDescriptionProvider extends org.geoserver.web.ServiceDes
         if (workspaceInfo != null) {
             HashMap<String, String> params = new HashMap<>();
             params.put("workspace", workspaceInfo.getName());
-            title =
-                    Text.text(
-                            localizer.getString(
-                                    "RESTServiceDescriptionProvider.workspace",
-                                    null,
-                                    new Model<>(params)));
+            title = Text.text(
+                    localizer.getString("RESTServiceDescriptionProvider.workspace", null, new Model<>(params)));
         } else {
             title = Text.text(localizer.getString("RESTServiceDescriptionProvider.title", null));
         }
         InternationalString description =
                 Text.text(localizer.getString("RESTServiceDescriptionProvider.description", null));
 
-        ServiceDescription restDescription =
-                new ServiceDescription(
-                        SERVICE_TYPE,
-                        title,
-                        description,
-                        true,
-                        true,
-                        workspaceInfo != null ? workspaceInfo.getName() : null,
-                        layerInfo != null ? layerInfo.getName() : null);
+        ServiceDescription restDescription = new ServiceDescription(
+                SERVICE_TYPE,
+                title,
+                description,
+                true,
+                true,
+                workspaceInfo != null ? workspaceInfo.getName() : null,
+                layerInfo != null ? layerInfo.getName() : null);
 
         descriptions.add(restDescription);
         return descriptions;
     }
 
     @Override
-    public List<ServiceLinkDescription> getServiceLinks(
-            WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
+    public List<ServiceLinkDescription> getServiceLinks(WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
 
         List<ServiceLinkDescription> links = new ArrayList<>();
         if (workspaceInfo == null) {
-            links.add(
-                    new ServiceLinkDescription(
-                            SERVICE_TYPE, new Version("1.0.0"), "../rest", null, null, "REST"));
+            links.add(new ServiceLinkDescription(SERVICE_TYPE, new Version("1.0.0"), "../rest", null, null, "REST"));
         } else {
-            links.add(
-                    new ServiceLinkDescription(
-                            SERVICE_TYPE,
-                            new Version("1.0.0"),
-                            "../rest/workspaces/" + workspaceInfo.getName(),
-                            workspaceInfo != null ? workspaceInfo.getName() : null,
-                            null,
-                            "REST"));
+            links.add(new ServiceLinkDescription(
+                    SERVICE_TYPE,
+                    new Version("1.0.0"),
+                    "../rest/workspaces/" + workspaceInfo.getName(),
+                    workspaceInfo != null ? workspaceInfo.getName() : null,
+                    null,
+                    "REST"));
         }
         return links;
     }

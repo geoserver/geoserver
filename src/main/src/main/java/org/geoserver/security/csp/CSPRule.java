@@ -8,6 +8,7 @@ import static com.google.common.base.MoreObjects.firstNonNull;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,11 +24,12 @@ import org.geoserver.security.csp.predicate.CSPPredicatePath;
 import org.geoserver.security.csp.predicate.CSPPredicateProperty;
 
 /**
- * Contains a filter for HTTP requests and the Content Security Policy directives to use for
- * requests matching the filter.
+ * Contains a filter for HTTP requests and the Content Security Policy directives to use for requests matching the
+ * filter.
  */
 public class CSPRule implements CSPPredicate, Serializable {
 
+    @Serial
     private static final long serialVersionUID = 838336921193518382L;
 
     // default values
@@ -42,7 +44,8 @@ public class CSPRule implements CSPPredicate, Serializable {
             Splitter.on(" AND ").trimResults().omitEmptyStrings();
 
     /** Splitter to extract the arguments of a predicate */
-    private static final Splitter COMMA_SPLITTER = Splitter.on(',').trimResults().limit(2);
+    private static final Splitter COMMA_SPLITTER =
+            Splitter.on(',').trimResults().limit(2);
 
     /** The rule name */
     private String name;
@@ -64,12 +67,7 @@ public class CSPRule implements CSPPredicate, Serializable {
 
     /** Creates a new CSPRule object with default values. */
     public CSPRule() {
-        this(
-                DEFAULT_NAME,
-                DEFAULT_DESCRIPTION,
-                DEFAULT_ENABLED,
-                DEFAULT_FILTER,
-                DEFAULT_DIRECTIVES);
+        this(DEFAULT_NAME, DEFAULT_DESCRIPTION, DEFAULT_ENABLED, DEFAULT_FILTER, DEFAULT_DIRECTIVES);
     }
 
     /**
@@ -81,8 +79,7 @@ public class CSPRule implements CSPPredicate, Serializable {
      * @param filter the filter string for matching HTTP requests
      * @param directives the Content-Security-Policy header directives
      */
-    public CSPRule(
-            String name, String description, boolean enabled, String filter, String directives) {
+    public CSPRule(String name, String description, boolean enabled, String filter, String directives) {
         this.name = name;
         this.description = description;
         this.enabled = enabled;
@@ -96,12 +93,7 @@ public class CSPRule implements CSPPredicate, Serializable {
      * @param other the rule to copy
      */
     public CSPRule(CSPRule other) {
-        this(
-                other.getName(),
-                other.getDescription(),
-                other.isEnabled(),
-                other.getFilter(),
-                other.getDirectives());
+        this(other.getName(), other.getDescription(), other.isEnabled(), other.getFilter(), other.getDirectives());
     }
 
     /** @return the rule name */
@@ -155,9 +147,8 @@ public class CSPRule implements CSPPredicate, Serializable {
     }
 
     /**
-     * Parses the filter string into a list of CSPPredicate objects. The predicate will be in a
-     * fixed sort order based on type but the order of predicates within each type will be preserved
-     * from the filter string.
+     * Parses the filter string into a list of CSPPredicate objects. The predicate will be in a fixed sort order based
+     * on type but the order of predicates within each type will be preserved from the filter string.
      *
      * @throws IllegalArgumentException if the filter could not be parsed
      */
@@ -166,8 +157,8 @@ public class CSPRule implements CSPPredicate, Serializable {
     }
 
     /**
-     * Returns true if this rule is enabled and all of its predicates match the provided request.
-     * Otherwise, returns false.
+     * Returns true if this rule is enabled and all of its predicates match the provided request. Otherwise, returns
+     * false.
      *
      * @param request the HTTP request
      * @return whether this rule matches the request
@@ -181,8 +172,7 @@ public class CSPRule implements CSPPredicate, Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof CSPRule) {
-            CSPRule other = (CSPRule) obj;
+        if (obj instanceof CSPRule other) {
             return Objects.equals(this.name, other.name)
                     && Objects.equals(this.description, other.description)
                     && Objects.equals(this.enabled, other.enabled)
@@ -194,8 +184,7 @@ public class CSPRule implements CSPPredicate, Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-                this.name, this.description, this.enabled, this.filter, this.directives);
+        return Objects.hash(this.name, this.description, this.enabled, this.filter, this.directives);
     }
 
     /** Initialize after XStream deserialization */
@@ -209,9 +198,8 @@ public class CSPRule implements CSPPredicate, Serializable {
     }
 
     /**
-     * Parses the filter string into a list of CSPPredicate objects. The predicate will be in a
-     * fixed sort order based on type but the order of predicates within each type will be preserved
-     * from the filter string.
+     * Parses the filter string into a list of CSPPredicate objects. The predicate will be in a fixed sort order based
+     * on type but the order of predicates within each type will be preserved from the filter string.
      *
      * @param filter the filter string
      * @return the parsed predicates
@@ -223,54 +211,45 @@ public class CSPRule implements CSPPredicate, Serializable {
             Map<Integer, List<CSPPredicate>> map = new TreeMap<>();
             for (String pred : PREDICATE_SPLITTER.split(filter)) {
                 int index = pred.indexOf('(');
+                Preconditions.checkArgument(index > 0, "Unable to determine type of predicate: %s", pred);
                 Preconditions.checkArgument(
-                        index > 0, "Unable to determine type of predicate: %s", pred);
-                Preconditions.checkArgument(
-                        pred.charAt(pred.length() - 1) == ')',
-                        "Unable to parse arguments in predicate: %s",
-                        pred);
+                        pred.charAt(pred.length() - 1) == ')', "Unable to parse arguments in predicate: %s", pred);
                 String type = pred.substring(0, index).trim().toUpperCase();
                 String arg = pred.substring(index + 1, pred.length() - 1).trim();
                 List<String> args = COMMA_SPLITTER.splitToList(arg);
                 switch (type) {
                     case "PROP":
-                        Preconditions.checkArgument(
-                                args.size() == 2, "Insuffient arguments in predicate: %s", pred);
+                        Preconditions.checkArgument(args.size() == 2, "Insuffient arguments in predicate: %s", pred);
                         addToMap(map, 1, new CSPPredicateProperty(args.get(0), args.get(1)));
                         break;
                     case "PATH":
                         addToMap(map, 2, new CSPPredicatePath(arg));
                         break;
                     case "PARAM":
-                        Preconditions.checkArgument(
-                                args.size() == 2, "Insuffient arguments in predicate: %s", pred);
+                        Preconditions.checkArgument(args.size() == 2, "Insuffient arguments in predicate: %s", pred);
                         addToMap(map, 3, new CSPPredicateParameter(args.get(0), args.get(1)));
                         break;
                     default:
                         throw new IllegalArgumentException("Unknown type for predicate: " + pred);
                 }
             }
-            return Collections.unmodifiableList(
-                    map.entrySet().stream()
-                            .map(Entry::getValue)
-                            .flatMap(List::stream)
-                            .collect(Collectors.toList()));
+            return Collections.unmodifiableList(map.entrySet().stream()
+                    .map(Entry::getValue)
+                    .flatMap(List::stream)
+                    .collect(Collectors.toList()));
         } catch (Exception e) {
-            throw new IllegalArgumentException(
-                    "Unable to parse predicates from string '" + filter + "'", e);
+            throw new IllegalArgumentException("Unable to parse predicates from string '" + filter + "'", e);
         }
     }
 
     /**
-     * Adds the predicate to the appropriate list in the map, initializing a new list if it doesn't
-     * already exist.
+     * Adds the predicate to the appropriate list in the map, initializing a new list if it doesn't already exist.
      *
      * @param map the map of predicates
      * @param key the map key
      * @param predicate the predicate
      */
-    private static void addToMap(
-            Map<Integer, List<CSPPredicate>> map, int key, CSPPredicate predicate) {
+    private static void addToMap(Map<Integer, List<CSPPredicate>> map, int key, CSPPredicate predicate) {
         map.computeIfAbsent(key, x -> new ArrayList<>()).add(predicate);
     }
 }

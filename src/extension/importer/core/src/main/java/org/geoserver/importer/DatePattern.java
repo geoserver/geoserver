@@ -5,6 +5,7 @@
  */
 package org.geoserver.importer;
 
+import java.io.Serial;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -20,6 +21,7 @@ import java.util.regex.Pattern;
  */
 public class DatePattern implements java.io.Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     final String format;
@@ -29,10 +31,7 @@ public class DatePattern implements java.io.Serializable {
 
     Pattern pattern;
 
-    /**
-     * Constructor with defaults, <tt>forceGmt</tt> set to <tt>true</tt> and <tt>strict</tt> set to
-     * <tt>false</tt>.
-     */
+    /** Constructor with defaults, <tt>forceGmt</tt> set to <tt>true</tt> and <tt>strict</tt> set to <tt>false</tt>. */
     public DatePattern(String format, String regex) {
         this(format, regex, true, false);
     }
@@ -43,8 +42,7 @@ public class DatePattern implements java.io.Serializable {
      * @param format The date format
      * @param regex The regular expression to pull the date out of a another string.
      * @param forceGmt Whether the pattern should assume the GMT time zone.
-     * @param strict Whether or not this pattern must apply the regular expression to match before
-     *     parsing a date.
+     * @param strict Whether or not this pattern must apply the regular expression to match before parsing a date.
      */
     public DatePattern(String format, String regex, boolean forceGmt, boolean strict) {
         this.format = format;

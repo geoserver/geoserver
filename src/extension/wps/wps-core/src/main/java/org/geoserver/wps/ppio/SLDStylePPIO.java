@@ -61,8 +61,7 @@ public class SLDStylePPIO extends XMLPPIO {
         Parser p = getParser(sldConfiguration);
 
         // extract the first style in the first sld
-        StyledLayerDescriptor sld =
-                (StyledLayerDescriptor) p.parse(new StringReader((String) input));
+        StyledLayerDescriptor sld = (StyledLayerDescriptor) p.parse(new StringReader((String) input));
         NamedLayer styledLayer = (NamedLayer) sld.getStyledLayers()[0];
         return styledLayer.getStyles()[0];
     }

@@ -27,8 +27,7 @@ public class ConfigChangeEventMatcher extends EventMatcher {
 
     public static <T extends Info> ConfigChangeEvent configChangeEvent(
             Object source, String id, String name, String workspaceId, Class<T> clazz, Type type) {
-        EasyMock.reportMatcher(
-                new ConfigChangeEventMatcher(source, id, name, workspaceId, clazz, type));
+        EasyMock.reportMatcher(new ConfigChangeEventMatcher(source, id, name, workspaceId, clazz, type));
         return null;
     }
 
@@ -48,8 +47,7 @@ public class ConfigChangeEventMatcher extends EventMatcher {
 
     @Override
     public boolean matches(Object argument) {
-        if (argument instanceof ConfigChangeEvent) {
-            ConfigChangeEvent evt = (ConfigChangeEvent) argument;
+        if (argument instanceof ConfigChangeEvent evt) {
             return super.matches(argument)
                     && nullsafeEquals(this.id, evt.getObjectId())
                     && nullsafeEquals(this.name, evt.getObjectName())

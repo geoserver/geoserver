@@ -30,17 +30,65 @@ import org.geotools.api.style.StyledLayerDescriptor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 
-/** Utility class to work with nested layer groups and extract selected sub-parts of it */
+/**
+ * Utility class to work with nested layer groups and extract selected sub-parts of it.
+ *
+ * <p>This helper provides methods to:
+ *
+ * <ul>
+ *   <li>Navigate through nested layer group structures
+ *   <li>Retrieve all layers, styles, and groups contained within a layer group
+ *   <li>Calculate bounding boxes for layer groups based on their contained layers
+ *   <li>Handle layer group styles and style groups
+ *   <li>Detect recursive references and loops in layer group structures
+ *   <li>Process layer groups for rendering
+ * </ul>
+ *
+ * <p>The helper accommodates different layer group modes (EO, SINGLE, CONTAINER, etc.) and handles special cases such
+ * as null layers with style groups and WMS remote layers.
+ */
 public class LayerGroupHelper {
 
-    protected static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.catalog");
+    protected static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.catalog");
 
     private LayerGroupInfo group;
 
-    /** @param group */
+    final Catalog catalog;
+
+    /**
+     * Constructs a new helper for the specified layer group.
+     *
+     * <p>This constructor uses the default GeoServer catalog obtained via {@link #catalog()}.
+     */
     public LayerGroupHelper(LayerGroupInfo group) {
+        this(catalog(), group);
+    }
+
+    /**
+     * Constructs a new helper for the specified layer group with a specific catalog.
+     *
+     * <p>This constructor allows specifying an explicit catalog instance instead of using the default one. This is
+     * useful to ensure the proper catalog instance is used, for example during startup, when a temporary catalog is
+     * populated from the data directory.
+     *
+     * @param catalog the catalog to use for resolving references, must not be null
+     * @param group the layer group to be worked with, must not be null
+     */
+    public LayerGroupHelper(Catalog catalog, LayerGroupInfo group) {
+        this.catalog = catalog;
         this.group = group;
+    }
+
+    /**
+     * Retrieves the default GeoServer catalog from the application context.
+     *
+     * <p>This method uses {@link GeoServerExtensions} to look up the catalog bean from the application context. It's
+     * used by the default constructor to obtain the catalog when none is explicitly provided.
+     *
+     * @return the default GeoServer catalog instance
+     */
+    private static Catalog catalog() {
+        return (Catalog) GeoServerExtensions.bean("catalog");
     }
 
     /** */
@@ -50,7 +98,7 @@ public class LayerGroupHelper {
         return layers;
     }
 
-    private static void allLayers(LayerGroupInfo group, List<LayerInfo> layers) {
+    private void allLayers(LayerGroupInfo group, List<LayerInfo> layers) {
         if (LayerGroupInfo.Mode.EO.equals(group.getMode())) {
             layers.add(group.getRootLayer());
         }
@@ -65,20 +113,16 @@ public class LayerGroupHelper {
                 s = group.getStyles().get(i);
             }
 
-            if (p instanceof LayerInfo) {
-                LayerInfo l = (LayerInfo) p;
+            if (p instanceof LayerInfo l) {
                 layers.add(l);
-            } else if (p instanceof LayerGroupInfo) {
-                LayerGroupInfo groupInfo = (LayerGroupInfo) p;
+            } else if (p instanceof LayerGroupInfo groupInfo) {
                 LayerGroupStyle lgStyle = getStyleOrThrow(groupInfo, s);
                 if (lgStyle != null) allLayers(getCrs(groupInfo.getBounds()), lgStyle, layers);
                 else allLayers(groupInfo, layers);
             } else if (p == null && s != null) {
                 expandStyleGroup(
                         s,
-                        group.getBounds() == null
-                                ? null
-                                : group.getBounds().getCoordinateReferenceSystem(),
+                        group.getBounds() == null ? null : group.getBounds().getCoordinateReferenceSystem(),
                         layers,
                         null);
             }
@@ -93,8 +137,7 @@ public class LayerGroupHelper {
         return layerInfos;
     }
 
-    private static void allLayers(
-            CoordinateReferenceSystem crs, LayerGroupStyle groupStyle, List<LayerInfo> layers) {
+    private void allLayers(CoordinateReferenceSystem crs, LayerGroupStyle groupStyle, List<LayerInfo> layers) {
         List<PublishedInfo> published = groupStyle.getLayers();
         List<StyleInfo> styles = groupStyle.getStyles();
         int pSize = published.size();
@@ -109,11 +152,9 @@ public class LayerGroupHelper {
                 s = styles.get(i);
             }
 
-            if (p instanceof LayerInfo) {
-                LayerInfo l = (LayerInfo) p;
+            if (p instanceof LayerInfo l) {
                 layers.add(l);
-            } else if (p instanceof LayerGroupInfo) {
-                LayerGroupInfo groupInfo = (LayerGroupInfo) p;
+            } else if (p instanceof LayerGroupInfo groupInfo) {
                 LayerGroupStyle lgStyle = getStyleOrThrow(groupInfo, s);
                 if (lgStyle != null) allLayers(getCrs(groupInfo.getBounds()), lgStyle, layers);
                 else allLayers(groupInfo, layers);
@@ -151,8 +192,7 @@ public class LayerGroupHelper {
                 s = group.getStyles().get(i);
             }
 
-            if (p instanceof LayerInfo) {
-                LayerInfo l = (LayerInfo) p;
+            if (p instanceof LayerInfo l) {
                 publisheds.add(l);
             } else if (p instanceof LayerGroupInfo) {
                 publisheds.add(p);
@@ -176,8 +216,7 @@ public class LayerGroupHelper {
     private static void allGroups(LayerGroupInfo group, List<LayerGroupInfo> groups) {
         groups.add(group);
         for (PublishedInfo p : group.getLayers()) {
-            if (p instanceof LayerGroupInfo) {
-                LayerGroupInfo g = (LayerGroupInfo) p;
+            if (p instanceof LayerGroupInfo g) {
                 allGroups(g, groups);
             }
         }
@@ -190,7 +229,7 @@ public class LayerGroupHelper {
         return styles;
     }
 
-    private static void allStyles(LayerGroupInfo group, List<StyleInfo> styles) {
+    private void allStyles(LayerGroupInfo group, List<StyleInfo> styles) {
         if (LayerGroupInfo.Mode.EO.equals(group.getMode())) {
             styles.add(group.getRootLayerStyle());
         }
@@ -201,8 +240,8 @@ public class LayerGroupHelper {
             StyleInfo s = group.getStyles().get(i);
             if (p instanceof LayerInfo) {
                 styles.add(group.getStyles().get(i));
-            } else if (p instanceof LayerGroupInfo) {
-                allStyles((LayerGroupInfo) p, styles);
+            } else if (p instanceof LayerGroupInfo groupInfo) {
+                allStyles(groupInfo, styles);
             } else if (p == null && s != null) {
                 expandStyleGroup(s, getCrs(group.getBounds()), null, styles);
             }
@@ -219,8 +258,7 @@ public class LayerGroupHelper {
      * Retrieves all the layers according to the LayerGroup style matching the style name.
      *
      * @param lgStyle the layer group style.
-     * @return the list of layers contained, comprising also the ones contained by nested layer
-     *     groups.
+     * @return the list of layers contained, comprising also the ones contained by nested layer groups.
      */
     public List<LayerInfo> allLayersForRendering(String lgStyle) {
         List<LayerInfo> layers = new ArrayList<>();
@@ -230,11 +268,9 @@ public class LayerGroupHelper {
         return layers;
     }
 
-    private static void allLayersForRendering(
-            LayerGroupInfo group,
-            LayerGroupStyle groupStyle,
-            List<LayerInfo> layers,
-            boolean root) {
+    @SuppressWarnings("FallThrough") // switch intentionally falls through default
+    private void allLayersForRendering(
+            LayerGroupInfo group, LayerGroupStyle groupStyle, List<LayerInfo> layers, boolean root) {
         switch (group.getMode()) {
             case EO:
                 layers.add(group.getRootLayer());
@@ -246,20 +282,16 @@ public class LayerGroupHelper {
                 }
                 // continue to default behaviour:
             default:
-                List<PublishedInfo> publishables =
-                        groupStyle == null ? group.getLayers() : groupStyle.getLayers();
-                List<StyleInfo> styles =
-                        groupStyle == null ? group.getStyles() : groupStyle.getStyles();
+                List<PublishedInfo> publishables = groupStyle == null ? group.getLayers() : groupStyle.getLayers();
+                List<StyleInfo> styles = groupStyle == null ? group.getStyles() : groupStyle.getStyles();
                 int size = publishables.size();
                 for (int i = 0; i < size; i++) {
                     PublishedInfo p = publishables.get(i);
                     StyleInfo s = styles.get(i);
-                    if (p instanceof LayerInfo) {
-                        LayerInfo l = (LayerInfo) p;
+                    if (p instanceof LayerInfo l) {
                         layers.add(l);
-                    } else if (p instanceof LayerGroupInfo) {
+                    } else if (p instanceof LayerGroupInfo groupInfo) {
                         LayerGroupStyle gStyle = null;
-                        LayerGroupInfo groupInfo = (LayerGroupInfo) p;
                         gStyle = getStyleOrThrow(groupInfo, s);
                         allLayersForRendering(groupInfo, gStyle, layers, false);
                     } else if (p == null && s != null) {
@@ -281,10 +313,7 @@ public class LayerGroupHelper {
         LayerGroupStyle groupStyle = getGroupStyleByName(groupInfo, styleName);
         if (groupStyle == null) {
             throw new NoSuchElementException(
-                    "No Style with name "
-                            + styleName
-                            + " found for LayerGroup "
-                            + groupInfo.getName());
+                    "No Style with name " + styleName + " found for LayerGroup " + groupInfo.getName());
         }
         return groupStyle;
     }
@@ -295,11 +324,9 @@ public class LayerGroupHelper {
         return styles;
     }
 
-    private static void allStylesForRendering(
-            LayerGroupInfo group,
-            LayerGroupStyle groupStyle,
-            List<StyleInfo> styles,
-            boolean root) {
+    @SuppressWarnings("FallThrough") // switch intentionally falls through default
+    private void allStylesForRendering(
+            LayerGroupInfo group, LayerGroupStyle groupStyle, List<StyleInfo> styles, boolean root) {
         switch (group.getMode()) {
             case EO:
                 styles.add(group.getRootLayerStyle());
@@ -311,28 +338,24 @@ public class LayerGroupHelper {
                 }
                 // continue to default behaviour:
             default:
-                List<PublishedInfo> publishables =
-                        groupStyle == null ? group.getLayers() : groupStyle.getLayers();
-                List<StyleInfo> stylesList =
-                        groupStyle == null ? group.getStyles() : groupStyle.getStyles();
+                List<PublishedInfo> publishables = groupStyle == null ? group.getLayers() : groupStyle.getLayers();
+                List<StyleInfo> stylesList = groupStyle == null ? group.getStyles() : groupStyle.getStyles();
                 int size = publishables.size();
                 for (int i = 0; i < size; i++) {
                     PublishedInfo p = publishables.get(i);
                     StyleInfo s = stylesList.get(i);
-                    if (p instanceof LayerInfo) {
-                        if (((LayerInfo) p).getResource() instanceof WMSLayerInfo) {
+                    if (p instanceof LayerInfo layerInfo) {
+                        if (layerInfo.getResource() instanceof WMSLayerInfo) {
                             // pre 2.16.2, raster style was by default assigned to wms remote layers
                             // this was not a problem because the default style was always used to
                             // request the remote server, once we introduced the possibility tos
                             // elect remote styles this broke layer groups migrated form old data
                             // directories, we need now to ensure that a valid style is selected
-                            WMSLayerInfo wmsLayerInfo =
-                                    (WMSLayerInfo) ((LayerInfo) p).getResource();
+                            WMSLayerInfo wmsLayerInfo = (WMSLayerInfo) layerInfo.getResource();
                             s = getRemoteWmsLayerStyle(wmsLayerInfo, s);
                         }
                         styles.add(s);
-                    } else if (p instanceof LayerGroupInfo) {
-                        LayerGroupInfo groupInfo = (LayerGroupInfo) p;
+                    } else if (p instanceof LayerGroupInfo groupInfo) {
                         LayerGroupStyle groupStyle2 = getStyleOrThrow(groupInfo, s);
                         allStylesForRendering(groupInfo, groupStyle2, styles, false);
                     } else if (p == null && s != null) {
@@ -343,8 +366,8 @@ public class LayerGroupHelper {
     }
 
     /**
-     * Retrieves all styles according to the LayerGroupStyle matching the styleName, including those
-     * of eventually present nested LayerGroups.
+     * Retrieves all styles according to the LayerGroupStyle matching the styleName, including those of eventually
+     * present nested LayerGroups.
      *
      * @param styleName the name of the style.
      * @return the List of all the StyleInfo contained by the LayerGroup.
@@ -365,16 +388,15 @@ public class LayerGroupHelper {
         for (int i = 0; i < size; i++) {
             PublishedInfo p = publishable.get(i);
             StyleInfo s = styles.get(i);
-            if (p instanceof LayerInfo) {
-                if (((LayerInfo) p).getResource() instanceof WMSLayerInfo) {
-                    WMSLayerInfo wmsLayerInfo = (WMSLayerInfo) ((LayerInfo) p).getResource();
+            if (p instanceof LayerInfo layerInfo) {
+                if (layerInfo.getResource() instanceof WMSLayerInfo) {
+                    WMSLayerInfo wmsLayerInfo = (WMSLayerInfo) layerInfo.getResource();
                     s = getRemoteWmsLayerStyle(wmsLayerInfo, s);
                 }
                 styleInfos.add(s);
-            } else if (p instanceof LayerGroupInfo) {
-                LayerGroupInfo group = (LayerGroupInfo) p;
+            } else if (p instanceof LayerGroupInfo group) {
                 LayerGroupStyle groupStyle2 = getStyleOrThrow(group, s);
-                allStylesForRendering((LayerGroupInfo) p, groupStyle2, styleInfos, false);
+                allStylesForRendering(group, groupStyle2, styleInfos, false);
             } else if (p == null && s != null) {
                 expandStyleGroup(s, crs, null, styleInfos);
             }
@@ -430,8 +452,7 @@ public class LayerGroupHelper {
         }
 
         if (bounds == null) {
-            throw new IllegalArgumentException(
-                    "Could not calculate bounds from layer with no bounds, " + l.getName());
+            throw new IllegalArgumentException("Could not calculate bounds from layer with no bounds, " + l.getName());
         }
 
         for (int i = 1; i < layers.size(); i++) {
@@ -473,7 +494,6 @@ public class LayerGroupHelper {
      *
      * @return true if the LayerGroup contains itself, or another LayerGroup contains itself
      */
-    @SuppressWarnings("PMD.ReplaceVectorWithList")
     public Stack<LayerGroupInfo> checkLoops() {
         Stack<LayerGroupInfo> path = new Stack<>();
         if (checkLoops(group, group.getLayers(), group.getStyles(), path)) {
@@ -485,7 +505,6 @@ public class LayerGroupHelper {
         }
     }
 
-    @SuppressWarnings("PMD.ReplaceVectorWithList")
     public String getLoopAsString(Stack<LayerGroupInfo> path) {
         if (path == null) {
             return "";
@@ -506,9 +525,7 @@ public class LayerGroupHelper {
      * @param path Stack of each visited/parent LayerGroup
      * @return true if the LayerGroup contains itself, or another LayerGroup contains itself
      */
-    @SuppressWarnings("PMD.ReplaceVectorWithList")
-    private static boolean checkLoops(
-            LayerGroupInfo group, List<LayerGroupStyle> groupStyles, Stack<LayerGroupInfo> path) {
+    private boolean checkLoops(LayerGroupInfo group, List<LayerGroupStyle> groupStyles, Stack<LayerGroupInfo> path) {
         if (groupStyles != null) {
             for (LayerGroupStyle groupStyle : groupStyles) {
                 if (checkLoops(group, groupStyle.getLayers(), groupStyle.getStyles(), path)) {
@@ -528,12 +545,8 @@ public class LayerGroupHelper {
      * @param path Stack of each visited/parent LayerGroup
      * @return true if the LayerGroup contains itself, or another LayerGroup contains itself
      */
-    @SuppressWarnings("PMD.ReplaceVectorWithList")
-    private static boolean checkLoops(
-            LayerGroupInfo group,
-            List<PublishedInfo> layers,
-            List<StyleInfo> styles,
-            Stack<LayerGroupInfo> path) {
+    private boolean checkLoops(
+            LayerGroupInfo group, List<PublishedInfo> layers, List<StyleInfo> styles, Stack<LayerGroupInfo> path) {
         path.push(group);
         if (layers != null) {
             int size = layers.size();
@@ -547,16 +560,13 @@ public class LayerGroupHelper {
                 } else {
                     s = styles.get(i);
                 }
-                if (child instanceof LayerGroupInfo) {
-                    LayerGroupInfo groupInfo = (LayerGroupInfo) child;
-                    if (isGroupInStack((LayerGroupInfo) child, path)) {
-                        path.push((LayerGroupInfo) child);
+                if (child instanceof LayerGroupInfo groupInfo) {
+                    if (isGroupInStack(groupInfo, path)) {
+                        path.push(groupInfo);
                         return true;
-                    } else if (checkLoops(
-                            groupInfo, groupInfo.getLayers(), groupInfo.getStyles(), path)) {
+                    } else if (checkLoops(groupInfo, groupInfo.getLayers(), groupInfo.getStyles(), path)) {
                         return true;
-                    } else if (checkLoops(groupInfo, groupInfo.getLayerGroupStyles(), path))
-                        return true;
+                    } else if (checkLoops(groupInfo, groupInfo.getLayerGroupStyles(), path)) return true;
                 } else if (child == null && s != null) {
                     if (checkStyleGroupLoops(s, group, path)) {
                         return true;
@@ -577,23 +587,18 @@ public class LayerGroupHelper {
      * @param path Stack of each visited/parent LayerGroup
      * @return true if the style group contains itself, or another LayerGroup contains itself
      */
-    @SuppressWarnings("PMD.ReplaceVectorWithList")
-    private static boolean checkStyleGroupLoops(
-            StyleInfo styleGroup, LayerGroupInfo group, Stack<LayerGroupInfo> path) {
+    private boolean checkStyleGroupLoops(StyleInfo styleGroup, LayerGroupInfo group, Stack<LayerGroupInfo> path) {
         try {
             StyledLayerDescriptor sld = styleGroup.getSLD();
 
             final boolean[] hasLoop = {false};
             sld.accept(
                     new GeoServerSLDVisitorAdapter(
-                            (Catalog) GeoServerExtensions.bean("catalog"),
-                            group.getBounds() == null
-                                    ? null
-                                    : group.getBounds().getCoordinateReferenceSystem()) {
+                            catalog,
+                            group.getBounds() == null ? null : group.getBounds().getCoordinateReferenceSystem()) {
 
                         private final IllegalStateException recursionException =
-                                new IllegalStateException(
-                                        "Style group contains recursive structure");
+                                new IllegalStateException("Style group contains recursive structure");
 
                         @Override
                         public void visit(StyledLayerDescriptor sld) {
@@ -616,14 +621,12 @@ public class LayerGroupHelper {
                                     && namedLayer.getName().equals(group.getName())) {
                                 throw recursionException;
                             }
-                            LayerGroupInfo child =
-                                    catalog.getLayerGroupByName(namedLayer.getName());
+                            LayerGroupInfo child = catalog.getLayerGroupByName(namedLayer.getName());
                             if (child != null) {
                                 if (isGroupInStack(child, path)) {
                                     path.push(child);
                                     throw recursionException;
-                                } else if (checkLoops(
-                                        child, child.getLayers(), child.getStyles(), path)) {
+                                } else if (checkLoops(child, child.getLayers(), child.getStyles(), path)) {
                                     throw recursionException;
                                 }
                                 return child;
@@ -639,15 +642,12 @@ public class LayerGroupHelper {
                 | UnsupportedOperationException e) {
             LOGGER.log(
                     Level.WARNING,
-                    "Error extracting layers from Style Group '"
-                            + styleGroup.getName()
-                            + "'. Skipping...",
+                    "Error extracting layers from Style Group '" + styleGroup.getName() + "'. Skipping...",
                     e);
             return false;
         }
     }
 
-    @SuppressWarnings("PMD.ReplaceVectorWithList")
     private static boolean isGroupInStack(LayerGroupInfo group, Stack<LayerGroupInfo> path) {
         for (LayerGroupInfo groupInPath : path) {
             if (groupInPath.getId() != null && groupInPath.getId().equals(group.getId())) {
@@ -658,11 +658,8 @@ public class LayerGroupHelper {
         return false;
     }
 
-    private static void expandStyleGroup(
-            StyleInfo styleGroup,
-            CoordinateReferenceSystem crs,
-            List<LayerInfo> layers,
-            List<StyleInfo> styles) {
+    private void expandStyleGroup(
+            StyleInfo styleGroup, CoordinateReferenceSystem crs, List<LayerInfo> layers, List<StyleInfo> styles) {
         if (layers == null) {
             layers = new ArrayList<>();
         }
@@ -672,8 +669,7 @@ public class LayerGroupHelper {
 
         try {
             StyledLayerDescriptor sld = styleGroup.getSLD();
-            StyleGroupHelper helper =
-                    new StyleGroupHelper((Catalog) GeoServerExtensions.bean("catalog"), crs);
+            StyleGroupHelper helper = new StyleGroupHelper(catalog, crs);
             sld.accept(helper);
             layers.addAll(helper.getLayers());
             styles.addAll(helper.getStyles());
@@ -684,29 +680,25 @@ public class LayerGroupHelper {
                 | UnsupportedOperationException e) {
             LOGGER.log(
                     Level.WARNING,
-                    "Error extracting styles from Style Group '"
-                            + styleGroup.getName()
-                            + "'. Skipping...",
+                    "Error extracting styles from Style Group '" + styleGroup.getName() + "'. Skipping...",
                     e);
         }
     }
 
     /**
-     * Ensures that cascaded WMS Layer is assigned the correct remote style if the passed style is
-     * NULL or unknown to cascaded WMS layer, the default style will returned *
+     * Ensures that cascaded WMS Layer is assigned the correct remote style if the passed style is NULL or unknown to
+     * cascaded WMS layer, the default style will returned *
      */
-    private static StyleInfo getRemoteWmsLayerStyle(
-            WMSLayerInfo wmsLayerInfo, StyleInfo styleInfo) {
+    private static StyleInfo getRemoteWmsLayerStyle(WMSLayerInfo wmsLayerInfo, StyleInfo styleInfo) {
 
         if (styleInfo == null) styleInfo = wmsLayerInfo.getDefaultStyle();
-        else if (!wmsLayerInfo.findRemoteStyleByName(styleInfo.getName()).isPresent()) {
+        else if (wmsLayerInfo.findRemoteStyleByName(styleInfo.getName()).isEmpty()) {
             if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine(
-                        styleInfo.getName()
-                                + " style is not a known remote style for WMS Layer "
-                                + wmsLayerInfo
-                                + ","
-                                + " Re-configure the Resource");
+                LOGGER.fine(styleInfo.getName()
+                        + " style is not a known remote style for WMS Layer "
+                        + wmsLayerInfo
+                        + ","
+                        + " Re-configure the Resource");
             }
             styleInfo = WMSLayerInfoImpl.DEFAULT_ON_REMOTE;
         }
@@ -719,8 +711,7 @@ public class LayerGroupHelper {
      *
      * @param group the LayerGroupInfo for which find the style.
      * @param styleName the name of the style to find.
-     * @return the {@link LayerGroupStyle} corresponding to the specified name if exists, false
-     *     otherwise.
+     * @return the {@link LayerGroupStyle} corresponding to the specified name if exists, false otherwise.
      */
     public static LayerGroupStyle getGroupStyleByName(LayerGroupInfo group, String styleName) {
         List<LayerGroupStyle> styles = group.getLayerGroupStyles();
@@ -739,9 +730,9 @@ public class LayerGroupHelper {
     /**
      * Converts a style group sld into a flat list of {@link LayerInfo}s and {@link StyleInfo}s.
      *
-     * <p>To handle styles and layers that are not in the catalog: User layers are wrapped in {@link
-     * GeoServerSLDVisitor.StyleWrappingStyleInfoImpl}. Inline features and remote OWS services are
-     * wrapped in {@link GeoServerSLDVisitor.FeatureSourceWrappingFeatureTypeInfoImpl}.
+     * <p>To handle styles and layers that are not in the catalog: User layers are wrapped in
+     * {@link GeoServerSLDVisitor.StyleWrappingStyleInfoImpl}. Inline features and remote OWS services are wrapped in
+     * {@link GeoServerSLDVisitor.FeatureSourceWrappingFeatureTypeInfoImpl}.
      */
     protected static class StyleGroupHelper extends GeoServerSLDVisitorAdapter {
 
@@ -773,8 +764,7 @@ public class LayerGroupHelper {
             if (p == null) {
                 p = catalog.getLayerByName(namedLayer.getName());
                 if (p == null) {
-                    throw new ServiceException(
-                            "No layer or layer group with name \"" + namedLayer.getName() + "\"");
+                    throw new ServiceException("No layer or layer group with name \"" + namedLayer.getName() + "\"");
                 }
             }
             return p;

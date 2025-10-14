@@ -34,21 +34,18 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 /** A template response able to write a GML output format according to gml version. */
 public class GMLTemplateResponse extends BaseTemplateGetFeatureResponse {
 
-    public GMLTemplateResponse(
-            GeoServer gs, TemplateLoader configuration, TemplateIdentifier identifier) {
+    public GMLTemplateResponse(GeoServer gs, TemplateLoader configuration, TemplateIdentifier identifier) {
         super(gs, configuration, identifier);
     }
 
     @Override
-    protected void beforeFeatureIteration(
-            TemplateOutputWriter writer, RootBuilder root, FeatureTypeInfo typeInfo) {
+    protected void beforeFeatureIteration(TemplateOutputWriter writer, RootBuilder root, FeatureTypeInfo typeInfo) {
         String typeName = typeInfo.getName();
         ((GMLTemplateWriter) writer).setTypeName(typeName);
     }
 
     @Override
-    protected void write(
-            FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
+    protected void write(FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
             throws ServiceException {
         String outputFormat = getMimeType(null, getFeature);
         try (GMLTemplateWriter writer = getOutputWriter(output, outputFormat)) {
@@ -80,8 +77,7 @@ public class GMLTemplateResponse extends BaseTemplateGetFeatureResponse {
         }
     }
 
-    protected GMLTemplateWriter getOutputWriter(OutputStream output, String outputFormat)
-            throws IOException {
+    protected GMLTemplateWriter getOutputWriter(OutputStream output, String outputFormat) throws IOException {
         return (GMLTemplateWriter) helper.getOutputWriter(output, outputFormat);
     }
 
@@ -97,8 +93,7 @@ public class GMLTemplateResponse extends BaseTemplateGetFeatureResponse {
             Map<String, String> namespaces2 =
                     (Map<String, String>) root.getEncodingHints().get(NAMESPACES);
             if (namespaces2 != null) namespaces.putAll(namespaces2);
-            String schemaLocation =
-                    (String) root.getVendorOptions().get(VendorOptions.SCHEMA_LOCATION);
+            String schemaLocation = (String) root.getVendorOptions().get(VendorOptions.SCHEMA_LOCATION);
             if (schemaLocation == null)
                 schemaLocation = (String) root.getEncodingHints().get(SCHEMA_LOCATION);
             if (namespaces != null) writer.addNamespaces(namespaces);
@@ -108,28 +103,32 @@ public class GMLTemplateResponse extends BaseTemplateGetFeatureResponse {
 
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
-        if (operation != null) {
-            Object[] parameters = operation.getParameters();
-            if (parameters.length > 0) {
-                Object param = parameters[0];
-                if (param instanceof GetFeatureType) {
-                    return ((GetFeatureType) param).getOutputFormat();
-                }
-            }
+        GetFeatureType getFeatureType = getGetFeatureType(operation);
+        if (getFeatureType != null) {
+            return getFeatureType.getOutputFormat();
         }
         return TemplateIdentifier.GML32.getOutputFormat();
     }
 
+    private static GetFeatureType getGetFeatureType(Operation operation) {
+        if (operation == null) {
+            return null;
+        }
+        Object[] parameters = operation.getParameters();
+        if (parameters.length > 0 && parameters[0] instanceof GetFeatureType gft) {
+            return gft;
+        }
+        return null;
+    }
+
     @Override
-    protected void beforeEvaluation(TemplateOutputWriter writer, RootBuilder root, Feature feature)
-            throws IOException {
+    protected void beforeEvaluation(TemplateOutputWriter writer, RootBuilder root, Feature feature) throws IOException {
         super.beforeEvaluation(writer, root, feature);
         ((GMLTemplateWriter) writer).startFeatureMember();
     }
 
     @Override
-    protected void afterEvaluation(TemplateOutputWriter writer, RootBuilder root, Feature feature)
-            throws IOException {
+    protected void afterEvaluation(TemplateOutputWriter writer, RootBuilder root, Feature feature) throws IOException {
         super.afterEvaluation(writer, root, feature);
         ((GMLTemplateWriter) writer).endFeatureMember();
     }

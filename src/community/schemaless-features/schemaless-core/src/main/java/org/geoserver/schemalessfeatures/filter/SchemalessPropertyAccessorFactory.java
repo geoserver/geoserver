@@ -25,28 +25,25 @@ import org.geotools.filter.expression.PropertyAccessorFactory;
 import org.geotools.util.factory.Hints;
 
 /**
- * Factory for a SchemalessPropertyAccessor. The PropertyAccessor produced can handle only
- * SchemalessFeatureType. When evaluating against a FeatureType returns a ComplexType "anyType",
- * while when evaluating against a descriptor returns a descriptor of type "anyType". The
- * PropertyAccessor is able also to evaluate against a Feature of type SchemalessFeatureType a
- * property path that references nested attributes as property and not as property/object
+ * Factory for a SchemalessPropertyAccessor. The PropertyAccessor produced can handle only SchemalessFeatureType. When
+ * evaluating against a FeatureType returns a ComplexType "anyType", while when evaluating against a descriptor returns
+ * a descriptor of type "anyType". The PropertyAccessor is able also to evaluate against a Feature of type
+ * SchemalessFeatureType a property path that references nested attributes as property and not as property/object
  */
 public class SchemalessPropertyAccessorFactory implements PropertyAccessorFactory {
 
     public static final String NESTED_FEATURE_SUFFIX = "Feature";
-    public static final ComplexType ANYTYPE_TYPE =
-            new ComplexTypeImpl(
-                    new NameImpl("http://www.w3.org/2001/XMLSchema", "anyType"),
-                    null,
-                    false,
-                    true,
-                    Collections.emptyList(),
-                    null,
-                    null);
+    public static final ComplexType ANYTYPE_TYPE = new ComplexTypeImpl(
+            new NameImpl("http://www.w3.org/2001/XMLSchema", "anyType"),
+            null,
+            false,
+            true,
+            Collections.emptyList(),
+            null,
+            null);
 
     @Override
-    public PropertyAccessor createPropertyAccessor(
-            Class type, String propertyPath, Class target, Hints hints) {
+    public PropertyAccessor createPropertyAccessor(Class type, String propertyPath, Class target, Hints hints) {
 
         if (propertyPath == null) return null;
 
@@ -61,35 +58,27 @@ public class SchemalessPropertyAccessorFactory implements PropertyAccessorFactor
         @Override
         public boolean canHandle(Object object, String xpath, Class target) {
             AttributeType type = null;
-            if (object instanceof Attribute) {
-                type = ((Attribute) object).getType();
-            } else if (object instanceof AttributeType) {
-                type = (AttributeType) object;
-            } else if (object instanceof AttributeDescriptor)
-                type = ((AttributeDescriptor) object).getType();
+            if (object instanceof Attribute attribute) {
+                type = attribute.getType();
+            } else if (object instanceof AttributeType attributeType) {
+                type = attributeType;
+            } else if (object instanceof AttributeDescriptor descriptor) type = descriptor.getType();
             return type != null && type instanceof DynamicComplexType;
         }
 
         @Override
         @SuppressWarnings("unchecked")
-        public <T> T get(Object object, String xpath, Class<T> target)
-                throws IllegalArgumentException {
-            if (object instanceof ComplexAttribute) {
+        public <T> T get(Object object, String xpath, Class<T> target) throws IllegalArgumentException {
+            if (object instanceof ComplexAttribute attribute) {
                 String[] pathParts;
                 if (xpath.indexOf('/') != -1) pathParts = xpath.split("/");
                 else pathParts = xpath.split("\\.");
-                return (T) walkComplexAttribute((ComplexAttribute) object, pathParts);
+                return (T) walkComplexAttribute(attribute, pathParts);
             } else if (object instanceof DynamicComplexType) {
                 return (T) ANYTYPE_TYPE;
             } else if (object instanceof AttributeDescriptor) {
-                return (T)
-                        new AttributeDescriptorImpl(
-                                ANYTYPE_TYPE,
-                                new NameImpl(null, "anyType"),
-                                0,
-                                Integer.MAX_VALUE,
-                                true,
-                                null);
+                return (T) new AttributeDescriptorImpl(
+                        ANYTYPE_TYPE, new NameImpl(null, "anyType"), 0, Integer.MAX_VALUE, true, null);
             } else throw new IllegalArgumentException("Cannot handle the object");
         }
 
@@ -98,8 +87,8 @@ public class SchemalessPropertyAccessorFactory implements PropertyAccessorFactor
             for (int i = 0; i < path.length; i++) {
                 String pathPart = path[i];
                 result = walkComplexAttribute(complexAttribute, pathPart);
-                if (result instanceof ComplexAttribute) {
-                    complexAttribute = (ComplexAttribute) result;
+                if (result instanceof ComplexAttribute attribute) {
+                    complexAttribute = attribute;
                 } else if (result instanceof List) {
                     @SuppressWarnings("unchecked")
                     List<Object> attributes = List.class.cast(result);
@@ -140,10 +129,8 @@ public class SchemalessPropertyAccessorFactory implements PropertyAccessorFactor
                         results.addAll(values);
                     } else results.add(value);
                 } else {
-                    value =
-                            walkComplexAttribute(
-                                    (ComplexAttribute) value,
-                                    Arrays.copyOfRange(path, currentIndex + 1, path.length));
+                    value = walkComplexAttribute(
+                            (ComplexAttribute) value, Arrays.copyOfRange(path, currentIndex + 1, path.length));
                     if (value != null) {
                         if (value instanceof List) {
                             @SuppressWarnings("unchecked")
@@ -158,12 +145,9 @@ public class SchemalessPropertyAccessorFactory implements PropertyAccessorFactor
 
         private Object extractValue(Property property, String pathPart) {
             Object value;
-            if (property instanceof ComplexAttribute) {
-                ComplexAttribute complexProp = (ComplexAttribute) property;
+            if (property instanceof ComplexAttribute complexProp) {
                 String featurePath =
-                        pathPart.substring(0, 1).toUpperCase()
-                                + pathPart.substring(1)
-                                + NESTED_FEATURE_SUFFIX;
+                        pathPart.substring(0, 1).toUpperCase() + pathPart.substring(1) + NESTED_FEATURE_SUFFIX;
                 value = complexProp.getProperty(featurePath);
             } else {
                 value = property.getValue();
@@ -180,8 +164,7 @@ public class SchemalessPropertyAccessorFactory implements PropertyAccessorFactor
         }
 
         @Override
-        public void set(Object object, String xpath, Object value, Class target)
-                throws IllegalAttributeException {
+        public void set(Object object, String xpath, Object value, Class target) throws IllegalAttributeException {
             throw new UnsupportedOperationException("Set is not supported");
         }
     }

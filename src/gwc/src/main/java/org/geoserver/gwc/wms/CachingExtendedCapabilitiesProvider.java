@@ -29,11 +29,11 @@ import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
- * Implementation of the {@link ExtendedCapabilitiesProvider} extension point to contribute WMS-C
- * DTD elements and TileSet definitions to the capabilities document of the regular GeoServer WMS.
+ * Implementation of the {@link ExtendedCapabilitiesProvider} extension point to contribute WMS-C DTD elements and
+ * TileSet definitions to the capabilities document of the regular GeoServer WMS.
  *
- * <p>A {@code TileSet} is added at {@link #encode} for each GWC {@link TileLayer}, but respecting
- * the {@link GetCapabilitiesRequest#getNamespace() namespace} filter if set.
+ * <p>A {@code TileSet} is added at {@link #encode} for each GWC {@link TileLayer}, but respecting the
+ * {@link GetCapabilitiesRequest#getNamespace() namespace} filter if set.
  *
  * @author Gabriel Roldan
  */
@@ -73,8 +73,7 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
      *     org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls(GetCapabilitiesRequest)
      */
     @Override
-    public List<String> getVendorSpecificCapabilitiesChildDecls(
-            final GetCapabilitiesRequest request) {
+    public List<String> getVendorSpecificCapabilitiesChildDecls(final GetCapabilitiesRequest request) {
         if (gwc.getConfig().isDirectWMSIntegrationEnabled() && isTiled(request)) {
             List<String> wmscElements = new ArrayList<>();
             wmscElements.add(
@@ -92,17 +91,14 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
     /**
      * Empty implementation, no namespaces to add until we support the WMS-C 1.3 profile
      *
-     * @see
-     *     org.geoserver.wms.ExtendedCapabilitiesProvider#registerNamespaces(org.xml.sax.helpers.NamespaceSupport)
+     * @see org.geoserver.wms.ExtendedCapabilitiesProvider#registerNamespaces(org.xml.sax.helpers.NamespaceSupport)
      */
     @Override
     public void registerNamespaces(NamespaceSupport namespaces) {
         // nothing to do
     }
 
-    /**
-     * @see org.geoserver.wms.ExtendedCapabilitiesProvider#encode(Translator, ServiceInfo, Object)
-     */
+    /** @see org.geoserver.wms.ExtendedCapabilitiesProvider#encode(Translator, ServiceInfo, Object) */
     @Override
     public void encode(final Translator tx, final WMSInfo wms, final GetCapabilitiesRequest request)
             throws IOException {
@@ -115,8 +111,7 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
         }
 
         final String namespacePrefixFilter = request.getNamespace();
-        Iterable<? extends TileLayer> tileLayers =
-                gwc.getTileLayersByNamespacePrefix(namespacePrefixFilter);
+        Iterable<? extends TileLayer> tileLayers = gwc.getTileLayersByNamespacePrefix(namespacePrefixFilter);
 
         final String nsPrefix;
         {
@@ -220,8 +215,7 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
     }
 
     @Override
-    public NumberRange<Double> overrideScaleDenominators(
-            PublishedInfo layer, NumberRange<Double> scaleDenominators) {
+    public NumberRange<Double> overrideScaleDenominators(PublishedInfo layer, NumberRange<Double> scaleDenominators) {
         return scaleDenominators;
     }
 }

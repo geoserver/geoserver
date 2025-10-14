@@ -63,7 +63,6 @@ public interface GMLInfo extends Serializable {
 
         /** Deprecated. Use toSrsSyntax() and compute the SRS with it instead */
         @Deprecated
-        @SuppressWarnings("deprecation") // calling onto anothre deprecated  method
         public String getPrefix() {
             return toSrsSyntax().getPrefix();
         }
@@ -87,17 +86,16 @@ public interface GMLInfo extends Serializable {
     void setSrsNameStyle(SrsNameStyle srsNameStyle);
 
     /**
-     * Controls how attributes are handled with regard to attributes defined in the schema of
-     * AbstractFeatureType, name, description, etc...
+     * Controls how attributes are handled with regard to attributes defined in the schema of AbstractFeatureType, name,
+     * description, etc...
      *
-     * <p>When set this flag will cause the attributes to be redefined in the application schema
-     * namespace.
+     * <p>When set this flag will cause the attributes to be redefined in the application schema namespace.
      */
     Boolean getOverrideGMLAttributes();
 
     /**
-     * Sets the flag that controls how attributes are handled with regard to attributes defined in
-     * the schema of AbstractFeatureType.
+     * Sets the flag that controls how attributes are handled with regard to attributes defined in the schema of
+     * AbstractFeatureType.
      *
      * @see {@link #getOverrideGMLAttributes()}
      */

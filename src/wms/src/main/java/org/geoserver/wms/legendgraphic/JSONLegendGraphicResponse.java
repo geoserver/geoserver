@@ -17,7 +17,6 @@ import org.springframework.util.Assert;
  * OWS {@link Response} that encodes a {@link BufferedImageLegendGraphic} to the image/png MIME Type
  *
  * @author Ian Turton
- * @version $Id$
  */
 public class JSONLegendGraphicResponse extends AbstractGetLegendGraphicResponse {
 
@@ -28,11 +27,9 @@ public class JSONLegendGraphicResponse extends AbstractGetLegendGraphicResponse 
     /**
      * @param legend a {@link JSONLegendGraphic}
      * @param output JSON destination
-     * @see GetLegendGraphicProducer#writeTo(java.io.OutputStream)
      */
     @Override
-    public void write(Object legend, OutputStream output, Operation operation)
-            throws IOException, ServiceException {
+    public void write(Object legend, OutputStream output, Operation operation) throws IOException, ServiceException {
         Assert.isInstanceOf(JSONLegendGraphic.class, legend);
 
         JSONObject json = (JSONObject) ((LegendGraphic) legend).getLegend();

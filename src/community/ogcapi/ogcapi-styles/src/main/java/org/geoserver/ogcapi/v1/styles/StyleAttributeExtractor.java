@@ -73,18 +73,15 @@ import org.geotools.renderer.style.ExpressionExtractor;
 import org.locationtech.jts.geom.Geometry;
 
 /**
- * A clone of StyleAttributeExtractor that can provide hints about the data type needed for
- * properties. Will be moved back to GeoTools once we have some time to write proper tests for it.
+ * A clone of StyleAttributeExtractor that can provide hints about the data type needed for properties. Will be moved
+ * back to GeoTools once we have some time to write proper tests for it.
  */
 public class StyleAttributeExtractor extends FilterAttributeExtractor implements StyleVisitor {
 
     /** if the default geometry is used, this will be true. See GEOS-469 */
     boolean defaultGeometryUsed = false;
 
-    /**
-     * Symbolizer geometry is enabled by default, but there are relevant cases in which we don't
-     * desire that
-     */
+    /** Symbolizer geometry is enabled by default, but there are relevant cases in which we don't desire that */
     boolean symbolizerGeometriesVisitEnabled = true;
 
     Map<PropertyName, Class<?>> propertyTypes = new LinkedHashMap<>();
@@ -212,24 +209,24 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
     /** @see StyleVisitor#visit(Symbolizer) */
     @Override
     public void visit(Symbolizer sym) {
-        if (sym instanceof PointSymbolizer) {
-            visit((PointSymbolizer) sym);
+        if (sym instanceof PointSymbolizer symbolizer) {
+            visit(symbolizer);
         }
 
-        if (sym instanceof LineSymbolizer) {
-            visit((LineSymbolizer) sym);
+        if (sym instanceof LineSymbolizer symbolizer) {
+            visit(symbolizer);
         }
 
-        if (sym instanceof PolygonSymbolizer) {
-            visit((PolygonSymbolizer) sym);
+        if (sym instanceof PolygonSymbolizer symbolizer) {
+            visit(symbolizer);
         }
 
-        if (sym instanceof TextSymbolizer) {
-            visit((TextSymbolizer) sym);
+        if (sym instanceof TextSymbolizer symbolizer) {
+            visit(symbolizer);
         }
 
-        if (sym instanceof RasterSymbolizer) {
-            visit((RasterSymbolizer) sym);
+        if (sym instanceof RasterSymbolizer symbolizer) {
+            visit(symbolizer);
         }
     }
 
@@ -369,8 +366,8 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
     @Override
     public void visit(Graphic gr) {
         for (GraphicalSymbol symbol : gr.graphicalSymbols()) {
-            if (symbol instanceof Symbol) {
-                ((Symbol) symbol).accept(this);
+            if (symbol instanceof Symbol symbol1) {
+                symbol1.accept(this);
             } else {
                 throw new RuntimeException("Don't know how to visit " + symbol);
             }
@@ -426,10 +423,10 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
         visitCqlExpression(exgr.getFormat());
 
         try {
-            if (exgr.getLocation() != null) visitCqlExpression(exgr.getLocation().toString());
+            if (exgr.getLocation() != null)
+                visitCqlExpression(exgr.getLocation().toString());
         } catch (MalformedURLException e) {
-            throw new RuntimeException(
-                    "Errors while inspecting " + "the location of an external graphic", e);
+            throw new RuntimeException("Errors while inspecting " + "the location of an external graphic", e);
         }
     }
 
@@ -498,10 +495,10 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
         StyledLayer[] layers = sld.getStyledLayers();
 
         for (StyledLayer layer : layers) {
-            if (layer instanceof NamedLayer) {
-                ((NamedLayer) layer).accept(this);
-            } else if (layer instanceof UserLayer) {
-                ((UserLayer) layer).accept(this);
+            if (layer instanceof NamedLayer namedLayer) {
+                namedLayer.accept(this);
+            } else if (layer instanceof UserLayer userLayer) {
+                userLayer.accept(this);
             }
         }
     }
@@ -572,8 +569,8 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
         AttributeDescriptor ad = (AttributeDescriptor) expression.evaluate(featureType);
         if (ad != null) {
             propertyTypes.put(expression, ad.getType().getBinding());
-        } else if (data instanceof Class) {
-            propertyTypes.put(expression, (Class<?>) data);
+        } else if (data instanceof Class<?> class1) {
+            propertyTypes.put(expression, class1);
         } else {
             propertyTypes.put(expression, Object.class);
         }
@@ -582,10 +579,9 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
     }
 
     /**
-     * Returns a map from PropertyName to its data type, either retrieved from the feature type if
-     * available, or guessed from the style property necessities, otherwise. When multiple types
-     * would be allowed thanks to converters, the most specific is used (e.g., Color instead of
-     * String)
+     * Returns a map from PropertyName to its data type, either retrieved from the feature type if available, or guessed
+     * from the style property necessities, otherwise. When multiple types would be allowed thanks to converters, the
+     * most specific is used (e.g., Color instead of String)
      */
     public Map<PropertyName, Class<?>> getPropertyTypes() {
         return Collections.unmodifiableMap(propertyTypes);

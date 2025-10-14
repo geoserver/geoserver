@@ -15,7 +15,7 @@ import javax.servlet.ServletInputStream;
 /**
  * Wrap a String up as a ServletInputStream so we can read it multiple times.
  *
- * @author David Winslow <dwinslow@openplans.org>
+ * @author David Winslow dwinslow@openplans.org
  */
 public class BufferedRequestStream extends ServletInputStream {
     InputStream myInputStream;
@@ -56,8 +56,7 @@ public class BufferedRequestStream extends ServletInputStream {
         try {
             return available() < 1;
         } catch (IOException e) {
-            Logger LOGGER =
-                    org.geotools.util.logging.Logging.getLogger(BufferedRequestStream.class);
+            Logger LOGGER = org.geotools.util.logging.Logging.getLogger(BufferedRequestStream.class);
             LOGGER.finer("Stream is closed");
             return true;
         }
@@ -79,6 +78,14 @@ public class BufferedRequestStream extends ServletInputStream {
             throw new IOException("Stream closed");
         }
         return myInputStream.read();
+    }
+
+    @Override
+    public int read(byte[] b, int off, int len) throws IOException {
+        if (myInputStream == null) {
+            throw new IOException("Stream closed");
+        }
+        return myInputStream.read(b, off, len);
     }
 
     @Override
@@ -106,8 +113,7 @@ public class BufferedRequestStream extends ServletInputStream {
                 myInputStream = null;
             }
         } else {
-            Logger LOGGER =
-                    org.geotools.util.logging.Logging.getLogger(BufferedRequestStream.class);
+            Logger LOGGER = org.geotools.util.logging.Logging.getLogger(BufferedRequestStream.class);
             LOGGER.finer("Stream already closed");
         }
     }

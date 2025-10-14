@@ -9,18 +9,26 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
+import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.impl.CoverageInfoImpl;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.parameter.GeneralParameterDescriptor;
 import org.geotools.api.parameter.GeneralParameterValue;
 import org.geotools.api.parameter.ParameterDescriptor;
 import org.geotools.api.parameter.ParameterValue;
+import org.geotools.api.parameter.ParameterValueGroup;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 public class CoverageUtilsTest {
 
@@ -53,13 +61,33 @@ public class CoverageUtilsTest {
         GeneralParameterValue[] oldParams = new GeneralParameterValue[1];
         oldParams[0] = ImageMosaicFormat.FILTER.createValue();
         Filter filter = CQL.toFilter("a = 6");
-        GeneralParameterValue[] newParams =
-                CoverageUtils.mergeParameter(
-                        descriptors,
-                        oldParams,
-                        filter,
-                        ImageMosaicFormat.FILTER.getName().getCode());
+        GeneralParameterValue[] newParams = CoverageUtils.mergeParameter(
+                descriptors,
+                oldParams,
+                filter,
+                ImageMosaicFormat.FILTER.getName().getCode());
         assertEquals(1, newParams.length);
         assertEquals(filter, ((ParameterValue) newParams[0]).getValue());
+    }
+
+    @Test
+    public void testImageReadMigration() throws Exception {
+        // build a coverage info with the old jai parameter
+        Map<String, Serializable> params = new HashMap<>();
+        params.put("USE_JAI_IMAGEREAD", Boolean.TRUE);
+        Catalog catalog = Mockito.mock(Catalog.class);
+        CoverageInfoImpl ci = new CoverageInfoImpl(catalog);
+        ci.setParameters(params);
+
+        ImageMosaicFormat format = new ImageMosaicFormat();
+        ParameterValueGroup mosaicParameters = format.getReadParameters();
+        GeneralParameterValue[] readParams = CoverageUtils.getParameters(mosaicParameters, ci.getParameters());
+        Optional<Boolean> useImagenImageRead = Arrays.stream(readParams)
+                .filter(p -> p.getDescriptor().getName().getCode().equals("USE_IMAGEN_IMAGEREAD"))
+                .findFirst()
+                .map(p -> (ParameterValue) p)
+                .map(pv -> (Boolean) pv.getValue());
+        assertTrue(useImagenImageRead.isPresent());
+        assertEquals(Boolean.TRUE, useImagenImageRead.get());
     }
 }

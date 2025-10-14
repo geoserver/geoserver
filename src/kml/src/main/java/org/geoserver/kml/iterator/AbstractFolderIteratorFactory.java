@@ -55,7 +55,8 @@ public abstract class AbstractFolderIteratorFactory implements IteratorFactory<F
                 MapLayerInfo layerInfo =
                         context.getMapContent().getRequest().getLayers().get(index);
                 folder.setName(layerInfo.getLabel());
-                if (layerInfo.getDescription() != null && !layerInfo.getDescription().isEmpty()) {
+                if (layerInfo.getDescription() != null
+                        && !layerInfo.getDescription().isEmpty()) {
                     folder.setDescription(layerInfo.getDescription());
                 }
 
@@ -64,22 +65,17 @@ public abstract class AbstractFolderIteratorFactory implements IteratorFactory<F
                 if (layer instanceof FeatureLayer) {
                     try {
                         WMSMapContent mapContent = context.getMapContent();
-                        SimpleFeatureCollection fc =
-                                new KMLFeatureAccessor()
-                                        .loadFeatureCollection(
-                                                layer,
-                                                mapContent,
-                                                context.getWms(),
-                                                mapContent.getScaleDenominator());
+                        SimpleFeatureCollection fc = new KMLFeatureAccessor()
+                                .loadFeatureCollection(
+                                        layer, mapContent, context.getWms(), mapContent.getScaleDenominator());
                         context.setCurrentFeatureCollection(fc);
                     } catch (Exception e) {
-                        if (e instanceof ServiceException) {
-                            throw (ServiceException) e;
-                        } else if (e instanceof HttpErrorCodeException) {
-                            throw (HttpErrorCodeException) e;
+                        if (e instanceof ServiceException exception1) {
+                            throw exception1;
+                        } else if (e instanceof HttpErrorCodeException exception) {
+                            throw exception;
                         } else {
-                            throw new ServiceException(
-                                    "Failed to load vector data during KML generation", e);
+                            throw new ServiceException("Failed to load vector data during KML generation", e);
                         }
                     }
                 }

@@ -30,24 +30,122 @@ The general GeoServer upgrade process is as follows:
 Notes on upgrading specific versions
 ------------------------------------
 
+Java 17 and ImageN (GeoServer 2.28.0)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As of GeoServer 2.28.0, Java 17 is now the minimum required Java version to run GeoServer.
+
+Additionally, the image processing engine is now ImageN:
+
+* JAI-Ext related settings are gone from the UI (e.g. configuring if a certain operation should use JAI-Ext or not, from now on, it will use ImageN).
+* JAI native settings have been removed (ImageN is pure Java).
+* One notable change in the configuration is that the ``USE_JAI_IMAGEREAD`` parameter is now called
+  ``USE_IMAGEN_IMAGEREAD``.
+
+This ``USE_IMAGEN_IMAGEREAD``` parameter is used by image mosaic and a few other coverage readers,
+and is normally called "deferred loading" in the UI.
+GeoServer will migrate the parameter name automatically when layers are saved,
+and compatibility with REST scripts using the old name is preserved.
+If you want to migrate the data directory to the new parameter in bulk, look up all the coverage.xml
+files and replace the parameter name in them. For example, on Linux, the following command will
+perform a migration:
+
+.. code-block:: bash
+
+   find <GEOSERVER_DATA_DIR> -name coverage.xml -exec sed -i 's/USE_JAI_IMAGEREAD/USE_IMAGEN_IMAGEREAD/g' {} \;
+
+
+MapML Multi-Layer As Multi-Extent Configuration (GeoServer 2.27 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As of GeoServer 2.28, the configuration option for MapML Multi-Layer as Multi-Extent has been moved from 
+the WMS Administration page to the Publishing tab of the Layer Group configuration. Backwards compatibility 
+with previously configured MapML implementations is maintained through the population of Layer Group metadata 
+if the option was previously enabled in the WMS Administration page. For more information, see :ref:`mapml_installation`.
+
+FreeMarker Template Method Access (GeoServer 2.27 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As of GeoServer 2.27, FreeMarker templates are now restricted from accessing methods related to
+certain sensitive classes to mitigate the impact of malicious templates. Most templates that can
+be modified by administrators will also be limited to only accessing getter methods. For more
+information about this, see :ref:`tutorials_getfeatureinfo_html_access`.
+
+The following is an example of the exception message seen when processing a
+template that previously worked but is blocked by the new restrictions:
+
+  ::
+
+    Caused by: freemarker.core.InvalidReferenceException: The following has evaluated to null or missing:
+    ==> features[0].type.catalog  [in template "content_en_US.ftl" at line 1, column 3]
+
 Content Security Policy (GeoServer 2.27 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-As of GeoServer 2.27, the Content-Security-Policy HTTP response header will be enabled by default
-in order to mitigate cross-site scripting and clickjacking attacks. The default header value is
-intended to **block** the use of inline JavaScript in all HTML output except in cases where it is
-required (e.g., OpenLayers maps). It is possible that future work may further restrict the default
-policy.
+The Content-Security-Policy HTTP response header are now enabled by default in order to mitigate cross-site
+scripting and clickjacking attacks. The default header value asks the browser to **block** the use of inline
+JavaScript in all HTML output except in cases where it is required (e.g., OpenLayers maps).
 
-Most uers without any customized HTML output should not experience any issues. Users who need
-inline JavaScript in custom FreeMarker templates for WMS GetFeatureInfo HTML output should see
-:ref:`tutorials_getfeatureinfo_html_csp`. Users experiencing issues with static web files or custom
-classes/plugins generating HTML output may need to update their settings. For more information, see
-:ref:`production_config_csp`.
+It is anticipated that future work may further restrict the default policy in the interests of safety.
 
-.. note::
-    It is recommended that static web files be disabled if they are not necessary in order to
-    mitigate cross-site scripting attacks. For more information, see :ref`tutorials_staticfiles`.
+1. It is expected that the web administration console functions correctly, along with extensions and community modules.
+
+2. Before starting double check that your :ref:`proxy base url <proxy_base>` setting is correct (including HTTP/HTTPS differences).
+
+   .. warning:: CSP restrictions will detect if this information is inconsistent, preventing the user interface from functioning.
+
+3. If you have problems with the administration console being frozen or not working, please see :ref:`csp_strict` for details on how to restore access during troubleshooting.
+  
+   * If you encounter any CSP problems please let us know, as an open-source project we depend on public feedback and testing to report CSP problems found.
+  
+   * With these improved CSP safety measures GeoServer may now detect vulnerabilities in your environment that were previously undetected.
+
+4. Managing CSP restrictions in GeoServer:
+   
+   * When using inline JavaScript in custom FreeMarker templates for WMS GetFeatureInfo HTML output will require use of :ref:`GEOSERVER_FEATUREINFO_HTML_SCRIPT <security_csp_featureinfo_html_script>` application property.
+
+   * If you experience issues with static web files or custom classes/plugins generating HTML output may need to update their settings.
+
+     For more information, see :ref:`production_config_csp`.
+
+     .. note::
+
+        It is recommended that static web files be disabled if they are not necessary in order to
+        mitigate cross-site scripting attacks. For more information, see :ref`tutorials_staticfiles`.
+
+   * GeoServer provides tools for administrators to control content security policy headers, see GeoServer Security section on :ref:`Content Security Policy Reference <security_csp>` for very detailed information.
+
+Faster Startup for Large Catalogs (GeoServer 2.27 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Starting in GeoServer 2.27.0, the configuration loading process has been optimized for faster startup times, particularly for large catalogs and network filesystem deployments.
+
+With this enhancement, catalog and configuration loading is now up to 3× faster on local disks and up to 10× faster on network filesystems.
+
+Potential Considerations:
+
+* **Check Compatibility**: Although the new loader is a drop-in replacement, verify that your existing configurations and extensions work as expected. Testing in a staging environment before deploying to production is recommended.
+
+Configuration:
+
+* No additional configuration is required for standard setups. However, if you encounter any issues, you can disable the optimized loader by setting the
+  `GEOSERVER_DATA_DIR_LOADER_ENABLED=false` environment variable or system property.
+
+For additional information see :ref:`datadir-loader` documentation.
+
+Keystore password link (GeoServer 2.26 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The :guilabel:`Password` page link to :guilabel:`Keystore password forgotten` now :ref:`directly links <security_webadmin_masterpasswordprovider>` to the :ref:`REST API <rest_security_keystore>` endpoint, allowing the value to be read in your browser.
+
+With this change it is no longer necessary to generate a :file:`masterpw.info` when upgrading an older data directory. If this file is present from an earlier upgrade it is still considering a security warning noted on the welcome page.
+
+ENTITY_RESOLUTION_UNRESTRICTED application property (GeoServer 2.26.4 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The global setting :guilabel:`Unrestricted XML External Entity Resolution` has been repalced with the ``ENTITY_RESOLUTION_UNRESTRICTED`` application property.
+
+For more information see :ref:`production_config_external_entities`.
 
 REST API URL Checks (GeoServer 2.26 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -59,15 +157,15 @@ Use the existing :ref:`security_urlchecks` page to add any locations or director
 
 GRIB Layers (GeoServer 2.26 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-GeoServer 2.26 upgraded underlying Unidata NetCDF libraries, from 4.x to 5.x, which includes internal changes to how GRIB files are intepreted (mapping tables and GRIB parameters interpretation changes). 
-The results in the underlying library to give some variables a different name, as well as interpreting the temporal variables differently (e.g., from period to instant, and changing the number of available times as a consequence).
+GeoServer 2.26 upgraded underlying Unidata NetCDF libraries, from 4.x to 5.x, which includes internal changes to how GRIB files are interpreted (mapping tables and GRIB parameters interpretation changes). 
+This results in the underlying library giving some variables a different name, as well as interpreting the temporal variables differently (e.g., from period to instant, and changing the number of available times as a consequence).
 
 Due to the above compatibility issues, **some** layers based on underlying GRIB datasets may stop working properly after the upgrade.
 If that is the case, the recommended action is to do a backup before doing the upgrade and then reconfigure the layers.
 
 Backup
 """"""
-#. Backup the GeoServer Datadir
+#. Backup the GeoServer data directory
 #. Backup eventual DB tables being used as catalog for the GRIB Datasets (That  could be needed if ImageMosaic of GRIB have been configured, storing the mosaic index on DB)
 #. Backup the index file automatically generated by GRIB/NetCDF library for the involved GRIB files (i.e. \*.gbx9, \*.ncx3; \*.ncx4)
 
@@ -81,7 +179,7 @@ Basic cleanup
    * gribfile.gbx9
    * .gribfile_hash folder (if not previously deleted) either located beside the original file, or within the configured `NETCDF_DATA_DIR <https://docs.geoserver.org/main/en/user/extensions/netcdf/netcdf.html#netcdf-files-in-read-only-directories>`__ (if defined).
 
-   * The screenshot below, represents an actual example of a tpcprblty.2019100912.incremental.grib2 file with related auxiliary/cache files
+   * The screenshot below represents an actual example of a tpcprblty.2019100912.incremental.grib2 file with related auxiliary/cache files
 
     .. figure:: images/grib_auxiliary_files.png
 
@@ -94,9 +192,9 @@ Additional steps needed in case of ImageMosaic of GRIBs
    * VariableAsample_image.dat, VariableBsample_image.dat, VariableCsample_image.dat, …
    * mosaicM.xml
 
-#. If using a datastore.properties connecting to an actual DB, cleanup the tables from the DB
+#. If using a datastore.properties connecting to an actual DB, clean up the tables from the DB
 
-   * Assuming that all the grib files belonging to the same ImageMosaic are affected by the same issue, you can delete the related tables and allow the imageMosaic reconfiguration to recreate them.
+   * Assuming that all the GRIB files belonging to the same ImageMosaic are affected by the same issue, you can delete the related tables and allow the imageMosaic reconfiguration to recreate them.
    * Based on the above example, the naming convention is that granules for VariableA are stored on table named VariableA and so on.
 
 #. Recreate the indexer.xml and _auxiliary.xml file as reported in the `NetCDF documentation <https://docs.geoserver.org/main/en/user/extensions/netcdf/netcdf.html#setting-up-a-basic-mosaic>`__ . (At the end, GRIB file are served through the NetCDF libraries)
@@ -129,7 +227,7 @@ When using the JDBC Disk Quota:
 
 * Validation query for ``H2`` is limited to ``SELECT 1``.
 * Validation query for ``Oracle`` is limited to ``SELECT 1 FROM DUAL``.
-* Validation query for other JDBC formats receive a warning in the logs if is not one of the common examples above.
+* Validation query for other JDBC formats receive a warning in the logs if it is not one of the common examples above.
 
 .. note:: If you find your JDBC Disk Quota is no longer loaded on startup: check the logs for message about validation query, edit the configuration, and restart.
 

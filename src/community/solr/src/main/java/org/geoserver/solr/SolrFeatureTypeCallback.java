@@ -35,8 +35,7 @@ public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogList
     public SolrFeatureTypeCallback() {}
 
     @Override
-    public boolean canHandle(
-            FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess) {
+    public boolean canHandle(FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess) {
         if (dataAccess instanceof SolrDataStore) {
             return true;
         } else {
@@ -46,9 +45,7 @@ public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogList
 
     @Override
     public boolean initialize(
-            FeatureTypeInfo info,
-            DataAccess<? extends FeatureType, ? extends Feature> dataAccess,
-            Name temporaryName)
+            FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess, Name temporaryName)
             throws IOException {
         SolrLayerConfiguration configuration =
                 (SolrLayerConfiguration) info.getMetadata().get(SolrLayerConfiguration.KEY);
@@ -62,9 +59,7 @@ public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogList
 
     @Override
     public void dispose(
-            FeatureTypeInfo info,
-            DataAccess<? extends FeatureType, ? extends Feature> dataAccess,
-            Name temporaryName)
+            FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess, Name temporaryName)
             throws IOException {
         SolrLayerConfiguration configuration =
                 (SolrLayerConfiguration) info.getMetadata().get(SolrLayerConfiguration.KEY);
@@ -73,8 +68,7 @@ public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogList
     }
 
     @Override
-    public void flush(
-            FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess)
+    public void flush(FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess)
             throws IOException {
         // nothing to do
     }
@@ -84,8 +78,8 @@ public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogList
         if (event.getSource() instanceof FeatureTypeInfo) {
             FeatureTypeInfo ft = (FeatureTypeInfo) event.getSource();
             Serializable config = ft.getMetadata().get(SolrLayerConfiguration.KEY);
-            if (config instanceof SolrLayerConfiguration) {
-                updateSolrConfiguration(ft, (SolrLayerConfiguration) config);
+            if (config instanceof SolrLayerConfiguration configuration) {
+                updateSolrConfiguration(ft, configuration);
             }
         }
     }
@@ -96,19 +90,16 @@ public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogList
         if (event.getSource() instanceof FeatureTypeInfo) {
             FeatureTypeInfo ft = (FeatureTypeInfo) event.getSource();
             Serializable config = ft.getMetadata().get(SolrLayerConfiguration.KEY);
-            if (config instanceof SolrLayerConfiguration) {
-                SolrLayerConfiguration slc = (SolrLayerConfiguration) config;
+            if (config instanceof SolrLayerConfiguration slc) {
                 // go directly to the resource pool to avoid security wrappers
                 try {
                     DataAccess<? extends FeatureType, ? extends Feature> dataStore =
                             getCatalog().getResourcePool().getDataStore(ft.getStore());
-                    if (dataStore instanceof SolrDataStore) {
-                        SolrDataStore solr = (SolrDataStore) dataStore;
+                    if (dataStore instanceof SolrDataStore solr) {
                         solr.getSolrConfigurations().remove(slc.getLayerName());
                     }
                 } catch (IOException e) {
-                    throw new CatalogException(
-                            "Failed to remove layer configuration from data store", e);
+                    throw new CatalogException("Failed to remove layer configuration from data store", e);
                 }
             }
         }
@@ -126,8 +117,7 @@ public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogList
         if (event.getSource() instanceof FeatureTypeInfo) {
             FeatureTypeInfo ft = (FeatureTypeInfo) event.getSource();
             Serializable config = ft.getMetadata().get(SolrLayerConfiguration.KEY);
-            if (config instanceof SolrLayerConfiguration) {
-                SolrLayerConfiguration slc = (SolrLayerConfiguration) config;
+            if (config instanceof SolrLayerConfiguration slc) {
                 if (!ft.getName().equals(slc.getLayerName())) {
                     updateSolrConfiguration(ft, slc);
                 }
@@ -140,8 +130,7 @@ public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogList
         try {
             DataAccess<? extends FeatureType, ? extends Feature> dataStore =
                     getCatalog().getResourcePool().getDataStore(ft.getStore());
-            if (dataStore instanceof SolrDataStore) {
-                SolrDataStore solr = (SolrDataStore) dataStore;
+            if (dataStore instanceof SolrDataStore solr) {
                 solr.getSolrConfigurations().remove(slc.getLayerName());
                 slc.setLayerName(ft.getName());
                 solr.setSolrConfigurations(slc);
@@ -165,8 +154,8 @@ public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogList
     }
 
     /**
-     * Spring bean used for doing initializing logic with beans Catalog and SolrFeatureTypeCallback
-     * available and loaded.
+     * Spring bean used for doing initializing logic with beans Catalog and SolrFeatureTypeCallback available and
+     * loaded.
      *
      * @author Fernando Mino - Geosolutions
      */
@@ -177,8 +166,7 @@ public class SolrFeatureTypeCallback implements FeatureTypeCallback, CatalogList
         private Catalog catalog;
         private SolrFeatureTypeCallback solrFeatureTypeCallback;
 
-        public CatalogInitializer(
-                Catalog catalog, SolrFeatureTypeCallback solrFeatureTypeCallback) {
+        public CatalogInitializer(Catalog catalog, SolrFeatureTypeCallback solrFeatureTypeCallback) {
             super();
             this.catalog = catalog;
             this.solrFeatureTypeCallback = solrFeatureTypeCallback;

@@ -37,13 +37,11 @@ import org.w3c.dom.Element;
  * Unit test suite for {@link DescribeLayerTransformer}
  *
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class DescribeLayerTransformerTest {
 
     /**
-     * A request for the tests to fill up with the test spficic parameters. setUp creates it whit a
-     * mocked up catalog
+     * A request for the tests to fill up with the test spficic parameters. setUp creates it whit a mocked up catalog
      */
     private DescribeLayerRequest request;
 
@@ -147,9 +145,9 @@ public class DescribeLayerTransformerTest {
     /**
      * Test the root element name and version attribute.
      *
-     * <p>This test does not set a requested layer to the request and {@link
-     * DescribeLayerTransformer} does not care since checking the mandatory arguments shall be done
-     * prior to using the transformer, so it'll return an empty root element in this case.
+     * <p>This test does not set a requested layer to the request and {@link DescribeLayerTransformer} does not care
+     * since checking the mandatory arguments shall be done prior to using the transformer, so it'll return an empty
+     * root element in this case.
      */
     @Test
     public void testRootElement() throws Exception {

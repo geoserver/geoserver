@@ -28,8 +28,7 @@ public class GridBaseCRSKvpParser extends KvpParser {
             try {
                 CRS.decode(epsgCode);
             } catch (Exception e) {
-                throw new WcsException(
-                        "Invalid SRS code " + epsgCode, InvalidParameterValue, "GridBaseCRS");
+                throw new WcsException("Invalid SRS code " + epsgCode, InvalidParameterValue, "GridBaseCRS");
             }
         }
 

@@ -18,6 +18,5 @@ public interface AggregateStats {
      * @return The aggregate statistics
      * @throws IOException If an error occurs
      */
-    Object getStat(FeatureSource productSource, String collectionIdentifier, String sourceProperty)
-            throws IOException;
+    Object getStat(FeatureSource productSource, String collectionIdentifier, String sourceProperty) throws IOException;
 }

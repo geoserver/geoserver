@@ -5,19 +5,22 @@
  */
 package org.geoserver.web.util;
 
+import java.io.Serial;
 import java.util.Map;
 import org.apache.wicket.model.IModel;
 
 /**
  * A model which backs onto an underlying map.
  *
- * <p>The semantics of this model are similar to {@link org.apache.wicket.model.PropertyModel}
- * except for that expressions map to keys of a map rather than java bean property names.
+ * <p>The semantics of this model are similar to {@link org.apache.wicket.model.PropertyModel} except for that
+ * expressions map to keys of a map rather than java bean property names.
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
 public class MapModel<T> implements IModel<T> {
+    @Serial
     private static final long serialVersionUID = 3122822158252376260L;
+
     IModel<? extends Map<String, ?>> model;
     String expression;
 
@@ -52,6 +55,7 @@ public class MapModel<T> implements IModel<T> {
     }
 
     private static class MapWrappingModel implements IModel<Map<String, ?>> {
+        @Serial
         private static final long serialVersionUID = -1474150801738143281L;
 
         private Map<String, ?> myMap;

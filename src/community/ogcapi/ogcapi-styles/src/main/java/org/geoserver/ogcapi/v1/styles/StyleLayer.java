@@ -85,9 +85,7 @@ public class StyleLayer {
                 if (source.getName().contains(":")) {
                     layer = catalog.getLayerByName(source.getName());
                 } else {
-                    layer =
-                            catalog.getLayerByName(
-                                    si.getWorkspace().getName() + ":" + source.getName());
+                    layer = catalog.getLayerByName(si.getWorkspace().getName() + ":" + source.getName());
                 }
             }
             if (layer != null) {
@@ -95,10 +93,9 @@ public class StyleLayer {
             }
         } else {
             // common style case, look for layer associations
-            Filter layerFilter =
-                    Predicates.or(
-                            Predicates.equal("defaultStyle", si),
-                            Predicates.equal("styles", si, MultiValuedFilter.MatchAction.ANY));
+            Filter layerFilter = Predicates.or(
+                    Predicates.equal("defaultStyle", si),
+                    Predicates.equal("styles", si, MultiValuedFilter.MatchAction.ANY));
             try (CloseableIterator<LayerInfo> layers = catalog.list(LayerInfo.class, layerFilter)) {
                 while (layers.hasNext()) {
                     LayerInfo layer = layers.next();
@@ -116,14 +113,13 @@ public class StyleLayer {
         }
     }
 
-    public void addLayerInfo(
-            StyledLayer source, SampleDataSupport sampleDataSupport, LayerInfo layer) {
+    public void addLayerInfo(StyledLayer source, SampleDataSupport sampleDataSupport, LayerInfo layer) {
         // determine type from first usable match
         if (type == null) {
             try {
                 ResourceInfo resource = layer.getResource();
-                if (resource instanceof FeatureTypeInfo) {
-                    FeatureType featureType = ((FeatureTypeInfo) resource).getFeatureType();
+                if (resource instanceof FeatureTypeInfo info) {
+                    FeatureType featureType = info.getFeatureType();
                     this.type = getLayerType(featureType);
                     this.attributes = getAttributes(source, featureType);
                 } else if (resource instanceof CoverageInfo) {
@@ -163,8 +159,7 @@ public class StyleLayer {
         }
     }
 
-    private boolean containsSymbolizer(
-            Set<Class<? extends Symbolizer>> types, Class<? extends Symbolizer> target) {
+    private boolean containsSymbolizer(Set<Class<? extends Symbolizer>> types, Class<? extends Symbolizer> target) {
         return types.stream().anyMatch(symbolizerClass -> target.isAssignableFrom(symbolizerClass));
     }
 
@@ -173,11 +168,9 @@ public class StyleLayer {
         Class<?> binding = gd.getType().getBinding();
         if (Point.class.isAssignableFrom(binding) || MultiPoint.class.isAssignableFrom(binding)) {
             return LayerType.point;
-        } else if (LineString.class.isAssignableFrom(binding)
-                || MultiLineString.class.isAssignableFrom(binding)) {
+        } else if (LineString.class.isAssignableFrom(binding) || MultiLineString.class.isAssignableFrom(binding)) {
             return LayerType.line;
-        } else if (Polygon.class.isAssignableFrom(binding)
-                || MultiPolygon.class.isAssignableFrom(binding)) {
+        } else if (Polygon.class.isAssignableFrom(binding) || MultiPolygon.class.isAssignableFrom(binding)) {
             return LayerType.polygon;
         } else {
             return LayerType.geometry;
@@ -185,29 +178,27 @@ public class StyleLayer {
     }
 
     public void acceptvisitor(StyledLayer source, StyleVisitor visitor) {
-        if (source instanceof NamedLayer) {
-            ((NamedLayer) source).accept(visitor);
+        if (source instanceof NamedLayer layer) {
+            layer.accept(visitor);
         } else {
             ((UserLayer) source).accept(visitor);
         }
     }
 
     private List<StyleAttribute> getAttributes(StyledLayer source, FeatureType featureType) {
-        StyleAttributeExtractor extractor =
-                featureType instanceof SimpleFeatureType
-                        ? new StyleAttributeExtractor((SimpleFeatureType) featureType)
-                        : new StyleAttributeExtractor();
+        StyleAttributeExtractor extractor = featureType instanceof SimpleFeatureType sft
+                ? new StyleAttributeExtractor(sft)
+                : new StyleAttributeExtractor();
         acceptvisitor(source, extractor);
         Map<PropertyName, Class<?>> propertyTypes = extractor.getPropertyTypes();
 
         return propertyTypes.entrySet().stream()
-                .map(
-                        e -> {
-                            StyleAttribute sa = new StyleAttribute();
-                            sa.setId(e.getKey().getPropertyName());
-                            sa.setType(getAttributeType(e.getValue()));
-                            return sa;
-                        })
+                .map(e -> {
+                    StyleAttribute sa = new StyleAttribute();
+                    sa.setId(e.getKey().getPropertyName());
+                    sa.setType(getAttributeType(e.getValue()));
+                    return sa;
+                })
                 .collect(Collectors.toList());
     }
 

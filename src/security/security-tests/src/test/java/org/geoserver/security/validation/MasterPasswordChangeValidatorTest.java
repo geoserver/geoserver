@@ -50,8 +50,7 @@ public class MasterPasswordChangeValidatorTest extends GeoServerMockTestSupport 
             validator.validateChangeRequest(r);
             fail();
         } catch (MasterPasswordChangeException ex) {
-            assertSecurityException(
-                    ex, MasterPasswordChangeException.CONFIRMATION_PASSWORD_REQUIRED);
+            assertSecurityException(ex, MasterPasswordChangeException.CONFIRMATION_PASSWORD_REQUIRED);
         }
     }
 
@@ -66,15 +65,13 @@ public class MasterPasswordChangeValidatorTest extends GeoServerMockTestSupport 
         assertTrue(fail);
     }
 
-    protected void checkConfirmationEqualsNewPassword(MasterPasswordChangeRequest r)
-            throws Exception {
+    protected void checkConfirmationEqualsNewPassword(MasterPasswordChangeRequest r) throws Exception {
         boolean fail = false;
         try {
             validator.validateChangeRequest(r);
         } catch (MasterPasswordChangeException ex) {
             fail = true;
-            assertSecurityException(
-                    ex, MasterPasswordChangeException.PASSWORD_AND_CONFIRMATION_NOT_EQUAL);
+            assertSecurityException(ex, MasterPasswordChangeException.PASSWORD_AND_CONFIRMATION_NOT_EQUAL);
         }
         assertTrue(fail);
     }
@@ -98,8 +95,7 @@ public class MasterPasswordChangeValidatorTest extends GeoServerMockTestSupport 
 
     @Test
     public void testUrlConfig() throws Exception {
-        URLMasterPasswordProviderValidator validator =
-                new URLMasterPasswordProviderValidator(getSecurityManager());
+        URLMasterPasswordProviderValidator validator = new URLMasterPasswordProviderValidator(getSecurityManager());
 
         URLMasterPasswordProviderConfig config = new URLMasterPasswordProviderConfig();
         config.setName("foo");
@@ -119,9 +115,7 @@ public class MasterPasswordChangeValidatorTest extends GeoServerMockTestSupport 
             fail();
         } catch (URLMasterPasswordProviderException e) {
             assertSecurityException(
-                    e,
-                    URLMasterPasswordProviderException.URL_LOCATION_NOT_READABLE,
-                    new URL("file:ABC"));
+                    e, URLMasterPasswordProviderException.URL_LOCATION_NOT_READABLE, new URL("file:ABC"));
         }
     }
 
@@ -155,8 +149,7 @@ public class MasterPasswordChangeValidatorTest extends GeoServerMockTestSupport 
         validator.validateChangeRequest(r);
     }
 
-    protected void assertSecurityException(
-            MasterPasswordChangeException ex, String id, Object... params) {
+    protected void assertSecurityException(MasterPasswordChangeException ex, String id, Object... params) {
 
         assertEquals(id, ex.getId());
         assertEquals(params.length, ex.getArgs().length);
@@ -165,8 +158,7 @@ public class MasterPasswordChangeValidatorTest extends GeoServerMockTestSupport 
         }
     }
 
-    protected void assertSecurityException(
-            MasterPasswordProviderException ex, String id, Object... params) {
+    protected void assertSecurityException(MasterPasswordProviderException ex, String id, Object... params) {
 
         assertEquals(id, ex.getId());
         assertEquals(params.length, ex.getArgs().length);

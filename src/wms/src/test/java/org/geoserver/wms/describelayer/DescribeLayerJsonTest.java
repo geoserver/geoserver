@@ -22,7 +22,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
  * Unit test suite for {@link JSONDescribeLayerResponse}
  *
  * @author Carlo Cancellieri - GeoSolutions
- * @version $Id$
  */
 public class DescribeLayerJsonTest extends WMSTestSupport {
 
@@ -40,19 +39,18 @@ public class DescribeLayerJsonTest extends WMSTestSupport {
     public void testCustomJSONP() throws Exception {
 
         String layer = MockData.FORESTS.getPrefix() + ":" + MockData.FORESTS.getLocalPart();
-        String request =
-                "wms?version=1.1.1"
-                        + "&request=DescribeLayer"
-                        + "&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&width=20&height=20"
-                        + "&outputFormat="
-                        + JSONType.jsonp
-                        + "&format_options="
-                        + JSONType.CALLBACK_FUNCTION_KEY
-                        + ":DescribeLayer";
+        String request = "wms?version=1.1.1"
+                + "&request=DescribeLayer"
+                + "&layers="
+                + layer
+                + "&query_layers="
+                + layer
+                + "&width=20&height=20"
+                + "&outputFormat="
+                + JSONType.jsonp
+                + "&format_options="
+                + JSONType.CALLBACK_FUNCTION_KEY
+                + ":DescribeLayer";
 
         JSONType.setJsonpEnabled(true);
         String result = getAsString(request);
@@ -65,16 +63,15 @@ public class DescribeLayerJsonTest extends WMSTestSupport {
     @Test
     public void testSimpleJSON() throws Exception {
         String layer = MockData.FORESTS.getPrefix() + ":" + MockData.FORESTS.getLocalPart();
-        String request =
-                "wms?version=1.1.1"
-                        + "&request=DescribeLayer"
-                        + "&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&width=20&height=20"
-                        + "&outputFormat="
-                        + JSONType.json;
+        String request = "wms?version=1.1.1"
+                + "&request=DescribeLayer"
+                + "&layers="
+                + layer
+                + "&query_layers="
+                + layer
+                + "&width=20&height=20"
+                + "&outputFormat="
+                + JSONType.json;
 
         String result = getAsString(request);
         // System.out.println(result);
@@ -102,16 +99,15 @@ public class DescribeLayerJsonTest extends WMSTestSupport {
     public void testJSONLayerGroup() throws Exception {
 
         String layer = NATURE_GROUP;
-        String request =
-                "wms?version=1.1.1"
-                        + "&request=DescribeLayer"
-                        + "&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&width=20&height=20"
-                        + "&outputFormat="
-                        + JSONType.json;
+        String request = "wms?version=1.1.1"
+                + "&request=DescribeLayer"
+                + "&layers="
+                + layer
+                + "&query_layers="
+                + layer
+                + "&width=20&height=20"
+                + "&outputFormat="
+                + JSONType.json;
 
         String result = getAsString(request);
 
@@ -129,7 +125,7 @@ public class DescribeLayerJsonTest extends WMSTestSupport {
 
         assertEquals(layerDesc.get("layerName"), layer);
         // assertEquals(layerDesc.get("owsUrl"), "WFS");
-        assertEquals(layerDesc.get("owsType"), "WFS");
+        assertEquals("WFS", layerDesc.get("owsType"));
     }
 
     private void checkJSONDescribeLayerGroup(String body, String layer) {
@@ -139,33 +135,28 @@ public class DescribeLayerJsonTest extends WMSTestSupport {
 
         JSONArray layerDescs = rootObject.getJSONArray("layerDescriptions");
         JSONObject layerDesc = layerDescs.getJSONObject(0);
-        assertEquals(
-                layerDesc.get("layerName"),
-                MockData.LAKES.getPrefix() + ":" + MockData.LAKES.getLocalPart());
+        assertEquals(layerDesc.get("layerName"), MockData.LAKES.getPrefix() + ":" + MockData.LAKES.getLocalPart());
         assertTrue(layerDesc.get("owsURL").toString().endsWith("geoserver/wfs?"));
-        assertEquals(layerDesc.get("owsType"), "WFS");
+        assertEquals("WFS", layerDesc.get("owsType"));
 
         layerDesc = layerDescs.getJSONObject(1);
-        assertEquals(
-                layerDesc.get("layerName"),
-                MockData.FORESTS.getPrefix() + ":" + MockData.FORESTS.getLocalPart());
+        assertEquals(layerDesc.get("layerName"), MockData.FORESTS.getPrefix() + ":" + MockData.FORESTS.getLocalPart());
         assertTrue(layerDesc.get("owsURL").toString().endsWith("geoserver/wfs?"));
-        assertEquals(layerDesc.get("owsType"), "WFS");
+        assertEquals("WFS", layerDesc.get("owsType"));
     }
 
     @Test
     public void testJSONDescribeLayerCharset() throws Exception {
         String layer = MockData.FORESTS.getPrefix() + ":" + MockData.FORESTS.getLocalPart();
-        String request =
-                "wms?version=1.1.1"
-                        + "&request=DescribeLayer"
-                        + "&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&width=20&height=20"
-                        + "&outputFormat="
-                        + JSONType.json;
+        String request = "wms?version=1.1.1"
+                + "&request=DescribeLayer"
+                + "&layers="
+                + layer
+                + "&query_layers="
+                + layer
+                + "&width=20&height=20"
+                + "&outputFormat="
+                + JSONType.json;
 
         MockHttpServletResponse result = getAsServletResponse(request, "");
         assertEquals("UTF-8", result.getCharacterEncoding());

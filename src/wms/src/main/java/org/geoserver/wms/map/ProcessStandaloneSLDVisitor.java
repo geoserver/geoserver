@@ -75,8 +75,8 @@ public class ProcessStandaloneSLDVisitor extends GeoServerSLDVisitor {
             }
 
             currLayer = new MapLayerInfo(layerInfo);
-            if (sl instanceof NamedLayer) {
-                NamedLayer namedLayer = ((NamedLayer) sl);
+            if (sl instanceof NamedLayer namedLayer1) {
+                NamedLayer namedLayer = namedLayer1;
                 currLayer.setLayerFeatureConstraints(namedLayer.getLayerFeatureConstraints());
             }
             return layerInfo;
@@ -117,10 +117,9 @@ public class ProcessStandaloneSLDVisitor extends GeoServerSLDVisitor {
                 s = catalog.getStyleByName("raster");
                 if (s == null) {
                     // nope, no default raster style either. Give up.
-                    throw new ServiceException(
-                            failMessage
-                                    + "  Also tried to use "
-                                    + "the generic raster style 'raster', but it wasn't available.");
+                    throw new ServiceException(failMessage
+                            + "  Also tried to use "
+                            + "the generic raster style 'raster', but it wasn't available.");
                 }
             } else {
                 throw new ServiceException(failMessage);
@@ -143,8 +142,8 @@ public class ProcessStandaloneSLDVisitor extends GeoServerSLDVisitor {
         if (currLayer != null) {
             layers.add(currLayer);
             styles.add(userStyle);
-        } else if (info != null && info instanceof LayerInfo) {
-            layers.add(new MapLayerInfo((LayerInfo) info));
+        } else if (info != null && info instanceof LayerInfo layerInfo) {
+            layers.add(new MapLayerInfo(layerInfo));
             styles.add(userStyle);
         }
     }

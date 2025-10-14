@@ -14,8 +14,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import javax.media.jai.iterator.RandomIter;
-import javax.media.jai.iterator.RandomIterFactory;
+import org.eclipse.imagen.iterator.RandomIter;
+import org.eclipse.imagen.iterator.RandomIterFactory;
 import org.geotools.coverage.grid.GridCoverage2D;
 
 @JsonPropertyOrder({"type", "dataType", "axisNames", "shape", "values"})
@@ -32,7 +32,8 @@ public class NdArray extends CoverageJson {
     @JsonProperty(required = true)
     private List<String> axisNames;
 
-    @JsonIgnore private List<GridCoverage2D> coverages;
+    @JsonIgnore
+    private List<GridCoverage2D> coverages;
 
     public NdArray(int dataType, Domain domain, List<GridCoverage2D> coverages) {
         super(TYPE);

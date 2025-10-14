@@ -12,6 +12,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -34,6 +35,7 @@ import org.geotools.referencing.CRS;
 
 public class SpatialFile extends FileData {
 
+    @Serial
     private static final long serialVersionUID = -280215815681792790L;
 
     /** .prj file */
@@ -92,16 +94,13 @@ public class SpatialFile extends FileData {
         prjFile = null;
         styleFile = null;
 
-        final List<String> styleExtensions =
-                Lists.transform(
-                        Styles.handlers(),
-                        new Function<>() {
-                            @Nullable
-                            @Override
-                            public String apply(@Nullable StyleHandler input) {
-                                return input.getFileExtension();
-                            }
-                        });
+        final List<String> styleExtensions = Lists.transform(Styles.handlers(), new Function<>() {
+            @Nullable
+            @Override
+            public String apply(@Nullable StyleHandler input) {
+                return input.getFileExtension();
+            }
+        });
 
         // getBaseName only gets the LAST extension so beware for .shp.aux.xml stuff
         final String baseName = getBaseName(file.getName());

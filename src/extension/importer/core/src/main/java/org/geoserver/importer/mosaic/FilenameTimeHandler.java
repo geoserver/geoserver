@@ -6,6 +6,7 @@
 package org.geoserver.importer.mosaic;
 
 import com.google.common.base.Preconditions;
+import java.io.Serial;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,13 +20,14 @@ import org.geotools.util.logging.Logging;
 /**
  * Extracts timestamps from granule file names.
  *
- * <p>This class needs a regular expression in order to extract the raw timestamp from the filename
- * and a date format to parse the exracted timestamp into a date object.
+ * <p>This class needs a regular expression in order to extract the raw timestamp from the filename and a date format to
+ * parse the exracted timestamp into a date object.
  *
  * @author Justin Deoliveira, OpenGeo
  */
 public class FilenameTimeHandler extends TimeHandler {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public static final String FILENAME_REGEX = "filenameRegex";
@@ -78,11 +80,7 @@ public class FilenameTimeHandler extends TimeHandler {
         Matcher m = filenamePattern.matcher(g.getFile().getName());
         if (!m.matches() || m.groupCount() != 2) {
             // report back message
-            String msg =
-                    "Failure parsing time from file "
-                            + filename
-                            + " with pattern "
-                            + getFilenameRegex();
+            String msg = "Failure parsing time from file " + filename + " with pattern " + getFilenameRegex();
             g.setMessage(msg);
 
             LOGGER.log(Level.WARNING, msg);
@@ -93,10 +91,7 @@ public class FilenameTimeHandler extends TimeHandler {
             return timeFormat.parse(m.group(1));
         } catch (ParseException e) {
             String msg =
-                    "Failure parsing timestamp with pattern "
-                            + timeFormat.toPattern()
-                            + ": "
-                            + e.getLocalizedMessage();
+                    "Failure parsing timestamp with pattern " + timeFormat.toPattern() + ": " + e.getLocalizedMessage();
             g.setMessage(msg);
 
             LOGGER.log(Level.WARNING, msg, e);

@@ -75,18 +75,12 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
     /** Returns the featureId, or null if it's missing or the request is not for OGC API Features */
     protected String getItemId() {
         return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
-                .map(
-                        att ->
-                                (String)
-                                        att.getAttribute(
-                                                FeatureService.ITEM_ID,
-                                                RequestAttributes.SCOPE_REQUEST))
+                .map(att -> (String) att.getAttribute(FeatureService.ITEM_ID, RequestAttributes.SCOPE_REQUEST))
                 .orElse(null);
     }
 
     /** Writes a single feature using the facilities provided by the base class */
-    private void writeSingleFeature(
-            FeatureCollectionResponse value, OutputStream output, Operation operation)
+    private void writeSingleFeature(FeatureCollectionResponse value, OutputStream output, Operation operation)
             throws IOException {
         OutputStreamWriter osw =
                 new OutputStreamWriter(output, gs.getGlobal().getSettings().getCharset());
@@ -100,8 +94,7 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
     }
 
     @Override
-    protected void writeExtraFeatureProperties(
-            Feature feature, Operation operation, GeoJSONBuilder jw) {
+    protected void writeExtraFeatureProperties(Feature feature, Operation operation, GeoJSONBuilder jw) {
         String featureId = getItemId();
         if (featureId != null) {
             writeLinks(null, operation, jw, featureId);
@@ -109,8 +102,7 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
     }
 
     @Override
-    protected void writePagingLinks(
-            FeatureCollectionResponse response, Operation operation, GeoJSONBuilder jw) {
+    protected void writePagingLinks(FeatureCollectionResponse response, Operation operation, GeoJSONBuilder jw) {
         // we have more than just paging links here
         writeLinks(response, operation, jw, null);
     }
@@ -124,10 +116,7 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
      * @param featureId
      */
     protected void writeLinks(
-            FeatureCollectionResponse response,
-            Operation operation,
-            GeoJSONBuilder jw,
-            String featureId) {
+            FeatureCollectionResponse response, Operation operation, GeoJSONBuilder jw, String featureId) {
         APIRequestInfo requestInfo = APIRequestInfo.get();
         if (null == requestInfo) {
             // request comes from WFS, not from ogcapi
@@ -153,39 +142,22 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
         // paging links
         if (response != null) {
             if (response.getPrevious() != null) {
-                writeLink(
-                        jw,
-                        "Previous page",
-                        OGCAPIMediaTypes.GEOJSON_VALUE,
-                        "prev",
-                        response.getPrevious());
+                writeLink(jw, "Previous page", OGCAPIMediaTypes.GEOJSON_VALUE, "prev", response.getPrevious());
             }
             if (response.getNext() != null) {
-                writeLink(
-                        jw,
-                        "Next page",
-                        OGCAPIMediaTypes.GEOJSON_VALUE,
-                        "next",
-                        response.getNext());
+                writeLink(jw, "Next page", OGCAPIMediaTypes.GEOJSON_VALUE, "next", response.getNext());
             }
         }
         // alternate/self links
-        String basePath =
-                "ogc/features/v1/collections/"
-                        + ResponseUtils.urlEncode(featureType.prefixedName());
-        Collection<MediaType> formats =
-                requestInfo.getProducibleMediaTypes(FeaturesResponse.class, true);
+        String basePath = "ogc/features/v1/collections/" + ResponseUtils.urlEncode(featureType.prefixedName());
+        Collection<MediaType> formats = requestInfo.getProducibleMediaTypes(FeaturesResponse.class, true);
         for (MediaType format : formats) {
             String path = basePath + "/items";
             if (featureId != null) {
                 path += "/" + ResponseUtils.urlEncode(featureId);
             }
-            String href =
-                    ResponseUtils.buildURL(
-                            baseUrl,
-                            path,
-                            Collections.singletonMap("f", format.toString()),
-                            URLMangler.URLType.SERVICE);
+            String href = ResponseUtils.buildURL(
+                    baseUrl, path, Collections.singletonMap("f", format.toString()), URLMangler.URLType.SERVICE);
             String linkType = Link.REL_ALTERNATE;
             String linkTitle = "This document as " + format;
             if (format.toString().equals(OGCAPIMediaTypes.GEOJSON_VALUE)) {
@@ -195,14 +167,9 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
             writeLink(jw, linkTitle, format.toString(), linkType, href);
         }
         // back-pointer to the collection
-        for (MediaType format :
-                requestInfo.getProducibleMediaTypes(CollectionDocument.class, true)) {
-            String href =
-                    ResponseUtils.buildURL(
-                            baseUrl,
-                            basePath,
-                            Collections.singletonMap("f", format.toString()),
-                            URLMangler.URLType.SERVICE);
+        for (MediaType format : requestInfo.getProducibleMediaTypes(CollectionDocument.class, true)) {
+            String href = ResponseUtils.buildURL(
+                    baseUrl, basePath, Collections.singletonMap("f", format.toString()), URLMangler.URLType.SERVICE);
             String linkType = Link.REL_COLLECTION;
             String linkTitle = "The collection description as " + format;
             writeLink(jw, linkTitle, format.toString(), linkType, href);
@@ -223,8 +190,7 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
     }
 
     @Override
-    protected void writeCollectionCRS(GeoJSONBuilder jsonWriter, CoordinateReferenceSystem crs)
-            throws IOException {
+    protected void writeCollectionCRS(GeoJSONBuilder jsonWriter, CoordinateReferenceSystem crs) throws IOException {
         // write the CRS block only if needed
         if (!CRS.equalsIgnoreMetadata(DefaultGeographicCRS.WGS84, crs)) {
             super.writeCollectionCRS(jsonWriter, crs);
@@ -232,8 +198,7 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
     }
 
     @Override
-    protected void writeCollectionCounts(
-            BigInteger featureCount, long numberReturned, GeoJSONBuilder jsonWriter) {
+    protected void writeCollectionCounts(BigInteger featureCount, long numberReturned, GeoJSONBuilder jsonWriter) {
         // counts
         if (featureCount != null) {
             jsonWriter.key("numberMatched").value(featureCount);
@@ -243,10 +208,7 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
 
     @Override
     protected void writeCollectionBounds(
-            boolean featureBounding,
-            GeoJSONBuilder jsonWriter,
-            List<FeatureCollection> resultsList,
-            boolean hasGeom) {
+            boolean featureBounding, GeoJSONBuilder jsonWriter, List<FeatureCollection> resultsList, boolean hasGeom) {
         // not needed in OGC API for Features
     }
 

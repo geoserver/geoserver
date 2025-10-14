@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java-version: [11, 17, 21, 25] # Java versions to build/test against
+        java-version: [17, 21, 25] # Java versions to build/test against
     steps:
       - name: Checkout repository (shallow clone)
         uses: actions/checkout@v4
@@ -60,9 +60,8 @@ jobs:
     strategy:
       fail-fast: false  # Prevents other matrix jobs from being canceled if one fails
       matrix:
-        #suite: [ogcapi-features10, wcs10, wcs11, wfs10, wfs11, wms10, wms11, wms13]
-        suite: [ogcapi-features10, wms11, wms13, wfs10, wfs11, wcs11]
-        java-version: [11, 17, 21, 25] # Match Java versions from build-war
+        suite: [ogcapi-features10, ogcapi-tiles10, wms11, wms13, wmts10, wfs10, wfs11, wfs20, wcs11, geotiff11, gpkg12]
+        java-version: [17, 21, 25] # Match Java versions from build-war
     steps:
       - name: Checkout repository (shallow clone)
         uses: actions/checkout@v4
@@ -103,12 +102,32 @@ jobs:
         working-directory: build/cite
         run: |
           chmod o+w logs
-          make test suite=${{ matrix.suite }}
+          # WFS 2.0 lock tests can randomly fail due to timing issues, retry them
+          if [ "${{ matrix.suite }}" = "wfs20" ]; then
+            MAX_RETRIES=5
+            COUNT=0
+            until make test suite=${{ matrix.suite }}; do
+              COUNT=$((COUNT+1))
+              if [ "$COUNT" -ge "$MAX_RETRIES" ]; then
+                echo "WFS 2.0 tests failed after $COUNT attempts."
+                exit 1
+              fi
+              echo "Retrying WFS 2.0... attempt $((COUNT+1)) of $MAX_RETRIES"
+            done
+          else
+            make test suite=${{ matrix.suite }}
+          fi
 
       - name: Print full failures report
         if: always()
         working-directory: build/cite
         run: make print-full-failures
+
+      - name: Print GeoServer full version
+        if: always()
+        working-directory: build/cite
+        run: make geoserver-version
+
 
       - name: Print GeoServer logs
         if: always()

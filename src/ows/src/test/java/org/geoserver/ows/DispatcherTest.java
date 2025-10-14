@@ -12,8 +12,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -129,7 +129,7 @@ public class DispatcherTest {
             Request req = new Request();
             req.setInput(buffered);
 
-            Request res = Dispatcher.readOpPost(req);
+            Request res = Dispatcher.readOpPost(req, false);
             assertSame(req, res);
             assertEquals("Hello", res.getRequest());
             assertEquals("hello", res.getService());
@@ -143,8 +143,7 @@ public class DispatcherTest {
 
         IOException ioException = new FileNotFoundException("notFound.txt");
         SAXException saxException = new SAXException(ioException);
-        SAXException saxParseException =
-                new SAXParseException("glitch", "test.xsd", "test.xsd", 30, 12);
+        SAXException saxParseException = new SAXParseException("glitch", "test.xsd", "test.xsd", 30, 12);
 
         Exception clean = parser.cleanException(ioException);
         String message = clean.getLocalizedMessage();
@@ -190,8 +189,7 @@ public class DispatcherTest {
     public void testParseKVP() throws Exception {
         URL url = getClass().getResource("applicationContext.xml");
 
-        try (FileSystemXmlApplicationContext context =
-                new FileSystemXmlApplicationContext(url.toString())) {
+        try (FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString())) {
 
             Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
 
@@ -218,8 +216,7 @@ public class DispatcherTest {
     public void testParseXML() throws Exception {
         URL url = getClass().getResource("applicationContext.xml");
         File file = File.createTempFile("geoserver", "req");
-        try (FileSystemXmlApplicationContext context =
-                new FileSystemXmlApplicationContext(url.toString())) {
+        try (FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString())) {
 
             Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
 
@@ -229,8 +226,7 @@ public class DispatcherTest {
                 output.flush();
             }
 
-            try (BufferedReader input =
-                    new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
+            try (BufferedReader input = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
 
                 input.mark(8192);
 
@@ -254,16 +250,16 @@ public class DispatcherTest {
     public void testParseXMLServiceException() throws Exception {
         URL url = getClass().getResource("applicationContext.xml");
         File file = File.createTempFile("geoserver", "req");
-        try (FileSystemXmlApplicationContext context =
-                new FileSystemXmlApplicationContext(url.toString())) {
+        try (FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString())) {
 
             Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
 
             String dtdExternal =
-                    "<!DOCTYPE foo [\n"
-                            + "        <!ENTITY % external SYSTEM \"invalid.xsd\">\n"
-                            + "        %external;\n"
-                            + "        ]>";
+                    """
+                    <!DOCTYPE foo [
+                            <!ENTITY % external SYSTEM "invalid.xsd">
+                            %external;
+                            ]>""";
             String body = dtdExternal + "\n<Hello service=\"hello\"/>";
 
             try (FileOutputStream output = new FileOutputStream(file)) {
@@ -271,8 +267,7 @@ public class DispatcherTest {
                 output.flush();
             }
 
-            try (BufferedReader input =
-                    new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
+            try (BufferedReader input = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
 
                 input.mark(8192);
 
@@ -282,17 +277,9 @@ public class DispatcherTest {
                 req.setPostRequestElementName("Hello");
                 req.setService("hello");
 
-                try {
-                    Object request = dispatcher.parseRequestXML(null, input, req);
-                    fail("ServiceException expected due to invalid DTD reference:" + request);
-                } catch (SAXException e) {
-                    assertSame(e.getClass(), SAXException.class);
-                    String messsage = e.getMessage();
-                    assertFalse(messsage.contains("invalid.xsd"));
-                } catch (Throwable t) {
-                    fail(
-                            "ServiceException expected, to test use use of XmlRequestReader.cleanException(t)");
-                }
+                SAXException e = assertThrows(SAXException.class, () -> dispatcher.parseRequestXML(null, input, req));
+                String messsage = e.getMessage();
+                assertFalse(messsage.contains("invalid.xsd"));
             }
         } finally {
             file.delete();
@@ -303,30 +290,28 @@ public class DispatcherTest {
     public void testHelloOperationGet() throws Exception {
         URL url = getClass().getResource("applicationContext.xml");
 
-        try (FileSystemXmlApplicationContext context =
-                new FileSystemXmlApplicationContext(url.toString())) {
+        try (FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString())) {
 
             Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
 
-            MockHttpServletRequest request =
-                    new MockHttpServletRequest() {
-                        String encoding;
+            MockHttpServletRequest request = new MockHttpServletRequest() {
+                String encoding;
 
-                        @Override
-                        public int getServerPort() {
-                            return 8080;
-                        }
+                @Override
+                public int getServerPort() {
+                    return 8080;
+                }
 
-                        @Override
-                        public String getCharacterEncoding() {
-                            return encoding;
-                        }
+                @Override
+                public String getCharacterEncoding() {
+                    return encoding;
+                }
 
-                        @Override
-                        public void setCharacterEncoding(String encoding) {
-                            this.encoding = encoding;
-                        }
-                    };
+                @Override
+                public void setCharacterEncoding(String encoding) {
+                    this.encoding = encoding;
+                }
+            };
 
             request.setScheme("http");
             request.setServerName("localhost");
@@ -341,22 +326,19 @@ public class DispatcherTest {
             request.addParameter("version", "1.0.0");
             request.addParameter("message", "Hello world!");
 
-            request.setRequestURI(
-                    "http://localhost/geoserver/ows?service=hello&request=hello&message=HelloWorld");
+            request.setRequestURI("http://localhost/geoserver/ows?service=hello&request=hello&message=HelloWorld");
             request.setQueryString("service=hello&request=hello&message=HelloWorld");
 
-            dispatcher.callbacks.add(
-                    new AbstractDispatcherCallback() {
-                        @Override
-                        public Object operationExecuted(
-                                Request request, Operation operation, Object result) {
-                            Operation op = Dispatcher.REQUEST.get().getOperation();
-                            Assert.assertNotNull(op);
-                            assertTrue(op.getService().getService() instanceof HelloWorld);
-                            assertTrue(op.getParameters()[0] instanceof Message);
-                            return result;
-                        }
-                    });
+            dispatcher.callbacks.add(new AbstractDispatcherCallback() {
+                @Override
+                public Object operationExecuted(Request request, Operation operation, Object result) {
+                    Operation op = Dispatcher.REQUEST.get().getOperation();
+                    Assert.assertNotNull(op);
+                    assertTrue(op.getService().getService() instanceof HelloWorld);
+                    assertTrue(op.getParameters()[0] instanceof Message);
+                    return result;
+                }
+            });
 
             dispatcher.handleRequest(request, response);
             Assert.assertEquals("Hello world!", response.getContentAsString());
@@ -367,64 +349,66 @@ public class DispatcherTest {
     public void testHelloOperationPost() throws Exception {
         URL url = getClass().getResource("applicationContext.xml");
 
-        try (FileSystemXmlApplicationContext context =
-                new FileSystemXmlApplicationContext(url.toString())) {
+        try (FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString())) {
 
             Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
 
-            final String body =
-                    "<Hello service=\"hello\" message=\"Hello world!\" version=\"1.0.0\" />";
-            MockHttpServletRequest request =
-                    new MockHttpServletRequest() {
-                        String encoding;
+            final String body = "<Hello service=\"hello\" message=\"Hello world!\" version=\"1.0.0\" />";
+            MockHttpServletRequest request = new MockHttpServletRequest() {
+                String encoding;
 
+                @Override
+                public int getServerPort() {
+                    return 8080;
+                }
+
+                @Override
+                public String getCharacterEncoding() {
+                    return encoding;
+                }
+
+                @Override
+                public void setCharacterEncoding(String encoding) {
+                    this.encoding = encoding;
+                }
+
+                @Override
+                @SuppressWarnings("PMD.CloseResource")
+                public ServletInputStream getInputStream() {
+                    final ServletInputStream stream = super.getInputStream();
+                    return new ServletInputStream() {
                         @Override
-                        public int getServerPort() {
-                            return 8080;
+                        public boolean isFinished() {
+                            return stream.isFinished();
                         }
 
                         @Override
-                        public String getCharacterEncoding() {
-                            return encoding;
+                        public boolean isReady() {
+                            return stream.isReady();
                         }
 
                         @Override
-                        public void setCharacterEncoding(String encoding) {
-                            this.encoding = encoding;
+                        public void setReadListener(ReadListener readListener) {
+                            stream.setReadListener(readListener);
                         }
 
                         @Override
-                        @SuppressWarnings("PMD.CloseResource")
-                        public ServletInputStream getInputStream() {
-                            final ServletInputStream stream = super.getInputStream();
-                            return new ServletInputStream() {
-                                @Override
-                                public boolean isFinished() {
-                                    return stream.isFinished();
-                                }
+                        public int read() throws IOException {
+                            return stream.read();
+                        }
 
-                                @Override
-                                public boolean isReady() {
-                                    return stream.isReady();
-                                }
+                        @Override
+                        public int read(byte[] b, int off, int len) throws IOException {
+                            return stream.read(b, off, len);
+                        }
 
-                                @Override
-                                public void setReadListener(ReadListener readListener) {
-                                    stream.setReadListener(readListener);
-                                }
-
-                                @Override
-                                public int read() throws IOException {
-                                    return stream.read();
-                                }
-
-                                @Override
-                                public int available() {
-                                    return body.length();
-                                }
-                            };
+                        @Override
+                        public int available() {
+                            return body.length();
                         }
                     };
+                }
+            };
 
             request.setScheme("http");
             request.setServerName("localhost");
@@ -446,63 +430,65 @@ public class DispatcherTest {
     public void testHelloOperationMixed() throws Exception {
         URL url = getClass().getResource("applicationContextOnlyXml.xml");
 
-        try (FileSystemXmlApplicationContext context =
-                new FileSystemXmlApplicationContext(url.toString())) {
+        try (FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString())) {
 
             Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
 
-            final String body =
-                    "<Hello service=\"hello\" message=\"Hello world!\" version=\"1.0.0\" />";
+            final String body = "<Hello service=\"hello\" message=\"Hello world!\" version=\"1.0.0\" />";
 
-            MockHttpServletRequest request =
-                    new MockHttpServletRequest() {
-                        String encoding;
+            MockHttpServletRequest request = new MockHttpServletRequest() {
+                String encoding;
 
+                @Override
+                public int getServerPort() {
+                    return 8080;
+                }
+
+                @Override
+                public String getCharacterEncoding() {
+                    return encoding;
+                }
+
+                @Override
+                public void setCharacterEncoding(String encoding) {
+                    this.encoding = encoding;
+                }
+
+                @Override
+                @SuppressWarnings("PMD.CloseResource")
+                public ServletInputStream getInputStream() {
+                    final ServletInputStream stream = super.getInputStream();
+                    return new ServletInputStream() {
                         @Override
-                        public int getServerPort() {
-                            return 8080;
+                        public boolean isFinished() {
+                            return false;
                         }
 
                         @Override
-                        public String getCharacterEncoding() {
-                            return encoding;
+                        public boolean isReady() {
+                            return false;
                         }
 
                         @Override
-                        public void setCharacterEncoding(String encoding) {
-                            this.encoding = encoding;
+                        public void setReadListener(ReadListener readListener) {}
+
+                        @Override
+                        public int read() throws IOException {
+                            return stream.read();
                         }
 
                         @Override
-                        @SuppressWarnings("PMD.CloseResource")
-                        public ServletInputStream getInputStream() {
-                            final ServletInputStream stream = super.getInputStream();
-                            return new ServletInputStream() {
-                                @Override
-                                public boolean isFinished() {
-                                    return false;
-                                }
+                        public int read(byte[] b, int off, int len) throws IOException {
+                            return stream.read(b, off, len);
+                        }
 
-                                @Override
-                                public boolean isReady() {
-                                    return false;
-                                }
-
-                                @Override
-                                public void setReadListener(ReadListener readListener) {}
-
-                                @Override
-                                public int read() throws IOException {
-                                    return stream.read();
-                                }
-
-                                @Override
-                                public int available() {
-                                    return body.length();
-                                }
-                            };
+                        @Override
+                        public int available() {
+                            return body.length();
                         }
                     };
+                }
+            };
 
             request.setScheme("http");
             request.setServerName("localhost");
@@ -539,39 +525,36 @@ public class DispatcherTest {
     @Test
     public void testHttpErrorCodeExceptionWithContentType() throws Exception {
         CodeExpectingHttpServletResponse rsp =
-                assertHttpErrorCode(
-                        "httpErrorCodeExceptionWithContentType", HttpServletResponse.SC_OK);
+                assertHttpErrorCode("httpErrorCodeExceptionWithContentType", HttpServletResponse.SC_OK);
         Assert.assertEquals("application/json", rsp.getContentType());
     }
 
-    private CodeExpectingHttpServletResponse assertHttpErrorCode(
-            String requestType, int expectedCode) throws Exception {
+    private CodeExpectingHttpServletResponse assertHttpErrorCode(String requestType, int expectedCode)
+            throws Exception {
         URL url = getClass().getResource("applicationContext.xml");
 
-        try (FileSystemXmlApplicationContext context =
-                new FileSystemXmlApplicationContext(url.toString())) {
+        try (FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString())) {
 
             Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
 
-            MockHttpServletRequest request =
-                    new MockHttpServletRequest() {
-                        String encoding;
+            MockHttpServletRequest request = new MockHttpServletRequest() {
+                String encoding;
 
-                        @Override
-                        public int getServerPort() {
-                            return 8080;
-                        }
+                @Override
+                public int getServerPort() {
+                    return 8080;
+                }
 
-                        @Override
-                        public String getCharacterEncoding() {
-                            return encoding;
-                        }
+                @Override
+                public String getCharacterEncoding() {
+                    return encoding;
+                }
 
-                        @Override
-                        public void setCharacterEncoding(String encoding) {
-                            this.encoding = encoding;
-                        }
-                    };
+                @Override
+                public void setCharacterEncoding(String encoding) {
+                    this.encoding = encoding;
+                }
+            };
 
             request.setScheme("http");
             request.setServerName("localhost");
@@ -586,8 +569,7 @@ public class DispatcherTest {
             request.addParameter("request", requestType);
             request.addParameter("version", "1.0.0");
 
-            request.setRequestURI(
-                    "http://localhost/geoserver/ows?service=hello&request=hello&message=HelloWorld");
+            request.setRequestURI("http://localhost/geoserver/ows?service=hello&request=hello&message=HelloWorld");
             request.setQueryString("service=hello&request=hello&message=HelloWorld");
 
             dispatcher.handleRequest(request, response);
@@ -599,48 +581,41 @@ public class DispatcherTest {
     }
 
     /**
-     * Assert that if the service bean implements the optional {@link DirectInvocationService}
-     * operation, then the dispatcher executes the operation through its {@link
-     * DirectInvocationService#invokeDirect} method instead of through {@link Method#invoke
-     * reflection}.
+     * Assert that if the service bean implements the optional {@link DirectInvocationService} operation, then the
+     * dispatcher executes the operation through its {@link DirectInvocationService#invokeDirect} method instead of
+     * through {@link Method#invoke reflection}.
      */
     @Test
     public void testDirectInvocationService() throws Throwable {
 
         URL url = getClass().getResource("applicationContext.xml");
 
-        try (FileSystemXmlApplicationContext context =
-                new FileSystemXmlApplicationContext(url.toString())) {
+        try (FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString())) {
 
             Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
 
             final AtomicBoolean invokeDirectCalled = new AtomicBoolean();
-            DirectInvocationService serviceBean =
-                    new DirectInvocationService() {
+            DirectInvocationService serviceBean = new DirectInvocationService() {
 
-                        @Override
-                        public Object invokeDirect(String operationName, Object[] parameters)
-                                throws IllegalArgumentException, Exception {
-                            invokeDirectCalled.set(true);
-                            if ("concat".equals(operationName)) {
-                                String param1 = (String) parameters[0];
-                                String param2 = (String) parameters[1];
-                                return concat(param1, param2);
-                            }
-                            throw new IllegalArgumentException("Unknown operation name");
-                        }
+                @Override
+                public Object invokeDirect(String operationName, Object[] parameters)
+                        throws IllegalArgumentException, Exception {
+                    invokeDirectCalled.set(true);
+                    if ("concat".equals(operationName)) {
+                        String param1 = (String) parameters[0];
+                        String param2 = (String) parameters[1];
+                        return concat(param1, param2);
+                    }
+                    throw new IllegalArgumentException("Unknown operation name");
+                }
 
-                        public String concat(String param1, String param2) {
-                            return param1 + param2;
-                        }
-                    };
+                public String concat(String param1, String param2) {
+                    return param1 + param2;
+                }
+            };
 
-            Service service =
-                    new Service(
-                            "directCallService",
-                            serviceBean,
-                            new Version("1.0.0"),
-                            Collections.singletonList("concat"));
+            Service service = new Service(
+                    "directCallService", serviceBean, new Version("1.0.0"), Collections.singletonList("concat"));
             Method method = serviceBean.getClass().getMethod("concat", String.class, String.class);
             Object[] parameters = {"p1", "p2"};
             Operation opDescriptor = new Operation("concat", service, method, parameters);
@@ -654,29 +629,27 @@ public class DispatcherTest {
     @Test
     public void testDispatchWithNamespace() throws Exception {
         URL url = getClass().getResource("applicationContextNamespace.xml");
-        try (FileSystemXmlApplicationContext context =
-                new FileSystemXmlApplicationContext(url.toString())) {
+        try (FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString())) {
 
             Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
-            MockHttpServletRequest request =
-                    new MockHttpServletRequest() {
-                        String encoding;
+            MockHttpServletRequest request = new MockHttpServletRequest() {
+                String encoding;
 
-                        @Override
-                        public int getServerPort() {
-                            return 8080;
-                        }
+                @Override
+                public int getServerPort() {
+                    return 8080;
+                }
 
-                        @Override
-                        public String getCharacterEncoding() {
-                            return encoding;
-                        }
+                @Override
+                public String getCharacterEncoding() {
+                    return encoding;
+                }
 
-                        @Override
-                        public void setCharacterEncoding(String encoding) {
-                            this.encoding = encoding;
-                        }
-                    };
+                @Override
+                public void setCharacterEncoding(String encoding) {
+                    this.encoding = encoding;
+                }
+            };
 
             request.setScheme("http");
             request.setServerName("localhost");
@@ -688,16 +661,14 @@ public class DispatcherTest {
 
             request.setContentType("application/xml");
             request.setContent(
-                    "<h:Hello service='hello' message='Hello world!' xmlns:h='http://hello.org' />"
-                            .getBytes(UTF_8));
+                    "<h:Hello service='hello' message='Hello world!' xmlns:h='http://hello.org' />".getBytes(UTF_8));
             request.setRequestURI("http://localhost/geoserver/hello");
 
             dispatcher.handleRequest(request, response);
             Assert.assertEquals("Hello world!", response.getContentAsString());
 
             request.setContent(
-                    "<h:Hello service='hello' message='Hello world!' xmlns:h='http://hello.org/v2' />"
-                            .getBytes(UTF_8));
+                    "<h:Hello service='hello' message='Hello world!' xmlns:h='http://hello.org/v2' />".getBytes(UTF_8));
 
             response = new MockHttpServletResponse();
             dispatcher.handleRequest(request, response);
@@ -706,25 +677,24 @@ public class DispatcherTest {
     }
 
     public MockHttpServletRequest setupRequest() {
-        MockHttpServletRequest request =
-                new MockHttpServletRequest() {
-                    String encoding;
+        MockHttpServletRequest request = new MockHttpServletRequest() {
+            String encoding;
 
-                    @Override
-                    public int getServerPort() {
-                        return 8080;
-                    }
+            @Override
+            public int getServerPort() {
+                return 8080;
+            }
 
-                    @Override
-                    public String getCharacterEncoding() {
-                        return encoding;
-                    }
+            @Override
+            public String getCharacterEncoding() {
+                return encoding;
+            }
 
-                    @Override
-                    public void setCharacterEncoding(String encoding) {
-                        this.encoding = encoding;
-                    }
-                };
+            @Override
+            public void setCharacterEncoding(String encoding) {
+                this.encoding = encoding;
+            }
+        };
 
         request.setScheme("http");
         request.setServerName("localhost");
@@ -737,8 +707,7 @@ public class DispatcherTest {
         request.addParameter("version", "1.0.0");
         request.addParameter("message", "Hello world!");
 
-        request.setRequestURI(
-                "http://localhost/geoserver/ows?service=hello&request=hello&message=HelloWorld");
+        request.setRequestURI("http://localhost/geoserver/ows?service=hello&request=hello&message=HelloWorld");
         request.setQueryString("service=hello&request=hello&message=HelloWorld");
 
         return request;
@@ -748,8 +717,7 @@ public class DispatcherTest {
     public void testDispatcherCallback() throws Exception {
         URL url = getClass().getResource("applicationContext.xml");
 
-        try (FileSystemXmlApplicationContext context =
-                new FileSystemXmlApplicationContext(url.toString())) {
+        try (FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString())) {
 
             Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
             TestDispatcherCallback callback = new TestDispatcherCallback();
@@ -761,8 +729,7 @@ public class DispatcherTest {
 
             dispatcher.handleRequest(request, response);
             Assert.assertEquals("Hello world!", response.getContentAsString());
-            Assert.assertEquals(
-                    TestDispatcherCallback.Status.FINISHED, callback.dispatcherStatus.get());
+            Assert.assertEquals(TestDispatcherCallback.Status.FINISHED, callback.dispatcherStatus.get());
         }
     }
 
@@ -770,21 +737,19 @@ public class DispatcherTest {
     public void testDispatcherCallbackFailInit() throws Exception {
         URL url = getClass().getResource("applicationContext.xml");
 
-        try (FileSystemXmlApplicationContext context =
-                new FileSystemXmlApplicationContext(url.toString())) {
+        try (FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString())) {
 
             Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
 
             final TestDispatcherCallback callback1 = new TestDispatcherCallback();
             final TestDispatcherCallback callback2 = new TestDispatcherCallback();
-            TestDispatcherCallback callbackFail =
-                    new TestDispatcherCallback() {
-                        @Override
-                        public Request init(Request request) {
-                            dispatcherStatus.set(Status.INIT);
-                            throw new RuntimeException("TestDispatcherCallbackFailInit");
-                        }
-                    };
+            TestDispatcherCallback callbackFail = new TestDispatcherCallback() {
+                @Override
+                public Request init(Request request) {
+                    dispatcherStatus.set(Status.INIT);
+                    throw new RuntimeException("TestDispatcherCallbackFailInit");
+                }
+            };
 
             MockHttpServletRequest request = setupRequest();
             MockHttpServletResponse response = new MockHttpServletResponse();
@@ -796,10 +761,8 @@ public class DispatcherTest {
             dispatcher.handleRequest(request, response);
 
             assertTrue(response.getContentAsString().contains("ows:ExceptionReport"));
-            Assert.assertEquals(
-                    TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
-            Assert.assertEquals(
-                    TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
+            Assert.assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
+            Assert.assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
         }
     }
 
@@ -807,21 +770,18 @@ public class DispatcherTest {
     public void testDispatcherCallbackFailServiceDispatched() throws Exception {
         URL url = getClass().getResource("applicationContext.xml");
 
-        try (FileSystemXmlApplicationContext context =
-                new FileSystemXmlApplicationContext(url.toString())) {
+        try (FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString())) {
 
             Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
             final TestDispatcherCallback callback1 = new TestDispatcherCallback();
             final TestDispatcherCallback callback2 = new TestDispatcherCallback();
-            TestDispatcherCallback callbackFail =
-                    new TestDispatcherCallback() {
-                        @Override
-                        public Service serviceDispatched(Request request, Service service) {
-                            dispatcherStatus.set(Status.SERVICE_DISPATCHED);
-                            throw new RuntimeException(
-                                    "TestDispatcherCallbackFailServiceDispatched");
-                        }
-                    };
+            TestDispatcherCallback callbackFail = new TestDispatcherCallback() {
+                @Override
+                public Service serviceDispatched(Request request, Service service) {
+                    dispatcherStatus.set(Status.SERVICE_DISPATCHED);
+                    throw new RuntimeException("TestDispatcherCallbackFailServiceDispatched");
+                }
+            };
 
             MockHttpServletRequest request = setupRequest();
             MockHttpServletResponse response = new MockHttpServletResponse();
@@ -833,10 +793,8 @@ public class DispatcherTest {
             dispatcher.handleRequest(request, response);
 
             assertTrue(response.getContentAsString().contains("ows:ExceptionReport"));
-            Assert.assertEquals(
-                    TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
-            Assert.assertEquals(
-                    TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
+            Assert.assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
+            Assert.assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
         }
     }
 
@@ -844,21 +802,18 @@ public class DispatcherTest {
     public void testDispatcherCallbackFailOperationDispatched() throws Exception {
         URL url = getClass().getResource("applicationContext.xml");
 
-        try (FileSystemXmlApplicationContext context =
-                new FileSystemXmlApplicationContext(url.toString())) {
+        try (FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString())) {
 
             Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
             final TestDispatcherCallback callback1 = new TestDispatcherCallback();
             final TestDispatcherCallback callback2 = new TestDispatcherCallback();
-            TestDispatcherCallback callbackFail =
-                    new TestDispatcherCallback() {
-                        @Override
-                        public Operation operationDispatched(Request request, Operation operation) {
-                            dispatcherStatus.set(Status.OPERATION_DISPATCHED);
-                            throw new RuntimeException(
-                                    "TestDispatcherCallbackFailOperationDispatched");
-                        }
-                    };
+            TestDispatcherCallback callbackFail = new TestDispatcherCallback() {
+                @Override
+                public Operation operationDispatched(Request request, Operation operation) {
+                    dispatcherStatus.set(Status.OPERATION_DISPATCHED);
+                    throw new RuntimeException("TestDispatcherCallbackFailOperationDispatched");
+                }
+            };
 
             MockHttpServletRequest request = setupRequest();
             MockHttpServletResponse response = new MockHttpServletResponse();
@@ -870,10 +825,8 @@ public class DispatcherTest {
             dispatcher.handleRequest(request, response);
 
             assertTrue(response.getContentAsString().contains("ows:ExceptionReport"));
-            Assert.assertEquals(
-                    TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
-            Assert.assertEquals(
-                    TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
+            Assert.assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
+            Assert.assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
         }
     }
 
@@ -881,22 +834,18 @@ public class DispatcherTest {
     public void testDispatcherCallbackFailOperationExecuted() throws Exception {
         URL url = getClass().getResource("applicationContext.xml");
 
-        try (FileSystemXmlApplicationContext context =
-                new FileSystemXmlApplicationContext(url.toString())) {
+        try (FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString())) {
 
             Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
             final TestDispatcherCallback callback1 = new TestDispatcherCallback();
             final TestDispatcherCallback callback2 = new TestDispatcherCallback();
-            TestDispatcherCallback callbackFail =
-                    new TestDispatcherCallback() {
-                        @Override
-                        public Object operationExecuted(
-                                Request request, Operation operation, Object result) {
-                            dispatcherStatus.set(Status.OPERATION_EXECUTED);
-                            throw new RuntimeException(
-                                    "TestDispatcherCallbackFailOperationExecuted");
-                        }
-                    };
+            TestDispatcherCallback callbackFail = new TestDispatcherCallback() {
+                @Override
+                public Object operationExecuted(Request request, Operation operation, Object result) {
+                    dispatcherStatus.set(Status.OPERATION_EXECUTED);
+                    throw new RuntimeException("TestDispatcherCallbackFailOperationExecuted");
+                }
+            };
 
             MockHttpServletRequest request = setupRequest();
             MockHttpServletResponse response = new MockHttpServletResponse();
@@ -908,10 +857,8 @@ public class DispatcherTest {
             dispatcher.handleRequest(request, response);
 
             assertTrue(response.getContentAsString().contains("ows:ExceptionReport"));
-            Assert.assertEquals(
-                    TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
-            Assert.assertEquals(
-                    TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
+            Assert.assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
+            Assert.assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
         }
     }
 
@@ -919,25 +866,19 @@ public class DispatcherTest {
     public void testDispatcherCallbackFailResponseDispatched() throws Exception {
         URL url = getClass().getResource("applicationContext.xml");
 
-        try (FileSystemXmlApplicationContext context =
-                new FileSystemXmlApplicationContext(url.toString())) {
+        try (FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString())) {
 
             Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
             final TestDispatcherCallback callback1 = new TestDispatcherCallback();
             final TestDispatcherCallback callback2 = new TestDispatcherCallback();
-            TestDispatcherCallback callbackFail =
-                    new TestDispatcherCallback() {
-                        @Override
-                        public Response responseDispatched(
-                                Request request,
-                                Operation operation,
-                                Object result,
-                                Response response) {
-                            dispatcherStatus.set(Status.RESPONSE_DISPATCHED);
-                            throw new RuntimeException(
-                                    "TestDispatcherCallbackFailResponseDispatched");
-                        }
-                    };
+            TestDispatcherCallback callbackFail = new TestDispatcherCallback() {
+                @Override
+                public Response responseDispatched(
+                        Request request, Operation operation, Object result, Response response) {
+                    dispatcherStatus.set(Status.RESPONSE_DISPATCHED);
+                    throw new RuntimeException("TestDispatcherCallbackFailResponseDispatched");
+                }
+            };
 
             MockHttpServletRequest request = setupRequest();
             MockHttpServletResponse response = new MockHttpServletResponse();
@@ -949,10 +890,8 @@ public class DispatcherTest {
             dispatcher.handleRequest(request, response);
 
             assertTrue(response.getContentAsString().contains("ows:ExceptionReport"));
-            Assert.assertEquals(
-                    TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
-            Assert.assertEquals(
-                    TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
+            Assert.assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
+            Assert.assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
         }
     }
 
@@ -960,28 +899,25 @@ public class DispatcherTest {
     public void testDispatcherCallbackFailFinished() throws Exception {
         URL url = getClass().getResource("applicationContext.xml");
 
-        try (FileSystemXmlApplicationContext context =
-                new FileSystemXmlApplicationContext(url.toString())) {
+        try (FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString())) {
             Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
             final AtomicBoolean firedCallback = new AtomicBoolean(false);
             TestDispatcherCallback callback1 = new TestDispatcherCallback();
-            TestDispatcherCallback callback2 =
-                    new TestDispatcherCallback() {
-                        @Override
-                        public void finished(Request request) {
-                            firedCallback.set(true);
-                            super.finished(request);
-                        }
-                    };
-            TestDispatcherCallback callbackFail =
-                    new TestDispatcherCallback() {
-                        @Override
-                        public void finished(Request request) {
-                            dispatcherStatus.set(Status.FINISHED);
-                            // cleanups must continue even if an error was thrown
-                            throw new Error("TestDispatcherCallbackFailFinished");
-                        }
-                    };
+            TestDispatcherCallback callback2 = new TestDispatcherCallback() {
+                @Override
+                public void finished(Request request) {
+                    firedCallback.set(true);
+                    super.finished(request);
+                }
+            };
+            TestDispatcherCallback callbackFail = new TestDispatcherCallback() {
+                @Override
+                public void finished(Request request) {
+                    dispatcherStatus.set(Status.FINISHED);
+                    // cleanups must continue even if an error was thrown
+                    throw new Error("TestDispatcherCallbackFailFinished");
+                }
+            };
 
             MockHttpServletRequest request = setupRequest();
             MockHttpServletResponse response = new MockHttpServletResponse();
@@ -993,10 +929,8 @@ public class DispatcherTest {
             dispatcher.handleRequest(request, response);
             Assert.assertEquals("Hello world!", response.getContentAsString());
             assertTrue(firedCallback.get());
-            Assert.assertEquals(
-                    TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
-            Assert.assertEquals(
-                    TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
+            Assert.assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
+            Assert.assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
         }
     }
 
@@ -1070,29 +1004,27 @@ public class DispatcherTest {
     public void testDispatchXMLException() throws Exception {
         // This test ensures that the text of the exception indicates that a wrong XML has been set
         URL url = getClass().getResource("applicationContextNamespace.xml");
-        try (FileSystemXmlApplicationContext context =
-                new FileSystemXmlApplicationContext(url.toString())) {
+        try (FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString())) {
 
             Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
-            MockHttpServletRequest request =
-                    new MockHttpServletRequest() {
-                        String encoding;
+            MockHttpServletRequest request = new MockHttpServletRequest() {
+                String encoding;
 
-                        @Override
-                        public int getServerPort() {
-                            return 8080;
-                        }
+                @Override
+                public int getServerPort() {
+                    return 8080;
+                }
 
-                        @Override
-                        public String getCharacterEncoding() {
-                            return encoding;
-                        }
+                @Override
+                public String getCharacterEncoding() {
+                    return encoding;
+                }
 
-                        @Override
-                        public void setCharacterEncoding(String encoding) {
-                            this.encoding = encoding;
-                        }
-                    };
+                @Override
+                public void setCharacterEncoding(String encoding) {
+                    this.encoding = encoding;
+                }
+            };
 
             request.setScheme("http");
             request.setServerName("localhost");
@@ -1122,30 +1054,28 @@ public class DispatcherTest {
         // This test ensures that the text of the exception indicates that a wrong KVP has been set
         URL url = getClass().getResource("applicationContext4.xml");
 
-        try (FileSystemXmlApplicationContext context =
-                new FileSystemXmlApplicationContext(url.toString())) {
+        try (FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString())) {
 
             Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
 
-            MockHttpServletRequest request =
-                    new MockHttpServletRequest() {
-                        String encoding;
+            MockHttpServletRequest request = new MockHttpServletRequest() {
+                String encoding;
 
-                        @Override
-                        public int getServerPort() {
-                            return 8080;
-                        }
+                @Override
+                public int getServerPort() {
+                    return 8080;
+                }
 
-                        @Override
-                        public String getCharacterEncoding() {
-                            return encoding;
-                        }
+                @Override
+                public String getCharacterEncoding() {
+                    return encoding;
+                }
 
-                        @Override
-                        public void setCharacterEncoding(String encoding) {
-                            this.encoding = encoding;
-                        }
-                    };
+                @Override
+                public void setCharacterEncoding(String encoding) {
+                    this.encoding = encoding;
+                }
+            };
             request.setScheme("http");
             request.setServerName("localhost");
 
@@ -1185,8 +1115,7 @@ public class DispatcherTest {
         request.setContentType(body.getContentType());
 
         InternetHeaders headers = new InternetHeaders();
-        headers.setHeader(
-                "Content-Disposition", "form-data; name=\"upload\"; filename=\"request.xml\"");
+        headers.setHeader("Content-Disposition", "form-data; name=\"upload\"; filename=\"request.xml\"");
         headers.setHeader("Content-Type", "application/xml");
         body.addBodyPart(new MimeBodyPart(headers, xml.getBytes()));
 
@@ -1198,8 +1127,7 @@ public class DispatcherTest {
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         URL url = getClass().getResource("applicationContext.xml");
-        try (FileSystemXmlApplicationContext context =
-                new FileSystemXmlApplicationContext(url.toString())) {
+        try (FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString())) {
             Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
             dispatcher.handleRequestInternal(request, response);
 
@@ -1232,8 +1160,7 @@ public class DispatcherTest {
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         URL url = getClass().getResource("applicationContext.xml");
-        try (FileSystemXmlApplicationContext context =
-                new FileSystemXmlApplicationContext(url.toString())) {
+        try (FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString())) {
             Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
             dispatcher.handleRequestInternal(request, response);
 
@@ -1245,8 +1172,7 @@ public class DispatcherTest {
     public void testErrorThrowingResponse() throws Exception {
         URL url = getClass().getResource("applicationContext-errorResponse.xml");
 
-        try (FileSystemXmlApplicationContext context =
-                new FileSystemXmlApplicationContext(url.toString())) {
+        try (FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString())) {
             Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
             MockHttpServletRequest request = setupRequest();
             MockHttpServletResponse response = new MockHttpServletResponse();

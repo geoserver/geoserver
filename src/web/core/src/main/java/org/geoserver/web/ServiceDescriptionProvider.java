@@ -27,27 +27,40 @@ import org.geotools.api.util.InternationalString;
  */
 public abstract class ServiceDescriptionProvider {
 
+    /** Service type to cross-link between service description and service link description. */
+    protected final String serviceType;
+
+    protected ServiceDescriptionProvider(String serviceType) {
+        this.serviceType = serviceType;
+    }
+
+    /**
+     * List service types supported by this provider.
+     *
+     * <p>Used to determine what service types have been migrated, and do not need to be represented as generic fallback
+     * service capability links.
+     *
+     * @return service types
+     */
+    public List<String> getServiceTypes() {
+        return List.of(serviceType);
+    }
     /**
      * Provides service descriptions, filtered by workspace and layer.
      *
      * <p>Service info precedence: <pl>
-     * <li>layer (LayerInfo), workspace (WorkspaceInfo): Description of virtual web service for
-     *     individual layer.
+     * <li>layer (LayerInfo), workspace (WorkspaceInfo): Description of virtual web service for individual layer.
      *
-     *     <p>Service info may be constructed on the fly from layer, with default values from
-     *     workspace service info (if defined), or global service info.
-     * <li>layer (LayerGroup), workspace (WorkspaceInfo): Description of virtual web service for
-     *     individual layer group.
+     *     <p>Service info may be constructed on the fly from layer, with default values from workspace service info (if
+     *     defined), or global service info.
+     * <li>layer (LayerGroup), workspace (WorkspaceInfo): Description of virtual web service for individual layer group.
      *
-     *     <p>Service info may be constructed on the fly from layer group, with default values from
-     *     workspace service info (if defined), or global service info.
-     * <li>layer (LayerGroup), workspace (null): Description of virtual web service for global layer
-     *     group.
+     *     <p>Service info may be constructed on the fly from layer group, with default values from workspace service
+     *     info (if defined), or global service info.
+     * <li>layer (LayerGroup), workspace (null): Description of virtual web service for global layer group.
      *
-     *     <p>Service info may be constructed on the fly from layer group, with default values from
-     *     global service info.
-     * <li>layer (null), workspace (WorkspaceInfo): Description of virtual web virtual service for
-     *     workspace.
+     *     <p>Service info may be constructed on the fly from layer group, with default values from global service info.
+     * <li>layer (null), workspace (WorkspaceInfo): Description of virtual web virtual service for workspace.
      *
      *     <p>Service info from workspace service info (if defined), or global service info.
      * <li>layer (null), workspace (null): Description of global web service.
@@ -61,8 +74,7 @@ public abstract class ServiceDescriptionProvider {
      * @param layerInfo Layer context, or {@code null} for all
      * @return Service descriptions, may be empty if none available.
      */
-    public List<ServiceDescription> getServices(
-            WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
+    public List<ServiceDescription> getServices(WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
         return Collections.emptyList();
     }
 
@@ -73,41 +85,41 @@ public abstract class ServiceDescriptionProvider {
      * @param layer Layer context, or {@code null} for all
      * @return service links, may be empty if none available.
      */
-    public List<ServiceLinkDescription> getServiceLinks(
-            WorkspaceInfo workspace, PublishedInfo layer) {
+    public List<ServiceLinkDescription> getServiceLinks(WorkspaceInfo workspace, PublishedInfo layer) {
         return Collections.emptyList();
     }
 
     /**
-     * Is this service/layer available? This works for standard GS services like WMS/WFS - GWC-based
-     * ones will need to re-implement.
+     * Is this service/layer available? This works for standard GS services like WMS/WFS - GWC-based ones will need to
+     * re-implement.
      *
-     * @param serviceType Service type, example {@code WPS}, to cross reference with service links
-     * @param info - Info about the service (service can be on/off)
-     * @param layerInfo - Info about the layer (layer can not have this service enabled)
-     * @return true of service is available for this layer
+     * @param serviceType Service type, example {@code WPS}, to cross-reference with service links.
+     * @param serviceInfo - Service configuration (including service enabled/disabled)
+     * @param layerInfo - Layer configuration (including disabled service list)
+     * @return true if service is available for this layer
      */
-    protected boolean isAvailable(String serviceType, ServiceInfo info, PublishedInfo layerInfo) {
+    protected boolean isAvailable(String serviceType, ServiceInfo serviceInfo, PublishedInfo layerInfo) {
         if (layerInfo != null && !layerInfo.isEnabled()) {
             return false;
         }
-        if (layerInfo instanceof LayerInfo) {
-            ResourceInfo resourceInfo = ((LayerInfo) layerInfo).getResource();
+        if (layerInfo instanceof LayerInfo info) {
+            ResourceInfo resourceInfo = info.getResource();
 
             // check what services are available for this kind of resource
-            ServiceResourceProvider provider =
-                    GeoServerExtensions.bean(ServiceResourceProvider.class);
+            ServiceResourceProvider provider = GeoServerExtensions.bean(ServiceResourceProvider.class);
 
             List<String> layerServices = provider.getServicesForResource(resourceInfo);
 
             // Remove any services that were disabled for this layer
-            List<String> disabledServices =
-                    DisabledServiceResourceFilter.disabledServices(resourceInfo);
+            List<String> disabledServices = DisabledServiceResourceFilter.disabledServices(resourceInfo);
             layerServices.removeAll(disabledServices);
 
-            return layerServices.contains(serviceType);
+            return layerServices.contains(serviceType) && serviceInfo.isEnabled();
         }
-        return info.isEnabled();
+        if (serviceInfo != null) {
+            return serviceInfo.isEnabled();
+        }
+        return true;
     }
 
     /**
@@ -122,21 +134,14 @@ public abstract class ServiceDescriptionProvider {
      * @return ServiceDescription
      */
     protected ServiceDescription description(
-            String serviceType,
-            ServiceInfo info,
-            WorkspaceInfo workspaceInfo,
-            PublishedInfo layerInfo) {
+            String serviceType, ServiceInfo info, WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
         boolean available = isAvailable(serviceType, info, layerInfo);
 
-        InternationalString title =
-                InternationalStringUtils.growable(
-                        info.getInternationalTitle(),
-                        Strings.isEmpty(info.getTitle()) ? info.getName() : info.getTitle());
+        InternationalString title = InternationalStringUtils.growable(
+                info.getInternationalTitle(), Strings.isEmpty(info.getTitle()) ? info.getName() : info.getTitle());
 
-        InternationalString description =
-                InternationalStringUtils.growable(
-                        info.getInternationalAbstract(),
-                        Strings.isEmpty(info.getAbstract()) ? null : info.getAbstract());
+        InternationalString description = InternationalStringUtils.growable(
+                info.getInternationalAbstract(), Strings.isEmpty(info.getAbstract()) ? null : info.getAbstract());
 
         return new ServiceDescription(
                 serviceType,
@@ -149,9 +154,8 @@ public abstract class ServiceDescriptionProvider {
     }
 
     /**
-     * Gets the name of the {@code version} parameter for the service. This will usually be {@code
-     * version}, but some (i.e. WCS 2+) it will be {@code acceptversions}. To overrided by
-     * subclasses.
+     * Gets the name of the {@code version} parameter for the service. This will usually be {@code version}, but some
+     * (i.e. WCS 2+) it will be {@code acceptversions}. To overrided by subclasses.
      *
      * @param service
      * @return version parameter of service, example {@code version} or {@code acceptversions}
@@ -167,20 +171,18 @@ public abstract class ServiceDescriptionProvider {
      * @param layer Layer or LayerGroup info if available
      * @return getcapabilities link
      */
-    protected String getCapabilitiesURL(
-            WorkspaceInfo workspace, PublishedInfo layer, Service service) {
+    protected String getCapabilitiesURL(WorkspaceInfo workspace, PublishedInfo layer, Service service) {
 
         String serviceId = service.getId();
         String serviceVersion = service.getVersion().toString();
 
-        String query =
-                "service="
-                        + serviceId.toUpperCase()
-                        + "&"
-                        + getVersionParameterName(service)
-                        + "="
-                        + serviceVersion
-                        + "&request=GetCapabilities";
+        String query = "service="
+                + serviceId.toUpperCase()
+                + "&"
+                + getVersionParameterName(service)
+                + "="
+                + serviceVersion
+                + "&request=GetCapabilities";
 
         if (workspace != null && layer != null) {
             return "../" + workspace.getName() + "/" + layer.getName() + "/ows?" + query;

@@ -114,8 +114,7 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
 
         WorkspaceInfo defaultWs = getCatalog().getDefaultWorkspace();
 
-        tester.assertModelValue(
-                "dataStoreForm:workspacePanel:border:border_body:paramValue", defaultWs);
+        tester.assertModelValue("dataStoreForm:workspacePanel:border:border_body:paramValue", defaultWs);
 
         WorkspaceInfo anotherWs = getCatalog().getFactory().createWorkspace();
         anotherWs.setName("anotherWs");
@@ -125,8 +124,7 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
         anotherWs = getCatalog().getDefaultWorkspace();
 
         startPage();
-        tester.assertModelValue(
-                "dataStoreForm:workspacePanel:border:border_body:paramValue", anotherWs);
+        tester.assertModelValue("dataStoreForm:workspacePanel:border:border_body:paramValue", anotherWs);
     }
 
     @Test
@@ -134,8 +132,7 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
 
         // final String namespacePath =
         // "dataStoreForm:parameters:1:parameterPanel:border:border_body:paramValue";
-        final String namespacePath =
-                "dataStoreForm:parametersPanel:parameters:1:parameterPanel:paramValue";
+        final String namespacePath = "dataStoreForm:parametersPanel:parameters:1:parameterPanel:paramValue";
 
         startPage();
 
@@ -149,15 +146,13 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
         startPage();
         List parametersListViewValues = Arrays.asList(new Object[] {"directory", "namespace"});
         tester.assertComponent(
-                "dataStoreForm:parametersPanel:parameters",
-                org.apache.wicket.markup.html.list.ListView.class);
-        tester.assertModelValue(
-                "dataStoreForm:parametersPanel:parameters", parametersListViewValues);
+                "dataStoreForm:parametersPanel:parameters", org.apache.wicket.markup.html.list.ListView.class);
+        tester.assertModelValue("dataStoreForm:parametersPanel:parameters", parametersListViewValues);
     }
 
     /**
-     * Make sure in case the DataStore has a "namespace" parameter, its value is initialized to the
-     * NameSpaceInfo one that matches the workspace
+     * Make sure in case the DataStore has a "namespace" parameter, its value is initialized to the NameSpaceInfo one
+     * that matches the workspace
      */
     @Test
     public void testInitCreateNewDataStoreSetsNamespaceParam() {
@@ -182,8 +177,7 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
         // tester.debugComponentTrees();
         // the "database" key is the second, should be a file panel
         Component component =
-                tester.getComponentFromLastRenderedPage(
-                        "dataStoreForm:parametersPanel:parameters:1:parameterPanel");
+                tester.getComponentFromLastRenderedPage("dataStoreForm:parametersPanel:parameters:1:parameterPanel");
         assertThat(component, instanceOf(FileParamPanel.class));
     }
 
@@ -192,9 +186,7 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
         startPage();
         FormTester ft = tester.newFormTester("dataStoreForm");
 
-        ft.setValue(
-                "parametersPanel:parameters:0:parameterPanel:fileInput:border:border_body:paramValue",
-                "file:cdf");
+        ft.setValue("parametersPanel:parameters:0:parameterPanel:fileInput:border:border_body:paramValue", "file:cdf");
         ft.setValue("dataStoreNamePanel:border:border_body:paramValue", "cdf2");
         ft.submit("save");
 
@@ -210,9 +202,7 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
         startPage();
         FormTester ft = tester.newFormTester("dataStoreForm");
 
-        ft.setValue(
-                "parametersPanel:parameters:0:parameterPanel:fileInput:border:border_body:paramValue",
-                "file:cdf");
+        ft.setValue("parametersPanel:parameters:0:parameterPanel:fileInput:border:border_body:paramValue", "file:cdf");
         ft.setValue("dataStoreNamePanel:border:border_body:paramValue", "cdf3");
         ft.submit("apply");
 
@@ -229,14 +219,11 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
         startPage();
         FormTester ft = tester.newFormTester("dataStoreForm");
 
-        ft.setValue(
-                "parametersPanel:parameters:0:parameterPanel:fileInput:border:border_body:paramValue",
-                "file:cdf");
+        ft.setValue("parametersPanel:parameters:0:parameterPanel:fileInput:border:border_body:paramValue", "file:cdf");
         ft.setValue("dataStoreNamePanel:border:border_body:paramValue", name);
 
         Component component =
-                tester.getComponentFromLastRenderedPage(
-                        "dataStoreForm:disableOnConnFailurePanel:paramValue");
+                tester.getComponentFromLastRenderedPage("dataStoreForm:disableOnConnFailurePanel:paramValue");
         CheckBox checkBox = (CheckBox) component;
         assertFalse(Boolean.valueOf(checkBox.getInput()).booleanValue());
 
@@ -270,8 +257,7 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
         try (OutputStream os = layerSecurity.out()) {
             properties.store(os, "sandbox");
         }
-        DefaultFileAccessManager fam =
-                GeoServerExtensions.bean(DefaultFileAccessManager.class, applicationContext);
+        DefaultFileAccessManager fam = GeoServerExtensions.bean(DefaultFileAccessManager.class, applicationContext);
         fam.reload();
 
         // login as workspace admin (logout happens as @After in base class)
@@ -281,9 +267,8 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
             FormTester ft = tester.newFormTester("dataStoreForm");
 
             DropDownChoice<WorkspaceInfo> select =
-                    (DropDownChoice<WorkspaceInfo>)
-                            tester.getComponentFromLastRenderedPage(
-                                    "dataStoreForm:workspacePanel:border:border_body:paramValue");
+                    (DropDownChoice<WorkspaceInfo>) tester.getComponentFromLastRenderedPage(
+                            "dataStoreForm:workspacePanel:border:border_body:paramValue");
             List<? extends WorkspaceInfo> workspaces = select.getChoices();
             int citeIdx = -1;
             for (int i = 0; i < workspaces.size(); i++) {
@@ -299,8 +284,7 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
             ft.setValue("dataStoreNamePanel:border:border_body:paramValue", storeName);
             ft.select("workspacePanel:border:border_body:paramValue", citeIdx);
             ft.setValue(
-                    "parametersPanel:parameters:0:parameterPanel:fileInput:border:border_body:paramValue",
-                    toppPath);
+                    "parametersPanel:parameters:0:parameterPanel:fileInput:border:border_body:paramValue", toppPath);
             ft.submit("save");
 
             List<Serializable> messages = tester.getMessages(FeedbackMessage.ERROR);
@@ -317,8 +301,7 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
             ft.setValue("dataStoreNamePanel:border:border_body:paramValue", storeName);
             ft.select("workspacePanel:border:border_body:paramValue", citeIdx);
             ft.setValue(
-                    "parametersPanel:parameters:0:parameterPanel:fileInput:border:border_body:paramValue",
-                    citePath);
+                    "parametersPanel:parameters:0:parameterPanel:fileInput:border:border_body:paramValue", citePath);
             ft.submit("save");
 
             // no messages and save worked

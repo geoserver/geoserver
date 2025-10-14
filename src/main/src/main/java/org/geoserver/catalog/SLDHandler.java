@@ -58,8 +58,8 @@ public class SLDHandler extends StyleHandler {
     static Logger LOGGER = Logging.getLogger(SLDHandler.class);
 
     /**
-     * number of bytes to "look ahead" when pre parsing xml document. TODO: make this configurable,
-     * and possibley link it to the same value used by the ows dispatcher.
+     * number of bytes to "look ahead" when pre parsing xml document. TODO: make this configurable, and possibley link
+     * it to the same value used by the ows dispatcher.
      */
     static int XML_LOOKAHEAD = 8500;
 
@@ -77,24 +77,18 @@ public class SLDHandler extends StyleHandler {
         try {
             TEMPLATES.put(
                     StyleType.POINT,
-                    IOUtils.toString(
-                            SLDHandler.class.getResourceAsStream("template_point.sld"), UTF_8));
+                    IOUtils.toString(SLDHandler.class.getResourceAsStream("template_point.sld"), UTF_8));
             TEMPLATES.put(
                     StyleType.POLYGON,
-                    IOUtils.toString(
-                            SLDHandler.class.getResourceAsStream("template_polygon.sld"), UTF_8));
+                    IOUtils.toString(SLDHandler.class.getResourceAsStream("template_polygon.sld"), UTF_8));
             TEMPLATES.put(
-                    StyleType.LINE,
-                    IOUtils.toString(
-                            SLDHandler.class.getResourceAsStream("template_line.sld"), UTF_8));
+                    StyleType.LINE, IOUtils.toString(SLDHandler.class.getResourceAsStream("template_line.sld"), UTF_8));
             TEMPLATES.put(
                     StyleType.RASTER,
-                    IOUtils.toString(
-                            SLDHandler.class.getResourceAsStream("template_raster.sld"), UTF_8));
+                    IOUtils.toString(SLDHandler.class.getResourceAsStream("template_raster.sld"), UTF_8));
             TEMPLATES.put(
                     StyleType.GENERIC,
-                    IOUtils.toString(
-                            SLDHandler.class.getResourceAsStream("template_generic.sld"), UTF_8));
+                    IOUtils.toString(SLDHandler.class.getResourceAsStream("template_generic.sld"), UTF_8));
         } catch (IOException e) {
             throw new RuntimeException("Error loading up the style templates", e);
         }
@@ -147,10 +141,7 @@ public class SLDHandler extends StyleHandler {
 
     @Override
     public StyledLayerDescriptor parse(
-            Object input,
-            Version version,
-            ResourceLocator resourceLocator,
-            EntityResolver entityResolver)
+            Object input, Version version, ResourceLocator resourceLocator, EntityResolver entityResolver)
             throws IOException {
         if (version == null) {
             Object[] versionAndReader = getVersionAndReader(input, true);
@@ -166,8 +157,7 @@ public class SLDHandler extends StyleHandler {
     }
 
     @SuppressWarnings({"PMD.CloseResource", "PMD.UseTryWithResources"})
-    StyledLayerDescriptor parse10(
-            Object input, ResourceLocator resourceLocator, EntityResolver entityResolver)
+    StyledLayerDescriptor parse10(Object input, ResourceLocator resourceLocator, EntityResolver entityResolver)
             throws IOException {
 
         // reader is conditionally initialized, actually gets closed
@@ -186,8 +176,7 @@ public class SLDHandler extends StyleHandler {
                 // style and then wrap it in an sld
                 Style[] style = p.readDOM();
                 if (style.length > 0) {
-                    StyledLayerDescriptorBuilder sldBuilder =
-                            new StyledLayerDescriptorBuilder().reset(sld);
+                    StyledLayerDescriptorBuilder sldBuilder = new StyledLayerDescriptorBuilder().reset(sld);
                     sldBuilder.namedLayer().style().reset(style[0]);
                     sld = sldBuilder.build();
                 }
@@ -198,8 +187,7 @@ public class SLDHandler extends StyleHandler {
         }
     }
 
-    StyledLayerDescriptor parse11(
-            Object input, ResourceLocator resourceLocator, EntityResolver entityResolver)
+    StyledLayerDescriptor parse11(Object input, ResourceLocator resourceLocator, EntityResolver entityResolver)
             throws IOException {
         Parser parser = createSld11Parser(input, resourceLocator, entityResolver);
         try (Reader reader = toReader(input)) {
@@ -210,12 +198,11 @@ public class SLDHandler extends StyleHandler {
         }
     }
 
-    SLDParser createSld10Parser(
-            Object input, ResourceLocator resourceLocator, EntityResolver entityResolver)
+    SLDParser createSld10Parser(Object input, ResourceLocator resourceLocator, EntityResolver entityResolver)
             throws IOException {
         SLDParser parser;
-        if (input instanceof File) {
-            parser = new SLDParser(styleFactory, (File) input);
+        if (input instanceof File file) {
+            parser = new SLDParser(styleFactory, file);
         } else {
             parser = new SLDParser(styleFactory, toReader(input));
         }
@@ -229,11 +216,10 @@ public class SLDHandler extends StyleHandler {
         return parser;
     }
 
-    Parser createSld11Parser(
-            Object input, ResourceLocator resourceLocator, EntityResolver entityResolver) {
-        if (resourceLocator == null && input instanceof File) {
+    Parser createSld11Parser(Object input, ResourceLocator resourceLocator, EntityResolver entityResolver) {
+        if (resourceLocator == null && input instanceof File file) {
             // setup for resolution of relative paths
-            final java.net.URL surl = URLs.fileToUrl((File) input);
+            final java.net.URL surl = URLs.fileToUrl(file);
             DefaultResourceLocator defResourceLocator = new DefaultResourceLocator();
             defResourceLocator.setSourceUrl(surl);
             resourceLocator = defResourceLocator;
@@ -242,14 +228,12 @@ public class SLDHandler extends StyleHandler {
         final ResourceLocator locator = resourceLocator;
         SLDConfiguration sld;
         if (locator != null) {
-            sld =
-                    new SLDConfiguration() {
-                        @Override
-                        protected void configureContext(
-                                org.picocontainer.MutablePicoContainer container) {
-                            container.registerComponentInstance(ResourceLocator.class, locator);
-                        }
-                    };
+            sld = new SLDConfiguration() {
+                @Override
+                protected void configureContext(org.picocontainer.MutablePicoContainer container) {
+                    container.registerComponentInstance(ResourceLocator.class, locator);
+                }
+            };
         } else {
             sld = new SLDConfiguration();
         }
@@ -262,8 +246,7 @@ public class SLDHandler extends StyleHandler {
     }
 
     @Override
-    public void encode(
-            StyledLayerDescriptor sld, Version version, boolean pretty, OutputStream output)
+    public void encode(StyledLayerDescriptor sld, Version version, boolean pretty, OutputStream output)
             throws IOException {
         if (version != null && VERSION_11.compareTo(version) == 0) {
             encode11(sld, pretty, output);
@@ -272,8 +255,7 @@ public class SLDHandler extends StyleHandler {
         }
     }
 
-    void encode10(StyledLayerDescriptor sld, boolean pretty, OutputStream output)
-            throws IOException {
+    void encode10(StyledLayerDescriptor sld, boolean pretty, OutputStream output) throws IOException {
         SLDTransformer tx = new SLDTransformer();
         if (pretty) {
             tx.setIndentation(2);
@@ -285,16 +267,14 @@ public class SLDHandler extends StyleHandler {
         }
     }
 
-    void encode11(StyledLayerDescriptor sld, boolean pretty, OutputStream output)
-            throws IOException {
+    void encode11(StyledLayerDescriptor sld, boolean pretty, OutputStream output) throws IOException {
         Encoder e = new Encoder(new SLDConfiguration());
         e.setIndenting(pretty);
         e.encode(sld, SLD.StyledLayerDescriptor, output);
     }
 
     @Override
-    public List<Exception> validate(Object input, Version version, EntityResolver entityResolver)
-            throws IOException {
+    public List<Exception> validate(Object input, Version version, EntityResolver entityResolver) throws IOException {
         if (version == null) {
             Object[] versionAndReader = getVersionAndReader(input, true);
             version = (Version) versionAndReader[0];
@@ -333,13 +313,13 @@ public class SLDHandler extends StyleHandler {
     }
 
     /** Helper method for finding which style handler/version to use from the actual content. */
+    @SuppressWarnings("PMD.CloseResource") // reader returned as part of the response, instanceof InputStream stream
     Object[] getVersionAndReader(Object input, boolean needReader) throws IOException {
         // need to determine version of sld from actual content
-        @SuppressWarnings("PMD.CloseResource") // returned as part of the response
         BufferedReader reader = null;
 
-        if (input instanceof InputStream) {
-            reader = RequestUtils.getBufferedXMLReader((InputStream) input, XML_LOOKAHEAD);
+        if (input instanceof InputStream stream) {
+            reader = RequestUtils.getBufferedXMLReader(stream, XML_LOOKAHEAD);
         } else {
             reader = RequestUtils.getBufferedXMLReader(toReader(input), XML_LOOKAHEAD);
         }
@@ -410,10 +390,7 @@ public class SLDHandler extends StyleHandler {
             }
         }
         return new StringBuffer("<ExternalGraphic ")
-                .append(
-                        version11
-                                ? "xmlns=\"http://www.opengis.net/se\" "
-                                : "xmlns=\"http://www.opengis.net/sld\" ")
+                .append(version11 ? "xmlns=\"http://www.opengis.net/se\" " : "xmlns=\"http://www.opengis.net/sld\" ")
                 .append("xmlns:xlink=\"http://www.w3.org/1999/xlink\">\\n")
                 .append("<OnlineResource xlink:type=\"simple\" xlink:href=\"")
                 .append(imageFileName)

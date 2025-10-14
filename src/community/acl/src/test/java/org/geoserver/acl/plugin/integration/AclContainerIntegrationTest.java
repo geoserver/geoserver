@@ -4,7 +4,6 @@
  */
 package org.geoserver.acl.plugin.integration;
 
-import static java.lang.String.format;
 import static org.geoserver.acl.domain.rules.GrantType.ALLOW;
 
 import java.util.HashMap;
@@ -30,9 +29,9 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 
 /**
- * Runs the {@link GeoServerAclContainer} test container in dev mode (that is, with an embedded h2
- * database) on a random port, sets up the GeoServer-ACL api client system properties to work
- * against the ephemeral service, and runs some plugin integration tests.
+ * Runs the {@link GeoServerAclContainer} test container in dev mode (that is, with an embedded h2 database) on a random
+ * port, sets up the GeoServer-ACL api client system properties to work against the ephemeral service, and runs some
+ * plugin integration tests.
  */
 public class AclContainerIntegrationTest extends GeoServerSystemTestSupport {
 
@@ -65,43 +64,34 @@ public class AclContainerIntegrationTest extends GeoServerSystemTestSupport {
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
     }
 
-    private final List<String> cdfLayers =
-            List.of(
-                    "cdf:Deletes",
-                    "cdf:Fifteen",
-                    "cdf:Inserts",
-                    "cdf:Locks",
-                    "cdf:Nulls",
-                    "cdf:Other",
-                    "cdf:Seven",
-                    "cdf:Updates");
+    private final List<String> cdfLayers = List.of(
+            "cdf:Deletes",
+            "cdf:Fifteen",
+            "cdf:Inserts",
+            "cdf:Locks",
+            "cdf:Nulls",
+            "cdf:Other",
+            "cdf:Seven",
+            "cdf:Updates");
     private final List<String> cgfLayers =
-            List.of(
-                    "cgf:Lines",
-                    "cgf:MLines",
-                    "cgf:MPoints",
-                    "cgf:MPolygons",
-                    "cgf:Points",
-                    "cgf:Polygons");
-    private final List<String> citeLayers =
-            List.of(
-                    "cite:BasicPolygons",
-                    "cite:Bridges",
-                    "cite:Buildings",
-                    "cite:DividedRoutes",
-                    "cite:Forests",
-                    "cite:Lakes",
-                    "cite:MapNeatline",
-                    "cite:NamedPlaces",
-                    "cite:Ponds",
-                    "cite:RoadSegments",
-                    "cite:Streams");
+            List.of("cgf:Lines", "cgf:MLines", "cgf:MPoints", "cgf:MPolygons", "cgf:Points", "cgf:Polygons");
+    private final List<String> citeLayers = List.of(
+            "cite:BasicPolygons",
+            "cite:Bridges",
+            "cite:Buildings",
+            "cite:DividedRoutes",
+            "cite:Forests",
+            "cite:Lakes",
+            "cite:MapNeatline",
+            "cite:NamedPlaces",
+            "cite:Ponds",
+            "cite:RoadSegments",
+            "cite:Streams");
     private final List<String> sfLayers =
             List.of("sf:AggregateGeoFeature", "sf:GenericEntity", "sf:PrimitiveGeoFeature");
-    private final List<String> allLayers =
-            Stream.of(cdfLayers, cgfLayers, citeLayers, sfLayers)
-                    .flatMap(List::stream)
-                    .collect(Collectors.toList());
+    private final List<String> allLayers = Stream.of(cdfLayers, cgfLayers, citeLayers, sfLayers)
+            .flatMap(List::stream)
+            .collect(Collectors.toList());
 
     @Test
     public void aclIntegrationTest() throws Exception {
@@ -165,17 +155,15 @@ public class AclContainerIntegrationTest extends GeoServerSystemTestSupport {
         createRule(user, null, grant, workspace, layer);
     }
 
-    private void createRule(
-            String user, String role, GrantType grant, String workspace, String layer) {
+    private void createRule(String user, String role, GrantType grant, String workspace, String layer) {
         RuleAdminService ruleAdminService = applicationContext.getBean(RuleAdminService.class);
-        RuleIdentifier identifier =
-                RuleIdentifier.builder()
-                        .username(user)
-                        .rolename(role)
-                        .workspace(workspace)
-                        .layer(layer)
-                        .access(grant)
-                        .build();
+        RuleIdentifier identifier = RuleIdentifier.builder()
+                .username(user)
+                .rolename(role)
+                .workspace(workspace)
+                .layer(layer)
+                .access(grant)
+                .build();
         Rule rule = Rule.builder().identifier(identifier).build();
         ruleAdminService.insert(rule);
     }
@@ -197,31 +185,27 @@ public class AclContainerIntegrationTest extends GeoServerSystemTestSupport {
 
     @SafeVarargs
     private void assertVisible(List<String>... layers) throws Exception {
-        List<String> expected =
-                Stream.of(layers).flatMap(List::stream).collect(Collectors.toList());
+        List<String> expected = Stream.of(layers).flatMap(List::stream).collect(Collectors.toList());
         assertWMSCapabilitiesContainsAll(expected);
         assertWFSCapabilitiesContainsAll(expected);
     }
 
     @SafeVarargs
     private void assertNotVisible(List<String>... layers) throws Exception {
-        List<String> expected =
-                Stream.of(layers).flatMap(List::stream).collect(Collectors.toList());
+        List<String> expected = Stream.of(layers).flatMap(List::stream).collect(Collectors.toList());
         assertWMSCapabilitiesDoesNotContain(expected);
         assertWFSCapabilitiesDoesNotContain(expected);
     }
 
     private void assertWMSCapabilitiesContainsAll(List<String> layers) throws Exception {
         Document wmsCaps = getWmsCapabilities();
-        Function<String, String> xpathBuilder =
-                layer -> format("//wms:Layer/wms:Name[text() = '%s']", layer);
+        Function<String, String> xpathBuilder = layer -> "//wms:Layer/wms:Name[text() = '%s']".formatted(layer);
         assertXpathExists(wmsCaps, xpathBuilder, layers);
     }
 
     private void assertWMSCapabilitiesDoesNotContain(List<String> layers) throws Exception {
         Document wmsCaps = getWmsCapabilities();
-        Function<String, String> xpathBuilder =
-                layer -> format("//wms:Layer/wms:Name[text() = '%s']", layer);
+        Function<String, String> xpathBuilder = layer -> "//wms:Layer/wms:Name[text() = '%s']".formatted(layer);
         assertXpathDoesNotExist(wmsCaps, xpathBuilder, layers);
     }
 
@@ -233,20 +217,17 @@ public class AclContainerIntegrationTest extends GeoServerSystemTestSupport {
 
     private void assertWFSCapabilitiesContainsAll(List<String> layers) throws Exception {
         Document wfsCaps = getWfsCapabilities();
-        Function<String, String> xpathBuilder =
-                layer -> format("//wfs:FeatureType/wfs:Name[text() = '%s']", layer);
+        Function<String, String> xpathBuilder = layer -> "//wfs:FeatureType/wfs:Name[text() = '%s']".formatted(layer);
         assertXpathExists(wfsCaps, xpathBuilder, layers);
     }
 
     private void assertWFSCapabilitiesDoesNotContain(List<String> layers) throws Exception {
         Document wfsCaps = getWfsCapabilities();
-        Function<String, String> xpathBuilder =
-                layer -> format("//wfs:FeatureType/wfs:Name[text() = '%s']", layer);
+        Function<String, String> xpathBuilder = layer -> "//wfs:FeatureType/wfs:Name[text() = '%s']".formatted(layer);
         assertXpathDoesNotExist(wfsCaps, xpathBuilder, layers);
     }
 
-    private void assertXpathExists(
-            Document dom, Function<String, String> xpathBuilder, List<String> layers)
+    private void assertXpathExists(Document dom, Function<String, String> xpathBuilder, List<String> layers)
             throws Exception {
         for (String layer : layers) {
             String xpath = xpathBuilder.apply(layer);
@@ -254,8 +235,7 @@ public class AclContainerIntegrationTest extends GeoServerSystemTestSupport {
         }
     }
 
-    private void assertXpathDoesNotExist(
-            Document dom, Function<String, String> xpathBuilder, List<String> layers)
+    private void assertXpathDoesNotExist(Document dom, Function<String, String> xpathBuilder, List<String> layers)
             throws Exception {
         for (String layer : layers) {
             String xpath = xpathBuilder.apply(layer);
@@ -267,10 +247,6 @@ public class AclContainerIntegrationTest extends GeoServerSystemTestSupport {
         Document wfsCaps = super.getAsDOM("/wfs?version=1.1.0&request=GetCapabilities");
         XMLAssert.assertXpathExists("/wfs:WFS_Capabilities", wfsCaps);
         return wfsCaps;
-    }
-
-    public void loginAsAdmin() {
-        login("admin", "geoserver", "ADMIN", "ROLE_ADMINISTRATOR");
     }
 
     public void loginAsAnonymous() {

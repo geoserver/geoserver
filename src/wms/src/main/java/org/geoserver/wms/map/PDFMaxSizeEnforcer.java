@@ -12,8 +12,8 @@ import org.geotools.renderer.GTRenderer;
 import org.geotools.renderer.RenderListener;
 
 /**
- * Attaches itself to the renderer and ensures no more than maxSize bytes are used to store the PDF
- * in memory, and stops the renderer in case that happens.
+ * Attaches itself to the renderer and ensures no more than maxSize bytes are used to store the PDF in memory, and stops
+ * the renderer in case that happens.
  *
  * @author Andrea Aime - OpenGeo
  */
@@ -23,28 +23,24 @@ public class PDFMaxSizeEnforcer {
 
     ByteBuffer pdfBytes;
 
-    /**
-     * Builds a new max errors enforcer. If maxErrors is not positive the enforcer will do nothing
-     */
-    public PDFMaxSizeEnforcer(
-            final GTRenderer renderer, final PdfGraphics2D graphics, final int maxSize) {
+    /** Builds a new max errors enforcer. If maxErrors is not positive the enforcer will do nothing */
+    public PDFMaxSizeEnforcer(final GTRenderer renderer, final PdfGraphics2D graphics, final int maxSize) {
         this.maxSize = maxSize;
         this.pdfBytes = graphics.getContent().getInternalBuffer();
 
         if (maxSize > 0) {
-            renderer.addRenderListener(
-                    new RenderListener() {
+            renderer.addRenderListener(new RenderListener() {
 
-                        @Override
-                        public void featureRenderer(SimpleFeature feature) {
-                            if (pdfBytes.size() > maxSize) {
-                                renderer.stopRendering();
-                            }
-                        }
+                @Override
+                public void featureRenderer(SimpleFeature feature) {
+                    if (pdfBytes.size() > maxSize) {
+                        renderer.stopRendering();
+                    }
+                }
 
-                        @Override
-                        public void errorOccurred(Exception e) {}
-                    });
+                @Override
+                public void errorOccurred(Exception e) {}
+            });
         }
     }
 

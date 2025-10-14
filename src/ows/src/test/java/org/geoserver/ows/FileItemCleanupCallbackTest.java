@@ -7,7 +7,6 @@ package org.geoserver.ows;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 
-import com.google.common.base.Strings;
 import java.io.File;
 import java.net.URL;
 import java.nio.file.DirectoryStream;
@@ -31,12 +30,12 @@ public class FileItemCleanupCallbackTest {
     private static final String BOUNDARY = "----1234";
 
     // temp files are only created for fields that exceed a certain content length
-    private static final String FILE_CONTENTS =
-            Strings.repeat("1", DiskFileItemFactory.DEFAULT_SIZE_THRESHOLD + 1);
+    private static final String FILE_CONTENTS = "1".repeat(DiskFileItemFactory.DEFAULT_SIZE_THRESHOLD + 1);
 
     private static String oldTmpDir;
 
-    @Rule public TemporaryFolder tmpFolder = new TemporaryFolder(new File("target"));
+    @Rule
+    public TemporaryFolder tmpFolder = new TemporaryFolder(new File("target"));
 
     @BeforeClass
     public static void saveTempDir() {
@@ -83,29 +82,27 @@ public class FileItemCleanupCallbackTest {
         request.setContentType("multipart/form-data; boundary=" + BOUNDARY);
         String content = "";
         if (field1 != null) {
-            content =
-                    "--"
-                            + BOUNDARY
-                            + "\r\nContent-Disposition: form-data; name="
-                            + field1
-                            + "\r\n\r\n"
-                            + FILE_CONTENTS
-                            + "\r\n--"
-                            + BOUNDARY
-                            + "\r\nContent-Disposition: form-data; name="
-                            + field2
-                            + "\r\n\r\n"
-                            + FILE_CONTENTS
-                            + "\r\n--"
-                            + BOUNDARY
-                            + "--\r\n";
+            content = "--"
+                    + BOUNDARY
+                    + "\r\nContent-Disposition: form-data; name="
+                    + field1
+                    + "\r\n\r\n"
+                    + FILE_CONTENTS
+                    + "\r\n--"
+                    + BOUNDARY
+                    + "\r\nContent-Disposition: form-data; name="
+                    + field2
+                    + "\r\n\r\n"
+                    + FILE_CONTENTS
+                    + "\r\n--"
+                    + BOUNDARY
+                    + "--\r\n";
         }
         request.setContent(content.getBytes());
 
         // init a new dispatcher and dispatch the request
         URL url = getClass().getResource("applicationContext.xml");
-        try (FileSystemXmlApplicationContext context =
-                new FileSystemXmlApplicationContext(url.toString())) {
+        try (FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString())) {
             Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
             MockHttpServletResponse response = new MockHttpServletResponse();
             dispatcher.handleRequest(request, response);

@@ -9,6 +9,7 @@ import static org.geoserver.web.data.workspace.WorkspaceProvider.DEFAULT;
 import static org.geoserver.web.data.workspace.WorkspaceProvider.ISOLATED;
 import static org.geoserver.web.data.workspace.WorkspaceProvider.NAME;
 
+import java.io.Serial;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
@@ -29,7 +30,9 @@ import org.geoserver.web.wicket.SimpleBookmarkableLink;
 
 /** Lists available workspaces, links to them, allows for addition and removal */
 public class WorkspacePage extends GeoServerSecuredPage {
+    @Serial
     private static final long serialVersionUID = 3084639304127909774L;
+
     WorkspaceProvider provider = new WorkspaceProvider();
     GeoServerTablePanel<WorkspaceInfo> table;
     GeoServerDialog dialog;
@@ -38,49 +41,40 @@ public class WorkspacePage extends GeoServerSecuredPage {
     public WorkspacePage() {
         // the middle table
         add(
-                table =
-                        new GeoServerTablePanel<>("table", provider, true) {
-                            private static final long serialVersionUID = 8028081894753417294L;
+                table = new GeoServerTablePanel<>("table", provider, true) {
+                    @Serial
+                    private static final long serialVersionUID = 8028081894753417294L;
 
-                            @Override
-                            protected Component getComponentForProperty(
-                                    String id,
-                                    IModel<WorkspaceInfo> itemModel,
-                                    Property<WorkspaceInfo> property) {
-                                if (property == NAME) {
-                                    return workspaceLink(id, itemModel);
-                                } else if (property == DEFAULT) {
-                                    if (getCatalog()
-                                            .getDefaultWorkspace()
-                                            .equals(itemModel.getObject()))
-                                        return new Icon(id, CatalogIconFactory.ENABLED_ICON);
-                                    else return new Label(id, "");
-                                } else if (property == ISOLATED) {
-                                    if (itemModel.getObject().isIsolated())
-                                        return new Icon(id, CatalogIconFactory.ENABLED_ICON);
-                                    else return new Label(id, "");
-                                } else if (property == WorkspaceProvider.MODIFIED_TIMESTAMP) {
-                                    return new DateTimeLabel(
-                                            id,
-                                            WorkspaceProvider.MODIFIED_TIMESTAMP.getModel(
-                                                    itemModel));
-                                } else if (property == WorkspaceProvider.CREATED_TIMESTAMP) {
-                                    return new DateTimeLabel(
-                                            id,
-                                            WorkspaceProvider.CREATED_TIMESTAMP.getModel(
-                                                    itemModel));
-                                }
+                    @Override
+                    protected Component getComponentForProperty(
+                            String id, IModel<WorkspaceInfo> itemModel, Property<WorkspaceInfo> property) {
+                        if (property == NAME) {
+                            return workspaceLink(id, itemModel);
+                        } else if (property == DEFAULT) {
+                            if (getCatalog().getDefaultWorkspace().equals(itemModel.getObject()))
+                                return new Icon(id, CatalogIconFactory.ENABLED_ICON);
+                            else return new Label(id, "");
+                        } else if (property == ISOLATED) {
+                            if (itemModel.getObject().isIsolated())
+                                return new Icon(id, CatalogIconFactory.ENABLED_ICON);
+                            else return new Label(id, "");
+                        } else if (property == WorkspaceProvider.MODIFIED_TIMESTAMP) {
+                            return new DateTimeLabel(id, WorkspaceProvider.MODIFIED_TIMESTAMP.getModel(itemModel));
+                        } else if (property == WorkspaceProvider.CREATED_TIMESTAMP) {
+                            return new DateTimeLabel(id, WorkspaceProvider.CREATED_TIMESTAMP.getModel(itemModel));
+                        } else if (property == WorkspaceProvider.MODIFIED_BY) {
+                            return new Label(id, WorkspaceProvider.MODIFIED_BY.getModel(itemModel));
+                        }
 
-                                throw new IllegalArgumentException(
-                                        "No such property " + property.getName());
-                            }
+                        throw new IllegalArgumentException("No such property " + property.getName());
+                    }
 
-                            @Override
-                            protected void onSelectionUpdate(AjaxRequestTarget target) {
-                                removal.setEnabled(!table.getSelection().isEmpty());
-                                target.add(removal);
-                            }
-                        });
+                    @Override
+                    protected void onSelectionUpdate(AjaxRequestTarget target) {
+                        removal.setEnabled(!table.getSelection().isEmpty());
+                        target.add(removal);
+                    }
+                });
         table.setOutputMarkupId(true);
 
         // the confirm dialog

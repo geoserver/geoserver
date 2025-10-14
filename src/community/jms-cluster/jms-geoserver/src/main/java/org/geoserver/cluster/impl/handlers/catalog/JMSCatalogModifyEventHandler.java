@@ -46,8 +46,7 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
 
     /** */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public JMSCatalogModifyEventHandler(
-            Catalog catalog, XStream xstream, Class clazz, ToggleSwitch producer) {
+    public JMSCatalogModifyEventHandler(Catalog catalog, XStream xstream, Class clazz, ToggleSwitch producer) {
         super(xstream, clazz);
         this.catalog = catalog;
         this.producer = producer;
@@ -59,23 +58,21 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
             throw new IllegalArgumentException("Incoming object is null");
         }
         try {
-            if (event instanceof CatalogModifyEvent) {
-                final CatalogModifyEvent modifyEv = ((CatalogModifyEvent) event);
+            if (event instanceof CatalogModifyEvent modifyEvent) {
+                final CatalogModifyEvent modifyEv = modifyEvent;
 
                 producer.disable();
                 JMSCatalogModifyEventHandler.modify(catalog, modifyEv);
 
             } else {
                 // incoming object not recognized
-                if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
-                    LOGGER.severe("Unrecognized event type");
+                if (LOGGER.isLoggable(java.util.logging.Level.SEVERE)) LOGGER.severe("Unrecognized event type");
                 return false;
             }
 
         } catch (Exception e) {
             if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
-                LOGGER.severe(
-                        this.getClass() + " is unable to synchronize the incoming event: " + event);
+                LOGGER.severe(this.getClass() + " is unable to synchronize the incoming event: " + event);
             throw e;
         } finally {
             // re enable the producer
@@ -85,8 +82,8 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
     }
 
     /**
-     * simulate a catalog.save() rebuilding the EventModify proxy object locally {@link
-     * org.geoserver.catalog.impl.DefaultCatalogFacade#saved(CatalogInfo)}
+     * simulate a catalog.save() rebuilding the EventModify proxy object locally
+     * {@link org.geoserver.catalog.impl.DefaultCatalogFacade#saved(CatalogInfo)}
      *
      * <p>TODO synchronization on catalog object
      */
@@ -98,64 +95,58 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
         // check if name is changed
         String name = getOldName(catalog, modifyEv);
 
-        if (info instanceof LayerGroupInfo) {
+        if (info instanceof LayerGroupInfo groupInfo) {
 
             // check if name is changed
             if (name == null) {
                 // name is unchanged
-                name = ((LayerGroupInfo) info).getName();
+                name = groupInfo.getName();
             }
 
             final LayerGroupInfo localObject = catalog.getLayerGroupByName(name);
 
             if (localObject == null) {
-                throw new CatalogException(
-                        "Unable to locate " + info + " named: " + name + " locally.");
+                throw new CatalogException("Unable to locate " + info + " named: " + name + " locally.");
             }
 
-            BeanUtils.smartUpdate(
-                    localObject, modifyEv.getPropertyNames(), modifyEv.getNewValues());
+            BeanUtils.smartUpdate(localObject, modifyEv.getPropertyNames(), modifyEv.getNewValues());
             catalog.save(localObject);
 
-        } else if (info instanceof LayerInfo) {
+        } else if (info instanceof LayerInfo layerInfo) {
 
             // check if name is changed
             if (name == null) {
                 // name is unchanged
-                name = ((LayerInfo) info).getName();
+                name = layerInfo.getName();
             }
 
             final LayerInfo localObject = catalog.getLayerByName(name);
 
             if (localObject == null) {
-                throw new CatalogException(
-                        "Unable to locate " + info + " named: " + name + " locally.");
+                throw new CatalogException("Unable to locate " + info + " named: " + name + " locally.");
             }
 
-            BeanUtils.smartUpdate(
-                    localObject, modifyEv.getPropertyNames(), modifyEv.getNewValues());
+            BeanUtils.smartUpdate(localObject, modifyEv.getPropertyNames(), modifyEv.getNewValues());
             catalog.save(localObject);
 
-        } else if (info instanceof MapInfo) {
+        } else if (info instanceof MapInfo mapInfo) {
 
             // check if name is changed
             if (name == null) {
                 // name is unchanged
-                name = ((MapInfo) info).getName();
+                name = mapInfo.getName();
             }
 
             final MapInfo localObject = catalog.getMapByName(name);
 
             if (localObject == null) {
-                throw new CatalogException(
-                        "Unable to locate " + info + " named: " + name + " locally.");
+                throw new CatalogException("Unable to locate " + info + " named: " + name + " locally.");
             }
 
-            BeanUtils.smartUpdate(
-                    localObject, modifyEv.getPropertyNames(), modifyEv.getNewValues());
+            BeanUtils.smartUpdate(localObject, modifyEv.getPropertyNames(), modifyEv.getNewValues());
             catalog.save(localObject);
 
-        } else if (info instanceof NamespaceInfo) {
+        } else if (info instanceof NamespaceInfo namespaceInfo) {
 
             final String uri;
             final Object uriObj = getOldValue(modifyEv, "uRI");
@@ -163,25 +154,23 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
                 uri = uriObj.toString();
             } else {
                 // uri is unchanged
-                uri = ((NamespaceInfo) info).getURI();
+                uri = namespaceInfo.getURI();
             }
             final NamespaceInfo localObject = catalog.getNamespaceByURI(uri);
 
             if (localObject == null) {
-                throw new CatalogException(
-                        "Unable to locate " + info + " uri: " + uri + " locally.");
+                throw new CatalogException("Unable to locate " + info + " uri: " + uri + " locally.");
             }
 
-            BeanUtils.smartUpdate(
-                    localObject, modifyEv.getPropertyNames(), modifyEv.getNewValues());
+            BeanUtils.smartUpdate(localObject, modifyEv.getPropertyNames(), modifyEv.getNewValues());
             catalog.save(localObject);
 
-        } else if (info instanceof StoreInfo) {
+        } else if (info instanceof StoreInfo storeInfo) {
 
             // check if name is changed
             if (name == null) {
                 // name is unchanged
-                name = ((StoreInfo) info).getName();
+                name = storeInfo.getName();
             }
             // check if workspace is changed
             final WorkspaceInfo workspace;
@@ -190,7 +179,7 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
                 workspace = (WorkspaceInfo) objWorkpsace;
             } else {
                 // workspace is unchanged
-                workspace = ((StoreInfo) info).getWorkspace();
+                workspace = storeInfo.getWorkspace();
             }
 
             final StoreInfo localObject;
@@ -201,25 +190,22 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
             } else if (info instanceof WMSStoreInfo) {
                 localObject = catalog.getStoreByName(workspace, name, WMSStoreInfo.class);
             } else {
-                throw new IllegalArgumentException(
-                        "Unable to provide localization for the passed instance");
+                throw new IllegalArgumentException("Unable to provide localization for the passed instance");
             }
 
             if (localObject == null) {
-                throw new CatalogException(
-                        "Unable to locate " + info + " named: " + name + " locally.");
+                throw new CatalogException("Unable to locate " + info + " named: " + name + " locally.");
             }
 
-            BeanUtils.smartUpdate(
-                    localObject, modifyEv.getPropertyNames(), modifyEv.getNewValues());
+            BeanUtils.smartUpdate(localObject, modifyEv.getPropertyNames(), modifyEv.getNewValues());
             catalog.save(localObject);
 
-        } else if (info instanceof ResourceInfo) {
+        } else if (info instanceof ResourceInfo resourceInfo) {
 
             // check if name is changed
             if (name == null) {
                 // name is unchanged
-                name = ((ResourceInfo) info).getName();
+                name = resourceInfo.getName();
             }
             // check if namespace is changed
             final NamespaceInfo namespace;
@@ -228,7 +214,7 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
                 namespace = (NamespaceInfo) objWorkpsace;
             } else {
                 // workspace is unchanged
-                namespace = ((ResourceInfo) info).getNamespace();
+                namespace = resourceInfo.getNamespace();
             }
             final ResourceInfo localObject;
             if (info instanceof CoverageInfo) {
@@ -241,41 +227,35 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
                 // wmslayer
                 localObject = catalog.getResourceByName(namespace, name, WMSLayerInfo.class);
             } else {
-                throw new IllegalArgumentException(
-                        "Unable to provide localization for the passed instance");
+                throw new IllegalArgumentException("Unable to provide localization for the passed instance");
             }
             if (localObject == null) {
-                throw new CatalogException(
-                        "Unable to locate " + info + " named: " + name + " locally.");
+                throw new CatalogException("Unable to locate " + info + " named: " + name + " locally.");
             }
 
-            BeanUtils.smartUpdate(
-                    localObject, modifyEv.getPropertyNames(), modifyEv.getNewValues());
+            BeanUtils.smartUpdate(localObject, modifyEv.getPropertyNames(), modifyEv.getNewValues());
             catalog.save(localObject);
 
-        } else if (info instanceof StyleInfo) {
+        } else if (info instanceof StyleInfo styleInfo) {
 
             // check if name is changed
             if (name == null) {
                 // name is unchanged
-                name = ((StyleInfo) info).getName();
+                name = styleInfo.getName();
             }
 
             final StyleInfo localObject = catalog.getStyleByName(name);
 
             if (localObject == null) {
-                throw new CatalogException(
-                        "Unable to locate " + info + " named: " + name + " locally.");
+                throw new CatalogException("Unable to locate " + info + " named: " + name + " locally.");
             }
 
-            BeanUtils.smartUpdate(
-                    localObject, modifyEv.getPropertyNames(), modifyEv.getNewValues());
+            BeanUtils.smartUpdate(localObject, modifyEv.getPropertyNames(), modifyEv.getNewValues());
 
             // let's see if the style file was provided
             Resource oldStyleFile = null;
             GeoServerDataDirectory dd = new GeoServerDataDirectory(catalog.getResourceLoader());
-            if (modifyEv instanceof StyleModifyEvent) {
-                StyleModifyEvent styleModifyEvent = (StyleModifyEvent) modifyEv;
+            if (modifyEv instanceof StyleModifyEvent styleModifyEvent) {
                 byte[] fileContent = styleModifyEvent.getFile();
                 StyleInfo oldStyle = catalog.getStyleByName(name);
                 oldStyleFile = dd.style(oldStyle);
@@ -283,13 +263,10 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
                 if (fileContent != null && fileContent.length != 0) {
                     // update the style file using the old style
                     try {
-                        catalog.getResourcePool()
-                                .writeStyle(oldStyle, new ByteArrayInputStream(fileContent));
+                        catalog.getResourcePool().writeStyle(oldStyle, new ByteArrayInputStream(fileContent));
                     } catch (Exception exception) {
                         throw new RuntimeException(
-                                String.format(
-                                        "Error writing style '%s' file.", localObject.getName()),
-                                exception);
+                                "Error writing style '%s' file.".formatted(localObject.getName()), exception);
                     }
                 }
             }
@@ -307,37 +284,34 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
                 }
             }
 
-        } else if (info instanceof WorkspaceInfo) {
+        } else if (info instanceof WorkspaceInfo workspaceInfo) {
 
             // check if name is changed
             if (name == null) {
                 // name is unchanged
-                name = ((WorkspaceInfo) info).getName();
+                name = workspaceInfo.getName();
             }
 
             final WorkspaceInfo localObject = catalog.getWorkspaceByName(name);
 
             if (localObject == null) {
-                throw new CatalogException(
-                        "Unable to locate " + info + " named: " + name + " locally.");
+                throw new CatalogException("Unable to locate " + info + " named: " + name + " locally.");
             }
 
-            BeanUtils.smartUpdate(
-                    localObject, modifyEv.getPropertyNames(), modifyEv.getNewValues());
+            BeanUtils.smartUpdate(localObject, modifyEv.getPropertyNames(), modifyEv.getNewValues());
             catalog.save(localObject);
 
         } else if (info instanceof CatalogInfo) {
 
             // change default workspace in the handled catalog
             /**
-             * This piece of code was extracted from: {@link
-             * org.geoserver.catalog.NamespaceWorkspaceConsistencyListener#handleModifyEvent(CatalogModifyEvent)}
+             * This piece of code was extracted from:
+             * {@link org.geoserver.catalog.NamespaceWorkspaceConsistencyListener#handleModifyEvent(CatalogModifyEvent)}
              */
             final List<String> properties = modifyEv.getPropertyNames();
             if (properties.contains("defaultNamespace")) {
                 final NamespaceInfo newDefault =
-                        (NamespaceInfo)
-                                modifyEv.getNewValues().get(properties.indexOf("defaultNamespace"));
+                        (NamespaceInfo) modifyEv.getNewValues().get(properties.indexOf("defaultNamespace"));
                 if (newDefault != null) {
                     final WorkspaceInfo ws = catalog.getWorkspaceByName(newDefault.getPrefix());
                     if (ws != null && !catalog.getDefaultWorkspace().equals(ws)) {
@@ -346,8 +320,7 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
                 }
             } else if (properties.contains("defaultWorkspace")) {
                 final WorkspaceInfo newDefault =
-                        (WorkspaceInfo)
-                                modifyEv.getNewValues().get(properties.indexOf("defaultWorkspace"));
+                        (WorkspaceInfo) modifyEv.getNewValues().get(properties.indexOf("defaultWorkspace"));
                 if (newDefault != null) {
                     final NamespaceInfo ns = catalog.getNamespaceByPrefix(newDefault.getName());
                     if (ns != null && !catalog.getDefaultNamespace().equals(ns)) {
@@ -369,8 +342,7 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
      *
      * @param catalog the catalog
      * @param ev the modify event
-     * @return a String representing the old name or null if name is not changed or not exists at
-     *     all
+     * @return a String representing the old name or null if name is not changed or not exists at all
      */
     private static String getOldName(final Catalog catalog, final CatalogModifyEvent ev) {
         // try to get the old value for the name
@@ -384,8 +356,8 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
      *
      * @param ev the modify event
      * @param oldProp the name of the old property to search for
-     * @return an Object representing the old value of the passed property or null if name is not
-     *     changed or not exists at all
+     * @return an Object representing the old value of the passed property or null if name is not changed or not exists
+     *     at all
      */
     private static Object getOldValue(final CatalogModifyEvent ev, final String oldProp) {
         final CatalogInfo service = ev.getSource();

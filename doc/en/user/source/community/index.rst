@@ -39,11 +39,10 @@ officially part of the GeoServer releases. They are however built along with the
    graticules/index
    gsr/index
    gwc-azure-blob/index
-   gwc-distributed/index
    gwc-mbtiles/index
    gwc-sqlite/index
    hana/index
-   imagemap
+   hz-cluster/index
    importer-jdbc/index
    jdbcconfig/index
    jdbcstore/index
@@ -52,19 +51,22 @@ officially part of the GeoServer releases. They are however built along with the
    keycloak/index
    libdeflate/index
    mbtiles/index
-   monitor-hibernate/index
    monitor-kafka/index
+   monitor-micrometer/index
    ncwms/index
    netcdf-ghrsst/index
    notification/index
    oauth2/index
    ogc-api/index
    ogr-store/index
+   oidc/index
    opensearch-eo/index
+   pmtiles-store/index
    proxy-base-ext/index
    remote-wps/index
    s3-geotiff/index
    schemaless-features/index
+   singlestore/index
    smart-data-loader/index
    spatialjson/index
    stac-datastore/index
@@ -72,8 +74,9 @@ officially part of the GeoServer releases. They are however built along with the
    taskmanager/index
    vector-mosaic/index
    vsi/index
-   xslt/index
    web-service-auth/index
    webp/index
    wfs-freemarker/index
+   wps-download-netcdf/index
    wps-longitudinal-profile/index
+

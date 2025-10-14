@@ -32,8 +32,8 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.vfny.geoserver.wcs.WcsException;
 
 /**
- * Returns a single coverage encoded in the specified output format (eventually the native one)
- * along with the XML describing the coverage, in a MIME multipart package
+ * Returns a single coverage encoded in the specified output format (eventually the native one) along with the XML
+ * describing the coverage, in a MIME multipart package
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -44,8 +44,7 @@ public class WCS20GetCoverageMultipartResponse extends Response {
     EnvelopeAxesLabelsMapper envelopeDimensionsMapper;
 
     public WCS20GetCoverageMultipartResponse(
-            CoverageResponseDelegateFinder responseFactory,
-            EnvelopeAxesLabelsMapper envelopeDimensionsMapper) {
+            CoverageResponseDelegateFinder responseFactory, EnvelopeAxesLabelsMapper envelopeDimensionsMapper) {
         super(GridCoverage.class);
         this.responseFactory = responseFactory;
         this.envelopeDimensionsMapper = envelopeDimensionsMapper;
@@ -106,21 +105,13 @@ public class WCS20GetCoverageMultipartResponse extends Response {
             MimeMultipart multipart = new MimeMultipart();
             multipart.setSubType("related");
 
-            String fileName =
-                    "/coverages/"
-                            + getCoverage.getCoverageId()
-                            + "."
-                            + delegate.getFileExtension(format);
+            String fileName = "/coverages/" + getCoverage.getCoverageId() + "." + delegate.getFileExtension(format);
 
             // coverages xml structure, which is very close to the DescribeFeatureType output
             BodyPart coveragesPart = new MimeBodyPart();
             FileReference reference =
-                    new FileReference(
-                            fileName,
-                            delegate.getMimeType(format),
-                            delegate.getConformanceClass(format));
-            final CoverageData coveragesData =
-                    new CoverageData(coverage, reference, envelopeDimensionsMapper);
+                    new FileReference(fileName, delegate.getMimeType(format), delegate.getConformanceClass(format));
+            final CoverageData coveragesData = new CoverageData(coverage, reference, envelopeDimensionsMapper);
             coveragesPart.setDataHandler(new DataHandler(coveragesData, "geoserver/coverages20"));
             coveragesPart.setHeader("Content-ID", "wcs");
             coveragesPart.setHeader("Content-Type", "application/gml+xml");
@@ -128,8 +119,7 @@ public class WCS20GetCoverageMultipartResponse extends Response {
 
             // the actual coverage
             BodyPart coveragePart = new MimeBodyPart();
-            CoverageEncoder encoder =
-                    new CoverageEncoder(delegate, coverage, format, encodingParameters);
+            CoverageEncoder encoder = new CoverageEncoder(delegate, coverage, format, encodingParameters);
             coveragePart.setDataHandler(new DataHandler(encoder, "geoserver/coverageDelegate"));
             coveragePart.setHeader("Content-ID", fileName);
             coveragePart.setHeader("Content-Type", delegate.getMimeType(format));

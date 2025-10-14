@@ -67,7 +67,7 @@ public class DataAccessRuleDAOTest {
     @Test
     public void testParseGlobalLayerGroupRule() {
         DataAccessRule r = dao.parseDataAccessRule("group.r", "ROLE_GROUP_OWNER");
-        assertEquals(r.getRoot(), "group");
+        assertEquals("group", r.getRoot());
         assertNull(r.getLayer());
         assertTrue(r.isGlobalGroupRule());
         assertEquals(AccessMode.READ, r.getAccessMode());
@@ -148,12 +148,8 @@ public class DataAccessRuleDAOTest {
     @Test
     public void testStoreEscapedDots() throws Exception {
         dao.clear();
-        dao.addRule(
-                new DataAccessRule(
-                        "it.geosolutions",
-                        "layer.dots",
-                        AccessMode.READ,
-                        Collections.singleton("ROLE_ABC")));
+        dao.addRule(new DataAccessRule(
+                "it.geosolutions", "layer.dots", AccessMode.READ, Collections.singleton("ROLE_ABC")));
         Properties ps = dao.toProperties();
 
         assertEquals(2, ps.size());

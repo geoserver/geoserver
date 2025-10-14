@@ -14,14 +14,13 @@ import org.geoserver.catalog.PublishedInfo;
 /**
  * Extension point for sections of the configuration pages for individual layers.
  *
- * @author David Winslow <dwinslow@openplans.org>
+ * @author David Winslow dwinslow@openplans.org
  * @author Niels Charlier
  */
 public class LayerConfigurationPanelInfo extends PublishedConfigurationPanelInfo<LayerInfo> {
     public static final long serialVersionUID = -1l;
 
-    private static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.config");
+    private static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.config");
 
     private List<String> myHandleableClasses;
 
@@ -51,10 +50,7 @@ public class LayerConfigurationPanelInfo extends PublishedConfigurationPanelInfo
                         return true;
                     }
                 } catch (ClassNotFoundException cnfe) {
-                    LOGGER.severe(
-                            "Couldn't find class "
-                                    + className
-                                    + "; please check your applicationContext.xml");
+                    LOGGER.severe("Couldn't find class " + className + "; please check your applicationContext.xml");
                 }
             }
         }

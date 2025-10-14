@@ -107,15 +107,9 @@ public class ProductsController extends AbstractOpenSearchController {
     static final Name PARENT_ID = new NameImpl(OpenSearchAccess.EO_NAMESPACE, "parentIdentifier");
 
     static final List<String> PRODUCT_HREFS =
-            Arrays.asList(
-                    "ogcLinksHref",
-                    "metadataHref",
-                    "descriptionHref",
-                    "thumbnailHref",
-                    "granulesHref");
+            Arrays.asList("ogcLinksHref", "metadataHref", "descriptionHref", "thumbnailHref", "granulesHref");
 
-    public ProductsController(
-            OpenSearchAccessProvider accessProvider, OseoJSONConverter jsonConverter) {
+    public ProductsController(OpenSearchAccessProvider accessProvider, OseoJSONConverter jsonConverter) {
         super(accessProvider, jsonConverter);
     }
 
@@ -129,8 +123,7 @@ public class ProductsController extends AbstractOpenSearchController {
             throws IOException {
         // query products for their identifiers
         Query query = new Query();
-        PropertyIsEqualTo parentIdFilter =
-                FF.equal(FF.property(PARENT_ID), FF.literal(collection), true);
+        PropertyIsEqualTo parentIdFilter = FF.equal(FF.property(PARENT_ID), FF.literal(collection), true);
         query.setFilter(parentIdFilter);
         setupQueryPaging(query, offset, limit);
         query.setSortBy(new SortBy[] {FF.sort(PRODUCT_ID.getLocalPart(), SortOrder.ASCENDING)});
@@ -145,18 +138,13 @@ public class ProductsController extends AbstractOpenSearchController {
         features.accepts(
                 f -> {
                     String id = (String) f.getProperty("identifier").getValue();
-                    String productHref =
-                            ResponseUtils.buildURL(
-                                    baseURL,
-                                    "/rest/oseo/collections/" + collection + "/products/" + id,
-                                    null,
-                                    URLType.RESOURCE);
-                    String oseoHref =
-                            ResponseUtils.buildURL(
-                                    baseURL,
-                                    "/oseo/search",
-                                    Collections.singletonMap("uid", id),
-                                    URLType.RESOURCE);
+                    String productHref = ResponseUtils.buildURL(
+                            baseURL,
+                            "/rest/oseo/collections/" + collection + "/products/" + id,
+                            null,
+                            URLType.RESOURCE);
+                    String oseoHref = ResponseUtils.buildURL(
+                            baseURL, "/oseo/search", Collections.singletonMap("uid", id), URLType.RESOURCE);
                     ProductReference pr = new ProductReference(id, productHref, oseoHref);
                     list.add(pr);
                 },
@@ -187,9 +175,7 @@ public class ProductsController extends AbstractOpenSearchController {
 
     @PostMapping(consumes = MediaTypeExtensions.APPLICATION_ZIP_VALUE)
     public ResponseEntity<String> postProductZip(
-            @PathVariable(name = "collection") String collection,
-            HttpServletRequest request,
-            InputStream body)
+            @PathVariable(name = "collection") String collection, HttpServletRequest request, InputStream body)
             throws IOException, URISyntaxException {
 
         return createProductFromZip(collection, request, body, null);
@@ -203,8 +189,7 @@ public class ProductsController extends AbstractOpenSearchController {
         // process the product part
         final byte[] productPayload = parts.get(ProductPart.Product);
         if (productPayload == null) {
-            throw new RestException(
-                    "product.json file is missing from the zip", HttpStatus.BAD_REQUEST);
+            throw new RestException("product.json file is missing from the zip", HttpStatus.BAD_REQUEST);
         }
         SimpleFeature jsonFeature = parseGeoJSONFeature("product.json", productPayload);
         if (urlProductId != null) jsonFeature = updateOrVerifyId(jsonFeature, urlProductId);
@@ -233,45 +218,34 @@ public class ProductsController extends AbstractOpenSearchController {
         }
 
         // insert the new feature and accessory bits
-        runTransactionOnProductStore(
-                fs -> {
-                    fs.addFeatures(singleton(productFeature));
+        runTransactionOnProductStore(fs -> {
+            fs.addFeatures(singleton(productFeature));
 
-                    final String nsURI = fs.getSchema().getName().getNamespaceURI();
-                    Filter filter = getProductFilter(collection, productId);
+            final String nsURI = fs.getSchema().getName().getNamespaceURI();
+            Filter filter = getProductFilter(collection, productId);
 
-                    if (linksCollection != null) {
-                        fs.modifyFeatures(
-                                OpenSearchAccess.OGC_LINKS_PROPERTY_NAME, linksCollection, filter);
-                    }
+            if (linksCollection != null) {
+                fs.modifyFeatures(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME, linksCollection, filter);
+            }
 
-                    if (thumbnail != null) {
-                        fs.modifyFeatures(
-                                OpenSearchAccess.QUICKLOOK_PROPERTY_NAME, thumbnail, filter);
-                    }
+            if (thumbnail != null) {
+                fs.modifyFeatures(OpenSearchAccess.QUICKLOOK_PROPERTY_NAME, thumbnail, filter);
+            }
 
-                    if (granulesCollection != null) {
-                        fs.modifyFeatures(
-                                new NameImpl(nsURI, OpenSearchAccess.GRANULES),
-                                granulesCollection,
-                                filter);
-                    }
-                });
+            if (granulesCollection != null) {
+                fs.modifyFeatures(new NameImpl(nsURI, OpenSearchAccess.GRANULES), granulesCollection, filter);
+            }
+        });
 
         // if got here, all is fine
         return returnCreatedProductReference(collection, request, productId);
     }
 
     private ResponseEntity<String> returnCreatedProductReference(
-            String collection, HttpServletRequest request, String productId)
-            throws URISyntaxException {
+            String collection, HttpServletRequest request, String productId) throws URISyntaxException {
         String baseURL = ResponseUtils.baseURL(request);
-        String newCollectionLocation =
-                ResponseUtils.buildURL(
-                        baseURL,
-                        "/rest/oseo/collections/" + collection + "/products/" + productId,
-                        null,
-                        URLType.RESOURCE);
+        String newCollectionLocation = ResponseUtils.buildURL(
+                baseURL, "/rest/oseo/collections/" + collection + "/products/" + productId, null, URLType.RESOURCE);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(new URI(newCollectionLocation));
         headers.setContentType(MediaType.TEXT_PLAIN);
@@ -293,45 +267,28 @@ public class ProductsController extends AbstractOpenSearchController {
         Feature feature = queryProduct(collection, product, q -> {}, true);
 
         // map to the output schema for GeoJSON encoding
-        SimpleFeatureType targetSchema =
-                mapFeatureTypeToSimple(
-                        feature.getType(),
-                        ftb -> {
-                            ftb.add("ogcLinksHref", String.class);
-                            ftb.add("metadataHref", String.class);
-                            ftb.add("descriptionHref", String.class);
-                            ftb.add("thumbnailHref", String.class);
-                            ftb.add("granulesHref", String.class);
-                        });
-        return mapFeatureToSimple(
-                feature,
-                targetSchema,
-                fb -> {
-                    String baseURL = ResponseUtils.baseURL(request);
-                    String pathBase =
-                            "/rest/oseo/collections/" + collection + "/products/" + product + "/";
-                    String ogcLinks =
-                            ResponseUtils.buildURL(
-                                    baseURL, pathBase + "ogcLinks", null, URLType.RESOURCE);
-                    String metadata =
-                            ResponseUtils.buildURL(
-                                    baseURL, pathBase + "metadata", null, URLType.RESOURCE);
-                    String description =
-                            ResponseUtils.buildURL(
-                                    baseURL, pathBase + "description", null, URLType.RESOURCE);
-                    String thumb =
-                            ResponseUtils.buildURL(
-                                    baseURL, pathBase + "thumbnail", null, URLType.RESOURCE);
-                    String granules =
-                            ResponseUtils.buildURL(
-                                    baseURL, pathBase + "granules", null, URLType.RESOURCE);
+        SimpleFeatureType targetSchema = mapFeatureTypeToSimple(feature.getType(), ftb -> {
+            ftb.add("ogcLinksHref", String.class);
+            ftb.add("metadataHref", String.class);
+            ftb.add("descriptionHref", String.class);
+            ftb.add("thumbnailHref", String.class);
+            ftb.add("granulesHref", String.class);
+        });
+        return mapFeatureToSimple(feature, targetSchema, fb -> {
+            String baseURL = ResponseUtils.baseURL(request);
+            String pathBase = "/rest/oseo/collections/" + collection + "/products/" + product + "/";
+            String ogcLinks = ResponseUtils.buildURL(baseURL, pathBase + "ogcLinks", null, URLType.RESOURCE);
+            String metadata = ResponseUtils.buildURL(baseURL, pathBase + "metadata", null, URLType.RESOURCE);
+            String description = ResponseUtils.buildURL(baseURL, pathBase + "description", null, URLType.RESOURCE);
+            String thumb = ResponseUtils.buildURL(baseURL, pathBase + "thumbnail", null, URLType.RESOURCE);
+            String granules = ResponseUtils.buildURL(baseURL, pathBase + "granules", null, URLType.RESOURCE);
 
-                    fb.set("ogcLinksHref", ogcLinks);
-                    fb.set("metadataHref", metadata);
-                    fb.set("descriptionHref", description);
-                    fb.set("thumbnailHref", thumb);
-                    fb.set("granulesHref", granules);
-                });
+            fb.set("ogcLinksHref", ogcLinks);
+            fb.set("metadataHref", metadata);
+            fb.set("descriptionHref", description);
+            fb.set("thumbnailHref", thumb);
+            fb.set("granulesHref", granules);
+        });
     }
 
     @PutMapping(path = "{product:.+}", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -390,8 +347,7 @@ public class ProductsController extends AbstractOpenSearchController {
         return fb.buildFeature(feature.getID());
     }
 
-    private void updateProductInternal(
-            String collection, String product, SimpleFeature feature, FeatureStore fs)
+    private void updateProductInternal(String collection, String product, SimpleFeature feature, FeatureStore fs)
             throws IOException {
         // prepare the update, need to convert each field into a Name/Value couple
         Feature productFeature = simpleToComplex(feature, getProductSchema(), PRODUCT_HREFS);
@@ -441,16 +397,13 @@ public class ProductsController extends AbstractOpenSearchController {
             @PathVariable(name = "product", required = true) String product)
             throws IOException {
         // query one collection and grab its OGC links
-        Feature feature =
-                queryProduct(
-                        collection,
-                        product,
-                        q -> {
-                            q.setProperties(
-                                    Collections.singletonList(
-                                            FF.property(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME)));
-                        },
-                        true);
+        Feature feature = queryProduct(
+                collection,
+                product,
+                q -> {
+                    q.setProperties(Collections.singletonList(FF.property(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME)));
+                },
+                true);
 
         OgcLinks links = buildOgcLinksFromFeature(feature, true);
         return links;
@@ -470,9 +423,7 @@ public class ProductsController extends AbstractOpenSearchController {
 
         Filter filter = getProductFilter(collection, product);
         runTransactionOnProductStore(
-                fs ->
-                        fs.modifyFeatures(
-                                OpenSearchAccess.OGC_LINKS_PROPERTY_NAME, linksCollection, filter));
+                fs -> fs.modifyFeatures(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME, linksCollection, filter));
     }
 
     @DeleteMapping(path = "{product:.+}/ogcLinks")
@@ -485,8 +436,7 @@ public class ProductsController extends AbstractOpenSearchController {
 
         // prepare the update
         Filter filter = getProductFilter(collection, product);
-        runTransactionOnProductStore(
-                fs -> fs.modifyFeatures(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME, null, filter));
+        runTransactionOnProductStore(fs -> fs.modifyFeatures(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME, null, filter));
     }
 
     private void throwProductNotFound(String collection, String product, String item) {
@@ -506,14 +456,13 @@ public class ProductsController extends AbstractOpenSearchController {
             HttpServletResponse response)
             throws IOException {
         // query one collection and grab its OGC links
-        Feature feature =
-                queryProduct(
-                        collection,
-                        product,
-                        q -> {
-                            q.setPropertyNames(new String[] {"htmlDescription"});
-                        },
-                        true);
+        Feature feature = queryProduct(
+                collection,
+                product,
+                q -> {
+                    q.setPropertyNames(new String[] {"htmlDescription"});
+                },
+                true);
 
         // grab the description
         Property descriptionProperty = feature.getProperty("htmlDescription");
@@ -552,18 +501,15 @@ public class ProductsController extends AbstractOpenSearchController {
         updateDescription(collection, product, null);
     }
 
-    private void updateDescription(String collection, String product, String description)
-            throws IOException {
+    private void updateDescription(String collection, String product, String description) throws IOException {
         // prepare the update
         Filter filter = getProductFilter(collection, product);
-        runTransactionOnProductStore(
-                fs -> {
-                    // set the description to the specified value
-                    final FeatureType schema = fs.getSchema();
-                    final String nsURI = schema.getName().getNamespaceURI();
-                    fs.modifyFeatures(
-                            new NameImpl(nsURI, OpenSearchAccess.DESCRIPTION), description, filter);
-                });
+        runTransactionOnProductStore(fs -> {
+            // set the description to the specified value
+            final FeatureType schema = fs.getSchema();
+            final String nsURI = schema.getName().getNamespaceURI();
+            fs.modifyFeatures(new NameImpl(nsURI, OpenSearchAccess.DESCRIPTION), description, filter);
+        });
     }
 
     /*
@@ -578,16 +524,13 @@ public class ProductsController extends AbstractOpenSearchController {
             HttpServletResponse response)
             throws IOException {
         // query one collection and grab its OGC links
-        Feature feature =
-                queryProduct(
-                        collection,
-                        product,
-                        q -> {
-                            q.setProperties(
-                                    Collections.singletonList(
-                                            FF.property(OpenSearchAccess.QUICKLOOK_PROPERTY_NAME)));
-                        },
-                        true);
+        Feature feature = queryProduct(
+                collection,
+                product,
+                q -> {
+                    q.setProperties(Collections.singletonList(FF.property(OpenSearchAccess.QUICKLOOK_PROPERTY_NAME)));
+                },
+                true);
 
         // grab the thumbnail
         Property thumbnailProperty = feature.getProperty(OpenSearchAccess.QUICKLOOK_PROPERTY_NAME);
@@ -647,14 +590,11 @@ public class ProductsController extends AbstractOpenSearchController {
             @PathVariable(name = "product", required = true) String product,
             @RequestBody SimpleFeatureCollection granules)
             throws IOException {
-        SimpleFeatureStore store =
-                (SimpleFeatureStore) getOpenSearchAccess().getGranules(collection, product);
-        runTransactionOnStore(
-                store,
-                s -> {
-                    s.removeFeatures(Filter.INCLUDE);
-                    s.addFeatures(granules);
-                });
+        SimpleFeatureStore store = (SimpleFeatureStore) getOpenSearchAccess().getGranules(collection, product);
+        runTransactionOnStore(store, s -> {
+            s.removeFeatures(Filter.INCLUDE);
+            s.addFeatures(granules);
+        });
     }
 
     @DeleteMapping(path = "{product:.+}/granules")
@@ -662,24 +602,19 @@ public class ProductsController extends AbstractOpenSearchController {
             @PathVariable(name = "collection", required = true) String collection,
             @PathVariable(name = "product", required = true) String product)
             throws IOException {
-        SimpleFeatureStore store =
-                (SimpleFeatureStore) getOpenSearchAccess().getGranules(collection, product);
-        runTransactionOnStore(
-                store,
-                s -> {
-                    s.removeFeatures(Filter.INCLUDE);
-                });
+        SimpleFeatureStore store = (SimpleFeatureStore) getOpenSearchAccess().getGranules(collection, product);
+        runTransactionOnStore(store, s -> {
+            s.removeFeatures(Filter.INCLUDE);
+        });
     }
 
-    private void updateThumbnail(String collection, String product, byte[] thumbnail)
-            throws IOException {
+    private void updateThumbnail(String collection, String product, byte[] thumbnail) throws IOException {
         // prepare the update
         Filter filter = getProductFilter(collection, product);
-        runTransactionOnProductStore(
-                fs -> {
-                    // set the description to the specified value
-                    fs.modifyFeatures(OpenSearchAccess.QUICKLOOK_PROPERTY_NAME, thumbnail, filter);
-                });
+        runTransactionOnProductStore(fs -> {
+            // set the description to the specified value
+            fs.modifyFeatures(OpenSearchAccess.QUICKLOOK_PROPERTY_NAME, thumbnail, filter);
+        });
     }
 
     private Feature queryProduct(
@@ -703,14 +638,12 @@ public class ProductsController extends AbstractOpenSearchController {
     }
 
     private And getProductFilter(String collection, String product) {
-        PropertyIsEqualTo parentIdFilter =
-                FF.equal(FF.property(PARENT_ID), FF.literal(collection), true);
+        PropertyIsEqualTo parentIdFilter = FF.equal(FF.property(PARENT_ID), FF.literal(collection), true);
         PropertyIsEqualTo idFilter = FF.equal(FF.property(PRODUCT_ID), FF.literal(product), true);
         return FF.and(parentIdFilter, idFilter);
     }
 
-    private void runTransactionOnProductStore(IOConsumer<FeatureStore> featureStoreConsumer)
-            throws IOException {
+    private void runTransactionOnProductStore(IOConsumer<FeatureStore> featureStoreConsumer) throws IOException {
         FeatureStore store = (FeatureStore) getOpenSearchAccess().getProductSource();
         super.runTransactionOnStore(store, featureStoreConsumer);
     }
@@ -787,32 +720,26 @@ public class ProductsController extends AbstractOpenSearchController {
         }
 
         // update the feature and accessory bits
-        runTransactionOnProductStore(
-                fs -> {
-                    if (jsonFeature != null) {
-                        updateProductInternal(collection, product, jsonFeature, fs);
-                    }
+        runTransactionOnProductStore(fs -> {
+            if (jsonFeature != null) {
+                updateProductInternal(collection, product, jsonFeature, fs);
+            }
 
-                    final String nsURI = fs.getSchema().getName().getNamespaceURI();
-                    Filter filter = getProductFilter(collection, product);
+            final String nsURI = fs.getSchema().getName().getNamespaceURI();
+            Filter filter = getProductFilter(collection, product);
 
-                    if (linksCollection != null) {
-                        fs.modifyFeatures(
-                                OpenSearchAccess.OGC_LINKS_PROPERTY_NAME, linksCollection, filter);
-                    }
+            if (linksCollection != null) {
+                fs.modifyFeatures(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME, linksCollection, filter);
+            }
 
-                    if (thumbnail != null) {
-                        fs.modifyFeatures(
-                                OpenSearchAccess.QUICKLOOK_PROPERTY_NAME, thumbnail, filter);
-                    }
+            if (thumbnail != null) {
+                fs.modifyFeatures(OpenSearchAccess.QUICKLOOK_PROPERTY_NAME, thumbnail, filter);
+            }
 
-                    if (granulesCollection != null) {
-                        fs.modifyFeatures(
-                                new NameImpl(nsURI, OpenSearchAccess.GRANULES),
-                                granulesCollection,
-                                filter);
-                    }
-                });
+            if (granulesCollection != null) {
+                fs.modifyFeatures(new NameImpl(nsURI, OpenSearchAccess.GRANULES), granulesCollection, filter);
+            }
+        });
         return ResponseEntity.status(200).build();
     }
 }

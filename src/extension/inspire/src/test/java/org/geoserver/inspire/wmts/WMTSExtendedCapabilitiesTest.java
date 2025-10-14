@@ -25,8 +25,7 @@ import org.w3c.dom.NodeList;
 
 public class WMTSExtendedCapabilitiesTest extends ServicesTestSupport {
 
-    private static final String WMTS_1_0_0_GETCAPREQUEST =
-            "gwc/service/wmts?REQUEST=GetCapabilities";
+    private static final String WMTS_1_0_0_GETCAPREQUEST = "gwc/service/wmts?REQUEST=GetCapabilities";
 
     @Override
     protected String getGetCapabilitiesRequestPath() {
@@ -83,11 +82,9 @@ public class WMTSExtendedCapabilitiesTest extends ServicesTestSupport {
         NodeList nodeList = dom.getElementsByTagNameNS(VS_VS_OWS_NAMESPACE, "ExtendedCapabilities");
         final Element extendedCaps = (Element) nodeList.item(0);
 
-        final Element suppLangs =
-                (Element)
-                        extendedCaps
-                                .getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguages")
-                                .item(0);
+        final Element suppLangs = (Element) extendedCaps
+                .getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguages")
+                .item(0);
 
         nodeList = suppLangs.getElementsByTagNameNS(COMMON_NAMESPACE, "DefaultLanguage");
         assertEquals("Number of DefaultLanguage elements", 1, nodeList.getLength());
@@ -110,24 +107,21 @@ public class WMTSExtendedCapabilitiesTest extends ServicesTestSupport {
         NodeList nodeList = dom.getElementsByTagNameNS(VS_VS_OWS_NAMESPACE, "ExtendedCapabilities");
         final Element extendedCaps = (Element) nodeList.item(0);
 
-        final Element suppLangs =
-                (Element)
-                        extendedCaps
-                                .getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguages")
-                                .item(0);
+        final Element suppLangs = (Element) extendedCaps
+                .getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguages")
+                .item(0);
 
         nodeList = suppLangs.getElementsByTagNameNS(COMMON_NAMESPACE, "DefaultLanguage");
         assertEquals("Number of DefaultLanguage elements", 1, nodeList.getLength());
         nodeList = suppLangs.getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguage");
         assertEquals("Number of Supported Languages", 2, nodeList.getLength());
 
-        final String responseLanguage =
-                dom.getElementsByTagNameNS(COMMON_NAMESPACE, "ResponseLanguage")
-                        .item(0)
-                        .getFirstChild()
-                        .getNextSibling()
-                        .getFirstChild()
-                        .getNodeValue();
+        final String responseLanguage = dom.getElementsByTagNameNS(COMMON_NAMESPACE, "ResponseLanguage")
+                .item(0)
+                .getFirstChild()
+                .getNextSibling()
+                .getFirstChild()
+                .getNodeValue();
         assertEquals("Unsupported LANGUAGE returns the Default one", "fre", responseLanguage);
     }
 }

@@ -9,9 +9,8 @@ import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.list.ListView;
 
 /**
- * {@link GeoServerHomePage} extension point allowing to contribute a Wicket component listing links
- * to the GetCapabilities or similar service description document for the various services provided
- * by GeoServer.
+ * {@link GeoServerHomePage} extension point allowing to contribute a Wicket component listing links to the
+ * GetCapabilities or similar service description document for the various services provided by GeoServer.
  *
  * @author Gabriel Roldan
  * @see CapabilitiesHomePagePanel
@@ -20,12 +19,12 @@ import org.apache.wicket.markup.html.list.ListView;
 public interface CapabilitiesHomePageLinkProvider {
 
     /**
-     * Returns a component to be added as a child of the home page {@link ListView} that contains
-     * the list of Services and Protocols (such as GetCapabilities links).
+     * Returns a component to be added as a child of the home page {@link ListView} that contains the list of Services
+     * and Protocols (such as GetCapabilities links).
      *
      * @param id the id of the returned component
-     * @return a component suitable to be contained by the home page list of getcapabilities links,
-     *     or {@code null} if not available.
+     * @return a component suitable to be contained by the home page list of getcapabilities links, or {@code null} if
+     *     not available.
      */
     public Component getCapabilitiesComponent(final String id);
 }

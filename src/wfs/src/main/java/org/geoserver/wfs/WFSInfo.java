@@ -131,10 +131,7 @@ public interface WFSInfo extends ServiceInfo {
 
             @Override
             public List<Operation> getOps() {
-                return Arrays.asList(
-                        Operation.GETCAPABILITIES,
-                        Operation.DESCRIBEFEATURETYPE,
-                        Operation.GETFEATURE);
+                return Arrays.asList(Operation.GETCAPABILITIES, Operation.DESCRIBEFEATURETYPE, Operation.GETFEATURE);
             }
         },
         TRANSACTIONAL {
@@ -213,35 +210,27 @@ public interface WFSInfo extends ServiceInfo {
     /** Sets the level of service provided by the WFS. */
     void setServiceLevel(ServiceLevel serviceLevel);
 
-    /**
-     * The flag which determines if gml:bounds elements should be encoded at the feature level in
-     * gml output.
-     */
+    /** The flag which determines if gml:bounds elements should be encoded at the feature level in gml output. */
     boolean isFeatureBounding();
 
-    /**
-     * Sets the flag which determines if gml:bounds elements should be encoded at the feature level
-     * in gml output.
-     */
+    /** Sets the flag which determines if gml:bounds elements should be encoded at the feature level in gml output. */
     void setFeatureBounding(boolean featureBounding);
 
     /**
-     * Get the flag that determines the encoding of the WFS schemaLocation. True if the WFS
-     * schemaLocation should refer to the canonical location, false if the WFS schemaLocation should
-     * refer to a copy served by GeoServer.
+     * Get the flag that determines the encoding of the WFS schemaLocation. True if the WFS schemaLocation should refer
+     * to the canonical location, false if the WFS schemaLocation should refer to a copy served by GeoServer.
      */
     boolean isCanonicalSchemaLocation();
 
     /**
-     * Set the flag that determines the encoding of the WFS schemaLocation. True if the WFS
-     * schemaLocation should refer to the canonical location, false if the WFS schemaLocation should
-     * refer to a copy served by GeoServer.
+     * Set the flag that determines the encoding of the WFS schemaLocation. True if the WFS schemaLocation should refer
+     * to the canonical location, false if the WFS schemaLocation should refer to a copy served by GeoServer.
      */
     void setCanonicalSchemaLocation(boolean canonicalSchemaLocation);
 
     /**
-     * Get the flag that determines encoding of featureMember or featureMembers True if the
-     * featureMember should be encoded False if the featureMembers should be encoded
+     * Get the flag that determines encoding of featureMember or featureMembers True if the featureMember should be
+     * encoded False if the featureMembers should be encoded
      *
      * @return encodingFeatureMember
      */
@@ -251,8 +240,7 @@ public interface WFSInfo extends ServiceInfo {
     void setEncodeFeatureMember(boolean encodeFeatureMember);
 
     /**
-     * Get the flag that determines if WFS hit requests (counts) will ignore the maximum features
-     * limit for this server
+     * Get the flag that determines if WFS hit requests (counts) will ignore the maximum features limit for this server
      *
      * @return hitsIgnoreMaxFeatures
      */
@@ -262,8 +250,8 @@ public interface WFSInfo extends ServiceInfo {
     void setHitsIgnoreMaxFeatures(boolean hitsIgnoreMaxFeatures);
 
     /**
-     * Get the maximum number of features to be displayed in a layer preview. Can be defined by the
-     * user. By default, 50.
+     * Get the maximum number of features to be displayed in a layer preview. Can be defined by the user. By default,
+     * 50.
      *
      * @return maxNumberOfFeaturesForPreview
      */
@@ -280,26 +268,17 @@ public interface WFSInfo extends ServiceInfo {
 
     void setAllowGlobalQueries(Boolean allowGlobalQueries);
 
-    /**
-     * Flag that determines if complex features will be converted to simple feature for compatible
-     * output formats.
-     */
+    /** Flag that determines if complex features will be converted to simple feature for compatible output formats. */
     boolean isSimpleConversionEnabled();
 
     /**
-     * Sets the flag that determines if complex features will be converted to simple feature for
-     * compatible output formats.
+     * Sets the flag that determines if complex features will be converted to simple feature for compatible output
+     * formats.
      */
     void setSimpleConversionEnabled(boolean simpleConversionEnabled);
-    /**
-     * Flag that determines if the wfsRequest.txt dump file should be included in shapefile/zip
-     * output.
-     */
+    /** Flag that determines if the wfsRequest.txt dump file should be included in shapefile/zip output. */
     boolean getIncludeWFSRequestDumpFile();
-    /**
-     * Sets the flag that determines if the wfsRequest.txt dump file should be included in
-     * shapefile/zip output
-     */
+    /** Sets the flag that determines if the wfsRequest.txt dump file should be included in shapefile/zip output */
     void setIncludeWFSRequestDumpFile(boolean includeWFSRequestDumpFile);
 
     /**
@@ -342,5 +321,9 @@ public interface WFSInfo extends ServiceInfo {
      *
      * @param csvDateFormat Date Format pattern
      */
-    public void setCsvDateFormat(String csvDateFormat);
+    void setCsvDateFormat(String csvDateFormat);
+
+    boolean isDisableStoredQueriesManagement();
+
+    void setDisableStoredQueriesManagement(boolean disableStoredQueriesManagement);
 }

@@ -10,12 +10,10 @@ import java.util.List;
 /**
  * Represents a WMS 1.1.1 GetFeatureInfo request.
  *
- * <p>The "GetMap" part of the request is represented by a <code>GetMapRequest</code> object by
- * itself. It is intended to provide enough map context information about the map over the
- * GetFeatureInfo request is performed.
+ * <p>The "GetMap" part of the request is represented by a <code>GetMapRequest</code> object by itself. It is intended
+ * to provide enough map context information about the map over the GetFeatureInfo request is performed.
  *
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class GetFeatureInfoRequest extends WMSRequest {
     private static final String DEFAULT_EXCEPTION_FORMAT = "application/vnd.ogc.se_xml";
@@ -23,8 +21,8 @@ public class GetFeatureInfoRequest extends WMSRequest {
     private static final int DEFAULT_MAX_FEATURES = 1;
 
     /**
-     * Holds the GetMap part of the GetFeatureInfo request, wich is meant to provide enough context
-     * information about the map over the GetFeatureInfo request is being made.
+     * Holds the GetMap part of the GetFeatureInfo request, wich is meant to provide enough context information about
+     * the map over the GetFeatureInfo request is being made.
      */
     private GetMapRequest getMapRequest;
 

@@ -30,14 +30,13 @@ public class GetFeatureInfoKvpRequestReaderTest extends KvpRequestReaderTestSupp
 
     Dispatcher dispatcher;
 
-    public static final String STATES_SLD =
-            "<StyledLayerDescriptor version=\"1.0.0\">"
-                    + "<UserLayer><Name>sf:states</Name><UserStyle><Name>UserSelection</Name>"
-                    + "<FeatureTypeStyle><Rule><Filter xmlns:gml=\"http://www.opengis.net/gml\">"
-                    + "<PropertyIsEqualTo><PropertyName>STATE_ABBR</PropertyName><Literal>IL</Literal></PropertyIsEqualTo>"
-                    + "</Filter><PolygonSymbolizer><Fill><CssParameter name=\"fill\">#FF0000</CssParameter></Fill>"
-                    + "</PolygonSymbolizer></Rule><Rule><LineSymbolizer><Stroke/></LineSymbolizer></Rule>"
-                    + "</FeatureTypeStyle></UserStyle></UserLayer></StyledLayerDescriptor>";
+    public static final String STATES_SLD = "<StyledLayerDescriptor version=\"1.0.0\">"
+            + "<UserLayer><Name>sf:states</Name><UserStyle><Name>UserSelection</Name>"
+            + "<FeatureTypeStyle><Rule><Filter xmlns:gml=\"http://www.opengis.net/gml\">"
+            + "<PropertyIsEqualTo><PropertyName>STATE_ABBR</PropertyName><Literal>IL</Literal></PropertyIsEqualTo>"
+            + "</Filter><PolygonSymbolizer><Fill><CssParameter name=\"fill\">#FF0000</CssParameter></Fill>"
+            + "</PolygonSymbolizer></Rule><Rule><LineSymbolizer><Stroke/></LineSymbolizer></Rule>"
+            + "</FeatureTypeStyle></UserStyle></UserLayer></StyledLayerDescriptor>";
 
     @Override
     protected void oneTimeSetUp() throws Exception {
@@ -84,9 +83,7 @@ public class GetFeatureInfoKvpRequestReaderTest extends KvpRequestReaderTestSupp
         URL url = GetMapKvpRequestReader.class.getResource("BasicPolygonsLibraryDefault.sld");
         String decoded = URLDecoder.decode(url.toExternalForm(), "UTF-8");
         kvp.put("sld", decoded);
-        kvp.put(
-                "layers",
-                MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
+        kvp.put("layers", MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
 
         WMS wms = new WMS(getGeoServer());
         WMSInfo oldInfo = wms.getGeoServer().getService(WMSInfo.class);
@@ -111,9 +108,7 @@ public class GetFeatureInfoKvpRequestReaderTest extends KvpRequestReaderTestSupp
     public void testSldBodyDisabled() throws Exception {
         Map<String, Object> kvp = new HashMap<>();
         kvp.put("sld_body", STATES_SLD);
-        kvp.put(
-                "layers",
-                MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
+        kvp.put("layers", MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
 
         WMS wms = new WMS(getGeoServer());
         WMSInfo oldInfo = wms.getGeoServer().getService(WMSInfo.class);

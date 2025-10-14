@@ -5,7 +5,6 @@
 package org.geoserver.rest.catalog;
 
 /**
- * A marker interface. Any controller class implementing this interface will not allow parallel
- * execution for REST APIs
+ * A marker interface. Any controller class implementing this interface will not allow parallel execution for REST APIs
  */
 public interface SequentialExecutionController {}

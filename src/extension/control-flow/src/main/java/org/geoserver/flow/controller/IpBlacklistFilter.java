@@ -27,8 +27,8 @@ import org.geoserver.security.PropertyFileWatcher;
 import org.geotools.util.logging.Logging;
 
 /**
- * A class that allows the configuration of an ip black list, rejecting requests from ip addresses
- * configured in the controlflow.properties file
+ * A class that allows the configuration of an ip black list, rejecting requests from ip addresses configured in the
+ * controlflow.properties file
  *
  * @author Juan Marin, OpenGeo
  */
@@ -57,8 +57,7 @@ public class IpBlacklistFilter implements GeoServerFilter {
     /** Default constructor */
     public IpBlacklistFilter() {
         try {
-            GeoServerResourceLoader loader =
-                    GeoServerExtensions.bean(GeoServerResourceLoader.class);
+            GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
             Resource resource = loader.get(PROPERTYFILENAME);
             configFile = new PropertyFileWatcher(resource);
             blackListedAddresses = reloadConfiguration(BLPROPERTY);
@@ -77,8 +76,7 @@ public class IpBlacklistFilter implements GeoServerFilter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
         if (isBlackListed(httpRequest)) {
-            if (response instanceof HttpServletResponse) {
-                HttpServletResponse httpResponse = (HttpServletResponse) response;
+            if (response instanceof HttpServletResponse httpResponse) {
                 httpResponse.sendError(
                         HttpServletResponse.SC_FORBIDDEN,
                         "This IP has been blocked. Please contact the server administrator");

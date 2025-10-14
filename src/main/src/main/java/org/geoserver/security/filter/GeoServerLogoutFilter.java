@@ -12,6 +12,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -37,6 +39,8 @@ import org.springframework.util.StringUtils;
  */
 public class GeoServerLogoutFilter extends GeoServerSecurityFilter {
 
+    protected static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.security");
+
     public static final String URL_AFTER_LOGOUT = "/web/";
     public static final String LOGOUT_REDIRECT_ATTR = "_logout_redirect";
 
@@ -53,12 +57,10 @@ public class GeoServerLogoutFilter extends GeoServerSecurityFilter {
         logoutHandler = new SecurityContextLogoutHandler();
         redirectUrl = ((LogoutFilterConfig) config).getRedirectURL();
         logoutSuccessHandler = new SimpleUrlLogoutSuccessHandler();
-        if (StringUtils.hasLength(redirectUrl))
-            logoutSuccessHandler.setDefaultTargetUrl(redirectUrl);
-        String formLogoutChain =
-                (((LogoutFilterConfig) config).getFormLogoutChain() != null
-                        ? ((LogoutFilterConfig) config).getFormLogoutChain()
-                        : GeoServerSecurityFilterChain.FORM_LOGOUT_CHAIN);
+        if (StringUtils.hasLength(redirectUrl)) logoutSuccessHandler.setDefaultTargetUrl(redirectUrl);
+        String formLogoutChain = (((LogoutFilterConfig) config).getFormLogoutChain() != null
+                ? ((LogoutFilterConfig) config).getFormLogoutChain()
+                : GeoServerSecurityFilterChain.FORM_LOGOUT_CHAIN);
         pathInfos = formLogoutChain.split(",");
     }
 
@@ -78,20 +80,28 @@ public class GeoServerLogoutFilter extends GeoServerSecurityFilter {
         if (doLogout) doLogout(request, response);
     }
 
-    public void doLogout(
-            HttpServletRequest request, HttpServletResponse response, String... skipHandlerName)
+    public void doLogout(HttpServletRequest request, HttpServletResponse response, String... skipHandlerName)
             throws IOException, ServletException {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication != null) {
-            List<LogoutHandler> logoutHandlers = calculateActiveLogoutHandlers(skipHandlerName);
-            for (LogoutHandler h : logoutHandlers) {
-                h.logout(request, response, authentication);
-            }
 
+            // first we tell the client that the `remember-me` token shouldn't be used
             RememberMeServices rms = securityManager.getRememberMeService();
             ((LogoutHandler) rms).logout(request, response, authentication);
+
+            List<LogoutHandler> logoutHandlers = calculateActiveLogoutHandlers(skipHandlerName);
+            for (LogoutHandler h : logoutHandlers) {
+                try {
+                    h.logout(request, response, authentication);
+                } catch (Exception e) {
+                    LOGGER.log(
+                            Level.WARNING,
+                            "Exception during logout handler: " + h.getClass().getName(),
+                            e);
+                }
+            }
 
             logoutHandler.logout(request, response, authentication);
         }
@@ -108,15 +118,13 @@ public class GeoServerLogoutFilter extends GeoServerSecurityFilter {
     }
 
     /**
-     * Search for filters implementing {@link LogoutHandler}. If such a filter is on an active
-     * filter chain and is not enlisted in the parameter skipHandlerName, add it to the result
+     * Search for filters implementing {@link LogoutHandler}. If such a filter is on an active filter chain and is not
+     * enlisted in the parameter skipHandlerName, add it to the result
      *
      * <p>The skipHandlerName parameter gives other LogoutHandler the chance to trigger a using
-     * {@link #doLogout(HttpServletRequest, HttpServletResponse, String...)} without receiving an
-     * unnecessary callback.
+     * {@link #doLogout(HttpServletRequest, HttpServletResponse, String...)} without receiving an unnecessary callback.
      */
-    List<LogoutHandler> calculateActiveLogoutHandlers(String... skipHandlerName)
-            throws IOException {
+    List<LogoutHandler> calculateActiveLogoutHandlers(String... skipHandlerName) throws IOException {
         List<LogoutHandler> result = new ArrayList<>();
         SortedSet<String> logoutFilterNames = getSecurityManager().listFilters(LogoutHandler.class);
         logoutFilterNames.removeAll(Arrays.asList(skipHandlerName));

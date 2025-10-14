@@ -37,9 +37,7 @@ public class StreamingKMLBuilder {
             document = (Document) decorator.decorate(document, context);
             if (document == null) {
                 throw new ServiceException(
-                        "Coding error in decorator "
-                                + decorator
-                                + ", document objects cannot be set to null");
+                        "Coding error in decorator " + decorator + ", document objects cannot be set to null");
             }
         }
 

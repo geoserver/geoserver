@@ -44,11 +44,8 @@ public class CRSExtentionTest extends WCSTestSupport {
         assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport)", dom);
         assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport//ows:Exception)", dom);
         assertXpathEvaluatesTo(
-                "1",
-                "count(//ows:ExceptionReport//ows:Exception[@exceptionCode='InvalidParameterValue'])",
-                dom);
-        assertXpathEvaluatesTo(
-                "1", "count(//ows:ExceptionReport//ows:Exception[@locator='wCS'])", dom);
+                "1", "count(//ows:ExceptionReport//ows:Exception[@exceptionCode='InvalidParameterValue'])", dom);
+        assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport//ows:Exception[@locator='wCS'])", dom);
     }
 
     @Test
@@ -65,26 +62,22 @@ public class CRSExtentionTest extends WCSTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file);
         GridCoverage2D targetCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
             final CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:3857", true);
-            Assert.assertTrue(
-                    CRS.equalsIgnoreMetadata(
-                            targetCoverage.getCoordinateReferenceSystem(), targetCRS));
+            Assert.assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), targetCRS));
 
             // checks
             final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
 
-            final GeneralBounds expectedEnvelope =
-                    new GeneralBounds(
-                            new double[] {1.6308305401213994E7, -5543147.203861462},
-                            new double[] {1.6475284637403902E7, -5311971.846945147});
+            final GeneralBounds expectedEnvelope = new GeneralBounds(
+                    new double[] {1.6308305401213994E7, -5543147.203861462},
+                    new double[] {1.6475284637403902E7, -5311971.846945147});
             expectedEnvelope.setCoordinateReferenceSystem(targetCRS);
 
             final double scale = getScale(targetCoverage);
-            assertEnvelopeEquals(
-                    expectedEnvelope, scale, (GeneralBounds) targetCoverage.getEnvelope(), scale);
-            assertEquals(gridRange.getSpan(0), 360);
-            assertEquals(gridRange.getSpan(1), 360);
+            assertEnvelopeEquals(expectedEnvelope, scale, (GeneralBounds) targetCoverage.getEnvelope(), scale);
+            assertEquals(360, gridRange.getSpan(0));
+            assertEquals(360, gridRange.getSpan(1));
 
         } finally {
             try {
@@ -114,26 +107,22 @@ public class CRSExtentionTest extends WCSTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file);
         GridCoverage2D targetCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
             final CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:3857", true);
-            Assert.assertTrue(
-                    CRS.equalsIgnoreMetadata(
-                            targetCoverage.getCoordinateReferenceSystem(), targetCRS));
+            Assert.assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), targetCRS));
 
             // checks
             final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
 
-            final GeneralBounds expectedEnvelope =
-                    new GeneralBounds(
-                            new double[] {1.6308305401213994E7, -5388389.272818998},
-                            new double[] {1.636396514661063E7, -5311971.846945147});
+            final GeneralBounds expectedEnvelope = new GeneralBounds(
+                    new double[] {1.6308305401213994E7, -5388389.272818998},
+                    new double[] {1.636396514661063E7, -5311971.846945147});
             expectedEnvelope.setCoordinateReferenceSystem(targetCRS);
 
             final double scale = getScale(targetCoverage);
-            assertEnvelopeEquals(
-                    expectedEnvelope, scale, (GeneralBounds) targetCoverage.getEnvelope(), scale);
-            assertEquals(gridRange.getSpan(0), 120);
-            assertEquals(gridRange.getSpan(1), 120);
+            assertEnvelopeEquals(expectedEnvelope, scale, (GeneralBounds) targetCoverage.getEnvelope(), scale);
+            assertEquals(120, gridRange.getSpan(0));
+            assertEquals(120, gridRange.getSpan(1));
 
         } finally {
             try {
@@ -151,8 +140,7 @@ public class CRSExtentionTest extends WCSTestSupport {
 
     @Test
     public void testGetCoverageSubsettingTrimCRSXML() throws Exception {
-        final File xml =
-                new File("./src/test/resources/crs/requestGetCoverageSubsettingTrimCRS.xml");
+        final File xml = new File("./src/test/resources/crs/requestGetCoverageSubsettingTrimCRS.xml");
         final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
@@ -164,26 +152,22 @@ public class CRSExtentionTest extends WCSTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file);
         GridCoverage2D targetCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
             final CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:3857", true);
-            Assert.assertTrue(
-                    CRS.equalsIgnoreMetadata(
-                            targetCoverage.getCoordinateReferenceSystem(), targetCRS));
+            Assert.assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), targetCRS));
 
             // checks
             final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
 
-            final GeneralBounds expectedEnvelope =
-                    new GeneralBounds(
-                            new double[] {1.6308305401213994E7, -5543147.203861462},
-                            new double[] {1.6475284637403902E7, -5311971.846945147});
+            final GeneralBounds expectedEnvelope = new GeneralBounds(
+                    new double[] {1.6308305401213994E7, -5543147.203861462},
+                    new double[] {1.6475284637403902E7, -5311971.846945147});
             expectedEnvelope.setCoordinateReferenceSystem(targetCRS);
 
             final double scale = getScale(targetCoverage);
-            assertEnvelopeEquals(
-                    expectedEnvelope, scale, (GeneralBounds) targetCoverage.getEnvelope(), scale);
-            assertEquals(gridRange.getSpan(0), 360);
-            assertEquals(gridRange.getSpan(1), 360);
+            assertEnvelopeEquals(expectedEnvelope, scale, (GeneralBounds) targetCoverage.getEnvelope(), scale);
+            assertEquals(360, gridRange.getSpan(0));
+            assertEquals(360, gridRange.getSpan(1));
 
         } finally {
             try {
@@ -201,8 +185,7 @@ public class CRSExtentionTest extends WCSTestSupport {
 
     @Test
     public void subsettingNativeCRSReprojectTo3857() throws Exception {
-        final File xml =
-                new File("./src/test/resources/crs/requestGetCoverageSubsettingTrimCRS2.xml");
+        final File xml = new File("./src/test/resources/crs/requestGetCoverageSubsettingTrimCRS2.xml");
         final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
@@ -214,26 +197,22 @@ public class CRSExtentionTest extends WCSTestSupport {
         GeoTiffReader readerTarget = new GeoTiffReader(file);
         GridCoverage2D targetCoverage = null;
         try {
-            targetCoverage = readerTarget.read(null);
+            targetCoverage = readerTarget.read();
             final CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:3857", true);
-            Assert.assertTrue(
-                    CRS.equalsIgnoreMetadata(
-                            targetCoverage.getCoordinateReferenceSystem(), targetCRS));
+            Assert.assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), targetCRS));
 
             // checks
             final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
 
-            final GeneralBounds expectedEnvelope =
-                    new GeneralBounds(
-                            new double[] {1.6308305401213994E7, -5543147.203861462},
-                            new double[] {1.6475284637403902E7, -5311971.846945147});
+            final GeneralBounds expectedEnvelope = new GeneralBounds(
+                    new double[] {1.6308305401213994E7, -5543147.203861462},
+                    new double[] {1.6475284637403902E7, -5311971.846945147});
             expectedEnvelope.setCoordinateReferenceSystem(targetCRS);
 
             final double scale = getScale(targetCoverage);
-            assertEnvelopeEquals(
-                    expectedEnvelope, scale, (GeneralBounds) targetCoverage.getEnvelope(), scale);
-            assertEquals(gridRange.getSpan(0), 360);
-            assertEquals(gridRange.getSpan(1), 360);
+            assertEnvelopeEquals(expectedEnvelope, scale, (GeneralBounds) targetCoverage.getEnvelope(), scale);
+            assertEquals(360, gridRange.getSpan(0));
+            assertEquals(360, gridRange.getSpan(1));
 
         } finally {
             try {

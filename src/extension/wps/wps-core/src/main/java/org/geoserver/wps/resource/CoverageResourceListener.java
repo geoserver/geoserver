@@ -16,8 +16,8 @@ import org.geoserver.wps.WPSException;
 import org.geotools.api.coverage.grid.GridCoverage;
 
 /**
- * Listens to progress events and makes sure the input/output coverages are marked as resources to
- * clean up (to release readers and thus file system locks and associated tiles in the tile cache)
+ * Listens to progress events and makes sure the input/output coverages are marked as resources to clean up (to release
+ * readers and thus file system locks and associated tiles in the tile cache)
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -39,8 +39,7 @@ public class CoverageResourceListener extends ProcessListenerAdapter {
 
     Map<String, ResourceStatus> resourceStates = new ConcurrentHashMap<>();
 
-    public CoverageResourceListener(
-            WPSResourceManager resourceManager, CoverageCleanerCallback cleaner) {
+    public CoverageResourceListener(WPSResourceManager resourceManager, CoverageCleanerCallback cleaner) {
         this.resourceManager = resourceManager;
         this.cleaner = cleaner;
     }
@@ -69,10 +68,8 @@ public class CoverageResourceListener extends ProcessListenerAdapter {
         if ((inputs != null) && (inputsChecked.size() < inputs.size())) {
             for (Entry<String, Object> entry : inputs.entrySet()) {
                 Object input = entry.getValue();
-                if ((input != null)
-                        && inputsChecked.add(entry.getKey())
-                        && (input instanceof GridCoverage)) {
-                    resourceManager.addResource(new GridCoverageResource((GridCoverage) input));
+                if ((input != null) && inputsChecked.add(entry.getKey()) && (input instanceof GridCoverage coverage)) {
+                    resourceManager.addResource(new GridCoverageResource(coverage));
                 }
             }
         }
@@ -84,8 +81,8 @@ public class CoverageResourceListener extends ProcessListenerAdapter {
                 Object output = entry.getValue();
                 if ((output != null)
                         && outputsChecked.add(entry.getKey())
-                        && (output instanceof GridCoverage)) {
-                    resourceManager.addResource(new GridCoverageResource((GridCoverage) output));
+                        && (output instanceof GridCoverage coverage)) {
+                    resourceManager.addResource(new GridCoverageResource(coverage));
                 }
             }
         }

@@ -20,8 +20,7 @@ import org.geotools.feature.FeatureCollection;
  *
  * @author Andrea Aime - GeoSolutions
  */
-class UTFGridFeatureSource<T extends FeatureType, F extends Feature>
-        extends DecoratingFeatureSource<T, F> {
+class UTFGridFeatureSource<T extends FeatureType, F extends Feature> extends DecoratingFeatureSource<T, F> {
 
     String[] propertyNames;
 

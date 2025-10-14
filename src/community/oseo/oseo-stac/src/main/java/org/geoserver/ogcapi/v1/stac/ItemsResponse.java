@@ -8,18 +8,15 @@ import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import java.math.BigInteger;
 import org.geotools.feature.FeatureCollection;
 
-/**
- * Wrapper for the returned FeatureCollection containing the STAC Items definitions, for a single
- * collection search.
- */
+/** Wrapper for the returned FeatureCollection containing the STAC Items definitions, for a single collection search. */
 @JsonIgnoreType
 public class ItemsResponse extends AbstractItemsResponse {
 
     private String collectionId;
 
     public ItemsResponse(
-            String collectionId, FeatureCollection items, BigInteger numberMatched, int returned) {
-        super(items, numberMatched, returned);
+            String collectionId, FeatureCollection items, BigInteger numberMatched, int returned, boolean nextPage) {
+        super(items, numberMatched, returned, nextPage);
         this.collectionId = collectionId;
     }
 

@@ -4,6 +4,7 @@
  */
 package org.geoserver.smartdataloader.data.store.panel;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
@@ -24,6 +25,7 @@ import org.apache.wicket.model.util.SetModel;
 /** Panel that includes a NestedTree wicket component and a label. */
 public class NestedTreePanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private Label label;
@@ -50,28 +52,24 @@ public class NestedTreePanel extends Panel {
     }
 
     public void buildTree(DefaultTreeModel treeModel, Set<DefaultMutableTreeNode> checkedNodes) {
-        modelProvider =
-                new TreeModelProvider<DefaultMutableTreeNode>(treeModel) {
-                    @Override
-                    public IModel<DefaultMutableTreeNode> model(DefaultMutableTreeNode object) {
-                        IModel<DefaultMutableTreeNode> model = Model.of(object);
-                        return model;
-                    }
-                };
+        modelProvider = new TreeModelProvider<DefaultMutableTreeNode>(treeModel) {
+            @Override
+            public IModel<DefaultMutableTreeNode> model(DefaultMutableTreeNode object) {
+                IModel<DefaultMutableTreeNode> model = Model.of(object);
+                return model;
+            }
+        };
         final SetModel<DefaultMutableTreeNode> checkedNodesModel = new SetModel<>(checkedNodes);
-        tree =
-                new NestedTree<DefaultMutableTreeNode>(
-                        "paramValue", modelProvider, checkedNodesModel) {
-                    private static final long serialVersionUID = 1L;
+        tree = new NestedTree<DefaultMutableTreeNode>("paramValue", modelProvider, checkedNodesModel) {
+            @Serial
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    protected Component newContentComponent(
-                            String id, IModel<DefaultMutableTreeNode> model) {
-                        CheckedFolder<DefaultMutableTreeNode> ret =
-                                new AutocheckedFolder<>(id, this, model, checkedNodesModel);
-                        return ret;
-                    }
-                };
+            @Override
+            protected Component newContentComponent(String id, IModel<DefaultMutableTreeNode> model) {
+                CheckedFolder<DefaultMutableTreeNode> ret = new AutocheckedFolder<>(id, this, model, checkedNodesModel);
+                return ret;
+            }
+        };
         tree.add(new WindowsTheme());
         tree.setOutputMarkupId(true);
 

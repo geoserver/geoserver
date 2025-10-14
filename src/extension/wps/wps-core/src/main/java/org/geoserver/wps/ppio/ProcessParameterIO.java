@@ -128,8 +128,7 @@ public abstract class ProcessParameterIO {
 
         if (mime != null) {
             for (ProcessParameterIO ppio : all) {
-                if (ppio instanceof ComplexPPIO
-                        && ((ComplexPPIO) ppio).getMimeType().equals(mime)) {
+                if (ppio instanceof ComplexPPIO iO && iO.getMimeType().equals(mime)) {
                     return ppio;
                 }
             }
@@ -171,9 +170,7 @@ public abstract class ProcessParameterIO {
 
         // do a two phase search, first try to match the identifier
         for (ProcessParameterIO ppio : l) {
-            if (ppio.getIdentifer() != null
-                    && ppio.getIdentifer().equals(p.key)
-                    && typeCompatible(p, ppio)) {
+            if (ppio.getIdentifer() != null && ppio.getIdentifer().equals(p.key) && typeCompatible(p, ppio)) {
                 matches.add(ppio);
             }
         }
@@ -276,8 +273,8 @@ public abstract class ProcessParameterIO {
     }
 
     /**
-     * Used to advertise if the PPIO can support encoding, decoding, or both. By default BOTH is
-     * returned, subclass can override with their specific abilities
+     * Used to advertise if the PPIO can support encoding, decoding, or both. By default BOTH is returned, subclass can
+     * override with their specific abilities
      */
     public PPIODirection getDirection() {
         return PPIODirection.BOTH;

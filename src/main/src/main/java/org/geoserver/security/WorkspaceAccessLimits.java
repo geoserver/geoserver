@@ -5,15 +5,17 @@
  */
 package org.geoserver.security;
 
+import java.io.Serial;
 import org.geoserver.platform.GeoServerExtensions;
 
 /**
- * Access limits to a workspace (the write flag controls also direct access to data stores, though
- * normally only configuration code should be playing directy with stores)
+ * Access limits to a workspace (the write flag controls also direct access to data stores, though normally only
+ * configuration code should be playing directy with stores)
  *
  * @author Andrea Aime - GeoSolutions
  */
 public class WorkspaceAccessLimits extends AccessLimits {
+    @Serial
     private static final long serialVersionUID = -1852838160677767466L;
 
     boolean readable;
@@ -28,12 +30,10 @@ public class WorkspaceAccessLimits extends AccessLimits {
 
     private static boolean isAuthenticatedAsAdmin() {
 
-        return GeoServerExtensions.bean(GeoServerSecurityManager.class)
-                .checkAuthenticationForAdminRole();
+        return GeoServerExtensions.bean(GeoServerSecurityManager.class).checkAuthenticationForAdminRole();
     }
 
-    public WorkspaceAccessLimits(
-            CatalogMode mode, boolean readable, boolean writable, boolean adminable) {
+    public WorkspaceAccessLimits(CatalogMode mode, boolean readable, boolean writable, boolean adminable) {
         super(mode);
         this.readable = readable;
         this.writable = writable;

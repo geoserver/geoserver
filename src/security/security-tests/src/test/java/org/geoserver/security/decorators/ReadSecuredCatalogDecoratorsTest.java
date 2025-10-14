@@ -47,8 +47,7 @@ public class ReadSecuredCatalogDecoratorsTest extends AbstractAuthorizationTest 
 
     @Test
     public void testSecuredFeatureTypeInfoMetadata() throws Exception {
-        SecuredFeatureTypeInfo ro =
-                new SecuredFeatureTypeInfo(states, WrapperPolicy.metadata(null));
+        SecuredFeatureTypeInfo ro = new SecuredFeatureTypeInfo(states, WrapperPolicy.metadata(null));
         try {
             ro.getFeatureSource(null, null);
             fail("This should have failed with a security exception");
@@ -62,8 +61,7 @@ public class ReadSecuredCatalogDecoratorsTest extends AbstractAuthorizationTest 
 
     @Test
     public void testSecuredTypeInfoReadOnly() throws Exception {
-        SecuredFeatureTypeInfo ro =
-                new SecuredFeatureTypeInfo(states, WrapperPolicy.readOnlyChallenge(null));
+        SecuredFeatureTypeInfo ro = new SecuredFeatureTypeInfo(states, WrapperPolicy.readOnlyChallenge(null));
         SecuredFeatureStore fs = (SecuredFeatureStore) ro.getFeatureSource(null, null);
         assertTrue(fs.policy.isReadOnlyChallenge());
         SecuredDataStoreInfo store = (SecuredDataStoreInfo) ro.getStore();
@@ -79,8 +77,7 @@ public class ReadSecuredCatalogDecoratorsTest extends AbstractAuthorizationTest 
 
     @Test
     public void testSecuredDataStoreInfoMetadata() throws Exception {
-        SecuredDataStoreInfo ro =
-                new SecuredDataStoreInfo(statesStore, WrapperPolicy.metadata(null));
+        SecuredDataStoreInfo ro = new SecuredDataStoreInfo(statesStore, WrapperPolicy.metadata(null));
         try {
             ro.getDataStore(null);
             fail("This should have failed with a security exception");

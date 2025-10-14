@@ -9,10 +9,10 @@ import static org.geoserver.ogcapi.ConformanceClass.CQL2_ARITHMETIC;
 import static org.geoserver.ogcapi.ConformanceClass.CQL2_BASIC;
 import static org.geoserver.ogcapi.ConformanceClass.CQL2_BASIC_SPATIAL;
 import static org.geoserver.ogcapi.ConformanceClass.CQL2_FUNCTIONS;
+import static org.geoserver.ogcapi.ConformanceClass.CQL2_JSON;
 import static org.geoserver.ogcapi.ConformanceClass.CQL2_PROPERTY_PROPERTY;
 import static org.geoserver.ogcapi.ConformanceClass.CQL2_SPATIAL;
 import static org.geoserver.ogcapi.ConformanceClass.CQL2_TEXT;
-import static org.geoserver.ogcapi.ConformanceClass.ECQL;
 import static org.geoserver.ogcapi.ConformanceClass.ECQL_TEXT;
 import static org.geoserver.ogcapi.ConformanceClass.FEATURES_FILTER;
 import static org.geoserver.ogcapi.ConformanceClass.FILTER;
@@ -22,8 +22,12 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
 
 import com.jayway.jsonpath.DocumentContext;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.geoserver.ogcapi.ConformanceClass;
+import org.geoserver.wfs.WFSInfo;
 import org.junit.Test;
 
 public class ConformanceTest extends FeaturesTestSupport {
@@ -44,6 +48,7 @@ public class ConformanceTest extends FeaturesTestSupport {
         //   IDS
         //   SEARCH
         //   SORTBY
+        //   PROPERTY_SELECTION
         //   GMLSF0
         //   GMLSF2
         return new String[] {
@@ -56,7 +61,6 @@ public class ConformanceTest extends FeaturesTestSupport {
             FEATURES_FILTER,
             FILTER,
             QUERYABLES,
-            ECQL,
             ECQL_TEXT,
             CQL2_BASIC,
             CQL2_ADVANCED,
@@ -65,7 +69,8 @@ public class ConformanceTest extends FeaturesTestSupport {
             CQL2_BASIC_SPATIAL,
             CQL2_SPATIAL,
             CQL2_FUNCTIONS,
-            CQL2_TEXT
+            CQL2_TEXT,
+            CQL2_JSON
         };
     }
 
@@ -78,11 +83,39 @@ public class ConformanceTest extends FeaturesTestSupport {
     @Test
     public void testConformanceHTML() throws Exception {
         org.jsoup.nodes.Document document = getAsJSoup("ogc/features/v1/conformance?f=text/html");
-        assertEquals("GeoServer OGC API Features Conformance", document.select("#title").text());
+        assertEquals(
+                "GeoServer OGC API Features Conformance",
+                document.select("#title").text());
         List<String> classes =
-                document.select("#content li").stream()
-                        .map(e -> e.text())
-                        .collect(Collectors.toList());
+                document.select("#content li").stream().map(e -> e.text()).collect(Collectors.toList());
         assertThat(classes, containsInAnyOrder(getExpectedConformanceClasses()));
+    }
+
+    @Test
+    public void testOptionalConformance() throws Exception {
+        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
+        FeatureConformance features = FeatureConformance.configuration(wfs);
+        // enable a few optional extensions
+        features.setIDs(true);
+        features.setSortBy(true);
+        features.setPropertySelection(true);
+        getGeoServer().save(wfs);
+        try {
+            DocumentContext json = getAsJSONPath("ogc/features/v1/conformance", 200);
+            assertEquals(2, (int) json.read("$.length()", Integer.class));
+            // start with the basic ones
+            List<String> expected = new ArrayList<>(Arrays.asList(getExpectedConformanceClasses()));
+            // add the ones configured above
+            expected.add(ConformanceClass.IDS);
+            expected.add(ConformanceClass.SORTBY);
+            expected.add(ConformanceClass.PROPERTY_SELECTION);
+            assertThat(json.read("$.conformsTo"), containsInAnyOrder(expected.toArray(String[]::new)));
+        } finally {
+            // reset defaults
+            features.setIDs(null);
+            features.setSortBy(null);
+            features.setPropertySelection(null);
+            getGeoServer().save(wfs);
+        }
     }
 }

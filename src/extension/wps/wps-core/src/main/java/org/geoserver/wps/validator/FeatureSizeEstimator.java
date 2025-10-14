@@ -13,8 +13,8 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 
 /**
- * Estimates the size of a feature collection by guessing how bit an average feature will be by
- * checking its feature type
+ * Estimates the size of a feature collection by guessing how bit an average feature will be by checking its feature
+ * type
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -22,11 +22,10 @@ public class FeatureSizeEstimator implements ObjectSizeEstimator {
 
     @Override
     public long getSizeOf(Object object) {
-        if (object instanceof SimpleFeature) {
-            SimpleFeatureType ft = ((SimpleFeature) object).getFeatureType();
+        if (object instanceof SimpleFeature feature) {
+            SimpleFeatureType ft = feature.getFeatureType();
             return estimateSizeByFeatureType(ft);
-        } else if (object instanceof SimpleFeatureCollection) {
-            SimpleFeatureCollection fc = (SimpleFeatureCollection) object;
+        } else if (object instanceof SimpleFeatureCollection fc) {
             int count = fc.size();
             if (count > 0) {
                 SimpleFeatureType ft = fc.getSchema();
@@ -50,16 +49,14 @@ public class FeatureSizeEstimator implements ObjectSizeEstimator {
             } else if (Number.class.isAssignableFrom(type)) {
                 if (Double.class.isAssignableFrom(type) || Float.class.isAssignableFrom(type)) {
                     bytes += 8;
-                } else if (Float.class.isAssignableFrom(type)
-                        || Integer.class.isAssignableFrom(type)) {
+                } else if (Float.class.isAssignableFrom(type) || Integer.class.isAssignableFrom(type)) {
                     bytes += 4;
                 } else if (Short.class.isAssignableFrom(type)) {
                     bytes += 2;
                 } else if (Byte.class.isAssignableFrom(type)) {
                     bytes += 1;
                 }
-            } else if (Character.class.isAssignableFrom(type)
-                    || Boolean.class.isAssignableFrom(type)) {
+            } else if (Character.class.isAssignableFrom(type) || Boolean.class.isAssignableFrom(type)) {
                 bytes += 1;
             } else if (Date.class.isAssignableFrom(type)) {
                 bytes += 8;

@@ -36,27 +36,20 @@ public class ResourcePoolInitializer implements GeoServerReinitializer {
             gs.getCatalog().getResourcePool().setFeatureTypeCacheSize(cacheSize);
         }
 
-        geoServer.addListener(
-                new ConfigurationListenerAdapter() {
-                    @Override
-                    public void handleGlobalChange(
-                            GeoServerInfo global,
-                            List<String> propertyNames,
-                            List<Object> oldValues,
-                            List<Object> newValues) {
-                        int i = propertyNames.indexOf("featureTypeCacheSize");
-                        if (i > -1) {
-                            Number featureTypeCacheSize = (Number) newValues.get(i);
-                            gs.getCatalog()
-                                    .getResourcePool()
-                                    .setFeatureTypeCacheSize(featureTypeCacheSize.intValue());
-                        }
-                        gs.getCatalog()
-                                .getResourcePool()
-                                .setCoverageExecutor(
-                                        global.getCoverageAccess().getThreadPoolExecutor());
-                    }
-                });
+        geoServer.addListener(new ConfigurationListenerAdapter() {
+            @Override
+            public void handleGlobalChange(
+                    GeoServerInfo global, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
+                int i = propertyNames.indexOf("featureTypeCacheSize");
+                if (i > -1) {
+                    Number featureTypeCacheSize = (Number) newValues.get(i);
+                    gs.getCatalog().getResourcePool().setFeatureTypeCacheSize(featureTypeCacheSize.intValue());
+                }
+                gs.getCatalog()
+                        .getResourcePool()
+                        .setCoverageExecutor(global.getCoverageAccess().getThreadPoolExecutor());
+            }
+        });
 
         gs.getCatalog().getResourcePool().setEntityResolverProvider(resolverProvider);
     }

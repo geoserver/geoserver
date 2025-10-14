@@ -26,25 +26,22 @@ public class CasFilterConfigValidator extends FilterConfigValidator {
     }
 
     @Override
-    public void validateFilterConfig(SecurityNamedServiceConfig config)
-            throws FilterConfigException {
+    public void validateFilterConfig(SecurityNamedServiceConfig config) throws FilterConfigException {
 
-        if (config instanceof CasAuthenticationFilterConfig) {
-            validateCASFilterConfig((CasAuthenticationFilterConfig) config);
+        if (config instanceof CasAuthenticationFilterConfig filterConfig) {
+            validateCASFilterConfig(filterConfig);
         } else {
             super.validateFilterConfig(config);
         }
     }
 
-    public void validateCASFilterConfig(CasAuthenticationFilterConfig casConfig)
-            throws FilterConfigException {
+    public void validateCASFilterConfig(CasAuthenticationFilterConfig casConfig) throws FilterConfigException {
 
         if (StringUtils.hasLength(casConfig.getUrlInCasLogoutPage())) {
             try {
                 new URL(casConfig.getUrlInCasLogoutPage());
             } catch (MalformedURLException ex) {
-                throw createFilterException(
-                        CasFilterConfigException.CAS_URL_IN_LOGOUT_PAGE_MALFORMED);
+                throw createFilterException(CasFilterConfigException.CAS_URL_IN_LOGOUT_PAGE_MALFORMED);
             }
         }
         super.validateFilterConfig(casConfig);

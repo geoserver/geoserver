@@ -35,7 +35,7 @@ public class ClickHouseJNDIRHealPixOnlineTest extends ClickHouseRHealPixOnlineTe
     @Override
     protected ClickHouseDGGSDataStore getDataStore() throws Exception {
         String dggsId = getDGGSId();
-        if (!DGGSFactoryFinder.getFactory(dggsId).isPresent()) {
+        if (DGGSFactoryFinder.getFactory(dggsId).isEmpty()) {
             throw new Exception(dggsId + " is not present, skipping the test");
         }
 
@@ -43,8 +43,7 @@ public class ClickHouseJNDIRHealPixOnlineTest extends ClickHouseRHealPixOnlineTe
         @SuppressWarnings("unchecked")
         BasicDataSource dataSource = (BasicDataSource) factory.createDataSource((Map) fixture);
         MockInitialDirContextFactory.setDataSource(dataSource);
-        System.setProperty(
-                Context.INITIAL_CONTEXT_FACTORY, MockInitialDirContextFactory.class.getName());
+        System.setProperty(Context.INITIAL_CONTEXT_FACTORY, MockInitialDirContextFactory.class.getName());
         try {
             GeoTools.clearInitialContext();
         } catch (NamingException e) {

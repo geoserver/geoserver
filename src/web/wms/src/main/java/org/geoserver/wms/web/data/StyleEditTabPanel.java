@@ -4,20 +4,20 @@
  */
 package org.geoserver.wms.web.data;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.IModel;
 
 /**
  * Extension point for panels which appear in separate tabs on the style edit page.
  *
- * <p>Subclasses <b>must</b> override the {@link #StyleEditTabPanel(String, IModel)} constructor and
+ * <p>Subclasses <b>must</b> override the {@link #StyleEditTabPanel(String, AbstractStylePage)} constructor and
  * <b>not</b> change its signature.
  *
- * <p>Instances of this class are described in a spring context with a {@link StyleEditTabPanelInfo}
- * bean.
+ * <p>Instances of this class are described in a spring context with a {@link StyleEditTabPanelInfo} bean.
  */
 public class StyleEditTabPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = 8044055895040826418L;
 
     protected AbstractStylePage stylePage;
@@ -50,10 +50,9 @@ public class StyleEditTabPanel extends Panel {
     }
 
     public StyleEditTabPanel setInputEnabled(final boolean enabled) {
-        visitChildren(
-                (component, visit) -> {
-                    component.setEnabled(enabled);
-                });
+        visitChildren((component, visit) -> {
+            component.setEnabled(enabled);
+        });
         return this;
     }
 }

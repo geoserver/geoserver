@@ -69,8 +69,7 @@ public class OWSContextWriter {
 
     private static final Logger LOGGER = Logging.getLogger(OWSContextWriter.class);
 
-    private static final String OWS_CONTEXT_JSON_URI =
-            "https://portal.opengeospatial.org/files/?artifact_id=68826";
+    private static final String OWS_CONTEXT_JSON_URI = "https://portal.opengeospatial.org/files/?artifact_id=68826";
 
     private static final String DATE_FORMAT_STRING = "yyyy-MM-dd'T'HH:mm:ss'Z'";
     private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
@@ -113,8 +112,7 @@ public class OWSContextWriter {
     }
 
     /**
-     * Adds the WPS request context. Should be called first, as the per layer metadata references
-     * depend on it.
+     * Adds the WPS request context. Should be called first, as the per layer metadata references depend on it.
      *
      * @throws IOException
      */
@@ -127,28 +125,25 @@ public class OWSContextWriter {
         model.put("uuid", UUID.randomUUID().toString());
         Request request = Dispatcher.REQUEST.get();
         String baseURL = ResponseUtils.baseURL(request.getHttpRequest());
-        String capsURL =
-                buildURL(
-                        baseURL,
-                        "wps",
-                        ImmutableMap.of(
-                                "service", "WPS", "version", "1.0", "request", "GetCapabilities"),
-                        SERVICE);
+        String capsURL = buildURL(
+                baseURL,
+                "wps",
+                ImmutableMap.of("service", "WPS", "version", "1.0", "request", "GetCapabilities"),
+                SERVICE);
         model.put("getCapabilitiesURL", capsURL);
-        String describeURL =
-                buildURL(
-                        baseURL,
-                        "wps",
-                        ImmutableMap.of(
-                                "service",
-                                "WPS",
-                                "version",
-                                "1.0",
-                                "request",
-                                "DescribeProcess",
-                                "identifier",
-                                "gs:GeoPackageProcess"),
-                        SERVICE);
+        String describeURL = buildURL(
+                baseURL,
+                "wps",
+                ImmutableMap.of(
+                        "service",
+                        "WPS",
+                        "version",
+                        "1.0",
+                        "request",
+                        "DescribeProcess",
+                        "identifier",
+                        "gs:GeoPackageProcess"),
+                SERVICE);
         model.put("describeProcessURL", describeURL);
         String executeURL = buildURL(baseURL, "wps", Collections.emptyMap(), SERVICE);
         model.put("executeURL", executeURL);
@@ -159,31 +154,21 @@ public class OWSContextWriter {
 
         try {
             GeoPkgMetadata metadata =
-                    new GeoPkgMetadata(
-                            Scope.Undefined, OWS_CONTEXT_JSON_URI, GEO_JSON_MIME, requestContext);
+                    new GeoPkgMetadata(Scope.Undefined, OWS_CONTEXT_JSON_URI, GEO_JSON_MIME, requestContext);
             metadatas.addMetadata(metadata);
 
-            GeoPkgMetadataReference reference =
-                    new GeoPkgMetadataReference(
-                            GeoPkgMetadataReference.Scope.GeoPackage,
-                            null,
-                            null,
-                            null,
-                            new Date(),
-                            metadata,
-                            null);
+            GeoPkgMetadataReference reference = new GeoPkgMetadataReference(
+                    GeoPkgMetadataReference.Scope.GeoPackage, null, null, null, new Date(), metadata, null);
             metadatas.addReference(reference);
             this.requestMetadata = metadata;
 
             GeoPkgSemanticAnnotation annotation =
-                    new GeoPkgSemanticAnnotation(
-                            PROVENANCE_SA_TYPE, "Dataset provenance", PROVENANCE_SA_URI);
+                    new GeoPkgSemanticAnnotation(PROVENANCE_SA_TYPE, "Dataset provenance", PROVENANCE_SA_URI);
             annotations.addAnnotation(annotation);
             this.provenanceAnnotation = annotation;
 
             GeoPkgAnnotationReference ar =
-                    new GeoPkgAnnotationReference(
-                            "gpkg_metadata", "id", metadata.getId(), annotation);
+                    new GeoPkgAnnotationReference("gpkg_metadata", "id", metadata.getId(), annotation);
             annotations.addReference(ar);
         } catch (SQLException e) {
             throw new IOException(e);
@@ -191,8 +176,8 @@ public class OWSContextWriter {
     }
 
     /**
-     * Adds the OWS context for a given feature type, assuming WFS is enabled. Should be called
-     * after {@link #addRequestContext()}
+     * Adds the OWS context for a given feature type, assuming WFS is enabled. Should be called after
+     * {@link #addRequestContext()}
      *
      * @throws IOException
      */
@@ -210,51 +195,32 @@ public class OWSContextWriter {
         model.put("now", getCurrentISOTimestamp());
         Request request = Dispatcher.REQUEST.get();
         String baseURL = ResponseUtils.baseURL(request.getHttpRequest());
-        String capsURL =
-                buildURL(
-                        baseURL,
-                        "wfs",
-                        ImmutableMap.of(
-                                "service", "WFS", "version", "2.0", "request", "GetCapabilities"),
-                        SERVICE);
+        String capsURL = buildURL(
+                baseURL,
+                "wfs",
+                ImmutableMap.of("service", "WFS", "version", "2.0", "request", "GetCapabilities"),
+                SERVICE);
         model.put("getCapabilitiesURL", capsURL);
-        String getFeatureURL =
-                buildURL(
-                        baseURL,
-                        "wfs",
-                        ImmutableMap.of(
-                                "service",
-                                "WFS",
-                                "version",
-                                "2.0",
-                                "request",
-                                "GetFeature",
-                                "typeNames",
-                                ft.prefixedName()),
-                        SERVICE);
+        String getFeatureURL = buildURL(
+                baseURL,
+                "wfs",
+                ImmutableMap.of(
+                        "service", "WFS", "version", "2.0", "request", "GetFeature", "typeNames", ft.prefixedName()),
+                SERVICE);
         model.put("getFeatureURL", getFeatureURL);
         String requestContext = process(FEATURE_WFS_TEMPLATE, model);
 
         try {
             GeoPkgMetadata metadata =
-                    new GeoPkgMetadata(
-                            Scope.Dataset, OWS_CONTEXT_JSON_URI, GEO_JSON_MIME, requestContext);
+                    new GeoPkgMetadata(Scope.Dataset, OWS_CONTEXT_JSON_URI, GEO_JSON_MIME, requestContext);
             metadatas.addMetadata(metadata);
 
-            GeoPkgMetadataReference reference =
-                    new GeoPkgMetadataReference(
-                            GeoPkgMetadataReference.Scope.Table,
-                            layerName,
-                            null,
-                            null,
-                            new Date(),
-                            metadata,
-                            requestMetadata);
+            GeoPkgMetadataReference reference = new GeoPkgMetadataReference(
+                    GeoPkgMetadataReference.Scope.Table, layerName, null, null, new Date(), metadata, requestMetadata);
             metadatas.addReference(reference);
 
             GeoPkgAnnotationReference ar =
-                    new GeoPkgAnnotationReference(
-                            "gpkg_metadata", "id", metadata.getId(), provenanceAnnotation);
+                    new GeoPkgAnnotationReference("gpkg_metadata", "id", metadata.getId(), provenanceAnnotation);
             annotations.addReference(ar);
         } catch (SQLException e) {
             throw new IOException(e);
@@ -313,14 +279,12 @@ public class OWSContextWriter {
         }
     }
 
-    private void writeStyleContext(
-            LayerGroupInfo layerGroup, Map<String, LayerInfo> layerStyles, String packageName)
+    private void writeStyleContext(LayerGroupInfo layerGroup, Map<String, LayerInfo> layerStyles, String packageName)
             throws IOException {
         // setup the template model
         HashMap<String, Object> model = new HashMap<>();
         model.put("groupId", layerGroup.prefixedName());
-        String groupTitle =
-                Optional.ofNullable(layerGroup.getTitle()).orElse(layerGroup.prefixedName());
+        String groupTitle = Optional.ofNullable(layerGroup.getTitle()).orElse(layerGroup.prefixedName());
         model.put("groupTitle", groupTitle);
         model.put("now", getCurrentISOTimestamp());
         model.put("contact", gs.getGlobal().getSettings().getContact());
@@ -331,47 +295,31 @@ public class OWSContextWriter {
 
         try {
             GeoPkgMetadata metadata =
-                    new GeoPkgMetadata(
-                            Scope.Undefined,
-                            OWS_CONTEXT_JSON_URI,
-                            GEO_JSON_MIME,
-                            stylesheetContext);
+                    new GeoPkgMetadata(Scope.Undefined, OWS_CONTEXT_JSON_URI, GEO_JSON_MIME, stylesheetContext);
             metadatas.addMetadata(metadata);
 
-            GeoPkgMetadataReference reference =
-                    new GeoPkgMetadataReference(
-                            GeoPkgMetadataReference.Scope.GeoPackage,
-                            null,
-                            null,
-                            null,
-                            new Date(),
-                            metadata,
-                            null);
+            GeoPkgMetadataReference reference = new GeoPkgMetadataReference(
+                    GeoPkgMetadataReference.Scope.GeoPackage, null, null, null, new Date(), metadata, null);
             metadatas.addReference(reference);
 
-            GeoPkgSemanticAnnotation annotation =
-                    new GeoPkgSemanticAnnotation(
-                            STYLESHEET_SA_TYPE,
-                            "OGC OWS Context GeoJSON for " + groupTitle,
-                            STYLESHEET_SA_URI);
+            GeoPkgSemanticAnnotation annotation = new GeoPkgSemanticAnnotation(
+                    STYLESHEET_SA_TYPE, "OGC OWS Context GeoJSON for " + groupTitle, STYLESHEET_SA_URI);
             annotations.addAnnotation(annotation);
 
             GeoPkgAnnotationReference ar =
-                    new GeoPkgAnnotationReference(
-                            "gpkg_metadata", "id", metadata.getId(), annotation);
+                    new GeoPkgAnnotationReference("gpkg_metadata", "id", metadata.getId(), annotation);
             annotations.addReference(ar);
         } catch (SQLException e) {
             throw new IOException(e);
         }
     }
 
-    private List<Map<String, Object>> getLayersModel(
-            LayerGroupInfo layerGroup, Map<String, LayerInfo> layerStyles) throws IOException {
+    private List<Map<String, Object>> getLayersModel(LayerGroupInfo layerGroup, Map<String, LayerInfo> layerStyles)
+            throws IOException {
         List<Map<String, Object>> result = new ArrayList<>();
         List<PublishedInfo> layers = layerGroup.getLayers();
         Map<LayerInfo, String> targetLayers =
-                layerStyles.entrySet().stream()
-                        .collect(Collectors.toMap(e -> e.getValue(), e -> e.getKey()));
+                layerStyles.entrySet().stream().collect(Collectors.toMap(e -> e.getValue(), e -> e.getKey()));
         int size = layers.size();
         // OWS context lists the layers top to bottom, the opposite of painter's order
         // used in the layer group definition, and WMS. So, iterate backwards.
@@ -416,8 +364,7 @@ public class OWSContextWriter {
             StyleInfo styleInfo = lg.getStyles().get(idx);
             if (styleInfo != null
                     && !(styleInfo.equals(layer.getDefaultStyle())
-                            || (layer.getStyles() != null
-                                    && layer.getStyles().contains(styleInfo)))) return false;
+                            || (layer.getStyles() != null && layer.getStyles().contains(styleInfo)))) return false;
         }
 
         return true;

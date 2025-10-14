@@ -24,24 +24,21 @@ public class GetRepositoryItemTest extends CSWSimpleTestSupport {
     @Test
     public void testGetMissing() throws Exception {
         MockHttpServletResponse response =
-                getAsServletResponse(
-                        BASEPATH + "?service=csw&version=2.0.2&request=GetRepositoryItem&id=foo");
+                getAsServletResponse(BASEPATH + "?service=csw&version=2.0.2&request=GetRepositoryItem&id=foo");
         assertEquals(404, response.getStatus());
     }
 
     @Test
     public void testGetSingle() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        BASEPATH
-                                + "?service=csw&version=2.0.2&request=GetRepositoryItem&id=urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f");
+        MockHttpServletResponse response = getAsServletResponse(
+                BASEPATH
+                        + "?service=csw&version=2.0.2&request=GetRepositoryItem&id=urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f");
         String content = response.getContentAsString();
         // System.out.println(content);
         assertEquals(200, response.getStatus());
         assertEquals("application/xml", response.getContentType());
 
-        String expected =
-                "This is a random comment that will show up only when fetching the repository item";
+        String expected = "This is a random comment that will show up only when fetching the repository item";
         assertTrue(content.contains(expected));
     }
 }

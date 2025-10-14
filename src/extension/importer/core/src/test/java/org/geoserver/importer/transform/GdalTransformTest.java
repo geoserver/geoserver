@@ -13,7 +13,7 @@ import java.awt.image.SampleModel;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import javax.media.jai.ImageLayout;
+import org.eclipse.imagen.ImageLayout;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.importer.ImportContext;
@@ -207,9 +207,7 @@ public class GdalTransformTest extends ImporterTestSupport {
             assertEquals(1, sm.getNumBands());
             assertEquals(DataBuffer.TYPE_BYTE, sm.getDataType());
             assertEquals(0, reader.getDatasetLayout().getNumInternalOverviews());
-            assertEquals(
-                    Integer.valueOf(4326),
-                    CRS.lookupEpsgCode(reader.getCoordinateReferenceSystem(), false));
+            assertEquals(Integer.valueOf(4326), CRS.lookupEpsgCode(reader.getCoordinateReferenceSystem(), false));
         } finally {
             if (reader != null) {
                 reader.dispose();

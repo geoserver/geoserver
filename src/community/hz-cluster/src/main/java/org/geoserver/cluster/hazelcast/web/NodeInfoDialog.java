@@ -8,6 +8,7 @@ package org.geoserver.cluster.hazelcast.web;
 import com.hazelcast.cluster.Cluster;
 import com.hazelcast.cluster.Member;
 import com.hazelcast.core.HazelcastInstance;
+import java.io.Serial;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ import org.geoserver.web.GeoServerApplication;
 
 public class NodeInfoDialog extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -6118539402031076763L;
 
     public NodeInfoDialog(String id) {
@@ -36,29 +38,25 @@ public class NodeInfoDialog extends Panel {
         add(new Label("host", address.getHostName()));
         add(new Label("port", String.valueOf(address.getPort())));
 
-        add(
-                new WebMarkupContainer("cluster")
-                        .add(
-                                new ListView<Member>("members", new MembersDetachableModel()) {
-                                    private static final long serialVersionUID = 1L;
+        add(new WebMarkupContainer("cluster").add(new ListView<Member>("members", new MembersDetachableModel()) {
+            @Serial
+            private static final long serialVersionUID = 1L;
 
-                                    @Override
-                                    protected void populateItem(ListItem<Member> item) {
-                                        Member m = item.getModelObject();
-                                        InetSocketAddress address = m.getSocketAddress();
-                                        String ip = address.getAddress().getHostAddress();
-                                        int port = address.getPort();
-                                        String local = m.localMember() ? " (this)" : "";
+            @Override
+            protected void populateItem(ListItem<Member> item) {
+                Member m = item.getModelObject();
+                InetSocketAddress address = m.getSocketAddress();
+                String ip = address.getAddress().getHostAddress();
+                int port = address.getPort();
+                String local = m.localMember() ? " (this)" : "";
 
-                                        item.add(
-                                                new Label(
-                                                        "label",
-                                                        String.format("%s:%d%s", ip, port, local)));
-                                    }
-                                }));
+                item.add(new Label("label", "%s:%d%s".formatted(ip, port, local)));
+            }
+        }));
     }
 
     private static class MembersDetachableModel extends LoadableDetachableModel<List<Member>> {
+        @Serial
         private static final long serialVersionUID = 1L;
 
         @Override

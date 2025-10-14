@@ -15,6 +15,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.geoserver.ogr.core.AbstractToolWrapper;
 import org.geoserver.ogr.core.Format;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
@@ -64,35 +66,46 @@ public class OGRWrapper extends AbstractToolWrapper {
             commands.add("--long-usage");
             addFormats(commands, formats);
 
+            // this one is required starting with ogr2ogr 3.
+            commands = new ArrayList<>();
+            commands.add(getExecutable());
+            commands.add("--formats");
+            addFormats(commands, formats);
+
             return formats;
         } catch (Exception e) {
-            LOGGER.log(
-                    Level.SEVERE,
-                    "Could not get the list of output formats supported by ogr2ogr",
-                    e);
+            LOGGER.log(Level.SEVERE, "Could not get the list of output formats supported by ogr2ogr", e);
             return Collections.emptySet();
         }
     }
 
-    private void addFormats(List<String> commands, Set<String> formats)
-            throws IOException, InterruptedException {
+    private void addFormats(List<String> commands, Set<String> formats) throws IOException, InterruptedException {
         StringBuilder sb = new StringBuilder();
         // can't trust the exit code, --help exits with -1 on my pc
         run(commands, sb);
 
         String[] lines = sb.toString().split("\n");
-        for (String line : lines) {
-            if (line.matches("\\s*-f \".*")) {
-                String format = line.substring(line.indexOf('"') + 1, line.lastIndexOf('"'));
-                formats.add(format);
+        if (commands.contains("--help") || commands.contains("--long-usage")) {
+            Pattern helpPattern = Pattern.compile("\\s*-f \".*");
+            for (String line : lines) {
+                if (helpPattern.matcher(line).matches()) {
+                    String format = line.substring(line.indexOf('"') + 1, line.lastIndexOf('"'));
+                    formats.add(format);
+                }
+            }
+        }
+        if (commands.contains("--formats")) {
+            Pattern formatPattern = Pattern.compile("^  (.*) -.*$");
+            for (String line : lines) {
+                Matcher match = formatPattern.matcher(line);
+                if (match.matches()) {
+                    formats.add(match.group(1));
+                }
             }
         }
     }
 
-    /**
-     * Returns true if ogr2ogr is available, that is, if executing "ogr2ogr --version" returns 0 as
-     * the exit code
-     */
+    /** Returns true if ogr2ogr is available, that is, if executing "ogr2ogr --version" returns 0 as the exit code */
     @Override
     public boolean isAvailable() {
         List<String> commands = new ArrayList<>();

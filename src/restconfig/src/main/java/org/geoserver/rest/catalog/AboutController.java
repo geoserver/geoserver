@@ -39,11 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(
         path = RestBaseController.ROOT_PATH + "/about",
-        produces = {
-            MediaType.TEXT_HTML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE
-        })
+        produces = {MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
 @ControllerAdvice
 public class AboutController extends RestBaseController {
 
@@ -55,8 +51,7 @@ public class AboutController extends RestBaseController {
             @RequestParam(required = false) String key,
             @RequestParam(required = false) String value) {
 
-        return wrapObject(
-                getModel(AboutModelType.RESOURCES, regex, from, to, key, value), AboutModel.class);
+        return wrapObject(getModel(AboutModelType.RESOURCES, regex, from, to, key, value), AboutModel.class);
     }
 
     @GetMapping(value = "/version")
@@ -67,12 +62,10 @@ public class AboutController extends RestBaseController {
             @RequestParam(required = false) String key,
             @RequestParam(required = false) String value) {
 
-        return wrapObject(
-                getModel(AboutModelType.VERSIONS, regex, from, to, key, value), AboutModel.class);
+        return wrapObject(getModel(AboutModelType.VERSIONS, regex, from, to, key, value), AboutModel.class);
     }
 
-    protected AboutModel getModel(
-            AboutModelType type, String regex, String from, String to, String key, String value) {
+    protected AboutModel getModel(AboutModelType type, String regex, String from, String to, String key, String value) {
         AboutModel model = null;
 
         // filter name by regex
@@ -129,9 +122,7 @@ public class AboutController extends RestBaseController {
 
     @Override
     public boolean supports(
-            MethodParameter methodParameter,
-            Type targetType,
-            Class<? extends HttpMessageConverter<?>> converterType) {
+            MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return AboutModel.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
@@ -141,8 +132,7 @@ public class AboutController extends RestBaseController {
         if (AboutModel.class.isAssignableFrom(clazz)) {
             return new ObjectToMapWrapper<>(AboutModel.class) {
                 @Override
-                protected void wrapInternal(
-                        Map<String, Object> properties, SimpleHash model, AboutModel object) {
+                protected void wrapInternal(Map<String, Object> properties, SimpleHash model, AboutModel object) {
                     final List<Map<String, Object>> manifests = new ArrayList<>();
                     for (ManifestModel manifest : object.getManifests()) {
                         final Map<String, Object> map = new HashMap<>();
@@ -180,61 +170,48 @@ public class AboutController extends RestBaseController {
         xs.alias("about", AboutModel.class);
 
         // ManifestModel Xstream converter
-        xs.registerConverter(
-                new Converter() {
+        xs.registerConverter(new Converter() {
 
-                    @Override
-                    public boolean canConvert(Class type) {
-                        return type.equals(ManifestModel.class);
-                    }
+            @Override
+            public boolean canConvert(Class type) {
+                return type.equals(ManifestModel.class);
+            }
 
-                    @Override
-                    public void marshal(
-                            Object source,
-                            HierarchicalStreamWriter writer,
-                            MarshallingContext context) {
-                        ManifestModel model = (ManifestModel) source;
-                        writer.addAttribute("name", model.getName());
-                        for (java.util.Map.Entry<String, String> entry :
-                                model.getEntries().entrySet())
-                            context.convertAnother(
-                                    entry,
-                                    new Converter() {
+            @Override
+            public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
+                ManifestModel model = (ManifestModel) source;
+                writer.addAttribute("name", model.getName());
+                for (java.util.Map.Entry<String, String> entry :
+                        model.getEntries().entrySet())
+                    context.convertAnother(entry, new Converter() {
 
-                                        @Override
-                                        public boolean canConvert(Class type) {
-                                            return Entry.class.isAssignableFrom(type);
-                                        }
+                        @Override
+                        public boolean canConvert(Class type) {
+                            return Entry.class.isAssignableFrom(type);
+                        }
 
-                                        @Override
-                                        public void marshal(
-                                                Object source,
-                                                HierarchicalStreamWriter writer,
-                                                MarshallingContext context) {
-                                            @SuppressWarnings("unchecked")
-                                            Entry<String, String> e =
-                                                    (Entry<String, String>) source;
-                                            writer.startNode(e.getKey());
-                                            writer.setValue(e.getValue());
-                                            writer.endNode();
-                                        }
+                        @Override
+                        public void marshal(
+                                Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
+                            @SuppressWarnings("unchecked")
+                            Entry<String, String> e = (Entry<String, String>) source;
+                            writer.startNode(e.getKey());
+                            writer.setValue(e.getValue());
+                            writer.endNode();
+                        }
 
-                                        @Override
-                                        public Object unmarshal(
-                                                HierarchicalStreamReader reader,
-                                                UnmarshallingContext context) {
-                                            throw new UnsupportedOperationException(
-                                                    "Not implemented");
-                                        }
-                                    });
-                    }
+                        @Override
+                        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
+                            throw new UnsupportedOperationException("Not implemented");
+                        }
+                    });
+            }
 
-                    @Override
-                    public Object unmarshal(
-                            HierarchicalStreamReader reader, UnmarshallingContext context) {
-                        throw new UnsupportedOperationException("Not implemented");
-                    }
-                });
+            @Override
+            public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
+                throw new UnsupportedOperationException("Not implemented");
+            }
+        });
         xs.alias("resource", ManifestModel.class);
         xs.addImplicitCollection(ManifestModel.class, "entries");
         xs.useAttributeFor(ManifestModel.class, "name");

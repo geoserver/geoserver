@@ -47,7 +47,7 @@ public class ArcGridPPIO extends CDataPPIO {
             }
             ArcGridReader reader = format.getReader(f);
             resource = new GridCoverageReaderResource(reader, f);
-            return reader.read(null);
+            return reader.read();
         } finally {
             if (resource != null) {
                 resources.addResource(resource);
@@ -68,8 +68,7 @@ public class ArcGridPPIO extends CDataPPIO {
 
     @Override
     public void encode(Object value, OutputStream os) throws IOException {
-        Parameter<Boolean> forceSquareCells =
-                new Parameter<>(ArcGridFormat.FORCE_CELLSIZE, Boolean.TRUE);
+        Parameter<Boolean> forceSquareCells = new Parameter<>(ArcGridFormat.FORCE_CELLSIZE, Boolean.TRUE);
         new ArcGridFormat().getWriter(os).write((GridCoverage2D) value, forceSquareCells);
     }
 

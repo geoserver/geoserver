@@ -52,26 +52,22 @@ public class Mosaic extends Directory {
         super.prepare(m);
 
         // strip away the shapefile index, properties file, and sample_image file
-        files.removeAll(
-                Collections2.filter(
-                        files,
-                        input -> {
-                            File f = input.getFile();
-                            String basename = FilenameUtils.getBaseName(f.getName());
+        files.removeAll(Collections2.filter(files, input -> {
+            File f = input.getFile();
+            String basename = FilenameUtils.getBaseName(f.getName());
 
-                            // is this file part a shapefile or properties file?
-                            if (new File(f.getParentFile(), basename + ".shp").exists()
-                                    || new File(f.getParentFile(), basename + ".properties")
-                                            .exists()) {
-                                return true;
-                            }
+            // is this file part a shapefile or properties file?
+            if (new File(f.getParentFile(), basename + ".shp").exists()
+                    || new File(f.getParentFile(), basename + ".properties").exists()) {
+                return true;
+            }
 
-                            if ("sample_image".equals(basename)) {
-                                return true;
-                            }
+            if ("sample_image".equals(basename)) {
+                return true;
+            }
 
-                            return false;
-                        }));
+            return false;
+        }));
 
         if (!files.isEmpty()) {
             DataFormat format = format();
@@ -80,8 +76,7 @@ public class Mosaic extends Directory {
             }
 
             if (!(format instanceof RasterFormat)) {
-                throw new IllegalArgumentException(
-                        "Mosaic directory must contain only raster files");
+                throw new IllegalArgumentException("Mosaic directory must contain only raster files");
             }
         }
 
@@ -90,15 +85,15 @@ public class Mosaic extends Directory {
 
     @Override
     protected SpatialFile newSpatialFile(File f, DataFormat format) {
-        if (format instanceof GridFormat) {
+        if (format instanceof GridFormat gridFormat) {
             Granule g = new Granule(super.newSpatialFile(f, format));
 
             // process the granule
             try {
-                AbstractGridCoverage2DReader r = ((GridFormat) format).gridReader(g);
+                AbstractGridCoverage2DReader r = gridFormat.gridReader(g);
                 try {
                     // get the envelope
-                    GridCoverage2D cov = r.read(null);
+                    GridCoverage2D cov = r.read();
 
                     g.setEnvelope(cov.getEnvelope2D());
                     g.setGrid(cov.getGridGeometry());
@@ -115,9 +110,7 @@ public class Mosaic extends Directory {
                     }
                 }
             } catch (Exception e) {
-                LOGGER.log(
-                        Level.WARNING,
-                        "Could not read file " + f + ", unable to get coverage info");
+                LOGGER.log(Level.WARNING, "Could not read file " + f + ", unable to get coverage info");
             }
         }
         return super.newSpatialFile(f, format);

@@ -34,8 +34,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-public abstract class AbstractAclController<
-                R extends Comparable<R>, DAO extends AbstractAccessRuleDAO<R>>
+public abstract class AbstractAclController<R extends Comparable<R>, DAO extends AbstractAccessRuleDAO<R>>
         implements SequentialExecutionController {
 
     public static final String ANY = "*";
@@ -196,7 +195,7 @@ public abstract class AbstractAclController<
     protected abstract String keyFor(R rule);
 
     /**
-     * Validate a rule, return an error message or <code>null</code> if the rule is ok
+     * Validate a rule, return an error message or {@code null} if the rule is ok
      *
      * @param ruleKey ,ruleValue
      */
@@ -289,8 +288,8 @@ public abstract class AbstractAclController<
     }
 
     protected RestException createRestException(Exception ex) {
-        if (ex instanceof RestException) {
-            return (RestException) ex; // do nothing
+        if (ex instanceof RestException exception) {
+            return exception; // do nothing
         } else {
             return new RestException("", HttpStatus.INTERNAL_SERVER_ERROR, ex);
         }

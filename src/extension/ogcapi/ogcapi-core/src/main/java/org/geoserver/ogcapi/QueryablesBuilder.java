@@ -9,6 +9,7 @@ import static org.geotools.data.complex.util.ComplexFeatureConstants.FEATURE_CHA
 import io.swagger.v3.oas.models.media.Schema;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -54,19 +55,16 @@ public class QueryablesBuilder {
     }
 
     public QueryablesBuilder forType(FeatureType ft) {
-        Map<String, Schema> properties =
-                ft.getDescriptors().stream()
-                        .filter( // ignore feature chaining links, they might be duplicated
-                                ad -> !ad.getName().equals(FEATURE_CHAINING_LINK_NAME))
-                        .collect(
-                                Collectors.toMap(
-                                        ad -> ad.getName().getLocalPart(),
-                                        ad -> getSchema(ad),
-                                        (u, v) -> {
-                                            throw new IllegalStateException(
-                                                    String.format("Duplicate key %s", u));
-                                        },
-                                        () -> new LinkedHashMap<>()));
+        Map<String, Schema> properties = ft.getDescriptors().stream()
+                .filter( // ignore feature chaining links, they might be duplicated
+                        ad -> !ad.getName().equals(FEATURE_CHAINING_LINK_NAME))
+                .collect(Collectors.toMap(
+                        ad -> ad.getName().getLocalPart(),
+                        ad -> getSchema(ad),
+                        (u, v) -> {
+                            throw new IllegalStateException("Duplicate key %s".formatted(u));
+                        },
+                        () -> new LinkedHashMap<>()));
         this.queryables.setProperties(properties);
         return this;
     }
@@ -123,6 +121,15 @@ public class QueryablesBuilder {
      * @return the schema
      */
     public static Schema<?> getAlphanumericSchema(Class<?> binding) {
+        if (binding.isEnum()) {
+            Schema<String> schema = new Schema<>();
+            schema.setType("string");
+            schema.setTitle("string");
+            Arrays.stream(binding.getEnumConstants()).map(Object::toString).forEach(n -> schema.addEnumItemObject(n));
+            return schema;
+        }
+
+        // other types
         Schema<?> schema = new Schema<>();
 
         schema.setType(org.geoserver.ogcapi.AttributeType.fromClass(binding).getType());
@@ -140,6 +147,12 @@ public class QueryablesBuilder {
             schema.setFormat("uuid");
         } else if (URL.class.isAssignableFrom(binding)) {
             schema.setTitle("uri");
+        } else if (binding.isAssignableFrom(String.class)) {
+            schema.setFormat("string");
+        } else if (binding.isAssignableFrom(Boolean.class)) {
+            schema.setFormat("boolean");
+        } else if (binding.isAssignableFrom(Number.class)) {
+            schema.setFormat("number");
         }
         return schema;
     }

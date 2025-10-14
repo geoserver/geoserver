@@ -52,20 +52,17 @@ public final class GmlSchemaVisitor extends DomainModelVisitorImpl {
         // let's check that we are in a valid state
         if (currentComplexType == null) {
             // no complex type being encoded, so there is nothing we can do
-            throw new RuntimeException(
-                    "There is no current complex type being encoded for the complex attribute '"
-                            + relation.getDestinationEntity().getName()
-                            + "'.");
+            throw new RuntimeException("There is no current complex type being encoded for the complex attribute '"
+                    + relation.getDestinationEntity().getName()
+                    + "'.");
         }
-        Node featureTypeNode =
-                getFeatureElementNodeByName(
-                        gmlDocument, relation.getContainingEntity().getGmlInfo().complexTypeName());
+        Node featureTypeNode = getFeatureElementNodeByName(
+                gmlDocument, relation.getContainingEntity().getGmlInfo().complexTypeName());
         Element sequenceNode =
                 (Element) featureTypeNode.getFirstChild().getFirstChild().getFirstChild();
         // let's proceed with the complex attribute encoding
         Element attributeElement =
-                createComplexAttributeElementNode(
-                        gmlDocument, relation.getDestinationEntity(), targetNamespacePrefix);
+                createComplexAttributeElementNode(gmlDocument, relation.getDestinationEntity(), targetNamespacePrefix);
         // retrieve the sequence node of the current complex type
         sequenceNode.appendChild(attributeElement);
     }
@@ -75,10 +72,9 @@ public final class GmlSchemaVisitor extends DomainModelVisitorImpl {
         // let's check that we are in a valid state
         if (currentComplexType == null) {
             // no complex type being encoded, so there is nothing we can do
-            throw new RuntimeException(
-                    "There is no current complex type being encoded for the simple attribute '"
-                            + attribute.getName()
-                            + "'.");
+            throw new RuntimeException("There is no current complex type being encoded for the simple attribute '"
+                    + attribute.getName()
+                    + "'.");
         }
         // let's proceed with the simple attribute encoding
         Element attributeElement = createSimpleAttributeElementNode(gmlDocument, attribute);
@@ -89,22 +85,20 @@ public final class GmlSchemaVisitor extends DomainModelVisitorImpl {
     }
 
     /**
-     * Helper method that creates the necessary declarations for a domain entity, attributes
-     * elements are not created. The creation of a property type is optional, since it's only needed
-     * for feature types that will be feature chained.
+     * Helper method that creates the necessary declarations for a domain entity, attributes elements are not created.
+     * The creation of a property type is optional, since it's only needed for feature types that will be feature
+     * chained.
      */
     private void handleEntity(DomainEntity entity, boolean createPropertyType) {
         // create the complex type node for the entity feature type
         Element complexType = createFeatureTypeNode(gmlDocument, entity);
         gmlDocument.getFirstChild().appendChild(complexType);
         // create the element declaration node for the entity feature type
-        Element elementDeclaration =
-                createFeatureElementNode(gmlDocument, entity, targetNamespacePrefix);
+        Element elementDeclaration = createFeatureElementNode(gmlDocument, entity, targetNamespacePrefix);
         gmlDocument.getFirstChild().appendChild(elementDeclaration);
         // create the correspondent property type, used for feature chaining, if needed
         if (createPropertyType) {
-            Element propertyType =
-                    createPropertyTypeNode(gmlDocument, entity, targetNamespacePrefix);
+            Element propertyType = createPropertyTypeNode(gmlDocument, entity, targetNamespacePrefix);
             gmlDocument.getFirstChild().appendChild(propertyType);
         }
         // set the entity complex type as the current one being encoded

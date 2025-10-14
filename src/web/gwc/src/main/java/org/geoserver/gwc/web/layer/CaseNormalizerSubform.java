@@ -4,6 +4,7 @@
  */
 package org.geoserver.gwc.web.layer;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -23,6 +24,7 @@ import org.geowebcache.filter.parameters.CaseNormalizer.Case;
  */
 public class CaseNormalizerSubform extends FormComponentPanel<CaseNormalizer> {
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = -197485768903404047L;
 
     private DropDownChoice<Locale> localeEntry;
@@ -40,50 +42,38 @@ public class CaseNormalizerSubform extends FormComponentPanel<CaseNormalizer> {
         final IModel<Case> caseModel = new PropertyModel<>(model, "case");
         final IModel<Locale> localeModel = new PropertyModel<>(model, "configuredLocale");
 
-        localeEntry =
-                new DropDownChoice<>(
-                        "locale",
-                        localeModel,
-                        getLocales(),
-                        new ChoiceRenderer<>() {
+        localeEntry = new DropDownChoice<>("locale", localeModel, getLocales(), new ChoiceRenderer<>() {
 
-                            private static final long serialVersionUID = -2122570049478633429L;
+            @Serial
+            private static final long serialVersionUID = -2122570049478633429L;
 
-                            @Override
-                            public Object getDisplayValue(Locale object) {
-                                return object.getDisplayName(
-                                        CaseNormalizerSubform.this.getLocale());
-                            }
+            @Override
+            public Object getDisplayValue(Locale object) {
+                return object.getDisplayName(CaseNormalizerSubform.this.getLocale());
+            }
 
-                            @Override
-                            public String getIdValue(Locale object, int index) {
-                                return object.toString();
-                            }
-                        });
+            @Override
+            public String getIdValue(Locale object, int index) {
+                return object.toString();
+            }
+        });
         localeEntry.setNullValid(true);
 
-        caseEntry =
-                new DropDownChoice<>(
-                        "case",
-                        caseModel,
-                        Arrays.asList(Case.values()),
-                        new ChoiceRenderer<>() {
+        caseEntry = new DropDownChoice<>("case", caseModel, Arrays.asList(Case.values()), new ChoiceRenderer<>() {
 
-                            private static final long serialVersionUID = -129788130907421097L;
+            @Serial
+            private static final long serialVersionUID = -129788130907421097L;
 
-                            @Override
-                            public Object getDisplayValue(Case object) {
-                                return getLocalizer()
-                                        .getString(
-                                                "case." + object.name(),
-                                                CaseNormalizerSubform.this);
-                            }
+            @Override
+            public Object getDisplayValue(Case object) {
+                return getLocalizer().getString("case." + object.name(), CaseNormalizerSubform.this);
+            }
 
-                            @Override
-                            public String getIdValue(Case object, int index) {
-                                return object.name();
-                            }
-                        });
+            @Override
+            public String getIdValue(Case object, int index) {
+                return object.name();
+            }
+        });
 
         add(caseEntry);
         add(localeEntry);
@@ -91,13 +81,11 @@ public class CaseNormalizerSubform extends FormComponentPanel<CaseNormalizer> {
 
     @Override
     public void convertInput() {
-        visitChildren(
-                (component, visit) -> {
-                    if (component instanceof FormComponent) {
-                        FormComponent<?> formComponent = (FormComponent<?>) component;
-                        formComponent.processInput();
-                    }
-                });
+        visitChildren((component, visit) -> {
+            if (component instanceof FormComponent<?> formComponent) {
+                formComponent.processInput();
+            }
+        });
         CaseNormalizer filter = getModelObject();
         setConvertedInput(filter);
     }

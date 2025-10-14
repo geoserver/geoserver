@@ -8,8 +8,8 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * Cache configuration object for WMS remote styles. Allows enabling the cache and setting the size,
- * in terms of entries and single entry size.
+ * Cache configuration object for WMS remote styles. Allows enabling the cache and setting the size, in terms of entries
+ * and single entry size.
  *
  * @author maurobartolomeoli@gmail.com
  */
@@ -64,11 +64,8 @@ public class CacheConfiguration implements Cloneable, Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof CacheConfiguration) {
-            CacheConfiguration other = (CacheConfiguration) obj;
-            return other.enabled == enabled
-                    && other.maxEntries == maxEntries
-                    && other.maxEntrySize == maxEntrySize;
+        if (obj instanceof CacheConfiguration other) {
+            return other.enabled == enabled && other.maxEntries == maxEntries && other.maxEntrySize == maxEntrySize;
         }
         return false;
     }

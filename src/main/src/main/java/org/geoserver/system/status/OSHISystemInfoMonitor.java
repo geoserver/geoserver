@@ -4,13 +4,14 @@
  */
 package org.geoserver.system.status;
 
+import java.io.Serial;
 import java.util.List;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.stereotype.Component;
 
 /**
- * Retrieve real system information metrics defined in {@link MetricInfo} from a collector thread.
- * The collector thread is started and stopped according to the statistics status.
+ * Retrieve real system information metrics defined in {@link MetricInfo} from a collector thread. The collector thread
+ * is started and stopped according to the statistics status.
  *
  * <p>This class is located as a singleton bean by a &lt;context:component-scan
  * base-package="org.geoserver.system.status"/&lgt;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class OSHISystemInfoMonitor extends BaseSystemInfoCollector implements DisposableBean {
 
+    @Serial
     private static final long serialVersionUID = 502867203324474735L;
 
     public static String NAME = OSHISystemInfoCollector.class.getSimpleName();

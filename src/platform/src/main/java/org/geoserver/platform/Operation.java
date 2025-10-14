@@ -10,8 +10,8 @@ import java.lang.reflect.Method;
 /**
  * An operation descriptor providing metadata about a service operation.
  *
- * <p>An operation is identified by an id,service pair. Two operation descriptors are considred
- * equal if they have the same id, service pair.
+ * <p>An operation is identified by an id,service pair. Two operation descriptors are considred equal if they have the
+ * same id, service pair.
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
@@ -31,10 +31,10 @@ public final class Operation {
     /**
      * Creates a new operation descriptor.
      *
-     * @param id Id of the operation, must not be <code>null</code>
-     * @param service The service containing the operation, must not be <code>null</code>
+     * @param id Id of the operation, must not be {@code null}
+     * @param service The service containing the operation, must not be {@code null}
      * @param method THe method implementing the operation.
-     * @param parameters The parameters of the operation, may be <code>null</code>
+     * @param parameters The parameters of the operation, may be {@code null}
      */
     public Operation(String id, Service service, Method method, Object[] parameters) {
         this.id = id;

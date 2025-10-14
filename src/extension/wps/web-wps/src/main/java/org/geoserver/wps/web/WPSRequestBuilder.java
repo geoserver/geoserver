@@ -25,15 +25,13 @@ import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
-import org.geoserver.web.demo.DemoRequest;
-import org.geoserver.web.demo.DemoRequestResponse;
 import org.geoserver.web.demo.DemoRequestsPage;
 import org.geoserver.web.demo.PlainCodePage;
 import org.geoserver.web.wicket.GSModalWindow;
 
 /**
- * Small embedded WPS client enabling users to visually build a WPS Execute request (and as a side
- * effect also showing what capabilities and describe process would provide).
+ * Small embedded WPS client enabling users to visually build a WPS Execute request (and as a side effect also showing
+ * what capabilities and describe process would provide).
  *
  * <p>Parameters:
  *
@@ -50,7 +48,6 @@ public class WPSRequestBuilder extends GeoServerBasePage {
 
     public static final String PARAM_NAME = "name";
 
-    GSModalWindow responseWindow;
     WPSRequestBuilderPanel builder;
 
     TextField<String> xml;
@@ -68,7 +65,7 @@ public class WPSRequestBuilder extends GeoServerBasePage {
         Form form = new Form<>("form");
         add(form);
 
-        var model = new Model<>(new WPSRequestModel());
+        Model<WPSRequestModel> model = new Model<>(new WPSRequestModel());
         form.setDefaultModel(model);
 
         xml = new TextField<>("xml", new PropertyModel<>(model, "xml"));
@@ -85,107 +82,73 @@ public class WPSRequestBuilder extends GeoServerBasePage {
         // the xml popup window
         final GSModalWindow xmlWindow = new GSModalWindow("xmlWindow");
         add(xmlWindow);
-        xmlWindow.setPageCreator(
-                (GSModalWindow.PageCreator)
-                        () -> new PlainCodePage(xmlWindow, responseWindow, getRequestXML()));
 
-        // the output response window
-        responseWindow = new GSModalWindow("responseWindow");
-        add(responseWindow);
-        // removed, don't know what it did, but page maps are gone in 1.5...
-        // responseWindow.setPageMapName("demoResponse");
-        responseWindow.setCookieName("demoResponse");
+        form.add(new AjaxSubmitLink("setXml") {
 
-        responseWindow.setPageCreator(
-                (GSModalWindow.PageCreator)
-                        () -> {
-                            DemoRequest request = new DemoRequest(null);
-                            HttpServletRequest http =
-                                    (HttpServletRequest) getRequest().getContainerRequest();
-                            String url =
-                                    ResponseUtils.buildURL(
-                                            ResponseUtils.baseURL(http),
-                                            "ows",
-                                            Collections.singletonMap("strict", "true"),
-                                            URLType.SERVICE);
-                            request.setRequestUrl(url);
-                            request.setRequestBody((String) responseWindow.getDefaultModelObject());
-                            request.setUserName(builder.username);
-                            request.setPassword(builder.password);
-                            return new DemoRequestResponse(new Model<>(request));
-                        });
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                try {
+                    String xmlText = getRequestXML();
+                    xml.setModelObject(xmlText);
+                    target.add(xml);
+                } catch (Exception e) {
+                    error(e.getMessage());
+                    addFeedbackPanels(target);
+                }
+                target.appendJavaScript("executeWPS()");
+            }
 
-        form.add(
-                new AjaxSubmitLink("setXml") {
+            @Override
+            protected void onError(AjaxRequestTarget target) {
+                addFeedbackPanels(target);
+            }
+        });
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        try {
-                            var xmlText = getRequestXML();
-                            xml.setModelObject(xmlText);
-                            target.add(xml);
-                        } catch (Exception e) {
-                            error(e.getMessage());
-                            addFeedbackPanels(target);
-                        }
-                        target.appendJavaScript("executeWPS()");
-                    }
+        form.add(new AjaxSubmitLink("execute") {
 
-                    @Override
-                    protected void onError(AjaxRequestTarget target) {
-                        addFeedbackPanels(target);
-                    }
-                });
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                HttpServletRequest http = GeoServerApplication.get().servletRequest();
 
-        form.add(
-                new AjaxSubmitLink("execute") {
+                String url = ResponseUtils.buildURL(
+                        ResponseUtils.baseURL(http),
+                        "ows",
+                        Collections.singletonMap("strict", "true"),
+                        URLType.SERVICE);
+                String xml = getRequestXML();
 
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        HttpServletRequest http = GeoServerApplication.get().servletRequest();
+                PageParameters parameters = new PageParameters();
+                parameters.add("url", url);
+                parameters.add("xml", xml);
 
-                        String url =
-                                ResponseUtils.buildURL(
-                                        ResponseUtils.baseURL(http),
-                                        "ows",
-                                        Collections.singletonMap("strict", "true"),
-                                        URLType.SERVICE);
-                        var xml = getRequestXML();
+                getRequestCycle().setResponsePage(DemoRequestsPage.class, parameters);
+            }
 
-                        PageParameters parameters = new PageParameters();
-                        parameters.add("url", url);
-                        parameters.add("xml", xml);
+            @Override
+            protected void onError(AjaxRequestTarget target) {
+                super.onError(target);
+                target.add(builder.getFeedbackPanel());
+            }
+        });
 
-                        getRequestCycle().setResponsePage(DemoRequestsPage.class, parameters);
-                    }
+        form.add(new AjaxSubmitLink("executeXML") {
 
-                    @Override
-                    protected void onError(AjaxRequestTarget target) {
-                        super.onError(target);
-                        target.add(builder.getFeedbackPanel());
-                    }
-                });
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                try {
+                    xmlWindow.setContent(new PlainCodePage(xmlWindow.getContentId(), getRequestXML()));
+                    xmlWindow.show(target);
+                } catch (Exception e) {
+                    error(e.getMessage());
+                    addFeedbackPanels(target);
+                }
+            }
 
-        form.add(
-                new AjaxSubmitLink("executeXML") {
-
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        try {
-                            getRequestXML();
-                            xmlWindow.show(target);
-                        } catch (Exception e) {
-                            error(e.getMessage());
-                            addFeedbackPanels(target);
-                        }
-                    }
-
-                    @Override
-                    protected void onError(AjaxRequestTarget target) {
-                        addFeedbackPanels(target);
-                    }
-                });
+            @Override
+            protected void onError(AjaxRequestTarget target) {
+                addFeedbackPanels(target);
+            }
+        });
     }
 
     String getRequestXML() {
@@ -207,13 +170,11 @@ public class WPSRequestBuilder extends GeoServerBasePage {
     @Override
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
-        response.render(
-                JavaScriptContentHeaderItem.forScript(
-                        DemoRequestsPage.demoRequestsJavascript, null));
+        response.render(JavaScriptContentHeaderItem.forScript(DemoRequestsPage.demoRequestsJavascript, null));
         response.render(CssHeaderItem.forCSS("#xml {display: none;}", "wpsRequestBuilderCSS"));
     }
 
-    public class WPSRequestModel implements Serializable {
+    public static class WPSRequestModel implements Serializable {
         public String xml;
 
         public String getXml() {

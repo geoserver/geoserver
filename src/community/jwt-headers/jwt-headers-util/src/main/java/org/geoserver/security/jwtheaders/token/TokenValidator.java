@@ -9,8 +9,8 @@ import com.nimbusds.jose.JWSObject;
 import org.geoserver.security.jwtheaders.JwtConfiguration;
 
 /**
- * validates a token - according to the GeoServerJwtHeadersFilterConfig. This will use the various
- * Token...Validator classes to do the actual validation.
+ * validates a token - according to the GeoServerJwtHeadersFilterConfig. This will use the various Token...Validator
+ * classes to do the actual validation.
  */
 public class TokenValidator {
 

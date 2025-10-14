@@ -7,6 +7,7 @@
 package org.geoserver.security;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.List;
 import java.util.SortedSet;
 
@@ -19,13 +20,13 @@ public abstract class VariableFilterChain extends RequestFilterChain {
 
     String interceptorName, exceptionTranslationName;
     /** */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public VariableFilterChain(String... patterns) {
         super(patterns);
         interceptorName = GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR;
-        exceptionTranslationName =
-                GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER;
+        exceptionTranslationName = GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER;
     }
 
     @Override
@@ -34,8 +35,7 @@ public abstract class VariableFilterChain extends RequestFilterChain {
     }
 
     /** list the filter names which can be added to this chain */
-    public abstract SortedSet<String> listFilterCandidates(GeoServerSecurityManager m)
-            throws IOException;
+    public abstract SortedSet<String> listFilterCandidates(GeoServerSecurityManager m) throws IOException;
 
     @Override
     void createCompiledFilterList(List<String> list) {
@@ -50,8 +50,7 @@ public abstract class VariableFilterChain extends RequestFilterChain {
 
         VariableFilterChain other = (VariableFilterChain) obj;
         if (this.interceptorName == null && other.interceptorName != null) return false;
-        if (this.interceptorName != null
-                && this.interceptorName.equals(other.interceptorName) == false) return false;
+        if (this.interceptorName != null && this.interceptorName.equals(other.interceptorName) == false) return false;
 
         return super.equals(obj);
     }

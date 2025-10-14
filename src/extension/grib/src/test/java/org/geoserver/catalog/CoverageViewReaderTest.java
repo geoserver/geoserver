@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import javax.media.jai.ImageLayout;
 import javax.xml.namespace.QName;
+import org.eclipse.imagen.ImageLayout;
 import org.geoserver.catalog.CoverageView.CompositionType;
 import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
@@ -50,8 +50,7 @@ public class CoverageViewReaderTest extends GeoServerSystemTestSupport {
 
     public static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
-    protected static QName CURRENT =
-            new QName(MockData.SF_URI, "regional_currents", MockData.SF_PREFIX);
+    protected static QName CURRENT = new QName(MockData.SF_URI, "regional_currents", MockData.SF_PREFIX);
 
     private CoverageView coverageView = null;
     private CoverageView multiBandCoverageView = null;
@@ -60,8 +59,7 @@ public class CoverageViewReaderTest extends GeoServerSystemTestSupport {
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
         testData.setUpDefaultRasterLayers();
-        testData.setUpRasterLayer(
-                CURRENT, "currents.zip", null, null, CoverageViewReaderTest.class);
+        testData.setUpRasterLayer(CURRENT, "currents.zip", null, null, CoverageViewReaderTest.class);
     }
 
     @Override
@@ -78,9 +76,8 @@ public class CoverageViewReaderTest extends GeoServerSystemTestSupport {
         final CatalogBuilder builder = new CatalogBuilder(cat);
         builder.setStore(storeInfo);
 
-        final CoverageInfo coverageInfo =
-                coverageView.createCoverageInfo("regional_currents", storeInfo, builder);
-        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        final CoverageInfo coverageInfo = coverageView.createCoverageInfo("regional_currents", storeInfo, builder);
+        coverageInfo.getParameters().put("USE_IMAGEN_IMAGEREAD", "false");
         cat.add(coverageInfo);
         final LayerInfo layerInfo = builder.buildLayer(coverageInfo);
         cat.add(layerInfo);
@@ -94,32 +91,21 @@ public class CoverageViewReaderTest extends GeoServerSystemTestSupport {
         builder.setStore(storeInfo);
 
         // Reordered bands coverage
-        CoverageInfo coverageInfo =
-                multiBandCoverageView.createCoverageInfo("multiband_select", storeInfo, builder);
-        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        CoverageInfo coverageInfo = multiBandCoverageView.createCoverageInfo("multiband_select", storeInfo, builder);
+        coverageInfo.getParameters().put("USE_IMAGEN_IMAGEREAD", "false");
         cat.add(coverageInfo);
         final LayerInfo layerInfoView = builder.buildLayer(coverageInfo);
         cat.add(layerInfoView);
     }
 
     private void createCoverageView() throws Exception {
-        final InputCoverageBand band_u =
-                new InputCoverageBand("u-component_of_current_surface", "0");
-        final CoverageBand outputBand_u =
-                new CoverageBand(
-                        Collections.singletonList(band_u),
-                        "u-component_of_current_surface@0",
-                        0,
-                        CompositionType.BAND_SELECT);
+        final InputCoverageBand band_u = new InputCoverageBand("u-component_of_current_surface", "0");
+        final CoverageBand outputBand_u = new CoverageBand(
+                Collections.singletonList(band_u), "u-component_of_current_surface@0", 0, CompositionType.BAND_SELECT);
 
-        final InputCoverageBand band_v =
-                new InputCoverageBand("v-component_of_current_surface", "0");
-        final CoverageBand outputBand_v =
-                new CoverageBand(
-                        Collections.singletonList(band_v),
-                        "v-component_of_current_surface@0",
-                        1,
-                        CompositionType.BAND_SELECT);
+        final InputCoverageBand band_v = new InputCoverageBand("v-component_of_current_surface", "0");
+        final CoverageBand outputBand_v = new CoverageBand(
+                Collections.singletonList(band_v), "v-component_of_current_surface@0", 1, CompositionType.BAND_SELECT);
         final List<CoverageBand> coverageBands = new ArrayList<>(2);
         coverageBands.add(outputBand_u);
         coverageBands.add(outputBand_v);
@@ -129,43 +115,23 @@ public class CoverageViewReaderTest extends GeoServerSystemTestSupport {
     private void createMultiBandCoverageView() throws Exception {
         final InputCoverageBand ib0 = new InputCoverageBand("multiband", "2");
         final CoverageBand b0 =
-                new CoverageBand(
-                        Collections.singletonList(ib0),
-                        "multiband@2",
-                        0,
-                        CompositionType.BAND_SELECT);
+                new CoverageBand(Collections.singletonList(ib0), "multiband@2", 0, CompositionType.BAND_SELECT);
 
         final InputCoverageBand ib1 = new InputCoverageBand("multiband", "1");
         final CoverageBand b1 =
-                new CoverageBand(
-                        Collections.singletonList(ib1),
-                        "multiband@1",
-                        1,
-                        CompositionType.BAND_SELECT);
+                new CoverageBand(Collections.singletonList(ib1), "multiband@1", 1, CompositionType.BAND_SELECT);
 
         final InputCoverageBand ib2 = new InputCoverageBand("multiband", "0");
         final CoverageBand b2 =
-                new CoverageBand(
-                        Collections.singletonList(ib2),
-                        "multiband@0",
-                        2,
-                        CompositionType.BAND_SELECT);
+                new CoverageBand(Collections.singletonList(ib2), "multiband@0", 2, CompositionType.BAND_SELECT);
 
         final InputCoverageBand ib3 = new InputCoverageBand("multiband", "0");
         final CoverageBand b3 =
-                new CoverageBand(
-                        Collections.singletonList(ib3),
-                        "multiband@0",
-                        0,
-                        CompositionType.BAND_SELECT);
+                new CoverageBand(Collections.singletonList(ib3), "multiband@0", 0, CompositionType.BAND_SELECT);
 
         final InputCoverageBand ib4 = new InputCoverageBand("multiband", "1");
         final CoverageBand b4 =
-                new CoverageBand(
-                        Collections.singletonList(ib4),
-                        "multiband@1",
-                        1,
-                        CompositionType.BAND_SELECT);
+                new CoverageBand(Collections.singletonList(ib4), "multiband@1", 1, CompositionType.BAND_SELECT);
 
         final List<CoverageBand> coverageBands = new ArrayList<>(1);
         coverageBands.add(b0);
@@ -188,23 +154,18 @@ public class CoverageViewReaderTest extends GeoServerSystemTestSupport {
         final CoverageInfo coverageInfo = cat.getCoverageByName("regional_currents");
         final MetadataMap metadata = coverageInfo.getMetadata();
 
-        final CoverageView metadataCoverageView =
-                (CoverageView) metadata.get(CoverageView.COVERAGE_VIEW);
+        final CoverageView metadataCoverageView = (CoverageView) metadata.get(CoverageView.COVERAGE_VIEW);
         assertEquals(metadataCoverageView, coverageView);
 
         final ResourcePool resPool = cat.getResourcePool();
         final ReferencedEnvelope bbox = coverageInfo.getLatLonBoundingBox();
-        final GridCoverage coverage =
-                resPool.getGridCoverage(coverageInfo, "regional_currents", bbox, null);
+        final GridCoverage coverage = resPool.getGridCoverage(coverageInfo, "regional_currents", bbox, null);
         assertEquals(coverage.getNumSampleDimensions(), 2);
 
         ((GridCoverage2D) coverage).dispose(true);
-        final GridCoverageReader reader =
-                resPool.getGridCoverageReader(coverageInfo, "regional_currents", null);
+        final GridCoverageReader reader = resPool.getGridCoverageReader(coverageInfo, "regional_currents", null);
         final GranuleStore granules =
-                (GranuleStore)
-                        ((StructuredGridCoverage2DReader) reader)
-                                .getGranules("regional_currents", true);
+                (GranuleStore) ((StructuredGridCoverage2DReader) reader).getGranules("regional_currents", true);
         SimpleFeatureCollection granulesCollection = granules.getGranules(null);
         // getting the actual phisical granules behind the view,
         assertEquals(2, granulesCollection.size());
@@ -224,8 +185,8 @@ public class CoverageViewReaderTest extends GeoServerSystemTestSupport {
     }
 
     /**
-     * Test creation of a Coverage from a multi band CoverageView using an {@link
-     * org.geotools.coverage.grid.io.AbstractGridFormat#BANDS} reading parameter
+     * Test creation of a Coverage from a multi band CoverageView using an
+     * {@link org.geotools.coverage.grid.io.AbstractGridFormat#BANDS} reading parameter
      */
     @Test
     public void testBandSelectionOnCoverageView() throws Exception {
@@ -235,14 +196,12 @@ public class CoverageViewReaderTest extends GeoServerSystemTestSupport {
 
         final ResourcePool resPool = cat.getResourcePool();
         final ReferencedEnvelope bbox = coverageInfo.getLatLonBoundingBox();
-        final GridCoverage coverage =
-                resPool.getGridCoverage(coverageInfo, "multiband_select", bbox, null);
+        final GridCoverage coverage = resPool.getGridCoverage(coverageInfo, "multiband_select", bbox, null);
         RenderedImage srcImage = coverage.getRenderedImage();
 
         assertEquals(coverage.getNumSampleDimensions(), 5);
         ((GridCoverage2D) coverage).dispose(true);
-        final GridCoverageReader reader =
-                resPool.getGridCoverageReader(coverageInfo, "multiband_select", null);
+        final GridCoverageReader reader = resPool.getGridCoverageReader(coverageInfo, "multiband_select", null);
         int[] bandIndices = {2, 0, 1, 0, 2, 2, 2, 3};
         Parameter<int[]> bandIndicesParam = null;
 
@@ -259,8 +218,7 @@ public class CoverageViewReaderTest extends GeoServerSystemTestSupport {
 
         List<GeneralParameterValue> paramList = new ArrayList<>();
         paramList.addAll(Arrays.asList(bandIndicesParam));
-        GeneralParameterValue[] readParams =
-                paramList.toArray(new GeneralParameterValue[paramList.size()]);
+        GeneralParameterValue[] readParams = paramList.toArray(new GeneralParameterValue[paramList.size()]);
         GridCoverage result = reader.read(readParams);
         assertEquals(8, result.getNumSampleDimensions());
         RenderedImage destImage = result.getRenderedImage();
@@ -296,8 +254,8 @@ public class CoverageViewReaderTest extends GeoServerSystemTestSupport {
     }
 
     /**
-     * Test creation of a Coverage from a multi band CoverageView which has more bands compared to
-     * the input CoverageView
+     * Test creation of a Coverage from a multi band CoverageView which has more bands compared to the input
+     * CoverageView
      */
     @Test
     public void testOutputWithMoreBandsThanInputCoverageView() throws Exception {
@@ -307,13 +265,11 @@ public class CoverageViewReaderTest extends GeoServerSystemTestSupport {
 
         final ResourcePool resPool = cat.getResourcePool();
         final ReferencedEnvelope bbox = coverageInfo.getLatLonBoundingBox();
-        final GridCoverage coverage =
-                resPool.getGridCoverage(coverageInfo, "multiband_select", bbox, null);
+        final GridCoverage coverage = resPool.getGridCoverage(coverageInfo, "multiband_select", bbox, null);
 
         assertEquals(coverage.getNumSampleDimensions(), 5);
         ((GridCoverage2D) coverage).dispose(true);
-        final GridCoverageReader reader =
-                resPool.getGridCoverageReader(coverageInfo, "multiband_select", null);
+        final GridCoverageReader reader = resPool.getGridCoverageReader(coverageInfo, "multiband_select", null);
         int[] bandIndices = {2, 0, 1, 0, 2, 2, 2, 3, 4, 0, 1, 0, 4, 2, 3};
         Parameter<int[]> bandIndicesParam = null;
 
@@ -330,8 +286,7 @@ public class CoverageViewReaderTest extends GeoServerSystemTestSupport {
 
         List<GeneralParameterValue> paramList = new ArrayList<>();
         paramList.addAll(Arrays.asList(bandIndicesParam));
-        GeneralParameterValue[] readParams =
-                paramList.toArray(new GeneralParameterValue[paramList.size()]);
+        GeneralParameterValue[] readParams = paramList.toArray(new GeneralParameterValue[paramList.size()]);
         GridCoverage result = myReader.read(readParams);
         assertEquals(15, result.getNumSampleDimensions());
     }

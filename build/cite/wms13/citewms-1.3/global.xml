@@ -1,7 +1,28 @@
 <global>
-  <contact>
-    <id>contact</id>
-  </contact>
+  <settings>
+    <id>SettingsInfoImpl--2c66d306:1941cde040b:-7fff</id>
+    <contact>
+      <id>contact</id>
+    </contact>
+    <charset>UTF-8</charset>
+    <numDecimals>4</numDecimals>
+    <verbose>true</verbose>
+    <verboseExceptions>false</verboseExceptions>
+    <metadata>
+      <map>
+        <entry>
+          <string>CogSettings.Key</string>
+          <cogSettings>
+            <useCachingStream>false</useCachingStream>
+            <rangeReaderSettings>HTTP</rangeReaderSettings>
+          </cogSettings>
+        </entry>
+      </map>
+    </metadata>
+    <localWorkspaceIncludesPrefix>false</localWorkspaceIncludesPrefix>
+    <showCreatedTimeColumnsInAdminList>false</showCreatedTimeColumnsInAdminList>
+    <showModifiedTimeColumnsInAdminList>false</showModifiedTimeColumnsInAdminList>
+  </settings>
   <jai>
     <allowInterpolation>false</allowInterpolation>
     <recycling>false</recycling>
@@ -13,18 +34,48 @@
     <pngAcceleration>false</pngAcceleration>
     <jpegAcceleration>false</jpegAcceleration>
     <allowNativeMosaic>false</allowNativeMosaic>
+    <allowNativeWarp>false</allowNativeWarp>
+    <jaiext>
+      <jaiExtOperations class="sorted-set">
+        <string>Affine</string>
+        <string>BandCombine</string>
+        <string>BandMerge</string>
+        <string>BandSelect</string>
+        <string>Binarize</string>
+        <string>Border</string>
+        <string>ColorConvert</string>
+        <string>Crop</string>
+        <string>ErrorDiffusion</string>
+        <string>Format</string>
+        <string>ImageFunction</string>
+        <string>Lookup</string>
+        <string>Mosaic</string>
+        <string>Null</string>
+        <string>OrderedDither</string>
+        <string>Rescale</string>
+        <string>Scale</string>
+        <string>Stats</string>
+        <string>Translate</string>
+        <string>Warp</string>
+        <string>algebric</string>
+        <string>operationConst</string>
+      </jaiExtOperations>
+    </jaiext>
   </jai>
   <coverageAccess>
     <maxPoolSize>10</maxPoolSize>
     <corePoolSize>5</corePoolSize>
     <keepAliveTime>30000</keepAliveTime>
     <queueType>UNBOUNDED</queueType>
+    <imageIOCacheThreshold>1024</imageIOCacheThreshold>
   </coverageAccess>
-  <charset>UTF-8</charset>
-  <numDecimals>4</numDecimals>
-  <verbose>true</verbose>
-  <verboseExceptions>false</verboseExceptions>
-  <updateSequence>19</updateSequence>
+  <metadata>
+    <entry key="logRequestsEnabled">true</entry>
+    <entry key="logHeadersEnabled">false</entry>
+    <entry key="logBodiesEnabled">true</entry>
+  </metadata>
+  <updateSequence>23</updateSequence>
   <featureTypeCacheSize>0</featureTypeCacheSize>
   <globalServices>true</globalServices>
+  <xmlPostRequestLogBufferSize>4096</xmlPostRequestLogBufferSize>
 </global>

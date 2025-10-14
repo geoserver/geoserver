@@ -6,6 +6,7 @@
 package org.geoserver.web.data.store.panel;
 
 import java.io.FileFilter;
+import java.io.Serial;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -19,13 +20,12 @@ import org.geoserver.web.wicket.browser.FileInput;
  * @author Andrea Aime - GeoSolutions
  */
 public class FileParamPanel extends Panel implements ParamPanel<String> {
+    @Serial
     private static final long serialVersionUID = 2630421795437249103L;
+
     private final FileInput fileInput;
 
-    /**
-     * @param validators any extra validator that should be added to the input field, or {@code
-     *     null}
-     */
+    /** @param validators any extra validator that should be added to the input field, or {@code null} */
     @SafeVarargs
     public FileParamPanel(
             final String id,

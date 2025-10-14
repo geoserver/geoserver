@@ -24,10 +24,10 @@ import org.eclipse.emf.ecore.util.FeatureMap;
 public abstract class LockFeatureRequest extends RequestObject {
 
     public static LockFeatureRequest adapt(Object request) {
-        if (request instanceof LockFeatureType) {
-            return new WFS11((EObject) request);
-        } else if (request instanceof net.opengis.wfs20.LockFeatureType) {
-            return new WFS20((EObject) request);
+        if (request instanceof LockFeatureType type) {
+            return new WFS11(type);
+        } else if (request instanceof net.opengis.wfs20.LockFeatureType type) {
+            return new WFS20(type);
         }
         return null;
     }
@@ -115,8 +115,7 @@ public abstract class LockFeatureRequest extends RequestObject {
 
         @Override
         public LockFeatureResponse createResponse() {
-            return new LockFeatureResponse.WFS11(
-                    ((WfsFactory) getFactory()).createLockFeatureResponseType());
+            return new LockFeatureResponse.WFS11(((WfsFactory) getFactory()).createLockFeatureResponseType());
         }
 
         @Override
@@ -158,26 +157,22 @@ public abstract class LockFeatureRequest extends RequestObject {
 
         @Override
         public boolean isLockActionAll() {
-            return ((net.opengis.wfs20.LockFeatureType) adaptee).getLockAction()
-                    == net.opengis.wfs20.AllSomeType.ALL;
+            return ((net.opengis.wfs20.LockFeatureType) adaptee).getLockAction() == net.opengis.wfs20.AllSomeType.ALL;
         }
 
         @Override
         public void setLockActionAll() {
-            ((net.opengis.wfs20.LockFeatureType) adaptee)
-                    .setLockAction(net.opengis.wfs20.AllSomeType.ALL);
+            ((net.opengis.wfs20.LockFeatureType) adaptee).setLockAction(net.opengis.wfs20.AllSomeType.ALL);
         }
 
         @Override
         public boolean isLockActionSome() {
-            return ((net.opengis.wfs20.LockFeatureType) adaptee).getLockAction()
-                    == net.opengis.wfs20.AllSomeType.SOME;
+            return ((net.opengis.wfs20.LockFeatureType) adaptee).getLockAction() == net.opengis.wfs20.AllSomeType.SOME;
         }
 
         @Override
         public void setLockActionSome() {
-            ((net.opengis.wfs20.LockFeatureType) adaptee)
-                    .setLockAction(net.opengis.wfs20.AllSomeType.SOME);
+            ((net.opengis.wfs20.LockFeatureType) adaptee).setLockAction(net.opengis.wfs20.AllSomeType.SOME);
         }
 
         @Override
@@ -187,8 +182,7 @@ public abstract class LockFeatureRequest extends RequestObject {
 
         @Override
         public LockFeatureResponse createResponse() {
-            return new LockFeatureResponse.WFS20(
-                    ((Wfs20Factory) getFactory()).createLockFeatureResponseType());
+            return new LockFeatureResponse.WFS20(((Wfs20Factory) getFactory()).createLockFeatureResponseType());
         }
 
         @Override

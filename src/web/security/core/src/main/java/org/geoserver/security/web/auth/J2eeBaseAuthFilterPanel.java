@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.web.auth;
 
+import java.io.Serial;
 import java.util.Arrays;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -23,6 +24,7 @@ public abstract class J2eeBaseAuthFilterPanel<T extends J2eeAuthenticationBaseFi
         extends PreAuthenticatedUserNameFilterPanel<T> {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public J2eeBaseAuthFilterPanel(String id, IModel<T> model) {
@@ -50,8 +52,6 @@ public abstract class J2eeBaseAuthFilterPanel<T extends J2eeAuthenticationBaseFi
     @Override
     protected DropDownChoice<RoleSource> createRoleSourceDropDown() {
         return new DropDownChoice<>(
-                "roleSource",
-                Arrays.asList(J2EERoleSource.values()),
-                new RoleSourceChoiceRenderer());
+                "roleSource", Arrays.asList(J2EERoleSource.values()), new RoleSourceChoiceRenderer());
     }
 }

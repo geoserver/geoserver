@@ -23,8 +23,8 @@ import org.geotools.ows.v1_1.OWSConfiguration;
 import org.geotools.xsd.Encoder;
 
 /**
- * A default implementation of {@link ServiceExceptionHandler} which outputs as service exception in
- * a <code>ows:ExceptionReport</code> document.
+ * A default implementation of {@link ServiceExceptionHandler} which outputs as service exception in a <code>
+ * ows:ExceptionReport</code> document.
  *
  * <p>This service exception handler will generate an OWS exception report, see <a
  * href="http://schemas.opengis.net/ows/1.1.0/owsExceptionReport.xsd">owsExceptionReport.xsd</a>.
@@ -33,11 +33,11 @@ import org.geotools.xsd.Encoder;
  */
 public class OWS11ServiceExceptionHandler extends ServiceExceptionHandler {
 
-    private static String CONTENT_TYPE =
-            System.getProperty("ows11.exception.xml.responsetype", DEFAULT_XML_MIME_TYPE);
+    static String CONTENT_TYPE = System.getProperty("ows11.exception.xml.responsetype", DEFAULT_XML_MIME_TYPE);
+
     /**
-     * verbose exception flag controlling whether the exception stack trace will be included in the
-     * encoded ows exception report
+     * verbose exception flag controlling whether the exception stack trace will be included in the encoded ows
+     * exception report
      */
     protected boolean verboseExceptions = false;
 
@@ -75,8 +75,7 @@ public class OWS11ServiceExceptionHandler extends ServiceExceptionHandler {
             version = request.getServiceDescriptor().getVersion().toString();
         }
 
-        ExceptionReportType report =
-                Ows11Util.exceptionReport(exception, verboseExceptions, version);
+        ExceptionReportType report = Ows11Util.exceptionReport(exception, verboseExceptions, version);
 
         HttpServletResponse response = request.getHttpResponse();
         if (!request.isSOAP()) {
@@ -99,8 +98,7 @@ public class OWS11ServiceExceptionHandler extends ServiceExceptionHandler {
         encoder.setLineWidth(60);
         encoder.setOmitXMLDeclaration(request.isSOAP());
 
-        String schemaLocation =
-                buildSchemaURL(baseURL(request.getHttpRequest()), "ows/1.1.0/owsAll.xsd");
+        String schemaLocation = buildSchemaURL(baseURL(request.getHttpRequest()), "ows/1.1.0/owsAll.xsd");
         encoder.setSchemaLocation(OWS.NAMESPACE, schemaLocation);
 
         try {
@@ -109,10 +107,7 @@ public class OWS11ServiceExceptionHandler extends ServiceExceptionHandler {
             // throw new RuntimeException(ex);
             // Hmm, not much we can do here.  I guess log the fact that we couldn't write out the
             // exception and be done with it...
-            LOGGER.log(
-                    Level.INFO,
-                    "Problem writing exception information back to calling client:",
-                    ex);
+            LOGGER.log(Level.INFO, "Problem writing exception information back to calling client:", ex);
         } finally {
             try {
                 response.getOutputStream().flush();
@@ -124,8 +119,7 @@ public class OWS11ServiceExceptionHandler extends ServiceExceptionHandler {
     /**
      * Flag that controls what version to use in the ows exception report.
      *
-     * <p>Setting to true will cause the service version to be used rather than the ows spec
-     * version.
+     * <p>Setting to true will cause the service version to be used rather than the ows spec version.
      */
     public void setUseServiceVersion(boolean useServiceVersion) {
         this.useServiceVersion = useServiceVersion;

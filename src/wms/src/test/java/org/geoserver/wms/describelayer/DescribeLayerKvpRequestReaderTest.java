@@ -34,7 +34,6 @@ import org.junit.Test;
  * Unit test suite for {@link DescribeLayerKvpRequestReader}
  *
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class DescribeLayerKvpRequestReaderTest {
 
@@ -62,8 +61,7 @@ public class DescribeLayerKvpRequestReaderTest {
         return getRequest(rawKvp, new HashMap<>(rawKvp));
     }
 
-    private DescribeLayerRequest getRequest(Map<String, String> rawKvp, Map<String, Object> kvp)
-            throws Exception {
+    private DescribeLayerRequest getRequest(Map<String, String> rawKvp, Map<String, Object> kvp) throws Exception {
 
         DescribeLayerKvpRequestReader reader = new DescribeLayerKvpRequestReader(wms);
         DescribeLayerRequest req = (DescribeLayerRequest) reader.createRequest();

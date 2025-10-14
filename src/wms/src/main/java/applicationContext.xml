@@ -444,10 +444,8 @@
         class="org.geoserver.wms.legendgraphic.JPEGLegendOutputFormat">
 	</bean>
     <bean id="wmsJPEGLegendGraphicResponse" 
-        class="org.geoserver.wms.legendgraphic.JPEGLegendGraphicResponse">
-        <constructor-arg index="0" ref="wms"/>
-    </bean>
-	<bean id="wmsPNGLegendOutputFormat" 
+        class="org.geoserver.wms.legendgraphic.JPEGLegendGraphicResponse"/>
+	<bean id="wmsPNGLegendOutputFormat"
 		class="org.geoserver.wms.legendgraphic.PNGLegendOutputFormat">
 	</bean>
     <bean id="wmsPNGLegendGraphicResponse" 
@@ -854,6 +852,8 @@
   </bean>
   
   <bean id="clipWMSGetMapCallBack" class="org.geoserver.wms.clip.ClipWMSGetMapCallBack"/>
+
+  <bean id="renderingVariablesCallback" class="org.geoserver.wms.RenderingVariablesCallback"/>
 
     <bean id="wmsDefaultLocaleCallback" class="org.geoserver.wms.WMSDefaultLocaleCallback">
         <constructor-arg ref="geoServer"/>

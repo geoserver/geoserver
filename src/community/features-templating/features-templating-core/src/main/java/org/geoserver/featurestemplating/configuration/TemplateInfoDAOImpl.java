@@ -70,8 +70,7 @@ public class TemplateInfoDAOImpl implements TemplateInfoDAO {
     public TemplateInfo saveOrUpdate(TemplateInfo templateData) {
         reloadIfNeeded();
         boolean isUpdate =
-                templateDataSet.stream()
-                        .anyMatch(ti -> ti.getIdentifier().equals(templateData.getIdentifier()));
+                templateDataSet.stream().anyMatch(ti -> ti.getIdentifier().equals(templateData.getIdentifier()));
         if (isUpdate) {
             fireTemplateUpdateEvent(templateData);
             templateDataSet.removeIf(ti -> ti.getIdentifier().equals(templateData.getIdentifier()));
@@ -110,8 +109,9 @@ public class TemplateInfoDAOImpl implements TemplateInfoDAO {
     @Override
     public TemplateInfo findById(String id) {
         reloadIfNeeded();
-        Optional<TemplateInfo> optional =
-                templateDataSet.stream().filter(ti -> ti.getIdentifier().equals(id)).findFirst();
+        Optional<TemplateInfo> optional = templateDataSet.stream()
+                .filter(ti -> ti.getIdentifier().equals(id))
+                .findFirst();
         if (optional.isPresent()) return optional.get();
         else return null;
     }
@@ -119,10 +119,9 @@ public class TemplateInfoDAOImpl implements TemplateInfoDAO {
     @Override
     public TemplateInfo findByFullName(String fullName) {
         reloadIfNeeded();
-        Optional<TemplateInfo> templateInfo =
-                templateDataSet.stream()
-                        .filter(ti -> ti.getFullName().equals(fullName))
-                        .findFirst();
+        Optional<TemplateInfo> templateInfo = templateDataSet.stream()
+                .filter(ti -> ti.getFullName().equals(fullName))
+                .findFirst();
         if (templateInfo.isPresent()) return templateInfo.get();
         return null;
     }
@@ -133,13 +132,10 @@ public class TemplateInfoDAOImpl implements TemplateInfoDAO {
         String workspace = featureTypeInfo.getStore().getWorkspace().getName();
         String name = featureTypeInfo.getName();
         return templateDataSet.stream()
-                .filter(
-                        ti ->
-                                (ti.getWorkspace() == null && ti.getFeatureType() == null)
-                                        || ti.getFeatureType() == null
-                                                && ti.getWorkspace().equals(workspace)
-                                        || (ti.getWorkspace().equals(workspace)
-                                                && ti.getFeatureType().equals(name)))
+                .filter(ti -> (ti.getWorkspace() == null && ti.getFeatureType() == null)
+                        || ti.getFeatureType() == null && ti.getWorkspace().equals(workspace)
+                        || (ti.getWorkspace().equals(workspace)
+                                && ti.getFeatureType().equals(name)))
                 .collect(Collectors.toList());
     }
 
@@ -235,40 +231,38 @@ public class TemplateInfoDAOImpl implements TemplateInfoDAO {
         @Override
         public void handleRemoveEvent(CatalogRemoveEvent event) throws CatalogException {
             CatalogInfo source = event.getSource();
-            if (source instanceof FeatureTypeInfo) {
-                removeFtTemplates((FeatureTypeInfo) source);
+            if (source instanceof FeatureTypeInfo info1) {
+                removeFtTemplates(info1);
 
-            } else if (source instanceof WorkspaceInfo) {
-                removeWSTemplates((WorkspaceInfo) source);
+            } else if (source instanceof WorkspaceInfo info) {
+                removeWSTemplates(info);
             }
         }
 
         private void removeFtTemplates(FeatureTypeInfo ft) {
             TemplateInfoDAO dao = TemplateInfoDAO.get();
             List<TemplateInfo> templateInfos = dao.findByFeatureTypeInfo(ft);
-            dao.delete(
-                    templateInfos.stream()
-                            .filter(ti -> ti.getFeatureType() != null)
-                            .collect(Collectors.toList()));
+            dao.delete(templateInfos.stream()
+                    .filter(ti -> ti.getFeatureType() != null)
+                    .collect(Collectors.toList()));
         }
 
         private void removeWSTemplates(WorkspaceInfo ws) {
             TemplateInfoDAO dao = TemplateInfoDAO.get();
-            List<TemplateInfo> templateInfos =
-                    dao.findAll().stream()
-                            .filter(ti -> ti.getWorkspace().equals(ws.getName()))
-                            .collect(Collectors.toList());
+            List<TemplateInfo> templateInfos = dao.findAll().stream()
+                    .filter(ti -> ti.getWorkspace().equals(ws.getName()))
+                    .collect(Collectors.toList());
             dao.delete(templateInfos);
         }
 
         @Override
         public void handleModifyEvent(CatalogModifyEvent event) throws CatalogException {
             final CatalogInfo source = event.getSource();
-            if (source instanceof FeatureTypeInfo) {
+            if (source instanceof FeatureTypeInfo info) {
                 int nameIdx = event.getPropertyNames().indexOf("name");
                 if (nameIdx != -1) {
                     String newName = (String) event.getNewValues().get(nameIdx);
-                    updateTemplateInfoLayerName((FeatureTypeInfo) source, newName);
+                    updateTemplateInfoLayerName(info, newName);
                 }
             } else if (source instanceof WorkspaceInfo) {
                 int nameIdx = event.getPropertyNames().indexOf("name");
@@ -310,11 +304,11 @@ public class TemplateInfoDAOImpl implements TemplateInfoDAO {
         @Override
         public void handlePostModifyEvent(CatalogPostModifyEvent event) throws CatalogException {
             CatalogInfo source = event.getSource();
-            if (source instanceof FeatureTypeInfo) {
-                FeatureTypeInfo info = (FeatureTypeInfo) source;
+            if (source instanceof FeatureTypeInfo info) {
                 int wsIdx = event.getPropertyNames().indexOf("workspace");
                 if (wsIdx != -1) {
-                    WorkspaceInfo newWorkspace = (WorkspaceInfo) event.getNewValues().get(wsIdx);
+                    WorkspaceInfo newWorkspace =
+                            (WorkspaceInfo) event.getNewValues().get(wsIdx);
                     updateTemplateInfoWorkspace(newWorkspace, info);
                 }
             }

@@ -13,8 +13,7 @@ public class GeoServerMultiplexingPasswordEncoderTest extends GeoServerMockTestS
 
     @Test
     public void testEncode() {
-        GeoServerMultiplexingPasswordEncoder pwe =
-                new GeoServerMultiplexingPasswordEncoder(getSecurityManager());
+        GeoServerMultiplexingPasswordEncoder pwe = new GeoServerMultiplexingPasswordEncoder(getSecurityManager());
         try {
             pwe.encodePassword("foo", null);
         } catch (Exception e) {

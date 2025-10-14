@@ -4,6 +4,7 @@
  */
 package org.geoserver.web;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,20 +15,20 @@ import org.geotools.util.Version;
 /**
  * A complete reference to a GetCapabilities, REST API, or other service description document.
  *
- * <p>ServiceLinkDescription is associated with a {@link ServiceDescription} by service type {@link
- * #getServiceType()}.
+ * <p>ServiceLinkDescription is associated with a {@link ServiceDescription} by service type {@link #getServiceType()}.
  *
  * <p>This description is a model object for the {@link ServicesPanel}.
  */
 public class ServiceLinkDescription implements Serializable, Comparable<ServiceLinkDescription> {
+    @Serial
     private static final long serialVersionUID = -5600492358023139816L;
 
     /** Service type, example {@code WMS}, {@code WFS}, {@code Features}, ... */
     private final String serviceType;
 
     /**
-     * For things like OGCAPI-Features, serviceType would be "WFS", however, this should be
-     * "Features" - the actual service type name. Can be null.
+     * For things like OGCAPI-Features, serviceType would be "WFS", however, this should be "Features" - the actual
+     * service type name. Can be null.
      */
     private final String specificServiceType;
 
@@ -46,18 +47,12 @@ public class ServiceLinkDescription implements Serializable, Comparable<ServiceL
     /** Layer name for virtual web service, may be null for workspace or global services. */
     private final String layer;
 
-    public ServiceLinkDescription(
-            String serviceType, Version version, String link, String workspace, String layer) {
+    public ServiceLinkDescription(String serviceType, Version version, String link, String workspace, String layer) {
         this(serviceType, version, link, workspace, layer, null);
     }
 
     public ServiceLinkDescription(
-            String serviceType,
-            Version version,
-            String link,
-            String workspace,
-            String layer,
-            String protocol) {
+            String serviceType, Version version, String link, String workspace, String layer, String protocol) {
         this(serviceType, version, link, workspace, layer, protocol, null);
     }
 
@@ -81,11 +76,9 @@ public class ServiceLinkDescription implements Serializable, Comparable<ServiceL
     /**
      * Service type, example {@code WFS}, {@code WMS}, {@code Features}.
      *
-     * <p>Service type is internal to GeoServer codebase, while the title is used to identify the
-     * service to users.
+     * <p>Service type is internal to GeoServer codebase, while the title is used to identify the service to users.
      *
-     * <p>A given internal service type may support several external protocols and versions (see
-     * below).
+     * <p>A given internal service type may support several external protocols and versions (see below).
      *
      * @return service name, forced to lower case for ease of comparison.
      */
@@ -105,8 +98,8 @@ public class ServiceLinkDescription implements Serializable, Comparable<ServiceL
     }
 
     /**
-     * OGCAPI serviceType used for configuration, this may be different than serviceType, example
-     * {@code WFS}, used to group for heading and description information.
+     * OGCAPI serviceType used for configuration, this may be different than serviceType, example {@code WFS}, used to
+     * group for heading and description information.
      */
     public String getSpecificServiceType() {
         return specificServiceType;

@@ -15,7 +15,7 @@ Contains the following data stores:
 
 INSTALLATION
 
-1. Copy the gt-jdbc-oracle and ojdbc8 jars into your GeoServer library directory.
+1. Copy the gt-jdbc-oracle and ojdbc17 jars into your GeoServer library directory.
    In a binary install this is [GEOSERVER_HOME]/server/geoserver/WEB-INF/lib/
    In a war install this is [container]/webapps/geoserver/WEB-INF/lib/
 

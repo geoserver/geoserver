@@ -82,9 +82,9 @@ public class HazelcastLoader implements DisposableBean {
     }
 
     /**
-     * Validation for an input {@link Config} object provided. This method ensures that the input
-     * configuration contains the right map, and issues warning in case the map is configured as a
-     * cache instead of as a regular distributed map
+     * Validation for an input {@link Config} object provided. This method ensures that the input configuration contains
+     * the right map, and issues warning in case the map is configured as a cache instead of as a regular distributed
+     * map
      */
     private void validateConfiguration(Config config) {
         LOGGER.fine("Checking configuration");
@@ -94,27 +94,23 @@ public class HazelcastLoader implements DisposableBean {
         // Check if the cache map is present
         if (!config.getMapConfigs().containsKey(EXECUTION_STATUS_MAP)) {
             throw new IllegalArgumentException(
-                    "Hazelcast configuration is missing the status map, should be called: "
-                            + EXECUTION_STATUS_MAP);
+                    "Hazelcast configuration is missing the status map, should be called: " + EXECUTION_STATUS_MAP);
         }
 
         // make some sanity checks on the map
         MapConfig mapConfig = config.getMapConfig(EXECUTION_STATUS_MAP);
         // Check size policy
         if (mapConfig.getEvictionConfig().getSize() > 0) {
-            LOGGER.warning(
-                    "The WPS status map "
-                            + EXECUTION_STATUS_MAP
-                            + " has a max size set, it should be unbounded so that no status is lost"
-                            + " before the configured timeout");
+            LOGGER.warning("The WPS status map "
+                    + EXECUTION_STATUS_MAP
+                    + " has a max size set, it should be unbounded so that no status is lost"
+                    + " before the configured timeout");
         }
-        if (mapConfig.getEvictionConfig().getEvictionPolicy()
-                != MapConfig.DEFAULT_EVICTION_POLICY) {
-            LOGGER.warning(
-                    "The WPS status map "
-                            + EXECUTION_STATUS_MAP
-                            + " has a eviction policy set, it should not automatically evict entries so that "
-                            + " no status is lost before the configured timeout");
+        if (mapConfig.getEvictionConfig().getEvictionPolicy() != MapConfig.DEFAULT_EVICTION_POLICY) {
+            LOGGER.warning("The WPS status map "
+                    + EXECUTION_STATUS_MAP
+                    + " has a eviction policy set, it should not automatically evict entries so that "
+                    + " no status is lost before the configured timeout");
         }
     }
 

@@ -16,7 +16,7 @@ import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import javax.media.jai.PlanarImage;
+import org.eclipse.imagen.PlanarImage;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -56,8 +56,7 @@ public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicB
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
         try {
-            SimpleFeatureCollection feature =
-                    FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            SimpleFeatureCollection feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
             req.setLayer(feature.getSchema());
             req.setStyle(multipleRulesStyle);
 
@@ -84,11 +83,11 @@ public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicB
 
         } finally {
             RenderedImage ri = coverage.getRenderedImage();
-            if (coverage instanceof GridCoverage2D) {
-                ((GridCoverage2D) coverage).dispose(true);
+            if (coverage instanceof GridCoverage2D coverage2D) {
+                coverage2D.dispose(true);
             }
-            if (ri instanceof PlanarImage) {
-                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            if (ri instanceof PlanarImage image) {
+                ImageUtilities.disposePlanarImageChain(image);
             }
         }
     }
@@ -125,8 +124,7 @@ public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicB
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
         try {
-            SimpleFeatureCollection feature =
-                    FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            SimpleFeatureCollection feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
             req.setLayer(feature.getSchema());
             req.setStyle(multipleRulesStyle);
 
@@ -152,11 +150,11 @@ public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicB
 
         } finally {
             RenderedImage ri = coverage.getRenderedImage();
-            if (coverage instanceof GridCoverage2D) {
-                ((GridCoverage2D) coverage).dispose(true);
+            if (coverage instanceof GridCoverage2D coverage2D) {
+                coverage2D.dispose(true);
             }
-            if (ri instanceof PlanarImage) {
-                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            if (ri instanceof PlanarImage image) {
+                ImageUtilities.disposePlanarImageChain(image);
             }
         }
     }
@@ -176,8 +174,7 @@ public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicB
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
         try {
-            SimpleFeatureCollection feature =
-                    FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            SimpleFeatureCollection feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
             req.setLayer(feature.getSchema());
             req.setStyle(multipleRulesStyle);
 
@@ -205,11 +202,11 @@ public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicB
 
         } finally {
             RenderedImage ri = coverage.getRenderedImage();
-            if (coverage instanceof GridCoverage2D) {
-                ((GridCoverage2D) coverage).dispose(true);
+            if (coverage instanceof GridCoverage2D coverage2D) {
+                coverage2D.dispose(true);
             }
-            if (ri instanceof PlanarImage) {
-                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            if (ri instanceof PlanarImage image) {
+                ImageUtilities.disposePlanarImageChain(image);
             }
         }
     }
@@ -229,8 +226,7 @@ public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicB
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
         try {
-            SimpleFeatureCollection feature =
-                    FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            SimpleFeatureCollection feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
             req.setLayer(feature.getSchema());
             req.setStyle(multipleRulesStyle);
 
@@ -257,11 +253,11 @@ public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicB
 
         } finally {
             RenderedImage ri = coverage.getRenderedImage();
-            if (coverage instanceof GridCoverage2D) {
-                ((GridCoverage2D) coverage).dispose(true);
+            if (coverage instanceof GridCoverage2D coverage2D) {
+                coverage2D.dispose(true);
             }
-            if (ri instanceof PlanarImage) {
-                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            if (ri instanceof PlanarImage image) {
+                ImageUtilities.disposePlanarImageChain(image);
             }
         }
     }
@@ -271,13 +267,12 @@ public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicB
     public void testVectorLayersHorizontal() throws Exception {
         GetLegendGraphicRequest req = new GetLegendGraphicRequest();
 
-        FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.ROAD_SEGMENTS.getNamespaceURI(),
-                                MockData.ROAD_SEGMENTS.getLocalPart());
+        FeatureTypeInfo ftInfo = getCatalog()
+                .getFeatureTypeByName(MockData.ROAD_SEGMENTS.getNamespaceURI(), MockData.ROAD_SEGMENTS.getLocalPart());
         req.setLayer(ftInfo.getFeatureType());
-        req.setStyle(getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
+        req.setStyle(getCatalog()
+                .getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart())
+                .getStyle());
 
         final int HEIGHT_HINT = 20;
         req.setHeight(HEIGHT_HINT);
@@ -301,19 +296,11 @@ public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicB
         GetLegendGraphicRequest req = new GetLegendGraphicRequest();
 
         FeatureTypeInfo lakesFt =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.LAKES.getNamespaceURI(), MockData.LAKES.getLocalPart());
-        FeatureTypeInfo placesFt =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.NAMED_PLACES.getNamespaceURI(),
-                                MockData.NAMED_PLACES.getLocalPart());
-        FeatureTypeInfo roadsFt =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.ROAD_SEGMENTS.getNamespaceURI(),
-                                MockData.ROAD_SEGMENTS.getLocalPart());
+                getCatalog().getFeatureTypeByName(MockData.LAKES.getNamespaceURI(), MockData.LAKES.getLocalPart());
+        FeatureTypeInfo placesFt = getCatalog()
+                .getFeatureTypeByName(MockData.NAMED_PLACES.getNamespaceURI(), MockData.NAMED_PLACES.getLocalPart());
+        FeatureTypeInfo roadsFt = getCatalog()
+                .getFeatureTypeByName(MockData.ROAD_SEGMENTS.getNamespaceURI(), MockData.ROAD_SEGMENTS.getLocalPart());
 
         StyleInfo lakesStyle = getCatalog().getStyleByName(MockData.LAKES.getLocalPart());
         StyleInfo placesStyle = getCatalog().getStyleByName(MockData.NAMED_PLACES.getLocalPart());
@@ -359,10 +346,9 @@ public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicB
         assertPixel(image, 10, 3 * HEIGHT_HINT + HEIGHT_HINT / 2, new Color(192, 160, 0));
     }
 
-    public GetLegendGraphicRequest.LegendRequest buildLegendRequest(
-            FeatureTypeInfo ft, StyleInfo style) throws IOException {
-        GetLegendGraphicRequest.LegendRequest request =
-                new GetLegendGraphicRequest.LegendRequest(ft.getFeatureType());
+    public GetLegendGraphicRequest.LegendRequest buildLegendRequest(FeatureTypeInfo ft, StyleInfo style)
+            throws IOException {
+        GetLegendGraphicRequest.LegendRequest request = new GetLegendGraphicRequest.LegendRequest(ft.getFeatureType());
         request.setStyle(style.getStyle());
         return request;
     }
@@ -372,19 +358,11 @@ public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicB
         GetLegendGraphicRequest req = new GetLegendGraphicRequest();
 
         FeatureTypeInfo lakesFt =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.LAKES.getNamespaceURI(), MockData.LAKES.getLocalPart());
-        FeatureTypeInfo placesFt =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.NAMED_PLACES.getNamespaceURI(),
-                                MockData.NAMED_PLACES.getLocalPart());
-        FeatureTypeInfo roadsFt =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.ROAD_SEGMENTS.getNamespaceURI(),
-                                MockData.ROAD_SEGMENTS.getLocalPart());
+                getCatalog().getFeatureTypeByName(MockData.LAKES.getNamespaceURI(), MockData.LAKES.getLocalPart());
+        FeatureTypeInfo placesFt = getCatalog()
+                .getFeatureTypeByName(MockData.NAMED_PLACES.getNamespaceURI(), MockData.NAMED_PLACES.getLocalPart());
+        FeatureTypeInfo roadsFt = getCatalog()
+                .getFeatureTypeByName(MockData.ROAD_SEGMENTS.getNamespaceURI(), MockData.ROAD_SEGMENTS.getLocalPart());
 
         StyleInfo lakesStyle = getCatalog().getStyleByName(MockData.LAKES.getLocalPart());
         StyleInfo placesStyle = getCatalog().getStyleByName(MockData.NAMED_PLACES.getLocalPart());
@@ -433,19 +411,11 @@ public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicB
         GetLegendGraphicRequest req = new GetLegendGraphicRequest();
 
         FeatureTypeInfo lakesFt =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.LAKES.getNamespaceURI(), MockData.LAKES.getLocalPart());
-        FeatureTypeInfo placesFt =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.NAMED_PLACES.getNamespaceURI(),
-                                MockData.NAMED_PLACES.getLocalPart());
-        FeatureTypeInfo roadsFt =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.ROAD_SEGMENTS.getNamespaceURI(),
-                                MockData.ROAD_SEGMENTS.getLocalPart());
+                getCatalog().getFeatureTypeByName(MockData.LAKES.getNamespaceURI(), MockData.LAKES.getLocalPart());
+        FeatureTypeInfo placesFt = getCatalog()
+                .getFeatureTypeByName(MockData.NAMED_PLACES.getNamespaceURI(), MockData.NAMED_PLACES.getLocalPart());
+        FeatureTypeInfo roadsFt = getCatalog()
+                .getFeatureTypeByName(MockData.ROAD_SEGMENTS.getNamespaceURI(), MockData.ROAD_SEGMENTS.getLocalPart());
 
         StyleInfo lakesStyle = getCatalog().getStyleByName(MockData.LAKES.getLocalPart());
         StyleInfo placesStyle = getCatalog().getStyleByName(MockData.NAMED_PLACES.getLocalPart());

@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.web.auth;
 
+import java.io.Serial;
 import java.util.logging.Logger;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
@@ -14,13 +15,14 @@ import org.geoserver.web.wicket.HelpLink;
 import org.geotools.util.logging.Logging;
 
 /**
- * Configuration panel for {@link GeoServerCredentialsFromRequestHeaderAuthenticationFilter}.
+ * Configuration panel for GeoServerCredentialsFromRequestHeaderAuthenticationFilter.
  *
  * @author Lorenzo Natali, GeoSolutions
  * @author Mauro Bartolomeoli, GeoSolutions
  */
 public class CredentialsFromRequestHeaderFilterPanel
         extends AuthenticationFilterPanel<CredentialsFromRequestHeaderFilterConfig> {
+    @Serial
     private static final long serialVersionUID = 1;
 
     static Logger LOGGER = Logging.getLogger("org.geoserver.security");
@@ -29,8 +31,7 @@ public class CredentialsFromRequestHeaderFilterPanel
 
     IModel<CredentialsFromRequestHeaderFilterConfig> model;
 
-    public CredentialsFromRequestHeaderFilterPanel(
-            String id, IModel<CredentialsFromRequestHeaderFilterConfig> model) {
+    public CredentialsFromRequestHeaderFilterPanel(String id, IModel<CredentialsFromRequestHeaderFilterConfig> model) {
         super(id, model);
 
         dialog = (GeoServerDialog) get("dialog");

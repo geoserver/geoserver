@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.security.ldap;
 
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -40,6 +41,7 @@ import org.springframework.security.core.Authentication;
 // TODO WICKET8 - Verify this page works OK
 public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecurityServiceConfig> {
 
+    @Serial
     private static final long serialVersionUID = 4772173006888418298L;
 
     public LDAPAuthProviderPanel(String id, IModel<LDAPSecurityServiceConfig> model) {
@@ -52,34 +54,31 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
         add(new TextField<>("userFormat"));
 
         boolean useLdapAuth = model.getObject().getUserGroupServiceName() == null;
-        add(
-                new AjaxCheckBox("useLdapAuthorization", new Model<>(useLdapAuth)) {
+        add(new AjaxCheckBox("useLdapAuthorization", new Model<>(useLdapAuth)) {
 
-                    private static final long serialVersionUID = 2060279075143716273L;
+            @Serial
+            private static final long serialVersionUID = 2060279075143716273L;
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        WebMarkupContainer c =
-                                (WebMarkupContainer)
-                                        LDAPAuthProviderPanel.this.get(
-                                                "authorizationPanelContainer");
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                WebMarkupContainer c =
+                        (WebMarkupContainer) LDAPAuthProviderPanel.this.get("authorizationPanelContainer");
 
-                        // reset any values that were set
-                        ((AuthorizationPanel) c.get("authorizationPanel")).resetModel();
+                // reset any values that were set
+                ((AuthorizationPanel) c.get("authorizationPanel")).resetModel();
 
-                        // remove the old panel
-                        c.remove("authorizationPanel");
+                // remove the old panel
+                c.remove("authorizationPanel");
 
-                        // add the new panel
-                        c.add(createAuthorizationPanel("authorizationPanel", getModelObject()));
+                // add the new panel
+                c.add(createAuthorizationPanel("authorizationPanel", getModelObject()));
 
-                        target.add(c);
-                    }
-                });
-        add(
-                new WebMarkupContainer("authorizationPanelContainer")
-                        .add(createAuthorizationPanel("authorizationPanel", useLdapAuth))
-                        .setOutputMarkupId(true));
+                target.add(c);
+            }
+        });
+        add(new WebMarkupContainer("authorizationPanelContainer")
+                .add(createAuthorizationPanel("authorizationPanel", useLdapAuth))
+                .setOutputMarkupId(true));
 
         add(new TestLDAPConnectionPanel("testCx"));
     }
@@ -88,8 +87,9 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
         return useLDAP ? new LDAPAuthorizationPanel(id) : new UserGroupAuthorizationPanel(id);
     }
 
-    abstract class AuthorizationPanel extends FormComponentPanel<HashMap<String, Object>> {
+    abstract static class AuthorizationPanel extends FormComponentPanel<HashMap<String, Object>> {
 
+        @Serial
         private static final long serialVersionUID = -2021795762927385164L;
 
         public AuthorizationPanel(String id) {
@@ -99,8 +99,9 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
         public abstract void resetModel();
     }
 
-    class UserGroupAuthorizationPanel extends AuthorizationPanel {
+    static class UserGroupAuthorizationPanel extends AuthorizationPanel {
 
+        @Serial
         private static final long serialVersionUID = 2464048864034610244L;
 
         public UserGroupAuthorizationPanel(String id) {
@@ -117,7 +118,9 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
 
     class LDAPAuthorizationPanel extends AuthorizationPanel {
 
+        @Serial
         private static final long serialVersionUID = 7541432269535150812L;
+
         private static final String USE_NESTED_PARENT_GROUPS = "useNestedParentGroups";
         private static final String MAX_GROUP_SEARCH_LEVEL = "maxGroupSearchLevel";
         private static final String NESTED_GROUP_SEARCH_FILTER = "nestedGroupSearchFilter";
@@ -141,26 +144,23 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
 
         private void hierarchicalGroupsinit() {
             // hierarchical groups configurations
-            Optional<LDAPSecurityServiceConfig> useNestedOpt =
-                    Optional.of(this)
-                            .map(
-                                    x -> {
-                                        try {
-                                            return x.getForm();
-                                        } catch (WicketRuntimeException ex) {
-                                            // no form
-                                        }
-                                        return null;
-                                    })
-                            .map(Form::getModel)
-                            .map(IModel::getObject)
-                            .filter(x -> x instanceof LDAPSecurityServiceConfig)
-                            .map(x -> (LDAPSecurityServiceConfig) x);
+            Optional<LDAPSecurityServiceConfig> useNestedOpt = Optional.of(this)
+                    .map(x -> {
+                        try {
+                            return x.getForm();
+                        } catch (WicketRuntimeException ex) {
+                            // no form
+                        }
+                        return null;
+                    })
+                    .map(Form::getModel)
+                    .map(IModel::getObject)
+                    .filter(x -> x instanceof LDAPSecurityServiceConfig)
+                    .map(x -> (LDAPSecurityServiceConfig) x);
             // get initial value for use_nested checkbox
-            boolean useNestedActivated =
-                    useNestedOpt
-                            .map(LDAPSecurityServiceConfig::isUseNestedParentGroups)
-                            .orElse(false);
+            boolean useNestedActivated = useNestedOpt
+                    .map(LDAPSecurityServiceConfig::isUseNestedParentGroups)
+                    .orElse(false);
             // create fields objects
             final WebMarkupContainer nestedSearchFieldsContainer =
                     new WebMarkupContainer(NESTED_SEARCH_FIELDS_CONTAINER);
@@ -169,24 +169,20 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
             nestedSearchFieldsContainer.setVisible(useNestedActivated);
             add(nestedSearchFieldsContainer);
             final TextField<String> maxLevelField = new TextField<>(MAX_GROUP_SEARCH_LEVEL);
-            final TextField<String> nestedGroupSearchFilterField =
-                    new TextField<>(NESTED_GROUP_SEARCH_FILTER);
-            final AjaxCheckBox useNestedCheckbox =
-                    new AjaxCheckBox(USE_NESTED_PARENT_GROUPS) {
-                        private static final long serialVersionUID = 1L;
+            final TextField<String> nestedGroupSearchFilterField = new TextField<>(NESTED_GROUP_SEARCH_FILTER);
+            final AjaxCheckBox useNestedCheckbox = new AjaxCheckBox(USE_NESTED_PARENT_GROUPS) {
+                @Serial
+                private static final long serialVersionUID = 1L;
 
-                        @Override
-                        protected void onUpdate(AjaxRequestTarget target) {
-                            // get the checkbox boolean value and set visibility for fields
-                            AjaxCheckBox cb =
-                                    (AjaxCheckBox)
-                                            LDAPAuthorizationPanel.this.get(
-                                                    USE_NESTED_PARENT_GROUPS);
-                            boolean value = cb.getModelObject();
-                            nestedSearchFieldsContainer.setVisible(value);
-                            target.add(nestedSearchFieldsContainer);
-                        }
-                    };
+                @Override
+                protected void onUpdate(AjaxRequestTarget target) {
+                    // get the checkbox boolean value and set visibility for fields
+                    AjaxCheckBox cb = (AjaxCheckBox) LDAPAuthorizationPanel.this.get(USE_NESTED_PARENT_GROUPS);
+                    boolean value = cb.getModelObject();
+                    nestedSearchFieldsContainer.setVisible(value);
+                    target.add(nestedSearchFieldsContainer);
+                }
+            };
             add(useNestedCheckbox);
             nestedSearchFieldsContainer.add(maxLevelField);
             nestedSearchFieldsContainer.add(nestedGroupSearchFilterField);
@@ -206,21 +202,21 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
 
     class TestLDAPConnectionPanel extends FormComponentPanel<HashMap<String, Object>> {
 
+        @Serial
         private static final long serialVersionUID = 5433983389877706266L;
 
         public TestLDAPConnectionPanel(String id) {
             super(id, new Model<>(new HashMap<>()));
 
             add(new TextField<>("username", new MapModel<>(getModel().getObject(), "username")));
-            add(
-                    new PasswordTextField(
-                                    "password", new MapModel<>(getModel().getObject(), "password"))
-                            .setRequired(false));
+            add(new PasswordTextField("password", new MapModel<>(getModel().getObject(), "password"))
+                    .setRequired(false));
             add(new TestLink().setDefaultFormProcessing(false));
         }
 
         private class TestLink extends AjaxSubmitLink {
 
+            @Serial
             private static final long serialVersionUID = 2373404292655355758L;
 
             public TestLink() {
@@ -243,13 +239,9 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
                 ((FormComponent<?>) LDAPAuthProviderPanel.this.get("userFormat")).processInput();
 
                 String username =
-                        (String)
-                                ((FormComponent<?>) TestLDAPConnectionPanel.this.get("username"))
-                                        .getConvertedInput();
+                        (String) ((FormComponent<?>) TestLDAPConnectionPanel.this.get("username")).getConvertedInput();
                 String password =
-                        (String)
-                                ((FormComponent<?>) TestLDAPConnectionPanel.this.get("password"))
-                                        .getConvertedInput();
+                        (String) ((FormComponent<?>) TestLDAPConnectionPanel.this.get("password")).getConvertedInput();
 
                 LDAPSecurityServiceConfig ldapConfig =
                         (LDAPSecurityServiceConfig) getForm().getModelObject();
@@ -272,21 +264,16 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
 
                 LDAPSecurityProvider provider = new LDAPSecurityProvider(getSecurityManager());
                 LDAPAuthenticationProvider authProvider =
-                        (LDAPAuthenticationProvider)
-                                provider.createAuthenticationProvider(ldapConfig);
+                        (LDAPAuthenticationProvider) provider.createAuthenticationProvider(ldapConfig);
                 Authentication authentication =
-                        authProvider.authenticate(
-                                new UsernamePasswordAuthenticationToken(username, password));
+                        authProvider.authenticate(new UsernamePasswordAuthenticationToken(username, password));
                 if (authentication == null || !authentication.isAuthenticated()) {
                     throw new AuthenticationException("Cannot authenticate " + username);
                 }
 
                 provider.destroy(null);
-                info(
-                        new StringResourceModel(
-                                        LDAPAuthProviderPanel.class.getSimpleName()
-                                                + ".connectionSuccessful")
-                                .getObject());
+                info(new StringResourceModel(LDAPAuthProviderPanel.class.getSimpleName() + ".connectionSuccessful")
+                        .getObject());
             }
         }
     }

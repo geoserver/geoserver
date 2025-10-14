@@ -24,8 +24,8 @@ import org.geoserver.smartdataloader.metadata.jdbc.constraint.JdbcPrimaryKeyCons
 import org.geotools.jdbc.JDBCDataStore;
 
 /**
- * JDBC utilities singleton class. It encapsulates a GeoTools JDBCDataStore instance in order to use
- * some useful methods and extends it based on JDBC API use.
+ * JDBC utilities singleton class. It encapsulates a GeoTools JDBCDataStore instance in order to use some useful methods
+ * and extends it based on JDBC API use.
  */
 public class JdbcHelper {
 
@@ -42,19 +42,18 @@ public class JdbcHelper {
         return single_instance;
     }
 
-    private List<JdbcTableMetadata> getListOfTablesFromResultSet(
-            DatabaseMetaData metaData, ResultSet tables) throws Exception {
+    private List<JdbcTableMetadata> getListOfTablesFromResultSet(DatabaseMetaData metaData, ResultSet tables)
+            throws Exception {
         if (tables != null) {
             List<JdbcTableMetadata> tableList = new ArrayList<>();
             while (tables.next()) {
                 if (tables.getString("TABLE_TYPE") != null
                         && tables.getString("TABLE_TYPE").equals("TABLE")) {
-                    tableList.add(
-                            new JdbcTableMetadata(
-                                    metaData.getConnection(),
-                                    tables.getString("TABLE_CAT"),
-                                    tables.getString("TABLE_SCHEM"),
-                                    tables.getString("TABLE_NAME")));
+                    tableList.add(new JdbcTableMetadata(
+                            metaData.getConnection(),
+                            tables.getString("TABLE_CAT"),
+                            tables.getString("TABLE_SCHEM"),
+                            tables.getString("TABLE_NAME")));
                 }
             }
             return tableList;
@@ -62,11 +61,9 @@ public class JdbcHelper {
         return null;
     }
 
-    public List<JdbcTableMetadata> getSchemaTables(DatabaseMetaData metaData, String schema)
-            throws Exception {
+    public List<JdbcTableMetadata> getSchemaTables(DatabaseMetaData metaData, String schema) throws Exception {
         try (ResultSet tables =
-                metaData.getTables(
-                        null, jdbcDataStore.escapeNamePattern(metaData, schema), "%", null)) {
+                metaData.getTables(null, jdbcDataStore.escapeNamePattern(metaData, schema), "%", null)) {
             return getListOfTablesFromResultSet(metaData, tables);
         }
     }
@@ -110,18 +107,15 @@ public class JdbcHelper {
 
     public JdbcPrimaryKeyConstraintMetadata getPrimaryKeyColumnsByTable(
             DatabaseMetaData metaData, JdbcTableMetadata table) throws Exception {
-        ResultSet primaryKeyColumns =
-                (table != null)
-                        ? metaData.getPrimaryKeys(
-                                table.getCatalog(), table.getSchema(), table.getName())
-                        : null;
+        ResultSet primaryKeyColumns = (table != null)
+                ? metaData.getPrimaryKeys(table.getCatalog(), table.getSchema(), table.getName())
+                : null;
         if (primaryKeyColumns != null && primaryKeyColumns.next()) {
-            JdbcTableMetadata pkTable =
-                    new JdbcTableMetadata(
-                            metaData.getConnection(),
-                            primaryKeyColumns.getString("TABLE_CAT"),
-                            primaryKeyColumns.getString("TABLE_SCHEM"),
-                            primaryKeyColumns.getString("TABLE_NAME"));
+            JdbcTableMetadata pkTable = new JdbcTableMetadata(
+                    metaData.getConnection(),
+                    primaryKeyColumns.getString("TABLE_CAT"),
+                    primaryKeyColumns.getString("TABLE_SCHEM"),
+                    primaryKeyColumns.getString("TABLE_NAME"));
             String pkConstraintName = primaryKeyColumns.getString("PK_NAME");
             List<String> pkColumnNames = new ArrayList<>();
             do {
@@ -134,31 +128,23 @@ public class JdbcHelper {
         return null;
     }
 
-    public List<AttributeMetadata> getColumnsByTable(
-            DatabaseMetaData metaData, JdbcTableMetadata table) throws Exception {
-        ResultSet columns =
-                (table != null)
-                        ? metaData.getColumns(
-                                table.getCatalog(), table.getSchema(), table.getName(), "%")
-                        : null;
+    public List<AttributeMetadata> getColumnsByTable(DatabaseMetaData metaData, JdbcTableMetadata table)
+            throws Exception {
+        ResultSet columns = (table != null)
+                ? metaData.getColumns(table.getCatalog(), table.getSchema(), table.getName(), "%")
+                : null;
         if (columns != null && columns.next()) {
-            JdbcTableMetadata aTable =
-                    new JdbcTableMetadata(
-                            metaData.getConnection(),
-                            columns.getString("TABLE_CAT"),
-                            columns.getString("TABLE_SCHEM"),
-                            columns.getString("TABLE_NAME"));
+            JdbcTableMetadata aTable = new JdbcTableMetadata(
+                    metaData.getConnection(),
+                    columns.getString("TABLE_CAT"),
+                    columns.getString("TABLE_SCHEM"),
+                    columns.getString("TABLE_NAME"));
             List<AttributeMetadata> columnsList = new ArrayList<>();
             do {
                 boolean isFK = isForeignKey(metaData, aTable, columns.getString("COLUMN_NAME"));
                 boolean isPK = isPrimaryKey(metaData, aTable, columns.getString("COLUMN_NAME"));
-                JdbcColumnMetadata aColumn =
-                        new JdbcColumnMetadata(
-                                aTable,
-                                columns.getString("COLUMN_NAME"),
-                                columns.getString("TYPE_NAME"),
-                                isFK,
-                                isPK);
+                JdbcColumnMetadata aColumn = new JdbcColumnMetadata(
+                        aTable, columns.getString("COLUMN_NAME"), columns.getString("TYPE_NAME"), isFK, isPK);
                 columnsList.add(aColumn);
 
             } while (columns.next());
@@ -168,14 +154,15 @@ public class JdbcHelper {
         return null;
     }
 
-    public List<RelationMetadata> getRelationsByTable(
-            DatabaseMetaData metaData, JdbcTableMetadata table) throws Exception {
+    public List<RelationMetadata> getRelationsByTable(DatabaseMetaData metaData, JdbcTableMetadata table)
+            throws Exception {
         ArrayList<RelationMetadata> relations = new ArrayList<>();
         // add all foreignkeys relations
-        SortedMap<JdbcForeignKeyConstraintMetadata, Collection<JdbcForeignKeyColumnMetadata>>
-                fkMap = JdbcHelper.getInstance().getForeignKeysByTable(metaData, table);
+        SortedMap<JdbcForeignKeyConstraintMetadata, Collection<JdbcForeignKeyColumnMetadata>> fkMap =
+                JdbcHelper.getInstance().getForeignKeysByTable(metaData, table);
         if (fkMap != null) {
-            Iterator<JdbcForeignKeyConstraintMetadata> iFkConstraint = fkMap.keySet().iterator();
+            Iterator<JdbcForeignKeyConstraintMetadata> iFkConstraint =
+                    fkMap.keySet().iterator();
             while (iFkConstraint.hasNext()) {
                 JdbcForeignKeyConstraintMetadata key = iFkConstraint.next();
                 Collection<JdbcForeignKeyColumnMetadata> fkColumns = fkMap.get(key);
@@ -183,19 +170,19 @@ public class JdbcHelper {
                 while (iFkColumns.hasNext()) {
                     JdbcForeignKeyColumnMetadata aFkColumn = iFkColumns.next();
                     DomainRelationType type = JdbcHelper.getInstance().getCardinality(table, key);
-                    JdbcRelationMetadata relation =
-                            new JdbcRelationMetadata(key.getName(), type, aFkColumn);
+                    JdbcRelationMetadata relation = new JdbcRelationMetadata(key.getName(), type, aFkColumn);
                     relations.add(relation);
                     table.addRelation(relation);
                 }
             }
         }
         // add all inverted foreignkeys relations
-        SortedMap<JdbcForeignKeyConstraintMetadata, Collection<JdbcForeignKeyColumnMetadata>>
-                iFkMap = JdbcHelper.getInstance().getInversedForeignKeysByTable(metaData, table);
+        SortedMap<JdbcForeignKeyConstraintMetadata, Collection<JdbcForeignKeyColumnMetadata>> iFkMap =
+                JdbcHelper.getInstance().getInversedForeignKeysByTable(metaData, table);
         if (iFkMap != null) {
 
-            Iterator<JdbcForeignKeyConstraintMetadata> iFkConstraint = iFkMap.keySet().iterator();
+            Iterator<JdbcForeignKeyConstraintMetadata> iFkConstraint =
+                    iFkMap.keySet().iterator();
             while (iFkConstraint.hasNext()) {
                 JdbcForeignKeyConstraintMetadata key = iFkConstraint.next();
                 Collection<JdbcForeignKeyColumnMetadata> fkColumns = iFkMap.get(key);
@@ -203,8 +190,7 @@ public class JdbcHelper {
                 while (iFkColumns.hasNext()) {
                     JdbcForeignKeyColumnMetadata aFkColumn = iFkColumns.next();
                     DomainRelationType type = DomainRelationType.ONEMANY;
-                    JdbcRelationMetadata relation =
-                            new JdbcRelationMetadata(key.getName(), type, aFkColumn);
+                    JdbcRelationMetadata relation = new JdbcRelationMetadata(key.getName(), type, aFkColumn);
                     relations.add(relation);
                     table.addRelation(relation);
                 }
@@ -213,14 +199,11 @@ public class JdbcHelper {
         return relations;
     }
 
-    public boolean isForeignKey(
-            DatabaseMetaData metaData, JdbcTableMetadata table, String columnName)
+    public boolean isForeignKey(DatabaseMetaData metaData, JdbcTableMetadata table, String columnName)
             throws Exception {
-        ResultSet foreignKeys =
-                (table != null)
-                        ? metaData.getImportedKeys(
-                                table.getCatalog(), table.getSchema(), table.getName())
-                        : null;
+        ResultSet foreignKeys = (table != null)
+                ? metaData.getImportedKeys(table.getCatalog(), table.getSchema(), table.getName())
+                : null;
         if (foreignKeys != null && foreignKeys.next()) {
             do {
                 if (foreignKeys.getString("FKTABLE_SCHEM").equals(table.getSchema())
@@ -233,14 +216,11 @@ public class JdbcHelper {
         return false;
     }
 
-    public boolean isPrimaryKey(
-            DatabaseMetaData metaData, JdbcTableMetadata table, String columnName)
+    public boolean isPrimaryKey(DatabaseMetaData metaData, JdbcTableMetadata table, String columnName)
             throws Exception {
-        ResultSet primaryKey =
-                (table != null)
-                        ? metaData.getPrimaryKeys(
-                                table.getCatalog(), table.getSchema(), table.getName())
-                        : null;
+        ResultSet primaryKey = (table != null)
+                ? metaData.getPrimaryKeys(table.getCatalog(), table.getSchema(), table.getName())
+                : null;
         if (primaryKey != null && primaryKey.next()) {
             do {
                 if (primaryKey.getString("COLUMN_NAME").equals(columnName)) {
@@ -251,40 +231,28 @@ public class JdbcHelper {
         return false;
     }
 
-    public AttributeMetadata getColumnFromTable(
-            DatabaseMetaData metaData, JdbcTableMetadata table, String columnName)
+    public AttributeMetadata getColumnFromTable(DatabaseMetaData metaData, JdbcTableMetadata table, String columnName)
             throws Exception {
-        ResultSet columns =
-                (table != null)
-                        ? metaData.getColumns(
-                                table.getCatalog(), table.getSchema(), table.getName(), columnName)
-                        : null;
+        ResultSet columns = (table != null)
+                ? metaData.getColumns(table.getCatalog(), table.getSchema(), table.getName(), columnName)
+                : null;
         if (columns != null && columns.next()) {
-            JdbcTableMetadata aTable =
-                    new JdbcTableMetadata(
-                            metaData.getConnection(),
-                            columns.getString("TABLE_CAT"),
-                            columns.getString("TABLE_SCHEM"),
-                            columns.getString("TABLE_NAME"));
+            JdbcTableMetadata aTable = new JdbcTableMetadata(
+                    metaData.getConnection(),
+                    columns.getString("TABLE_CAT"),
+                    columns.getString("TABLE_SCHEM"),
+                    columns.getString("TABLE_NAME"));
             boolean isFK = isForeignKey(metaData, aTable, columnName);
             boolean isPK = isPrimaryKey(metaData, aTable, columnName);
-            JdbcColumnMetadata aColumn =
-                    new JdbcColumnMetadata(
-                            aTable,
-                            columns.getString("COLUMN_NAME"),
-                            columns.getString("TYPE_NAME"),
-                            isFK,
-                            isPK);
+            JdbcColumnMetadata aColumn = new JdbcColumnMetadata(
+                    aTable, columns.getString("COLUMN_NAME"), columns.getString("TYPE_NAME"), isFK, isPK);
             return aColumn;
         }
         return null;
     }
 
     public SortedMap<String, Collection<String>> getIndexColumns(
-            DatabaseMetaData metaData,
-            List<JdbcTableMetadata> tables,
-            boolean unique,
-            boolean approximate)
+            DatabaseMetaData metaData, List<JdbcTableMetadata> tables, boolean unique, boolean approximate)
             throws Exception {
         if (tables != null) {
             SortedMap<String, Collection<String>> indexMap = new TreeMap<>();
@@ -301,25 +269,17 @@ public class JdbcHelper {
     }
 
     public SortedMap<String, Collection<String>> getIndexesByTable(
-            DatabaseMetaData metaData, JdbcTableMetadata table, boolean unique, boolean approximate)
-            throws Exception {
-        ResultSet indexColumns =
-                (table != null)
-                        ? metaData.getIndexInfo(
-                                table.getCatalog(),
-                                table.getSchema(),
-                                table.getName(),
-                                unique,
-                                approximate)
-                        : null;
+            DatabaseMetaData metaData, JdbcTableMetadata table, boolean unique, boolean approximate) throws Exception {
+        ResultSet indexColumns = (table != null)
+                ? metaData.getIndexInfo(table.getCatalog(), table.getSchema(), table.getName(), unique, approximate)
+                : null;
         if (indexColumns != null && indexColumns.next()) {
             SortedSetMultimap<String, String> indexMultimap = TreeMultimap.create();
-            JdbcTableMetadata tableAux =
-                    new JdbcTableMetadata(
-                            metaData.getConnection(),
-                            indexColumns.getString("TABLE_CAT"),
-                            indexColumns.getString("TABLE_SCHEM"),
-                            indexColumns.getString("TABLE_NAME"));
+            JdbcTableMetadata tableAux = new JdbcTableMetadata(
+                    metaData.getConnection(),
+                    indexColumns.getString("TABLE_CAT"),
+                    indexColumns.getString("TABLE_SCHEM"),
+                    indexColumns.getString("TABLE_NAME"));
             do {
 
                 String indexConstraintName = indexColumns.getString("INDEX_NAME");
@@ -335,17 +295,14 @@ public class JdbcHelper {
         return null;
     }
 
-    public SortedMap<JdbcForeignKeyConstraintMetadata, Collection<JdbcForeignKeyColumnMetadata>>
-            getForeignKeys(DatabaseMetaData metaData, List<JdbcTableMetadata> tables)
-                    throws Exception {
+    public SortedMap<JdbcForeignKeyConstraintMetadata, Collection<JdbcForeignKeyColumnMetadata>> getForeignKeys(
+            DatabaseMetaData metaData, List<JdbcTableMetadata> tables) throws Exception {
         if (tables != null) {
-            SortedMap<JdbcForeignKeyConstraintMetadata, Collection<JdbcForeignKeyColumnMetadata>>
-                    fkMap = new TreeMap<>();
+            SortedMap<JdbcForeignKeyConstraintMetadata, Collection<JdbcForeignKeyColumnMetadata>> fkMap =
+                    new TreeMap<>();
             for (JdbcTableMetadata table : tables) {
-                SortedMap<
-                                JdbcForeignKeyConstraintMetadata,
-                                Collection<JdbcForeignKeyColumnMetadata>>
-                        tableFKMap = getForeignKeysByTable(metaData, table);
+                SortedMap<JdbcForeignKeyConstraintMetadata, Collection<JdbcForeignKeyColumnMetadata>> tableFKMap =
+                        getForeignKeysByTable(metaData, table);
                 if (tableFKMap != null) {
                     fkMap.putAll(tableFKMap);
                 }
@@ -355,64 +312,52 @@ public class JdbcHelper {
         return null;
     }
 
-    public SortedMap<JdbcForeignKeyConstraintMetadata, Collection<JdbcForeignKeyColumnMetadata>>
-            getForeignKeysByTable(DatabaseMetaData metaData, JdbcTableMetadata table)
-                    throws Exception {
-        ResultSet foreignKeys =
-                (table != null)
-                        ? metaData.getImportedKeys(
-                                table.getCatalog(), table.getSchema(), table.getName())
-                        : null;
+    public SortedMap<JdbcForeignKeyConstraintMetadata, Collection<JdbcForeignKeyColumnMetadata>> getForeignKeysByTable(
+            DatabaseMetaData metaData, JdbcTableMetadata table) throws Exception {
+        ResultSet foreignKeys = (table != null)
+                ? metaData.getImportedKeys(table.getCatalog(), table.getSchema(), table.getName())
+                : null;
         if (foreignKeys != null && foreignKeys.next()) {
-            SortedSetMultimap<JdbcForeignKeyConstraintMetadata, JdbcForeignKeyColumnMetadata>
-                    fkMultimap = TreeMultimap.create();
-            JdbcTableMetadata fkTable =
-                    new JdbcTableMetadata(
-                            metaData.getConnection(),
-                            foreignKeys.getString("FKTABLE_CAT"),
-                            foreignKeys.getString("FKTABLE_SCHEM"),
-                            foreignKeys.getString("FKTABLE_NAME"));
+            SortedSetMultimap<JdbcForeignKeyConstraintMetadata, JdbcForeignKeyColumnMetadata> fkMultimap =
+                    TreeMultimap.create();
+            JdbcTableMetadata fkTable = new JdbcTableMetadata(
+                    metaData.getConnection(),
+                    foreignKeys.getString("FKTABLE_CAT"),
+                    foreignKeys.getString("FKTABLE_SCHEM"),
+                    foreignKeys.getString("FKTABLE_NAME"));
             //  get FKColumn from table just in order to get datatype
             AttributeMetadata aColumn =
-                    this.getColumnFromTable(
-                            metaData, table, foreignKeys.getString("FKCOLUMN_NAME"));
+                    this.getColumnFromTable(metaData, table, foreignKeys.getString("FKCOLUMN_NAME"));
             String columnType = aColumn.getType();
             do {
                 String fkConstraintName = foreignKeys.getString("FK_NAME");
-                JdbcTableMetadata pkTable =
-                        new JdbcTableMetadata(
-                                metaData.getConnection(),
-                                foreignKeys.getString("PKTABLE_CAT"),
-                                foreignKeys.getString("PKTABLE_SCHEM"),
-                                foreignKeys.getString("PKTABLE_NAME"));
+                JdbcTableMetadata pkTable = new JdbcTableMetadata(
+                        metaData.getConnection(),
+                        foreignKeys.getString("PKTABLE_CAT"),
+                        foreignKeys.getString("PKTABLE_SCHEM"),
+                        foreignKeys.getString("PKTABLE_NAME"));
                 JdbcForeignKeyConstraintMetadata fkConstraint =
                         new JdbcForeignKeyConstraintMetadata(fkTable, fkConstraintName, pkTable);
-                JdbcForeignKeyColumnMetadata fkColumn =
-                        new JdbcForeignKeyColumnMetadata(
-                                fkTable,
-                                foreignKeys.getString("FKCOLUMN_NAME"),
-                                columnType,
-                                new JdbcColumnMetadata(
-                                        pkTable,
-                                        foreignKeys.getString("PKCOLUMN_NAME"),
-                                        columnType,
-                                        false));
+                JdbcForeignKeyColumnMetadata fkColumn = new JdbcForeignKeyColumnMetadata(
+                        fkTable,
+                        foreignKeys.getString("FKCOLUMN_NAME"),
+                        columnType,
+                        new JdbcColumnMetadata(pkTable, foreignKeys.getString("PKCOLUMN_NAME"), columnType, false));
                 fkMultimap.put(fkConstraint, fkColumn);
             } while (foreignKeys.next());
-            SortedMap<JdbcForeignKeyConstraintMetadata, Collection<JdbcForeignKeyColumnMetadata>>
-                    fkMap = new TreeMap<>();
+            SortedMap<JdbcForeignKeyConstraintMetadata, Collection<JdbcForeignKeyColumnMetadata>> fkMap =
+                    new TreeMap<>();
             fkMap.putAll(fkMultimap.asMap());
             return fkMap;
         }
         return null;
     }
 
-    public DomainRelationType getCardinality(
-            JdbcTableMetadata table, JdbcForeignKeyConstraintMetadata fkConstraint)
+    public DomainRelationType getCardinality(JdbcTableMetadata table, JdbcForeignKeyConstraintMetadata fkConstraint)
             throws Exception {
         DatabaseMetaData metaData = table.getConnection().getMetaData();
-        SortedMap<JdbcForeignKeyConstraintMetadata, Collection<JdbcForeignKeyColumnMetadata>>
-                fkMultimap = JdbcHelper.getInstance().getForeignKeysByTable(metaData, table);
+        SortedMap<JdbcForeignKeyConstraintMetadata, Collection<JdbcForeignKeyColumnMetadata>> fkMultimap =
+                JdbcHelper.getInstance().getForeignKeysByTable(metaData, table);
         JdbcPrimaryKeyConstraintMetadata primaryKey =
                 JdbcHelper.getInstance().getPrimaryKeyColumnsByTable(metaData, table);
         SortedMap<EntityMetadata, JdbcPrimaryKeyConstraintMetadata> pkMap = new TreeMap<>();
@@ -422,25 +367,18 @@ public class JdbcHelper {
         if (fkMultimap != null) {
             for (JdbcForeignKeyConstraintMetadata aFkConstraint : fkMultimap.keySet()) {
                 if (aFkConstraint.equals(fkConstraint)) {
-                    Collection<JdbcForeignKeyColumnMetadata> fkColumnsList =
-                            fkMultimap.get(aFkConstraint);
+                    Collection<JdbcForeignKeyColumnMetadata> fkColumnsList = fkMultimap.get(aFkConstraint);
                     JdbcPrimaryKeyConstraintMetadata isPrimaryKey =
-                            JdbcHelper.getInstance()
-                                    .isPrimaryKey(aFkConstraint.getTable(), fkColumnsList, pkMap);
+                            JdbcHelper.getInstance().isPrimaryKey(aFkConstraint.getTable(), fkColumnsList, pkMap);
                     if (isPrimaryKey != null) {
                         return DomainRelationType.ONEONE;
                     } else {
-                        String uniqueIndexConstraint =
-                                JdbcHelper.getInstance()
-                                        .isUniqueIndex(
-                                                aFkConstraint.getTable(),
-                                                fkColumnsList,
-                                                uniqueIndexMultimap);
+                        String uniqueIndexConstraint = JdbcHelper.getInstance()
+                                .isUniqueIndex(aFkConstraint.getTable(), fkColumnsList, uniqueIndexMultimap);
                         if (uniqueIndexConstraint != null) {
                             return DomainRelationType.ONEONE;
                         } else {
-                            if (aFkConstraint.equals(fkConstraint))
-                                return DomainRelationType.MANYONE;
+                            if (aFkConstraint.equals(fkConstraint)) return DomainRelationType.MANYONE;
                             else return DomainRelationType.ONEMANY;
                         }
                     }
@@ -503,58 +441,47 @@ public class JdbcHelper {
     /**
      * @param metaData the Database metadata
      * @param table the table metadata to use to pick up the column metadata
-     * @return a SortedMap mapping the foreignKeys metadata to the column metadata. Returns null if
-     *     no column referencing the table are found
+     * @return a SortedMap mapping the foreignKeys metadata to the column metadata. Returns null if no column
+     *     referencing the table are found
      * @throws Exception
      */
     public SortedMap<JdbcForeignKeyConstraintMetadata, Collection<JdbcForeignKeyColumnMetadata>>
-            getInversedForeignKeysByTable(DatabaseMetaData metaData, JdbcTableMetadata table)
-                    throws Exception {
-        ResultSet foreignKeys =
-                (table != null)
-                        ? metaData.getExportedKeys(
-                                table.getCatalog(), table.getSchema(), table.getName())
-                        : null;
+            getInversedForeignKeysByTable(DatabaseMetaData metaData, JdbcTableMetadata table) throws Exception {
+        ResultSet foreignKeys = (table != null)
+                ? metaData.getExportedKeys(table.getCatalog(), table.getSchema(), table.getName())
+                : null;
         if (foreignKeys != null && foreignKeys.next()) {
-            SortedSetMultimap<JdbcForeignKeyConstraintMetadata, JdbcForeignKeyColumnMetadata>
-                    inversedFkMultimap = TreeMultimap.create();
+            SortedSetMultimap<JdbcForeignKeyConstraintMetadata, JdbcForeignKeyColumnMetadata> inversedFkMultimap =
+                    TreeMultimap.create();
             do {
-                JdbcTableMetadata pkTable =
-                        new JdbcTableMetadata(
-                                metaData.getConnection(),
-                                foreignKeys.getString("PKTABLE_CAT"),
-                                foreignKeys.getString("PKTABLE_SCHEM"),
-                                foreignKeys.getString("PKTABLE_NAME"));
+                JdbcTableMetadata pkTable = new JdbcTableMetadata(
+                        metaData.getConnection(),
+                        foreignKeys.getString("PKTABLE_CAT"),
+                        foreignKeys.getString("PKTABLE_SCHEM"),
+                        foreignKeys.getString("PKTABLE_NAME"));
                 String pkConstraintName = foreignKeys.getString("PK_NAME");
-                JdbcTableMetadata fkTable =
-                        new JdbcTableMetadata(
-                                metaData.getConnection(),
-                                foreignKeys.getString("FKTABLE_CAT"),
-                                foreignKeys.getString("FKTABLE_SCHEM"),
-                                foreignKeys.getString("FKTABLE_NAME"));
+                JdbcTableMetadata fkTable = new JdbcTableMetadata(
+                        metaData.getConnection(),
+                        foreignKeys.getString("FKTABLE_CAT"),
+                        foreignKeys.getString("FKTABLE_SCHEM"),
+                        foreignKeys.getString("FKTABLE_NAME"));
                 JdbcForeignKeyConstraintMetadata pkConstraint =
                         new JdbcForeignKeyConstraintMetadata(pkTable, pkConstraintName, fkTable);
 
                 // get FKColumn from table just in order to get datatype
                 AttributeMetadata aColumn =
-                        this.getColumnFromTable(
-                                metaData, fkTable, foreignKeys.getString("FKCOLUMN_NAME"));
+                        this.getColumnFromTable(metaData, fkTable, foreignKeys.getString("FKCOLUMN_NAME"));
                 String columnType = aColumn.getType();
 
-                JdbcForeignKeyColumnMetadata fkColumns =
-                        new JdbcForeignKeyColumnMetadata(
-                                fkTable,
-                                foreignKeys.getString("FKCOLUMN_NAME"),
-                                columnType,
-                                new JdbcColumnMetadata(
-                                        pkTable,
-                                        foreignKeys.getString("PKCOLUMN_NAME"),
-                                        columnType,
-                                        false));
+                JdbcForeignKeyColumnMetadata fkColumns = new JdbcForeignKeyColumnMetadata(
+                        fkTable,
+                        foreignKeys.getString("FKCOLUMN_NAME"),
+                        columnType,
+                        new JdbcColumnMetadata(pkTable, foreignKeys.getString("PKCOLUMN_NAME"), columnType, false));
                 inversedFkMultimap.put(pkConstraint, fkColumns);
             } while (foreignKeys.next());
-            SortedMap<JdbcForeignKeyConstraintMetadata, Collection<JdbcForeignKeyColumnMetadata>>
-                    inversedFkMap = new TreeMap<>();
+            SortedMap<JdbcForeignKeyConstraintMetadata, Collection<JdbcForeignKeyColumnMetadata>> inversedFkMap =
+                    new TreeMap<>();
             inversedFkMap.putAll(inversedFkMultimap.asMap());
             return inversedFkMap;
         }

@@ -51,46 +51,28 @@ public class AppSchemaLocalPublicationTaskTypeImpl extends FileLocalPublicationT
             DbSource db, TaskContext ctx, String content, Resource res) throws TaskException {
         final Name layerName = (Name) ctx.getParameterValues().get(PARAM_LAYER);
 
-        return tableName ->
-                SqlUtil.notQualified(
-                        ((DbTableImpl)
-                                        ctx.getBatchContext()
-                                                .get(
-                                                        new DbTableImpl(db, tableName),
-                                                        new Dependency() {
-                                                            @Override
-                                                            public void revert()
-                                                                    throws TaskException {
-                                                                String newContent =
-                                                                        PlaceHolderUtil
-                                                                                .replaceObjectPlaceHolder(
-                                                                                        content,
-                                                                                        tableName ->
-                                                                                                SqlUtil
-                                                                                                        .notQualified(
-                                                                                                                tableName));
-                                                                try (OutputStream os = res.out()) {
-                                                                    os.write(newContent.getBytes());
-                                                                } catch (IOException e) {
-                                                                    throw new TaskException(e);
-                                                                }
-                                                                DataStoreInfo store =
-                                                                        catalog.getStoreByName(
-                                                                                catalog.getNamespaceByURI(
-                                                                                                layerName
-                                                                                                        .getNamespaceURI())
-                                                                                        .getName(),
-                                                                                layerName
-                                                                                        .getLocalPart(),
-                                                                                DataStoreInfo
-                                                                                        .class);
-                                                                if (store != null) {
-                                                                    catalog.getResourcePool()
-                                                                            .clear(store);
-                                                                }
-                                                            }
-                                                        }))
-                                .getTableName());
+        return tableName -> SqlUtil.notQualified(
+                ((DbTableImpl) ctx.getBatchContext().get(new DbTableImpl(db, tableName), new Dependency() {
+                            @Override
+                            public void revert() throws TaskException {
+                                String newContent = PlaceHolderUtil.replaceObjectPlaceHolder(
+                                        content, tableName -> SqlUtil.notQualified(tableName));
+                                try (OutputStream os = res.out()) {
+                                    os.write(newContent.getBytes());
+                                } catch (IOException e) {
+                                    throw new TaskException(e);
+                                }
+                                DataStoreInfo store = catalog.getStoreByName(
+                                        catalog.getNamespaceByURI(layerName.getNamespaceURI())
+                                                .getName(),
+                                        layerName.getLocalPart(),
+                                        DataStoreInfo.class);
+                                if (store != null) {
+                                    catalog.getResourcePool().clear(store);
+                                }
+                            }
+                        }))
+                        .getTableName());
     }
 
     @Override
@@ -126,23 +108,18 @@ public class AppSchemaLocalPublicationTaskTypeImpl extends FileLocalPublicationT
 
         try (ZipInputStream is = new ZipInputStream(Resources.fromPath(path).in())) {
             for (ZipEntry entry = is.getNextEntry(); entry != null; entry = is.getNextEntry()) {
-                Resource res =
-                        Resources.fromPath(
-                                FilenameUtils.getPath(path) + "local/" + entry.getName());
+                Resource res = Resources.fromPath(FilenameUtils.getPath(path) + "local/" + entry.getName());
 
                 String template = IOUtils.toString(is, "UTF-8");
                 String pub = PlaceHolderUtil.replacePlaceHolders(template, db.getParameters());
-                pub =
-                        PlaceHolderUtil.replaceObjectPlaceHolder(
-                                pub, getTableTransform(db, ctx, pub, res));
+                pub = PlaceHolderUtil.replaceObjectPlaceHolder(pub, getTableTransform(db, ctx, pub, res));
 
                 try (OutputStream os = res.out()) {
                     os.write(pub.getBytes());
                 }
             }
         }
-        String newPath =
-                FilenameUtils.getPath(path) + "local/" + FilenameUtils.getBaseName(path) + ".xml";
+        String newPath = FilenameUtils.getPath(path) + "local/" + FilenameUtils.getBaseName(path) + ".xml";
 
         if (!Resources.exists(Resources.fromPath(newPath))) {
             throw new TaskException("Zip file must include xml file with same name.");
@@ -160,9 +137,7 @@ public class AppSchemaLocalPublicationTaskTypeImpl extends FileLocalPublicationT
         try (InputStream is = Resources.fromPath(path).in()) {
             String template = IOUtils.toString(is, "UTF-8");
             String pub = PlaceHolderUtil.replacePlaceHolders(template, db.getParameters());
-            pub =
-                    PlaceHolderUtil.replaceObjectPlaceHolder(
-                            pub, getTableTransform(db, ctx, pub, res));
+            pub = PlaceHolderUtil.replaceObjectPlaceHolder(pub, getTableTransform(db, ctx, pub, res));
 
             try (OutputStream os = res.out()) {
                 os.write(pub.getBytes());

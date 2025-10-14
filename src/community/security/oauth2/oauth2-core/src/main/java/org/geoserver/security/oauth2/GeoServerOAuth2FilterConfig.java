@@ -5,11 +5,16 @@
 package org.geoserver.security.oauth2;
 
 import java.io.IOException;
+import java.io.Serial;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang.SerializationUtils;
+import org.geoserver.platform.GeoServerEnvironment;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
 import org.geoserver.security.config.SecurityAuthFilterConfig;
+import org.geoserver.security.config.SecurityConfig;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
@@ -17,6 +22,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 public class GeoServerOAuth2FilterConfig extends PreAuthenticatedUserNameFilterConfig
         implements SecurityAuthFilterConfig, OAuth2FilterConfig {
 
+    @Serial
     private static final long serialVersionUID = -8581346584859849804L;
 
     protected String cliendId;
@@ -48,8 +54,8 @@ public class GeoServerOAuth2FilterConfig extends PreAuthenticatedUserNameFilterC
     protected String logoutEndpoint;
 
     /**
-     * Add extra logging. NOTE: this might spill confidential information to the log - do not turn
-     * on in normal operation!
+     * Add extra logging. NOTE: this might spill confidential information to the log - do not turn on in normal
+     * operation!
      */
     boolean allowUnSecureLogging = false;
 
@@ -182,13 +188,9 @@ public class GeoServerOAuth2FilterConfig extends PreAuthenticatedUserNameFilterC
         return enableRedirectAuthenticationEntryPoint;
     }
 
-    /**
-     * @param enableRedirectAuthenticationEntryPoint the enableRedirectAuthenticationEntryPoint to
-     *     set
-     */
+    /** @param enableRedirectAuthenticationEntryPoint the enableRedirectAuthenticationEntryPoint to set */
     @Override
-    public void setEnableRedirectAuthenticationEntryPoint(
-            Boolean enableRedirectAuthenticationEntryPoint) {
+    public void setEnableRedirectAuthenticationEntryPoint(Boolean enableRedirectAuthenticationEntryPoint) {
         this.enableRedirectAuthenticationEntryPoint = enableRedirectAuthenticationEntryPoint;
     }
 
@@ -198,9 +200,7 @@ public class GeoServerOAuth2FilterConfig extends PreAuthenticatedUserNameFilterC
 
             @Override
             public void commence(
-                    HttpServletRequest request,
-                    HttpServletResponse response,
-                    AuthenticationException authException)
+                    HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
                     throws IOException, ServletException {
                 final StringBuilder loginUri = buildAuthorizationUrl();
 
@@ -267,5 +267,42 @@ public class GeoServerOAuth2FilterConfig extends PreAuthenticatedUserNameFilterC
     @Override
     public void setLogoutEndpoint(String logoutEndpoint) {
         this.logoutEndpoint = logoutEndpoint;
+    }
+
+    @Override
+    public SecurityConfig clone(boolean allowEnvParametrization) {
+        GeoServerOAuth2FilterConfig target = (GeoServerOAuth2FilterConfig) SerializationUtils.clone(this);
+
+        if (target != null) {
+            // Resolve GeoServer Environment placeholders
+            final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
+            if (allowEnvParametrization) {
+                parametrizedConfiguration(target, gsEnvironment);
+            }
+        }
+        return target;
+    }
+
+    protected void parametrizedConfiguration(GeoServerOAuth2FilterConfig target, GeoServerEnvironment gsEnvironment) {
+        target.setAccessTokenUri(resolveValueFromEnv(gsEnvironment, target.getAccessTokenUri()));
+        target.setUserAuthorizationUri(resolveValueFromEnv(gsEnvironment, target.getUserAuthorizationUri()));
+        target.setRedirectUri(resolveValueFromEnv(gsEnvironment, target.getRedirectUri()));
+        target.setCheckTokenEndpointUrl(resolveValueFromEnv(gsEnvironment, target.getCheckTokenEndpointUrl()));
+        target.setIntrospectionEndpointUrl(resolveValueFromEnv(gsEnvironment, target.getIntrospectionEndpointUrl()));
+        target.setLogoutUri(resolveValueFromEnv(gsEnvironment, target.getLogoutUri()));
+        target.setScopes(resolveValueFromEnv(gsEnvironment, target.getScopes()));
+        target.setCliendId(resolveValueFromEnv(gsEnvironment, target.getCliendId()));
+        target.setClientSecret(resolveValueFromEnv(gsEnvironment, target.getClientSecret()));
+    }
+
+    protected String resolveValueFromEnv(GeoServerEnvironment gsEnvironment, String key) {
+        if (gsEnvironment != null && GeoServerEnvironment.allowEnvParametrization()) {
+            Object resolvedValue = gsEnvironment.resolveValue(key);
+            if (resolvedValue != null) {
+                return (String) resolvedValue;
+            }
+        }
+
+        return key;
     }
 }

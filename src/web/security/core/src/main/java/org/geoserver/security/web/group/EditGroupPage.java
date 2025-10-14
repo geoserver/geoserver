@@ -33,28 +33,24 @@ public class EditGroupPage extends AbstractGroupPage {
         // name not changeable on edit
         get("form:groupname").setEnabled(false);
 
-        GeoServerDataProvider<GeoServerUser> usersDataProvider =
-                new GeoServerDataProvider<>() {
-                    @Override
-                    protected List<Property<GeoServerUser>> getProperties() {
-                        return Arrays.asList(UserListProvider.USERNAME);
-                    }
+        GeoServerDataProvider<GeoServerUser> usersDataProvider = new GeoServerDataProvider<>() {
+            @Override
+            protected List<Property<GeoServerUser>> getProperties() {
+                return Arrays.asList(UserListProvider.USERNAME);
+            }
 
-                    @Override
-                    protected List<GeoServerUser> getItems() {
-                        GeoServerUserGroupService ugService =
-                                getUserGroupService(EditGroupPage.this.userGroupServiceName);
-                        try {
-                            return new ArrayList<>(ugService.getUsersForGroup(group));
-                        } catch (IOException e) {
-                            throw new WicketRuntimeException(e);
-                        }
-                    }
-                };
+            @Override
+            protected List<GeoServerUser> getItems() {
+                GeoServerUserGroupService ugService = getUserGroupService(EditGroupPage.this.userGroupServiceName);
+                try {
+                    return new ArrayList<>(ugService.getUsersForGroup(group));
+                } catch (IOException e) {
+                    throw new WicketRuntimeException(e);
+                }
+            }
+        };
         ((Form) get("form"))
-                .add(
-                        new UserTablePanel("users", userGroupServiceName, usersDataProvider)
-                                .setFilterable(false));
+                .add(new UserTablePanel("users", userGroupServiceName, usersDataProvider).setFilterable(false));
     }
 
     @Override
@@ -62,9 +58,7 @@ public class EditGroupPage extends AbstractGroupPage {
         GeoServerUserGroupStore store = null;
         try {
             if (hasUserGroupStore(userGroupServiceName)) {
-                store =
-                        new UserGroupStoreValidationWrapper(
-                                getUserGroupStore(userGroupServiceName));
+                store = new UserGroupStoreValidationWrapper(getUserGroupStore(userGroupServiceName));
                 store.updateGroup(group);
                 store.store();
             }
@@ -80,7 +74,8 @@ public class EditGroupPage extends AbstractGroupPage {
         GeoServerRoleStore gaStore = null;
         try {
             if (hasRoleStore(getSecurityManager().getActiveRoleService().getName())) {
-                gaStore = getRoleStore(getSecurityManager().getActiveRoleService().getName());
+                gaStore =
+                        getRoleStore(getSecurityManager().getActiveRoleService().getName());
                 gaStore = new RoleStoreValidationWrapper(gaStore);
 
                 Set<GeoServerRole> orig = gaStore.getRolesForGroup(group.getGroupname());
@@ -88,10 +83,8 @@ public class EditGroupPage extends AbstractGroupPage {
                 Set<GeoServerRole> remove = new HashSet<>();
                 rolePalette.diff(orig, add, remove);
 
-                for (GeoServerRole role : add)
-                    gaStore.associateRoleToGroup(role, group.getGroupname());
-                for (GeoServerRole role : remove)
-                    gaStore.disAssociateRoleFromGroup(role, group.getGroupname());
+                for (GeoServerRole role : add) gaStore.associateRoleToGroup(role, group.getGroupname());
+                for (GeoServerRole role : remove) gaStore.disAssociateRoleFromGroup(role, group.getGroupname());
                 gaStore.store();
             }
         } catch (IOException ex) {

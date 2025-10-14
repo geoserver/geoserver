@@ -9,10 +9,7 @@ import java.util.List;
 import org.geoserver.util.DimensionWarning;
 import org.geoserver.util.HTTPWarningAppender;
 
-/**
- * Secondary result of the map process, collects time related WMS warnings (default, failed match,
- * nearest match)
- */
+/** Secondary result of the map process, collects time related WMS warnings (default, failed match, nearest match) */
 public class DownloadMetadata {
 
     List<DimensionWarning> warnings;

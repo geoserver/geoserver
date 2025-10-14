@@ -32,13 +32,11 @@ public class BufferedRequestWrapperTest extends RequestWrapperTestSupport {
         }
     }
 
-    @SuppressWarnings("PMD.EmptyWhileStmt")
     public void doInputStreamTest(String testString) throws Exception {
         HttpServletRequest req = makeRequest(testString, null);
 
         BufferedRequestWrapper wrapper =
-                new BufferedRequestWrapper(
-                        req, WebUtils.DEFAULT_CHARACTER_ENCODING, testString.getBytes());
+                new BufferedRequestWrapper(req, WebUtils.DEFAULT_CHARACTER_ENCODING, testString.getBytes());
         byte[] b = new byte[32];
         try (ServletInputStream sis = req.getInputStream()) {
             while ((sis.readLine(b, 0, 32)) > 0) { // NOPMD
@@ -63,8 +61,7 @@ public class BufferedRequestWrapperTest extends RequestWrapperTestSupport {
         clearOutBody(req);
 
         BufferedRequestWrapper wrapper =
-                new BufferedRequestWrapper(
-                        req, WebUtils.DEFAULT_CHARACTER_ENCODING, testString.getBytes());
+                new BufferedRequestWrapper(req, WebUtils.DEFAULT_CHARACTER_ENCODING, testString.getBytes());
         StringBuffer buff = new StringBuffer();
         int c;
         try (BufferedReader br = wrapper.getReader()) {
@@ -93,7 +90,6 @@ public class BufferedRequestWrapperTest extends RequestWrapperTestSupport {
         assertEquals("4", ((String[]) params.get("d"))[0]);
     }
 
-    @SuppressWarnings("PMD.EmptyWhileStmt")
     private void clearOutBody(HttpServletRequest req) throws IOException {
         try (BufferedReader br = req.getReader()) {
             while ((br.readLine()) != null) { // NOPMD

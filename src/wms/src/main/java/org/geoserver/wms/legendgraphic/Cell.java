@@ -80,16 +80,13 @@ public abstract class Cell {
         this.wrap = wrap;
     }
 
-    public abstract void draw(
-            final Graphics2D graphics, final Rectangle2D clipBox, final boolean completeBorder);
+    public abstract void draw(final Graphics2D graphics, final Rectangle2D clipBox, final boolean completeBorder);
 
     /**
-     * Retrieves the preferred dimension for this {@link Cell} element within the provided graphics
-     * element.
+     * Retrieves the preferred dimension for this {@link Cell} element within the provided graphics element.
      *
      * @param graphics {@link Graphics2D} object to use for computing the preferred dimension
-     * @return the preferred dimension for this {@link Cell} element within the provided graphics
-     *     element.
+     * @return the preferred dimension for this {@link Cell} element within the provided graphics element.
      */
     public abstract Dimension getPreferredDimension(final Graphics2D graphics);
 
@@ -131,9 +128,7 @@ public abstract class Cell {
         }
 
         protected ColorMapEntryLegendBuilder(
-                final ColorManager colorManager,
-                final TextManager labelManager,
-                final TextManager ruleManager) {
+                final ColorManager colorManager, final TextManager labelManager, final TextManager ruleManager) {
             super(Arrays.asList(colorManager, ruleManager, labelManager));
         }
 
@@ -155,8 +150,7 @@ public abstract class Cell {
             return get(0);
         }
 
-        protected String formatQuantity(
-                final double quantity, final int digits, final String unit) {
+        protected String formatQuantity(final double quantity, final int digits, final String unit) {
             final String format = "%." + digits + "f";
             return String.format(Locale.US, format, quantity) + (unit != null ? (" " + unit) : "");
         }
@@ -188,15 +182,8 @@ public abstract class Cell {
             final ColorMapEntry currentCME = cMapEntries.get(0);
             Color color = LegendUtils.color(currentCME);
             final double opacity = LegendUtils.getOpacity(currentCME);
-            color =
-                    new Color(
-                            color.getRed(),
-                            color.getGreen(),
-                            color.getBlue(),
-                            (int) (255 * opacity));
-            super.add(
-                    new ColorManager.SimpleColorManager(
-                            color, opacity, requestedDimension, borderColor, wrap));
+            color = new Color(color.getRed(), color.getGreen(), color.getBlue(), (int) (255 * opacity));
+            super.add(new ColorManager.SimpleColorManager(color, opacity, requestedDimension, borderColor, wrap));
 
             final String label = LegendUtils.getLabel(currentCME);
             final double quantity = LegendUtils.getQuantity(currentCME);
@@ -211,35 +198,33 @@ public abstract class Cell {
                 rule = Double.toString(quantity) + " " + symbol + " x";
             }
 
-            super.add(
-                    new TextManager(
-                            rule,
-                            vAling,
-                            hAlign,
-                            bkgColor,
-                            requestedDimension,
-                            labelFont,
-                            labelFontColor,
-                            fontAntiAliasing,
-                            borderColor,
-                            wrap));
+            super.add(new TextManager(
+                    rule,
+                    vAling,
+                    hAlign,
+                    bkgColor,
+                    requestedDimension,
+                    labelFont,
+                    labelFontColor,
+                    fontAntiAliasing,
+                    borderColor,
+                    wrap));
 
             // add the label the label to the rule so that we draw all text just once
             if (label != null) {
 
                 hasLabel = true;
-                super.add(
-                        new TextManager(
-                                label,
-                                vAling,
-                                hAlign,
-                                bkgColor,
-                                requestedDimension,
-                                labelFont,
-                                labelFontColor,
-                                fontAntiAliasing,
-                                borderColor,
-                                wrap));
+                super.add(new TextManager(
+                        label,
+                        vAling,
+                        hAlign,
+                        bkgColor,
+                        requestedDimension,
+                        labelFont,
+                        labelFontColor,
+                        fontAntiAliasing,
+                        borderColor,
+                        wrap));
             } else super.add(null);
         }
 
@@ -404,11 +389,8 @@ public abstract class Cell {
                 previousColor = LegendUtils.color(previousCME);
                 final double opacity = LegendUtils.getOpacity(previousCME);
                 previousColor =
-                        new Color(
-                                previousColor.getRed(),
-                                previousColor.getGreen(),
-                                previousColor.getBlue(),
-                                (int) (255 * opacity + 0.5));
+                        new Color(previousColor.getRed(), previousColor.getGreen(), previousColor.getBlue(), (int)
+                                (255 * opacity + 0.5));
             } else {
                 previousColor = null;
             }
@@ -416,15 +398,9 @@ public abstract class Cell {
             Color color = LegendUtils.color(currentCME);
             double opacity = LegendUtils.getOpacity(currentCME);
 
-            color =
-                    new Color(
-                            color.getRed(),
-                            color.getGreen(),
-                            color.getBlue(),
-                            (int) (255 * opacity));
-            super.add(
-                    new ColorManager.SimpleColorManager.GradientColorManager(
-                            color, opacity, previousColor, requestedDimension, borderColor, wrap));
+            color = new Color(color.getRed(), color.getGreen(), color.getBlue(), (int) (255 * opacity));
+            super.add(new ColorManager.SimpleColorManager.GradientColorManager(
+                    color, opacity, previousColor, requestedDimension, borderColor, wrap));
 
             String label = LegendUtils.getLabel(currentCME);
             double quantity = LegendUtils.getQuantity(currentCME);
@@ -457,47 +433,44 @@ public abstract class Cell {
                 }
             }
 
-            super.add(
-                    new TextManager(
-                            rule,
-                            vAling,
-                            hAlign,
-                            bkgColor,
-                            requestedDimension,
-                            labelFont,
-                            labelFontColor,
-                            leftEdge,
-                            borderColor,
-                            wrap));
-            lastRuleManager =
-                    new TextManager(
-                            lastRuleText,
-                            vAling,
-                            hAlign,
-                            bkgColor,
-                            requestedDimension,
-                            labelFont,
-                            labelFontColor,
-                            leftEdge,
-                            borderColor,
-                            wrap);
+            super.add(new TextManager(
+                    rule,
+                    vAling,
+                    hAlign,
+                    bkgColor,
+                    requestedDimension,
+                    labelFont,
+                    labelFontColor,
+                    leftEdge,
+                    borderColor,
+                    wrap));
+            lastRuleManager = new TextManager(
+                    lastRuleText,
+                    vAling,
+                    hAlign,
+                    bkgColor,
+                    requestedDimension,
+                    labelFont,
+                    labelFontColor,
+                    leftEdge,
+                    borderColor,
+                    wrap);
 
             // add the label the label to the rule so that we draw all text just once
             if (label != null) {
 
                 hasLabel = true;
-                super.add(
-                        new TextManager(
-                                label,
-                                vAling,
-                                hAlign,
-                                bkgColor,
-                                requestedDimension,
-                                labelFont,
-                                labelFontColor,
-                                leftEdge,
-                                borderColor,
-                                wrap));
+                super.add(new TextManager(
+                        label,
+                        vAling,
+                        hAlign,
+                        bkgColor,
+                        requestedDimension,
+                        labelFont,
+                        labelFontColor,
+                        leftEdge,
+                        borderColor,
+                        wrap));
             } else {
                 super.add(null);
             }
@@ -600,21 +573,11 @@ public abstract class Cell {
 
             Color color = LegendUtils.color(currentCME);
             final double opacity = LegendUtils.getOpacity(currentCME);
-            color =
-                    new Color(
-                            color.getRed(),
-                            color.getGreen(),
-                            color.getBlue(),
-                            (int) (255 * opacity));
-            super.add(
-                    new ColorManager.SimpleColorManager(
-                            color, opacity, requestedDimension, borderColor, wrap));
+            color = new Color(color.getRed(), color.getGreen(), color.getBlue(), (int) (255 * opacity));
+            super.add(new ColorManager.SimpleColorManager(color, opacity, requestedDimension, borderColor, wrap));
 
             String label = LegendUtils.getLabel(currentCME);
-            double quantity1 =
-                    leftEdge
-                            ? LegendUtils.getQuantity(currentCME)
-                            : LegendUtils.getQuantity(previousCME);
+            double quantity1 = leftEdge ? LegendUtils.getQuantity(currentCME) : LegendUtils.getQuantity(previousCME);
             double quantity2 = LegendUtils.getQuantity(currentCME);
 
             // Added variation for DynamicColorMap
@@ -650,35 +613,33 @@ public abstract class Cell {
                 }
             }
 
-            super.add(
-                    new TextManager(
-                            ruleText,
-                            vAling,
-                            hAlign,
-                            bkgColor,
-                            requestedDimension,
-                            labelFont,
-                            labelFontColor,
-                            leftEdge,
-                            borderColor,
-                            wrap));
+            super.add(new TextManager(
+                    ruleText,
+                    vAling,
+                    hAlign,
+                    bkgColor,
+                    requestedDimension,
+                    labelFont,
+                    labelFontColor,
+                    leftEdge,
+                    borderColor,
+                    wrap));
 
             // add the label the label to the rule so that we draw all text just once
             if (label != null) {
 
                 hasLabel = true;
-                super.add(
-                        new TextManager(
-                                label,
-                                vAling,
-                                hAlign,
-                                bkgColor,
-                                requestedDimension,
-                                labelFont,
-                                labelFontColor,
-                                leftEdge,
-                                borderColor,
-                                wrap));
+                super.add(new TextManager(
+                        label,
+                        vAling,
+                        hAlign,
+                        bkgColor,
+                        requestedDimension,
+                        labelFont,
+                        labelFontColor,
+                        leftEdge,
+                        borderColor,
+                        wrap));
             } else super.add(null);
         }
     }
@@ -726,18 +687,10 @@ public abstract class Cell {
             // on
             // it
 
-            final int labelHeight =
-                    (int)
-                            Math.ceil(
-                                    graphics.getFontMetrics()
-                                            .getStringBounds(text, graphics)
-                                            .getHeight());
-            final int width =
-                    (int)
-                            Math.ceil(
-                                    graphics.getFontMetrics()
-                                            .getStringBounds(text, graphics)
-                                            .getWidth());
+            final int labelHeight = (int) Math.ceil(
+                    graphics.getFontMetrics().getStringBounds(text, graphics).getHeight());
+            final int width = (int) Math.ceil(
+                    graphics.getFontMetrics().getStringBounds(text, graphics).getWidth());
             final int labelWidth = wrap ? Math.min(WRAP_WIDTH, width) : width;
 
             Rectangle2D bounds = new Rectangle2D.Double(0, 0, labelWidth, labelHeight);
@@ -765,8 +718,7 @@ public abstract class Cell {
 
                 while (st.hasMoreElements()) {
                     final String token = st.nextToken();
-                    Rectangle2D thisLineBounds =
-                            graphics.getFontMetrics().getStringBounds(token, graphics);
+                    Rectangle2D thisLineBounds = graphics.getFontMetrics().getStringBounds(token, graphics);
 
                     // if this is directly added as thisLineBounds.getHeight(), then there are
                     // rounding
@@ -778,15 +730,11 @@ public abstract class Cell {
                     lineHeight.add((int) Math.ceil(thisLineBounds.getHeight()));
                 }
             }
-            return new Dimension(
-                    (int) Math.ceil(bounds.getWidth()), (int) Math.ceil(bounds.getHeight()));
+            return new Dimension((int) Math.ceil(bounds.getWidth()), (int) Math.ceil(bounds.getHeight()));
         }
 
         @Override
-        public void draw(
-                final Graphics2D graphics,
-                final Rectangle2D clipBox,
-                final boolean completeBorder) {
+        public void draw(final Graphics2D graphics, final Rectangle2D clipBox, final boolean completeBorder) {
 
             // save old font
             final Font oldFont = graphics.getFont();
@@ -795,9 +743,7 @@ public abstract class Cell {
             graphics.setColor(labelFontColor);
             graphics.setFont(labelFont);
             if (fontAntiAliasing)
-                graphics.setRenderingHint(
-                        RenderingHints.KEY_TEXT_ANTIALIASING,
-                        RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
             // Halign==center vAlign==bottom
             final double minx = clipBox.getMinX();
@@ -839,12 +785,9 @@ public abstract class Cell {
             }
 
             if (wrap) {
-                Rectangle2D labelBounds =
-                        labelFont.getStringBounds(text, graphics.getFontRenderContext());
+                Rectangle2D labelBounds = labelFont.getStringBounds(text, graphics.getFontRenderContext());
 
-                if (text.contains("\n")
-                        || text.contains("\\n")
-                        || labelBounds.getWidth() > dimension.getWidth()) {
+                if (text.contains("\n") || text.contains("\\n") || labelBounds.getWidth() > dimension.getWidth()) {
                     FontMetrics fm = graphics.getFontMetrics();
                     int widthChars = (int) Math.floor(dimension.getWidth() / fm.stringWidth("m"));
                     String realLabel;
@@ -863,8 +806,7 @@ public abstract class Cell {
 
                     while (st.hasMoreElements()) {
                         final String token = st.nextToken();
-                        Rectangle2D thisLineBounds =
-                                graphics.getFontMetrics().getStringBounds(token, graphics);
+                        Rectangle2D thisLineBounds = graphics.getFontMetrics().getStringBounds(token, graphics);
 
                         // if this is directly added as thisLineBounds.getHeight(), then there are
                         // rounding
@@ -893,8 +835,8 @@ public abstract class Cell {
     }
 
     /**
-     * This class mimics a simple color cell for the final {@link ColorMap} legend representation.
-     * It is responsible for for drawing colors for a {@link ColorMapEntry}.
+     * This class mimics a simple color cell for the final {@link ColorMap} legend representation. It is responsible for
+     * for drawing colors for a {@link ColorMapEntry}.
      *
      * @author Simone Giannecchini, GeoSolutions SAS
      */
@@ -906,23 +848,11 @@ public abstract class Cell {
                 final Dimension requestedDimension,
                 final Color borderColor,
                 final boolean wrap) {
-            super(
-                    color,
-                    opacity,
-                    null,
-                    null,
-                    null,
-                    requestedDimension,
-                    null,
-                    null,
-                    false,
-                    borderColor,
-                    wrap);
+            super(color, opacity, null, null, null, requestedDimension, null, null, false, borderColor, wrap);
         }
 
         @Override
-        public abstract void draw(
-                final Graphics2D graphics, final Rectangle2D clipBox, final boolean completeBorder);
+        public abstract void draw(final Graphics2D graphics, final Rectangle2D clipBox, final boolean completeBorder);
 
         @Override
         public Dimension getPreferredDimension(final Graphics2D graphics) {
@@ -941,20 +871,13 @@ public abstract class Cell {
             }
 
             @Override
-            public void draw(
-                    final Graphics2D graphics,
-                    final Rectangle2D clipBox,
-                    final boolean completeBorder) {
+            public void draw(final Graphics2D graphics, final Rectangle2D clipBox, final boolean completeBorder) {
                 // bkgColor fill
                 if (bkgOpacity > 0) {
                     // OPAQUE
                     final Color oldColor = graphics.getColor();
-                    final Color newColor =
-                            new Color(
-                                    bkgColor.getRed(),
-                                    bkgColor.getGreen(),
-                                    bkgColor.getBlue(),
-                                    (int) (255 * bkgOpacity + 0.5));
+                    final Color newColor = new Color(
+                            bkgColor.getRed(), bkgColor.getGreen(), bkgColor.getBlue(), (int) (255 * bkgOpacity + 0.5));
                     graphics.setColor(newColor);
                     graphics.fill(clipBox);
                     // make bkgColor customizable
@@ -1004,9 +927,7 @@ public abstract class Cell {
                 @Override
                 public Dimension getPreferredDimension(Graphics2D graphics) {
                     // twice as much space for the Height to account for the gradient
-                    return new Dimension(
-                            requestedDimension.width,
-                            (int) (1.5 * requestedDimension.height + 0.5));
+                    return new Dimension(requestedDimension.width, (int) (1.5 * requestedDimension.height + 0.5));
                 }
 
                 private Color previousColor = null;
@@ -1026,10 +947,7 @@ public abstract class Cell {
                 }
 
                 @Override
-                public void draw(
-                        final Graphics2D graphics,
-                        final Rectangle2D clipBox,
-                        final boolean completeBorder) {
+                public void draw(final Graphics2D graphics, final Rectangle2D clipBox, final boolean completeBorder) {
 
                     // getting clipbox dimensions
                     final double minx = clipBox.getMinX();
@@ -1040,19 +958,17 @@ public abstract class Cell {
                     // GRADIENT
                     if (!leftEdge) {
                         // rectangle for the gradient
-                        final Rectangle2D.Double rectLegend =
-                                new Rectangle2D.Double(minx, miny, w, h / 2);
+                        final Rectangle2D.Double rectLegend = new Rectangle2D.Double(minx, miny, w, h / 2);
 
                         // gradient paint
                         final Paint oldPaint = graphics.getPaint();
-                        final GradientPaint paint =
-                                new GradientPaint(
-                                        (float) minx,
-                                        (float) miny,
-                                        previousColor,
-                                        (float) minx,
-                                        (float) (miny + h / 2),
-                                        bkgColor);
+                        final GradientPaint paint = new GradientPaint(
+                                (float) minx,
+                                (float) miny,
+                                previousColor,
+                                (float) minx,
+                                (float) (miny + h / 2),
+                                bkgColor);
 
                         // do the magic
                         graphics.setPaint(paint);
@@ -1065,8 +981,7 @@ public abstract class Cell {
                     // COLOR BOX
                     // careful with handling the leftEdge case
                     final Rectangle2D rectLegend =
-                            new Rectangle2D.Double(
-                                    minx, miny + (leftEdge ? 0 : h / 2), w, !leftEdge ? h / 2 : h);
+                            new Rectangle2D.Double(minx, miny + (leftEdge ? 0 : h / 2), w, !leftEdge ? h / 2 : h);
                     super.draw(graphics, rectLegend, completeBorder);
                     if (completeBorder) {
                         final Color oldColor = graphics.getColor();

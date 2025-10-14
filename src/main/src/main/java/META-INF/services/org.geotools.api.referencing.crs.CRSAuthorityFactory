@@ -1,2 +1,3 @@
 org.vfny.geoserver.crs.GeoserverCustomWKTFactory
 org.vfny.geoserver.crs.GeoserverOverridingWKTFactory
+org.vfny.geoserver.crs.GeoServerOverridingWebFactory

@@ -6,7 +6,7 @@
 package org.geoserver.wps.resource;
 
 import java.awt.image.RenderedImage;
-import javax.media.jai.PlanarImage;
+import org.eclipse.imagen.PlanarImage;
 import org.geotools.api.coverage.grid.GridCoverage;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.image.util.ImageUtilities;
@@ -21,11 +21,10 @@ public class CoverageResource implements WPSResource {
 
     @Override
     public void delete() throws Exception {
-        if (coverage instanceof GridCoverage2D) {
-            final GridCoverage2D gc = (GridCoverage2D) coverage;
+        if (coverage instanceof GridCoverage2D gc) {
             final RenderedImage image = gc.getRenderedImage();
-            if (image instanceof PlanarImage) {
-                ImageUtilities.disposePlanarImageChain((PlanarImage) image);
+            if (image instanceof PlanarImage planarImage) {
+                ImageUtilities.disposePlanarImageChain(planarImage);
             }
             gc.dispose(true);
         }

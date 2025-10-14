@@ -27,8 +27,7 @@ public class WFSTransactionException extends WFSException {
         super(message, code);
     }
 
-    public WFSTransactionException(
-            String message, Throwable cause, String code, String locator, String handle) {
+    public WFSTransactionException(String message, Throwable cause, String code, String locator, String handle) {
         super(message, cause, code, locator);
         this.handle = handle;
     }

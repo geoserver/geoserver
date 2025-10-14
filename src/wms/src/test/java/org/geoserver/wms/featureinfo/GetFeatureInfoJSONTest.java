@@ -77,11 +77,9 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
 
     public static final String LABEL_IN_FEATURE_INFO_STYLE_DEM = "labelInFeatureInfoTazDem";
     public static final String LABEL_CUSTOM_NAME_STYLE_DEM = "labelCustomNameTazDem";
-    public static final String LABEL_IN_FEATURE_INFO_DEM_REPLACE =
-            "labelInFeatureInfoTazDemReplace";
+    public static final String LABEL_IN_FEATURE_INFO_DEM_REPLACE = "labelInFeatureInfoTazDemReplace";
     public static final String LABEL_IN_FEATURE_INFO_DEM_NONE = "labelInFeatureInfoTazDemNone";
-    public static final String LABEL_IN_FEATURE_INFO_DEM_VALUES =
-            "labelInFeatureInfoTazDemColorMapValues";
+    public static final String LABEL_IN_FEATURE_INFO_DEM_VALUES = "labelInFeatureInfoTazDemColorMapValues";
     public static final String LABEL_IN_FEATURE_INFO_MULTIPLE_SYMBOLIZERS =
             "labelInFeatureInfoTazDemMultipleSymbolizers";
     public static final String LABEL_IN_FEATURE_INFO_STYLE_BM = "labelInFeatureInfoTazBm";
@@ -105,11 +103,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         super.onSetUp(testData);
         Catalog catalog = getCatalog();
         testData.addVectorLayer(
-                TEMPORAL_DATA,
-                Collections.emptyMap(),
-                "TemporalData.properties",
-                SystemTestData.class,
-                catalog);
+                TEMPORAL_DATA, Collections.emptyMap(), "TemporalData.properties", SystemTestData.class, catalog);
         testData.addStyle(LABEL_IN_FEATURE_INFO_STYLE_DEM, getClass(), catalog);
         testData.addStyle(LABEL_CUSTOM_NAME_STYLE_DEM, getClass(), catalog);
         testData.addStyle(LABEL_IN_FEATURE_INFO_DEM_REPLACE, getClass(), catalog);
@@ -124,10 +118,8 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         testData.addStyle(RAT_STYLE, getClass(), catalog);
         Map<SystemTestData.LayerProperty, Object> propertyMap = new HashMap<>();
         propertyMap.put(SystemTestData.LayerProperty.STYLE, "raster");
-        testData.addRasterLayer(
-                TASMANIA_DEM, "tazdem.tiff", "tiff", propertyMap, SystemTestData.class, catalog);
-        testData.addRasterLayer(
-                TASMANIA_SPY, "tazbm.tiff", "tiff", propertyMap, SystemTestData.class, catalog);
+        testData.addRasterLayer(TASMANIA_DEM, "tazdem.tiff", "tiff", propertyMap, SystemTestData.class, catalog);
+        testData.addRasterLayer(TASMANIA_SPY, "tazbm.tiff", "tiff", propertyMap, SystemTestData.class, catalog);
 
         // setup a raster with attribute table
         testData.addRasterLayer(RAT, "rat.tiff", "tiff", null, getClass(), getCatalog());
@@ -146,15 +138,14 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
     @Test
     public void testSimpleJSONP() throws Exception {
         String layer = getLayerId(MockData.FORESTS);
-        String request =
-                "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
-                        + "&request=GetFeatureInfo&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&width=20&height=20&x=10&y=10"
-                        + "&info_format="
-                        + JSONType.jsonp;
+        String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
+                + "&request=GetFeatureInfo&layers="
+                + layer
+                + "&query_layers="
+                + layer
+                + "&width=20&height=20&x=10&y=10"
+                + "&info_format="
+                + JSONType.jsonp;
 
         // JSONP
         JSONType.setJsonpEnabled(true);
@@ -180,28 +171,27 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         result = result.substring(JSONType.CALLBACK_FUNCTION.length() + 1, result.length());
 
         JSONObject rootObject = JSONObject.fromObject(result);
-        assertEquals(rootObject.get("type"), "FeatureCollection");
+        assertEquals("FeatureCollection", rootObject.get("type"));
         JSONArray featureCol = rootObject.getJSONArray("features");
         JSONObject aFeature = featureCol.getJSONObject(0);
-        assertEquals(aFeature.getString("geometry_name"), "the_geom");
+        assertEquals("the_geom", aFeature.getString("geometry_name"));
     }
 
     /** Tests jsonp with custom callback function */
     @Test
     public void testCustomJSONP() throws Exception {
         String layer = getLayerId(MockData.FORESTS);
-        String request =
-                "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
-                        + "&request=GetFeatureInfo&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&width=20&height=20&x=10&y=10"
-                        + "&info_format="
-                        + JSONType.jsonp
-                        + "&format_options="
-                        + JSONType.CALLBACK_FUNCTION_KEY
-                        + ":custom";
+        String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
+                + "&request=GetFeatureInfo&layers="
+                + layer
+                + "&query_layers="
+                + layer
+                + "&width=20&height=20&x=10&y=10"
+                + "&info_format="
+                + JSONType.jsonp
+                + "&format_options="
+                + JSONType.CALLBACK_FUNCTION_KEY
+                + ":custom";
         // JSONP
         JSONType.setJsonpEnabled(true);
         MockHttpServletResponse response = getAsServletResponse(request, "");
@@ -226,25 +216,24 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         result = result.substring("custom".length() + 1, result.length());
 
         JSONObject rootObject = JSONObject.fromObject(result);
-        assertEquals(rootObject.get("type"), "FeatureCollection");
+        assertEquals("FeatureCollection", rootObject.get("type"));
         JSONArray featureCol = rootObject.getJSONArray("features");
         JSONObject aFeature = featureCol.getJSONObject(0);
-        assertEquals(aFeature.getString("geometry_name"), "the_geom");
+        assertEquals("the_geom", aFeature.getString("geometry_name"));
     }
 
     /** Tests JSON outside of expected polygon */
     @Test
     public void testSimpleJSON() throws Exception {
         String layer = getLayerId(MockData.FORESTS);
-        String request =
-                "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
-                        + "&request=GetFeatureInfo&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&width=20&height=20&x=10&y=10"
-                        + "&info_format="
-                        + JSONType.json;
+        String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
+                + "&request=GetFeatureInfo&layers="
+                + layer
+                + "&query_layers="
+                + layer
+                + "&width=20&height=20&x=10&y=10"
+                + "&info_format="
+                + JSONType.json;
 
         // JSON
         MockHttpServletResponse response = getAsServletResponse(request, "");
@@ -261,25 +250,24 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         assertNotNull(result);
 
         JSONObject rootObject = JSONObject.fromObject(result);
-        assertEquals(rootObject.get("type"), "FeatureCollection");
+        assertEquals("FeatureCollection", rootObject.get("type"));
         JSONArray featureCol = rootObject.getJSONArray("features");
         JSONObject aFeature = featureCol.getJSONObject(0);
-        assertEquals(aFeature.getString("geometry_name"), "the_geom");
+        assertEquals("the_geom", aFeature.getString("geometry_name"));
     }
 
     @Test
     public void testPropertySelection() throws Exception {
         String layer = getLayerId(MockData.FORESTS);
-        String request =
-                "wms?service=wms&version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
-                        + "&request=GetFeatureInfo&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&width=20&height=20&x=10&y=10"
-                        + "&info_format="
-                        + JSONType.json
-                        + "&propertyName=NAME";
+        String request = "wms?service=wms&version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
+                + "&request=GetFeatureInfo&layers="
+                + layer
+                + "&query_layers="
+                + layer
+                + "&width=20&height=20&x=10&y=10"
+                + "&info_format="
+                + JSONType.json
+                + "&propertyName=NAME";
 
         // JSON
         MockHttpServletResponse response = getAsServletResponse(request, "");
@@ -297,7 +285,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
 
         JSONObject rootObject = JSONObject.fromObject(result);
         // print(rootObject);
-        assertEquals(rootObject.get("type"), "FeatureCollection");
+        assertEquals("FeatureCollection", rootObject.get("type"));
         JSONArray featureCol = rootObject.getJSONArray("features");
         JSONObject aFeature = featureCol.getJSONObject(0);
         assertTrue(aFeature.getJSONObject("geometry").isNullObject());
@@ -310,15 +298,14 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
     public void testReprojectedLayer() throws Exception {
         String layer = getLayerId(MockData.MPOLYGONS);
 
-        String request =
-                "wms?version=1.1.1&bbox=500525,500025,500575,500050&styles=&format=jpeg"
-                        + "&request=GetFeatureInfo&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&width=20&height=20&x=10&y=10"
-                        + "&info_format="
-                        + JSONType.json;
+        String request = "wms?version=1.1.1&bbox=500525,500025,500575,500050&styles=&format=jpeg"
+                + "&request=GetFeatureInfo&layers="
+                + layer
+                + "&query_layers="
+                + layer
+                + "&width=20&height=20&x=10&y=10"
+                + "&info_format="
+                + JSONType.json;
 
         // JSON
         JSONObject json = (JSONObject) getAsJSON(request);
@@ -327,12 +314,8 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         // unroll the geometry and get the first coordinate
         JSONArray coords =
                 geom.getJSONArray("coordinates").getJSONArray(0).getJSONArray(0).getJSONArray(0);
-        assertTrue(
-                new NumberRange<>(Double.class, 500525d, 500575d)
-                        .contains((Number) coords.getDouble(0)));
-        assertTrue(
-                new NumberRange<>(Double.class, 500025d, 500050d)
-                        .contains((Number) coords.getDouble(1)));
+        assertTrue(new NumberRange<>(Double.class, 500525d, 500575d).contains((Number) coords.getDouble(0)));
+        assertTrue(new NumberRange<>(Double.class, 500025d, 500050d).contains((Number) coords.getDouble(1)));
     }
 
     /** Tests CQL filter */
@@ -340,15 +323,14 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
     public void testCQLFilter() throws Exception {
         String layer = getLayerId(MockData.FORESTS);
 
-        String request =
-                "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
-                        + "&request=GetFeatureInfo&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&width=20&height=20&x=10&y=10"
-                        + "&info_format="
-                        + JSONType.json;
+        String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
+                + "&request=GetFeatureInfo&layers="
+                + layer
+                + "&query_layers="
+                + layer
+                + "&width=20&height=20&x=10&y=10"
+                + "&info_format="
+                + JSONType.json;
 
         JSONObject json = (JSONObject) getAsJSON(request);
         JSONArray features = json.getJSONArray("features");
@@ -378,15 +360,14 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
             System.setProperty("org.geotools.localDateTimeHandling", "true");
             Hints.scanSystemProperties();
             String layer = getLayerId(TEMPORAL_DATA);
-            String request =
-                    "wms?version=1.1.1&bbox=39.73245,2.00342,39.732451,2.003421&styles=&format=jpeg"
-                            + "&request=GetFeatureInfo&layers="
-                            + layer
-                            + "&query_layers="
-                            + layer
-                            + "&width=10&height=10&x=5&y=5"
-                            + "&info_format="
-                            + JSONType.json;
+            String request = "wms?version=1.1.1&bbox=39.73245,2.00342,39.732451,2.003421&styles=&format=jpeg"
+                    + "&request=GetFeatureInfo&layers="
+                    + layer
+                    + "&query_layers="
+                    + layer
+                    + "&width=10&height=10&x=5&y=5"
+                    + "&info_format="
+                    + JSONType.json;
 
             // JSON
             MockHttpServletResponse response = getAsServletResponse(request, "");
@@ -402,7 +383,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
             assertNotNull(result);
 
             JSONObject rootObject = JSONObject.fromObject(result);
-            assertEquals(rootObject.get("type"), "FeatureCollection");
+            assertEquals("FeatureCollection", rootObject.get("type"));
             JSONArray featureCol = rootObject.getJSONArray("features");
             JSONObject aFeature = featureCol.getJSONObject(0);
             JSONObject properties = aFeature.getJSONObject("properties");
@@ -424,15 +405,14 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
             System.setProperty("org.geotools.localDateTimeHandling", "true");
             Hints.scanSystemProperties();
             String layer = getLayerId(TEMPORAL_DATA);
-            String request =
-                    "wms?version=1.1.1&bbox=39.73245,2.00342,39.732451,2.003421&styles=&format=jpeg"
-                            + "&request=GetFeatureInfo&layers="
-                            + layer
-                            + "&query_layers="
-                            + layer
-                            + "&width=10&height=10&x=5&y=5"
-                            + "&info_format="
-                            + JSONType.json;
+            String request = "wms?version=1.1.1&bbox=39.73245,2.00342,39.732451,2.003421&styles=&format=jpeg"
+                    + "&request=GetFeatureInfo&layers="
+                    + layer
+                    + "&query_layers="
+                    + layer
+                    + "&width=10&height=10&x=5&y=5"
+                    + "&info_format="
+                    + JSONType.json;
 
             // JSON
             MockHttpServletResponse response = getAsServletResponse(request, "");
@@ -448,7 +428,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
             assertNotNull(result);
 
             JSONObject rootObject = JSONObject.fromObject(result);
-            assertEquals(rootObject.get("type"), "FeatureCollection");
+            assertEquals("FeatureCollection", rootObject.get("type"));
             JSONArray featureCol = rootObject.getJSONArray("features");
             JSONObject aFeature = featureCol.getJSONObject(0);
             JSONObject properties = aFeature.getJSONObject("properties");
@@ -471,12 +451,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         URL footerUrl = getClass().getResource("../footer_json.ftl");
         GeoServerResourceLoader loader = getDataDirectory().getResourceLoader();
         Resource resource =
-                loader.get(
-                        Paths.path(
-                                "workspaces",
-                                TEMPORAL_DATA.getPrefix(),
-                                "cite",
-                                TEMPORAL_DATA.getLocalPart()));
+                loader.get(Paths.path("workspaces", TEMPORAL_DATA.getPrefix(), "cite", TEMPORAL_DATA.getLocalPart()));
         Resource workspace = loader.get(Paths.path("workspaces", TEMPORAL_DATA.getPrefix()));
         File fileHeader = new File(workspace.dir(), "header_json.ftl");
         File fileFooter = new File(workspace.dir(), "footer_json.ftl");
@@ -485,12 +460,8 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         FileUtils.copyURLToFile(contentUrl, fileContent);
         FileUtils.copyURLToFile(footerUrl, fileFooter);
         GeoJSONFeatureInfoResponse geoJsonResp =
-                new GeoJSONFeatureInfoResponse(
-                        getWMS(), getCatalog().getResourceLoader(), "application/json");
-        FeatureTypeInfo ft =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                TEMPORAL_DATA.getPrefix(), TEMPORAL_DATA.getLocalPart());
+                new GeoJSONFeatureInfoResponse(getWMS(), getCatalog().getResourceLoader(), "application/json");
+        FeatureTypeInfo ft = getCatalog().getFeatureTypeByName(TEMPORAL_DATA.getPrefix(), TEMPORAL_DATA.getLocalPart());
 
         List<MapLayerInfo> queryLayers = new ArrayList<>();
         LayerInfo layerInfo = getCatalog().getLayerByName(TEMPORAL_DATA.getLocalPart());
@@ -510,21 +481,21 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         String result = new String(outStream.toByteArray());
         JSONObject response = JSONObject.fromObject(result);
         // got header ftl
-        assertEquals(response.get("header"), "this is the header");
+        assertEquals("this is the header", response.get("header"));
         JSONArray featuresInfo = response.getJSONArray("features");
         JSONObject featureInfo = (JSONObject) featuresInfo.get(0);
         // got content ftl
-        assertEquals(featureInfo.get("content"), "this is the content");
-        assertEquals(featureInfo.get("type"), "Feature");
-        assertEquals(featureInfo.get("id"), "Points.0");
+        assertEquals("this is the content", featureInfo.get("content"));
+        assertEquals("Feature", featureInfo.get("type"));
+        assertEquals("Points.0", featureInfo.get("id"));
         assertNotNull(featureInfo.get("geometry"));
         JSONObject props = featureInfo.getJSONObject("properties");
-        assertEquals(props.get("id"), "t0000");
-        assertEquals(props.get("altitude"), "500");
+        assertEquals("t0000", props.get("id"));
+        assertEquals("500", props.get("altitude"));
         assertNotNull(props.get("dateTimeProperty"));
         assertNotNull(props.get("dateProperty"));
         // got footer ftl
-        assertEquals(response.get("footer"), "this is the footer");
+        assertEquals("this is the footer", response.get("footer"));
         fileHeader.delete();
         fileContent.delete();
         fileFooter.delete();
@@ -545,20 +516,10 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         URL footerUrl = getClass().getResource("../footer_json.ftl");
         GeoServerResourceLoader loader = getDataDirectory().getResourceLoader();
         Resource templates = loader.get(Paths.path("templates"));
-        Resource resForest =
-                loader.get(
-                        Paths.path(
-                                "workspaces",
-                                MockData.FORESTS.getPrefix(),
-                                "cite",
-                                MockData.FORESTS.getLocalPart()));
+        Resource resForest = loader.get(
+                Paths.path("workspaces", MockData.FORESTS.getPrefix(), "cite", MockData.FORESTS.getLocalPart()));
         Resource resLake =
-                loader.get(
-                        Paths.path(
-                                "workspaces",
-                                MockData.LAKES.getPrefix(),
-                                "cite",
-                                MockData.LAKES.getLocalPart()));
+                loader.get(Paths.path("workspaces", MockData.LAKES.getPrefix(), "cite", MockData.LAKES.getLocalPart()));
         File fileHeader = new File(templates.dir(), "header_json.ftl");
         File fileFooter = new File(templates.dir(), "footer_json.ftl");
         // configure content template for both layers
@@ -570,8 +531,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         FileUtils.copyURLToFile(contentUrl, fileContentLake);
         FileUtils.copyURLToFile(footerUrl, fileFooter);
         GeoJSONFeatureInfoResponse geoJsonResp =
-                new GeoJSONFeatureInfoResponse(
-                        getWMS(), getCatalog().getResourceLoader(), "application/json");
+                new GeoJSONFeatureInfoResponse(getWMS(), getCatalog().getResourceLoader(), "application/json");
 
         List<MapLayerInfo> queryLayers = new ArrayList<>();
         LayerGroupInfo lgInfo = getCatalog().getLayerGroupByName("nature");
@@ -599,35 +559,35 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         String result = new String(outStream.toByteArray());
         JSONObject response = JSONObject.fromObject(result);
         // got header ftl
-        assertEquals(response.get("header"), "this is the header");
+        assertEquals("this is the header", response.get("header"));
         JSONArray featuresInfo = response.getJSONArray("features");
         // check the first layer
         JSONObject fiLake = (JSONObject) featuresInfo.get(0);
-        assertEquals(fiLake.get("content"), "this is the content");
-        assertEquals(fiLake.get("type"), "Feature");
-        assertEquals(fiLake.get("id"), "Lakes.1107531835962");
+        assertEquals("this is the content", fiLake.get("content"));
+        assertEquals("Feature", fiLake.get("type"));
+        assertEquals("Lakes.1107531835962", fiLake.get("id"));
         JSONObject geomLake = fiLake.getJSONObject("geometry");
         // check the geometry attribute
-        assertEquals(geomLake.get("type"), "MultiPolygon");
+        assertEquals("MultiPolygon", geomLake.get("type"));
         assertNotNull(geomLake.getJSONArray("coordinates"));
         JSONObject lakeProps = fiLake.getJSONObject("properties");
-        assertEquals(lakeProps.get("NAME"), "Blue Lake");
-        assertEquals(lakeProps.get("FID"), "101");
+        assertEquals("Blue Lake", lakeProps.get("NAME"));
+        assertEquals("101", lakeProps.get("FID"));
 
         // check the second layer
         JSONObject fiForest = (JSONObject) featuresInfo.get(1);
         // got content ftl
-        assertEquals(fiForest.get("content"), "this is the content");
-        assertEquals(fiForest.get("type"), "Feature");
-        assertEquals(fiForest.get("id"), "Forests.1107531798144");
+        assertEquals("this is the content", fiForest.get("content"));
+        assertEquals("Feature", fiForest.get("type"));
+        assertEquals("Forests.1107531798144", fiForest.get("id"));
         JSONObject geomForest = fiForest.getJSONObject("geometry");
-        assertEquals(geomForest.get("type"), "MultiPolygon");
+        assertEquals("MultiPolygon", geomForest.get("type"));
         assertNotNull(geomForest.getJSONArray("coordinates"));
         JSONObject forestProps = fiForest.getJSONObject("properties");
-        assertEquals(forestProps.get("NAME"), "Green Forest");
-        assertEquals(forestProps.get("FID"), "109");
+        assertEquals("Green Forest", forestProps.get("NAME"));
+        assertEquals("109", forestProps.get("FID"));
         // got footer ftl
-        assertEquals(response.get("footer"), "this is the footer");
+        assertEquals("this is the footer", response.get("footer"));
         fileHeader.delete();
         fileContentForest.delete();
         fileContentLake.delete();
@@ -642,13 +602,8 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         URL footerUrl = getClass().getResource("../footer_json.ftl");
         GeoServerResourceLoader loader = getDataDirectory().getResourceLoader();
         Resource templates = loader.get(Paths.path("templates"));
-        Resource resource =
-                loader.get(
-                        Paths.path(
-                                "workspaces",
-                                MockData.FORESTS.getPrefix(),
-                                "cite",
-                                MockData.FORESTS.getLocalPart()));
+        Resource resource = loader.get(
+                Paths.path("workspaces", MockData.FORESTS.getPrefix(), "cite", MockData.FORESTS.getLocalPart()));
         File fileHeader = new File(templates.dir(), "header_json.ftl");
         File fileFooter = new File(templates.dir(), "footer_json.ftl");
         File fileContent = new File(resource.dir(), "content_json.ftl");
@@ -656,8 +611,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         FileUtils.copyURLToFile(contentUrl, fileContent);
         FileUtils.copyURLToFile(footerUrl, fileFooter);
         GeoJSONFeatureInfoResponse geoJsonResp =
-                new GeoJSONFeatureInfoResponse(
-                        getWMS(), getCatalog().getResourceLoader(), "application/json");
+                new GeoJSONFeatureInfoResponse(getWMS(), getCatalog().getResourceLoader(), "application/json");
 
         List<MapLayerInfo> queryLayers = new ArrayList<>();
         LayerGroupInfo lgInfo = getCatalog().getLayerGroupByName("nature");
@@ -685,38 +639,38 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         String result = new String(outStream.toByteArray());
         JSONObject response = JSONObject.fromObject(result);
         // got header ftl
-        assertEquals(response.get("header"), "this is the header");
+        assertEquals("this is the header", response.get("header"));
         JSONArray featuresInfo = response.getJSONArray("features");
 
         // check the first feature normally encoded
         JSONObject fiLake = (JSONObject) featuresInfo.get(0);
         // didn't get the content template
         assertNull(fiLake.get("content"));
-        assertEquals(fiLake.get("type"), "Feature");
-        assertEquals(fiLake.get("id"), "Lakes.1107531835962");
+        assertEquals("Feature", fiLake.get("type"));
+        assertEquals("Lakes.1107531835962", fiLake.get("id"));
         // check the geometry
         JSONObject geomLake = fiLake.getJSONObject("geometry");
-        assertEquals(geomLake.get("type"), "MultiPolygon");
+        assertEquals("MultiPolygon", geomLake.get("type"));
         assertNotNull(geomLake.getJSONArray("coordinates"));
         JSONObject lakeProps = fiLake.getJSONObject("properties");
-        assertEquals(lakeProps.get("NAME"), "Blue Lake");
-        assertEquals(lakeProps.get("FID"), "101");
+        assertEquals("Blue Lake", lakeProps.get("NAME"));
+        assertEquals("101", lakeProps.get("FID"));
 
         // second feature used template
         JSONObject fiForest = (JSONObject) featuresInfo.get(1);
         // got content ftl
-        assertEquals(fiForest.get("content"), "this is the content");
-        assertEquals(fiForest.get("type"), "Feature");
-        assertEquals(fiForest.get("id"), "Forests.1107531798144");
+        assertEquals("this is the content", fiForest.get("content"));
+        assertEquals("Feature", fiForest.get("type"));
+        assertEquals("Forests.1107531798144", fiForest.get("id"));
         // check the geometry
         JSONObject geomForest = fiForest.getJSONObject("geometry");
-        assertEquals(geomForest.get("type"), "MultiPolygon");
+        assertEquals("MultiPolygon", geomForest.get("type"));
         assertNotNull(geomForest.getJSONArray("coordinates"));
         JSONObject forestProps = fiForest.getJSONObject("properties");
-        assertEquals(forestProps.get("NAME"), "Green Forest");
-        assertEquals(forestProps.get("FID"), "109");
+        assertEquals("Green Forest", forestProps.get("NAME"));
+        assertEquals("109", forestProps.get("FID"));
         // got footer ftl
-        assertEquals(response.get("footer"), "this is the footer");
+        assertEquals("this is the footer", response.get("footer"));
         fileHeader.delete();
         fileContent.delete();
         fileFooter.delete();
@@ -728,21 +682,12 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         URL contentUrl = getClass().getResource("../content_json.ftl");
         URL footerUrl = getClass().getResource("../footer_json.ftl");
         GeoJSONFeatureInfoResponse geoJsonResp =
-                new GeoJSONFeatureInfoResponse(
-                        getWMS(), getCatalog().getResourceLoader(), "application/json");
-        FeatureTypeInfo ft =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                TEMPORAL_DATA.getPrefix(), TEMPORAL_DATA.getLocalPart());
+                new GeoJSONFeatureInfoResponse(getWMS(), getCatalog().getResourceLoader(), "application/json");
+        FeatureTypeInfo ft = getCatalog().getFeatureTypeByName(TEMPORAL_DATA.getPrefix(), TEMPORAL_DATA.getLocalPart());
 
         GeoServerResourceLoader loader = getDataDirectory().getResourceLoader();
         Resource resource =
-                loader.get(
-                        Paths.path(
-                                "workspaces",
-                                TEMPORAL_DATA.getPrefix(),
-                                "cite",
-                                TEMPORAL_DATA.getLocalPart()));
+                loader.get(Paths.path("workspaces", TEMPORAL_DATA.getPrefix(), "cite", TEMPORAL_DATA.getLocalPart()));
         Resource workspace = loader.get(Paths.path("workspaces", TEMPORAL_DATA.getPrefix()));
         File fileFooter = new File(workspace.dir(), "footer_json.ftl");
         File fileContent = new File(resource.dir(), "content_json.ftl");
@@ -783,13 +728,12 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
     }
 
     /**
-     * Verifies that templates can be executed if resulting data contains multiple collections
-     * although only one layer was queried
+     * Verifies that templates can be executed if resulting data contains multiple collections although only one layer
+     * was queried
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void testJSONFreeMarkerTemplateMultipleFeatureCollectionsPerQueryLayer()
-            throws Exception {
+    public void testJSONFreeMarkerTemplateMultipleFeatureCollectionsPerQueryLayer() throws Exception {
         URL contentUrl = getClass().getResource("../content_json.ftl");
         URL headerUrl = getClass().getResource("../header_json.ftl");
         URL footerUrl = getClass().getResource("../footer_json.ftl");
@@ -803,12 +747,8 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         FileUtils.copyURLToFile(contentUrl, fileContent);
         FileUtils.copyURLToFile(footerUrl, fileFooter);
         GeoJSONFeatureInfoResponse geoJsonResp =
-                new GeoJSONFeatureInfoResponse(
-                        getWMS(), getCatalog().getResourceLoader(), "application/json");
-        FeatureTypeInfo ft =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                TEMPORAL_DATA.getPrefix(), TEMPORAL_DATA.getLocalPart());
+                new GeoJSONFeatureInfoResponse(getWMS(), getCatalog().getResourceLoader(), "application/json");
+        FeatureTypeInfo ft = getCatalog().getFeatureTypeByName(TEMPORAL_DATA.getPrefix(), TEMPORAL_DATA.getLocalPart());
 
         List<MapLayerInfo> queryLayers = new ArrayList<>();
         LayerInfo layerInfo = getCatalog().getLayerByName(TEMPORAL_DATA.getLocalPart());
@@ -852,33 +792,28 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         // in the RasterSymbolizer the matched ColorMapEntry label is added to the getFeatureInfo
         // response
         Catalog cat = getCatalog();
-        LayerInfo tazDem =
-                cat.getLayerByName(
-                        new NameImpl(
-                                MockData.TASMANIA_DEM.getPrefix(),
-                                MockData.TASMANIA_DEM.getLocalPart()));
+        LayerInfo tazDem = cat.getLayerByName(
+                new NameImpl(MockData.TASMANIA_DEM.getPrefix(), MockData.TASMANIA_DEM.getLocalPart()));
         StyleInfo style = cat.getStyleByName(LABEL_IN_FEATURE_INFO_STYLE_DEM);
         tazDem.getStyles().add(style);
         cat.save(tazDem);
         String layerId = getLayerId(MockData.TASMANIA_DEM);
-        String request =
-                "wms?version=1.1.1"
-                        + "&styles="
-                        + LABEL_IN_FEATURE_INFO_STYLE_DEM
-                        + "&format=jpeg"
-                        + "&request=GetFeatureInfo&layers="
-                        + layerId
-                        + "&query_layers="
-                        + layerId
-                        + "&X=50&Y=50"
-                        + "&SRS=EPSG:4326"
-                        + "&WIDTH=101&HEIGHT=101"
-                        + "&BBOX=144.9566345277708,-42.23886111751199,145.23403931292705,-41.96145633235574"
-                        + "&info_format="
-                        + JSONType.json;
+        String request = "wms?version=1.1.1"
+                + "&styles="
+                + LABEL_IN_FEATURE_INFO_STYLE_DEM
+                + "&format=jpeg"
+                + "&request=GetFeatureInfo&layers="
+                + layerId
+                + "&query_layers="
+                + layerId
+                + "&X=50&Y=50"
+                + "&SRS=EPSG:4326"
+                + "&WIDTH=101&HEIGHT=101"
+                + "&BBOX=144.9566345277708,-42.23886111751199,145.23403931292705,-41.96145633235574"
+                + "&info_format="
+                + JSONType.json;
         JSONObject json = (JSONObject) getAsJSON(request);
-        JSONObject properties =
-                json.getJSONArray("features").getJSONObject(0).getJSONObject("properties");
+        JSONObject properties = json.getJSONArray("features").getJSONObject(0).getJSONObject("properties");
         assertTrue(properties.has("Label_GRAY_INDEX"));
         assertEquals(55537, properties.getInt("GRAY_INDEX"));
         assertEquals("55537", properties.getString("Label_GRAY_INDEX"));
@@ -892,33 +827,28 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         // the matching ColorMap entry label is added to the output format with
         // custom attribute name
         Catalog cat = getCatalog();
-        LayerInfo tazDem =
-                cat.getLayerByName(
-                        new NameImpl(
-                                MockData.TASMANIA_DEM.getPrefix(),
-                                MockData.TASMANIA_DEM.getLocalPart()));
+        LayerInfo tazDem = cat.getLayerByName(
+                new NameImpl(MockData.TASMANIA_DEM.getPrefix(), MockData.TASMANIA_DEM.getLocalPart()));
         StyleInfo style = cat.getStyleByName(LABEL_CUSTOM_NAME_STYLE_DEM);
         tazDem.getStyles().add(style);
         cat.save(tazDem);
         String layerId = getLayerId(MockData.TASMANIA_DEM);
-        String request =
-                "wms?version=1.1.1"
-                        + "&styles="
-                        + LABEL_CUSTOM_NAME_STYLE_DEM
-                        + "&format=jpeg"
-                        + "&request=GetFeatureInfo&layers="
-                        + layerId
-                        + "&query_layers="
-                        + layerId
-                        + "&X=50&Y=50"
-                        + "&SRS=EPSG:4326"
-                        + "&WIDTH=101&HEIGHT=101"
-                        + "&BBOX=144.9566345277708,-42.23886111751199,145.23403931292705,-41.96145633235574"
-                        + "&info_format="
-                        + JSONType.json;
+        String request = "wms?version=1.1.1"
+                + "&styles="
+                + LABEL_CUSTOM_NAME_STYLE_DEM
+                + "&format=jpeg"
+                + "&request=GetFeatureInfo&layers="
+                + layerId
+                + "&query_layers="
+                + layerId
+                + "&X=50&Y=50"
+                + "&SRS=EPSG:4326"
+                + "&WIDTH=101&HEIGHT=101"
+                + "&BBOX=144.9566345277708,-42.23886111751199,145.23403931292705,-41.96145633235574"
+                + "&info_format="
+                + JSONType.json;
         JSONObject json = (JSONObject) getAsJSON(request);
-        JSONObject properties =
-                json.getJSONArray("features").getJSONObject(0).getJSONObject("properties");
+        JSONObject properties = json.getJSONArray("features").getJSONObject(0).getJSONObject("properties");
         assertEquals(55537, properties.getInt("GRAY_INDEX"));
         assertEquals("55537", properties.getString("custom name"));
     }
@@ -930,33 +860,28 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         // the label of the matching ColorMapEntry in a ColorMap of type intervals is replacing
         // the pixel value
         Catalog cat = getCatalog();
-        LayerInfo tazDem =
-                cat.getLayerByName(
-                        new NameImpl(
-                                MockData.TASMANIA_DEM.getPrefix(),
-                                MockData.TASMANIA_DEM.getLocalPart()));
+        LayerInfo tazDem = cat.getLayerByName(
+                new NameImpl(MockData.TASMANIA_DEM.getPrefix(), MockData.TASMANIA_DEM.getLocalPart()));
         StyleInfo style = cat.getStyleByName(LABEL_IN_FEATURE_INFO_DEM_REPLACE);
         tazDem.getStyles().add(style);
         cat.save(tazDem);
         String layerId = getLayerId(MockData.TASMANIA_DEM);
-        String request =
-                "wms?version=1.1.1"
-                        + "&styles="
-                        + LABEL_IN_FEATURE_INFO_DEM_REPLACE
-                        + "&format=jpeg"
-                        + "&request=GetFeatureInfo&layers="
-                        + layerId
-                        + "&query_layers="
-                        + layerId
-                        + "&X=50&Y=50"
-                        + "&SRS=EPSG:4326"
-                        + "&WIDTH=101&HEIGHT=101"
-                        + "&BBOX=145.41806031949818,-42.16195682063699,145.69546510465443,-41.88455203548074"
-                        + "&info_format="
-                        + JSONType.json;
+        String request = "wms?version=1.1.1"
+                + "&styles="
+                + LABEL_IN_FEATURE_INFO_DEM_REPLACE
+                + "&format=jpeg"
+                + "&request=GetFeatureInfo&layers="
+                + layerId
+                + "&query_layers="
+                + layerId
+                + "&X=50&Y=50"
+                + "&SRS=EPSG:4326"
+                + "&WIDTH=101&HEIGHT=101"
+                + "&BBOX=145.41806031949818,-42.16195682063699,145.69546510465443,-41.88455203548074"
+                + "&info_format="
+                + JSONType.json;
         JSONObject json = (JSONObject) getAsJSON(request);
-        JSONObject properties =
-                json.getJSONArray("features").getJSONObject(0).getJSONObject("properties");
+        JSONObject properties = json.getJSONArray("features").getJSONObject(0).getJSONObject("properties");
         // we have replace size should be one
         assertEquals(1, properties.size());
         assertEquals(">= 308.142116 AND < 752.166285", properties.getString("Label_GRAY_INDEX"));
@@ -968,33 +893,28 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         // name="labelInFeatureInfo">none</VendorOption>
         // no ColorMapEntry label is added to the GetFeatureInfo output
         Catalog cat = getCatalog();
-        LayerInfo tazDem =
-                cat.getLayerByName(
-                        new NameImpl(
-                                MockData.TASMANIA_DEM.getPrefix(),
-                                MockData.TASMANIA_DEM.getLocalPart()));
+        LayerInfo tazDem = cat.getLayerByName(
+                new NameImpl(MockData.TASMANIA_DEM.getPrefix(), MockData.TASMANIA_DEM.getLocalPart()));
         StyleInfo style = cat.getStyleByName(LABEL_IN_FEATURE_INFO_DEM_NONE);
         tazDem.getStyles().add(style);
         cat.save(tazDem);
         String layerId = getLayerId(MockData.TASMANIA_DEM);
-        String request =
-                "wms?version=1.1.1"
-                        + "&styles="
-                        + LABEL_IN_FEATURE_INFO_DEM_NONE
-                        + "&format=jpeg"
-                        + "&request=GetFeatureInfo&layers="
-                        + layerId
-                        + "&query_layers="
-                        + layerId
-                        + "&X=50&Y=50"
-                        + "&SRS=EPSG:4326"
-                        + "&WIDTH=101&HEIGHT=101"
-                        + "&BBOX=145.41806031949818,-42.16195682063699,145.69546510465443,-41.88455203548074"
-                        + "&info_format="
-                        + JSONType.json;
+        String request = "wms?version=1.1.1"
+                + "&styles="
+                + LABEL_IN_FEATURE_INFO_DEM_NONE
+                + "&format=jpeg"
+                + "&request=GetFeatureInfo&layers="
+                + layerId
+                + "&query_layers="
+                + layerId
+                + "&X=50&Y=50"
+                + "&SRS=EPSG:4326"
+                + "&WIDTH=101&HEIGHT=101"
+                + "&BBOX=145.41806031949818,-42.16195682063699,145.69546510465443,-41.88455203548074"
+                + "&info_format="
+                + JSONType.json;
         JSONObject json = (JSONObject) getAsJSON(request);
-        JSONObject properties =
-                json.getJSONArray("features").getJSONObject(0).getJSONObject("properties");
+        JSONObject properties = json.getJSONArray("features").getJSONObject(0).getJSONObject("properties");
         assertFalse(properties.has("Label_GRAY_INDEX"));
         assertTrue(properties.has("GRAY_INDEX"));
     }
@@ -1004,33 +924,28 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         // Tests vendor option <VendorOption name="labelInFeatureInfo">replace</VendorOption>
         // with a ColorMap of type values
         Catalog cat = getCatalog();
-        LayerInfo tazDem =
-                cat.getLayerByName(
-                        new NameImpl(
-                                MockData.TASMANIA_DEM.getPrefix(),
-                                MockData.TASMANIA_DEM.getLocalPart()));
+        LayerInfo tazDem = cat.getLayerByName(
+                new NameImpl(MockData.TASMANIA_DEM.getPrefix(), MockData.TASMANIA_DEM.getLocalPart()));
         StyleInfo style = cat.getStyleByName(LABEL_IN_FEATURE_INFO_DEM_VALUES);
         tazDem.getStyles().add(style);
         cat.save(tazDem);
         String layerId = getLayerId(MockData.TASMANIA_DEM);
-        String request =
-                "wms?version=1.1.1"
-                        + "&styles="
-                        + LABEL_IN_FEATURE_INFO_DEM_VALUES
-                        + "&format=jpeg"
-                        + "&request=GetFeatureInfo&layers="
-                        + layerId
-                        + "&query_layers="
-                        + layerId
-                        + "&X=50&Y=50"
-                        + "&SRS=EPSG:4326"
-                        + "&WIDTH=101&HEIGHT=101"
-                        + "&BBOX=145.11703491210938,-42.28939821012318,145.39443969726562,-42.01199342496693"
-                        + "&info_format="
-                        + JSONType.json;
+        String request = "wms?version=1.1.1"
+                + "&styles="
+                + LABEL_IN_FEATURE_INFO_DEM_VALUES
+                + "&format=jpeg"
+                + "&request=GetFeatureInfo&layers="
+                + layerId
+                + "&query_layers="
+                + layerId
+                + "&X=50&Y=50"
+                + "&SRS=EPSG:4326"
+                + "&WIDTH=101&HEIGHT=101"
+                + "&BBOX=145.11703491210938,-42.28939821012318,145.39443969726562,-42.01199342496693"
+                + "&info_format="
+                + JSONType.json;
         JSONObject json = (JSONObject) getAsJSON(request);
-        JSONObject properties =
-                json.getJSONArray("features").getJSONObject(0).getJSONObject("properties");
+        JSONObject properties = json.getJSONArray("features").getJSONObject(0).getJSONObject("properties");
         // we have replace size should be 1
         assertEquals(1, properties.size());
         assertEquals("value is 1", properties.getString("Label_GRAY_INDEX"));
@@ -1045,33 +960,28 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         //
         // <VendorOption name="labelInFeatureInfo">replace</VendorOption>
         Catalog cat = getCatalog();
-        LayerInfo tazDem =
-                cat.getLayerByName(
-                        new NameImpl(
-                                MockData.TASMANIA_DEM.getPrefix(),
-                                MockData.TASMANIA_DEM.getLocalPart()));
+        LayerInfo tazDem = cat.getLayerByName(
+                new NameImpl(MockData.TASMANIA_DEM.getPrefix(), MockData.TASMANIA_DEM.getLocalPart()));
         StyleInfo style = cat.getStyleByName(LABEL_IN_FEATURE_INFO_MULTIPLE_SYMBOLIZERS);
         tazDem.getStyles().add(style);
         cat.save(tazDem);
         String layerId = getLayerId(MockData.TASMANIA_DEM);
-        String request =
-                "wms?version=1.1.1"
-                        + "&styles="
-                        + LABEL_IN_FEATURE_INFO_MULTIPLE_SYMBOLIZERS
-                        + "&format=jpeg"
-                        + "&request=GetFeatureInfo&layers="
-                        + layerId
-                        + "&query_layers="
-                        + layerId
-                        + "&X=50&Y=50"
-                        + "&SRS=EPSG:4326"
-                        + "&WIDTH=101&HEIGHT=101"
-                        + "&BBOX=145.11703491210938,-42.28939821012318,145.39443969726562,-42.01199342496693"
-                        + "&info_format="
-                        + JSONType.json;
+        String request = "wms?version=1.1.1"
+                + "&styles="
+                + LABEL_IN_FEATURE_INFO_MULTIPLE_SYMBOLIZERS
+                + "&format=jpeg"
+                + "&request=GetFeatureInfo&layers="
+                + layerId
+                + "&query_layers="
+                + layerId
+                + "&X=50&Y=50"
+                + "&SRS=EPSG:4326"
+                + "&WIDTH=101&HEIGHT=101"
+                + "&BBOX=145.11703491210938,-42.28939821012318,145.39443969726562,-42.01199342496693"
+                + "&info_format="
+                + JSONType.json;
         JSONObject json = (JSONObject) getAsJSON(request);
-        JSONObject properties =
-                json.getJSONArray("features").getJSONObject(0).getJSONObject("properties");
+        JSONObject properties = json.getJSONArray("features").getJSONObject(0).getJSONObject("properties");
         // we have replace size should be 2
         assertEquals(2, properties.size());
         assertEquals(">= 1 AND < 124.811736", properties.getString("first symbolizer"));
@@ -1085,31 +995,26 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         // add the label only for the band being used in the rule
         Catalog cat = getCatalog();
         LayerInfo tazDem =
-                cat.getLayerByName(
-                        new NameImpl(
-                                MockData.TASMANIA_BM.getPrefix(),
-                                MockData.TASMANIA_BM.getLocalPart()));
+                cat.getLayerByName(new NameImpl(MockData.TASMANIA_BM.getPrefix(), MockData.TASMANIA_BM.getLocalPart()));
         StyleInfo style = cat.getStyleByName(LABEL_IN_FEATURE_INFO_STYLE_BM);
         tazDem.getStyles().add(style);
         cat.save(tazDem);
         String layerId = getLayerId(MockData.TASMANIA_BM);
-        String request =
-                "wms?version=1.1.1"
-                        + "&styles="
-                        + LABEL_IN_FEATURE_INFO_STYLE_BM
-                        + "&format=jpeg"
-                        + "&request=GetFeatureInfo&layers="
-                        + layerId
-                        + "&query_layers="
-                        + layerId
-                        + "&X=50&Y=50"
-                        + "&SRS=EPSG:4326&WIDTH=101&HEIGHT=101"
-                        + "&BBOX=147.22476194612682,-44.045562744140625,147.50216673128307,-43.768157958984375"
-                        + "&info_format="
-                        + JSONType.json;
+        String request = "wms?version=1.1.1"
+                + "&styles="
+                + LABEL_IN_FEATURE_INFO_STYLE_BM
+                + "&format=jpeg"
+                + "&request=GetFeatureInfo&layers="
+                + layerId
+                + "&query_layers="
+                + layerId
+                + "&X=50&Y=50"
+                + "&SRS=EPSG:4326&WIDTH=101&HEIGHT=101"
+                + "&BBOX=147.22476194612682,-44.045562744140625,147.50216673128307,-43.768157958984375"
+                + "&info_format="
+                + JSONType.json;
         JSONObject json = (JSONObject) getAsJSON(request);
-        JSONObject properties =
-                json.getJSONArray("features").getJSONObject(0).getJSONObject("properties");
+        JSONObject properties = json.getJSONArray("features").getJSONObject(0).getJSONObject("properties");
         assertTrue(properties.has("Label_RED_BAND"));
         assertEquals(26, properties.getInt("RED_BAND"));
         assertEquals("21", properties.getString("Label_RED_BAND"));
@@ -1123,58 +1028,51 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         // <VendorOption name="labelInFeatureInfo">add</VendorOption>
         Catalog cat = getCatalog();
         LayerInfo tazDem =
-                cat.getLayerByName(
-                        new NameImpl(
-                                MockData.TASMANIA_BM.getPrefix(),
-                                MockData.TASMANIA_BM.getLocalPart()));
+                cat.getLayerByName(new NameImpl(MockData.TASMANIA_BM.getPrefix(), MockData.TASMANIA_BM.getLocalPart()));
         StyleInfo style = cat.getStyleByName(LABEL_IN_FEATURE_INFO_STYLE_MULTIPLE_SYMBLOZERS2);
         tazDem.getStyles().add(style);
         cat.save(tazDem);
         String layerId = getLayerId(MockData.TASMANIA_BM);
-        String request =
-                "wms?version=1.1.1"
-                        + "&styles="
-                        + LABEL_IN_FEATURE_INFO_STYLE_MULTIPLE_SYMBLOZERS2
-                        + "&format=jpeg"
-                        + "&request=GetFeatureInfo&layers="
-                        + layerId
-                        + "&query_layers="
-                        + layerId
-                        + "&X=50&Y=50"
-                        + "&SRS=EPSG:4326&WIDTH=101&HEIGHT=101"
-                        + "&BBOX=147.14566041715443,-44.49600223917514,147.42306520231068,-44.21859745401889"
-                        + "&info_format="
-                        + JSONType.json;
+        String request = "wms?version=1.1.1"
+                + "&styles="
+                + LABEL_IN_FEATURE_INFO_STYLE_MULTIPLE_SYMBLOZERS2
+                + "&format=jpeg"
+                + "&request=GetFeatureInfo&layers="
+                + layerId
+                + "&query_layers="
+                + layerId
+                + "&X=50&Y=50"
+                + "&SRS=EPSG:4326&WIDTH=101&HEIGHT=101"
+                + "&BBOX=147.14566041715443,-44.49600223917514,147.42306520231068,-44.21859745401889"
+                + "&info_format="
+                + JSONType.json;
         JSONObject json = (JSONObject) getAsJSON(request);
-        JSONObject properties =
-                json.getJSONArray("features").getJSONObject(0).getJSONObject("properties");
+        JSONObject properties = json.getJSONArray("features").getJSONObject(0).getJSONObject("properties");
         assertEquals("13", properties.getString("Label1_RED_BAND"));
         assertEquals("value is 13", properties.getString("Label2_RED_BAND"));
     }
 
     /**
-     * Checks that a style that displays the same data as both raster and vector gets identified
-     * twice, once for the raster information, and once for the vector one (with a rendering
-     * transformation in the mix)
+     * Checks that a style that displays the same data as both raster and vector gets identified twice, once for the
+     * raster information, and once for the vector one (with a rendering transformation in the mix)
      */
     @Test
     public void testRasterAndVectorInfo() throws Exception {
         String layerId = getLayerId(MockData.TASMANIA_BM);
-        String request =
-                "wms?version=1.1.1"
-                        + "&styles="
-                        + RASTER_VECTOR
-                        + "&format=jpeg"
-                        + "&request=GetFeatureInfo&layers="
-                        + layerId
-                        + "&query_layers="
-                        + layerId
-                        + "&X=50&Y=50"
-                        + "&SRS=EPSG:4326&WIDTH=100&HEIGHT=100"
-                        + "&BBOX=147.14566041715443,-44.49600223917514,147.42306520231068,-44.21859745401889"
-                        + "&info_format="
-                        + JSONType.json
-                        + "&buffer=1";
+        String request = "wms?version=1.1.1"
+                + "&styles="
+                + RASTER_VECTOR
+                + "&format=jpeg"
+                + "&request=GetFeatureInfo&layers="
+                + layerId
+                + "&query_layers="
+                + layerId
+                + "&X=50&Y=50"
+                + "&SRS=EPSG:4326&WIDTH=100&HEIGHT=100"
+                + "&BBOX=147.14566041715443,-44.49600223917514,147.42306520231068,-44.21859745401889"
+                + "&info_format="
+                + JSONType.json
+                + "&buffer=1";
         JSONObject json = (JSONObject) getAsJSON(request);
         JSONArray features = json.getJSONArray("features");
         assertEquals(2, features.size());
@@ -1201,15 +1099,14 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
     @Test
     public void testMosaicFootprintRaster() throws Exception {
         // both footprint extraction and raster identification at the same time
-        String url =
-                "wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES="
-                        + FOOTPRINT_RASTER
-                        + "&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
-                        + "&REQUEST=GetFeatureInfo&SRS=EPSG:4326&BBOX=0,0,1,1&WIDTH=150&HEIGHT=150"
-                        + "&transparent=false&CQL_FILTER=location like 'green%25' + "
-                        + "&query_layers=sf:mosaic&x=10&y=10"
-                        + "&info_format="
-                        + JSONType.json;
+        String url = "wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES="
+                + FOOTPRINT_RASTER
+                + "&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
+                + "&REQUEST=GetFeatureInfo&SRS=EPSG:4326&BBOX=0,0,1,1&WIDTH=150&HEIGHT=150"
+                + "&transparent=false&CQL_FILTER=location like 'green%25' + "
+                + "&query_layers=sf:mosaic&x=10&y=10"
+                + "&info_format="
+                + JSONType.json;
         JSONObject json = (JSONObject) getAsJSON(url);
         JSONArray features = json.getJSONArray("features");
         assertEquals(2, features.size());
@@ -1236,16 +1133,15 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
     @Test
     public void testIAURasterFeatureInfo() throws Exception {
         String layerId = getLayerId(SystemTestData.MARS_VIKING);
-        String url =
-                "wms?&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
-                        + "&REQUEST=GetFeatureInfo&SRS=EPSG:4326&BBOX=0,0,1,1&WIDTH=150&HEIGHT=150"
-                        + "&x=10&y=10"
-                        + "&LAYERS="
-                        + layerId
-                        + "&query_layers="
-                        + layerId
-                        + "&info_format="
-                        + JSONType.json;
+        String url = "wms?&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
+                + "&REQUEST=GetFeatureInfo&SRS=EPSG:4326&BBOX=0,0,1,1&WIDTH=150&HEIGHT=150"
+                + "&x=10&y=10"
+                + "&LAYERS="
+                + layerId
+                + "&query_layers="
+                + layerId
+                + "&info_format="
+                + JSONType.json;
         JSONObject json = (JSONObject) getAsJSON(url);
         // raster output does not carry a geometry, we only check a feature has been generated
         JSONArray features = json.getJSONArray("features");
@@ -1255,16 +1151,15 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
     @Test
     public void testIAUVectorFeatureInfo() throws Exception {
         String layerId = getLayerId(SystemTestData.MARS_POI);
-        String url =
-                "wms?&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
-                        + "&REQUEST=GetFeatureInfo&SRS=IAU:49900&BBOX=-180,-90,180,90"
-                        + "&WIDTH=20&HEIGHT=20&x=10&y=10&buffer=20"
-                        + "&LAYERS="
-                        + layerId
-                        + "&query_layers="
-                        + layerId
-                        + "&info_format="
-                        + JSONType.json;
+        String url = "wms?&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
+                + "&REQUEST=GetFeatureInfo&SRS=IAU:49900&BBOX=-180,-90,180,90"
+                + "&WIDTH=20&HEIGHT=20&x=10&y=10&buffer=20"
+                + "&LAYERS="
+                + layerId
+                + "&query_layers="
+                + layerId
+                + "&info_format="
+                + JSONType.json;
         JSONObject json = (JSONObject) getAsJSON(url);
         print(json);
         // raster output does not carry a geometry, we only check a feature has been generated
@@ -1289,38 +1184,35 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         // add a property selection (the code turns the original band names into band indexes,
         // has no way to know the result will be named in a different way... a fix for another day)
         checkFeatureInfoRTMultiband(r -> r + "&propertyNames=RED_BAND", 25);
-        checkFeatureInfoRTMultiband(
-                r -> (r + "&propertyNames=RED_BAND").replace("&X=50&Y=50", "&X=0&Y=0"), 0);
+        checkFeatureInfoRTMultiband(r -> (r + "&propertyNames=RED_BAND").replace("&X=50&Y=50", "&X=0&Y=0"), 0);
     }
 
-    private void checkFeatureInfoRTMultiband(
-            Function<String, String> requestCustomizer, int expected) throws Exception {
+    private void checkFeatureInfoRTMultiband(Function<String, String> requestCustomizer, int expected)
+            throws Exception {
         // set up the layer to use the spy format
         GeoTIFFSpyFormat.ENABLED = true;
         Catalog catalog = getCatalog();
         CoverageStoreInfo spyStore =
-                catalog.getCoverageStoreByName(
-                        TASMANIA_SPY.getPrefix(), TASMANIA_SPY.getLocalPart());
+                catalog.getCoverageStoreByName(TASMANIA_SPY.getPrefix(), TASMANIA_SPY.getLocalPart());
         spyStore.setType(GeoTIFFSpyFormat.NAME);
         catalog.save(spyStore);
         catalog.getResourcePool().clear(spyStore);
 
         try {
             String layerId = getLayerId(TASMANIA_SPY);
-            String request =
-                    "wms?version=1.1.1"
-                            + "&styles="
-                            + JIFFLE_CONDITION
-                            + "&format=jpeg"
-                            + "&request=GetFeatureInfo&layers="
-                            + layerId
-                            + "&query_layers="
-                            + layerId
-                            + "&X=50&Y=50"
-                            + "&SRS=EPSG:4326&WIDTH=101&HEIGHT=101"
-                            + "&BBOX=146.5,-44.5,148,-43"
-                            + "&info_format="
-                            + JSONType.json;
+            String request = "wms?version=1.1.1"
+                    + "&styles="
+                    + JIFFLE_CONDITION
+                    + "&format=jpeg"
+                    + "&request=GetFeatureInfo&layers="
+                    + layerId
+                    + "&query_layers="
+                    + layerId
+                    + "&X=50&Y=50"
+                    + "&SRS=EPSG:4326&WIDTH=101&HEIGHT=101"
+                    + "&BBOX=146.5,-44.5,148,-43"
+                    + "&info_format="
+                    + JSONType.json;
             request = requestCustomizer.apply(request);
             JSONObject json = (JSONObject) getAsJSON(request);
 
@@ -1374,21 +1266,20 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
 
     private JSONObject testRATAttributes(int x, int y) throws Exception {
         String layerId = getLayerId(RAT);
-        String url =
-                "wms?&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
-                        + "&REQUEST=GetFeatureInfo&SRS=EPSG:26918&BBOX=737662,4603974,737678,4603982"
-                        + "&LAYERS="
-                        + layerId
-                        + "&query_layers="
-                        + layerId
-                        + "&info_format="
-                        + JSONType.json
-                        + "&styles=rat"
-                        + "&WIDTH=4&HEIGHT=2"
-                        + "&x="
-                        + x
-                        + "&y="
-                        + y;
+        String url = "wms?&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
+                + "&REQUEST=GetFeatureInfo&SRS=EPSG:26918&BBOX=737662,4603974,737678,4603982"
+                + "&LAYERS="
+                + layerId
+                + "&query_layers="
+                + layerId
+                + "&info_format="
+                + JSONType.json
+                + "&styles=rat"
+                + "&WIDTH=4&HEIGHT=2"
+                + "&x="
+                + x
+                + "&y="
+                + y;
         JSONObject json = (JSONObject) getAsJSON(url);
         // raster output does not carry a geometry, we only check a feature has been generated
         JSONArray features = json.getJSONArray("features");

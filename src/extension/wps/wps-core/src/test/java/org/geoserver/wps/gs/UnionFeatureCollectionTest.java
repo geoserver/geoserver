@@ -32,7 +32,6 @@ public class UnionFeatureCollectionTest extends WPSTestSupport {
     GeometryFactory gf = new GeometryFactory();
 
     @Test
-    @SuppressWarnings("PMD.SimplifiableTestAssertion") // JTS geometry equality
     public void testExecute() throws Exception {
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.setName("featureType");
@@ -43,8 +42,7 @@ public class UnionFeatureCollectionTest extends WPSTestSupport {
         SimpleFeatureBuilder b = new SimpleFeatureBuilder(tb.buildFeatureType());
 
         DefaultFeatureCollection features = new DefaultFeatureCollection(null, b.getFeatureType());
-        DefaultFeatureCollection secondFeatures =
-                new DefaultFeatureCollection(null, b.getFeatureType());
+        DefaultFeatureCollection secondFeatures = new DefaultFeatureCollection(null, b.getFeatureType());
         Geometry[] firstArrayGeometry = new Geometry[5];
         Geometry[] secondArrayGeometry = new Geometry[5];
         for (int numFeatures = 0; numFeatures < 5; numFeatures++) {

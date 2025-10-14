@@ -1,3 +1,5 @@
+.. _mapml_installation:
+
 Installation
 --------------------
 
@@ -36,17 +38,6 @@ After having saved the configuration, the WFS output will looks like this, where
 .. figure:: images/mapml_feature_captions_wfs.png
 
 
-
-
-There is also a MapML-specific global WMS setting in the *MapML Extension* section of the ``WMS`` Services Settings Page.  This setting is used to control the handling of multi-layer requests.  
-
-
-.. figure:: images/mapml_config_wms.png
-
-If the ``Represent multi-layer requests as multiple elements`` is checked (and the configuration is saved), an individually accessible <map-extent> element will be generated for each requested layer.  The default is to represent the layers as a single (hidden) <map-extent>.
-
-.. figure:: images/mapml_wms_multi_extent.png
-
 TiledCRS
 --------
 MapML supports 4 built-in TiledCRS:
@@ -78,7 +69,14 @@ For example, the UTM14WGS84Quad specified in the above selector has the followin
 
 .. figure:: images/mapml_utm_gridset.png
 
+Global Settings
+---------------
 
+.. figure:: images/mapml_global_menu.png
+
+The Global settings menu (above) contains a Service Response Settings section (below) which contains the Verbose XML output (pretty print) checkbox. The MapML extension respects or uses this setting when serializing text/mapml (media type) responses.  Be aware that caching on both the client and server may prevent this setting from becoming immediately obvious in devtools responses. Refreshing the browser cache can request a new version of the response, but if the response is cached on the server, for example as a vector tile, it may not be possible to obtain a pretty printed version of the data, short of deleting the tile cache, which may be undesirable.
+
+.. figure:: images/mapml_global_verbose_output.png
 
 Styles
 ------
@@ -109,21 +107,7 @@ Tile Settings
 Using tiles to access the layer can increase the performance of your web map. This is especially true if there is a tile cache mechanism in use between GeoServer and the browser client.
 
 **Use Tiles**
-  If the "Use Tiles" checkbox is checked, by default the output MapML will define a tile-based reference to the WMS server. Otherwise, an image-based reference will be used.  If one or more of the MapML-defined GridSets is referenced by the layer or layer group in its "Tile Caching" profile, GeoServer will generate tile references instead of generating WMS GetMap URLs in the MapML document body.
-
-Client Requests
-^^^^^^^^^^^^^^^
-
-When configuring a cascaded WMS or WMTS remote layers, a new "Client Requests" setting is available.
-
-**Remote**
-  If the "Remote" checkbox is checked, the link templates embedded in MapML will refer to the remote WMS/WMTS.
-  The MapML viewer will directly contact the remote server if certain criteria are met:
-
-- No restricting DataAccessLimit security is associated to the layer (e.g. with GeoFence integration) that will do filtering, clipping or similar operations. In that case, the MapML will point to the local GeoServer so that the param is honored.
-- No vendor parameters are used in the incoming request. If vendor parameters are used (e.g., request clipping with geometric mask) the MapML is pointing to the local GeoServer so that the vendor parameter is honored
-- The remote Server is supporting the requested CoordinateReferenceSystem for that layer.
-- GetTile requests will be sent to the remote server if there is a compatible gridset for that layer (same origin, same CRS, same tile sizes, same levels and same resolutions)
+  If you check the "Use Tiles" checkbox and save it, the MapML format on the Layer Preview page will use tile-based references to the WMS server. Checking this checkbox sets the `FORMAT_OPTIONS=mapmlusetiles:true` parameter value in the Layer Preview URL, but you can set and use this value in WMS requests for the text/mapml format independently. The `mapmlusetiles`, `mapmlusefeatures` and `mapmlusemultiextents` FORMAT_OPTIONS parameters can be used together to control the type of requests and responses used in your web map client. For example, if your layer or layer group has a cached tile layer configured, GeoServer will generate tile references (e.g., <map-link rel="tile" tref="...request=GetTile...">) instead of WMS GetMap URLs (e.g., <map-link rel="image" tref="...request=GetMap...">); if in addition to having a cached tile layer for a layer or layer group you have also enabled caching of the `text/mapml` format, you can use `FORMAT_OPTIONS=mapmlusetiles:true;mapmlusefeatures:true` to obtain and use tiles in MapML format.
 
 Vector Settings
 ^^^^^^^^^^^^^^^
@@ -131,7 +115,7 @@ Vector Settings
 MapML supports the serving of vector feature representations of the data.  This results in a smoother user navigation experience, smaller bandwidth requirements, and more options for dynamic styling on the client-side.
 
 **Use Features**
-  If the "Use Features" checkbox is checked, by default the output MapML will define a feature-based reference to the WMS server. Otherwise, an image-based reference will be used.  Note that this option is only available for vector source data.  MapML <map-extent> element with a feature link:
+  If the "Use Features" checkbox is checked, the output MapML on the Layer Preview page will define a feature-based reference to the WMS server. When making WMS request add `mapmlusefeatures:true` to the FORMAT_OPTIONS parameter.  Otherwise, an image-based reference will be used.  Note that when applied to raster data map-tile elements will be generated for the requested coverage area.  MapML <map-extent> element with a feature link:
 
 .. code-block:: html
 
@@ -146,9 +130,37 @@ MapML supports the serving of vector feature representations of the data.  This 
       <map-link tref="http://localhost:8080/geoserver/tiger/wms?format_options=mapmlfeatures:true&amp;request=GetMap&amp;crs=MapML:WGS84&amp;bbox={xmin},{ymin},{xmax},{ymax}&amp;format=text/mapml&amp;language=en&amp;version=1.3.0&amp;transparent=true&amp;service=WMS&amp;layers=poi&amp;width={w}&amp;styles=&amp;height={h}" rel="features"/>
     </map-extent>
 
-When both "Use Tiles" and "Use Features" are checked, the MapML extension will request tiled maps in ``text/mapml`` format.
+When both "Use Tiles" and "Use Features" are set in the FORMAT_OPTIONS parameter (`mapmlusefeatures:true;mapmlusetiles:true`), the MapML extension will request tiled maps in ``text/mapml`` format.
 The contents of the tiles will be clipped to the requested area, and feature attributes will be skiipped, as the MapML client cannot leverage them for the moment.
 
+Sub-layer Settings
+^^^^^^^^^^^^^^^^^^
+
+.. figure:: images/mapml_sub_layer_settings.png
+    :width: 50%
+
+    The sub-layer settings checkbox is shown
+
+If the ``Show <map-extent> in layer control`` checkbox is checked (and the configuration is saved), the `mapmlusemultiextents:true` FORMAT_OPTIONS value will be used in the Layer Preview URL, and an individually accessible <map-extent> element will be generated for each requested layer.  When composing a WMS request independently, include the `mapmlusemultiextents:true` parameter within FORMAT_OPTIONS if desired.  The default value (false) is to represent the all layers in the LAYERS list as a single (hidden) <map-extent>.
+
+.. figure:: images/mapml_wms_multi_extent.png
+   :width: 75%
+
+   This map uses `FORMAT_OPTIONS=mapmlusefeatures:true;mapmlusemultiextents:true;mapmlusetiles:true`
+
+Client Requests
+^^^^^^^^^^^^^^^
+
+When configuring a cascaded WMS or WMTS remote layers, a new "Client Requests" setting is available.
+
+**Remote**
+  If the "Remote" checkbox is checked, the link templates embedded in MapML will refer to the remote WMS/WMTS.
+  The MapML viewer will directly contact the remote server if certain criteria are met:
+
+- No restricting DataAccessLimit security is associated to the layer (e.g. with GeoFence integration) that will do filtering, clipping or similar operations. In that case, the MapML will point to the local GeoServer so that the param is honored.
+- No vendor parameters are used in the incoming request. If vendor parameters are used (e.g., request clipping with geometric mask) the MapML is pointing to the local GeoServer so that the vendor parameter is honored
+- The remote Server is supporting the requested CoordinateReferenceSystem for that layer.
+- GetTile requests will be sent to the remote server if there is a compatible gridset for that layer (same origin, same CRS, same tile sizes, same levels and same resolutions)
 
 **Feature Styling**
   Basic styling of vector features is supported by the MapML extension.  The style is defined in the WMS GetMap request, and the MapML extension will convert the rules and style attributes defined in the SLD into CSS classes and apply those classes to the appropriate features.  Note that this conversion is currently limited to basic styling and does not include transformation functions, external graphics, or styling dependent on individual feature attributes (non-static style values).  See below for a more detailed compatibility table: 
@@ -245,11 +257,9 @@ WMS GetMap considerations
 
 By default, each layer/style pair that is requested via the GetMap parameters is composed into a single <map-extent>...<map-link tref="...">...</map-extent> structure as exemplified above.  
 
-If the 'Represent multi-layer requests as multiple elements' checkbox from the global WMS Settings page is checked as described above, a request for multiple layers or layer groups in MapML format will result in the serialization of a MapML document containing multiple <map-extent> elements. Each layer/style pair is represented by a <map-extent> element in the response.  The <map-extent> elements are represented in the client viewer layer control settings as sub-layers, which turn on and off independently of each other, but which are controlled by the parent <map-layer> element's state (checked / unchecked, opacity etc) (right-click or Shift+F10 to obtain context menus):
+If the FORMAT_OPTION parameter of the WMS request is configured with `mapmlusemultiextents:true`, a request for multiple layers or layer groups in MapML format on the Layer Preview page will result in the serialization of a MapML document containing multiple <map-extent> elements.  Each layer/style pair is represented by a <map-extent> element in the response.  The <map-extent> elements are represented in the client viewer layer control settings as sub-layers, which turn on and off independently of each other, but which are controlled by the parent <map-layer> element's state (checked / unchecked, opacity etc) (right-click or Shift+F10 to obtain context menus):
 
 .. figure:: images/mapml_wms_multi_extent.png
-
-With 'Represent multi-layer requests as multiple elements' checked, if two or more layers are requested in MapML format via the GetMap 'layers' parameter, the MapML extension serialize each layer's <map-extent> according to its "Use Features" and "Use Tiles" settings.  Note that there is currently no "Use Features" setting available for layer groups.
 
 Tile Caching
 ^^^^^^^^^^^^
@@ -264,6 +274,18 @@ it will try to use tiles in ``text/mapml`` format, which should be configured as
 in order to enable WMTS requests.
 
 .. figure:: images/mapml_tile_caching_panel_ui.png
+
+In order to properly pass the proper multi-extent, tiling, and feature parameters to the tiling WMS requests used to populate the cache, a FORMAT_OPTIONS parameter filter (see :ref:`gwc_webadmin_layers`) must be created with appropriate default values and a regular expression that matches the MapML requests.  
+
+The Default Value entry should look like this::
+
+    mapmlusemultiextents:true;mapmlusefeatures:false;mapmlusetiles:true
+
+Here is an example regular expression that matches the MapML FORMAT_OPTIONS parameters in any order::
+
+    (?i)\\b(mapmlusemultiextents|mapmlusefeatures|mapmlusetiles):\\s*(true|false)\\b(?:\\s*;\\s*(?i)\\b(mapmlusemultiextents|mapmlusefeatures|mapmlusetiles):\\s*(true|false)\\b)*(?:\\s*;\\s*(?i)\\b(mapmlusemultiextents|mapmlusefeatures|mapmlusetiles):\\s*(true|false)\\b)*
+
+.. figure:: images/mapml_tile_filter.png
 
 Starting with version 2.26.x of GeoServer, Sharding support and related configuration has been removed
 

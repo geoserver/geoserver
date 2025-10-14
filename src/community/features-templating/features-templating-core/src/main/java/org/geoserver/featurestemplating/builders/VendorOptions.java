@@ -3,9 +3,7 @@ package org.geoserver.featurestemplating.builders;
 import java.util.HashMap;
 import org.geotools.api.filter.expression.Expression;
 
-/**
- * Class listing the supported options a user can specify from a template to customize the output.
- */
+/** Class listing the supported options a user can specify from a template to customize the output. */
 public class VendorOptions extends HashMap<String, Object> {
 
     // encoding hint to retrieve the json-ld context
@@ -47,8 +45,8 @@ public class VendorOptions extends HashMap<String, Object> {
     public <T> T get(String key, Class<T> cast) {
         Object value = get(key);
         T result = null;
-        if (value instanceof Expression && !Expression.class.isAssignableFrom(cast)) {
-            result = ((Expression) value).evaluate(null, cast);
+        if (value instanceof Expression expression && !Expression.class.isAssignableFrom(cast)) {
+            result = expression.evaluate(null, cast);
         } else {
             result = cast.cast(value);
         }

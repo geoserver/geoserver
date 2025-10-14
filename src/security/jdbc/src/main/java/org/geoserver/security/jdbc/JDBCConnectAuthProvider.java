@@ -50,20 +50,19 @@ public class JDBCConnectAuthProvider extends GeoServerAuthenticationProvider {
     public Authentication authenticate(Authentication authentication, HttpServletRequest request)
             throws AuthenticationException {
 
-        UsernamePasswordAuthenticationToken token =
-                (UsernamePasswordAuthenticationToken) authentication;
+        UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) authentication;
 
         // check for valid user name
         if (token.getPrincipal() == null || token.getPrincipal().toString().isEmpty()) return null;
         String user = token.getPrincipal().toString();
-        String password = token.getCredentials() == null ? "" : token.getCredentials().toString();
+        String password =
+                token.getCredentials() == null ? "" : token.getCredentials().toString();
 
         UserDetails details = null;
 
         if (userGroupServiceName != null) {
             try {
-                GeoServerUserGroupService service =
-                        getSecurityManager().loadUserGroupService(userGroupServiceName);
+                GeoServerUserGroupService service = getSecurityManager().loadUserGroupService(userGroupServiceName);
                 details = service.loadUserByUsername(user);
                 if (details.isEnabled() == false) {
                     log(new DisabledException("User " + user + " is disabled"));

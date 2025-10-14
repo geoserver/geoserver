@@ -28,8 +28,7 @@ public class XStreamXMLMessageConverter extends XStreamMessageConverter<Object> 
     @Override
     protected boolean supports(Class<?> clazz) {
         // we can only read RestWrapper, not RestListWrapper
-        return !RestWrapper.class.isAssignableFrom(clazz)
-                || !RestListWrapper.class.isAssignableFrom(clazz);
+        return !RestWrapper.class.isAssignableFrom(clazz) || !RestListWrapper.class.isAssignableFrom(clazz);
     }
 
     @Override
@@ -37,8 +36,8 @@ public class XStreamXMLMessageConverter extends XStreamMessageConverter<Object> 
             throws IOException, HttpMessageNotReadableException {
         XStreamPersister p = xpf.createXMLPersister();
         p.setUnwrapNulls(false);
-        if (inputMessage instanceof RestHttpInputWrapper) {
-            ((RestHttpInputWrapper) inputMessage).configurePersister(p, this);
+        if (inputMessage instanceof RestHttpInputWrapper wrapper) {
+            wrapper.configurePersister(p, this);
         }
         p.setCatalog(catalog);
         return p.load(inputMessage.getBody(), clazz);
@@ -62,8 +61,7 @@ public class XStreamXMLMessageConverter extends XStreamMessageConverter<Object> 
         xmlPersister.setCatalog(catalog);
         xmlPersister.setReferenceByName(true);
         xmlPersister.setExcludeIds();
-        if (o instanceof RestWrapper) {
-            RestWrapper<?> wrapper = (RestWrapper<?>) o;
+        if (o instanceof RestWrapper<?> wrapper) {
             wrapper.configurePersister(xmlPersister, this);
             o = wrapper.getObject();
         }

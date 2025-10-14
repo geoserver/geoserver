@@ -12,8 +12,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
-import javax.media.jai.RenderedOp;
-import javax.media.jai.operator.ExtremaDescriptor;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
@@ -33,6 +31,7 @@ import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.data.util.NullProgressListener;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.geometry.jts.WKTReader2;
+import org.geotools.image.ImageWorker;
 import org.geotools.process.ProcessException;
 import org.geotools.referencing.CRS;
 import org.junit.AfterClass;
@@ -65,8 +64,7 @@ public class VerticalResampleTest extends WPSTestSupport {
         testData.copyTo(
                 VerticalResampleTest.class
                         .getClassLoader()
-                        .getResourceAsStream(
-                                "download-process/vertical/epsg_operations.properties"),
+                        .getResourceAsStream("download-process/vertical/epsg_operations.properties"),
                 "user_projections/epsg_operations.properties");
         testData.copyTo(
                 VerticalResampleTest.class
@@ -87,10 +85,7 @@ public class VerticalResampleTest extends WPSTestSupport {
         testData.addRasterLayer(HETEROGENEOUS_CRS2, "heterogeneous_crs2.zip", null, getCatalog());
         CRS.reset("all");
         setVerticalCRS();
-        final File file =
-                new File(
-                        this.getTestData().getDataDirectoryRoot(),
-                        "user_projections/verticalgrid.tif");
+        final File file = new File(this.getTestData().getDataDirectoryRoot(), "user_projections/verticalgrid.tif");
         GeoTiffReader reader = new GeoTiffReader(file);
         reader.dispose();
     }
@@ -100,8 +95,7 @@ public class VerticalResampleTest extends WPSTestSupport {
     }
 
     @Test
-    public void testVerticalResamplingMissingSourceVerticalCRS()
-            throws ParseException, FactoryException {
+    public void testVerticalResamplingMissingSourceVerticalCRS() throws ParseException, FactoryException {
         final WPSResourceManager resourceManager = getResourceManager();
         GeoServer geoserver = getGeoServer();
         DownloadEstimatorProcess limits =
@@ -116,35 +110,32 @@ public class VerticalResampleTest extends WPSTestSupport {
             Parameters parameters = new Parameters();
             List<Parameter> parametersList = parameters.getParameters();
             parametersList.add(new Parameter("writenodata", "false"));
-            ProcessException e =
-                    Assert.assertThrows(
-                            ProcessException.class,
-                            new ThrowingRunnable() {
+            ProcessException e = Assert.assertThrows(ProcessException.class, new ThrowingRunnable() {
 
-                                @Override
-                                public void run() throws Throwable {
-                                    downloadProcess.execute(
-                                            getLayerId(HETEROGENEOUS_CRS2), // layerName
-                                            null, // filter
-                                            "image/tiff", // outputFormat
-                                            "image/tiff",
-                                            targetCRS, // targetCRS
-                                            targetCRS,
-                                            bboxRoi, // roi
-                                            false, // cropToGeometry
-                                            null, // interpolation
-                                            null, // targetSizeX
-                                            null, // targetSizeY
-                                            null, // bandSelectIndices
-                                            parameters, // Writing params
-                                            false,
-                                            false,
-                                            0d,
-                                            CRS.decode("EPSG:9999", true),
-                                            new NullProgressListener() // progressListener
-                                            );
-                                }
-                            });
+                @Override
+                public void run() throws Throwable {
+                    downloadProcess.execute(
+                            getLayerId(HETEROGENEOUS_CRS2), // layerName
+                            null, // filter
+                            "image/tiff", // outputFormat
+                            "image/tiff",
+                            targetCRS, // targetCRS
+                            targetCRS,
+                            bboxRoi, // roi
+                            false, // cropToGeometry
+                            null, // interpolation
+                            null, // targetSizeX
+                            null, // targetSizeY
+                            null, // bandSelectIndices
+                            parameters, // Writing params
+                            false,
+                            false,
+                            0d,
+                            CRS.decode("EPSG:9999", true),
+                            new NullProgressListener() // progressListener
+                            );
+                }
+            });
             assertTrue(e.getMessage().contains("no source VerticalCRS"));
         } finally {
             // clean up process
@@ -154,10 +145,8 @@ public class VerticalResampleTest extends WPSTestSupport {
     }
 
     @Test
-    public void testVerticalResamplingOutsideOfTheGrid()
-            throws ParseException, IOException, FactoryException {
-        final WPSResourceManager resourceManager =
-                GeoServerExtensions.bean(WPSResourceManager.class);
+    public void testVerticalResamplingOutsideOfTheGrid() throws ParseException, IOException, FactoryException {
+        final WPSResourceManager resourceManager = GeoServerExtensions.bean(WPSResourceManager.class);
         GeoServer geoserver = getGeoServer();
         DownloadEstimatorProcess limits =
                 new DownloadEstimatorProcess(new StaticDownloadServiceConfiguration(), geoserver);
@@ -172,41 +161,41 @@ public class VerticalResampleTest extends WPSTestSupport {
         Parameters parameters = new Parameters();
         List<Parameter> parametersList = parameters.getParameters();
         parametersList.add(new Parameter("writenodata", "false"));
-        RawData raster =
-                downloadProcess.execute(
-                        getLayerId(HETEROGENEOUS_CRS2), // layerName
-                        null, // filter
-                        "image/tiff", // outputFormat
-                        "image/tiff",
-                        targetCRS, // targetCRS
-                        targetCRS,
-                        bboxRoi, // roi
-                        false, // cropToGeometry
-                        null, // interpolation
-                        null, // targetSizeX
-                        null, // targetSizeY
-                        null, // bandSelectIndices
-                        parameters, // Writing params
-                        true,
-                        true,
-                        0d,
-                        CRS.decode("EPSG:9998", true),
-                        new NullProgressListener() // progressListener
-                        );
+        RawData raster = downloadProcess.execute(
+                getLayerId(HETEROGENEOUS_CRS2), // layerName
+                null, // filter
+                "image/tiff", // outputFormat
+                "image/tiff",
+                targetCRS, // targetCRS
+                targetCRS,
+                bboxRoi, // roi
+                false, // cropToGeometry
+                null, // interpolation
+                null, // targetSizeX
+                null, // targetSizeY
+                null, // bandSelectIndices
+                parameters, // Writing params
+                true,
+                true,
+                0d,
+                CRS.decode("EPSG:9998", true),
+                new NullProgressListener() // progressListener
+                );
         try (DownloadProcessTest.AutoCloseableResource resource =
                         new DownloadProcessTest.AutoCloseableResource(resourceManager, raster);
                 DownloadProcessTest.AutoDisposableGeoTiffReader reader =
                         new DownloadProcessTest.AutoDisposableGeoTiffReader(resource.getFile());
                 DownloadProcessTest.AutoDisposableGridCoverage2D gc = reader.read()) {
             RenderedImage ri = gc.getRenderedImage();
-            RenderedOp extremaOp = ExtremaDescriptor.create(ri, null, 1, 1, false, 1, null);
+            ImageWorker iw = new ImageWorker(ri);
+            double[] minimum = iw.getMinimums();
+            double[] maximum = iw.getMaximums();
 
             // The original file has only pixel with values in range [1 , 2]
             // Check that the vertical resampling didn't happen due to the vertical grid not
             // covering that area
-            double[][] extrema = (double[][]) extremaOp.getProperty("Extrema");
-            assertEquals(extrema[0][0], 1, DELTA);
-            assertEquals(extrema[1][0], 2, DELTA);
+            assertEquals(minimum[0], 1, DELTA);
+            assertEquals(maximum[0], 2, DELTA);
         }
     }
 
@@ -227,27 +216,26 @@ public class VerticalResampleTest extends WPSTestSupport {
         Parameters parameters = new Parameters();
         List<Parameter> parametersList = parameters.getParameters();
         parametersList.add(new Parameter("writenodata", "false"));
-        RawData raster =
-                downloadProcess.execute(
-                        getLayerId(HETEROGENEOUS_CRS2), // layerName
-                        null, // filter
-                        "image/tiff", // outputFormat
-                        "image/tiff",
-                        targetCRS, // targetCRS
-                        targetCRS,
-                        bboxRoi, // roi
-                        false, // cropToGeometry
-                        null, // interpolation
-                        null, // targetSizeX
-                        null, // targetSizeY
-                        null, // bandSelectIndices
-                        parameters, // Writing params
-                        true,
-                        true,
-                        0d,
-                        CRS.decode("EPSG:9999", true),
-                        new NullProgressListener() // progressListener
-                        );
+        RawData raster = downloadProcess.execute(
+                getLayerId(HETEROGENEOUS_CRS2), // layerName
+                null, // filter
+                "image/tiff", // outputFormat
+                "image/tiff",
+                targetCRS, // targetCRS
+                targetCRS,
+                bboxRoi, // roi
+                false, // cropToGeometry
+                null, // interpolation
+                null, // targetSizeX
+                null, // targetSizeY
+                null, // bandSelectIndices
+                parameters, // Writing params
+                true,
+                true,
+                0d,
+                CRS.decode("EPSG:9999", true),
+                new NullProgressListener() // progressListener
+                );
         try (DownloadProcessTest.AutoCloseableResource resource =
                         new DownloadProcessTest.AutoCloseableResource(resourceManager, raster);
                 DownloadProcessTest.AutoDisposableGeoTiffReader reader =
@@ -255,7 +243,6 @@ public class VerticalResampleTest extends WPSTestSupport {
                 DownloadProcessTest.AutoDisposableGridCoverage2D gc = reader.read()) {
 
             RenderedImage ri = gc.getRenderedImage();
-            RenderedOp extremaOp = ExtremaDescriptor.create(ri, null, 1, 1, false, 1, null);
 
             // The original file has only pixel with values in range [1 , 2]
             // On that ROI, the vertical grid has values around [60 , 160]
@@ -264,9 +251,11 @@ public class VerticalResampleTest extends WPSTestSupport {
             // Check that the vertically interpolated values are coherent.
             // Not using equals check to allow some tolerance for the bilinear interpolation on the
             // grid values
-            double[][] extrema = (double[][]) extremaOp.getProperty("Extrema");
-            assertTrue(extrema[0][0] > 60);
-            assertTrue(extrema[1][0] < 163);
+            ImageWorker iw = new ImageWorker(ri);
+            double[] minimum = iw.getMinimums();
+            double[] maximum = iw.getMaximums();
+            assertTrue(minimum[0] > 60);
+            assertTrue(maximum[0] < 163);
         }
     }
 
@@ -290,18 +279,14 @@ public class VerticalResampleTest extends WPSTestSupport {
             CoordinateReferenceSystem sourceCRS = CRS.decode("EPSG:5778", true);
             CoordinateReferenceSystem targetCRS1 = CRS.decode("EPSG:9998", true);
             CoordinateReferenceSystem targetCRS2 = CRS.decode("EPSG:9999", true);
-            VerticalResampler resampler1 =
-                    new VerticalResampler(sourceCRS, targetCRS1, new GridCoverageFactory());
-            VerticalResampler resampler2 =
-                    new VerticalResampler(sourceCRS, targetCRS2, new GridCoverageFactory());
+            VerticalResampler resampler1 = new VerticalResampler(sourceCRS, targetCRS1, new GridCoverageFactory());
+            VerticalResampler resampler2 = new VerticalResampler(sourceCRS, targetCRS2, new GridCoverageFactory());
             Field transform = VerticalResampler.class.getDeclaredField("verticalGridTransform");
             transform.setAccessible(true);
             VerticalGridTransform fieldValue1 = (VerticalGridTransform) transform.get(resampler1);
             VerticalGridTransform fieldValue2 = (VerticalGridTransform) transform.get(resampler2);
-            GeoTIFFVerticalGridShift gtiff1 =
-                    (GeoTIFFVerticalGridShift) fieldValue1.getVerticalGridShift();
-            GeoTIFFVerticalGridShift gtiff2 =
-                    (GeoTIFFVerticalGridShift) fieldValue2.getVerticalGridShift();
+            GeoTIFFVerticalGridShift gtiff1 = (GeoTIFFVerticalGridShift) fieldValue1.getVerticalGridShift();
+            GeoTIFFVerticalGridShift gtiff2 = (GeoTIFFVerticalGridShift) fieldValue2.getVerticalGridShift();
             gtiff1.dispose();
             gtiff2.dispose();
 

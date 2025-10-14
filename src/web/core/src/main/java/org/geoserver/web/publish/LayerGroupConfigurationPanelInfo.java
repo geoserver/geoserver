@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.publish;
 
+import java.io.Serial;
 import org.geoserver.catalog.LayerGroupInfo;
 
 /**
@@ -11,9 +12,9 @@ import org.geoserver.catalog.LayerGroupInfo;
  *
  * @author Niels Charlier
  */
-public class LayerGroupConfigurationPanelInfo
-        extends PublishedConfigurationPanelInfo<LayerGroupInfo> {
+public class LayerGroupConfigurationPanelInfo extends PublishedConfigurationPanelInfo<LayerGroupInfo> {
 
+    @Serial
     private static final long serialVersionUID = 8382295309912226673L;
 
     @Override

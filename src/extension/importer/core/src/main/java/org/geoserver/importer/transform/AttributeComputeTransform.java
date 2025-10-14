@@ -4,6 +4,7 @@
  */
 package org.geoserver.importer.transform;
 
+import java.io.Serial;
 import java.security.InvalidParameterException;
 import org.geoserver.importer.ImportTask;
 import org.geotools.api.data.DataStore;
@@ -17,6 +18,7 @@ import org.geotools.filter.text.ecql.ECQL;
 /** Transform creating a new attribute based on the existing ones */
 public class AttributeComputeTransform extends AbstractTransform implements InlineVectorTransform {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /** field to remap */
@@ -69,15 +71,12 @@ public class AttributeComputeTransform extends AbstractTransform implements Inli
     }
 
     @Override
-    public SimpleFeatureType apply(
-            ImportTask task, DataStore dataStore, SimpleFeatureType featureType) throws Exception {
+    public SimpleFeatureType apply(ImportTask task, DataStore dataStore, SimpleFeatureType featureType)
+            throws Exception {
         // validate the target attribute is not already there
         if (featureType.getDescriptor(field) != null) {
             throw new InvalidParameterException(
-                    "The computed attribute "
-                            + field
-                            + " is already present in the "
-                            + "source feature type");
+                    "The computed attribute " + field + " is already present in the " + "source feature type");
         }
 
         // remap the type
@@ -89,8 +88,7 @@ public class AttributeComputeTransform extends AbstractTransform implements Inli
     }
 
     @Override
-    public SimpleFeature apply(
-            ImportTask task, DataStore dataStore, SimpleFeature oldFeature, SimpleFeature feature)
+    public SimpleFeature apply(ImportTask task, DataStore dataStore, SimpleFeature oldFeature, SimpleFeature feature)
             throws Exception {
         Object value = getExpression().evaluate(oldFeature);
         feature.setAttribute(field, value);

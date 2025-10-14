@@ -113,10 +113,10 @@ public final class IconPropertyInjector {
             List<Mark> markList = new ArrayList<>();
             List<ExternalGraphic> externalGraphicList = new ArrayList<>();
             for (GraphicalSymbol symbol : original.graphicalSymbols()) {
-                if (symbol instanceof Mark) {
-                    markList.add(injectMark(key, (Mark) symbol));
-                } else if (symbol instanceof ExternalGraphic) {
-                    externalGraphicList.add(injectExternalGraphic(key, (ExternalGraphic) symbol));
+                if (symbol instanceof Mark mark) {
+                    markList.add(injectMark(key, mark));
+                } else if (symbol instanceof ExternalGraphic graphic) {
+                    externalGraphicList.add(injectExternalGraphic(key, graphic));
                 }
             }
             marks = markList.toArray(new Mark[0]);
@@ -125,8 +125,7 @@ public final class IconPropertyInjector {
             marks = new Mark[0];
             externalGraphics = new ExternalGraphic[0];
         }
-        return styleFactory.createGraphic(
-                externalGraphics, marks, symbols, opacity, size, rotation);
+        return styleFactory.createGraphic(externalGraphics, marks, symbols, opacity, size, rotation);
     }
 
     private ExternalGraphic injectExternalGraphic(String key, ExternalGraphic original) {
@@ -137,9 +136,8 @@ public final class IconPropertyInjector {
             if (original.getLocation() == null) {
                 locationExpression = null;
             } else {
-                locationExpression =
-                        ExpressionExtractor.extractCqlExpressions(
-                                original.getLocation().toExternalForm());
+                locationExpression = ExpressionExtractor.extractCqlExpressions(
+                        original.getLocation().toExternalForm());
             }
 
             if (locationExpression == null || isStatic(locationExpression)) {
@@ -157,8 +155,7 @@ public final class IconPropertyInjector {
         final Expression wellKnownName;
         final Stroke stroke;
         final Fill fill;
-        final Expression size =
-                null; // size and fill are handled only at the PointSymbolizer level - bug?
+        final Expression size = null; // size and fill are handled only at the PointSymbolizer level - bug?
         final Expression rotation = null;
 
         if (mark.getWellKnownName() == null || isStatic(mark.getWellKnownName())) {
@@ -280,12 +277,9 @@ public final class IconPropertyInjector {
 
     public static Style injectProperties(Style style, Map<String, String> properties) {
         boolean includeNonPointGraphics =
-                Boolean.valueOf(
-                        properties.getOrDefault(
-                                IconPropertyExtractor.NON_POINT_GRAPHIC_KEY, "false"));
+                Boolean.valueOf(properties.getOrDefault(IconPropertyExtractor.NON_POINT_GRAPHIC_KEY, "false"));
         List<List<MiniRule>> ftStyles = MiniRule.minify(style, includeNonPointGraphics);
         StyleFactory factory = CommonFactoryFinder.getStyleFactory();
-        return MiniRule.makeStyle(
-                factory, new IconPropertyInjector(properties).injectProperties(ftStyles));
+        return MiniRule.makeStyle(factory, new IconPropertyInjector(properties).injectProperties(ftStyles));
     }
 }

@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -32,14 +31,9 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.ows.Ows11Util;
-import org.geoserver.ows.URLMangler.URLType;
-import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.web.GeoServerBasePage;
-import org.geoserver.web.demo.DemoRequest;
-import org.geoserver.web.demo.DemoRequestResponse;
 import org.geoserver.web.wicket.CRSPanel;
 import org.geoserver.web.wicket.EnvelopePanel;
-import org.geoserver.web.wicket.GSModalWindow;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.Select2DropDownChoice;
 import org.geoserver.wps.process.GeoServerProcessors;
@@ -50,8 +44,8 @@ import org.geotools.process.Processors;
 import org.geotools.util.logging.Logging;
 
 /**
- * Small embedded WPS client enabling users to visually build a WPS Execute request (and as a side
- * effect also showing what capabilities and describe process would provide)
+ * Small embedded WPS client enabling users to visually build a WPS Execute request (and as a side effect also showing
+ * what capabilities and describe process would provide)
  *
  * @author Andrea Aime - OpenGeo
  */
@@ -62,8 +56,6 @@ public class WPSRequestBuilderPanel extends Panel {
     ExecuteRequest execute;
 
     String description;
-
-    GSModalWindow responseWindow;
 
     private Component feedback;
 
@@ -101,8 +93,7 @@ public class WPSRequestBuilderPanel extends Panel {
         this.execute = executeRequest;
 
         final DropDownChoice<String> processChoice =
-                new Select2DropDownChoice<>(
-                        "process", new PropertyModel<>(execute, "processName"), buildProcessList());
+                new Select2DropDownChoice<>("process", new PropertyModel<>(execute, "processName"), buildProcessList());
         add(processChoice);
 
         descriptionContainer = new WebMarkupContainer("descriptionContainer");
@@ -110,130 +101,89 @@ public class WPSRequestBuilderPanel extends Panel {
         add(descriptionContainer);
 
         // the process description
-        final Label descriptionLabel =
-                new Label("processDescription", new PropertyModel<>(this, "description"));
+        final Label descriptionLabel = new Label("processDescription", new PropertyModel<>(this, "description"));
         descriptionContainer.add(descriptionLabel);
         // description value is set later in initProcessView()
 
         inputContainer = new WebMarkupContainer("inputContainer");
         inputContainer.setVisible(false);
         add(inputContainer);
-        inputView =
-                new ListView<>("inputs", new PropertyModel<>(execute, "inputs")) {
+        inputView = new ListView<>("inputs", new PropertyModel<>(execute, "inputs")) {
 
-                    @Override
-                    protected void populateItem(ListItem item) {
-                        InputParameterValues pv = (InputParameterValues) item.getModelObject();
-                        Parameter p = pv.getParameter();
-                        item.add(new Label("param", buildParamSpec(p)));
-                        item.add(
-                                new Label(
-                                        "paramDescription",
-                                        p.description.toString(Locale.ENGLISH)));
-                        // TODO: roll out an extension point for these editors
-                        final PropertyModel property = new PropertyModel<>(pv, "values[0].value");
-                        if (pv.isBoundingBox()) {
-                            EnvelopePanel envelope = new EnvelopePanel("paramValue", property);
-                            envelope.setCRSFieldVisible(true);
-                            item.add(envelope);
-                        } else if (pv.isCoordinateReferenceSystem()) {
-                            CRSPanel crs = new CRSPanel("paramValue", property);
-                            item.add(crs);
-                        } else if (pv.isEnum()) {
-                            EnumPanel panel =
-                                    new EnumPanel(
-                                            "paramValue",
-                                            ((Class<Enum>) pv.getParameter().type),
-                                            property);
-                            item.add(panel);
-                        } else if (pv.isComplex()) {
-                            ComplexInputPanel input = new ComplexInputPanel("paramValue", pv, 0);
-                            item.add(input);
-                        } else {
-                            Fragment f =
-                                    new Fragment(
-                                            "paramValue", "literal", WPSRequestBuilderPanel.this);
-                            FormComponent literal = new TextField<>("literalValue", property);
-                            literal.setRequired(p.minOccurs > 0);
-                            literal.setLabel(new Model<>(p.key));
-                            f.add(literal);
-                            item.add(f);
-                        }
-                    }
-                };
+            @Override
+            protected void populateItem(ListItem item) {
+                InputParameterValues pv = (InputParameterValues) item.getModelObject();
+                Parameter p = pv.getParameter();
+                item.add(new Label("param", buildParamSpec(p)));
+                item.add(new Label("paramDescription", p.description.toString(Locale.ENGLISH)));
+                // TODO: roll out an extension point for these editors
+                final PropertyModel property = new PropertyModel<>(pv, "values[0].value");
+                if (pv.isBoundingBox()) {
+                    EnvelopePanel envelope = new EnvelopePanel("paramValue", property);
+                    envelope.setCRSFieldVisible(true);
+                    item.add(envelope);
+                } else if (pv.isCoordinateReferenceSystem()) {
+                    CRSPanel crs = new CRSPanel("paramValue", property);
+                    item.add(crs);
+                } else if (pv.isEnum()) {
+                    EnumPanel panel = new EnumPanel("paramValue", ((Class<Enum>) pv.getParameter().type), property);
+                    item.add(panel);
+                } else if (pv.isComplex()) {
+                    ComplexInputPanel input = new ComplexInputPanel("paramValue", pv, 0);
+                    item.add(input);
+                } else {
+                    Fragment f = new Fragment("paramValue", "literal", WPSRequestBuilderPanel.this);
+                    FormComponent literal = new TextField<>("literalValue", property);
+                    literal.setRequired(p.minOccurs > 0);
+                    literal.setLabel(new Model<>(p.key));
+                    f.add(literal);
+                    item.add(f);
+                }
+            }
+        };
         inputView.setReuseItems(true);
         inputContainer.add(inputView);
 
         outputContainer = new WebMarkupContainer("outputContainer");
         outputContainer.setVisible(false);
         add(outputContainer);
-        outputView =
-                new ListView("outputs", new PropertyModel<>(execute, "outputs")) {
+        outputView = new ListView("outputs", new PropertyModel<>(execute, "outputs")) {
 
-                    @Override
-                    protected void populateItem(ListItem item) {
-                        OutputParameter pv = (OutputParameter) item.getModelObject();
-                        Parameter p = pv.getParameter();
-                        item.add(new CheckBox("include", new PropertyModel<>(pv, "include")));
-                        item.add(new Label("param", buildParamSpec(p)));
-                        item.add(
-                                new Label(
-                                        "paramDescription",
-                                        p.description.toString(Locale.ENGLISH)));
-                        if (pv.isComplex()) {
-                            DropDownChoice mime =
-                                    new DropDownChoice<>(
-                                            "mime",
-                                            new PropertyModel<>(pv, "mimeType"),
-                                            pv.getSupportedMime());
-                            item.add(mime);
-                        } else {
-                            item.add(new Label("mime", "").setVisible(false)); // placeholder
-                        }
-                    }
-                };
+            @Override
+            protected void populateItem(ListItem item) {
+                OutputParameter pv = (OutputParameter) item.getModelObject();
+                Parameter p = pv.getParameter();
+                item.add(new CheckBox("include", new PropertyModel<>(pv, "include")));
+                item.add(new Label("param", buildParamSpec(p)));
+                item.add(new Label("paramDescription", p.description.toString(Locale.ENGLISH)));
+                if (pv.isComplex()) {
+                    DropDownChoice mime =
+                            new DropDownChoice<>("mime", new PropertyModel<>(pv, "mimeType"), pv.getSupportedMime());
+                    item.add(mime);
+                } else {
+                    item.add(new Label("mime", "").setVisible(false)); // placeholder
+                }
+            }
+        };
         outputView.setReuseItems(true);
         outputContainer.add(outputView);
 
-        // the output response window
-        responseWindow = new GSModalWindow("responseWindow");
-        add(responseWindow);
-        // responseWindow.setPageMapName("demoResponse");
-        responseWindow.setCookieName("demoResponse");
-
-        responseWindow.setPageCreator(
-                () -> {
-                    DemoRequest request = new DemoRequest(null);
-                    HttpServletRequest http =
-                            (HttpServletRequest) getRequest().getContainerRequest();
-                    String url =
-                            ResponseUtils.buildURL(
-                                    ResponseUtils.baseURL(http),
-                                    "ows",
-                                    Collections.singletonMap("strict", "true"),
-                                    URLType.SERVICE);
-                    request.setRequestUrl(url);
-                    request.setRequestBody((String) responseWindow.getDefaultModelObject());
-                    return new DemoRequestResponse(new Model<>(request));
-                });
-
         // the describe process link
-        final GeoServerAjaxFormLink describeLink =
-                new GeoServerAjaxFormLink("describeProcess") {
+        final GeoServerAjaxFormLink describeLink = new GeoServerAjaxFormLink("describeProcess") {
 
-                    @Override
-                    protected void onClick(AjaxRequestTarget target, Form form) {
-                        processChoice.processInput();
-                        if (execute.processName != null) {
+            @Override
+            protected void onClick(AjaxRequestTarget target, Form form) {
+                processChoice.processInput();
+                if (execute.processName != null) {
 
-                            var xmlText = getDescribeXML(execute.processName);
-                            var xml = (TextField) form.get("xml");
-                            xml.setModelObject(xmlText);
-                            target.add(xml);
-                            target.appendJavaScript("executeWPS()");
-                        }
-                    }
-                };
+                    String xmlText = getDescribeXML(execute.processName);
+                    TextField xml = (TextField) form.get("xml");
+                    xml.setModelObject(xmlText);
+                    target.add(xml);
+                    target.appendJavaScript("executeWPS()");
+                }
+            }
+        };
         descriptionContainer.add(describeLink);
 
         // the feedback panel, for validation errors
@@ -242,30 +192,28 @@ public class WPSRequestBuilderPanel extends Panel {
         add(feedback);
 
         // the process choice dropdown ajax behavior
-        processChoice.add(
-                new AjaxFormComponentUpdatingBehavior("change") {
+        processChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        initProcessView();
-                        target.add(WPSRequestBuilderPanel.this);
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                initProcessView();
+                target.add(WPSRequestBuilderPanel.this);
 
-                        // ensure the parent page feedback panel gets refreshed to clear any
-                        // existing err msg
-                        // check for GeoServerBasePage, because parent page can also be a
-                        // SubProcessBuilder
-                        WebPage page = getWebPage();
-                        if (page instanceof GeoServerBasePage) {
-                            ((GeoServerBasePage) page).addFeedbackPanels(target);
-                        }
-                    }
-                });
+                // ensure the parent page feedback panel gets refreshed to clear any
+                // existing err msg
+                // check for GeoServerBasePage, because parent page can also be a
+                // SubProcessBuilder
+                WebPage page = getWebPage();
+                if (page instanceof GeoServerBasePage basePage) {
+                    basePage.addFeedbackPanels(target);
+                }
+            }
+        });
         // handle process name submitted as request param
         if (execute.processName != null) initProcessView();
 
         // username and password for authenticated requests
-        final WebMarkupContainer authenticationContainer =
-                new WebMarkupContainer("authenticationContainer");
+        final WebMarkupContainer authenticationContainer = new WebMarkupContainer("authenticationContainer");
         authenticationContainer.setOutputMarkupId(true);
         add(authenticationContainer);
 
@@ -274,25 +222,22 @@ public class WPSRequestBuilderPanel extends Panel {
         userpwdContainer.setVisible(false);
         authenticationContainer.add(userpwdContainer);
 
-        final TextField username =
-                new TextField<>("username", new PropertyModel<>(this, "username"));
+        final TextField username = new TextField<>("username", new PropertyModel<>(this, "username"));
         userpwdContainer.add(username);
 
-        final PasswordTextField password =
-                new PasswordTextField("password", new PropertyModel<>(this, "password"));
+        final PasswordTextField password = new PasswordTextField("password", new PropertyModel<>(this, "password"));
         password.setRequired(false);
         userpwdContainer.add(password);
 
         CheckBox checkbox = new CheckBox("authenticate", new PropertyModel<>(this, "authenticate"));
-        checkbox.add(
-                new AjaxFormComponentUpdatingBehavior("change") {
+        checkbox.add(new AjaxFormComponentUpdatingBehavior("change") {
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        userpwdContainer.setVisible(authenticate);
-                        target.add(authenticationContainer);
-                    }
-                });
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                userpwdContainer.setVisible(authenticate);
+                target.add(authenticationContainer);
+            }
+        });
         authenticationContainer.add(checkbox);
     }
 

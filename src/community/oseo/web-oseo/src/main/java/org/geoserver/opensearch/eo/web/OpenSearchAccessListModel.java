@@ -5,6 +5,7 @@
  */
 package org.geoserver.opensearch.eo.web;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -20,14 +21,14 @@ import org.geotools.util.logging.Logging;
  * @author Andrea Aime - GeoSolutions
  */
 public class OpenSearchAccessListModel extends LoadableDetachableModel<List<DataStoreInfo>> {
+    @Serial
     private static final long serialVersionUID = -7742496075623731474L;
 
     static final Logger LOGGER = Logging.getLogger(OpenSearchAccessListModel.class);
 
     @Override
     protected List<DataStoreInfo> load() {
-        List<DataStoreInfo> stores =
-                GeoServerApplication.get().getCatalog().getStores(DataStoreInfo.class);
+        List<DataStoreInfo> stores = GeoServerApplication.get().getCatalog().getStores(DataStoreInfo.class);
         List<DataStoreInfo> openSearchAccesses = new ArrayList<>();
         for (DataStoreInfo info : stores) {
             try {
@@ -35,12 +36,11 @@ public class OpenSearchAccessListModel extends LoadableDetachableModel<List<Data
                     openSearchAccesses.add(info);
                 }
             } catch (Exception e) {
-                LOGGER.fine(
-                        "Skipping store "
-                                + info.getWorkspace().getName()
-                                + ":"
-                                + info.getName()
-                                + " as it cannot be connected to");
+                LOGGER.fine("Skipping store "
+                        + info.getWorkspace().getName()
+                        + ":"
+                        + info.getName()
+                        + " as it cannot be connected to");
             }
         }
         return openSearchAccesses;

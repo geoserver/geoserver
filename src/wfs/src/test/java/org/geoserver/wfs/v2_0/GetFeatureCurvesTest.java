@@ -36,31 +36,18 @@ public class GetFeatureCurvesTest extends WFS20TestSupport {
 
         testData.addWorkspace(MockData.CITE_PREFIX, MockData.CITE_URI, getCatalog());
         testData.addVectorLayer(
-                CURVELINES,
-                Collections.emptyMap(),
-                "curvelines.properties",
-                MockData.class,
-                getCatalog());
+                CURVELINES, Collections.emptyMap(), "curvelines.properties", MockData.class, getCatalog());
         testData.addVectorLayer(
-                CURVEMULTILINES,
-                Collections.emptyMap(),
-                "curvemultilines.properties",
-                MockData.class,
-                getCatalog());
+                CURVEMULTILINES, Collections.emptyMap(), "curvemultilines.properties", MockData.class, getCatalog());
         testData.addVectorLayer(
-                CURVEPOLYGONS,
-                Collections.emptyMap(),
-                "curvepolygons.properties",
-                MockData.class,
-                getCatalog());
+                CURVEPOLYGONS, Collections.emptyMap(), "curvepolygons.properties", MockData.class, getCatalog());
 
         FeatureTypeInfo curveLines = getCatalog().getFeatureTypeByName(getLayerId(CURVELINES));
         curveLines.setCircularArcPresent(true);
         curveLines.setLinearizationTolerance(null);
         getCatalog().save(curveLines);
 
-        FeatureTypeInfo curveMultiLines =
-                getCatalog().getFeatureTypeByName(getLayerId(CURVEMULTILINES));
+        FeatureTypeInfo curveMultiLines = getCatalog().getFeatureTypeByName(getLayerId(CURVEMULTILINES));
         curveMultiLines.setCircularArcPresent(true);
         curveMultiLines.setLinearizationTolerance(null);
         getCatalog().save(curveMultiLines);
@@ -77,8 +64,7 @@ public class GetFeatureCurvesTest extends WFS20TestSupport {
         testData.setUpSecurity();
     }
 
-    private int countCoordinates(Document dom, XpathEngine xpath, String path)
-            throws XpathException {
+    private int countCoordinates(Document dom, XpathEngine xpath, String path) throws XpathException {
         String coords = xpath.evaluate(path, dom);
         int coordCount = coords.split("\\s+").length;
         return coordCount;
@@ -86,10 +72,7 @@ public class GetFeatureCurvesTest extends WFS20TestSupport {
 
     @Test
     public void testCurveLine() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "wfs?service=wfs&version=2.0&request=GetFeature&typeName="
-                                + getLayerId(CURVELINES));
+        Document dom = getAsDOM("wfs?service=wfs&version=2.0&request=GetFeature&typeName=" + getLayerId(CURVELINES));
         // print(dom);
 
         // check the compound curve
@@ -145,11 +128,9 @@ public class GetFeatureCurvesTest extends WFS20TestSupport {
 
     @Test
     public void testCurveMultiLine() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "wfs?service=wfs&version=2.0&request=GetFeature&typeName="
-                                + getLayerId(CURVEMULTILINES)
-                                + "&featureid=cp.1");
+        Document dom = getAsDOM("wfs?service=wfs&version=2.0&request=GetFeature&typeName="
+                + getLayerId(CURVEMULTILINES)
+                + "&featureid=cp.1");
         // print(dom);
 
         // check the compound curve
@@ -177,11 +158,9 @@ public class GetFeatureCurvesTest extends WFS20TestSupport {
 
     @Test
     public void testCurvePolygons() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "wfs?service=wfs&version=2.0&request=GetFeature&typeName="
-                                + getLayerId(CURVEPOLYGONS)
-                                + "&featureid=cp.1");
+        Document dom = getAsDOM("wfs?service=wfs&version=2.0&request=GetFeature&typeName="
+                + getLayerId(CURVEPOLYGONS)
+                + "&featureid=cp.1");
         // print(dom);
 
         // check the compound curve

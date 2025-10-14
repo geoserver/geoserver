@@ -6,6 +6,7 @@ package org.geoserver.web.wicket.browser;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.Serial;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Optional;
@@ -38,10 +39,7 @@ public class FileInput extends Panel {
     protected GSModalWindow dialog;
     protected IModel<? extends FileFilter> fileFilter;
 
-    /**
-     * @param validators any extra validator that should be added to the input field, or {@code
-     *     null}
-     */
+    /** @param validators any extra validator that should be added to the input field, or {@code null} */
     @SafeVarargs
     public FileInput(
             final String id,
@@ -57,29 +55,23 @@ public class FileInput extends Panel {
 
         // the text field, with a decorator for validations
         this.rootsFinder = new FileRootsFinder(false);
-        textField =
-                new AutoCompleteTextField<>("paramValue", getFileModel(paramValue)) {
-                    @Override
-                    protected Iterator<String> getChoices(String input) {
-                        try {
-                            // do we need to filter files?
-                            FileFilter fileFilter =
-                                    FileInput.this.fileFilter != null
-                                            ? FileInput.this.fileFilter.getObject()
-                                            : null;
+        textField = new AutoCompleteTextField<>("paramValue", getFileModel(paramValue)) {
+            @Override
+            protected Iterator<String> getChoices(String input) {
+                try {
+                    // do we need to filter files?
+                    FileFilter fileFilter =
+                            FileInput.this.fileFilter != null ? FileInput.this.fileFilter.getObject() : null;
 
-                            return rootsFinder.getMatches(input, fileFilter).iterator();
-                        } catch (Exception e) {
-                            // this is a helper, don't let it break the UI at runtime but log errors
-                            // instead
-                            LOGGER.log(
-                                    Level.INFO,
-                                    "Failed to provide autocomplete for path " + input,
-                                    e);
-                            return Collections.emptyIterator();
-                        }
-                    }
-                };
+                    return rootsFinder.getMatches(input, fileFilter).iterator();
+                } catch (Exception e) {
+                    // this is a helper, don't let it break the UI at runtime but log errors
+                    // instead
+                    LOGGER.log(Level.INFO, "Failed to provide autocomplete for path " + input, e);
+                    return Collections.emptyIterator();
+                }
+            }
+        };
         textField.setRequired(required);
         textField.setOutputMarkupId(true);
         // set the label to be the paramLabelModel otherwise a validation error would look like
@@ -103,50 +95,48 @@ public class FileInput extends Panel {
     }
 
     protected Component chooserButton(final String windowTitle) {
-        AjaxSubmitLink link =
-                new AjaxSubmitLink("chooser") {
+        AjaxSubmitLink link = new AjaxSubmitLink("chooser") {
 
-                    private static final long serialVersionUID = -6640131658256808053L;
+            @Serial
+            private static final long serialVersionUID = -6640131658256808053L;
+
+            @Override
+            public boolean getDefaultFormProcessing() {
+                return false;
+            }
+
+            @Override
+            public void onSubmit(AjaxRequestTarget target) {
+                File file = null;
+                textField.processInput();
+                String input = textField.getConvertedInput();
+                if (input != null && !input.equals("")) {
+                    file = new File(input);
+                }
+
+                GeoServerFileChooser chooser = new GeoServerFileChooser(dialog.getContentId(), new Model<>(file)) {
+                    @Serial
+                    private static final long serialVersionUID = -7096642192491726498L;
 
                     @Override
-                    public boolean getDefaultFormProcessing() {
-                        return false;
-                    }
-
-                    @Override
-                    public void onSubmit(AjaxRequestTarget target) {
-                        File file = null;
-                        textField.processInput();
-                        String input = textField.getConvertedInput();
-                        if (input != null && !input.equals("")) {
-                            file = new File(input);
+                    protected void fileClicked(File file, Optional<AjaxRequestTarget> target) {
+                        // clear the raw input of the field won't show the new model
+                        // value
+                        textField.clearInput();
+                        textField.setModelObject(file.getAbsolutePath());
+                        if (target.isPresent()) {
+                            target.get().add(textField);
+                            dialog.close(target.get());
                         }
-
-                        GeoServerFileChooser chooser =
-                                new GeoServerFileChooser(dialog.getContentId(), new Model<>(file)) {
-                                    private static final long serialVersionUID =
-                                            -7096642192491726498L;
-
-                                    @Override
-                                    protected void fileClicked(
-                                            File file, Optional<AjaxRequestTarget> target) {
-                                        // clear the raw input of the field won't show the new model
-                                        // value
-                                        textField.clearInput();
-                                        textField.setModelObject(file.getAbsolutePath());
-                                        if (target.isPresent()) {
-                                            target.get().add(textField);
-                                            dialog.close(target.get());
-                                        }
-                                    }
-                                };
-                        chooser.setFileTableHeight(null);
-                        chooser.setFilter(fileFilter);
-                        dialog.setContent(chooser);
-                        dialog.setTitle(windowTitle);
-                        dialog.show(target);
                     }
                 };
+                chooser.setFileTableHeight(null);
+                chooser.setFilter(fileFilter);
+                dialog.setContent(chooser);
+                dialog.setTitle(windowTitle);
+                dialog.show(target);
+            }
+        };
         return link;
     }
 

@@ -34,19 +34,19 @@ public class GetCapabilities {
      */
     public TransformerBase run(final GetCapabilitiesRequest request) throws ServiceException {
 
-        final Version version = WMS.version(request.getVersion());
+        final Version version = WMS.version(request.getVersion(), WMS.VERSION_1_3_0);
         if (version == null) {
             throw new IllegalArgumentException("version not supplied.");
         }
 
         // UpdateSequence handling for WMS: see WMS 1.1.1 page 23
         long reqUS = -1;
-        if (request.getUpdateSequence() != null && !"".equals(request.getUpdateSequence().trim())) {
+        if (request.getUpdateSequence() != null
+                && !"".equals(request.getUpdateSequence().trim())) {
             try {
                 reqUS = Long.parseLong(request.getUpdateSequence());
             } catch (NumberFormatException nfe) {
-                throw new ServiceException(
-                        "GeoServer only accepts numbers in the updateSequence parameter");
+                throw new ServiceException("GeoServer only accepts numbers in the updateSequence parameter");
             }
         }
         long geoUS = wms.getUpdateSequence();
@@ -57,8 +57,7 @@ public class GetCapabilities {
         }
         if (reqUS == geoUS) {
             throw new ServiceException(
-                    "WMS capabilities document is current (updateSequence = " + geoUS + ")",
-                    "CurrentUpdateSequence");
+                    "WMS capabilities document is current (updateSequence = " + geoUS + ")", "CurrentUpdateSequence");
         }
         // otherwise it's a normal response...
 
@@ -66,23 +65,16 @@ public class GetCapabilities {
 
         TransformerBase transformer;
         String baseUrl = request.getBaseUrl();
-        if (WMS.VERSION_1_1_1.equals(version)) {
+        if (WMS.VERSION_1_1_1.equals(version) || WMS.VERSION_1_0_0.equals(version)) {
             Set<String> mapFormats = wms.getAllowedMapFormatNames();
-            List<ExtendedCapabilitiesProvider> extCapsProviders =
-                    wms.getAvailableExtendedCapabilitiesProviders();
-            transformer =
-                    new GetCapabilitiesTransformer(
-                            wms, baseUrl, mapFormats, legendFormats, extCapsProviders);
-            ((GetCapabilitiesTransformer) transformer)
-                    .setIncludeRootLayer(request.isRootLayerEnabled());
+            List<ExtendedCapabilitiesProvider> extCapsProviders = wms.getAvailableExtendedCapabilitiesProviders();
+            transformer = new GetCapabilitiesTransformer(wms, baseUrl, mapFormats, legendFormats, extCapsProviders);
+            ((GetCapabilitiesTransformer) transformer).setIncludeRootLayer(request.isRootLayerEnabled());
         } else if (WMS.VERSION_1_3_0.equals(version)) {
             Collection<GetMapOutputFormat> mapFormats = wms.getAllowedMapFormats();
-            Collection<ExtendedCapabilitiesProvider> extCapsProviders =
-                    wms.getAvailableExtendedCapabilitiesProviders();
-            transformer =
-                    new Capabilities_1_3_0_Transformer(wms, baseUrl, mapFormats, extCapsProviders);
-            ((Capabilities_1_3_0_Transformer) transformer)
-                    .setIncludeRootLayer(request.isRootLayerEnabled());
+            Collection<ExtendedCapabilitiesProvider> extCapsProviders = wms.getAvailableExtendedCapabilitiesProviders();
+            transformer = new Capabilities_1_3_0_Transformer(wms, baseUrl, mapFormats, extCapsProviders);
+            ((Capabilities_1_3_0_Transformer) transformer).setIncludeRootLayer(request.isRootLayerEnabled());
         } else {
             throw new IllegalArgumentException("Unknown version: " + version);
         }

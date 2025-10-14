@@ -17,7 +17,6 @@ import java.util.HashMap;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.GeoServerLoader;
 import org.geoserver.data.test.MockData;
 import org.geoserver.ows.Dispatcher;
@@ -77,8 +76,7 @@ public class GetMapXmlReaderTest extends KvpRequestReaderTestSupport {
     @Test
     public void testResolveStylesForLayerGroup() throws Exception {
         GetMapRequest request = reader.createRequest();
-        try (BufferedReader input =
-                getResourceInputStream("WMSPostLayerGroupNonDefaultStyle.xml")) {
+        try (BufferedReader input = getResourceInputStream("WMSPostLayerGroupNonDefaultStyle.xml")) {
 
             request = (GetMapRequest) reader.read(request, input, new HashMap<>());
 
@@ -96,8 +94,7 @@ public class GetMapXmlReaderTest extends KvpRequestReaderTestSupport {
     @Test
     public void testLayerFeatureConstraintFilterParsing() throws Exception {
         GetMapRequest request = reader.createRequest();
-        try (BufferedReader input =
-                getResourceInputStream("WMSPostLayerFeatureConstraintFilter.xml")) {
+        try (BufferedReader input = getResourceInputStream("WMSPostLayerFeatureConstraintFilter.xml")) {
 
             request = (GetMapRequest) reader.read(request, input, new HashMap<>());
 
@@ -115,8 +112,7 @@ public class GetMapXmlReaderTest extends KvpRequestReaderTestSupport {
     @Test
     public void testAllowDynamicStyles() throws Exception {
         GetMapRequest request = reader.createRequest();
-        try (BufferedReader input =
-                getResourceInputStream("WMSPostLayerGroupNonDefaultStyle.xml")) {
+        try (BufferedReader input = getResourceInputStream("WMSPostLayerGroupNonDefaultStyle.xml")) {
 
             WMS wms = new WMS(getGeoServer());
             WMSInfo oldInfo = wms.getGeoServer().getService(WMSInfo.class);
@@ -139,27 +135,18 @@ public class GetMapXmlReaderTest extends KvpRequestReaderTestSupport {
 
     @Test
     public void testCleanServiceException() throws Exception {
-        GeoServerInfo cfg = getGeoServer().getGlobal();
         GetMapRequest request = reader.createRequest();
         // this request forces an IOException
         try (BufferedReader input = getResourceInputStream("WMSPostServiceException.xml")) {
-
-            cfg.setXmlExternalEntitiesEnabled(true);
-            getGeoServer().save(cfg);
-
+            System.setProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED, "true");
             request = (GetMapRequest) reader.read(request, input, new HashMap<>());
             fail("ServiceException with IOException Expected");
         } catch (ServiceException e) {
-            assertTrue(
-                    e.getMessage()
-                            .contains(
-                                    "xml request is most probably not compliant to GetMap element"));
+            assertTrue(e.getMessage().contains("xml request is most probably not compliant to GetMap element"));
             assertTrue(e.getCause() instanceof SAXException);
         } finally {
-            cfg.setXmlExternalEntitiesEnabled(null);
-            getGeoServer().save(cfg);
-            EntityResolverProvider.setEntityResolver(
-                    GeoServerSystemTestSupport.RESOLVE_DISABLED_PROVIDER_DEVMODE);
+            System.clearProperty(EntityResolverProvider.ENTITY_RESOLUTION_UNRESTRICTED);
+            EntityResolverProvider.setEntityResolver(GeoServerSystemTestSupport.RESOLVE_DISABLED_PROVIDER_DEVMODE);
         }
     }
 

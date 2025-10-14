@@ -19,8 +19,6 @@ import org.geotools.api.util.ProgressListener;
  * Given a {@link DataStoreInfo} makes sure no write operations can be performed through it
  *
  * @author Andrea Aime - TOPP
- * @param <T>
- * @param <F>
  */
 @SuppressWarnings("serial")
 public class SecuredDataStoreInfo extends DecoratingDataStoreInfo {
@@ -33,13 +31,11 @@ public class SecuredDataStoreInfo extends DecoratingDataStoreInfo {
     }
 
     @Override
-    public DataAccess<? extends FeatureType, ? extends Feature> getDataStore(
-            ProgressListener listener) throws IOException {
-        final DataAccess<? extends FeatureType, ? extends Feature> ds =
-                super.getDataStore(listener);
+    public DataAccess<? extends FeatureType, ? extends Feature> getDataStore(ProgressListener listener)
+            throws IOException {
+        final DataAccess<? extends FeatureType, ? extends Feature> ds = super.getDataStore(listener);
         if (ds == null) return null;
-        else if (policy.level == AccessLevel.METADATA)
-            throw SecureCatalogImpl.unauthorizedAccess(this.getName());
+        else if (policy.level == AccessLevel.METADATA) throw SecureCatalogImpl.unauthorizedAccess(this.getName());
         else return SecuredObjects.secure(ds, policy);
     }
 }

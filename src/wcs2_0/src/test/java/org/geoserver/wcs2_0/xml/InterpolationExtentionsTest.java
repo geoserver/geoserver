@@ -32,8 +32,7 @@ public class InterpolationExtentionsTest extends WCSTestSupport {
         FileUtils.writeByteArrayToFile(file, tiffContents);
 
         // TODO: check the tiff structure is the one requested
-        final TIFFImageReader reader =
-                (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
+        final TIFFImageReader reader = (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
         reader.setInput(new FileImageInputStream(file));
         assertEquals(360, reader.getWidth(0));
         assertEquals(360, reader.getHeight(0));
@@ -43,8 +42,7 @@ public class InterpolationExtentionsTest extends WCSTestSupport {
     @Test
     public void testInterpolationSingleNearestXML() throws Exception {
 
-        final File xml =
-                new File("./src/test/resources/requestGetCoverageInterpolationNearest.xml");
+        final File xml = new File("./src/test/resources/requestGetCoverageInterpolationNearest.xml");
         final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
@@ -54,8 +52,7 @@ public class InterpolationExtentionsTest extends WCSTestSupport {
         FileUtils.writeByteArrayToFile(file, tiffContents);
 
         // TODO: check the tiff structure is the one requested
-        final TIFFImageReader reader =
-                (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
+        final TIFFImageReader reader = (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
         reader.setInput(new FileImageInputStream(file));
         assertEquals(360, reader.getWidth(0));
         assertEquals(360, reader.getHeight(0));
@@ -65,8 +62,7 @@ public class InterpolationExtentionsTest extends WCSTestSupport {
     @Test
     public void testInterpolationMixedSupportedXML() throws Exception {
 
-        final File xml =
-                new File("./src/test/resources/requestGetCoverageInterpolationMixedSupported.xml");
+        final File xml = new File("./src/test/resources/requestGetCoverageInterpolationMixedSupported.xml");
         final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
@@ -76,8 +72,7 @@ public class InterpolationExtentionsTest extends WCSTestSupport {
         FileUtils.writeByteArrayToFile(file, tiffContents);
 
         // TODO: check the tiff structure is the one requested
-        final TIFFImageReader reader =
-                (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
+        final TIFFImageReader reader = (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
         reader.setInput(new FileImageInputStream(file));
         assertEquals(360, reader.getWidth(0));
         assertEquals(360, reader.getHeight(0));
@@ -87,8 +82,7 @@ public class InterpolationExtentionsTest extends WCSTestSupport {
     @Test
     public void testInterpolationMixedTimeXML() throws Exception {
 
-        final File xml =
-                new File("./src/test/resources/requestGetCoverageInterpolationMixedTime.xml");
+        final File xml = new File("./src/test/resources/requestGetCoverageInterpolationMixedTime.xml");
         final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
@@ -99,9 +93,7 @@ public class InterpolationExtentionsTest extends WCSTestSupport {
     @Test
     public void testInterpolationMixedUnsupportedXML() throws Exception {
 
-        final File xml =
-                new File(
-                        "./src/test/resources/requestGetCoverageInterpolationMixedUnsupported.xml");
+        final File xml = new File("./src/test/resources/requestGetCoverageInterpolationMixedUnsupported.xml");
         final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
@@ -112,8 +104,7 @@ public class InterpolationExtentionsTest extends WCSTestSupport {
     @Test
     public void testInterpolationMixedDuplicatedXML() throws Exception {
 
-        final File xml =
-                new File("./src/test/resources/requestGetCoverageInterpolationMixedDuplicated.xml");
+        final File xml = new File("./src/test/resources/requestGetCoverageInterpolationMixedDuplicated.xml");
         final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 

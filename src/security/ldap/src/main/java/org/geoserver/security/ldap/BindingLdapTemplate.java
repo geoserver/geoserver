@@ -15,8 +15,8 @@ import org.springframework.ldap.support.LdapUtils;
 import org.springframework.security.ldap.SpringSecurityLdapTemplate;
 
 /**
- * Alternative SpringSecurityLdapTemplate, executing authentication without a prior search that
- * could raise errors by some LDAP servers.
+ * Alternative SpringSecurityLdapTemplate, executing authentication without a prior search that could raise errors by
+ * some LDAP servers.
  *
  * @author "Mauro Bartolomeoli - mauro.bartolomeoli@geo-solutions.it"
  */
@@ -37,11 +37,10 @@ public class BindingLdapTemplate extends SpringSecurityLdapTemplate {
 
         try {
             DirContext ctx = getContextSource().getContext(username, password);
-            ContextExecutor ce =
-                    ctx1 -> {
-                        callback.executeWithContext(ctx1, null);
-                        return null;
-                    };
+            ContextExecutor ce = ctx1 -> {
+                callback.executeWithContext(ctx1, null);
+                return null;
+            };
             try {
                 ce.executeWithContext(ctx);
             } catch (javax.naming.NamingException e) {

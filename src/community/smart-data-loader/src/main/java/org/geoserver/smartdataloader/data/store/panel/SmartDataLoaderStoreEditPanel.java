@@ -16,6 +16,9 @@ import javax.swing.tree.DefaultTreeModel;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -84,6 +87,7 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
     private String selectedPostgisDataStoreId = "";
     private String selectedRootEntityName = "";
     private String excludedObjectCodesList = "";
+    private String entitiesPrefix = "";
 
     @SuppressWarnings("unused")
     private String selectedWorkspaceName = "";
@@ -92,14 +96,13 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
         super(componentId, storeEditForm);
         model = storeEditForm.getModel();
         setDefaultModel(model);
-        smartAppSchemaDataStoreInfo = ((DataStoreInfo) storeEditForm.getModel().getObject());
+        smartAppSchemaDataStoreInfo = (DataStoreInfo) model.getObject();
         // set helper variables
-        selectedPostgisDataStoreId =
-                getDataStoreInfoParam(SmartDataLoaderDataAccessFactory.DATASTORE_METADATA.key);
-        selectedRootEntityName =
-                getDataStoreInfoParam(SmartDataLoaderDataAccessFactory.ROOT_ENTITY.key);
-        excludedObjectCodesList =
-                getDataStoreInfoParam(SmartDataLoaderDataAccessFactory.DOMAIN_MODEL_EXCLUSIONS.key);
+        selectedPostgisDataStoreId = getDataStoreInfoParam(SmartDataLoaderDataAccessFactory.DATASTORE_METADATA.key);
+        selectedRootEntityName = getDataStoreInfoParam(SmartDataLoaderDataAccessFactory.ROOT_ENTITY.key);
+        excludedObjectCodesList = getDataStoreInfoParam(SmartDataLoaderDataAccessFactory.DOMAIN_MODEL_EXCLUSIONS.key);
+        entitiesPrefix = getDataStoreInfoParam(SmartDataLoaderDataAccessFactory.ENTITIES_PREFIX.key);
+        buildEntitiesPrefixTextbox();
         // build connection parameters panel
         buildPostgisDropDownPanel();
         // build rootentity selector panel
@@ -108,6 +111,7 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
         buildDomainModelTreePanel(model);
         // build exclusions panel (it's hidden)
         buildHiddenParametersPanel(model);
+        buildOverridesView();
     }
 
     @Override
@@ -117,73 +121,57 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
         workspacePanel = (WorkspacePanel) getPage().get("dataStoreForm:workspacePanel");
         // attach behavior on form component selector, so we can filter list of available postgis
         // related datastores
-        workspacePanel
-                .getFormComponent()
-                .add(
-                        new AjaxFormComponentUpdatingBehavior("change") {
-                            @SuppressWarnings({"rawtypes", "unchecked"})
-                            @Override
-                            protected void onUpdate(AjaxRequestTarget target) {
-                                WorkspaceInfo wi =
-                                        ((WorkspaceInfo)
-                                                workspacePanel.getFormComponent().getModelObject());
-                                selectedWorkspaceName =
-                                        ((WorkspaceInfo)
-                                                        workspacePanel
-                                                                .getFormComponent()
-                                                                .getModelObject())
-                                                .getName();
-                                List<DataStoreSummmary> list = getPostgisDataStores(wi);
-                                datastores.setChoices(list);
-                                availableRootEntities
-                                        .getFormComponent()
-                                        .setChoices(Collections.EMPTY_LIST);
-                                selectedRootEntityName = "";
-                                // clear list of exclusions
-                                excludedObjectCodesList = "";
-                                exclusions.modelChanging();
-                                smartAppSchemaDataStoreInfo
-                                        .getConnectionParameters()
-                                        .put(
-                                                SmartDataLoaderDataAccessFactory
-                                                        .DOMAIN_MODEL_EXCLUSIONS
-                                                        .key,
-                                                excludedObjectCodesList);
-                                exclusions.modelChanged();
-                                // rebuild tree
-                                IModel iModel = new PropertyModel(model, "connectionParameters");
-                                buildDomainModelTreePanel(iModel);
-                                target.add(domainModelTree);
-                                target.add(availableRootEntities);
-                                target.add(datastores);
-                            }
-                        });
+        workspacePanel.getFormComponent().add(new AjaxFormComponentUpdatingBehavior("change") {
+            @SuppressWarnings({"rawtypes", "unchecked"})
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                WorkspaceInfo wi =
+                        ((WorkspaceInfo) workspacePanel.getFormComponent().getModelObject());
+                selectedWorkspaceName =
+                        ((WorkspaceInfo) workspacePanel.getFormComponent().getModelObject()).getName();
+                List<DataStoreSummmary> list = getPostgisDataStores(wi);
+                datastores.setChoices(list);
+                availableRootEntities.getFormComponent().setChoices(Collections.EMPTY_LIST);
+                selectedRootEntityName = "";
+                // clear list of exclusions
+                excludedObjectCodesList = "";
+                exclusions.modelChanging();
+                smartAppSchemaDataStoreInfo
+                        .getConnectionParameters()
+                        .put(SmartDataLoaderDataAccessFactory.DOMAIN_MODEL_EXCLUSIONS.key, excludedObjectCodesList);
+                exclusions.modelChanged();
+                // rebuild tree
+                IModel iModel = new PropertyModel(model, "connectionParameters");
+                buildDomainModelTreePanel(iModel);
+                target.add(domainModelTree);
+                target.add(availableRootEntities);
+                target.add(datastores);
+            }
+        });
 
         // search for the datastorename panel
         datastoreNamePanel = (TextParamPanel) getPage().get("dataStoreForm:dataStoreNamePanel");
         // attach datastore name to hidden text component used to share datastorename with the
         // dataaccessfactory
-        datastoreNamePanel
-                .getFormComponent()
-                .add(
-                        new AjaxFormComponentUpdatingBehavior("change") {
-                            @Override
-                            protected void onUpdate(AjaxRequestTarget target) {
-                                String name =
-                                        ((String)
-                                                datastoreNamePanel
-                                                        .getFormComponent()
-                                                        .getModelObject());
-                                datastorename.modelChanging();
-                                smartAppSchemaDataStoreInfo
-                                        .getConnectionParameters()
-                                        .put(
-                                                SmartDataLoaderDataAccessFactory.DATASTORE_NAME.key,
-                                                name);
-                                datastorename.modelChanged();
-                                target.add(datastorename);
-                            }
-                        });
+        datastoreNamePanel.getFormComponent().add(new AjaxFormComponentUpdatingBehavior("change") {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                String name = ((String) datastoreNamePanel.getFormComponent().getModelObject());
+                datastorename.modelChanging();
+                smartAppSchemaDataStoreInfo
+                        .getConnectionParameters()
+                        .put(SmartDataLoaderDataAccessFactory.DATASTORE_NAME.key, name);
+                datastorename.modelChanged();
+                target.add(datastorename);
+            }
+        });
+    }
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        String css = ".qos-panel { " + "border: 1px solid #c6e09b; " + "padding: 5px; " + " }";
+        response.render(CssHeaderItem.forCSS(css, "qosPanelCss"));
     }
 
     /** Helper method that creates dropdown for postgis datastore selection. */
@@ -191,46 +179,35 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
     protected void buildPostgisDropDownPanel() {
         List<DataStoreSummmary> postgisDSs = getPostgisDataStores(getWorkspaceInfo());
 
-        if (datastoreModel == null
-                && selectedPostgisDataStoreId != null
-                && !selectedPostgisDataStoreId.isEmpty()) {
+        if (datastoreModel == null && selectedPostgisDataStoreId != null && !selectedPostgisDataStoreId.isEmpty()) {
             this.datastoreModel =
-                    new Model<>(
-                            new DataStoreSummmary(
-                                    getCatalog().getDataStore(selectedPostgisDataStoreId)));
+                    new Model<>(new DataStoreSummmary(getCatalog().getDataStore(selectedPostgisDataStoreId)));
         } else if (datastoreModel == null) {
             this.datastoreModel = new Model<>(new DataStoreSummmary());
         }
-        datastores =
-                new DropDownChoice<>(
-                        "postgisdatastore", datastoreModel, postgisDSs, new StoreRenderer());
+        datastores = new DropDownChoice<>("postgisdatastore", datastoreModel, postgisDSs, new StoreRenderer());
         datastores.setRequired(true);
-        datastores.add(
-                new AjaxFormComponentUpdatingBehavior("click") {
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        selectedPostgisDataStoreId =
-                                datastores.getModelObject() != null
-                                        ? datastores.getModelObject().getId()
-                                        : null;
-                        DataStoreInfo postgisDS = null;
-                        if (selectedPostgisDataStoreId != null
-                                && !selectedPostgisDataStoreId.isEmpty()) {
-                            postgisDS = getCatalog().getDataStore(selectedPostgisDataStoreId);
-                        }
-                        smartAppSchemaDataStoreInfo
-                                .getConnectionParameters()
-                                .put(
-                                        SmartDataLoaderDataAccessFactory.DATASTORE_METADATA.key,
-                                        selectedPostgisDataStoreId);
-                        List<String> list = new ArrayList<>();
-                        if (postgisDS != null) {
-                            list = getAvailableRootEntities(postgisDS);
-                        }
-                        availableRootEntities.getFormComponent().setChoices(list);
-                        target.add(availableRootEntities);
-                    }
-                });
+        datastores.add(new AjaxFormComponentUpdatingBehavior("click") {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                selectedPostgisDataStoreId = datastores.getModelObject() != null
+                        ? datastores.getModelObject().getId()
+                        : null;
+                DataStoreInfo postgisDS = null;
+                if (selectedPostgisDataStoreId != null && !selectedPostgisDataStoreId.isEmpty()) {
+                    postgisDS = getCatalog().getDataStore(selectedPostgisDataStoreId);
+                }
+                smartAppSchemaDataStoreInfo
+                        .getConnectionParameters()
+                        .put(SmartDataLoaderDataAccessFactory.DATASTORE_METADATA.key, selectedPostgisDataStoreId);
+                List<String> list = new ArrayList<>();
+                if (postgisDS != null) {
+                    list = getAvailableRootEntities(postgisDS);
+                }
+                availableRootEntities.getFormComponent().setChoices(list);
+                target.add(availableRootEntities);
+            }
+        });
         datastores.setOutputMarkupId(true);
         Label dataStoreLabel = new Label("dataStoreName", "Data store name *");
         add(dataStoreLabel);
@@ -246,10 +223,9 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
             String dbType = type != null ? type.toString().toUpperCase() : null;
             List<JDBCDataStoreFactoryFinder.SupportedStoreType> supportedStoreTypes =
                     Arrays.asList(JDBCDataStoreFactoryFinder.SupportedStoreType.values());
-            boolean isSupported =
-                    dbType != null
-                            && supportedStoreTypes.stream()
-                                    .anyMatch(st -> dbType.toUpperCase().contains(st.name()));
+            boolean isSupported = dbType != null
+                    && supportedStoreTypes.stream()
+                            .anyMatch(st -> dbType.toUpperCase().contains(st.name()));
             if (isSupported) {
                 postgisDSs.add(new DataStoreSummmary(ds));
             }
@@ -267,48 +243,36 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
             DataStoreInfo postgisDS = getCatalog().getDataStore(postgisSummary.getId());
             list = getAvailableRootEntities(postgisDS);
         }
-        availableRootEntities =
-                new SimpleDropDownChoiceParamPanel(
-                        "rootentities",
-                        new MapModel(iModel, SmartDataLoaderDataAccessFactory.ROOT_ENTITY.key),
-                        rootentitiesResource,
-                        list,
-                        true);
-        availableRootEntities
-                .getFormComponent()
-                .add(
-                        new AjaxFormComponentUpdatingBehavior("change") {
-                            @Override
-                            protected void onUpdate(AjaxRequestTarget target) {
-                                selectedRootEntityName =
-                                        (String)
-                                                availableRootEntities
-                                                        .getFormComponent()
-                                                        .getModelObject();
-                                // clear list of exclusions
-                                excludedObjectCodesList = "";
-                                exclusions.modelChanging();
-                                smartAppSchemaDataStoreInfo
-                                        .getConnectionParameters()
-                                        .put(
-                                                SmartDataLoaderDataAccessFactory
-                                                        .DOMAIN_MODEL_EXCLUSIONS
-                                                        .key,
-                                                excludedObjectCodesList);
-                                exclusions.modelChanged();
-                                // rebuild tree
-                                buildDomainModelTreePanel(iModel);
-                                target.add(domainModelTree);
-                            }
-                        });
+        availableRootEntities = new SimpleDropDownChoiceParamPanel(
+                "rootentities",
+                new MapModel(iModel, SmartDataLoaderDataAccessFactory.ROOT_ENTITY.key),
+                rootentitiesResource,
+                list,
+                true);
+        availableRootEntities.getFormComponent().add(new AjaxFormComponentUpdatingBehavior("change") {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                selectedRootEntityName =
+                        (String) availableRootEntities.getFormComponent().getModelObject();
+                // clear list of exclusions
+                excludedObjectCodesList = "";
+                exclusions.modelChanging();
+                smartAppSchemaDataStoreInfo
+                        .getConnectionParameters()
+                        .put(SmartDataLoaderDataAccessFactory.DOMAIN_MODEL_EXCLUSIONS.key, excludedObjectCodesList);
+                exclusions.modelChanged();
+                // rebuild tree
+                buildDomainModelTreePanel(iModel);
+                target.add(domainModelTree);
+            }
+        });
         availableRootEntities.setOutputMarkupId(true);
         add(availableRootEntities);
     }
 
     /** Helper method that creates the DomainModel tree panel */
     protected void buildDomainModelTreePanel(final IModel model) {
-        domainModelTree =
-                new NestedTreePanel("domainmodel", null, domainmodelResource, null, false);
+        domainModelTree = new NestedTreePanel("domainmodel", null, domainmodelResource, null, false);
         domainModelTree.setOutputMarkupId(true);
         addOrReplace(domainModelTree);
         // avoid loading tree if rootentity was not selected
@@ -330,86 +294,71 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
                 Set<DefaultMutableTreeNode> nodes = getNodes(dtm);
                 Set<DefaultMutableTreeNode> checkedNodes = getCheckedNodes(dtm);
                 domainModelTree.buildTree(dtm, checkedNodes);
-                domainModelTree.add(
-                        new AjaxEventBehavior(("click")) {
-                            @Override
-                            protected void onEvent(AjaxRequestTarget target) {
-                                // build list of exclusions based on tree selection
-                                StringBuilder stringBuilder = new StringBuilder();
-                                for (DefaultMutableTreeNode node : nodes) {
-                                    if (!checkedNodes.contains(node)) {
-                                        if (node.getParent() != null) {
-                                            stringBuilder.append(
-                                                    node.getParent().toString()
-                                                            + "."
-                                                            + node.toString());
-                                        } else {
-                                            stringBuilder.append(node.toString());
-                                        }
-                                        stringBuilder.append(",");
-                                    }
+                domainModelTree.add(new AjaxEventBehavior(("click")) {
+                    @Override
+                    protected void onEvent(AjaxRequestTarget target) {
+                        // build list of exclusions based on tree selection
+                        StringBuilder stringBuilder = new StringBuilder();
+                        for (DefaultMutableTreeNode node : nodes) {
+                            if (!checkedNodes.contains(node)) {
+                                if (node.getParent() != null) {
+                                    stringBuilder.append(node.getParent().toString() + "." + node.toString());
+                                } else {
+                                    stringBuilder.append(node.toString());
                                 }
-                                String exclusionList = stringBuilder.toString();
-                                int size = exclusionList.length();
-                                String fullExclusionList = "";
-                                if (size > 0) {
-                                    fullExclusionList = exclusionList.substring(0, size - 1);
-                                }
-                                // set exclusionList value to exclusionsPanel (model)
-                                exclusions.getFormComponent().modelChanging();
-                                smartAppSchemaDataStoreInfo
-                                        .getConnectionParameters()
-                                        .put(
-                                                SmartDataLoaderDataAccessFactory
-                                                        .DOMAIN_MODEL_EXCLUSIONS
-                                                        .key,
-                                                fullExclusionList);
-                                exclusions.getFormComponent().modelChanged();
-                                target.add(exclusions);
+                                stringBuilder.append(",");
                             }
-                        });
+                        }
+                        String exclusionList = stringBuilder.toString();
+                        int size = exclusionList.length();
+                        String fullExclusionList = "";
+                        if (size > 0) {
+                            fullExclusionList = exclusionList.substring(0, size - 1);
+                        }
+                        // set exclusionList value to exclusionsPanel (model)
+                        exclusions.getFormComponent().modelChanging();
+                        smartAppSchemaDataStoreInfo
+                                .getConnectionParameters()
+                                .put(SmartDataLoaderDataAccessFactory.DOMAIN_MODEL_EXCLUSIONS.key, fullExclusionList);
+                        exclusions.getFormComponent().modelChanged();
+                        target.add(exclusions);
+                    }
+                });
             }
         }
     }
 
     /**
-     * Helper method that creates a hidden parameters panel, that allows to set the exclusion
-     * DomainModel objects (used internally in the form to keep list of exclusions based on tree
-     * selection) and the datastore name that will be shared to the factory.
+     * Helper method that creates a hidden parameters panel, that allows to set the exclusion DomainModel objects (used
+     * internally in the form to keep list of exclusions based on tree selection) and the datastore name that will be
+     * shared to the factory.
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected void buildHiddenParametersPanel(final IModel model) {
         IModel iModel = new PropertyModel(model, "connectionParameters");
-        exclusions =
-                new TextParamPanel(
-                        "exclusions",
-                        new MapModel(
-                                iModel,
-                                SmartDataLoaderDataAccessFactory.DOMAIN_MODEL_EXCLUSIONS.key),
-                        exclusionsResource,
-                        false);
+        exclusions = new TextParamPanel(
+                "exclusions",
+                new MapModel(iModel, SmartDataLoaderDataAccessFactory.DOMAIN_MODEL_EXCLUSIONS.key),
+                exclusionsResource,
+                false);
         exclusions.setOutputMarkupId(true);
         exclusions.getFormComponent().setEnabled(false);
         exclusions.setVisible(false);
         add(exclusions);
 
         iModel = new PropertyModel(model, "connectionParameters");
-        datastorename =
-                new TextParamPanel(
-                        "datastorename",
-                        new MapModel(iModel, SmartDataLoaderDataAccessFactory.DATASTORE_NAME.key),
-                        datastorenameResource,
-                        false);
+        datastorename = new TextParamPanel(
+                "datastorename",
+                new MapModel(iModel, SmartDataLoaderDataAccessFactory.DATASTORE_NAME.key),
+                datastorenameResource,
+                false);
         datastorename.setOutputMarkupId(true);
         datastorename.getFormComponent().setEnabled(false);
         datastorename.setVisible(false);
         add(datastorename);
     }
 
-    /**
-     * Helper that includes all the detected nodes in the DomainModel and uncheck those listed in
-     * the exclusion list
-     */
+    /** Helper that includes all the detected nodes in the DomainModel and uncheck those listed in the exclusion list */
     private Set<DefaultMutableTreeNode> getCheckedNodes(DefaultTreeModel dtm) {
         // get all nodes
         final Set<DefaultMutableTreeNode> allNodes = getNodes(dtm);
@@ -435,8 +384,7 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
     }
 
     /**
-     * Helper method to get the list of all the available entities that can be defined as root
-     * entity for a DomainModel.
+     * Helper method to get the list of all the available entities that can be defined as root entity for a DomainModel.
      */
     private List<String> getAvailableRootEntities(DataStoreInfo ds) {
         DataStoreMetadata dsm = this.getDataStoreMetadata(ds);
@@ -452,15 +400,14 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
 
     /** Helper method to get Postgis-related DataStoreMetadata. */
     private DataStoreMetadata getDataStoreMetadata(DataStoreInfo ds) {
-        JDBCDataStoreFactory factory =
-                new JDBCDataStoreFactoryFinder().getFactoryFromType(ds.getType());
+        JDBCDataStoreFactory factory = new JDBCDataStoreFactoryFinder().getFactoryFromType(ds.getType());
         JDBCDataStore jdbcDataStore = null;
         DataStoreMetadata dsm = null;
         try {
+            ds = getCatalog().getResourcePool().clone(ds, true);
             jdbcDataStore = factory.createDataStore(ds.getConnectionParameters());
-            DataStoreMetadataConfig config =
-                    new JdbcDataStoreMetadataConfig(
-                            jdbcDataStore, ds.getConnectionParameters().get("passwd").toString());
+            DataStoreMetadataConfig config = new JdbcDataStoreMetadataConfig(
+                    jdbcDataStore, ds.getConnectionParameters().get("passwd").toString());
             dsm = (new DataStoreMetadataFactory()).getDataStoreMetadata(config);
         } catch (Exception e) {
             throw new RuntimeException("Error retrieving metadata from DB.");
@@ -486,20 +433,52 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
 
     /** Helper method that returns a form datastore model parameter value based on the param key. */
     private String getDataStoreInfoParam(String key) {
-        String param = (String) smartAppSchemaDataStoreInfo.getConnectionParameters().get(key);
+        String param =
+                (String) smartAppSchemaDataStoreInfo.getConnectionParameters().get(key);
         return param;
     }
 
-    /**
-     * Helped method that return list of nodes based on a TreeNode (recursively get full list of
-     * nodes)
-     */
-    private static void convertTreeToSet(
-            DefaultMutableTreeNode aNode, Set<DefaultMutableTreeNode> nodes) {
+    /** Helped method that return list of nodes based on a TreeNode (recursively get full list of nodes) */
+    private static void convertTreeToSet(DefaultMutableTreeNode aNode, Set<DefaultMutableTreeNode> nodes) {
         for (int i = 0; i < aNode.getChildCount(); i++) {
             convertTreeToSet((DefaultMutableTreeNode) aNode.getChildAt(i), nodes);
         }
         nodes.add(aNode);
+    }
+
+    @SuppressWarnings({"unchecked"})
+    private void buildOverridesView() {
+        WebMarkupContainer container = new WebMarkupContainer("overridesContainer");
+        container.setOutputMarkupId(true);
+        add(container);
+        IModel<DataStoreInfo> dsiModel = (IModel<DataStoreInfo>) this.model;
+        SmartOverridesRefreshingView overridesView = new SmartOverridesRefreshingView("overridesview", dsiModel);
+        container.add(overridesView);
+        OverrideAddPanel addOverridePanel =
+                new OverrideAddPanel("addOverridePanel", new SmartOverridesModel(dsiModel), overridesView);
+        container.add(addOverridePanel);
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private void buildEntitiesPrefixTextbox() {
+        IModel iModel = new PropertyModel(model, "connectionParameters");
+        TextParamPanel entitiesPrefixPanel = new TextParamPanel(
+                "entities-prefix",
+                new MapModel(iModel, SmartDataLoaderDataAccessFactory.ENTITIES_PREFIX.key),
+                new ParamResourceModel("PostGisSmartAppSchemaStoreEditPanel.entitiesPrefix", this),
+                false);
+        entitiesPrefixPanel.setOutputMarkupId(true);
+        entitiesPrefixPanel.getFormComponent().add(new AjaxFormComponentUpdatingBehavior("change") {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                entitiesPrefix = (String) entitiesPrefixPanel.getFormComponent().getModelObject();
+                smartAppSchemaDataStoreInfo
+                        .getConnectionParameters()
+                        .put(SmartDataLoaderDataAccessFactory.ENTITIES_PREFIX.key, entitiesPrefix);
+                target.add(entitiesPrefixPanel);
+            }
+        });
+        add(entitiesPrefixPanel);
     }
 
     public static class DataStoreSummmary implements Serializable {

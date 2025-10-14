@@ -20,8 +20,7 @@ import org.jasig.cas.client.util.CommonUtils;
 import org.springframework.beans.factory.BeanNameAware;
 
 /**
- * a singleton {@link Filter} object receiving callbacks for proxy granting tickets from a cas
- * server
+ * a singleton {@link Filter} object receiving callbacks for proxy granting tickets from a cas server
  *
  * @author christian
  */
@@ -46,10 +45,7 @@ public class ProxyGrantingTicketCallbackFilter implements Filter, BeanNameAware 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {}
 
-    /**
-     * extract a proxy granting tickets and store it in the global {@link
-     * ProxyGrantingTicketStorage} object
-     */
+    /** extract a proxy granting tickets and store it in the global {@link ProxyGrantingTicketStorage} object */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {

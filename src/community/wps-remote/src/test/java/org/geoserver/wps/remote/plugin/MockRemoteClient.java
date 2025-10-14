@@ -30,17 +30,13 @@ public class MockRemoteClient extends RemoteProcessClient {
 
     @Override
     public String execute(
-            Name serviceName,
-            Map<String, Object> input,
-            Map<String, Object> metadata,
-            ProgressListener monitor)
+            Name serviceName, Map<String, Object> input, Map<String, Object> metadata, ProgressListener monitor)
             throws Exception {
 
         if (serviceName != null) {
             for (RemoteProcessFactoryListener listener : getRemoteFactoryListeners()) {
                 listener.registerProcess(
-                        new RemoteServiceDescriptor(
-                                serviceName, "Service", "A test service", null, null, metadata));
+                        new RemoteServiceDescriptor(serviceName, "Service", "A test service", null, null, metadata));
             }
         }
 

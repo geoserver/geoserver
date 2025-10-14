@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -67,8 +68,7 @@ public class IOUtils {
      *
      * <p>Please note that both from input stream and out output stream will be closed.
      */
-    public static void copy(InputStream in, OutputStream out, int copyBufferSize)
-            throws IOException {
+    public static void copy(InputStream in, OutputStream out, int copyBufferSize) throws IOException {
         try (in;
                 out) {
             byte[] buffer = new byte[copyBufferSize];
@@ -80,12 +80,10 @@ public class IOUtils {
     }
 
     /**
-     * Copies from a file to another by performing a filtering on certain specified tokens. In
-     * particular, each key in the filters map will be looked up in the reader as ${key} and
-     * replaced with the associated value.
+     * Copies from a file to another by performing a filtering on certain specified tokens. In particular, each key in
+     * the filters map will be looked up in the reader as ${key} and replaced with the associated value.
      */
-    public static void filteredCopy(File from, File to, Map<String, String> filters)
-            throws IOException {
+    public static void filteredCopy(File from, File to, Map<String, String> filters) throws IOException {
         filteredCopy(new BufferedReader(new FileReader(from)), to, filters);
     }
     /**
@@ -108,12 +106,10 @@ public class IOUtils {
     }
 
     /**
-     * Copies from a reader to a file by performing a filtering on certain specified tokens. In
-     * particular, each key in the filters map will be looked up in the reader as ${key} and
-     * replaced with the associated value.
+     * Copies from a reader to a file by performing a filtering on certain specified tokens. In particular, each key in
+     * the filters map will be looked up in the reader as ${key} and replaced with the associated value.
      */
-    public static void filteredCopy(BufferedReader from, File to, Map<String, String> filters)
-            throws IOException {
+    public static void filteredCopy(BufferedReader from, File to, Map<String, String> filters) throws IOException {
         // prepare the escaped ${key} keys so that it won't be necessary to do
         // it over and over
         // while parsing the file
@@ -144,11 +140,9 @@ public class IOUtils {
     public static void deepCopy(File fromDir, File toDir) throws IOException {
         if (!fromDir.isDirectory() || !fromDir.exists())
             throw new IllegalArgumentException(
-                    "Invalid source directory "
-                            + "(it's either not a directory, or does not exist");
+                    "Invalid source directory " + "(it's either not a directory, or does not exist");
         if (toDir.exists() && toDir.isFile())
-            throw new IllegalArgumentException(
-                    "Invalid destination directory, " + "it happens to be a file instead");
+            throw new IllegalArgumentException("Invalid destination directory, " + "it happens to be a file instead");
 
         // create destination if not available
         if (!toDir.exists()) if (!toDir.mkdir()) throw new IOException("Could not create " + toDir);
@@ -164,15 +158,12 @@ public class IOUtils {
     }
 
     /**
-     * Creates a directory as a child of baseDir. The directory name will be preceded by prefix and
-     * followed by suffix
+     * Creates a directory as a child of baseDir. The directory name will be preceded by prefix and followed by suffix
      */
-    public static File createRandomDirectory(String baseDir, String prefix, String suffix)
-            throws IOException {
+    public static File createRandomDirectory(String baseDir, String prefix, String suffix) throws IOException {
         File tempDir = File.createTempFile(prefix, suffix, new File(baseDir));
         tempDir.delete();
-        if (!tempDir.mkdir())
-            throw new IOException("Could not create the temp directory " + tempDir.getPath());
+        if (!tempDir.mkdir()) throw new IOException("Could not create the temp directory " + tempDir.getPath());
         return tempDir;
     }
 
@@ -186,28 +177,30 @@ public class IOUtils {
         String sysTempDir = dummyTemp.getParentFile().getAbsolutePath();
         dummyTemp.delete();
 
-        File reqTempDir = new File(sysTempDir + File.separator + prefix + Math.random());
+        File reqTempDir = new File(sysTempDir
+                + File.separator
+                + prefix
+                + ThreadLocalRandom.current().nextDouble());
         reqTempDir.mkdir();
 
         return reqTempDir;
     }
 
     /**
-     * Recursively deletes the contents of the specified directory, and finally wipes out the
-     * directory itself. For each file that cannot be deleted a warning log will be issued.
+     * Recursively deletes the contents of the specified directory, and finally wipes out the directory itself. For each
+     * file that cannot be deleted a warning log will be issued.
      *
      * @param directory Directory to delete
-     * @returns true if the directory could be deleted, false otherwise
+     * @return true if the directory could be deleted, false otherwise
      */
     public static boolean delete(File directory) throws IOException {
         return emptyDirectory(directory, false);
     }
 
     /**
-     * Recursively deletes the contents of the specified directory, and finally wipes out the
-     * directory itself. If running in quite mode no exception or log message will be issued by this
-     * method. Otherwise, an exception will be throw if the directory doesn't exists and a warning
-     * log will be issued for each file that cannot be deleted.
+     * Recursively deletes the contents of the specified directory, and finally wipes out the directory itself. If
+     * running in quite mode no exception or log message will be issued by this method. Otherwise, an exception will be
+     * throw if the directory doesn't exists and a warning log will be issued for each file that cannot be deleted.
      *
      * @param directory the directory to delete recursively
      * @return TRUE if the directory and its content could be deleted, FALSE otherwise
@@ -229,8 +222,8 @@ public class IOUtils {
     }
 
     /**
-     * Recursively deletes the contents of the specified directory (but not the directory itself).
-     * For each file that cannot be deleted a warning log will be issued.
+     * Recursively deletes the contents of the specified directory (but not the directory itself). For each file that
+     * cannot be deleted a warning log will be issued.
      *
      * @param directory the directory whose content will be deleted
      * @return TRUE if all the directory contents could be deleted, FALSE otherwise
@@ -240,10 +233,9 @@ public class IOUtils {
     }
 
     /**
-     * Recursively deletes the contents of the specified directory, but not the directory itself. If
-     * running in quite mode no exception or log message will be issued by this method. Otherwise,
-     * an exception will be throw if the directory doesn't exists and a warning log will be issued
-     * for each file that cannot be deleted.
+     * Recursively deletes the contents of the specified directory, but not the directory itself. If running in quite
+     * mode no exception or log message will be issued by this method. Otherwise, an exception will be throw if the
+     * directory doesn't exists and a warning log will be issued for each file that cannot be deleted.
      *
      * @param directory the directory whose content will be deleted
      * @param quiet if TRUE no exception or log will be issued
@@ -252,10 +244,8 @@ public class IOUtils {
     public static boolean emptyDirectory(File directory, boolean quiet) throws IOException {
         if (!directory.isDirectory()) {
             if (!quiet) {
-                throw new IllegalArgumentException(
-                        String.format(
-                                "The provide file '%s' doesn't appear to be a directory.",
-                                directory.getAbsolutePath()));
+                throw new IllegalArgumentException("The provide file '%s' doesn't appear to be a directory."
+                        .formatted(directory.getAbsolutePath()));
             }
             // in quiet mode, let's just move on
             return false;
@@ -267,8 +257,7 @@ public class IOUtils {
             if (!quiet) {
                 // unlikely to happen
                 throw new IllegalStateException(
-                        String.format(
-                                "Not able to list files of '%s'.", directory.getAbsolutePath()));
+                        "Not able to list files of '%s'.".formatted(directory.getAbsolutePath()));
             }
             // in quiet mode, let's just move on
             return false;
@@ -294,27 +283,24 @@ public class IOUtils {
     /**
      * Zips up the directory contents into the specified {@link ZipOutputStream}.
      *
-     * <p>Note this method does not take ownership of the provided zip output stream, meaning the
-     * client code is responsible for calling {@link ZipOutputStream#finish() finish()} when it's
-     * done adding zip entries.
+     * <p>Note this method does not take ownership of the provided zip output stream, meaning the client code is
+     * responsible for calling {@link ZipOutputStream#finish() finish()} when it's done adding zip entries.
      *
      * @param directory The directory whose contents have to be zipped up
      * @param zipout The {@link ZipOutputStream} that will be populated by the files found
-     * @param filter An optional filter that can be used to select only certain files. Can be null,
-     *     in that case all files in the directory will be zipped
+     * @param filter An optional filter that can be used to select only certain files. Can be null, in that case all
+     *     files in the directory will be zipped
      */
-    public static void zipDirectory(
-            File directory, ZipOutputStream zipout, final FilenameFilter filter)
+    public static void zipDirectory(File directory, ZipOutputStream zipout, final FilenameFilter filter)
             throws IOException, FileNotFoundException {
         zipDirectory(directory, "", zipout, filter);
     }
 
     /**
-     * See {@link #zipDirectory(File, ZipOutputStream, FilenameFilter)}, this version handles the
-     * prefix needed to recursively zip data preserving the relative path of each
+     * See {@link #zipDirectory(File, ZipOutputStream, FilenameFilter)}, this version handles the prefix needed to
+     * recursively zip data preserving the relative path of each
      */
-    private static void zipDirectory(
-            File directory, String prefix, ZipOutputStream zipout, final FilenameFilter filter)
+    private static void zipDirectory(File directory, String prefix, ZipOutputStream zipout, final FilenameFilter filter)
             throws IOException, FileNotFoundException {
         File[] files = directory.listFiles(filter);
         // copy file by reading 4k at a time (faster than buffered reading)
@@ -346,8 +332,8 @@ public class IOUtils {
     }
 
     /**
-     * Gets the output file for the provided zip entry and checks that it will not be written
-     * outside of the target directory.
+     * Gets the output file for the provided zip entry and checks that it will not be written outside of the target
+     * directory.
      *
      * @param destDir the output directory
      * @param entry the zip entry
@@ -417,8 +403,8 @@ public class IOUtils {
     }
 
     /** */
-    public static void saveCompressedStream(
-            final byte[] buffer, final OutputStream out, final int len) throws IOException {
+    public static void saveCompressedStream(final byte[] buffer, final OutputStream out, final int len)
+            throws IOException {
         try {
             out.write(buffer, 0, len);
 
@@ -487,9 +473,8 @@ public class IOUtils {
     }
 
     /**
-     * Replacement for the now deprecated {@link
-     * org.apache.commons.io.IOUtils#closeQuietly(Closeable)}, to be used only when then "quiet"
-     * behavior bit is really rneeded
+     * Replacement for the now deprecated {@link org.apache.commons.io.IOUtils#closeQuietly(Closeable)}, to be used only
+     * when then "quiet" behavior bit is really rneeded
      */
     public static void closeQuietly(final Closeable closeable) {
         try {

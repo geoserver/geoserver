@@ -24,12 +24,12 @@ And more. See the :ref:`monitor_reference` section for a complete list.
 In addition to capturing request data the monitor extension is also capable
 of persisting it. Two options are provided out of the box:
 
-* Persisting to a relational database, see :ref:`monitor_db` for more details
+* Persisting to a relational database (this used to be a community module) 
 * Piping to a log file, see :ref:`monitor_audit` for more details
 
 By default the extension will do neither and simply maintain data for only
 the most recent requests. The data is stored in memory meaning that if the
-server is restarted or shutdown this information is lost.The 
+server is restarted or shutdown this information is lost. The 
 :ref:`monitor_configuration` section provides a comprehensive guide to 
 configuring the monitor extension.  
 

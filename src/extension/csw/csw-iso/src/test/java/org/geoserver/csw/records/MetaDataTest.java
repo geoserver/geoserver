@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.List;
 import org.geoserver.csw.records.iso.MetaDataDescriptor;
 import org.geoserver.csw.store.internal.iso.MDTestSupport;
+import org.geoserver.csw.util.PropertyPath;
 import org.geotools.api.feature.Feature;
 import org.geotools.api.feature.Property;
 import org.geotools.api.filter.FilterFactory;
@@ -36,30 +37,30 @@ public class MetaDataTest extends MDTestSupport {
     @Test
     public void testBuildMDRecord() throws MismatchedDimensionException, Exception {
         GenericRecordBuilder rb = new GenericRecordBuilder(MetaDataDescriptor.getInstance());
-        rb.addElement("fileIdentifier.CharacterString", "00180e67-b7cf-40a3-861d-b3a09337b195");
         rb.addElement(
-                "identificationInfo.AbstractMD_Identification.citation.CI_Citation.title.CharacterString",
+                PropertyPath.fromDotPath("fileIdentifier.CharacterString"), "00180e67-b7cf-40a3-861d-b3a09337b195");
+        rb.addElement(
+                PropertyPath.fromDotPath(
+                        "identificationInfo.AbstractMD_Identification.citation.CI_Citation.title.CharacterString"),
                 "Image2000 Product 1 (at1) Multispectral");
-        rb.addElement("dateStamp.Date", "2004-10-04 00:00:00");
+        rb.addElement(PropertyPath.fromDotPath("dateStamp.Date"), "2004-10-04 00:00:00");
         rb.addElement(
-                "identificationInfo.AbstractMD_Identification.abstract.CharacterString",
+                PropertyPath.fromDotPath("identificationInfo.AbstractMD_Identification.abstract.CharacterString"),
                 "IMAGE2000 product 1 individual orthorectified scenes. IMAGE2000 was  produced from ETM+ Landsat 7 satellite data and provides a consistent European coverage of individual orthorectified scenes in national map projection systems.");
-        rb.addElement("hierarchyLevel.MD_ScopeCode.@codeListValue", "dataset");
+        rb.addElement(PropertyPath.fromDotPath("hierarchyLevel.MD_ScopeCode.@codeListValue"), "dataset");
         rb.addElement(
-                "identificationInfo.AbstractMD_Identification.descriptiveKeywords.MD_Keywords.keyword.CharacterString",
+                PropertyPath.fromDotPath(
+                        "identificationInfo.AbstractMD_Identification.descriptiveKeywords.MD_Keywords.keyword.CharacterString"),
                 "imagery",
                 "baseMaps",
                 "earthCover");
         rb.addElement(
-                "contact.CI_ResponsibleParty.individualName.CharacterString", "Niels Charlier");
-        rb.addBoundingBox(
-                new ReferencedEnvelope(14.05, 17.24, 46.46, 28.42, DefaultGeographicCRS.WGS84));
+                PropertyPath.fromDotPath("contact.CI_ResponsibleParty.individualName.CharacterString"),
+                "Niels Charlier");
+        rb.addBoundingBox(new ReferencedEnvelope(14.05, 17.24, 46.46, 28.42, DefaultGeographicCRS.WGS84));
         Feature f = rb.build(null);
 
-        assertRecordElement(
-                f,
-                "gmd:fileIdentifier/gco:CharacterString",
-                "00180e67-b7cf-40a3-861d-b3a09337b195");
+        assertRecordElement(f, "gmd:fileIdentifier/gco:CharacterString", "00180e67-b7cf-40a3-861d-b3a09337b195");
         assertRecordElement(
                 f,
                 "gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString",
@@ -76,21 +77,18 @@ public class MetaDataTest extends MDTestSupport {
                 "imagery",
                 "baseMaps",
                 "earthCover");
-        assertBBox(
-                f, new ReferencedEnvelope(14.05, 17.24, 46.46, 28.42, DefaultGeographicCRS.WGS84));
+        assertBBox(f, new ReferencedEnvelope(14.05, 17.24, 46.46, 28.42, DefaultGeographicCRS.WGS84));
     }
 
     private void assertBBox(Feature f, ReferencedEnvelope... envelopes) throws Exception {
-        PropertyName bbox =
-                ff.property(
-                        "gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox",
-                        MetaDataDescriptor.NAMESPACES);
+        PropertyName bbox = ff.property(
+                "gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox",
+                MetaDataDescriptor.NAMESPACES);
         Property p = (Property) bbox.evaluate(f);
         MultiPolygon geometry = (MultiPolygon) p.getValue();
         @SuppressWarnings("unchecked")
         List<ReferencedEnvelope> featureEnvelopes =
-                (List<ReferencedEnvelope>)
-                        p.getUserData().get(GenericRecordBuilder.ORIGINAL_BBOXES);
+                (List<ReferencedEnvelope>) p.getUserData().get(GenericRecordBuilder.ORIGINAL_BBOXES);
         ReferencedEnvelope total = null;
         for (int i = 0; i < envelopes.length; i++) {
             assertEquals(envelopes[i], featureEnvelopes.get(i));

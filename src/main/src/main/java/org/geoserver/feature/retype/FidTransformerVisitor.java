@@ -15,8 +15,8 @@ import org.geotools.filter.identity.FeatureIdImpl;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 
 /**
- * Takes a filter that eventually contains a fid filter and builds a new filter that contains the
- * same fids but with a different prefix
+ * Takes a filter that eventually contains a fid filter and builds a new filter that contains the same fids but with a
+ * different prefix
  *
  * @author Andrea Aime
  */
@@ -38,8 +38,7 @@ class FidTransformerVisitor extends DuplicatingFilterVisitor {
         for (Object o : ids) {
             FeatureId id = new FeatureIdImpl((String) o);
             FeatureId retyped =
-                    RetypingFeatureCollection.reTypeId(
-                            id, map.getFeatureType(), map.getOriginalFeatureType());
+                    RetypingFeatureCollection.reTypeId(id, map.getFeatureType(), map.getOriginalFeatureType());
             fids.add(retyped);
         }
         return ff.id(fids);

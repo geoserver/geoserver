@@ -12,7 +12,7 @@ import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerFactory;
 import org.geoserver.config.GeoServerInfo;
-import org.geoserver.config.JAIInfo;
+import org.geoserver.config.ImageProcessingInfo;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
@@ -50,8 +50,8 @@ public class GeoServerFactoryImpl implements GeoServerFactory, ApplicationContex
     }
 
     @Override
-    public JAIInfo createJAI() {
-        return new JAIInfoImpl();
+    public ImageProcessingInfo createJAI() {
+        return new ImageProcessingInfoImpl();
     }
 
     @Override
@@ -72,8 +72,9 @@ public class GeoServerFactoryImpl implements GeoServerFactory, ApplicationContex
     @Override
     public <T> T create(Class<T> clazz) {
         if (applicationContext != null) {
-            Collection extensions =
-                    applicationContext.getBeansOfType(GeoServerFactory.Extension.class).values();
+            Collection extensions = applicationContext
+                    .getBeansOfType(GeoServerFactory.Extension.class)
+                    .values();
             for (Object o : extensions) {
                 Extension extension = (Extension) o;
                 if (extension.canCreate(clazz)) {

@@ -5,6 +5,7 @@
  */
 package org.geoserver.wps.executor;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -20,10 +21,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * Summarizes the execution state of a certain process. Note: the class implements equals and
- * hashcode, but skips the exception in them, as common Java exceptions do not sport a usable
- * equals/hashcode implementation, and the exceptions might be cloned to due network/database
- * serialization.
+ * Summarizes the execution state of a certain process. Note: the class implements equals and hashcode, but skips the
+ * exception in them, as common Java exceptions do not sport a usable equals/hashcode implementation, and the exceptions
+ * might be cloned to due network/database serialization.
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -31,6 +31,7 @@ public class ExecutionStatus implements Serializable, Comparable<ExecutionStatus
 
     static final Logger LOGGER = Logging.getLogger(ExecutionStatus.class);
 
+    @Serial
     private static final long serialVersionUID = -2433524030271115410L;
 
     // TODO: find a GeoServer unified, non GUI specific way to get the node identifier
@@ -48,8 +49,7 @@ public class ExecutionStatus implements Serializable, Comparable<ExecutionStatus
         try {
             InetAddress candidateAddress = null;
             // Iterate all NICs (network interface cards)...
-            for (Enumeration interfaces = NetworkInterface.getNetworkInterfaces();
-                    interfaces.hasMoreElements(); ) {
+            for (Enumeration interfaces = NetworkInterface.getNetworkInterfaces(); interfaces.hasMoreElements(); ) {
                 NetworkInterface ni = (NetworkInterface) interfaces.nextElement();
                 if (ni.getName() != null && ni.getName().startsWith("vmnet")) {
                     // skipping vmware interfaces
@@ -74,13 +74,11 @@ public class ExecutionStatus implements Serializable, Comparable<ExecutionStatus
             // Fall back to whatever localhost provides
             InetAddress jdkSuppliedAddress = InetAddress.getLocalHost();
             if (jdkSuppliedAddress == null) {
-                throw new UnknownHostException(
-                        "The JDK InetAddress.getLocalHost() method unexpectedly returned null.");
+                throw new UnknownHostException("The JDK InetAddress.getLocalHost() method unexpectedly returned null.");
             }
             return jdkSuppliedAddress;
         } catch (Exception e) {
-            UnknownHostException unknownHostException =
-                    new UnknownHostException("Failed to determine LAN address");
+            UnknownHostException unknownHostException = new UnknownHostException("Failed to determine LAN address");
             unknownHostException.initCause(e);
             throw unknownHostException;
         }
@@ -129,8 +127,8 @@ public class ExecutionStatus implements Serializable, Comparable<ExecutionStatus
     Throwable exception;
 
     /**
-     * The original request. This is a transient field will be available only inside the node that
-     * originated the request, and only during its execution
+     * The original request. This is a transient field will be available only inside the node that originated the
+     * request, and only during its execution
      */
     transient ExecuteType request;
 
@@ -243,8 +241,8 @@ public class ExecutionStatus implements Serializable, Comparable<ExecutionStatus
     }
 
     /**
-     * The original request. This field is available only while the request is being processed, on
-     * the node that's processing it. For all other nodes, a copy of the request is stored on disk
+     * The original request. This field is available only while the request is being processed, on the node that's
+     * processing it. For all other nodes, a copy of the request is stored on disk
      */
     public ExecuteType getRequest() {
         return request;
@@ -363,9 +361,7 @@ public class ExecutionStatus implements Serializable, Comparable<ExecutionStatus
         result = prime * result + ((executionId == null) ? 0 : executionId.hashCode());
         result = prime * result + ((lastUpdated == null) ? 0 : lastUpdated.hashCode());
         result = prime * result + ((expirationDate == null) ? 0 : expirationDate.hashCode());
-        result =
-                prime * result
-                        + ((estimatedCompletion == null) ? 0 : estimatedCompletion.hashCode());
+        result = prime * result + ((estimatedCompletion == null) ? 0 : estimatedCompletion.hashCode());
         result = prime * result + ((nextPoll == null) ? 0 : nextPoll.hashCode());
         result = prime * result + ((nodeId == null) ? 0 : nodeId.hashCode());
         result = prime * result + ((phase == null) ? 0 : phase.hashCode());

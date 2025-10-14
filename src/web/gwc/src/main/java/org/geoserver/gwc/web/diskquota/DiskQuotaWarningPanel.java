@@ -4,6 +4,7 @@
  */
 package org.geoserver.gwc.web.diskquota;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
@@ -18,6 +19,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
  */
 public class DiskQuotaWarningPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -343944585740739250L;
 
     public DiskQuotaWarningPanel(String id) {
@@ -26,8 +28,7 @@ public class DiskQuotaWarningPanel extends Panel {
         Exception exception = getException();
         Label label = new Label("diskQuotaError", new Model<>());
         if (exception != null) {
-            ParamResourceModel rm =
-                    new ParamResourceModel("GWC.diskQuotaLoadFailed", null, exception.getMessage());
+            ParamResourceModel rm = new ParamResourceModel("GWC.diskQuotaLoadFailed", null, exception.getMessage());
             label.setDefaultModelObject(rm.getString());
         } else {
             label.setVisible(false);

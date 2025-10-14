@@ -6,6 +6,7 @@
 package org.geoserver.security.web.auth;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.Component;
@@ -34,8 +35,7 @@ public class AuthFilterChainPalette extends Palette<String> {
         this(id, model, new AvailableAuthFilterNamesModel());
     }
 
-    public AuthFilterChainPalette(
-            String id, IModel<List<String>> model, IModel<List<String>> choicesModel) {
+    public AuthFilterChainPalette(String id, IModel<List<String>> model, IModel<List<String>> choicesModel) {
         super(
                 id,
                 model,
@@ -70,8 +70,7 @@ public class AuthFilterChainPalette extends Palette<String> {
             List<String> result = new ArrayList<>();
             try {
                 result.addAll(
-                        chain.listFilterCandidates(
-                                GeoServerApplication.get().getSecurityManager()));
+                        chain.listFilterCandidates(GeoServerApplication.get().getSecurityManager()));
             } catch (IOException e) {
                 throw new WicketRuntimeException(e);
             }
@@ -87,13 +86,13 @@ public class AuthFilterChainPalette extends Palette<String> {
     @Override
     protected Recorder<String> newRecorderComponent() {
         Recorder<String> recorder = super.newRecorderComponent();
-        recorder.add(
-                new AjaxFormComponentUpdatingBehavior("change") {
-                    private static final long serialVersionUID = 1L;
+        recorder.add(new AjaxFormComponentUpdatingBehavior("change") {
+            @Serial
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {}
-                });
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {}
+        });
         return recorder;
     }
 

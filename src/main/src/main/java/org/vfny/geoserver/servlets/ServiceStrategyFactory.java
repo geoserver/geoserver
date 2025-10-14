@@ -21,8 +21,7 @@ import org.vfny.geoserver.util.PartialBufferedOutputStream2;
 
 public class ServiceStrategyFactory implements OutputStrategyFactory, ApplicationContextAware {
     /** Class logger */
-    static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.servlets");
+    static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.servlets");
 
     /** GeoServer configuratoin */
     GeoServer geoServer;
@@ -83,15 +82,12 @@ public class ServiceStrategyFactory implements OutputStrategyFactory, Applicatio
         try {
             theStrategy = (ServiceStrategy) theStrategy.clone();
         } catch (CloneNotSupportedException e) {
-            LOGGER.log(
-                    Level.SEVERE,
-                    "Programming error found, service strategies should be cloneable, " + e,
-                    e);
+            LOGGER.log(Level.SEVERE, "Programming error found, service strategies should be cloneable, " + e, e);
             throw new RuntimeException("Found a strategy that does not support cloning...", e);
         }
 
         // TODO: this hack should be removed once modules have their own config
-        if (theStrategy instanceof PartialBufferStrategy2) {
+        if (theStrategy instanceof PartialBufferStrategy2 strategy2) {
             if (partialBufferSize == 0) {
                 String size = getServletContext().getInitParameter("PARTIAL_BUFFER_STRATEGY_SIZE");
 
@@ -100,27 +96,25 @@ public class ServiceStrategyFactory implements OutputStrategyFactory, Applicatio
                         partialBufferSize = Integer.parseInt(size);
 
                         if (partialBufferSize <= 0) {
-                            LOGGER.warning(
-                                    "Invalid partial buffer size, defaulting to "
-                                            + PartialBufferedOutputStream2.DEFAULT_BUFFER_SIZE
-                                            + " (was "
-                                            + partialBufferSize
-                                            + ")");
+                            LOGGER.warning("Invalid partial buffer size, defaulting to "
+                                    + PartialBufferedOutputStream2.DEFAULT_BUFFER_SIZE
+                                    + " (was "
+                                    + partialBufferSize
+                                    + ")");
                             partialBufferSize = 0;
                         }
                     } catch (NumberFormatException nfe) {
-                        LOGGER.warning(
-                                "Invalid partial buffer size, defaulting to "
-                                        + PartialBufferedOutputStream2.DEFAULT_BUFFER_SIZE
-                                        + " (was "
-                                        + partialBufferSize
-                                        + ")");
+                        LOGGER.warning("Invalid partial buffer size, defaulting to "
+                                + PartialBufferedOutputStream2.DEFAULT_BUFFER_SIZE
+                                + " (was "
+                                + partialBufferSize
+                                + ")");
                         partialBufferSize = 0;
                     }
                 }
             }
 
-            ((PartialBufferStrategy2) theStrategy).setBufferSize(partialBufferSize);
+            strategy2.setBufferSize(partialBufferSize);
         }
 
         return theStrategy;

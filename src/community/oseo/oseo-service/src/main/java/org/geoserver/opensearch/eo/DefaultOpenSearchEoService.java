@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.config.GeoServer;
@@ -33,6 +34,7 @@ import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.filter.PropertyIsEqualTo;
 import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.data.DataUtilities;
+import org.geotools.data.store.MaxFeaturesFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
@@ -63,9 +65,7 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
     OpenSearchAccessProvider accessProvider;
 
     public DefaultOpenSearchEoService(
-            GeoServer geoServer,
-            OpenSearchAccessProvider accessProvider,
-            FreemarkerTemplateSupport templates) {
+            GeoServer geoServer, OpenSearchAccessProvider accessProvider, FreemarkerTemplateSupport templates) {
         this.geoServer = geoServer;
         this.accessProvider = accessProvider;
         this.templates = templates;
@@ -95,8 +95,7 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
 
         // product search for a given collection, figure out what parameters apply to it
         Feature match = getCollectionByParentIdentifier(parentId);
-        Property sensorTypeProperty =
-                match.getProperty(new NameImpl(OpenSearchAccess.EO_NAMESPACE, "sensorType"));
+        Property sensorTypeProperty = match.getProperty(new NameImpl(OpenSearchAccess.EO_NAMESPACE, "sensorType"));
         if (sensorTypeProperty == null || !(sensorTypeProperty.getValue() instanceof String)) {
             throw new OWS20Exception("Unknown or missing sensory type " + sensorTypeProperty);
         }
@@ -107,9 +106,7 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
             collectionClass = ProductClass.getProductClassFromName(geoServer, sensorType);
         } catch (Exception e) {
             LOGGER.warning(
-                    "Could not understand sensor type "
-                            + sensorType
-                            + ", will only return generic product properties");
+                    "Could not understand sensor type " + sensorType + ", will only return generic product properties");
         }
 
         OpenSearchAccess access = getOpenSearchAccess();
@@ -129,40 +126,36 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
 
         // build the query
         final NameImpl identifier = new NameImpl(OpenSearchAccess.EO_NAMESPACE, "identifier");
-        final PropertyIsEqualTo filter =
-                FF.equal(FF.property(identifier), FF.literal(parentId), true);
+        final PropertyIsEqualTo filter = FF.equal(FF.property(identifier), FF.literal(parentId), true);
         Query query = new Query(collectionSource.getName().getLocalPart(), filter);
         FeatureCollection<FeatureType, Feature> features = collectionSource.getFeatures(query);
 
         // get the expected matching feature
         Feature match = DataUtilities.first(features);
         if (match == null) {
-            throw new OWS20Exception(
-                    "Unknown parentId '" + parentId + "'", OWSExceptionCode.InvalidParameterValue);
+            throw new OWS20Exception("Unknown parentId '" + parentId + "'", OWSExceptionCode.InvalidParameterValue);
         } else {
             Property enabled = match.getProperty(OpenSearchAccess.ENABLED);
             if (enabled == null || !Boolean.TRUE.equals(enabled.getValue())) {
                 throw new OWS20Exception(
-                        "Parent '" + parentId + "' is not enabled",
-                        OWSExceptionCode.InvalidParameterValue);
+                        "Parent '" + parentId + "' is not enabled", OWSExceptionCode.InvalidParameterValue);
             }
         }
 
         return match;
     }
 
-    private List<Parameter<?>> getSearchParametersByClass(
-            ProductClass pc, FeatureType productSchema) {
+    private List<Parameter<?>> getSearchParametersByClass(ProductClass pc, FeatureType productSchema) {
         List<Parameter<?>> result = new ArrayList<>();
         final String targetNamespace = pc.getNamespace();
         for (PropertyDescriptor pd : productSchema.getDescriptors()) {
             Name name = pd.getName();
             final String propertyNs = name.getNamespaceURI();
             if (targetNamespace.equals(propertyNs)) {
-                Parameter parameter =
-                        new ParameterBuilder(name.getLocalPart(), pd.getType().getBinding())
-                                .prefix(pc.getPrefix())
-                                .build();
+                Parameter parameter = new ParameterBuilder(
+                                name.getLocalPart(), pd.getType().getBinding())
+                        .prefix(pc.getPrefix())
+                        .build();
                 result.add(parameter);
             }
         }
@@ -180,8 +173,7 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
         return searchParameters;
     }
 
-    private Collection<? extends Parameter<?>> getCollectionEoSearchParameters()
-            throws IOException {
+    private Collection<? extends Parameter<?>> getCollectionEoSearchParameters() throws IOException {
         final OpenSearchAccess osAccess = getOpenSearchAccess();
         FeatureType schema = osAccess.getCollectionSource().getSchema();
         List<Parameter<?>> result = new ArrayList<>();
@@ -189,10 +181,9 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
             final Class<?> type = pd.getType().getBinding();
             if (OpenSearchAccess.EO_NAMESPACE.equals(pd.getName().getNamespaceURI())
                     && !Geometry.class.isAssignableFrom(type)) {
-                Parameter<?> parameter =
-                        new ParameterBuilder(pd.getName().getLocalPart(), type)
-                                .prefix("eo")
-                                .build();
+                Parameter<?> parameter = new ParameterBuilder(pd.getName().getLocalPart(), type)
+                        .prefix("eo")
+                        .build();
                 result.add(parameter);
             }
         }
@@ -221,33 +212,52 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
             } else {
                 // adding parent id filter for primary collections
                 final PropertyName parentIdProperty =
-                        FF.property(
-                                new NameImpl(OpenSearchAccess.EO_NAMESPACE, "parentIdentifier"));
-                PropertyIsEqualTo parentIdFilter =
-                        FF.equal(parentIdProperty, FF.literal(parentId), true);
+                        FF.property(new NameImpl(OpenSearchAccess.EO_NAMESPACE, "parentIdentifier"));
+                PropertyIsEqualTo parentIdFilter = FF.equal(parentIdProperty, FF.literal(parentId), true);
                 resultsQuery = new Query(resultsQuery);
                 resultsQuery.setFilter(Predicates.and(resultsQuery.getFilter(), parentIdFilter));
             }
         }
 
         // count
-        Query countQuery = new Query(resultsQuery);
-        countQuery.setMaxFeatures(Query.DEFAULT_MAX);
-        countQuery.setStartIndex(null);
-        int totalResults = featureSource.getCount(countQuery);
-
-        // get actual features
+        Integer totalResults = null;
+        boolean nextPage;
         FeatureCollection<FeatureType, Feature> features;
-        if (resultsQuery.getMaxFeatures() == 0) {
-            // pure count query
-            features =
-                    new ListComplexFeatureCollection(
-                            featureSource.getSchema(), Collections.emptyList());
+        if (getService().isSkipNumberMatched()) {
+            if (resultsQuery.getMaxFeatures() == Query.DEFAULT_MAX) {
+                features = featureSource.getFeatures(resultsQuery);
+                nextPage = false;
+            } else {
+                // get the items, plus one to check for next page
+                Query nextQuery = new Query(resultsQuery);
+                nextQuery.setMaxFeatures(resultsQuery.getMaxFeatures() + 1);
+                features = featureSource.getFeatures(nextQuery);
+                int returned = features.size();
+                if (returned > resultsQuery.getMaxFeatures()) {
+                    nextPage = true;
+                    features = new MaxFeaturesFeatureCollection<>(features, resultsQuery.getMaxFeatures());
+                } else {
+                    nextPage = false;
+                }
+            }
         } else {
-            features = featureSource.getFeatures(resultsQuery);
+            Query countQuery = new Query(resultsQuery);
+            countQuery.setMaxFeatures(Query.DEFAULT_MAX);
+            countQuery.setStartIndex(null);
+            totalResults = featureSource.getCount(countQuery);
+            nextPage = totalResults
+                    > (Optional.ofNullable(resultsQuery.getStartIndex()).orElse(0) + resultsQuery.getMaxFeatures());
+
+            // get actual features
+            if (resultsQuery.getMaxFeatures() == 0) {
+                // pure count query
+                features = new ListComplexFeatureCollection(featureSource.getSchema(), Collections.emptyList());
+            } else {
+                features = featureSource.getFeatures(resultsQuery);
+            }
         }
 
-        SearchResults results = new SearchResults(request, features, totalResults);
+        SearchResults results = new SearchResults(request, features, totalResults, nextPage);
 
         return results;
     }
@@ -261,8 +271,7 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
     private Query filterEnabled(Query query) {
         Query result = new Query(query);
         Filter filter = query.getFilter();
-        PropertyIsEqualTo enabledFilter =
-                FF.equals(FF.property(OpenSearchAccess.ENABLED), FF.literal(true));
+        PropertyIsEqualTo enabledFilter = FF.equals(FF.property(OpenSearchAccess.ENABLED), FF.literal(true));
         if (filter == null || Filter.INCLUDE.equals(filter)) {
             result.setFilter(enabledFilter);
         } else {
@@ -310,7 +319,8 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
         String templateName, collectionId;
         if (parentId == null) {
             templateName = "collection-metadata";
-            collectionId = (String) feature.getProperty(OpenSearchAccess.EO_IDENTIFIER).getValue();
+            collectionId =
+                    (String) feature.getProperty(OpenSearchAccess.EO_IDENTIFIER).getValue();
         } else {
             templateName = "product-metadata";
             collectionId = parentId;
@@ -350,21 +360,16 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
                 throw new OWS20Exception(msg, OWSExceptionCode.NotFound);
             } else {
                 throw new OWS20Exception(
-                        "Could not locate the quicklook for the requested resource",
-                        OWSExceptionCode.NotFound);
+                        "Could not locate the quicklook for the requested resource", OWSExceptionCode.NotFound);
             }
         }
 
-        byte[] payload =
-                (byte[])
-                        getPropertyFromFirstFeature(
-                                features, OpenSearchAccess.QUICKLOOK_PROPERTY_NAME);
+        byte[] payload = (byte[]) getPropertyFromFirstFeature(features, OpenSearchAccess.QUICKLOOK_PROPERTY_NAME);
         if (payload == null) {
-            throw new OWS20Exception(
-                    "Could not locate the quicklook for uid = "
-                            + request.getId()
-                            + " and parentId = "
-                            + request.getParentIdentifier());
+            throw new OWS20Exception("Could not locate the quicklook for uid = "
+                    + request.getId()
+                    + " and parentId = "
+                    + request.getParentIdentifier());
         }
 
         return new QuicklookResults(request, payload, guessImageMimeType(payload));
@@ -406,8 +411,7 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
         }
     }
 
-    private Object getPropertyFromFirstFeature(
-            FeatureCollection<FeatureType, Feature> features, Name propertyName) {
+    private Object getPropertyFromFirstFeature(FeatureCollection<FeatureType, Feature> features, Name propertyName) {
         Feature feature = DataUtilities.first(features);
         Property property;
         Object value;
@@ -424,8 +428,7 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
 
     private Query queryByIdentifier(String identifier) {
         Query query = new Query();
-        PropertyName idProperty =
-                FF.property(new NameImpl(OpenSearchAccess.EO_NAMESPACE, "identifier"));
+        PropertyName idProperty = FF.property(new NameImpl(OpenSearchAccess.EO_NAMESPACE, "identifier"));
         final PropertyIsEqualTo idFilter = FF.equal(idProperty, FF.literal(identifier), true);
         query.setFilter(idFilter);
         return filterEnabled(query);

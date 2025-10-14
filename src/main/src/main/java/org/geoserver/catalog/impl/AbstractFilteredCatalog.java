@@ -44,8 +44,7 @@ import org.geotools.util.decorate.AbstractDecorator;
  *
  * @author Davide Savazzi - GeoSolutions
  */
-public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
-        implements Catalog {
+public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog> implements Catalog {
 
     public AbstractFilteredCatalog(Catalog catalog) {
         super(catalog);
@@ -356,8 +355,7 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     }
 
     @Override
-    public <T extends ResourceInfo> T getResourceByName(
-            NamespaceInfo ns, String name, Class<T> clazz) {
+    public <T extends ResourceInfo> T getResourceByName(NamespaceInfo ns, String name, Class<T> clazz) {
         return checkAccess(delegate.getResourceByName(ns, name, clazz));
     }
 
@@ -372,20 +370,17 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     }
 
     @Override
-    public <T extends ResourceInfo> List<T> getResourcesByNamespace(
-            NamespaceInfo namespace, Class<T> clazz) {
+    public <T extends ResourceInfo> List<T> getResourcesByNamespace(NamespaceInfo namespace, Class<T> clazz) {
         return filterResources(delegate.getResourcesByNamespace(namespace, clazz));
     }
 
     @Override
-    public <T extends ResourceInfo> List<T> getResourcesByNamespace(
-            String namespace, Class<T> clazz) {
+    public <T extends ResourceInfo> List<T> getResourcesByNamespace(String namespace, Class<T> clazz) {
         return filterResources(delegate.getResourcesByNamespace(namespace, clazz));
     }
 
     @Override
-    public <T extends ResourceInfo> T getResourceByStore(
-            StoreInfo store, String name, Class<T> clazz) {
+    public <T extends ResourceInfo> T getResourceByStore(StoreInfo store, String name, Class<T> clazz) {
         return checkAccess(delegate.getResourceByStore(store, name, clazz));
     }
 
@@ -405,14 +400,12 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     }
 
     @Override
-    public <T extends StoreInfo> T getStoreByName(
-            String workspaceName, String name, Class<T> clazz) {
+    public <T extends StoreInfo> T getStoreByName(String workspaceName, String name, Class<T> clazz) {
         return checkAccess(delegate.getStoreByName(workspaceName, name, clazz));
     }
 
     @Override
-    public <T extends StoreInfo> T getStoreByName(
-            WorkspaceInfo workspace, String name, Class<T> clazz) {
+    public <T extends StoreInfo> T getStoreByName(WorkspaceInfo workspace, String name, Class<T> clazz) {
         return checkAccess(delegate.getStoreByName(workspace, name, clazz));
     }
 
@@ -422,14 +415,12 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     }
 
     @Override
-    public <T extends StoreInfo> List<T> getStoresByWorkspace(
-            String workspaceName, Class<T> clazz) {
+    public <T extends StoreInfo> List<T> getStoresByWorkspace(String workspaceName, Class<T> clazz) {
         return filterStores(delegate.getStoresByWorkspace(workspaceName, clazz));
     }
 
     @Override
-    public <T extends StoreInfo> List<T> getStoresByWorkspace(
-            WorkspaceInfo workspace, Class<T> clazz) {
+    public <T extends StoreInfo> List<T> getStoresByWorkspace(WorkspaceInfo workspace, Class<T> clazz) {
         return filterStores(delegate.getStoresByWorkspace(workspace, clazz));
     }
 
@@ -454,45 +445,42 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
 
     @SuppressWarnings("unchecked")
     protected <T extends CatalogInfo> T checkAccess(T info) {
-        if (info instanceof WorkspaceInfo) {
-            return (T) checkAccess((WorkspaceInfo) info);
+        if (info instanceof WorkspaceInfo workspaceInfo) {
+            return (T) checkAccess(workspaceInfo);
         }
-        if (info instanceof NamespaceInfo) {
-            return (T) checkAccess((NamespaceInfo) info);
+        if (info instanceof NamespaceInfo namespaceInfo) {
+            return (T) checkAccess(namespaceInfo);
         }
-        if (info instanceof StoreInfo) {
-            return (T) checkAccess((StoreInfo) info);
+        if (info instanceof StoreInfo storeInfo) {
+            return (T) checkAccess(storeInfo);
         }
-        if (info instanceof ResourceInfo) {
-            return (T) checkAccess((ResourceInfo) info);
+        if (info instanceof ResourceInfo resourceInfo) {
+            return (T) checkAccess(resourceInfo);
         }
-        if (info instanceof LayerInfo) {
-            return (T) checkAccess((LayerInfo) info);
+        if (info instanceof LayerInfo layerInfo) {
+            return (T) checkAccess(layerInfo);
         }
-        if (info instanceof LayerGroupInfo) {
-            return (T) checkAccess((LayerGroupInfo) info);
+        if (info instanceof LayerGroupInfo groupInfo) {
+            return (T) checkAccess(groupInfo);
         }
 
         return info;
     }
 
     /**
-     * Given a {@link FeatureTypeInfo}, returns it back if the user can access it in write mode,
-     * makes it read only if the user can access it in read only mode, returns null otherwise
+     * Given a {@link FeatureTypeInfo}, returns it back if the user can access it in write mode, makes it read only if
+     * the user can access it in read only mode, returns null otherwise
      */
     protected abstract <T extends ResourceInfo> T checkAccess(T info);
 
     /**
      * Given a {@link StyleInfo}, returns it back if the user can access it.
      *
-     * @return <code>null</code> if the user can't acess the style, otherwise the original style.
+     * @return {@code null} if the user can't acess the style, otherwise the original style.
      */
     protected abstract StyleInfo checkAccess(StyleInfo style);
 
-    /**
-     * Given a store, returns it back if the user can access its workspace in read mode, null
-     * otherwise
-     */
+    /** Given a store, returns it back if the user can access its workspace in read mode, null otherwise */
     protected abstract <T extends StoreInfo> T checkAccess(T store);
 
     /** Given a layer, returns it back if the user can access it, null otherwise */
@@ -507,44 +495,25 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     /** Given a workspace, returns it back if the user can access it, null otherwise */
     protected abstract <T extends WorkspaceInfo> T checkAccess(T ws);
 
-    /**
-     * Given a list of resources, returns a copy of it containing only the resources the user can
-     * access
-     */
+    /** Given a list of resources, returns a copy of it containing only the resources the user can access */
     protected abstract <T extends ResourceInfo> List<T> filterResources(List<T> resources);
 
-    /**
-     * Given a list of stores, returns a copy of it containing only the resources the user can
-     * access
-     */
+    /** Given a list of stores, returns a copy of it containing only the resources the user can access */
     protected abstract <T extends StoreInfo> List<T> filterStores(List<T> resources);
 
-    /**
-     * Given a list of layer groups, returns a copy of it containing only the groups the user can
-     * access
-     */
+    /** Given a list of layer groups, returns a copy of it containing only the groups the user can access */
     protected abstract List<LayerGroupInfo> filterGroups(List<LayerGroupInfo> groups);
 
-    /**
-     * Given a list of layers, returns a copy of it containing only the layers the user can access
-     */
+    /** Given a list of layers, returns a copy of it containing only the layers the user can access */
     protected abstract List<LayerInfo> filterLayers(List<LayerInfo> layers);
 
-    /**
-     * Given a list of styles, returns a copy of it containing only the styles the user can access.
-     */
+    /** Given a list of styles, returns a copy of it containing only the styles the user can access. */
     protected abstract List<StyleInfo> filterStyles(List<StyleInfo> styles);
 
-    /**
-     * Given a list of namespaces, returns a copy of it containing only the namespaces the user can
-     * access
-     */
+    /** Given a list of namespaces, returns a copy of it containing only the namespaces the user can access */
     protected abstract <T extends NamespaceInfo> List<T> filterNamespaces(List<T> namespaces);
 
-    /**
-     * Given a list of workspaces, returns a copy of it containing only the workspaces the user can
-     * access
-     */
+    /** Given a list of workspaces, returns a copy of it containing only the workspaces the user can access */
     protected abstract <T extends WorkspaceInfo> List<T> filterWorkspaces(List<T> workspaces);
 
     // -------------------------------------------------------------------
@@ -715,19 +684,13 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
 
     @Override
     public void fireModified(
-            CatalogInfo object,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {
+            CatalogInfo object, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
         delegate.fireModified(object, propertyNames, oldValues, newValues);
     }
 
     @Override
     public void firePostModified(
-            CatalogInfo object,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {
+            CatalogInfo object, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
         delegate.firePostModified(object, propertyNames, oldValues, newValues);
     }
 
@@ -910,8 +873,7 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     }
 
     @Override
-    public <T extends CatalogInfo> T get(Class<T> type, Filter filter)
-            throws IllegalArgumentException {
+    public <T extends CatalogInfo> T get(Class<T> type, Filter filter) throws IllegalArgumentException {
 
         Filter securityFilter = securityFilter(type, filter);
         T result = delegate.get(type, securityFilter);
@@ -934,16 +896,12 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
 
         // create secured decorators on-demand
         final Function<T, T> securityWrapper = securityWrapper(of);
-        final CloseableIterator<T> filteredWrapped =
-                CloseableIteratorAdapter.transform(filtered, securityWrapper);
+        final CloseableIterator<T> filteredWrapped = CloseableIteratorAdapter.transform(filtered, securityWrapper);
 
         return filteredWrapped;
     }
 
-    /**
-     * @return a Function that applies a security wrapper over the catalog object given to it as
-     *     input
-     */
+    /** @return a Function that applies a security wrapper over the catalog object given to it as input */
     private <T extends CatalogInfo> Function<T, T> securityWrapper(final Class<T> forClass) {
         return input -> {
             T checked = checkAccess(input);
@@ -952,13 +910,11 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     }
 
     /**
-     * Returns a predicate that checks whether the current user has access to a given object of type
-     * {@code infoType}.
+     * Returns a predicate that checks whether the current user has access to a given object of type {@code infoType}.
      *
      * @return a catalog Predicate that evaluates if an object of the required type is accessible
      */
-    protected abstract <T extends CatalogInfo> Filter securityFilter(
-            final Class<T> infoType, final Filter filter);
+    protected abstract <T extends CatalogInfo> Filter securityFilter(final Class<T> infoType, final Filter filter);
 
     @Override
     public void removeListeners(Class<? extends CatalogListener> listenerClass) {

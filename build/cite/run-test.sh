@@ -62,35 +62,40 @@ if [ -d /home/teamengine/te_base/bin/unix/ ]; then
 fi;
 
 
-wms11 () {
-  echo $0
-  source="$TE_SCRIPTS_DIR/wms11/1.1.1/ctl/main.xml"
-  form="$TE_FORMS_DIR/wms-1.1.1.xml"
-  _run
+wms11() {
+    echo $0
+
+    run_rest_test_suite "wms11" "xml" "capabilities-url=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Fwms%3Fservice=WMS%26request%3DGetCapabilities%26version%3D1.1.0" "updatesequence=auto" "low-updatesequence=0" "high-updatesequence=100" "profile=queryable" "recommended=true" "getfeatureinfo=true" "feesconstraints=true" "bboxconstraints=EITHER"
 }
 
 wms13 () {
   echo $0
-  source="$TE_SCRIPTS_DIR/wms13/1.3.0/ctl/main.xml"
-  form="$TE_FORMS_DIR/wms-1.3.0.xml"
-  _run
+  
+  run_rest_test_suite "wms13" "xml" "capabilities-url=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Fwms%3Fservice=WMS%26request%3DGetCapabilities%26version%3D1.3.0" "updatesequence=auto" "low-updatesequence=0" "high-updatesequence=100" "queryable=true" "recommended=true"
 }
 
 wfs10 () {
   echo $0
-  source="$TE_SCRIPTS_DIR/wfs/1.0.0/ctl/main.xml"
-  form="$TE_FORMS_DIR/wfs-1.0.0.xml"
-  _run
+
+  run_rest_test_suite "wfs10" "xml" "capabilities-url=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Fwms%3Fservice=WFS%26request%3DGetCapabilities%26version%3D1.0.0" "multiplenamenspaces=true"
 }
 
 wfs11 () {
+  # Cannot run via REST API, see https://github.com/opengeospatial/ets-wfs11/issues/109
   echo $0
   source="$TE_SCRIPTS_DIR/wfs/1.1.0/ctl/main.ctl"
   form="$TE_FORMS_DIR/wfs-1.1.0.xml"
   _run
 }
 
+wfs20 () {
+  echo $0
+
+  run_rest_test_suite "wfs20" "testng" "iut=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Fwfs%3Fservice=WFS%26request%3DGetCapabilities%26version%3D2.0.0"
+}
+
 wcs10 () {
+  # WCS 1.0.0 is not supported by the REST API,s see https://github.com/opengeospatial/ets-wcs10/issues/43
   echo $0
   source="$TE_SCRIPTS_DIR/wcs/1.0.0/ctl/wcs.xml"
   form="$TE_FORMS_DIR/wcs-1.0.0.xml"
@@ -99,21 +104,96 @@ wcs10 () {
 
 wcs11 () {
   echo $0
-  source="$TE_SCRIPTS_DIR/wcs/1.1.1/ctl/wcs.xml"
-  form="$TE_FORMS_DIR/wcs-1.1.1.xml"
-  _run
+
+  run_rest_test_suite "wcs11" "xml" "url=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Fows%3Fservice=WCS%26request%3DGetCapabilities%26version%3D1.1.0"
+}
+
+wcs20 () {
+  echo $0
+
+  # suite name is really just "wcs" without the version
+  run_rest_test_suite "wcs" "xml" "url=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Fows%3Fservice=WCS%26request%3DGetCapabilities" "core=core" "ext_crs=crs" "ext_rsub=range%20subsetting" "ext_scal=scaling" "ext_int=interpolation"
+  # Leaving post out to https://github.com/opengeospatial/ets-wcs20/issues/143
+  # "ext_post=post" 
 }
 
 ogcapi-features10() {
+    run_rest_test_suite "ogcapi-features-1.0" "testng" "iut=http://geoserver:8080/geoserver/ogc/features/v1" "noofcollections=-1"
+}
+
+ogcapi-tiles10() {
+    run_rest_test_suite "ogcapi-tiles-1.0" "testng" "iut=http://geoserver:8080/geoserver/cite/ogc/tiles/v1" "tilematrixsetdefinitionuri=http://www.opengis.net/def/tilematrixset/OGC/1.0/WebMercatorQuad" "urltemplatefortiles=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Fcite%2Fogc%2Ftiles%2Fv1%2Fcollections%2FBuildings%2Fmap%2Ftiles%2FWebMercatorQuad%2F%7BtileMatrix%7D%2F%7BtileRow%7D%2F%7BtileCol%7D%3Ff%3Dimage%2Fpng" "tilematrix=17" "mintilerow=65535" "maxtilerow=65535" "mintilecol=65536" "maxtilecol=65536"
+}
+
+geotiff11() {
+  # RGB WMS
+  run_rest_test_suite_prefix "geotiff11" "01-wms-" "testng" "iut=http:%2F%2Fgeoserver:8080%2Fgeoserver%2Fwms?service%3DWMS%26version%3D1.1.0%26request%3DGetMap%26layers%3Dtopp%3Atazbm%26bbox%3D146.49999999999477%2C-44.49999999999785%2C147.99999999999474%2C-42.99999999999787%26width%3D767%26height%3D768%26srs%3DEPSG%3A4326%26styles%3D%26format%3Dimage%2Fgeotiff"
+
+  # single band WCS
+  run_rest_test_suite_prefix "geotiff11" "02-wcs-dem-basic-" "testng" "iut=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Ftopp%2Fows%3Fservice%3DWCS%26version%3D2.0.1%26request%3DGetCoverage%26coverageId%3Dtopp__tazdem"
+
+  # single band rotated
+  run_rest_test_suite_prefix "geotiff11" "03-wcs-rotated-" "testng" "iut=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Ftopp%2Fows%3Fservice%3DWCS%26version%3D2.0.1%26request%3DGetCoverage%26coverageId%3Dtopp__rotated"
+
+  # single band, deflate compressed, tiled, WCS
+  run_rest_test_suite_prefix "geotiff11" "04-wcs-dem-deflate-tiled-" "testng" "iut=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Ftopp%2Fows%3Fservice%3DWCS%26version%3D2.0.1%26request%3DGetCoverage%26coverageId%3Dtopp__tazdem%26compression%3DDeflate%26tiling%3Dtrue%26tileheight%3D256%26tilewidth%3D256"
+
+  # three band, JPEG compressed, small tiles, WCS
+  run_rest_test_suite_prefix "geotiff11" "05-wcs-dem-jpeg-tinytiles-" "testng" "iut=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Ftopp%2Fows%3Fservice%3DWCS%26version%3D2.0.1%26request%3DGetCoverage%26coverageId%3Dtopp__tazbm%26compression%3DJPEG%26compression%3DJPEG%26jpeg_quality%3D75%26tiling%3Dtrue%26tileheight%3D32%26tilewidth%3D32"
+}
+
+wmts10 () {
+  echo $0
+
+  # The suite name is just "wmts", without a version number
+  run_rest_test_suite "wmts" "xml" "capabilities-url=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Fgwc%2Fservice%2Fwmts%3Fservice=WMTS%26request%3DGetCapabilities%26AcceptVersions%3D1.0.0"
+}
+
+gpkg12() {
+  run_rest_test_suite_prefix "gpkg12" "01-wfs-single-table" "testng" "iut=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Ftopp%2Fows%3Fservice%3DWFS%26version%3D1.0.0%26request%3DGetFeature%26typeName%3Dtopp%253Astates%26outputFormat%3Dapplication%2Fgeopackage%252Bsqlite3"
+
+  run_rest_test_suite_prefix "gpkg12" "02-wfs-multi-table" "testng" "iut=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Fne%2Fows%3Fservice%3DWFS%26version%3D1.0.0%26request%3DGetFeature%26typeName%3Dne%3Acountries%2Cne%3Adisputed_areas%26outputFormat%3Dapplication%2Fgeopackage%252Bsqlite3"
+
+  run_rest_test_suite_prefix "gpkg12" "03-wfs-projected" "testng" "iut=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Fsf%2Fows%3Fservice%3DWFS%26version%3D1.0.0%26request%3DGetFeature%26typeName%3Dsf%3Aarchsites%26outputFormat%3Dapplication%2Fgeopackage%252Bsqlite3"
+
+  run_rest_test_suite_prefix "gpkg12" "04-wms-wgs84" "testng" "iut=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Fne%2Fwms%3Fservice%3DWMS%26version%3D1.1.0%26request%3DGetMap%26layers%3Dne%253Acountries%26bbox%3D-124.73142200000001%252C24.955967%252C-66.969849%252C49.371735%26width%3D768%26height%3D330%26srs%3DEPSG%253A4326%26styles%3D%26format%3Dapplication%2Fgeopackage%252Bsqlite3"
+
+  # This one is failing, needs a gridset for EPSG:26713 but once provided the output is still empty....
+  # run_rest_test_suite_prefix "gpkg12" "05-wms-projected" "testng" "iut=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Fsf%2Fwms%3Fservice%3DWMS%26version%3D1.1.0%26request%3DGetMap%26layers%3Dsf%253Aarchsites%26bbox%3D589851.4376666048%252C4914490.882968263%252C608346.4603107043%252C4926501.8980334345%26width%3D768%26height%3D498%26srs%3DEPSG%253A26713%26styles%3D%26format%3Dapplication%2Fgeopackage%252Bsqlite3"
+}
+
+run_rest_test_suite() {
+  local suite_name=$1
+  local format=$2
+  shift 2
+  run_rest_test_suite_prefix "$suite_name" "" "$format" "$@"
+}
+
+run_rest_test_suite_prefix() {
+    set +x
+
+    local suite_name=$1
+    local targetfile="/logs/$2$3-results.xml"
+    shift 3
+    local params=("$@")
+
     echo $0
-    
+
     teamenginehost=$(hostname)
-    apiurl="http://$teamenginehost:8080/teamengine/rest/suites/ogcapi-features-1.0/run"
-    iut="http://geoserver:8080/geoserver/ogc/features/v1"
-    testurl="$apiurl?noofcollections=-1&iut=$iut"
-    credentials="ogctest:ogctest"
-    targetfile="/logs/testng-results.xml"
+    apiurl="http://$teamenginehost:8080/teamengine/rest/suites/$suite_name/run"
     
+    # Build the URL parameters
+    url_params=""
+    for param in "${params[@]}"; do
+        url_params+="$param&"
+    done
+    url_params=${url_params%&}  # Remove the trailing '&'
+
+    testurl="$apiurl?$url_params"
+    echo $testurl
+    credentials="ogctest:ogctest"
+
+
     echo
     echo Running tests
     echo api URL: $apiurl
@@ -122,70 +202,11 @@ ogcapi-features10() {
     echo This may take a while...
     # if requesting application/zip, ogccite/teamengine-production will include both the html and xml results,
     # but ogccite/ets-ogcapi-features10 won't.
-    
+
     # requesting application/xml as it's the one we can parse to fail the build if there are test failures
     curl -v -s -u "$credentials" "$testurl" -H "Accept: application/xml" > $targetfile
-    # Check if the first curl command failed
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to run tests"
-        exit 1
-    fi
 }
 
-
-# Usage:
-# ogcapi-features10([iut])
-# - iut: optional. URL of landing page. Defaults to 'default_iut="http://geoserver:8080/geoserver/ogc/features/v1'
-ogcapi-features10() {
-    # Define the default Instance Under Test
-    default_iut="http://geoserver:8080/geoserver/ogc/features/v1"
-
-    # Use provided argument if given, otherwise use the default value
-    iut="${1:-$default_iut}"
-
-    # Call the generic function with iut as the first argument and default values for the others
-    run_rest_test 'ogcapi-features-1.0' "$iut"
-}
-
-# Usage:
-# run_rest_test(suitename iut)
-# - suitename: name of the test suite to run (e.g. 'ogcapi-features-1.0')
-# - iut: URL of the Instance Under Test's landing page or GetCapabilities document
-run_rest_test() {
-
-    local suitename="${1}"
-    local iut="${2}"    
-
-    local teamenginehost=$(hostname)
-
-    # Check if required arguments are provided
-    if [ -z "$suitename" ] || [ -z "$iut" ]; then
-        echo "run-rest-test()> Invalid arguments. Expected run-rest-test(suitename, iut)"
-        echo "suitename: name of the test suite to run (e.g., 'ogcapi-features-1.0')"
-        echo "iut: URL of the Instance Under Test's landing page or GetCapabilities document"
-        exit 1
-    fi
-    
-    apiurl="http://$teamenginehost:8080/teamengine/rest/suites/$suitename/run"
-    testurl="$apiurl?noofcollections=-1&iut=$iut"
-    credentials="ogctest:ogctest"
-    targetfile="/logs/testng-results.xml"
-
-    echo
-    echo Running tests
-    echo api URL: $apiurl
-    echo iut: $iut
-    echo Will save the XML report to $targetfile
-    echo This may take a while...
-
-    # Requesting application/xml as it's the one we can parse to fail the build if there are test failures
-    curl -v -s -u "$credentials" "$testurl" -H "Accept: application/xml" > $targetfile
-    # Check if the curl command failed
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to run tests"
-        exit 1
-    fi
-}
 
 interactive () {
     /usr/local/tomcat/bin/startup.sh

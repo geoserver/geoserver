@@ -6,10 +6,7 @@ package org.geoserver.wps.gs.download;
 
 import org.geoserver.util.DimensionWarning;
 
-/**
- * A {@link DimensionWarning}, with indication of which animation frame was affected by the
- * dimension issue
- */
+/** A {@link DimensionWarning}, with indication of which animation frame was affected by the dimension issue */
 public class FrameWarning extends DimensionWarning {
 
     private final int frame;

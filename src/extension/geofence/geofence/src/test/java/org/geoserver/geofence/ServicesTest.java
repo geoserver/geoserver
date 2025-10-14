@@ -30,8 +30,7 @@ public class ServicesTest extends GeofenceBaseTest {
     /** Enable the Spring Security auth filters, otherwise there will be no auth */
     @Override
     protected List<javax.servlet.Filter> getFilters() {
-        return Collections.singletonList(
-                (javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
+        return Collections.singletonList((javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
     }
 
     @Test
@@ -74,10 +73,8 @@ public class ServicesTest extends GeofenceBaseTest {
         loginAsCite();
 
         // try a getfeature on a sf layer
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wfs?service=wfs&version=1.0.0&request=getfeature&typeName="
-                                + getLayerId(MockData.GENERICENTITY));
+        MockHttpServletResponse response = getAsServletResponse(
+                "wfs?service=wfs&version=1.0.0&request=getfeature&typeName=" + getLayerId(MockData.GENERICENTITY));
         assertEquals(200, response.getStatus());
         assertTrue(
                 "Bad content type found " + response.getContentType(),

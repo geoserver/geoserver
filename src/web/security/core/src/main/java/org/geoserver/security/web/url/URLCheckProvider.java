@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.web.url;
 
+import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.geoserver.security.urlchecks.AbstractURLCheck;
@@ -12,13 +13,12 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 class URLCheckProvider extends GeoServerDataProvider<AbstractURLCheck> {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public static Property<AbstractURLCheck> NAME = new BeanProperty<>("name", "name");
-    public static Property<AbstractURLCheck> DESCRIPTION =
-            new BeanProperty<>("description", "description");
-    public static Property<AbstractURLCheck> CONFIGURATION =
-            new BeanProperty<>("configuration", "configuration");
+    public static Property<AbstractURLCheck> DESCRIPTION = new BeanProperty<>("description", "description");
+    public static Property<AbstractURLCheck> CONFIGURATION = new BeanProperty<>("configuration", "configuration");
     public static Property<AbstractURLCheck> ENABLED = new BeanProperty<>("enabled", "enabled");
 
     List<AbstractURLCheck> checks;

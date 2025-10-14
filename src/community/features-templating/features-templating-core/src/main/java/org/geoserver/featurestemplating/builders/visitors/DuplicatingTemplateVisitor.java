@@ -28,8 +28,7 @@ public class DuplicatingTemplateVisitor implements TemplateVisitor {
         return copy;
     }
 
-    protected void addChildren(
-            TemplateBuilder copy, Object extraData, List<TemplateBuilder> children) {
+    protected void addChildren(TemplateBuilder copy, Object extraData, List<TemplateBuilder> children) {
         for (TemplateBuilder child : children) {
             Object o = child.accept(this, extraData);
             if (o != null) copy.addChild((TemplateBuilder) o);
@@ -53,10 +52,8 @@ public class DuplicatingTemplateVisitor implements TemplateVisitor {
     @Override
     public Object visit(DynamicValueBuilder dynamicBuilder, Object extradata) {
         Object result;
-        if (dynamicBuilder instanceof DynamicIncludeFlatBuilder)
-            result = visit((DynamicIncludeFlatBuilder) dynamicBuilder, extradata);
-        else if (dynamicBuilder instanceof DynamicMergeBuilder)
-            result = visit((DynamicMergeBuilder) dynamicBuilder, extradata);
+        if (dynamicBuilder instanceof DynamicIncludeFlatBuilder builder1) result = visit(builder1, extradata);
+        else if (dynamicBuilder instanceof DynamicMergeBuilder builder) result = visit(builder, extradata);
         else {
             DynamicValueBuilder copy = dynamicBuilder.copy(false);
             addChildren(copy, extradata, dynamicBuilder.getChildren());

@@ -6,6 +6,7 @@
 
 package org.geoserver.security.config;
 
+import java.io.Serial;
 import org.geoserver.security.GeoServerRoleConverter;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.filter.GeoServerPreAuthenticatedUserNameFilter;
@@ -16,15 +17,14 @@ import org.geoserver.security.filter.GeoServerPreAuthenticatedUserNameFilter;
  * <p>{@link #getRoleSource()} determines how to calculate the roles:
  *
  * <ol>
- *   <li>{@link PreAuthenticatedUserNameRoleSource#UserGroupService} - Roles are calculated using
- *       the named user group service {@link #getUserGroupServiceName()}
- *   <li>{@link PreAuthenticatedUserNameRoleSource#RoleService} - Roles are calculated using the
- *       named role service {@link #getRoleServiceName()}. If no role service is given, the default
- *       is {@link GeoServerSecurityManager#getActiveRoleService()}
- *   <li>{@link PreAuthenticatedUserNameRoleSource#Header} - Roles are calculated using the content
- *       of {@link #getRolesHeaderAttribute()} parsed by {@link #getRoleConverterName()}. if no
- *       converter is given, roles are parsed by the default converter {@link
- *       GeoServerRoleConverter}
+ *   <li>{@link PreAuthenticatedUserNameRoleSource#UserGroupService} - Roles are calculated using the named user group
+ *       service {@link #getUserGroupServiceName()}
+ *   <li>{@link PreAuthenticatedUserNameRoleSource#RoleService} - Roles are calculated using the named role service
+ *       {@link #getRoleServiceName()}. If no role service is given, the default is
+ *       {@link GeoServerSecurityManager#getActiveRoleService()}
+ *   <li>{@link PreAuthenticatedUserNameRoleSource#Header} - Roles are calculated using the content of
+ *       {@link #getRolesHeaderAttribute()} parsed by {@link #getRoleConverterName()}. if no converter is given, roles
+ *       are parsed by the default converter {@link GeoServerRoleConverter}
  *
  * @author christian
  */
@@ -53,6 +53,7 @@ public abstract class PreAuthenticatedUserNameFilterConfig extends SecurityFilte
         }
     }
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public RoleSource getRoleSource() {

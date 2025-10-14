@@ -33,15 +33,13 @@ public class Stylesheet extends AbstractDocument {
     private String tilingScheme;
     private Link link;
 
-    public Stylesheet(StyleInfo info, StyleHandler handler, Version version)
-            throws MalformedURLException {
+    public Stylesheet(StyleInfo info, StyleHandler handler, Version version) throws MalformedURLException {
 
         this.title = "Stylesheet as " + handler.getName() + " " + version;
         this.version = version.toString();
-        this.specification =
-                Optional.ofNullable(handler.getSpecification(version))
-                        .map(URL::toExternalForm)
-                        .orElse(null);
+        this.specification = Optional.ofNullable(handler.getSpecification(version))
+                .map(URL::toExternalForm)
+                .orElse(null);
         this.nativ = isNative(info, handler, version);
         // no instanceof to avoid dependency, MBStyle is a plugin
         if (handler.getFormat().equals("MBStyle")) {
@@ -50,12 +48,11 @@ public class Stylesheet extends AbstractDocument {
         String baseURL = APIRequestInfo.get().getBaseURL();
         String styleId = info.prefixedName();
         String mimeType = handler.mimeType(version);
-        String url =
-                ResponseUtils.buildURL(
-                        baseURL,
-                        "ogc/styles/v1/styles/" + ResponseUtils.urlEncode(styleId),
-                        Collections.singletonMap("f", mimeType),
-                        URLMangler.URLType.SERVICE);
+        String url = ResponseUtils.buildURL(
+                baseURL,
+                "ogc/styles/v1/styles/" + ResponseUtils.urlEncode(styleId),
+                Collections.singletonMap("f", mimeType),
+                URLMangler.URLType.SERVICE);
         this.link = new Link(url, "stylesheet", mimeType, null);
     }
 
@@ -66,7 +63,8 @@ public class Stylesheet extends AbstractDocument {
         if (!info.getFormat().equals(handler.getFormat())) {
             return false;
         }
-        return (info.getFormatVersion() == null && version.equals(handler.getVersions().get(0)))
+        return (info.getFormatVersion() == null
+                        && version.equals(handler.getVersions().get(0)))
                 || (info.getFormatVersion() != null && info.getFormatVersion().equals(version));
     }
 

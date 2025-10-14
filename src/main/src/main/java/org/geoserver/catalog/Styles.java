@@ -42,12 +42,11 @@ public class Styles {
      *
      * @param sld The sld to encode.
      * @param handler The handler to use to encode.
-     * @param ver Version of the style to encode, may be <code>null</code>.
+     * @param ver Version of the style to encode, may be {@code null}.
      * @param pretty Whether to format the style.
      * @return The encoded style.
      */
-    public static String string(
-            StyledLayerDescriptor sld, SLDHandler handler, Version ver, boolean pretty)
+    public static String string(StyledLayerDescriptor sld, SLDHandler handler, Version ver, boolean pretty)
             throws IOException {
 
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
@@ -59,21 +58,18 @@ public class Styles {
     /**
      * Convenience method to pull a UserSyle from a StyledLayerDescriptor.
      *
-     * <p>This method will return the first UserStyle it encounters in the StyledLayerDescriptor
-     * tree.
+     * <p>This method will return the first UserStyle it encounters in the StyledLayerDescriptor tree.
      *
      * @param sld The StyledLayerDescriptor object.
-     * @return The UserStyle, or <code>null</code> if no such style could be found.
+     * @return The UserStyle, or {@code null} if no such style could be found.
      */
     public static Style style(StyledLayerDescriptor sld) {
         for (int i = 0; i < sld.getStyledLayers().length; i++) {
             Style[] styles = null;
 
-            if (sld.getStyledLayers()[i] instanceof NamedLayer) {
-                NamedLayer layer = (NamedLayer) sld.getStyledLayers()[i];
+            if (sld.getStyledLayers()[i] instanceof NamedLayer layer) {
                 styles = layer.getStyles();
-            } else if (sld.getStyledLayers()[i] instanceof UserLayer) {
-                UserLayer layer = (UserLayer) sld.getStyledLayers()[i];
+            } else if (sld.getStyledLayers()[i] instanceof UserLayer layer) {
                 styles = layer.getUserStyles();
             }
 
@@ -92,8 +88,7 @@ public class Styles {
     /**
      * Convenience method to wrap a UserStyle in a StyledLayerDescriptor object.
      *
-     * <p>This method wraps the UserStyle in a NamedLayer, and wraps the result in a
-     * StyledLayerDescriptor.
+     * <p>This method wraps the UserStyle in a NamedLayer, and wraps the result in a StyledLayerDescriptor.
      *
      * @param style The UserStyle.
      * @return The StyledLayerDescriptor.
@@ -155,22 +150,17 @@ public class Styles {
             return matches.get(0);
         }
 
-        List<String> handlerNames =
-                Lists.transform(
-                        matches,
-                        new Function<>() {
-                            @Nullable
-                            @Override
-                            public String apply(@Nullable StyleHandler styleHandler) {
-                                if (styleHandler == null) {
-                                    throw new RuntimeException(
-                                            "Got a null style handler, unexpected");
-                                }
-                                return styleHandler.getName();
-                            }
-                        });
-        throw new IllegalArgumentException(
-                "Multiple style handlers: " + handlerNames + " found for format: " + format);
+        List<String> handlerNames = Lists.transform(matches, new Function<>() {
+            @Nullable
+            @Override
+            public String apply(@Nullable StyleHandler styleHandler) {
+                if (styleHandler == null) {
+                    throw new RuntimeException("Got a null style handler, unexpected");
+                }
+                return styleHandler.getName();
+            }
+        });
+        throw new IllegalArgumentException("Multiple style handlers: " + handlerNames + " found for format: " + format);
     }
 
     /** Returns all registered style handlers. */

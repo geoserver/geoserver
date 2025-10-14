@@ -9,8 +9,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.Collections;
 import java.util.Properties;
 
-public class ServiceAccessRuleDAOTest
-        extends AbstractAccesRuleDAOConcurrencyTest<ServiceAccessRuleDAO> {
+public class ServiceAccessRuleDAOTest extends AbstractAccesRuleDAOConcurrencyTest<ServiceAccessRuleDAO> {
 
     /** A DAO that won't check the file system */
     static class MemoryServiceAccessRuleDAO extends ServiceAccessRuleDAO {

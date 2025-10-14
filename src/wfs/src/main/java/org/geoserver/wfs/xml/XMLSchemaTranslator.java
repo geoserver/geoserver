@@ -13,18 +13,16 @@ import java.util.Set;
 /**
  * XMLSchemaTranslator purpose.
  *
- * <p>This instance of the NameSpaceTranslator should be used with http://www.w3.org/2001/XMLSchema
- * namespace.
+ * <p>This instance of the NameSpaceTranslator should be used with http://www.w3.org/2001/XMLSchema namespace.
  *
  * <p>Instances of this object should always be retrieved through the NameSpaceTranslatorFactory.
  *
- * <p>Added a bit of a hack to get the right default mappings. Added isDefault to the classes we
- * want. Note that this list comes from org.geotools.gml.producer.FeatureTypeTransformer.
+ * <p>Added a bit of a hack to get the right default mappings. Added isDefault to the classes we want. Note that this
+ * list comes from org.geotools.gml.producer.FeatureTypeTransformer.
  *
  * @see NameSpaceTranslatorFactory
  * @author dzwiers, Refractions Research, Inc.
  * @author $Author: dmzwiers $ (last modification)
- * @version $Id$
  */
 public class XMLSchemaTranslator extends NameSpaceTranslator {
     private Set<NameSpaceElement> elements;

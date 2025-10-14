@@ -48,12 +48,7 @@ public class NeighborFunctionTest {
         Function testedZone = FF.function("env", FF.literal("test"));
 
         Function neighbor =
-                FF.function(
-                        "neighbor",
-                        testedZone,
-                        FF.literal("807ffffffffffff"),
-                        FF.literal(1),
-                        FF.literal(DGGS));
+                FF.function("neighbor", testedZone, FF.literal("807ffffffffffff"), FF.literal(1), FF.literal(DGGS));
         assertNotNull(neighbor);
 
         // test with a couple neighbors
@@ -80,8 +75,7 @@ public class NeighborFunctionTest {
         Function testedZone = FF.function("env", FF.literal("test"));
         Function referenceZone = FF.function("env", FF.literal("testReference"));
 
-        Function neighbor =
-                FF.function("neighbor", testedZone, referenceZone, FF.literal(1), FF.literal(DGGS));
+        Function neighbor = FF.function("neighbor", testedZone, referenceZone, FF.literal(1), FF.literal(DGGS));
         assertNotNull(neighbor);
 
         // setup the reference zone

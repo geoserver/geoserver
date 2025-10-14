@@ -8,6 +8,7 @@ package org.geoserver.web.admin;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.Serial;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,6 +45,7 @@ public class LogPage extends GeoServerSecuredPage {
 
     static final Logger LOGGER = Logging.getLogger(LogPage.class);
 
+    @Serial
     private static final long serialVersionUID = 4742103132576413211L;
 
     static final String LINES = "lines";
@@ -55,10 +57,8 @@ public class LogPage extends GeoServerSecuredPage {
     @Override
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
-        response.render(
-                OnDomReadyHeaderItem.forScript(
-                        "var textArea = document.getElementById('logs');"
-                                + "textArea.scrollTop = textArea.scrollHeight;"));
+        response.render(OnDomReadyHeaderItem.forScript(
+                "var textArea = document.getElementById('logs');" + "textArea.scrollTop = textArea.scrollHeight;"));
     }
 
     @SuppressWarnings("serial")
@@ -67,8 +67,8 @@ public class LogPage extends GeoServerSecuredPage {
         add(form);
 
         /**
-         * take geoserver log file location from Config as absolute path and only use if valid,
-         * otherwise fallback to (geoserver-root)/logs/geoserver.log as default.
+         * take geoserver log file location from Config as absolute path and only use if valid, otherwise fallback to
+         * (geoserver-root)/logs/geoserver.log as default.
          */
         String location = GeoServerExtensions.getProperty(LoggingUtils.GEOSERVER_LOG_LOCATION);
         if (location == null) {
@@ -82,8 +82,7 @@ public class LogPage extends GeoServerSecuredPage {
             logFile = new File(location);
             if (!logFile.isAbsolute()) {
                 // locate the geoserver.log file
-                GeoServerDataDirectory dd =
-                        getGeoServerApplication().getBeanOfType(GeoServerDataDirectory.class);
+                GeoServerDataDirectory dd = getGeoServerApplication().getBeanOfType(GeoServerDataDirectory.class);
                 logFile = dd.get(Paths.convert(logFile.getPath())).file();
             }
         }
@@ -105,17 +104,14 @@ public class LogPage extends GeoServerSecuredPage {
                     params.get(LINES).toString());
         }
 
-        form.add(
-                new SubmitLink("refresh") {
-                    @Override
-                    public void onSubmit() {
-                        setResponsePage(LogPage.class, new PageParameters().add(LINES, lines));
-                    }
-                });
+        form.add(new SubmitLink("refresh") {
+            @Override
+            public void onSubmit() {
+                setResponsePage(LogPage.class, new PageParameters().add(LINES, lines));
+            }
+        });
 
-        @SuppressWarnings("PMD.UseDiamondOperator") // java 8 compiler cannot infer type
-        NumberTextField<Integer> lines =
-                new NumberTextField<Integer>("lines", new PropertyModel<>(this, "lines"));
+        NumberTextField<Integer> lines = new NumberTextField<Integer>("lines", new PropertyModel<>(this, "lines"));
         lines.add(RangeValidator.minimum(1));
         form.add(lines);
 
@@ -124,29 +120,27 @@ public class LogPage extends GeoServerSecuredPage {
         logs.setMarkupId("logs");
         add(logs);
 
-        add(
-                new Link<>("download") {
+        add(new Link<>("download") {
 
+            @Override
+            public void onClick() {
+                @SuppressWarnings("PMD.CloseResource") // wrapped and returned
+                IResourceStream stream = new FileResourceStream(logFile) {
                     @Override
-                    public void onClick() {
-                        @SuppressWarnings("PMD.CloseResource") // wrapped and returned
-                        IResourceStream stream =
-                                new FileResourceStream(logFile) {
-                                    @Override
-                                    public String getContentType() {
-                                        return "text/plain";
-                                    }
-                                };
-                        ResourceStreamRequestHandler handler =
-                                new ResourceStreamRequestHandler(stream, "geoserver.log");
-                        handler.setContentDisposition(ContentDisposition.ATTACHMENT);
-
-                        RequestCycle.get().scheduleRequestHandlerAfterCurrent(handler);
+                    public String getContentType() {
+                        return "text/plain";
                     }
-                });
+                };
+                ResourceStreamRequestHandler handler = new ResourceStreamRequestHandler(stream, "geoserver.log");
+                handler.setContentDisposition(ContentDisposition.ATTACHMENT);
+
+                RequestCycle.get().scheduleRequestHandlerAfterCurrent(handler);
+            }
+        });
     }
 
     public class GSLogsModel extends LoadableDetachableModel<String> {
+        @Serial
         private static final long serialVersionUID = 3364442904754424569L;
 
         @Override

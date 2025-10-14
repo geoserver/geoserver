@@ -26,8 +26,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Christian
  */
-public abstract class AbstractRoleService extends AbstractGeoServerSecurityService
-        implements GeoServerRoleService {
+public abstract class AbstractRoleService extends AbstractGeoServerSecurityService implements GeoServerRoleService {
 
     protected String adminRoleName, groupAdminRoleName;
     protected RoleStoreHelper helper;
@@ -199,15 +198,14 @@ public abstract class AbstractRoleService extends AbstractGeoServerSecurityServi
     /**
      * (non-Javadoc)
      *
-     * @see org.geoserver.security.GeoServerRoleService#personalizeRoleParams(java.lang.String,
-     *     java.util.Properties, java.lang.String, java.util.Properties)
-     *     <p>Default implementation: if a user property name equals a role property name, take the
-     *     value from to user property and use it for the role property.
+     * @see org.geoserver.security.GeoServerRoleService#personalizeRoleParams(java.lang.String, java.util.Properties,
+     *     java.lang.String, java.util.Properties)
+     *     <p>Default implementation: if a user property name equals a role property name, take the value from to user
+     *     property and use it for the role property.
      */
     @Override
     public Properties personalizeRoleParams(
-            String roleName, Properties roleParams, String userName, Properties userProps)
-            throws IOException {
+            String roleName, Properties roleParams, String userName, Properties userProps) throws IOException {
 
         // this is true if the set is modified --> common
         // property names exist

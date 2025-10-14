@@ -27,17 +27,16 @@ import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.LockingCatalogFacade;
 import org.geoserver.catalog.MapInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.AbstractCatalogFacade;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.ClassMappings;
 import org.geoserver.catalog.impl.ModificationProxy;
-import org.geoserver.catalog.impl.ProxyUtils;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.jdbcconfig.internal.ConfigDatabase;
@@ -114,12 +113,11 @@ public class JDBCCatalogFacade implements CatalogFacade {
     }
 
     /**
-     * @see org.geoserver.catalog.CatalogFacade#getStoreByName(org.geoserver.catalog.WorkspaceInfo,
-     *     java.lang.String, java.lang.Class)
+     * @see org.geoserver.catalog.CatalogFacade#getStoreByName(org.geoserver.catalog.WorkspaceInfo, java.lang.String,
+     *     java.lang.Class)
      */
     @Override
-    public <T extends StoreInfo> T getStoreByName(
-            WorkspaceInfo workspace, String name, Class<T> clazz) {
+    public <T extends StoreInfo> T getStoreByName(WorkspaceInfo workspace, String name, Class<T> clazz) {
         if (workspace == null || workspace == ANY_WORKSPACE) {
             return db.getByIdentity(clazz, "name", name);
         } else {
@@ -128,13 +126,11 @@ public class JDBCCatalogFacade implements CatalogFacade {
     }
 
     /**
-     * @see
-     *     org.geoserver.catalog.CatalogFacade#getStoresByWorkspace(org.geoserver.catalog.WorkspaceInfo,
+     * @see org.geoserver.catalog.CatalogFacade#getStoresByWorkspace(org.geoserver.catalog.WorkspaceInfo,
      *     java.lang.Class)
      */
     @Override
-    public <T extends StoreInfo> List<T> getStoresByWorkspace(
-            WorkspaceInfo workspace, Class<T> clazz) {
+    public <T extends StoreInfo> List<T> getStoresByWorkspace(WorkspaceInfo workspace, Class<T> clazz) {
 
         Filter filter = acceptAll();
         if (null != workspace && ANY_WORKSPACE != workspace) {
@@ -152,10 +148,7 @@ public class JDBCCatalogFacade implements CatalogFacade {
         return db.getAll(clazz);
     }
 
-    /**
-     * @see
-     *     org.geoserver.catalog.CatalogFacade#getDefaultDataStore(org.geoserver.catalog.WorkspaceInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#getDefaultDataStore(org.geoserver.catalog.WorkspaceInfo) */
     @Override
     public DataStoreInfo getDefaultDataStore(WorkspaceInfo workspace) {
         final String target = WorkspaceInfo.class.getSimpleName() + "." + workspace.getId();
@@ -163,8 +156,7 @@ public class JDBCCatalogFacade implements CatalogFacade {
     }
 
     /**
-     * @see
-     *     org.geoserver.catalog.CatalogFacade#setDefaultDataStore(org.geoserver.catalog.WorkspaceInfo,
+     * @see org.geoserver.catalog.CatalogFacade#setDefaultDataStore(org.geoserver.catalog.WorkspaceInfo,
      *     org.geoserver.catalog.DataStoreInfo)
      */
     @Override
@@ -178,11 +170,7 @@ public class JDBCCatalogFacade implements CatalogFacade {
         // fire modify event before change
         if (!Utilities.equals(old, workspace)) {
             Catalog catalog = getCatalog();
-            catalog.fireModified(
-                    catalog,
-                    Arrays.asList("defaultDataStore"),
-                    Arrays.asList(old),
-                    Arrays.asList(store));
+            catalog.fireModified(catalog, Arrays.asList("defaultDataStore"), Arrays.asList(old), Arrays.asList(store));
         }
         db.setDefault(target, id);
 
@@ -190,10 +178,7 @@ public class JDBCCatalogFacade implements CatalogFacade {
         if (!Utilities.equals(old, workspace)) {
             Catalog catalog = getCatalog();
             catalog.firePostModified(
-                    catalog,
-                    Arrays.asList("defaultDataStore"),
-                    Arrays.asList(old),
-                    Arrays.asList(store));
+                    catalog, Arrays.asList("defaultDataStore"), Arrays.asList(old), Arrays.asList(store));
         }
     }
 
@@ -222,13 +207,11 @@ public class JDBCCatalogFacade implements CatalogFacade {
     }
 
     /**
-     * @see
-     *     org.geoserver.catalog.CatalogFacade#getResourceByName(org.geoserver.catalog.NamespaceInfo,
-     *     java.lang.String, java.lang.Class)
+     * @see org.geoserver.catalog.CatalogFacade#getResourceByName(org.geoserver.catalog.NamespaceInfo, java.lang.String,
+     *     java.lang.Class)
      */
     @Override
-    public <T extends ResourceInfo> T getResourceByName(
-            NamespaceInfo namespace, String name, Class<T> clazz) {
+    public <T extends ResourceInfo> T getResourceByName(NamespaceInfo namespace, String name, Class<T> clazz) {
         if (namespace == null || namespace == ANY_NAMESPACE) {
             return db.getByIdentity(clazz, "name", name);
         } else {
@@ -243,13 +226,11 @@ public class JDBCCatalogFacade implements CatalogFacade {
     }
 
     /**
-     * @see
-     *     org.geoserver.catalog.CatalogFacade#getResourcesByNamespace(org.geoserver.catalog.NamespaceInfo,
+     * @see org.geoserver.catalog.CatalogFacade#getResourcesByNamespace(org.geoserver.catalog.NamespaceInfo,
      *     java.lang.Class)
      */
     @Override
-    public <T extends ResourceInfo> List<T> getResourcesByNamespace(
-            NamespaceInfo namespace, Class<T> clazz) {
+    public <T extends ResourceInfo> List<T> getResourcesByNamespace(NamespaceInfo namespace, Class<T> clazz) {
 
         Filter filter = acceptAll();
         if (null != namespace && ANY_NAMESPACE != namespace) {
@@ -260,12 +241,11 @@ public class JDBCCatalogFacade implements CatalogFacade {
     }
 
     /**
-     * @see org.geoserver.catalog.CatalogFacade#getResourceByStore(org.geoserver.catalog.StoreInfo,
-     *     java.lang.String, java.lang.Class)
+     * @see org.geoserver.catalog.CatalogFacade#getResourceByStore(org.geoserver.catalog.StoreInfo, java.lang.String,
+     *     java.lang.Class)
      */
     @Override
-    public <T extends ResourceInfo> T getResourceByStore(
-            StoreInfo store, String name, Class<T> clazz) {
+    public <T extends ResourceInfo> T getResourceByStore(StoreInfo store, String name, Class<T> clazz) {
 
         Filter filter = equal("name", name);
         Filter storeFilter = equal("store.id", store.getId());
@@ -281,8 +261,7 @@ public class JDBCCatalogFacade implements CatalogFacade {
     }
 
     /**
-     * @see org.geoserver.catalog.CatalogFacade#getResourcesByStore(org.geoserver.catalog.StoreInfo,
-     *     java.lang.Class)
+     * @see org.geoserver.catalog.CatalogFacade#getResourcesByStore(org.geoserver.catalog.StoreInfo, java.lang.Class)
      */
     @Override
     public <T extends ResourceInfo> List<T> getResourcesByStore(StoreInfo store, Class<T> clazz) {
@@ -339,9 +318,9 @@ public class JDBCCatalogFacade implements CatalogFacade {
     @Override
     public List<LayerInfo> getLayers(ResourceInfo resource) {
 
-        Filter filter = equal("resource.id", resource.getId());
+        LayerInfo layer = db.getByIdentity(LayerInfo.class, "resource.id", resource.getId());
 
-        return db.queryAsList(LayerInfo.class, filter, null, null, null);
+        return layer == null ? Collections.emptyList() : Collections.singletonList(layer);
     }
 
     /** @see org.geoserver.catalog.CatalogFacade#getLayers(org.geoserver.catalog.StyleInfo) */
@@ -476,10 +455,7 @@ public class JDBCCatalogFacade implements CatalogFacade {
         return db.getDefault(NamespaceInfo.class.getSimpleName(), NamespaceInfo.class);
     }
 
-    /**
-     * @see
-     *     org.geoserver.catalog.CatalogFacade#setDefaultNamespace(org.geoserver.catalog.NamespaceInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#setDefaultNamespace(org.geoserver.catalog.NamespaceInfo) */
     @Override
     public void setDefaultNamespace(@Nullable NamespaceInfo defaultNamespace) {
         String target = NamespaceInfo.class.getSimpleName();
@@ -491,10 +467,7 @@ public class JDBCCatalogFacade implements CatalogFacade {
             // fire modify event before change
             Catalog catalog = getCatalog();
             catalog.fireModified(
-                    catalog,
-                    Arrays.asList("defaultNamespace"),
-                    Arrays.asList(old),
-                    Arrays.asList(defaultNamespace));
+                    catalog, Arrays.asList("defaultNamespace"), Arrays.asList(old), Arrays.asList(defaultNamespace));
         }
         db.setDefault(target, id);
 
@@ -502,10 +475,7 @@ public class JDBCCatalogFacade implements CatalogFacade {
             // fire postmodify event after change
             Catalog catalog = getCatalog();
             catalog.firePostModified(
-                    catalog,
-                    Arrays.asList("defaultNamespace"),
-                    Arrays.asList(old),
-                    Arrays.asList(defaultNamespace));
+                    catalog, Arrays.asList("defaultNamespace"), Arrays.asList(old), Arrays.asList(defaultNamespace));
         }
     }
 
@@ -566,10 +536,7 @@ public class JDBCCatalogFacade implements CatalogFacade {
         return db.getDefault(WorkspaceInfo.class.getSimpleName(), WorkspaceInfo.class);
     }
 
-    /**
-     * @see
-     *     org.geoserver.catalog.CatalogFacade#setDefaultWorkspace(org.geoserver.catalog.WorkspaceInfo)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#setDefaultWorkspace(org.geoserver.catalog.WorkspaceInfo) */
     @Override
     public void setDefaultWorkspace(@Nullable WorkspaceInfo workspace) {
         String type = WorkspaceInfo.class.getSimpleName();
@@ -581,10 +548,7 @@ public class JDBCCatalogFacade implements CatalogFacade {
             // fire modify event before change
             Catalog catalog = getCatalog();
             catalog.fireModified(
-                    catalog,
-                    Arrays.asList("defaultWorkspace"),
-                    Arrays.asList(old),
-                    Arrays.asList(workspace));
+                    catalog, Arrays.asList("defaultWorkspace"), Arrays.asList(old), Arrays.asList(workspace));
         }
         db.setDefault(type, id);
 
@@ -592,10 +556,7 @@ public class JDBCCatalogFacade implements CatalogFacade {
             // fire postmodify event after change
             Catalog catalog = getCatalog();
             catalog.firePostModified(
-                    catalog,
-                    Arrays.asList("defaultWorkspace"),
-                    Arrays.asList(old),
-                    Arrays.asList(workspace));
+                    catalog, Arrays.asList("defaultWorkspace"), Arrays.asList(old), Arrays.asList(workspace));
         }
     }
 
@@ -677,22 +638,18 @@ public class JDBCCatalogFacade implements CatalogFacade {
 
     @Override
     public LayerGroupInfo getLayerGroupByName(WorkspaceInfo workspace, String name) {
-        Filter filter = equal("name", name);
-        if (NO_WORKSPACE == workspace) {
-            Filter wsFilter = isNull("workspace.id");
-            filter = and(filter, wsFilter);
-        } else if (workspace != null && ANY_WORKSPACE != workspace) {
-            Filter wsFilter = equal("workspace.id", workspace.getId());
-            filter = and(filter, wsFilter);
-        }
+        checkNotNull(
+                workspace,
+                "workspace is null. Did you mean CatalogFacade.ANY_WORKSPACE or CatalogFacade.NO_WORKSPACE?");
+        checkNotNull(name, "name");
 
-        LayerGroupInfo store;
-        try {
-            store = findUnique(LayerGroupInfo.class, filter);
-        } catch (IllegalArgumentException e) {
-            return null;
+        if (workspace == ANY_WORKSPACE) {
+            return db.getByIdentity(LayerGroupInfo.class, "name", name);
+        } else if (workspace == NO_WORKSPACE) {
+            return db.getByIdentity(LayerGroupInfo.class, "workspace.id", null, "name", name);
+        } else {
+            return db.getByIdentity(LayerGroupInfo.class, "workspace.id", workspace.getId(), "name", name);
         }
-        return store;
     }
 
     @Override
@@ -723,8 +680,7 @@ public class JDBCCatalogFacade implements CatalogFacade {
         if (workspace == ANY_WORKSPACE) {
             return db.getByIdentity(StyleInfo.class, "name", name);
         } else {
-            return db.getByIdentity(
-                    StyleInfo.class, "workspace.id", workspace.getId(), "name", name);
+            return db.getByIdentity(StyleInfo.class, "workspace.id", workspace.getId(), "name", name);
         }
     }
 
@@ -748,51 +704,10 @@ public class JDBCCatalogFacade implements CatalogFacade {
     /** @see org.geoserver.catalog.CatalogFacade#syncTo(org.geoserver.catalog.CatalogFacade) */
     @Override
     public void syncTo(CatalogFacade other) {
-        other = ProxyUtils.unwrap(other, LockingCatalogFacade.class);
-        for (WorkspaceInfo w : getWorkspaces()) {
-            other.add(w);
-        }
-
-        for (NamespaceInfo ns : getNamespaces()) {
-            other.add(ns);
-        }
-
-        for (StoreInfo s : getStores(StoreInfo.class)) {
-            other.add(s);
-        }
-
-        for (ResourceInfo r : getResources(ResourceInfo.class)) {
-            other.add(r);
-        }
-
-        for (StyleInfo s : getStyles()) {
-            other.add(s);
-        }
-
-        for (LayerInfo l : getLayers()) {
-            other.add(l);
-        }
-        for (LayerGroupInfo lg : getLayerGroups()) {
-            other.add(lg);
-        }
-
-        for (MapInfo m : getMaps()) {
-            other.add(m);
-        }
-
-        other.setDefaultWorkspace(getDefaultWorkspace());
-        other.setDefaultNamespace(getDefaultNamespace());
-
-        for (WorkspaceInfo ws : getWorkspaces()) {
-            DataStoreInfo defaultDataStore = getDefaultDataStore(ws);
-            if (defaultDataStore != null) {
-                other.setDefaultDataStore(ws, defaultDataStore);
-            }
-        }
+        AbstractCatalogFacade.syncFromTo(this, other, true);
     }
 
-    private <T extends CatalogInfo> T findUnique(Class<T> type, Filter filter)
-            throws IllegalArgumentException {
+    private <T extends CatalogInfo> T findUnique(Class<T> type, Filter filter) throws IllegalArgumentException {
 
         final Integer count = Integer.valueOf(2);
         CloseableIterator<T> it = list(type, filter, null, count);
@@ -801,8 +716,7 @@ public class JDBCCatalogFacade implements CatalogFacade {
             if (it.hasNext()) {
                 result = it.next();
                 if (it.hasNext()) {
-                    throw new IllegalArgumentException(
-                            "Specified query predicate resulted in more than one object");
+                    throw new IllegalArgumentException("Specified query predicate resulted in more than one object");
                 }
             }
         } finally {
@@ -811,10 +725,7 @@ public class JDBCCatalogFacade implements CatalogFacade {
         return result;
     }
 
-    /**
-     * @see org.geoserver.catalog.CatalogFacade#count(java.lang.Class,
-     *     org.geoserver.catalog.Predicate)
-     */
+    /** @see org.geoserver.catalog.CatalogFacade#count(java.lang.Class, org.geoserver.catalog.Predicate) */
     @Override
     public <T extends CatalogInfo> int count(Class<T> of, Filter filter) {
         return db.count(of, filter);
@@ -827,8 +738,8 @@ public class JDBCCatalogFacade implements CatalogFacade {
     }
 
     /**
-     * @see org.geoserver.catalog.CatalogFacade#list(java.lang.Class,
-     *     org.geoserver.catalog.Predicate, java.lang.Integer, java.lang.Integer)
+     * @see org.geoserver.catalog.CatalogFacade#list(java.lang.Class, org.geoserver.catalog.Predicate,
+     *     java.lang.Integer, java.lang.Integer)
      */
     @Override
     public <T extends CatalogInfo> CloseableIterator<T> list(
@@ -868,8 +779,7 @@ public class JDBCCatalogFacade implements CatalogFacade {
         afterSaved(info, propertyNames, oldValues, newValues);
     }
 
-    protected void beforeSaved(
-            CatalogInfo object, List<String> propertyNames, List oldValues, List newValues) {
+    protected void beforeSaved(CatalogInfo object, List<String> propertyNames, List oldValues, List newValues) {
         // get the real object
         CatalogInfo real = ModificationProxy.unwrap(object);
 
@@ -888,8 +798,7 @@ public class JDBCCatalogFacade implements CatalogFacade {
         }
     }
 
-    protected void afterSaved(
-            CatalogInfo object, List<String> propertyNames, List oldValues, List newValues) {
+    protected void afterSaved(CatalogInfo object, List<String> propertyNames, List oldValues, List newValues) {
         CatalogInfo real = ModificationProxy.unwrap(object);
 
         // fire the post modify event

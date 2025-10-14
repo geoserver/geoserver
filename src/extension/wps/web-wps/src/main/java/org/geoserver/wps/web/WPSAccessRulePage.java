@@ -44,9 +44,8 @@ import org.geoserver.wps.ProcessGroupInfo;
 import org.geoserver.wps.WPSInfo;
 
 /**
- * A page listing all WPS groups, allowing enable/disable single groups and add/remove roles to
- * grant access to all its processes This page links to WPS service security configuration page to
- * works on single processes.
+ * A page listing all WPS groups, allowing enable/disable single groups and add/remove roles to grant access to all its
+ * processes This page links to WPS service security configuration page to works on single processes.
  *
  * @see ProcessSelectionPage
  */
@@ -67,8 +66,7 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
         Form form = new Form<>("form", new CompoundPropertyModel<>(wpsInfo));
 
         processFactories = cloneFactoryInfos(wpsInfo.getProcessGroups());
-        ProcessFactoryInfoProvider provider =
-                new ProcessFactoryInfoProvider(processFactories, getLocale());
+        ProcessFactoryInfoProvider provider = new ProcessFactoryInfoProvider(processFactories, getLocale());
         GeoServerRoleService roleService = getSecurityManager().getActiveRoleService();
         try {
             for (GeoServerRole r : roleService.getRoles()) {
@@ -78,8 +76,7 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
             LOGGER.log(Level.FINER, e1.getMessage(), e1);
         }
 
-        TextField<Integer> maxComplexInputSize =
-                new TextField<>("maxComplexInputSize", Integer.class);
+        TextField<Integer> maxComplexInputSize = new TextField<>("maxComplexInputSize", Integer.class);
         maxComplexInputSize.add(RangeValidator.minimum(0));
         form.add(maxComplexInputSize);
 
@@ -96,13 +93,10 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
 
                     @Override
                     protected Component getComponentForProperty(
-                            String id,
-                            final IModel<ProcessGroupInfo> itemModel,
-                            Property<ProcessGroupInfo> property) {
+                            String id, final IModel<ProcessGroupInfo> itemModel, Property<ProcessGroupInfo> property) {
 
                         if (property.getName().equals("enabled")) {
-                            Fragment fragment =
-                                    new Fragment(id, "enabledFragment", WPSAccessRulePage.this);
+                            Fragment fragment = new Fragment(id, "enabledFragment", WPSAccessRulePage.this);
                             @SuppressWarnings("unchecked")
                             IModel<Boolean> pm = (IModel<Boolean>) property.getModel(itemModel);
                             CheckBox enabled = new CheckBox("enabled", pm);
@@ -116,43 +110,34 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
                         } else if (property.getName().equals("summary")) {
                             return new Label(id, property.getModel(itemModel));
                         } else if (property.getName().equals("roles")) {
-                            Fragment fragment =
-                                    new Fragment(id, "rolesFragment", WPSAccessRulePage.this);
+                            Fragment fragment = new Fragment(id, "rolesFragment", WPSAccessRulePage.this);
                             @SuppressWarnings("unchecked")
                             IModel<String> pm = (IModel<String>) property.getModel(itemModel);
-                            TextArea<String> roles =
-                                    new TextArea<>("roles", pm) {
-                                        @Override
-                                        @SuppressWarnings("unchecked")
-                                        public <C extends Object> IConverter<C> getConverter(
-                                                java.lang.Class<C> type) {
-                                            return new RolesConverter(availableRoles);
-                                        }
-                                    };
+                            TextArea<String> roles = new TextArea<>("roles", pm) {
+                                @Override
+                                @SuppressWarnings("unchecked")
+                                public <C> IConverter<C> getConverter(java.lang.Class<C> type) {
+                                    return new RolesConverter(availableRoles);
+                                }
+                            };
                             StringBuilder selectedRoles = new StringBuilder();
-                            IAutoCompleteRenderer<String> roleRenderer =
-                                    new RolesRenderer(selectedRoles);
-                            AutoCompleteBehavior<String> b =
-                                    new RolesAutoCompleteBehavior(
-                                            roleRenderer, settings, selectedRoles, availableRoles);
+                            IAutoCompleteRenderer<String> roleRenderer = new RolesRenderer(selectedRoles);
+                            AutoCompleteBehavior<String> b = new RolesAutoCompleteBehavior(
+                                    roleRenderer, settings, selectedRoles, availableRoles);
                             roles.setOutputMarkupId(true);
                             roles.add(b);
                             fragment.add(roles);
                             return fragment;
                         } else if (property.getName().equals("edit")) {
-                            Fragment fragment =
-                                    new Fragment(id, "linkFragment", WPSAccessRulePage.this);
+                            Fragment fragment = new Fragment(id, "linkFragment", WPSAccessRulePage.this);
                             // we use a submit link to avoid losing the other edits in the form
-                            Link link =
-                                    new Link<>("link") {
-                                        @Override
-                                        public void onClick() {
-                                            ProcessGroupInfo pfi = itemModel.getObject();
-                                            setResponsePage(
-                                                    new ProcessSelectionPage(
-                                                            WPSAccessRulePage.this, pfi));
-                                        }
-                                    };
+                            Link link = new Link<>("link") {
+                                @Override
+                                public void onClick() {
+                                    ProcessGroupInfo pfi = itemModel.getObject();
+                                    setResponsePage(new ProcessSelectionPage(WPSAccessRulePage.this, pfi));
+                                }
+                            };
                             fragment.add(link);
 
                             return fragment;
@@ -166,50 +151,43 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
         processFilterEditor.setOutputMarkupId(true);
         form.add(processFilterEditor);
 
-        form.add(
-                new AjaxLink<>("processAccessModeHelp") {
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        dialog.showInfo(
-                                target,
-                                new StringResourceModel(
-                                        "processAccessModeHelp.title", getPage(), null),
-                                new StringResourceModel(
-                                        "processAccessModeHelp.message", getPage(), null));
-                    }
-                });
-        catalogModeChoice =
-                new RadioChoice<>(
-                        "processAccessMode",
-                        new PropertyModel<>(wpsInfo, "catalogMode"),
-                        CATALOG_MODES,
-                        new CatalogModeRenderer());
+        form.add(new AjaxLink<>("processAccessModeHelp") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                dialog.showInfo(
+                        target,
+                        new StringResourceModel("processAccessModeHelp.title", getPage(), null),
+                        new StringResourceModel("processAccessModeHelp.message", getPage(), null));
+            }
+        });
+        catalogModeChoice = new RadioChoice<>(
+                "processAccessMode",
+                new PropertyModel<>(wpsInfo, "catalogMode"),
+                CATALOG_MODES,
+                new CatalogModeRenderer());
         catalogModeChoice.setSuffix(" ");
         form.add(catalogModeChoice);
 
-        SubmitLink submit =
-                new SubmitLink("submit", new StringResourceModel("save", null, null)) {
-                    @Override
-                    public void onSubmit() {
-                        saveProcessFactories(true);
-                    }
-                };
+        SubmitLink submit = new SubmitLink("submit", new StringResourceModel("save", null, null)) {
+            @Override
+            public void onSubmit() {
+                saveProcessFactories(true);
+            }
+        };
         form.add(submit);
-        Button apply =
-                new Button("apply") {
-                    @Override
-                    public void onSubmit() {
-                        saveProcessFactories(false);
-                    }
-                };
+        Button apply = new Button("apply") {
+            @Override
+            public void onSubmit() {
+                saveProcessFactories(false);
+            }
+        };
         form.add(apply);
-        Button cancel =
-                new Button("cancel") {
-                    @Override
-                    public void onSubmit() {
-                        doReturn();
-                    }
-                };
+        Button cancel = new Button("cancel") {
+            @Override
+            public void onSubmit() {
+                doReturn();
+            }
+        };
         form.add(cancel);
 
         add(form);

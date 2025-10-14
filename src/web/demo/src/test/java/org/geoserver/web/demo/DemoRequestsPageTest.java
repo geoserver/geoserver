@@ -51,8 +51,7 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
         tester.assertComponent("demoRequestsForm", Form.class);
         tester.assertComponent("demoRequestsForm:demoRequestsList", DropDownChoice.class);
         tester.assertComponent("demoRequestsForm:url", TextField.class);
-        tester.assertComponent(
-                "demoRequestsForm:body:editorContainer:editorParent:editor", TextArea.class);
+        tester.assertComponent("demoRequestsForm:body:editorContainer:editorParent:editor", TextArea.class);
         tester.assertComponent("demoRequestsForm:username", TextField.class);
         tester.assertComponent("demoRequestsForm:password", PasswordTextField.class);
     }
@@ -64,7 +63,8 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
         requestFormTester.select("demoRequestsList", 0);
         tester.executeAjaxEvent("demoRequestsForm:demoRequestsList", "change");
 
-        var model = (DemoRequest) tester.getLastRenderedPage().getDefaultModel().getObject();
+        DemoRequest model =
+                (DemoRequest) tester.getLastRenderedPage().getDefaultModel().getObject();
         assertTrue(model.isPrettyXML());
 
         requestFormTester.setValue("prettyXML", false);
@@ -81,7 +81,8 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
         requestFormTester.select("demoRequestsList", 0);
         tester.executeAjaxEvent("demoRequestsForm:demoRequestsList", "change");
 
-        var model = (DemoRequest) tester.getLastRenderedPage().getDefaultModel().getObject();
+        DemoRequest model =
+                (DemoRequest) tester.getLastRenderedPage().getDefaultModel().getObject();
         assertFalse(model.isOpenNewWindow());
 
         requestFormTester.setValue("openNewWindow", true);
@@ -99,7 +100,8 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
         parameters.add("xml", "myxml");
 
         tester.startPage(new DemoRequestsPage(Files.asResource(demoDir), parameters));
-        var model = (DemoRequest) tester.getLastRenderedPage().getDefaultModel().getObject();
+        DemoRequest model =
+                (DemoRequest) tester.getLastRenderedPage().getDefaultModel().getObject();
 
         assertEquals("myurl", model.getRequestUrl());
         assertEquals("myxml", model.getRequestBody());
@@ -115,7 +117,8 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
         requestFormTester.select("demoRequestsList", 0);
         tester.executeAjaxEvent("demoRequestsForm:demoRequestsList", "change");
 
-        var model = (DemoRequest) tester.getLastRenderedPage().getDefaultModel().getObject();
+        DemoRequest model =
+                (DemoRequest) tester.getLastRenderedPage().getDefaultModel().getObject();
         assertEquals("UserName", model.getUserName());
         assertEquals("PassWord", model.getPassword());
 
@@ -135,7 +138,8 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
         requestFormTester.select("demoRequestsList", 0);
         tester.executeAjaxEvent("demoRequestsForm:demoRequestsList", "change");
 
-        var model = (DemoRequest) tester.getLastRenderedPage().getDefaultModel().getObject();
+        DemoRequest model =
+                (DemoRequest) tester.getLastRenderedPage().getDefaultModel().getObject();
 
         assertEquals("WFS_getFeature-1.1.xml", model.getRequestFileName());
         assertEquals("http://localhost/context/wfs", model.getRequestUrl());
@@ -164,9 +168,7 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
                 Arrays.asList(new String[] {"WFS_getFeature-1.1.xml", "WMS_describeLayer.url"});
 
         DropDownChoice dropDown =
-                (DropDownChoice)
-                        tester.getComponentFromLastRenderedPage(
-                                "demoRequestsForm:demoRequestsList");
+                (DropDownChoice) tester.getComponentFromLastRenderedPage("demoRequestsForm:demoRequestsList");
         List choices = dropDown.getChoices();
         assertEquals(expectedList, choices);
     }
@@ -190,7 +192,8 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
             tester.executeAjaxEvent("demoRequestsForm:demoRequestsList", "change");
             tester.assertModelValue("demoRequestsForm:demoRequestsList", requestName);
 
-            var model = (DemoRequest) tester.getLastRenderedPage().getDefaultModel().getObject();
+            DemoRequest model =
+                    (DemoRequest) tester.getLastRenderedPage().getDefaultModel().getObject();
 
             String requestFileName = model.getRequestFileName();
             String requestUrl = model.getRequestUrl();
@@ -206,9 +209,7 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testSerializable() {
         DemoRequestsPage page = new DemoRequestsPage();
-        DemoRequestsPage page2 =
-                (DemoRequestsPage)
-                        SerializationUtils.deserialize(SerializationUtils.serialize(page));
+        DemoRequestsPage page2 = (DemoRequestsPage) SerializationUtils.deserialize(SerializationUtils.serialize(page));
         assertEquals(page.demoDir, page2.demoDir);
     }
 }

@@ -29,31 +29,29 @@ public class ProxyBaseExtensionRulePage extends GeoServerSecuredPage {
         Form<ProxyBaseExtensionRule> form = new Form<>("form");
         add(form);
         List<WrappedTab> tabs = new ArrayList<>();
-        if (!optionalRuleModel.isPresent() || optionalRuleModel.get().getPosition() != null) {
-            tabs.add(
-                    new WrappedTab("Proxy Base Extension Rule", simpleRuleModel) {
-                        @Override
-                        public Panel getPanel(String panelId) {
-                            return new SimpleRulePanel(panelId, simpleRuleModel);
-                        }
-                    });
+        if (optionalRuleModel.isEmpty() || optionalRuleModel.get().getPosition() != null) {
+            tabs.add(new WrappedTab("Proxy Base Extension Rule", simpleRuleModel) {
+                @Override
+                public Panel getPanel(String panelId) {
+                    return new SimpleRulePanel(panelId, simpleRuleModel);
+                }
+            });
         }
         AjaxTabbedPanel tabbedPanel = new AjaxTabbedPanel<>("tabs", tabs);
         form.add(tabbedPanel);
-        form.add(
-                new SubmitLink("save") {
-                    @Override
-                    public void onSubmit() {
-                        try {
-                            WrappedTab selectedTab = tabs.get(tabbedPanel.getSelectedTab());
-                            ProxyBaseExtensionRule ruleModel = selectedTab.getModel().getObject();
-                            RulesDataProvider.saveOrUpdate(ruleModel);
-                            doReturn(ProxyBaseExtensionConfigPage.class);
-                        } catch (Exception exception) {
-                            error(exception);
-                        }
-                    }
-                });
+        form.add(new SubmitLink("save") {
+            @Override
+            public void onSubmit() {
+                try {
+                    WrappedTab selectedTab = tabs.get(tabbedPanel.getSelectedTab());
+                    ProxyBaseExtensionRule ruleModel = selectedTab.getModel().getObject();
+                    RulesDataProvider.saveOrUpdate(ruleModel);
+                    doReturn(ProxyBaseExtensionConfigPage.class);
+                } catch (Exception exception) {
+                    error(exception);
+                }
+            }
+        });
         form.add(new BookmarkablePageLink<>("cancel", ProxyBaseExtensionConfigPage.class));
     }
 

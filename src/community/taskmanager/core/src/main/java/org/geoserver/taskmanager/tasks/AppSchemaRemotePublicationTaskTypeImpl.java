@@ -42,7 +42,8 @@ public class AppSchemaRemotePublicationTaskTypeImpl extends FileRemotePublicatio
 
     public static final String PARAM_DB = "database";
 
-    @Autowired private GeoServerDataDirectory dataDirectory;
+    @Autowired
+    private GeoServerDataDirectory dataDirectory;
 
     @Override
     public String getName() {
@@ -67,76 +68,43 @@ public class AppSchemaRemotePublicationTaskTypeImpl extends FileRemotePublicatio
         final LayerInfo layer = (LayerInfo) ctx.getParameterValues().get(PARAM_LAYER);
         final StoreInfo store = layer.getResource().getStore();
         final StoreType storeType =
-                store instanceof CoverageStoreInfo
-                        ? StoreType.COVERAGESTORES
-                        : StoreType.DATASTORES;
-        return tableName ->
-                SqlUtil.notQualified(
-                        ((DbTableImpl)
-                                        ctx.getBatchContext()
-                                                .get(
-                                                        new DbTableImpl(db, tableName),
-                                                        new Dependency() {
-                                                            @Override
-                                                            public void revert()
-                                                                    throws TaskException {
-                                                                String newContent =
-                                                                        PlaceHolderUtil
-                                                                                .replaceObjectPlaceHolder(
-                                                                                        content,
-                                                                                        tableName ->
-                                                                                                SqlUtil
-                                                                                                        .notQualified(
-                                                                                                                tableName));
-                                                                try {
-                                                                    try (OutputStream os =
-                                                                            res.out()) {
-                                                                        os.write(
-                                                                                newContent
-                                                                                        .getBytes());
-                                                                    }
-                                                                    upload(
-                                                                            restManager,
-                                                                            locationKey,
-                                                                            res);
+                store instanceof CoverageStoreInfo ? StoreType.COVERAGESTORES : StoreType.DATASTORES;
+        return tableName -> SqlUtil.notQualified(
+                ((DbTableImpl) ctx.getBatchContext().get(new DbTableImpl(db, tableName), new Dependency() {
+                            @Override
+                            public void revert() throws TaskException {
+                                String newContent = PlaceHolderUtil.replaceObjectPlaceHolder(
+                                        content, tableName -> SqlUtil.notQualified(tableName));
+                                try {
+                                    try (OutputStream os = res.out()) {
+                                        os.write(newContent.getBytes());
+                                    }
+                                    upload(restManager, locationKey, res);
 
-                                                                    restManager
-                                                                            .getStoreManager()
-                                                                            .update(
-                                                                                    store.getWorkspace()
-                                                                                            .getName(),
-                                                                                    new GSGenericStoreEncoder(
-                                                                                            storeType,
-                                                                                            null,
-                                                                                            null,
-                                                                                            store
-                                                                                                    .getName(),
-                                                                                            null,
-                                                                                            null,
-                                                                                            null));
-                                                                } catch (IOException e) {
-                                                                    throw new TaskException(e);
-                                                                }
-                                                            }
-                                                        }))
-                                .getTableName());
+                                    restManager
+                                            .getStoreManager()
+                                            .update(
+                                                    store.getWorkspace().getName(),
+                                                    new GSGenericStoreEncoder(
+                                                            storeType, null, null, store.getName(), null, null, null));
+                                } catch (IOException e) {
+                                    throw new TaskException(e);
+                                }
+                            }
+                        }))
+                        .getTableName());
     }
 
     @Override
     protected List<Resource> process(
-            Resource res,
-            String locationKey,
-            ExternalGS extGS,
-            GeoServerRESTManager restManager,
-            TaskContext ctx)
+            Resource res, String locationKey, ExternalGS extGS, GeoServerRESTManager restManager, TaskContext ctx)
             throws TaskException {
 
         try {
             if (res.name().toUpperCase().endsWith(".ZIP")) {
                 return processZip(res, locationKey, extGS, restManager, ctx);
             } else {
-                return Collections.singletonList(
-                        processSingle(res, locationKey, extGS, restManager, ctx));
+                return Collections.singletonList(processSingle(res, locationKey, extGS, restManager, ctx));
             }
         } catch (IOException e) {
             throw new TaskException(e);
@@ -144,11 +112,7 @@ public class AppSchemaRemotePublicationTaskTypeImpl extends FileRemotePublicatio
     }
 
     private Resource processSingle(
-            Resource res,
-            String locationKey,
-            ExternalGS extGS,
-            GeoServerRESTManager restManager,
-            TaskContext ctx)
+            Resource res, String locationKey, ExternalGS extGS, GeoServerRESTManager restManager, TaskContext ctx)
             throws IOException, TaskException {
         final DbSource db = (DbSource) ctx.getParameterValues().get(PARAM_DB);
         Resource newRes = dataDirectory.get("/tmp").get(res.name());
@@ -156,9 +120,8 @@ public class AppSchemaRemotePublicationTaskTypeImpl extends FileRemotePublicatio
         try (InputStream is = res.in()) {
             String template = IOUtils.toString(is, "UTF-8");
             String pub = PlaceHolderUtil.replacePlaceHolders(template, db.getParameters(extGS));
-            pub =
-                    PlaceHolderUtil.replaceObjectPlaceHolder(
-                            pub, getTableTransform(newRes, locationKey, pub, db, restManager, ctx));
+            pub = PlaceHolderUtil.replaceObjectPlaceHolder(
+                    pub, getTableTransform(newRes, locationKey, pub, db, restManager, ctx));
 
             try (OutputStream os = newRes.out()) {
                 os.write(pub.getBytes());
@@ -169,11 +132,7 @@ public class AppSchemaRemotePublicationTaskTypeImpl extends FileRemotePublicatio
     }
 
     private List<Resource> processZip(
-            Resource res,
-            String locationKey,
-            ExternalGS extGS,
-            GeoServerRESTManager restManager,
-            TaskContext ctx)
+            Resource res, String locationKey, ExternalGS extGS, GeoServerRESTManager restManager, TaskContext ctx)
             throws IOException, TaskException {
 
         final DbSource db = (DbSource) ctx.getParameterValues().get(PARAM_DB);
@@ -186,10 +145,8 @@ public class AppSchemaRemotePublicationTaskTypeImpl extends FileRemotePublicatio
 
                 Resource newRes = dataDirectory.get("/tmp").get(entry.getName());
 
-                pub =
-                        PlaceHolderUtil.replaceObjectPlaceHolder(
-                                pub,
-                                getTableTransform(newRes, locationKey, pub, db, restManager, ctx));
+                pub = PlaceHolderUtil.replaceObjectPlaceHolder(
+                        pub, getTableTransform(newRes, locationKey, pub, db, restManager, ctx));
                 try (OutputStream os = newRes.out()) {
                     os.write(pub.getBytes());
                 }

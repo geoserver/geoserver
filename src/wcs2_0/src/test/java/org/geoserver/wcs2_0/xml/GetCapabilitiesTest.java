@@ -52,11 +52,8 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport)", dom);
         assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport//ows:Exception)", dom);
         assertXpathEvaluatesTo(
-                "1",
-                "count(//ows:ExceptionReport//ows:Exception[@exceptionCode='InvalidParameterValue'])",
-                dom);
-        assertXpathEvaluatesTo(
-                "1", "count(//ows:ExceptionReport//ows:Exception[@locator='WcS'])", dom);
+                "1", "count(//ows:ExceptionReport//ows:Exception[@exceptionCode='InvalidParameterValue'])", dom);
+        assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport//ows:Exception[@locator='WcS'])", dom);
     }
 
     @Test
@@ -105,15 +102,12 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         wcs.setInternationalTitle(title);
         wcs.setInternationalAbstract(_abstract);
         gs.save(wcs);
-        Document doc =
-                getAsDOM(
-                        "ows?service=WCS&request=getCapabilities&version=2.0.1&acceptLanguages=it");
+        Document doc = getAsDOM("ows?service=WCS&request=getCapabilities&version=2.0.1&acceptLanguages=it");
         print(doc);
         String service = "//ows:ServiceIdentification";
         assertXpathEvaluatesTo("titolo italiano servizio WCS", service + "/ows:Title", doc);
         assertXpathEvaluatesTo("abstract italiano servizio WCS", service + "/ows:Abstract", doc);
-        String bmLayer =
-                "/wcs:Capabilities/wcs:Contents/wcs:CoverageSummary[wcs:CoverageId = 'wcs__BlueMarble']";
+        String bmLayer = "/wcs:Capabilities/wcs:Contents/wcs:CoverageSummary[wcs:CoverageId = 'wcs__BlueMarble']";
         assertXpathEvaluatesTo("titolo italiano", bmLayer + "/ows:Title", doc);
         assertXpathEvaluatesTo("abstract italiano", bmLayer + "/ows:Abstract", doc);
         assertXpathEvaluatesTo("parola chiave", bmLayer + "/ows:Keywords/ows:Keyword", doc);
@@ -167,11 +161,9 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         String service = "//ows:ServiceIdentification";
         assertXpathEvaluatesTo("a i18n title for WCS service", service + "/ows:Title", doc);
         assertXpathEvaluatesTo("a i18n abstract for WCS service", service + "/ows:Abstract", doc);
-        String fifteenLayer =
-                "/wcs:Capabilities/wcs:Contents/wcs:CoverageSummary[wcs:CoverageId = 'wcs__BlueMarble']";
+        String fifteenLayer = "/wcs:Capabilities/wcs:Contents/wcs:CoverageSummary[wcs:CoverageId = 'wcs__BlueMarble']";
         assertXpathEvaluatesTo("a i18n title for ci bluemarble", fifteenLayer + "/ows:Title", doc);
-        assertXpathEvaluatesTo(
-                "a i18n abstract for ci bluemarble", fifteenLayer + "/ows:Abstract", doc);
+        assertXpathEvaluatesTo("a i18n abstract for ci bluemarble", fifteenLayer + "/ows:Abstract", doc);
     }
 
     @Test
@@ -202,11 +194,9 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         String service = "//ows:ServiceIdentification";
         assertXpathEvaluatesTo("a i18n title for WCS service", service + "/ows:Title", doc);
         assertXpathEvaluatesTo("a i18n abstract for WCS service", service + "/ows:Abstract", doc);
-        String fifteenLayer =
-                "/wcs:Capabilities/wcs:Contents/wcs:CoverageSummary[wcs:CoverageId = 'wcs__BlueMarble']";
+        String fifteenLayer = "/wcs:Capabilities/wcs:Contents/wcs:CoverageSummary[wcs:CoverageId = 'wcs__BlueMarble']";
         assertXpathEvaluatesTo("a i18n title for ci bluemarble", fifteenLayer + "/ows:Title", doc);
-        assertXpathEvaluatesTo(
-                "a i18n abstract for ci bluemarble", fifteenLayer + "/ows:Abstract", doc);
+        assertXpathEvaluatesTo("a i18n abstract for ci bluemarble", fifteenLayer + "/ows:Abstract", doc);
     }
 
     @Test
@@ -273,12 +263,9 @@ public class GetCapabilitiesTest extends WCSTestSupport {
             global.getSettings().setContact(contactInfo);
             getGeoServer().save(global);
 
-            Document doc =
-                    getAsDOM(
-                            "ows?service=WCS&request=getCapabilities&version=2.0.1&acceptLanguages=it");
+            Document doc = getAsDOM("ows?service=WCS&request=getCapabilities&version=2.0.1&acceptLanguages=it");
             String service = "//ows:ServiceProvider";
-            assertXpathEvaluatesTo(
-                    "I'm an italian organization", service + "/ows:ProviderName", doc);
+            assertXpathEvaluatesTo("I'm an italian organization", service + "/ows:ProviderName", doc);
 
             String contact = service + "/ows:ServiceContact";
             assertXpathEvaluatesTo("I'm an italian person", contact + "/ows:IndividualName", doc);
@@ -293,8 +280,7 @@ public class GetCapabilitiesTest extends WCSTestSupport {
             assertXpathEvaluatesTo("Roma", addressPath + "/ows:City", doc);
             assertXpathEvaluatesTo("50021", addressPath + "/ows:PostalCode", doc);
             assertXpathEvaluatesTo("Italia", addressPath + "/ows:Country", doc);
-            assertXpathEvaluatesTo(
-                    "italian@person.it", addressPath + "/ows:ElectronicMailAddress", doc);
+            assertXpathEvaluatesTo("italian@person.it", addressPath + "/ows:ElectronicMailAddress", doc);
         } finally {
             GeoServerInfo global = getGeoServer().getGlobal();
             global.getSettings().setContact(old);

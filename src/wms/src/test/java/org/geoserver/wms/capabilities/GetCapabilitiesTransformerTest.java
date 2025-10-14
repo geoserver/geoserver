@@ -79,14 +79,10 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.NamespaceSupport;
 
-/**
- * @author Gabriel Roldan
- * @version $Id$
- */
+/** @author Gabriel Roldan */
 public class GetCapabilitiesTransformerTest extends WMSTestSupport {
 
-    private static final class EmptyExtendedCapabilitiesProvider
-            implements ExtendedCapabilitiesProvider {
+    private static final class EmptyExtendedCapabilitiesProvider implements ExtendedCapabilitiesProvider {
         @Override
         public String[] getSchemaLocations(String schemaBaseURL) {
             throw new UnsupportedOperationException();
@@ -102,19 +98,14 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
             return null;
         }
 
-        /**
-         * @see
-         *     org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls()
-         */
+        /** @see org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls() */
         @Override
-        public List<String> getVendorSpecificCapabilitiesChildDecls(
-                GetCapabilitiesRequest request) {
+        public List<String> getVendorSpecificCapabilitiesChildDecls(GetCapabilitiesRequest request) {
             return null;
         }
 
         @Override
-        public void encode(Translator tx, WMSInfo wms, GetCapabilitiesRequest request)
-                throws IOException {}
+        public void encode(Translator tx, WMSInfo wms, GetCapabilitiesRequest request) throws IOException {}
 
         @Override
         public void customizeRootCrsList(Set<String> srs) {}
@@ -126,8 +117,7 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
         }
     }
 
-    private static final class TestExtendedCapabilitiesProvider
-            implements ExtendedCapabilitiesProvider {
+    private static final class TestExtendedCapabilitiesProvider implements ExtendedCapabilitiesProvider {
         @Override
         public String[] getSchemaLocations(String schemaBaseURL) {
             throw new UnsupportedOperationException();
@@ -143,19 +133,14 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
             return Collections.singletonList("TestElement?");
         }
 
-        /**
-         * @see
-         *     org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls()
-         */
+        /** @see org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls() */
         @Override
-        public List<String> getVendorSpecificCapabilitiesChildDecls(
-                GetCapabilitiesRequest request) {
+        public List<String> getVendorSpecificCapabilitiesChildDecls(GetCapabilitiesRequest request) {
             return Collections.singletonList("<!ELEMENT TestSubElement (#PCDATA) >");
         }
 
         @Override
-        public void encode(Translator tx, WMSInfo wms, GetCapabilitiesRequest request)
-                throws IOException {
+        public void encode(Translator tx, WMSInfo wms, GetCapabilitiesRequest request) throws IOException {
             tx.start("TestElement");
             tx.start("TestSubElement");
             tx.end("TestSubElement");
@@ -177,9 +162,7 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
 
     private XpathEngine XPATH;
 
-    /**
-     * default base url to feed a GetCapabilitiesTransformer with for it to append the DTD location
-     */
+    /** default base url to feed a GetCapabilitiesTransformer with for it to append the DTD location */
     private static final String baseUrl = "http://localhost/geoserver";
 
     /** test map formats to feed a GetCapabilitiesTransformer with */
@@ -189,27 +172,23 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
     private static final Set<String> legendFormats = Collections.singleton("image/png");
 
     /**
-     * a mocked up {@link GeoServer} config, almost empty after setUp(), except for the {@link
-     * WMSInfo}, {@link GeoServerInfo} and empty {@link Catalog}, Specific tests should add content
-     * as needed
+     * a mocked up {@link GeoServer} config, almost empty after setUp(), except for the {@link WMSInfo},
+     * {@link GeoServerInfo} and empty {@link Catalog}, Specific tests should add content as needed
      */
     private GeoServerImpl geosConfig;
 
-    /**
-     * a mocked up {@link GeoServerInfo} for {@link #geosConfig}. Specific tests should set its
-     * properties as needed
-     */
+    /** a mocked up {@link GeoServerInfo} for {@link #geosConfig}. Specific tests should set its properties as needed */
     private GeoServerInfoImpl geosInfo;
 
     /**
-     * a mocked up {@link WMSInfo} for {@link #geosConfig}, empty except for the WMSInfo after
-     * setUp(), Specific tests should set its properties as needed
+     * a mocked up {@link WMSInfo} for {@link #geosConfig}, empty except for the WMSInfo after setUp(), Specific tests
+     * should set its properties as needed
      */
     private WMSInfoImpl wmsInfo;
 
     /**
-     * a mocked up {@link Catalog} for {@link #geosConfig}, empty after setUp(), Specific tests
-     * should add content as needed
+     * a mocked up {@link Catalog} for {@link #geosConfig}, empty after setUp(), Specific tests should add content as
+     * needed
      */
     private CatalogImpl catalog;
 
@@ -218,8 +197,8 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
     private WMS wmsConfig;
 
     /**
-     * Sets up the configuration objects with default values. Since they're live, specific tests can
-     * modify their state before running the assertions
+     * Sets up the configuration objects with default values. Since they're live, specific tests can modify their state
+     * before running the assertions
      */
     @Before
     public void setUp() throws Exception {
@@ -239,6 +218,7 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
 
         req = new GetCapabilitiesRequest();
         req.setBaseUrl(baseUrl);
+        req.setVersion("1.1.1");
 
         Map<String, String> namespaces = new HashMap<>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
@@ -257,9 +237,7 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
 
         assertTrue(content.startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"));
         String dtdDef =
-                "<!DOCTYPE WMT_MS_Capabilities SYSTEM \""
-                        + baseUrl
-                        + "/schemas/wms/1.1.1/WMS_MS_Capabilities.dtd\">";
+                "<!DOCTYPE WMT_MS_Capabilities SYSTEM \"" + baseUrl + "/schemas/wms/1.1.1/WMS_MS_Capabilities.dtd\">";
         assertTrue(content.contains(dtdDef));
     }
 
@@ -322,35 +300,22 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
         assertXpathEvaluatesTo("k1", service + "/KeywordList/Keyword[1]", dom);
         assertXpathEvaluatesTo("k2", service + "/KeywordList/Keyword[2]", dom);
 
-        assertXpathEvaluatesTo(
-                wmsInfo.getOnlineResource(), service + "/OnlineResource/@xlink:href", dom);
+        assertXpathEvaluatesTo(wmsInfo.getOnlineResource(), service + "/OnlineResource/@xlink:href", dom);
 
         assertXpathEvaluatesTo(
-                "contactPerson",
-                service + "/ContactInformation/ContactPersonPrimary/ContactPerson",
-                dom);
+                "contactPerson", service + "/ContactInformation/ContactPersonPrimary/ContactPerson", dom);
         assertXpathEvaluatesTo(
-                "contactOrganization",
-                service + "/ContactInformation/ContactPersonPrimary/ContactOrganization",
-                dom);
-        assertXpathEvaluatesTo(
-                "contactPosition", service + "/ContactInformation/ContactPosition", dom);
-        assertXpathEvaluatesTo(
-                "address", service + "/ContactInformation/ContactAddress/Address", dom);
-        assertXpathEvaluatesTo(
-                "addressType", service + "/ContactInformation/ContactAddress/AddressType", dom);
+                "contactOrganization", service + "/ContactInformation/ContactPersonPrimary/ContactOrganization", dom);
+        assertXpathEvaluatesTo("contactPosition", service + "/ContactInformation/ContactPosition", dom);
+        assertXpathEvaluatesTo("address", service + "/ContactInformation/ContactAddress/Address", dom);
+        assertXpathEvaluatesTo("addressType", service + "/ContactInformation/ContactAddress/AddressType", dom);
         assertXpathEvaluatesTo("city", service + "/ContactInformation/ContactAddress/City", dom);
-        assertXpathEvaluatesTo(
-                "state", service + "/ContactInformation/ContactAddress/StateOrProvince", dom);
-        assertXpathEvaluatesTo(
-                "postCode", service + "/ContactInformation/ContactAddress/PostCode", dom);
-        assertXpathEvaluatesTo(
-                "country", service + "/ContactInformation/ContactAddress/Country", dom);
+        assertXpathEvaluatesTo("state", service + "/ContactInformation/ContactAddress/StateOrProvince", dom);
+        assertXpathEvaluatesTo("postCode", service + "/ContactInformation/ContactAddress/PostCode", dom);
+        assertXpathEvaluatesTo("country", service + "/ContactInformation/ContactAddress/Country", dom);
         assertXpathEvaluatesTo("voice", service + "/ContactInformation/ContactVoiceTelephone", dom);
-        assertXpathEvaluatesTo(
-                "fax", service + "/ContactInformation/ContactFacsimileTelephone", dom);
-        assertXpathEvaluatesTo(
-                "email", service + "/ContactInformation/ContactElectronicMailAddress", dom);
+        assertXpathEvaluatesTo("fax", service + "/ContactInformation/ContactFacsimileTelephone", dom);
+        assertXpathEvaluatesTo("email", service + "/ContactInformation/ContactElectronicMailAddress", dom);
 
         assertXpathEvaluatesTo("fees", service + "/Fees", dom);
         assertXpathEvaluatesTo("accessConstraints", service + "/AccessConstraints", dom);
@@ -381,14 +346,13 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
         final Set<String> supportedCodes = getCodes("EPSG");
         supportedCodes.addAll(getCodes("AUTO"));
         supportedCodes.addAll(getCodes("IAU"));
-        NodeList allCrsCodes =
-                XPATH.getMatchingNodes("/WMT_MS_Capabilities/Capability/Layer/SRS", dom);
+        NodeList allCrsCodes = XPATH.getMatchingNodes("/WMT_MS_Capabilities/Capability/Layer/SRS", dom);
         assertEquals(supportedCodes.size(), allCrsCodes.getLength());
     }
 
     /**
-     * Need to add prefixes here because some ids are duplicated amongst EPSG and IAU and to filter
-     * out WGS84(DD) because it shows up in all authorities
+     * Need to add prefixes here because some ids are duplicated amongst EPSG and IAU and to filter out WGS84(DD)
+     * because it shows up in all authorities
      */
     private static Set<String> getCodes(String authority) {
         return CRS.getSupportedCodes(authority).stream()
@@ -406,8 +370,7 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
                 new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats, null);
         tr.setIndentation(2);
         Document dom = WMSTestSupport.transform(req, tr);
-        NodeList limitedCrsCodes =
-                XPATH.getMatchingNodes("/WMT_MS_Capabilities/Capability/Layer/SRS", dom);
+        NodeList limitedCrsCodes = XPATH.getMatchingNodes("/WMT_MS_Capabilities/Capability/Layer/SRS", dom);
         assertEquals(2, limitedCrsCodes.getLength());
     }
 
@@ -415,13 +378,8 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
     public void testVendorSpecificCapabilities() throws Exception {
         ExtendedCapabilitiesProvider vendorCapsProvider = new TestExtendedCapabilitiesProvider();
 
-        GetCapabilitiesTransformer tr =
-                new GetCapabilitiesTransformer(
-                        wmsConfig,
-                        baseUrl,
-                        mapFormats,
-                        legendFormats,
-                        Collections.singletonList(vendorCapsProvider));
+        GetCapabilitiesTransformer tr = new GetCapabilitiesTransformer(
+                wmsConfig, baseUrl, mapFormats, legendFormats, Collections.singletonList(vendorCapsProvider));
         tr.setIndentation(2);
         checkVendorSpecificCapsProviders(tr);
     }
@@ -431,13 +389,8 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
         ExtendedCapabilitiesProvider emptyCapsProvider = new EmptyExtendedCapabilitiesProvider();
         ExtendedCapabilitiesProvider vendorCapsProvider = new TestExtendedCapabilitiesProvider();
 
-        GetCapabilitiesTransformer tr =
-                new GetCapabilitiesTransformer(
-                        wmsConfig,
-                        baseUrl,
-                        mapFormats,
-                        legendFormats,
-                        Arrays.asList(emptyCapsProvider, vendorCapsProvider));
+        GetCapabilitiesTransformer tr = new GetCapabilitiesTransformer(
+                wmsConfig, baseUrl, mapFormats, legendFormats, Arrays.asList(emptyCapsProvider, vendorCapsProvider));
         tr.setIndentation(2);
         checkVendorSpecificCapsProviders(tr);
     }
@@ -445,32 +398,26 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
     private void checkVendorSpecificCapsProviders(GetCapabilitiesTransformer tr) throws Exception {
         Document dom = WMSTestSupport.transform(req, tr);
         assertXpathEvaluatesTo("1", "count(/WMT_MS_Capabilities/Capability/Layer/SRS)", dom);
-        assertXpathEvaluatesTo(
-                "1", "count(/WMT_MS_Capabilities/Capability/Layer[SRS='EPSG:4326'])", dom);
+        assertXpathEvaluatesTo("1", "count(/WMT_MS_Capabilities/Capability/Layer[SRS='EPSG:4326'])", dom);
 
         NodeList list =
-                XPATH.getMatchingNodes(
-                        "/WMT_MS_Capabilities/Capability/VendorSpecificCapabilities/TestElement",
-                        dom);
+                XPATH.getMatchingNodes("/WMT_MS_Capabilities/Capability/VendorSpecificCapabilities/TestElement", dom);
         assertEquals(1, list.getLength());
 
-        list =
-                XPATH.getMatchingNodes(
-                        "/WMT_MS_Capabilities/Capability/VendorSpecificCapabilities/TestElement/TestSubElement",
-                        dom);
+        list = XPATH.getMatchingNodes(
+                "/WMT_MS_Capabilities/Capability/VendorSpecificCapabilities/TestElement/TestSubElement", dom);
         assertEquals(1, list.getLength());
     }
 
     /**
-     * Gets a capabilities document as an XML string Also, adds: <!DOCTYPE WMT_MS_Capabilities
-     * SYSTEM "WMS_MS_Capabilities.dtd"> at the top of the document.
+     * Gets a capabilities document as an XML string Also, adds: <!DOCTYPE WMT_MS_Capabilities SYSTEM
+     * "WMS_MS_Capabilities.dtd"> at the top of the document.
      */
     String getCapabilitiesXML() throws Exception {
         // WMS wms = new WMS(getGeoServer());
         WMS wms = (WMS) applicationContext.getBean("wms");
 
-        GetCapabilitiesTransformer tr =
-                new GetCapabilitiesTransformer(wms, baseUrl, mapFormats, legendFormats, null);
+        GetCapabilitiesTransformer tr = new GetCapabilitiesTransformer(wms, baseUrl, mapFormats, legendFormats, null);
 
         Document dom = WMSTestSupport.transform(req, tr);
         TransformerFactory ttf = TransformerFactory.newInstance();
@@ -479,10 +426,9 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
         trans.transform(new DOMSource(dom), new StreamResult(sw));
 
         String xml = sw.toString();
-        xml =
-                xml.replace(
-                        "<WMT_MS_Capabilities ",
-                        "<!DOCTYPE WMT_MS_Capabilities SYSTEM \"WMS_MS_Capabilities.dtd\"><WMT_MS_Capabilities ");
+        xml = xml.replace(
+                "<WMT_MS_Capabilities ",
+                "<!DOCTYPE WMT_MS_Capabilities SYSTEM \"WMS_MS_Capabilities.dtd\"><WMT_MS_Capabilities ");
 
         return xml;
     }
@@ -493,9 +439,7 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
         String getCapXML = getCapabilitiesXML();
 
         // get the wms 1.1.1 DTD
-        URL dtdURL =
-                GetCapabilitiesTransformer.class.getResource(
-                        "/schemas/wms/1.1.1/WMS_MS_Capabilities.dtd");
+        URL dtdURL = GetCapabilitiesTransformer.class.getResource("/schemas/wms/1.1.1/WMS_MS_Capabilities.dtd");
         String dtd = Resources.toString(dtdURL, StandardCharsets.UTF_8);
 
         try (InputStream dtdInputStream = new ByteArrayInputStream(dtd.getBytes())) {
@@ -509,34 +453,31 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
 
             // Normally, the DTD would downloaded from the internet.  We don't want to do that, so
             // we tell the parse to use our DTD instead of downloading it.
-            builder.setEntityResolver(
-                    new EntityResolver() {
-                        @Override
-                        public InputSource resolveEntity(String publicId, String systemId)
-                                throws SAXException, IOException {
-                            if (systemId.endsWith("WMS_MS_Capabilities.dtd")) {
-                                return new InputSource(dtdInputStream);
-                            }
-                            return null;
-                        }
-                    });
+            builder.setEntityResolver(new EntityResolver() {
+                @Override
+                public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+                    if (systemId.endsWith("WMS_MS_Capabilities.dtd")) {
+                        return new InputSource(dtdInputStream);
+                    }
+                    return null;
+                }
+            });
 
             // make sure sax throws an error when it finds an error
-            builder.setErrorHandler(
-                    new ErrorHandler() {
-                        @Override
-                        public void warning(SAXParseException exception) throws SAXException {}
+            builder.setErrorHandler(new ErrorHandler() {
+                @Override
+                public void warning(SAXParseException exception) throws SAXException {}
 
-                        @Override
-                        public void error(SAXParseException exception) throws SAXException {
-                            throw new SAXException("SAX ERROR OCCURRED!", exception);
-                        }
+                @Override
+                public void error(SAXParseException exception) throws SAXException {
+                    throw new SAXException("SAX ERROR OCCURRED!", exception);
+                }
 
-                        @Override
-                        public void fatalError(SAXParseException exception) throws SAXException {
-                            throw new SAXException("SAX ERROR OCCURRED!", exception);
-                        }
-                    });
+                @Override
+                public void fatalError(SAXParseException exception) throws SAXException {
+                    throw new SAXException("SAX ERROR OCCURRED!", exception);
+                }
+            });
 
             // this will parse and validate - if there are parse issues the ErrorHandler will throw.
             builder.parse(new ByteArrayInputStream(getCapXML.getBytes()));
@@ -555,12 +496,11 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
         Document trDom = WMSTestSupport.transform(req, tr);
         Element trRoot = trDom.getDocumentElement();
 
-        Capabilities_1_3_0_Transformer tr130 =
-                new Capabilities_1_3_0_Transformer(
-                        wmsConfig,
-                        baseUrl,
-                        wmsConfig.getAllowedMapFormats(),
-                        wmsConfig.getAvailableExtendedCapabilitiesProviders());
+        Capabilities_1_3_0_Transformer tr130 = new Capabilities_1_3_0_Transformer(
+                wmsConfig,
+                baseUrl,
+                wmsConfig.getAllowedMapFormats(),
+                wmsConfig.getAvailableExtendedCapabilitiesProviders());
         Document tr130Dom = WMSTestSupport.transform(req, tr130);
         Element tr130Root = tr130Dom.getDocumentElement();
 
@@ -584,21 +524,17 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
         Document dom = WMSTestSupport.transform(req, tr);
 
         // default the style should be present
-        String lgStyleName =
-                XPATH.evaluate("/WMT_MS_Capabilities/Capability/Layer/Layer/Style/Title", dom);
+        String lgStyleName = XPATH.evaluate("/WMT_MS_Capabilities/Capability/Layer/Layer/Style/Title", dom);
         assertEquals("aLayerGroup style", lgStyleName);
-        WMS wms =
-                new WMS(geosConfig) {
-                    @Override
-                    public boolean isDefaultGroupStyleEnabled() {
-                        return false;
-                    }
-                };
-        GetCapabilitiesTransformer tr2 =
-                new GetCapabilitiesTransformer(wms, baseUrl, mapFormats, legendFormats, null);
+        WMS wms = new WMS(geosConfig) {
+            @Override
+            public boolean isDefaultGroupStyleEnabled() {
+                return false;
+            }
+        };
+        GetCapabilitiesTransformer tr2 = new GetCapabilitiesTransformer(wms, baseUrl, mapFormats, legendFormats, null);
         Document dom2 = WMSTestSupport.transform(req, tr2);
-        lgStyleName =
-                XPATH.evaluate("/WMT_MS_Capabilities/Capability/Layer/Layer/Style/Title", dom2);
+        lgStyleName = XPATH.evaluate("/WMT_MS_Capabilities/Capability/Layer/Layer/Style/Title", dom2);
         // the style won't appear
         assertEquals(lgStyleName, "");
     }
@@ -611,12 +547,11 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
         String layerGroupName = "aLayerGroup";
         createLayerGroup(layerGroupName);
 
-        Capabilities_1_3_0_Transformer tr =
-                new Capabilities_1_3_0_Transformer(
-                        wmsConfig,
-                        baseUrl,
-                        wmsConfig.getAllowedMapFormats(),
-                        wmsConfig.getAvailableExtendedCapabilitiesProviders());
+        Capabilities_1_3_0_Transformer tr = new Capabilities_1_3_0_Transformer(
+                wmsConfig,
+                baseUrl,
+                wmsConfig.getAllowedMapFormats(),
+                wmsConfig.getAvailableExtendedCapabilitiesProviders());
         Document dom = WMSTestSupport.transform(req, tr);
 
         // default case, the style should be present
@@ -625,19 +560,14 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
         Element styleEl = (Element) nodeList.item(0);
         String title = styleEl.getElementsByTagName("Title").item(0).getTextContent();
         assertEquals("aLayerGroup style", title);
-        WMS wms =
-                new WMS(geosConfig) {
-                    @Override
-                    public boolean isDefaultGroupStyleEnabled() {
-                        return false;
-                    }
-                };
-        Capabilities_1_3_0_Transformer tr2 =
-                new Capabilities_1_3_0_Transformer(
-                        wms,
-                        baseUrl,
-                        wms.getAllowedMapFormats(),
-                        wms.getAvailableExtendedCapabilitiesProviders());
+        WMS wms = new WMS(geosConfig) {
+            @Override
+            public boolean isDefaultGroupStyleEnabled() {
+                return false;
+            }
+        };
+        Capabilities_1_3_0_Transformer tr2 = new Capabilities_1_3_0_Transformer(
+                wms, baseUrl, wms.getAllowedMapFormats(), wms.getAvailableExtendedCapabilitiesProviders());
         Document dom2 = WMSTestSupport.transform(req, tr2);
         nodeList = dom2.getElementsByTagName("Style");
         // the style won't appear
@@ -651,24 +581,20 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
         // getCapabilities resp if mode is single.
         String layerGroupName = "aLayerGroup";
         createLayerGroup(layerGroupName, LayerGroupInfo.Mode.SINGLE);
-        WMS wms =
-                new WMS(geosConfig) {
-                    @Override
-                    public boolean isDefaultGroupStyleEnabled() {
-                        return false;
-                    }
-                };
-        GetCapabilitiesTransformer tr2 =
-                new GetCapabilitiesTransformer(wms, baseUrl, mapFormats, legendFormats, null);
+        WMS wms = new WMS(geosConfig) {
+            @Override
+            public boolean isDefaultGroupStyleEnabled() {
+                return false;
+            }
+        };
+        GetCapabilitiesTransformer tr2 = new GetCapabilitiesTransformer(wms, baseUrl, mapFormats, legendFormats, null);
         Document dom2 = WMSTestSupport.transform(req, tr2);
         // the style should appear
-        String lgStyleTitle =
-                XPATH.evaluate("/WMT_MS_Capabilities/Capability/Layer/Layer/Style/Title", dom2);
-        assertEquals(lgStyleTitle, "aLayerGroup style");
+        String lgStyleTitle = XPATH.evaluate("/WMT_MS_Capabilities/Capability/Layer/Layer/Style/Title", dom2);
+        assertEquals("aLayerGroup style", lgStyleTitle);
 
-        String lgStyleName =
-                XPATH.evaluate("/WMT_MS_Capabilities/Capability/Layer/Layer/Style/Name", dom2);
-        assertEquals(lgStyleName, "default-style-aLayerGroup");
+        String lgStyleName = XPATH.evaluate("/WMT_MS_Capabilities/Capability/Layer/Layer/Style/Name", dom2);
+        assertEquals("default-style-aLayerGroup", lgStyleName);
     }
 
     @Test
@@ -678,19 +604,14 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
         // getCapabilities resp if mode is opaque.
         String layerGroupName = "aLayerGroup";
         createLayerGroup(layerGroupName, LayerGroupInfo.Mode.OPAQUE_CONTAINER);
-        WMS wms =
-                new WMS(geosConfig) {
-                    @Override
-                    public boolean isDefaultGroupStyleEnabled() {
-                        return false;
-                    }
-                };
-        Capabilities_1_3_0_Transformer tr =
-                new Capabilities_1_3_0_Transformer(
-                        wms,
-                        baseUrl,
-                        wmsConfig.getAllowedMapFormats(),
-                        wmsConfig.getAvailableExtendedCapabilitiesProviders());
+        WMS wms = new WMS(geosConfig) {
+            @Override
+            public boolean isDefaultGroupStyleEnabled() {
+                return false;
+            }
+        };
+        Capabilities_1_3_0_Transformer tr = new Capabilities_1_3_0_Transformer(
+                wms, baseUrl, wmsConfig.getAllowedMapFormats(), wmsConfig.getAvailableExtendedCapabilitiesProviders());
         Document dom = WMSTestSupport.transform(req, tr);
 
         // the style should appear
@@ -707,8 +628,7 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
     public void testDefaultLayerAbstract() throws Exception {
         WMS wms = new WMS(getGeoServer());
 
-        GetCapabilitiesTransformer tr =
-                new GetCapabilitiesTransformer(wms, baseUrl, mapFormats, legendFormats, null);
+        GetCapabilitiesTransformer tr = new GetCapabilitiesTransformer(wms, baseUrl, mapFormats, legendFormats, null);
         tr.setIndentation(2);
         Document dom = WMSTestSupport.transform(req, tr);
 
@@ -768,8 +688,7 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
         createLayerGroup(layerGroupName, LayerGroupInfo.Mode.NAMED);
     }
 
-    private void createLayerGroup(String layerGroupName, LayerGroupInfo.Mode mode)
-            throws FactoryException {
+    private void createLayerGroup(String layerGroupName, LayerGroupInfo.Mode mode) throws FactoryException {
         StyleInfo styleInfo = this.catalog.getFactory().createStyle();
         styleInfo.setName("testStyle");
         styleInfo.setFilename("testStyle.sld");

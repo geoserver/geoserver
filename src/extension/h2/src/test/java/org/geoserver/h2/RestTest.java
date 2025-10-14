@@ -97,14 +97,12 @@ public final class RestTest extends GeoServerSystemTestSupport {
         genericCreateDataStoreUsingRestTest(dataStoreName, "application/zip", content);
     }
 
-    public void genericCreateDataStoreUsingRestTest(
-            String dataStoreName, String mimeType, byte[] content) throws Exception {
+    public void genericCreateDataStoreUsingRestTest(String dataStoreName, String mimeType, byte[] content)
+            throws Exception {
         // perform a PUT request, a new H2 data store should be created
         // we also require that all available feature types should be created
         String path =
-                String.format(
-                        "/rest/workspaces/%s/datastores/%s/file.h2?configure=all",
-                        WORKSPACE_NAME, dataStoreName);
+                "/rest/workspaces/%s/datastores/%s/file.h2?configure=all".formatted(WORKSPACE_NAME, dataStoreName);
         MockHttpServletResponse response = putAsServletResponse(path, content, mimeType);
         // we should get a HTTP 201 status code meaning that the data store was created
         assertThat(response.getStatus(), is(201));
@@ -116,11 +114,10 @@ public final class RestTest extends GeoServerSystemTestSupport {
         List<Name> names = store.getNames();
         assertThat(store, notNullValue());
         // check that at least the table points is available
-        Name found =
-                names.stream()
-                        .filter(name -> name != null && name.getLocalPart().equals("points"))
-                        .findFirst()
-                        .orElse(null);
+        Name found = names.stream()
+                .filter(name -> name != null && name.getLocalPart().equals("points"))
+                .findFirst()
+                .orElse(null);
         assertThat(found, notNullValue());
         // check that the points layer was correctly created
         LayerInfo layerInfo = getCatalog().getLayerByName(new NameImpl(WORKSPACE_URI, "points"));
@@ -133,9 +130,7 @@ public final class RestTest extends GeoServerSystemTestSupport {
         assertThat(count, is(4));
     }
 
-    /**
-     * Helper method that just reads the test H2 database file and stores it in a array of bytes.
-     */
+    /** Helper method that just reads the test H2 database file and stores it in a array of bytes. */
     private static byte[] readSqLiteDatabaseFile() throws Exception {
         // open the database file
         try (InputStream input = RestTest.class.getResourceAsStream("/test-database.data.db");
@@ -144,8 +139,7 @@ public final class RestTest extends GeoServerSystemTestSupport {
             IOUtils.copy(input, output);
             return output.toByteArray();
         } catch (Exception exception) {
-            throw new RuntimeException(
-                    "Error reading SQLite database file to byte array.", exception);
+            throw new RuntimeException("Error reading SQLite database file to byte array.", exception);
         }
     }
 

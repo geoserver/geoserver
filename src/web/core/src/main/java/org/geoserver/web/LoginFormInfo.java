@@ -7,37 +7,39 @@ package org.geoserver.web;
 import org.geoserver.security.GeoServerSecurityProvider;
 
 /**
- * Information about a login form that should be shown from the main page in the GeoServer UI. The
- * "order" field is based on the "name".
+ * Information about a login form that should be shown from the main page in the GeoServer UI. The "order" field is
+ * based on the "name".
  *
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
 @SuppressWarnings("serial")
-public class LoginFormInfo extends ComponentInfo<GeoServerBasePage>
-        implements Comparable<LoginFormInfo> {
+public class LoginFormInfo extends ComponentInfo<GeoServerBasePage> implements Comparable<LoginFormInfo> {
     String name;
     String icon = "";
     private Class<GeoServerSecurityProvider> filterClass;
     private String include;
     private String loginPath;
+    private String method = "post";
+    private boolean enabled = true;
+
+    /**
+     * Set this to true if you want the login button to just be an external link - instead of a form. This allows for
+     * easier content-security-policy management since a form that redirect externally is typically not allowed. a)
+     * shouldn't have any form field (i.e. user/password) #include = null b) should be GET (method="GET")
+     */
+    private boolean justUseExternalLink = false;
 
     /** Name of the login extension; it will determine also the order displayed for the icons */
     public void setName(String name) {
         this.name = name;
     }
 
-    /**
-     * Path to the icon; the graphic file must be places under resources on the same package of the
-     * "componentClass"
-     */
+    /** Path to the icon; the graphic file must be places under resources on the same package of the "componentClass" */
     public String getIcon() {
         return icon;
     }
 
-    /**
-     * Path to the icon; the graphic file must be places under resources on the same package of the
-     * "componentClass"
-     */
+    /** Path to the icon; the graphic file must be places under resources on the same package of the "componentClass" */
     public void setIcon(String icon) {
         this.icon = icon;
     }
@@ -101,9 +103,39 @@ public class LoginFormInfo extends ComponentInfo<GeoServerBasePage>
         this.loginPath = loginPath;
     }
 
+    /** @return the method */
+    public String getMethod() {
+        return method;
+    }
+
+    /** @param pMethod the method to set */
+    public void setMethod(String pMethod) {
+        method = pMethod;
+    }
+
     /** Sorts by name the Login extensions */
     @Override
     public int compareTo(LoginFormInfo other) {
         return getName().compareTo(other.getName());
+    }
+
+    /** @return the enabled */
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    /** @param pEnabled the enabled to set */
+    public void setEnabled(boolean pEnabled) {
+        enabled = pEnabled;
+    }
+
+    /** @return the justUseExternalLink */
+    public boolean isJustUseExternalLink() {
+        return justUseExternalLink;
+    }
+
+    /** @param pJustUseExternalLink mark this form as Just-Use-External-Link */
+    public void setJustUseExternalLink(boolean pJustUseExternalLink) {
+        justUseExternalLink = pJustUseExternalLink;
     }
 }

@@ -29,40 +29,34 @@ import org.locationtech.jts.simplify.TopologyPreservingSimplifier;
 class MapMLSimplifier {
 
     /**
-     * The tolerance in pixels, two vertices at less than this distance will be considered the same.
-     * It's smaller compared to the server side renderer, the client side seems to render thinner
-     * lines.
+     * The tolerance in pixels, two vertices at less than this distance will be considered the same. The MapML client
+     * side seems to render thinner lines, we might want to use a smaller value.
      */
-    public static final double PIXEL_TOLERANCE = 0.1;
+    public static final double PIXEL_TOLERANCE = 0.8;
 
     private final double querySimplificationDistance;
     private final double simplificationDistance;
-    private final ScreenMap screenMap;
+    private ScreenMap screenMap;
     private final ReferencedEnvelope renderingArea;
 
-    public MapMLSimplifier(WMSMapContent mapContent, CoordinateReferenceSystem sourceCrs)
-            throws FactoryException {
+    public MapMLSimplifier(WMSMapContent mapContent, CoordinateReferenceSystem sourceCrs) throws FactoryException {
         Rectangle paintArea = new Rectangle(mapContent.getMapWidth(), mapContent.getMapHeight());
         this.renderingArea = mapContent.getRenderingArea();
-        AffineTransform worldToScreen =
-                RendererUtilities.worldToScreenTransform(renderingArea, paintArea);
+        AffineTransform worldToScreen = RendererUtilities.worldToScreenTransform(renderingArea, paintArea);
 
         CoordinateReferenceSystem mapCrs = renderingArea.getCoordinateReferenceSystem();
         MathTransform sourceToTargetCrs = buildTransform(sourceCrs, mapCrs);
         MathTransform targetToScreen = ProjectiveTransform.create(worldToScreen);
-        MathTransform sourceToScreen =
-                ConcatenatedTransform.create(sourceToTargetCrs, targetToScreen);
+        MathTransform sourceToScreen = ConcatenatedTransform.create(sourceToTargetCrs, targetToScreen);
 
         double[] spans_sourceCRS;
         double[] spans_targetCRS;
         try {
             spans_sourceCRS =
-                    Decimator.computeGeneralizationDistances(
-                            sourceToScreen.inverse(), paintArea, PIXEL_TOLERANCE);
+                    Decimator.computeGeneralizationDistances(sourceToScreen.inverse(), paintArea, PIXEL_TOLERANCE);
 
             spans_targetCRS =
-                    Decimator.computeGeneralizationDistances(
-                            targetToScreen.inverse(), paintArea, PIXEL_TOLERANCE);
+                    Decimator.computeGeneralizationDistances(targetToScreen.inverse(), paintArea, PIXEL_TOLERANCE);
 
         } catch (TransformException e) {
             throw new RuntimeException(e);
@@ -83,7 +77,7 @@ class MapMLSimplifier {
         return querySimplificationDistance;
     }
 
-    public Geometry simplify(Geometry geom) throws FactoryException, TransformException {
+    public Geometry simplify(Geometry geom) throws TransformException {
         if (geom == null) return null;
         Geometry result = geom;
 
@@ -97,26 +91,47 @@ class MapMLSimplifier {
         int dimension = result.getDimension();
         if (dimension > 0) {
             Envelope env = result.getEnvelopeInternal();
-            if (screenMap.canSimplify(env)) {
+            // null screenMap means that it was successfully passed to the datasource
+            if (screenMap != null && screenMap.canSimplify(env)) {
                 if (screenMap.checkAndSet(env)) {
                     return null;
                 } else {
-                    result =
-                            screenMap.getSimplifiedShape(
-                                    env.getMinX(),
-                                    env.getMinY(),
-                                    env.getMaxX(),
-                                    env.getMaxY(),
-                                    result.getFactory(),
-                                    result.getClass());
+                    result = screenMap.getSimplifiedShape(
+                            env.getMinX(),
+                            env.getMinY(),
+                            env.getMaxX(),
+                            env.getMaxY(),
+                            result.getFactory(),
+                            result.getClass());
                 }
-            } else if (dimension == 2) {
+            }
+            if (dimension == 2) {
                 result = TopologyPreservingSimplifier.simplify(geom, this.simplificationDistance);
             } else if (dimension == 1) {
                 result = DouglasPeuckerSimplifier.simplify(geom, this.simplificationDistance);
             }
         }
+        return simplifyPrecision(result);
+    }
 
-        return result;
+    /**
+     * Simplify the geometry to the precision of the rendering area using the simplificationDistance
+     *
+     * @param result
+     * @return
+     */
+    private Geometry simplifyPrecision(Geometry result) {
+        if (result == null) return null;
+        int scale = (int) Math.ceil(-Math.log10(simplificationDistance));
+        RoundingPrecisionTransformer transformer = new RoundingPrecisionTransformer(scale);
+        return transformer.transform(result);
+    }
+
+    public ScreenMap getScreenMap() {
+        return screenMap;
+    }
+
+    public void setScreenMap(ScreenMap screenMap) {
+        this.screenMap = screenMap;
     }
 }

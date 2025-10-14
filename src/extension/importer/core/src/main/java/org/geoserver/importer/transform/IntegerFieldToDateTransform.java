@@ -9,6 +9,7 @@
  */
 package org.geoserver.importer.transform;
 
+import java.io.Serial;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -17,13 +18,13 @@ import org.geotools.api.data.DataStore;
 import org.geotools.api.feature.simple.SimpleFeature;
 
 /**
- * Allow a string or number field to be used as a year Date. The number is interpreted as an
- * Integer.
+ * Allow a string or number field to be used as a year Date. The number is interpreted as an Integer.
  *
  * @author Ian Schneider <ischneider@opengeo.org>
  */
 public class IntegerFieldToDateTransform extends AttributeRemapTransform {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     transient Calendar calendar;
@@ -41,13 +42,12 @@ public class IntegerFieldToDateTransform extends AttributeRemapTransform {
     }
 
     @Override
-    public SimpleFeature apply(
-            ImportTask task, DataStore dataStore, SimpleFeature oldFeature, SimpleFeature feature)
+    public SimpleFeature apply(ImportTask task, DataStore dataStore, SimpleFeature oldFeature, SimpleFeature feature)
             throws Exception {
         Object val = oldFeature.getAttribute(field);
         Date parsed = null;
-        if (val instanceof String) {
-            String s = ((String) val).trim();
+        if (val instanceof String string) {
+            String s = string.trim();
             if (s.length() > 0) {
                 val = Double.parseDouble(s);
             } else {

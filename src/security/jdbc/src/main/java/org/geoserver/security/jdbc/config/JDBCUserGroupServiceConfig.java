@@ -6,12 +6,14 @@
 
 package org.geoserver.security.jdbc.config;
 
+import java.io.Serial;
 import org.geoserver.security.config.SecurityUserGroupServiceConfig;
 
-public class JDBCUserGroupServiceConfig extends JDBCSecurityServiceConfig
-        implements SecurityUserGroupServiceConfig {
+public class JDBCUserGroupServiceConfig extends JDBCSecurityServiceConfig implements SecurityUserGroupServiceConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
+
     protected String passwordEncoderName;
     protected String passwordPolicyName;
 

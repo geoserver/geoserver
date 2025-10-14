@@ -14,8 +14,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 /**
- * Coordinates for a geometry. Can contain a mix of strings (the space separate coordinates bits)
- * and {@link Span} elements for bits that need to bit styled differently.
+ * Coordinates for a geometry. Can contain a mix of strings (the space separate coordinates bits) and {@link Span}
+ * elements for bits that need to bit styled differently.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(

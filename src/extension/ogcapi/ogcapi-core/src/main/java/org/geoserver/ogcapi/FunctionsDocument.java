@@ -55,14 +55,11 @@ public class FunctionsDocument extends AbstractDocument {
 
         Function(FunctionName fn) {
             this.name = fn.getName();
-            this.returns =
-                    Arrays.stream(toParameter(fn.getReturn()).getType())
-                            .collect(Collectors.toList());
+            this.returns = Arrays.stream(toParameter(fn.getReturn()).getType()).collect(Collectors.toList());
             this.description = null; // no support for descriptions in GeoTools functions
-            this.arguments =
-                    fn.getArguments().stream()
-                            .map(FunctionsDocument::toParameter)
-                            .collect(Collectors.toList());
+            this.arguments = fn.getArguments().stream()
+                    .map(FunctionsDocument::toParameter)
+                    .collect(Collectors.toList());
         }
 
         public String getName() {
@@ -81,20 +78,21 @@ public class FunctionsDocument extends AbstractDocument {
     private static Argument toParameter(Parameter<?> parameter) {
         return new Argument(
                 parameter.getName(),
-                Optional.ofNullable(parameter.getDescription()).map(d -> d.toString()).orElse(null),
+                Optional.ofNullable(parameter.getDescription())
+                        .map(d -> d.toString())
+                        .orElse(null),
                 new AttributeType[] {AttributeType.fromClass(parameter.getType())});
     }
 
     List<Function> functions;
 
     public FunctionsDocument() {
-        functions =
-                new FunctionFinder(null)
-                        .getAllFunctionDescriptions().stream()
-                                .filter(FunctionsDocument::isSimpleFunction)
-                                .map(Function::new)
-                                .distinct()
-                                .collect(Collectors.toList());
+        functions = new FunctionFinder(null)
+                .getAllFunctionDescriptions().stream()
+                        .filter(FunctionsDocument::isSimpleFunction)
+                        .map(Function::new)
+                        .distinct()
+                        .collect(Collectors.toList());
 
         addSelfLinks("ogc/features/v1/functions");
     }

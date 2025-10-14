@@ -49,8 +49,6 @@ public class PlaceHolderUtilTest {
 
     @Test
     public void testReplacePlaceHolder() {
-        assertEquals(
-                Lists.newArrayList(STR_1, STR_2),
-                PlaceHolderUtil.replacePlaceHolder(PATTERN_2, map2));
+        assertEquals(Lists.newArrayList(STR_1, STR_2), PlaceHolderUtil.replacePlaceHolder(PATTERN_2, map2));
     }
 }

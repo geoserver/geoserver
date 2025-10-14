@@ -7,6 +7,7 @@ package org.geoserver.flow.controller;
 import com.google.common.base.Predicate;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,8 +20,8 @@ import org.geotools.util.CanonicalSet;
 import org.geotools.util.logging.Logging;
 
 /**
- * Limits the rate of requests, and slows them down after the number of requests per unit of time is
- * filled, or throws a HTTP 429 if no delay if configured
+ * Limits the rate of requests, and slows them down after the number of requests per unit of time is filled, or throws a
+ * HTTP 429 if no delay if configured
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -42,15 +43,13 @@ public class RateFlowController implements FlowController {
 
     /** The minimum number of counters we have need to have around before a cleanup is initiated */
     static int COUNTERS_CLEANUP_THRESHOLD =
-            Integer.parseInt(
-                    System.getProperty("org.geoserver.flow.countersCleanupThreshold", "200"));
+            Integer.parseInt(System.getProperty("org.geoserver.flow.countersCleanupThreshold", "200"));
 
     /** The cleanup interval before a cleanup is initiated */
     static int COUNTERS_CLEANUP_INTERVAL =
-            Integer.parseInt(
-                    System.getProperty("org.geoserver.flow.countersCleanupInterval", "10000"));
+            Integer.parseInt(System.getProperty("org.geoserver.flow.countersCleanupInterval", "10000"));
 
-    final class Counter {
+    static final class Counter {
         volatile long timePeriodId;
 
         AtomicInteger requests = new AtomicInteger(0);
@@ -81,7 +80,7 @@ public class RateFlowController implements FlowController {
     KeyGenerator keyGenerator;
 
     /** Contains all active counters */
-    Map<String, Counter> counters = new ConcurrentHashMap<>();
+    ConcurrentMap<String, Counter> counters = new ConcurrentHashMap<>();
 
     /** Used to make user keys unique before using them as synchronization locks */
     CanonicalSet<String> canonicalizer = CanonicalSet.newInstance(String.class);
@@ -101,15 +100,10 @@ public class RateFlowController implements FlowController {
     volatile long lastCleanup = System.currentTimeMillis();
 
     /**
-     * Builds a UserFlowController that will trigger stale queue expiration once 100 queues have
-     * been accumulated and
+     * Builds a UserFlowController that will trigger stale queue expiration once 100 queues have been accumulated and
      */
     public RateFlowController(
-            Predicate<Request> matcher,
-            int maxRequests,
-            long timeInterval,
-            long delay,
-            KeyGenerator keyGenerator) {
+            Predicate<Request> matcher, int maxRequests, long timeInterval, long delay, KeyGenerator keyGenerator) {
         this.matcher = matcher;
         this.maxRequests = maxRequests;
         this.timeInterval = timeInterval;
@@ -189,8 +183,7 @@ public class RateFlowController implements FlowController {
 
         // cleanup stale counters if necessary
         long elapsed = now - lastCleanup;
-        if (counters.size() > COUNTERS_CLEANUP_THRESHOLD
-                && (elapsed > (timeInterval) || (elapsed > 10000))) {
+        if (counters.size() > COUNTERS_CLEANUP_THRESHOLD && (elapsed > (timeInterval) || (elapsed > 10000))) {
             int cleanupCount = 0;
             synchronized (this) {
                 for (Map.Entry<String, Counter> entry : counters.entrySet()) {

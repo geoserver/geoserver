@@ -41,15 +41,13 @@ public class DecimalListTextFieldTest {
     public void setUp() throws Exception {
         tester = new WicketTester();
         initResourceSettings(tester);
-        tester.startPage(
-                new InputTestPage() {
+        tester.startPage(new InputTestPage() {
 
-                    @Override
-                    protected Component newTextInput(String id) {
-                        return new DecimalListTextField(
-                                id, new PropertyModel<>(DecimalListTextFieldTest.this, "theList"));
-                    }
-                });
+            @Override
+            protected Component newTextInput(String id) {
+                return new DecimalListTextField(id, new PropertyModel<>(DecimalListTextFieldTest.this, "theList"));
+            }
+        });
     }
 
     @Test

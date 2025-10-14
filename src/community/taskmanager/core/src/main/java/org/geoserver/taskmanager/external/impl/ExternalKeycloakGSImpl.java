@@ -72,16 +72,8 @@ public class ExternalKeycloakGSImpl extends ExternalGSImpl {
     @Override
     public GeoServerRESTManager getRESTManager() throws MalformedURLException {
         if (auth == null) {
-            auth =
-                    new KeycloakAuthenticator(
-                            getUsername(),
-                            getPassword(),
-                            clientId,
-                            clientSecret,
-                            authUrl,
-                            realm,
-                            proxyHost,
-                            proxyPort);
+            auth = new KeycloakAuthenticator(
+                    getUsername(), getPassword(), clientId, clientSecret, authUrl, realm, proxyHost, proxyPort);
         }
         return new GeoServerRESTManager(new URL(getUrl()), auth);
     }

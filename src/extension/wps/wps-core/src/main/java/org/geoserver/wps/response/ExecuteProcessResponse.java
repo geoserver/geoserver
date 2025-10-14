@@ -53,8 +53,7 @@ public class ExecuteProcessResponse extends Response {
 
     public ExecuteProcessResponse(Class<?> binding, String elementName, Class<?> xmlConfiguration) {
         super(ExecuteResponseType.class);
-        this.standardResponse =
-                new XmlObjectEncodingResponse(binding, elementName, xmlConfiguration);
+        this.standardResponse = new XmlObjectEncodingResponse(binding, elementName, xmlConfiguration);
     }
 
     @Override
@@ -87,8 +86,7 @@ public class ExecuteProcessResponse extends Response {
     }
 
     private boolean isStandardDocumentResponse(Operation operation) {
-        if (operation.getParameters()[0] instanceof ExecuteType) {
-            ExecuteType execute = (ExecuteType) operation.getParameters()[0];
+        if (operation.getParameters()[0] instanceof ExecuteType execute) {
             return execute.getResponseForm() == null
                     || execute.getResponseForm().getRawDataOutput() == null;
         }
@@ -142,11 +140,11 @@ public class ExecuteProcessResponse extends Response {
                     Map<String, Parameter<?>> resultInfo = factory.getResultInfo(name, null);
                     Parameter p = resultInfo.get(result.getIdentifier().getValue());
                     if (p != null) {
-                        ProcessParameterIO ppio =
-                                ProcessParameterIO.find(p, ctx, complex.getMimeType());
-                        if (ppio instanceof ComplexPPIO) {
-                            Object cd = result.getData().getComplexData().getData().get(0);
-                            fext = ((ComplexPPIO) ppio).getFileExtension(cd);
+                        ProcessParameterIO ppio = ProcessParameterIO.find(p, ctx, complex.getMimeType());
+                        if (ppio instanceof ComplexPPIO iO) {
+                            Object cd =
+                                    result.getData().getComplexData().getData().get(0);
+                            fext = iO.getFileExtension(cd);
                         }
                     }
                 }
@@ -161,8 +159,7 @@ public class ExecuteProcessResponse extends Response {
     }
 
     @Override
-    public void write(Object value, OutputStream output, Operation operation)
-            throws IOException, ServiceException {
+    public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
         ExecuteResponseType response = (ExecuteResponseType) value;
 
         // From the spec:
@@ -172,8 +169,7 @@ public class ExecuteProcessResponse extends Response {
         // returned directly to the client.
         // In all other cases, the response to a valid Execute operation request is an
         // ExecuteResponse XML document
-        if (isStandardDocumentResponse(operation)
-                || response.getStatus().getProcessSucceeded() == null) {
+        if (isStandardDocumentResponse(operation) || response.getStatus().getProcessSucceeded() == null) {
             // normal execute response encoding
             standardResponse.write(value, output, operation);
         } else {
@@ -197,46 +193,37 @@ public class ExecuteProcessResponse extends Response {
         encoder.encode(bbox, OWS.BoundingBox, os);
     }
 
-    /**
-     * Write out complex data assuming {@link Execute} has set up the proper encoder as the output
-     */
+    /** Write out complex data assuming {@link Execute} has set up the proper encoder as the output */
     void writeComplex(OutputStream output, OutputDataType result) throws IOException {
         Object rawResult = result.getData().getComplexData().getData().get(0);
-        if (rawResult instanceof RawDataEncoderDelegate) {
-            RawDataEncoderDelegate delegate = (RawDataEncoderDelegate) rawResult;
+        if (rawResult instanceof RawDataEncoderDelegate delegate) {
             delegate.encode(output);
-        } else if (rawResult instanceof XMLEncoderDelegate) {
-            XMLEncoderDelegate delegate = (XMLEncoderDelegate) rawResult;
+        } else if (rawResult instanceof XMLEncoderDelegate delegate) {
 
             try {
                 TransformerHandler xmls =
-                        ((SAXTransformerFactory) SAXTransformerFactory.newInstance())
-                                .newTransformerHandler();
+                        ((SAXTransformerFactory) SAXTransformerFactory.newInstance()).newTransformerHandler();
                 xmls.setResult(new StreamResult(output));
                 delegate.encode(xmls);
             } catch (IOException e) {
                 throw e;
             } catch (Exception e) {
-                throw new WPSException(
-                        "An error occurred while encoding " + "the results of the process", e);
+                throw new WPSException("An error occurred while encoding " + "the results of the process", e);
             }
-        } else if (rawResult instanceof CDataEncoderDelegate) {
+        } else if (rawResult instanceof CDataEncoderDelegate delegate1) {
             try {
-                ((CDataEncoderDelegate) rawResult).encode(output);
+                delegate1.encode(output);
             } catch (Exception e) {
-                throw new WPSException(
-                        "An error occurred while encoding " + "the results of the process", e);
+                throw new WPSException("An error occurred while encoding " + "the results of the process", e);
             }
-        } else if (rawResult instanceof BinaryEncoderDelegate) {
+        } else if (rawResult instanceof BinaryEncoderDelegate delegate) {
             try {
-                ((BinaryEncoderDelegate) rawResult).encode(output);
+                delegate.encode(output);
             } catch (Exception e) {
-                throw new WPSException(
-                        "An error occurred while encoding " + "the results of the process", e);
+                throw new WPSException("An error occurred while encoding " + "the results of the process", e);
             }
         } else {
-            throw new WPSException(
-                    "Cannot encode an object of class " + rawResult.getClass() + " in raw form");
+            throw new WPSException("Cannot encode an object of class " + rawResult.getClass() + " in raw form");
         }
     }
 

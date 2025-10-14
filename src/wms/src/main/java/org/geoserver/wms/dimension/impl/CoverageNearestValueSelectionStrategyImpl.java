@@ -27,16 +27,14 @@ import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
 
 /**
- * Default implementation for selecting the default values for dimensions of coverage (raster)
- * resources using the nearest-domain-value-to-the-reference-value strategy.
+ * Default implementation for selecting the default values for dimensions of coverage (raster) resources using the
+ * nearest-domain-value-to-the-reference-value strategy.
  *
  * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
  */
-public class CoverageNearestValueSelectionStrategyImpl
-        extends AbstractDefaultValueSelectionStrategy {
+public class CoverageNearestValueSelectionStrategyImpl extends AbstractDefaultValueSelectionStrategy {
 
-    private static final Logger LOGGER =
-            Logging.getLogger(CoverageNearestValueSelectionStrategyImpl.class);
+    private static final Logger LOGGER = Logging.getLogger(CoverageNearestValueSelectionStrategyImpl.class);
 
     private Object toMatch;
     private String fixedCapabilitiesValue;
@@ -52,22 +50,20 @@ public class CoverageNearestValueSelectionStrategyImpl
     }
 
     @Override
-    public Object getDefaultValue(
-            ResourceInfo resource, String dimensionName, DimensionInfo dimension, Class<?> clz) {
+    public Object getDefaultValue(ResourceInfo resource, String dimensionName, DimensionInfo dimension, Class<?> clz) {
         Object retval = null;
         try {
             GridCoverage2DReader reader =
-                    (GridCoverage2DReader)
-                            ((CoverageInfo) resource).getGridCoverageReader(null, null);
+                    (GridCoverage2DReader) ((CoverageInfo) resource).getGridCoverageReader(null, null);
             ReaderDimensionsAccessor dimAccessor = new ReaderDimensionsAccessor(reader);
 
             if (dimensionName.equals(ResourceInfo.TIME)) {
                 Date dateToMatch = null;
-                if (this.toMatch instanceof Date) {
-                    dateToMatch = (Date) this.toMatch;
-                } else if (this.toMatch instanceof Long) {
+                if (this.toMatch instanceof Date date) {
+                    dateToMatch = date;
+                } else if (this.toMatch instanceof Long long1) {
                     // Assume millis time if reference value is given as Long:
-                    dateToMatch = new Date(((Long) this.toMatch).longValue());
+                    dateToMatch = new Date(long1.longValue());
                 } else {
                     try {
                         dateToMatch = new Date(DateUtil.parseDateTime(this.toMatch.toString()));
@@ -80,8 +76,8 @@ public class CoverageNearestValueSelectionStrategyImpl
                 }
                 retval = findNearestTime(dimAccessor, dateToMatch);
             } else if (dimensionName.equals(ResourceInfo.ELEVATION)) {
-                if (this.toMatch instanceof Number) {
-                    Double doubleToMatch = ((Number) this.toMatch).doubleValue();
+                if (this.toMatch instanceof Number number) {
+                    Double doubleToMatch = number.doubleValue();
                     retval = findNearestElevation(dimAccessor, doubleToMatch);
                 } else {
                     throw new ServiceException(
@@ -89,12 +85,10 @@ public class CoverageNearestValueSelectionStrategyImpl
                                     + resource.getName());
                 }
             } else if (dimensionName.startsWith(ResourceInfo.CUSTOM_DIMENSION_PREFIX)) {
-                retval =
-                        findNearestCustomDimensionValue(
-                                dimensionName.substring(
-                                        ResourceInfo.CUSTOM_DIMENSION_PREFIX.length()),
-                                dimAccessor,
-                                this.toMatch.toString());
+                retval = findNearestCustomDimensionValue(
+                        dimensionName.substring(ResourceInfo.CUSTOM_DIMENSION_PREFIX.length()),
+                        dimAccessor,
+                        this.toMatch.toString());
             }
 
         } catch (IOException e) {
@@ -103,15 +97,13 @@ public class CoverageNearestValueSelectionStrategyImpl
         return Converters.convert(retval, clz);
     }
 
-    private Date findNearestTime(ReaderDimensionsAccessor dimAccessor, Date toMatch)
-            throws IOException {
+    private Date findNearestTime(ReaderDimensionsAccessor dimAccessor, Date toMatch) throws IOException {
         Date candidate = null;
         TreeSet<Object> timeDomain = dimAccessor.getTimeDomain();
         long shortestDistance = Long.MAX_VALUE;
         long currentDistance = 0;
         for (Object dateOrRange : timeDomain) {
-            if (dateOrRange instanceof Date) {
-                Date d = (Date) dateOrRange;
+            if (dateOrRange instanceof Date d) {
                 if (d.before(toMatch)) {
                     currentDistance = toMatch.getTime() - d.getTime();
                     if (currentDistance < shortestDistance) {
@@ -131,8 +123,7 @@ public class CoverageNearestValueSelectionStrategyImpl
                     candidate = d;
                     break;
                 }
-            } else if (dateOrRange instanceof DateRange) {
-                DateRange d = (DateRange) dateOrRange;
+            } else if (dateOrRange instanceof DateRange d) {
                 if (d.getMaxValue().before(toMatch)) {
                     currentDistance = toMatch.getTime() - d.getMaxValue().getTime();
                     if (currentDistance < shortestDistance) {
@@ -159,15 +150,13 @@ public class CoverageNearestValueSelectionStrategyImpl
     }
 
     @SuppressWarnings("unchecked")
-    private Double findNearestElevation(ReaderDimensionsAccessor dimAccessor, Double toMatch)
-            throws IOException {
+    private Double findNearestElevation(ReaderDimensionsAccessor dimAccessor, Double toMatch) throws IOException {
         Double candidate = null;
         TreeSet<Object> elevDomain = dimAccessor.getElevationDomain();
         double shortestDistance = Double.MAX_VALUE;
         double currentDistance = 0d;
         for (Object doubleOrRange : elevDomain) {
-            if (doubleOrRange instanceof Double) {
-                Double d = (Double) doubleOrRange;
+            if (doubleOrRange instanceof Double d) {
                 int comp = d.compareTo(toMatch);
                 if (comp < 0) {
                     currentDistance = toMatch.doubleValue() - d.doubleValue();
@@ -188,9 +177,8 @@ public class CoverageNearestValueSelectionStrategyImpl
                     candidate = d;
                     break;
                 }
-            } else if (doubleOrRange instanceof NumberRange<?>) {
+            } else if (doubleOrRange instanceof NumberRange<?> maybeD) {
                 NumberRange<Double> d = null;
-                NumberRange<?> maybeD = (NumberRange<?>) doubleOrRange;
                 if (maybeD.getElementClass().equals(Double.class)) {
                     d = (NumberRange<Double>) maybeD;
                 } else {
@@ -222,8 +210,7 @@ public class CoverageNearestValueSelectionStrategyImpl
     }
 
     private String findNearestCustomDimensionValue(
-            String dimensionName, ReaderDimensionsAccessor dimAccessor, String toMatch)
-            throws IOException {
+            String dimensionName, ReaderDimensionsAccessor dimAccessor, String toMatch) throws IOException {
         String candidate = null;
         List<String> domain = dimAccessor.getDomain(dimensionName);
 

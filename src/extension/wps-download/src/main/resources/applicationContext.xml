@@ -75,6 +75,8 @@
 	<bean id="geopkgVectorPPIO" class="org.geoserver.wps.gs.download.GeopkgVectorPPIO"/>
 	<bean id="geopkgRasterPPIO" class="org.geoserver.wps.gs.download.GeopkgRasterPPIO"/>
 
+	<bean id="slicerThreadLocalCleaner" class="org.geoserver.wps.gs.download.SpatioTemporalCoverageSlicer.SlicerCleanupListener"/>
+
 	<bean id="verticalCrsConfigPanel"
 		  class="org.geoserver.web.data.resource.ResourceConfigurationPanelInfo">
 		<property name="id" value="coverage" />

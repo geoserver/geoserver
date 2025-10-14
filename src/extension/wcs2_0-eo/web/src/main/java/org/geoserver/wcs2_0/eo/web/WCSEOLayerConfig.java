@@ -6,6 +6,7 @@
 package org.geoserver.wcs2_0.eo.web;
 
 import java.io.IOException;
+import java.io.Serial;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
@@ -19,6 +20,7 @@ import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 /** A configuration panel for CoverageInfo properties that related to WCS publication */
 public class WCSEOLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
+    @Serial
     private static final long serialVersionUID = 5069332181659419455L;
 
     public WCSEOLayerConfig(String id, IModel<LayerInfo> model) {
@@ -29,8 +31,7 @@ public class WCSEOLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
         // add the checkbox to enable exposing a layer as a dataset
         MapModel<Boolean> datasetModel =
-                new MapModel<>(
-                        new PropertyModel<>(model, "resource.metadata"), WCSEOMetadata.DATASET.key);
+                new MapModel<>(new PropertyModel<>(model, "resource.metadata"), WCSEOMetadata.DATASET.key);
         CheckBox dataset = new CheckBox("dataset", datasetModel);
         add(dataset);
     }
@@ -38,12 +39,10 @@ public class WCSEOLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
     private boolean isStructuredCoverage(IModel<LayerInfo> model) {
         try {
             CoverageInfo ci = (CoverageInfo) model.getObject().getResource();
-            boolean result =
-                    ci.getGridCoverageReader(null, null) instanceof StructuredGridCoverage2DReader;
+            boolean result = ci.getGridCoverageReader(null, null) instanceof StructuredGridCoverage2DReader;
             return result;
         } catch (IOException e) {
-            throw new RuntimeException(
-                    "Faied to load reader to determine if it's WCS EO Dataset worthy", e);
+            throw new RuntimeException("Faied to load reader to determine if it's WCS EO Dataset worthy", e);
         }
     }
 }

@@ -6,7 +6,6 @@
 package org.geoserver.map.turbojpeg;
 
 import it.geosolutions.imageio.plugins.turbojpeg.TurboJpegUtilities;
-import it.geosolutions.jaiext.range.NoDataContainer;
 import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
@@ -15,8 +14,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
-import javax.media.jai.PlanarImage;
-import javax.media.jai.RasterFactory;
+import org.eclipse.imagen.PlanarImage;
+import org.eclipse.imagen.RasterFactory;
+import org.eclipse.imagen.media.range.NoDataContainer;
 import org.geotools.image.ImageWorker;
 import org.geotools.test.TestData;
 import org.junit.Assert;
@@ -30,8 +30,7 @@ import org.junit.Test;
  */
 public class TurboImageWorkerTest extends Assert {
 
-    static final String ERROR_LIB_MESSAGE =
-            "The TurboJpeg native library hasn't been loaded: Skipping test";
+    static final String ERROR_LIB_MESSAGE = "The TurboJpeg native library hasn't been loaded: Skipping test";
 
     static boolean SKIP_TESTS = false;
 
@@ -56,16 +55,14 @@ public class TurboImageWorkerTest extends Assert {
         // create output file
         final File output = TestData.temp(this, "output.jpeg");
         try {
-            new TurboJpegImageWorker(ImageIO.read(input))
-                    .writeTurboJPEG(new FileOutputStream(output), 1.5f);
+            new TurboJpegImageWorker(ImageIO.read(input)).writeTurboJPEG(new FileOutputStream(output), 1.5f);
             fail("We should not be allowed to specify compression ratios > 1");
         } catch (Exception e) {
             // TODO: handle exception
         }
 
         try {
-            new TurboJpegImageWorker(ImageIO.read(input))
-                    .writeTurboJPEG(new FileOutputStream(output), -.5f);
+            new TurboJpegImageWorker(ImageIO.read(input)).writeTurboJPEG(new FileOutputStream(output), -.5f);
             fail("We should not be allowed to specify compression ratios > 1");
         } catch (Exception e) {
             // TODO: handle exception
@@ -123,8 +120,7 @@ public class TurboImageWorkerTest extends Assert {
 
         // create output file
         final File output = TestData.temp(this, "output.jpeg");
-        new TurboJpegImageWorker(ImageIO.read(input))
-                .writeTurboJPEG(new FileOutputStream(output), .5f);
+        new TurboJpegImageWorker(ImageIO.read(input)).writeTurboJPEG(new FileOutputStream(output), .5f);
         assertTrue("Unable to create output file", output.exists() && output.isFile());
 
         new ImageWorker(output).getBufferedImage().flush();
@@ -143,8 +139,7 @@ public class TurboImageWorkerTest extends Assert {
 
         // create output file
         final File output = TestData.temp(this, "output.jpeg");
-        new TurboJpegImageWorker(ImageIO.read(input))
-                .writeTurboJPEG(new FileOutputStream(output), .5f);
+        new TurboJpegImageWorker(ImageIO.read(input)).writeTurboJPEG(new FileOutputStream(output), .5f);
         assertTrue("Unable to create output file", output.exists() && output.isFile());
 
         new ImageWorker(output).getBufferedImage().flush();

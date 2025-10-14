@@ -1,0 +1,86 @@
+.display-none {
+    display: none;
+}
+
+.display-inline {
+    display: inline;
+}
+
+.display-block{
+    display: block;
+}
+
+.padTopLarge {
+    padding-top:20px;
+}
+
+.width95 {
+    width:95%;
+}
+
+.justifyContentCenter {
+    justify-content: center;
+}
+
+.fontSize10 {
+    font-size: 10px;
+}
+
+
+.padLeftSmall {
+    padding-left:5px;
+}
+
+.textAlignCenter {
+    text-align: center;
+}
+
+#roleConverterStringDiv {
+    display:none;
+    padding-top:10px;
+    width:55%;
+}
+
+
+#roleConverterStringTable table, th, td {
+    border: black 1px solid !important;
+}
+
+#roleSource .autoTopBottom {
+    margin-top:auto;
+    margin-bottom:auto;
+}
+
+.display-flex {
+    display: flex;
+}
+
+.flex-column {
+    flex-direction: column;
+}
+
+.pad-checkbox {
+    padding-left: 22px;
+}
+
+.flex-row {
+    flex-direction: row;
+}
+
+ul.horizontal div {
+    display: inline;
+}
+
+
+.checkLabelInline {
+    vertical-align: middle;
+    line-height: 2em;
+    display: flex;
+    align-items: center;
+    align-content: center;
+    flex-wrap: wrap;
+
+    label {
+        padding: 0 5px;
+    }
+}

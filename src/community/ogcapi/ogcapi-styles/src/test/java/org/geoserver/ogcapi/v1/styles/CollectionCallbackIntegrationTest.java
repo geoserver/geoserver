@@ -14,15 +14,11 @@ public class CollectionCallbackIntegrationTest extends StylesTestSupport {
 
     @Test
     public void testFeatureCollectionCallback() throws Exception {
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/features/v1/collections/" + getLayerId(MockData.BASIC_POLYGONS), 200);
+        DocumentContext json = getAsJSONPath("ogc/features/v1/collections/" + getLayerId(MockData.BASIC_POLYGONS), 200);
 
         // the collection shows links to the styles API
         // concentrate on one and check title and links
-        assertEquals(
-                "A blue linestring style",
-                readSingle(json, "styles[?(@.id == 'BasicPolygons')].title"));
+        assertEquals("A blue linestring style", readSingle(json, "styles[?(@.id == 'BasicPolygons')].title"));
         // there is at least a link to SLD 1.0
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/styles/v1/styles/BasicPolygons?f=application%2Fvnd.ogc.sld%2Bxml",
@@ -39,9 +35,7 @@ public class CollectionCallbackIntegrationTest extends StylesTestSupport {
 
     @Test
     public void testTilesCollectionCallback() throws Exception {
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/tiles/v1/collections/" + getLayerId(MockData.BASIC_POLYGONS), 200);
+        DocumentContext json = getAsJSONPath("ogc/tiles/v1/collections/" + getLayerId(MockData.BASIC_POLYGONS), 200);
 
         // tile tiles API already adds the notion of style, but the links to the styles formats and
         // metadata need to be added

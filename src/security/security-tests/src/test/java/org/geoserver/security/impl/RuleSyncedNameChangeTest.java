@@ -17,8 +17,8 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Test;
 
 /**
- * Test for verifying if Data Access rules change when a Workspace or Layername having a Data
- * Security Rule experience change of Name
+ * Test for verifying if Data Access rules change when a Workspace or Layername having a Data Security Rule experience
+ * change of Name
  *
  * @author ImranR
  */

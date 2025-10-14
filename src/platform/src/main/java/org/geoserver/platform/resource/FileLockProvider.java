@@ -60,12 +60,7 @@ public class FileLockProvider implements LockProvider, ServletContextAware {
         // then synch up between different processes
         final File file = getFile(lockKey);
         if (LOGGER.isLoggable(Level.FINE))
-            LOGGER.fine(
-                    "Mapped lock key "
-                            + lockKey
-                            + " to lock file "
-                            + file
-                            + ". Attempting to lock on it.");
+            LOGGER.fine("Mapped lock key " + lockKey + " to lock file " + file + ". Attempting to lock on it.");
         try {
             FileOutputStream currFos = null;
             FileLock currLock = null;
@@ -93,21 +88,16 @@ public class FileLockProvider implements LockProvider, ServletContextAware {
                 // verify we managed to get the FS lock
                 if (count >= maxLockAttempts) {
                     throw new IllegalStateException(
-                            "Failed to get a lock on key "
-                                    + lockKey
-                                    + " after "
-                                    + count
-                                    + " attempts");
+                            "Failed to get a lock on key " + lockKey + " after " + count + " attempts");
                 }
 
                 if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.fine(
-                            "Lock "
-                                    + lockKey
-                                    + " acquired by thread "
-                                    + Thread.currentThread().getId()
-                                    + " on file "
-                                    + file);
+                    LOGGER.fine("Lock "
+                            + lockKey
+                            + " acquired by thread "
+                            + Thread.currentThread().getId()
+                            + " on file "
+                            + file);
                 }
 
                 // store the results in a final variable for the inner class to use
@@ -153,18 +143,16 @@ public class FileLockProvider implements LockProvider, ServletContextAware {
                                 file.delete();
 
                                 if (LOGGER.isLoggable(Level.FINE)) {
-                                    LOGGER.fine(
-                                            "Lock "
-                                                    + lockKey
-                                                    + " mapped onto "
-                                                    + file
-                                                    + " released by thread "
-                                                    + Thread.currentThread().getId());
+                                    LOGGER.fine("Lock "
+                                            + lockKey
+                                            + " mapped onto "
+                                            + file
+                                            + " released by thread "
+                                            + Thread.currentThread().getId());
                                 }
                             } catch (IOException e) {
                                 throw new IllegalStateException(
-                                        "Failure while trying to release lock for key " + lockKey,
-                                        e);
+                                        "Failure while trying to release lock for key " + lockKey, e);
                             }
                         } finally {
                             memoryLock.release();
@@ -185,8 +173,7 @@ public class FileLockProvider implements LockProvider, ServletContextAware {
                 file.delete();
             }
         } catch (IOException e) {
-            throw new IllegalStateException(
-                    "Failure while trying to get lock for key " + lockKey, e);
+            throw new IllegalStateException("Failure while trying to get lock for key " + lockKey, e);
         }
     }
 

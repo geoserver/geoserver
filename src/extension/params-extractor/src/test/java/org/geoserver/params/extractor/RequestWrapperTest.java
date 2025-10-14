@@ -13,11 +13,9 @@ public class RequestWrapperTest {
     /** Tests getServletPath correct value. */
     @Test
     public void testServletPath() {
-        UrlTransform urlTransform =
-                new UrlTransform("/geoserver/it.geosolutions/wms/what", buildParameters());
+        UrlTransform urlTransform = new UrlTransform("/geoserver/it.geosolutions/wms/what", buildParameters());
         MockHttpServletRequest request =
-                new MockHttpServletRequest(
-                        "GET", "http://127.0.0.1/geoserver/it.geosolutions/wms/what");
+                new MockHttpServletRequest("GET", "http://127.0.0.1/geoserver/it.geosolutions/wms/what");
         RequestWrapper requestWrapper = new RequestWrapper(urlTransform, request);
         assertEquals("/geoserver", requestWrapper.getServletPath());
     }
@@ -26,12 +24,9 @@ public class RequestWrapperTest {
     @Test
     public void testServletPathWithQueryParams() {
         UrlTransform urlTransform =
-                new UrlTransform(
-                        "/geoserver/it.geosolutions/wms/what?parameter=value", buildParameters());
-        MockHttpServletRequest request =
-                new MockHttpServletRequest(
-                        "GET",
-                        "http://127.0.0.1/geoserver/it.geosolutions/wms/what?parameter=value");
+                new UrlTransform("/geoserver/it.geosolutions/wms/what?parameter=value", buildParameters());
+        MockHttpServletRequest request = new MockHttpServletRequest(
+                "GET", "http://127.0.0.1/geoserver/it.geosolutions/wms/what?parameter=value");
         RequestWrapper requestWrapper = new RequestWrapper(urlTransform, request);
         assertEquals("/geoserver", requestWrapper.getServletPath());
     }
@@ -39,11 +34,9 @@ public class RequestWrapperTest {
     /** Tests getPathInfo correct value. */
     @Test
     public void testPathInfo() {
-        UrlTransform urlTransform =
-                new UrlTransform("/geoserver/it.geosolutions/wms/what", buildParameters());
+        UrlTransform urlTransform = new UrlTransform("/geoserver/it.geosolutions/wms/what", buildParameters());
         MockHttpServletRequest request =
-                new MockHttpServletRequest(
-                        "GET", "http://127.0.0.1/geoserver/it.geosolutions/wms/what");
+                new MockHttpServletRequest("GET", "http://127.0.0.1/geoserver/it.geosolutions/wms/what");
         RequestWrapper requestWrapper = new RequestWrapper(urlTransform, request);
         assertEquals("/it.geosolutions/wms/what", requestWrapper.getPathInfo());
     }
@@ -52,12 +45,9 @@ public class RequestWrapperTest {
     @Test
     public void testPathInfoWithQueryParams() {
         UrlTransform urlTransform =
-                new UrlTransform(
-                        "/geoserver/it.geosolutions/wms/what/?parameter=value", buildParameters());
-        MockHttpServletRequest request =
-                new MockHttpServletRequest(
-                        "GET",
-                        "http://127.0.0.1/geoserver/it.geosolutions/wms/what/?parameter=value");
+                new UrlTransform("/geoserver/it.geosolutions/wms/what/?parameter=value", buildParameters());
+        MockHttpServletRequest request = new MockHttpServletRequest(
+                "GET", "http://127.0.0.1/geoserver/it.geosolutions/wms/what/?parameter=value");
         RequestWrapper requestWrapper = new RequestWrapper(urlTransform, request);
         assertEquals("/it.geosolutions/wms/what", requestWrapper.getPathInfo());
     }

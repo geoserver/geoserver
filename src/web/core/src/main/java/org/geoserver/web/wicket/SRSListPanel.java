@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.io.Serial;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
@@ -39,8 +40,8 @@ import org.geoserver.web.wicket.SRSProvider.SRS;
  *  ...
  * </pre>
  *
- * <p>Client could should override the method {@link #createLinkForCode(String, IModel)} to provide
- * some action when the user clicks on a SRS code in the list.
+ * <p>Client could should override the method {@link #createLinkForCode(String, IModel)} to provide some action when the
+ * user clicks on a SRS code in the list.
  *
  * @author Andrea Aime, OpenGeo
  * @author Justin Deoliveira, OpenGeo
@@ -48,7 +49,9 @@ import org.geoserver.web.wicket.SRSProvider.SRS;
  */
 public abstract class SRSListPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = 3777350932084160337L;
+
     GeoServerTablePanel<SRS> table;
 
     /** Creates the new SRS list panel. */
@@ -60,40 +63,36 @@ public abstract class SRSListPanel extends Panel {
     public SRSListPanel(String id, SRSProvider srsProvider) {
         super(id);
 
-        table =
-                new GeoServerTablePanel<>("table", srsProvider) {
+        table = new GeoServerTablePanel<>("table", srsProvider) {
 
-                    private static final long serialVersionUID = 6182776235846912573L;
+            @Serial
+            private static final long serialVersionUID = 6182776235846912573L;
 
-                    @Override
-                    protected Component getComponentForProperty(
-                            String id, IModel<SRS> itemModel, Property<SRS> property) {
+            @Override
+            protected Component getComponentForProperty(String id, IModel<SRS> itemModel, Property<SRS> property) {
 
-                        SRS srs = itemModel.getObject();
+                SRS srs = itemModel.getObject();
 
-                        if (SRSProvider.IDENTIFIER.equals(property)) {
+                if (SRSProvider.IDENTIFIER.equals(property)) {
 
-                            Component linkForCode = createLinkForCode(id, itemModel);
+                    Component linkForCode = createLinkForCode(id, itemModel);
 
-                            return linkForCode;
+                    return linkForCode;
 
-                        } else if (SRSProvider.DESCRIPTION.equals(property)) {
-                            String description = srs.getDescription();
-                            return new Label(id, description.trim());
+                } else if (SRSProvider.DESCRIPTION.equals(property)) {
+                    String description = srs.getDescription();
+                    return new Label(id, description.trim());
 
-                        } else {
-                            throw new IllegalArgumentException("Unknown property: " + property);
-                        }
-                    }
-                };
+                } else {
+                    throw new IllegalArgumentException("Unknown property: " + property);
+                }
+            }
+        };
 
         add(table);
     }
 
-    /**
-     * Hides the top pager so that the panel shows nicely in a small space (such as in a popup
-     * window)
-     */
+    /** Hides the top pager so that the panel shows nicely in a small space (such as in a popup window) */
     public void setCompactMode(boolean compact) {
         table.getTopPager().setVisible(!compact);
     }
@@ -101,17 +100,17 @@ public abstract class SRSListPanel extends Panel {
     /**
      * Creates a link for an epsgCode.
      *
-     * <p>Subclasses may override to perform an action when an epsg code has been selected. This
-     * default implementation returns a link that does nothing.
+     * <p>Subclasses may override to perform an action when an epsg code has been selected. This default implementation
+     * returns a link that does nothing.
      *
      * @param linkId The id of the link component to be created.
      * @param itemModel The epsg code (integer).
      */
     @SuppressWarnings("unchecked")
     protected Component createLinkForCode(String linkId, IModel<SRS> itemModel) {
-        return new SimpleAjaxLink<>(
-                linkId, (IModel<Object>) SRSProvider.IDENTIFIER.getModel(itemModel)) {
+        return new SimpleAjaxLink<>(linkId, (IModel<Object>) SRSProvider.IDENTIFIER.getModel(itemModel)) {
 
+            @Serial
             private static final long serialVersionUID = -1330723116026268069L;
 
             @Override

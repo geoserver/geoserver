@@ -32,25 +32,21 @@ public class JVMFontsPage extends ServerAdminPage {
 
     @SuppressWarnings("serial")
     private void updateModel() {
-        table =
-                new GeoServerTablePanel<>("table", provider) {
-                    @Override
-                    protected Component getComponentForProperty(
-                            String id,
-                            IModel<PreviewFont> itemModel,
-                            Property<PreviewFont> property) {
-                        PreviewFont previewFont = itemModel.getObject();
+        table = new GeoServerTablePanel<>("table", provider) {
+            @Override
+            protected Component getComponentForProperty(
+                    String id, IModel<PreviewFont> itemModel, Property<PreviewFont> property) {
+                PreviewFont previewFont = itemModel.getObject();
 
-                        if (property == PREVIEW_IMAGE) {
-                            BufferedDynamicImageResource image = previewFont.getPreviewImage();
-                            Fragment f =
-                                    new Fragment(id, "previewImageFragment", JVMFontsPage.this);
-                            f.add(new Image("previewImage", image));
-                            return f;
-                        }
-                        return null;
-                    }
-                };
+                if (property == PREVIEW_IMAGE) {
+                    BufferedDynamicImageResource image = previewFont.getPreviewImage();
+                    Fragment f = new Fragment(id, "previewImageFragment", JVMFontsPage.this);
+                    f.add(new Image("previewImage", image));
+                    return f;
+                }
+                return null;
+            }
+        };
         table.setOutputMarkupId(true);
         add(table);
     }

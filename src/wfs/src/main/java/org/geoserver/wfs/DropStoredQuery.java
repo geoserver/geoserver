@@ -14,7 +14,6 @@ import org.geoserver.platform.ServiceException;
  * Web Feature Service DropStoredQuery operation.
  *
  * @author Justin Deoliveira, OpenGeo
- * @version $Id$
  */
 public class DropStoredQuery {
 
@@ -30,7 +29,9 @@ public class DropStoredQuery {
     }
 
     public ExecutionStatusType run(DropStoredQueryType request) throws WFSException {
-
+        if (wfs.isDisableStoredQueriesManagement()) {
+            throw new WFSException("Stored queries management is disabled");
+        }
         if (request.getId() == null) {
             throw new WFSException(request, "No stored query id specified");
         }
@@ -39,11 +40,10 @@ public class DropStoredQuery {
         if (query != null) {
             storedQueryProvider.removeStoredQuery(query);
         } else {
-            WFSException exception =
-                    new WFSException(
-                            request,
-                            String.format("Stored query %s does not exist.", request.getId()),
-                            ServiceException.INVALID_PARAMETER_VALUE);
+            WFSException exception = new WFSException(
+                    request,
+                    "Stored query %s does not exist.".formatted(request.getId()),
+                    ServiceException.INVALID_PARAMETER_VALUE);
             // CITE tests vagary, the XML uses "id" and KVP uses "STOREDQUERY_ID", the CITE tests
             // mandate "id"
             // in all bindings

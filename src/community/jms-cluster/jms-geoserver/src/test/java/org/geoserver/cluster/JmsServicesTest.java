@@ -68,9 +68,8 @@ public final class JmsServicesTest extends GeoServerSystemTestSupport {
         // add the new service to GeoServer
         getGeoServer().add(serviceInfo);
         // waiting for a service add event
-        List<Message> messages =
-                JmsEventsListener.getMessagesByHandlerKey(
-                        5000, (selected) -> selected.size() >= 1, SERVICE_EVENT_HANDLER_KEY);
+        List<Message> messages = JmsEventsListener.getMessagesByHandlerKey(
+                5000, (selected) -> selected.size() >= 1, SERVICE_EVENT_HANDLER_KEY);
         // let's check if the new added service was correctly published
         assertThat(messages.size(), is(1));
         List<JMSServiceModifyEvent> serviceEvents =
@@ -93,31 +92,28 @@ public final class JmsServicesTest extends GeoServerSystemTestSupport {
         serviceInfo.setAbstract(newAbstract);
         getGeoServer().save(serviceInfo);
         // waiting for the service modify events
-        List<Message> messages =
-                JmsEventsListener.getMessagesByHandlerKey(
-                        5000, (selected) -> selected.size() >= 2, SERVICE_EVENT_HANDLER_KEY);
+        List<Message> messages = JmsEventsListener.getMessagesByHandlerKey(
+                5000, (selected) -> selected.size() >= 2, SERVICE_EVENT_HANDLER_KEY);
         // checking if we got the correct events, modify event and a post modify event
         assertThat(messages.size(), is(2));
         List<JMSServiceModifyEvent> serviceEvents =
                 getMessagesForHandler(messages, SERVICE_EVENT_HANDLER_KEY, serviceHandler);
         assertThat(serviceEvents.size(), is(2));
         // check the modify event
-        JMSServiceModifyEvent modifyEvent =
-                serviceEvents.stream()
-                        .filter(event -> event.getEventType() == JMSEventType.MODIFIED)
-                        .findFirst()
-                        .orElse(null);
+        JMSServiceModifyEvent modifyEvent = serviceEvents.stream()
+                .filter(event -> event.getEventType() == JMSEventType.MODIFIED)
+                .findFirst()
+                .orElse(null);
         assertThat(modifyEvent, notNullValue());
         ServiceInfo modifiedService = serviceEvents.get(0).getSource();
         assertThat(modifiedService.getName(), is(serviceInfo.getName()));
         assertThat(modifiedService.getId(), is(serviceInfo.getId()));
         assertThat(modifiedService.getAbstract(), is(newAbstract));
         // check the post modify event
-        JMSServiceModifyEvent postModifyEvent =
-                serviceEvents.stream()
-                        .filter(event -> event.getEventType() == JMSEventType.ADDED)
-                        .findFirst()
-                        .orElse(null);
+        JMSServiceModifyEvent postModifyEvent = serviceEvents.stream()
+                .filter(event -> event.getEventType() == JMSEventType.ADDED)
+                .findFirst()
+                .orElse(null);
         assertThat(postModifyEvent, notNullValue());
         ServiceInfo postModifiedService = serviceEvents.get(0).getSource();
         assertThat(postModifiedService.getName(), is(serviceInfo.getName()));

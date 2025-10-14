@@ -3,11 +3,11 @@
   <!--
   Examples:
 
-    ant -f release.xml -Dcurrent=2.17 -Drelease=2.18
+    ant -f release.xml -Dcurrent=2.27 -Drelease=2.28
   -->
   <tstamp/>
-  <property name="current" value="2.26"/>
-  <property name="release" value="2.27"/>
+  <property name="current" value="2.27"/>
+  <property name="release" value="2.28"/>
   
   <target name="test">
      <echo>current: ${current}</echo>
@@ -32,8 +32,8 @@
     </replace>
     <replace dir="..">
       <include name="src/pom.xml"/>
-      <replacefilter token="32-SNAPSHOT" value="33-SNAPSHOT"/>
-      <replacefilter token="1.27-SNAPSHOT" value="1.27-SNAPSHOT"/>
+      <replacefilter token="33-SNAPSHOT" value="34-SNAPSHOT"/>
+      <replacefilter token="1.27-SNAPSHOT" value="1.28-SNAPSHOT"/>
     </replace>
   </target>
 

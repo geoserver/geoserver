@@ -90,8 +90,7 @@ public class LabelInfoVisitor extends AbstractStyleVisitor {
     @Override
     public void visit(TextSymbolizer text) {
         // TODO: support more complex expression
-        if (!(text.getLabel() instanceof Literal) && !(text.getLabel() instanceof PropertyName))
-            return;
+        if (!(text.getLabel() instanceof Literal) && !(text.getLabel() instanceof PropertyName)) return;
 
         String labelExpression;
         if (text.getLabel() instanceof Literal) {
@@ -102,123 +101,88 @@ public class LabelInfoVisitor extends AbstractStyleVisitor {
 
         TextSymbol ts = getTextSymbol(text);
 
-        if (text.getLabelPlacement() == null
-                || text.getLabelPlacement() instanceof PointPlacement) {
-            this.currentLabel =
-                    new PointLabel(
-                            PointLabelPlacementEnum.CENTER_CENTER,
-                            labelExpression,
-                            false,
-                            ts,
-                            0,
-                            0);
+        if (text.getLabelPlacement() == null || text.getLabelPlacement() instanceof PointPlacement) {
+            this.currentLabel = new PointLabel(PointLabelPlacementEnum.CENTER_CENTER, labelExpression, false, ts, 0, 0);
         } else {
-            this.currentLabel =
-                    new LineLabel(
-                            LineLabelPlacementEnum.CENTER_ALONG, labelExpression, false, ts, 0, 0);
+            this.currentLabel = new LineLabel(LineLabelPlacementEnum.CENTER_ALONG, labelExpression, false, ts, 0, 0);
         }
     }
 
     private TextSymbol getTextSymbol(TextSymbolizer text) {
         // point placement
-        Optional<PointPlacement> pointPlacement =
-                Optional.ofNullable(text.getLabelPlacement())
-                        .filter(p -> p instanceof PointPlacement)
-                        .map(p -> (PointPlacement) p);
-        double angle =
-                pointPlacement
-                        .map(p -> p.getRotation())
-                        .map(r -> r.evaluate(null, Double.class))
-                        .orElse(0d);
-        int xoffset =
-                pointPlacement
-                        .map(p -> p.getDisplacement())
-                        .map(Displacement::getDisplacementX)
-                        .map(e -> e.evaluate(null, Integer.class))
-                        .orElse(0);
-        int yoffset =
-                pointPlacement
-                        .map(p -> p.getDisplacement())
-                        .map(Displacement::getDisplacementY)
-                        .map(e -> e.evaluate(null, Integer.class))
-                        .orElse(0);
+        Optional<PointPlacement> pointPlacement = Optional.ofNullable(text.getLabelPlacement())
+                .filter(p -> p instanceof PointPlacement)
+                .map(p -> (PointPlacement) p);
+        double angle = pointPlacement
+                .map(p -> p.getRotation())
+                .map(r -> r.evaluate(null, Double.class))
+                .orElse(0d);
+        int xoffset = pointPlacement
+                .map(p -> p.getDisplacement())
+                .map(Displacement::getDisplacementX)
+                .map(e -> e.evaluate(null, Integer.class))
+                .orElse(0);
+        int yoffset = pointPlacement
+                .map(p -> p.getDisplacement())
+                .map(Displacement::getDisplacementY)
+                .map(e -> e.evaluate(null, Integer.class))
+                .orElse(0);
 
-        VerticalAlignmentEnum verticalAlignment =
-                pointPlacement
-                        .map(p -> p.getAnchorPoint())
-                        .map(ap -> ap.getAnchorPointY())
-                        .map(e -> mapPoint(e, BOTTOM, MIDDLE, TOP))
-                        .orElse(null);
-        HorizontalAlignmentEnum horizontalAlighment =
-                pointPlacement
-                        .map(p -> p.getAnchorPoint())
-                        .map(ap -> ap.getAnchorPointX())
-                        .map(e -> mapPoint(e, LEFT, CENTER, RIGHT))
-                        .orElse(null);
+        VerticalAlignmentEnum verticalAlignment = pointPlacement
+                .map(p -> p.getAnchorPoint())
+                .map(ap -> ap.getAnchorPointY())
+                .map(e -> mapPoint(e, BOTTOM, MIDDLE, TOP))
+                .orElse(null);
+        HorizontalAlignmentEnum horizontalAlighment = pointPlacement
+                .map(p -> p.getAnchorPoint())
+                .map(ap -> ap.getAnchorPointX())
+                .map(e -> mapPoint(e, LEFT, CENTER, RIGHT))
+                .orElse(null);
 
         // fill color
         int[] color = new int[] {0, 0, 0, 255};
         if (text.getFill() != null) {
-            color =
-                    evaluateColor(
-                            text.getFill().getColor(), text.getFill().getOpacity(), Color.BLACK);
+            color = evaluateColor(text.getFill().getColor(), text.getFill().getOpacity(), Color.BLACK);
         }
 
         // "halo" color... not the same thing, but hopefully close enough in the intentions
         Optional<Halo> halo = Optional.ofNullable(text.getHalo());
-        int[] haloColor =
-                halo.map(h -> h.getFill())
-                        .map(f -> evaluateColor(f.getColor(), f.getOpacity(), Color.BLACK))
-                        .orElse(null);
-        Integer haloSize =
-                halo.map(h -> h.getRadius())
-                        .map(r -> r.evaluate(null, Integer.class))
-                        .orElseGet(() -> haloColor == null ? null : 1);
+        int[] haloColor = halo.map(h -> h.getFill())
+                .map(f -> evaluateColor(f.getColor(), f.getOpacity(), Color.BLACK))
+                .orElse(null);
+        Integer haloSize = halo.map(h -> h.getRadius())
+                .map(r -> r.evaluate(null, Integer.class))
+                .orElseGet(() -> haloColor == null ? null : 1);
 
         Optional<Font> tsFont = Optional.of(text.getFont());
-        String family =
-                tsFont.map(f -> f.getFamily())
-                        .map(e -> e.get(0).evaluate(null, String.class))
-                        .orElse("Sans");
-        int size =
-                tsFont.map(f -> f.getSize()).map(e -> e.evaluate(null, Integer.class)).orElse(12);
-        FontStyleEnum fontStyle =
-                tsFont.map(f -> f.getStyle())
-                        .map(e -> e.evaluate(null, String.class))
-                        .map(s -> FontStyleEnum.valueOf(s.toUpperCase()))
-                        .orElse(null);
-        FontWeightEnum fontWeight =
-                tsFont.map(f -> f.getWeight())
-                        .map(e -> e.evaluate(null, String.class))
-                        .map(s -> FontWeightEnum.valueOf(s.toUpperCase()))
-                        .orElse(null);
+        String family = tsFont.map(f -> f.getFamily())
+                .map(e -> e.get(0).evaluate(null, String.class))
+                .orElse("Sans");
+        int size = tsFont.map(f -> f.getSize())
+                .map(e -> e.evaluate(null, Integer.class))
+                .orElse(12);
+        FontStyleEnum fontStyle = tsFont.map(f -> f.getStyle())
+                .map(e -> e.evaluate(null, String.class))
+                .map(s -> FontStyleEnum.valueOf(s.toUpperCase()))
+                .orElse(null);
+        FontWeightEnum fontWeight = tsFont.map(f -> f.getWeight())
+                .map(e -> e.evaluate(null, String.class))
+                .map(s -> FontWeightEnum.valueOf(s.toUpperCase()))
+                .orElse(null);
         Optional<Map<String, String>> options = Optional.of(text.getOptions());
-        FontDecorationEnum fontDecoration =
-                options.map(o -> o.get(TextSymbolizer.STRIKETHROUGH_TEXT_KEY))
-                        .map(s -> Boolean.valueOf(s) ? FontDecorationEnum.LINE_THROUGH : null)
-                        .orElse(null);
+        FontDecorationEnum fontDecoration = options.map(o -> o.get(TextSymbolizer.STRIKETHROUGH_TEXT_KEY))
+                .map(s -> Boolean.valueOf(s) ? FontDecorationEnum.LINE_THROUGH : null)
+                .orElse(null);
         if (fontDecoration == null) {
-            fontDecoration =
-                    options.map(o -> o.get(TextSymbolizer.UNDERLINE_TEXT_KEY))
-                            .map(s -> Boolean.valueOf(s) ? FontDecorationEnum.UNDERLINE : null)
-                            .orElse(null);
+            fontDecoration = options.map(o -> o.get(TextSymbolizer.UNDERLINE_TEXT_KEY))
+                    .map(s -> Boolean.valueOf(s) ? FontDecorationEnum.UNDERLINE : null)
+                    .orElse(null);
         }
         org.geoserver.gsr.model.font.Font font =
-                new org.geoserver.gsr.model.font.Font(
-                        family, size, fontStyle, fontWeight, fontDecoration);
+                new org.geoserver.gsr.model.font.Font(family, size, fontStyle, fontWeight, fontDecoration);
 
-        TextSymbol textSymbol =
-                new TextSymbol(
-                        angle,
-                        xoffset,
-                        yoffset,
-                        color,
-                        null,
-                        null,
-                        verticalAlignment,
-                        horizontalAlighment,
-                        false,
-                        font);
+        TextSymbol textSymbol = new TextSymbol(
+                angle, xoffset, yoffset, color, null, null, verticalAlignment, horizontalAlighment, false, font);
         if (haloSize != null) {
             textSymbol.setHaloColor(haloColor);
             textSymbol.setHaloSize(haloSize);
@@ -239,10 +203,7 @@ public class LabelInfoVisitor extends AbstractStyleVisitor {
     }
 
     private int[] evaluateColor(Expression color, Expression opacity, Color defaultColor) {
-        int[] result =
-                new int[] {
-                    defaultColor.getRed(), defaultColor.getGreen(), defaultColor.getBlue(), 255
-                };
+        int[] result = new int[] {defaultColor.getRed(), defaultColor.getGreen(), defaultColor.getBlue(), 255};
         if (color != null && color.evaluate(null, Color.class) != null) {
             Color evaluated = color.evaluate(null, Color.class);
             result[0] = evaluated.getRed();

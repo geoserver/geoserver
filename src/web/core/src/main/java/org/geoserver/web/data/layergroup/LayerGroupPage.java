@@ -5,10 +5,11 @@
  */
 package org.geoserver.web.data.layergroup;
 
+import java.io.Serial;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.image.Image;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
@@ -20,6 +21,7 @@ import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.SelectionRemovalLink;
 import org.geoserver.web.data.workspace.WorkspaceEditPage;
+import org.geoserver.web.wicket.CachingImage;
 import org.geoserver.web.wicket.DateTimeLabel;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
@@ -29,6 +31,7 @@ import org.geoserver.web.wicket.SimpleBookmarkableLink;
 /** Lists layer groups, allows removal and editing */
 public class LayerGroupPage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = 5039809655908312633L;
 
     GeoServerTablePanel<LayerGroupInfo> table;
@@ -39,75 +42,66 @@ public class LayerGroupPage extends GeoServerSecuredPage {
         final CatalogIconFactory icons = CatalogIconFactory.get();
         LayerGroupProvider provider = new LayerGroupProvider();
         add(
-                table =
-                        new GeoServerTablePanel<>("table", provider, true) {
+                table = new GeoServerTablePanel<>("table", provider, true) {
 
-                            private static final long serialVersionUID = 714777934301159139L;
+                    @Serial
+                    private static final long serialVersionUID = 714777934301159139L;
 
-                            @Override
-                            protected Component getComponentForProperty(
-                                    String id,
-                                    IModel<LayerGroupInfo> itemModel,
-                                    Property<LayerGroupInfo> property) {
+                    @Override
+                    protected Component getComponentForProperty(
+                            String id, IModel<LayerGroupInfo> itemModel, Property<LayerGroupInfo> property) {
 
-                                if (property == LayerGroupProvider.NAME) {
-                                    return layerGroupLink(id, itemModel);
-                                }
-                                if (property == LayerGroupProvider.WORKSPACE) {
-                                    return workspaceLink(id, itemModel);
-                                }
-                                if (property == LayerGroupProvider.MODIFIED_TIMESTAMP) {
-                                    return new DateTimeLabel(
-                                            id,
-                                            LayerGroupProvider.MODIFIED_TIMESTAMP.getModel(
-                                                    itemModel));
-                                }
-                                if (property == LayerGroupProvider.CREATED_TIMESTAMP) {
-                                    return new DateTimeLabel(
-                                            id,
-                                            LayerGroupProvider.CREATED_TIMESTAMP.getModel(
-                                                    itemModel));
-                                }
-                                if (property == LayerGroupProvider.ENABLED) {
-                                    LayerGroupInfo layerGroupInfo = itemModel.getObject();
-                                    // ask for enabled() instead of isEnabled() to account for
-                                    // disabled
-                                    // resource/store
-                                    boolean enabled = layerGroupInfo.isEnabled();
-                                    PackageResourceReference icon =
-                                            enabled
-                                                    ? icons.getEnabledIcon()
-                                                    : icons.getDisabledIcon();
-                                    Fragment f =
-                                            new Fragment(id, "iconFragment", LayerGroupPage.this);
-                                    f.add(new Image("layerIcon", icon));
-                                    return f;
-                                }
-                                return null;
-                            }
+                        if (property == LayerGroupProvider.NAME) {
+                            return layerGroupLink(id, itemModel);
+                        }
+                        if (property == LayerGroupProvider.WORKSPACE) {
+                            return workspaceLink(id, itemModel);
+                        }
+                        if (property == LayerGroupProvider.MODIFIED_TIMESTAMP) {
+                            return new DateTimeLabel(id, LayerGroupProvider.MODIFIED_TIMESTAMP.getModel(itemModel));
+                        }
+                        if (property == LayerGroupProvider.CREATED_TIMESTAMP) {
+                            return new DateTimeLabel(id, LayerGroupProvider.CREATED_TIMESTAMP.getModel(itemModel));
+                        }
+                        if (property == LayerGroupProvider.ENABLED) {
+                            LayerGroupInfo layerGroupInfo = itemModel.getObject();
+                            // ask for enabled() instead of isEnabled() to account for
+                            // disabled
+                            // resource/store
+                            boolean enabled = layerGroupInfo.isEnabled();
+                            PackageResourceReference icon = enabled ? icons.getEnabledIcon() : icons.getDisabledIcon();
+                            Fragment f = new Fragment(id, "iconFragment", LayerGroupPage.this);
+                            f.add(new CachingImage("layerIcon", icon));
+                            return f;
+                        }
+                        if (property == LayerGroupProvider.MODIFIED_BY) {
+                            return new Label(id, LayerGroupProvider.MODIFIED_BY.getModel(itemModel));
+                        }
+                        return null;
+                    }
 
-                            @Override
-                            protected void onSelectionUpdate(AjaxRequestTarget target) {
-                                if (!table.getSelection().isEmpty()) {
-                                    boolean canRemove = true;
-                                    if (!isAuthenticatedAsAdmin()) {
-                                        // if any global layer groups are selected, don't allow
-                                        // delete
-                                        for (LayerGroupInfo lg : table.getSelection()) {
-                                            if (lg.getWorkspace() == null) {
-                                                canRemove = false;
-                                                break;
-                                            }
-                                        }
+                    @Override
+                    protected void onSelectionUpdate(AjaxRequestTarget target) {
+                        if (!table.getSelection().isEmpty()) {
+                            boolean canRemove = true;
+                            if (!isAuthenticatedAsAdmin()) {
+                                // if any global layer groups are selected, don't allow
+                                // delete
+                                for (LayerGroupInfo lg : table.getSelection()) {
+                                    if (lg.getWorkspace() == null) {
+                                        canRemove = false;
+                                        break;
                                     }
-
-                                    removal.setEnabled(canRemove);
-                                } else {
-                                    removal.setEnabled(false);
                                 }
-                                target.add(removal);
                             }
-                        });
+
+                            removal.setEnabled(canRemove);
+                        } else {
+                            removal.setEnabled(false);
+                        }
+                        target.add(removal);
+                    }
+                });
 
         table.setOutputMarkupId(true);
         add(table);
@@ -140,11 +134,7 @@ public class LayerGroupPage extends GeoServerSecuredPage {
 
         if (wsName == null) {
             return new SimpleBookmarkableLink(
-                    id,
-                    LayerGroupEditPage.class,
-                    groupNameModel,
-                    LayerGroupEditPage.GROUP,
-                    groupName);
+                    id, LayerGroupEditPage.class, groupNameModel, LayerGroupEditPage.GROUP, groupName);
         } else {
             return new SimpleBookmarkableLink(
                     id,
@@ -161,8 +151,7 @@ public class LayerGroupPage extends GeoServerSecuredPage {
         IModel<?> wsNameModel = LayerGroupProvider.WORKSPACE.getModel(itemModel);
         String wsName = (String) wsNameModel.getObject();
         if (wsName != null) {
-            return new SimpleBookmarkableLink(
-                    id, WorkspaceEditPage.class, new Model<>(wsName), "name", wsName);
+            return new SimpleBookmarkableLink(id, WorkspaceEditPage.class, new Model<>(wsName), "name", wsName);
         } else {
             return new WebMarkupContainer(id);
         }

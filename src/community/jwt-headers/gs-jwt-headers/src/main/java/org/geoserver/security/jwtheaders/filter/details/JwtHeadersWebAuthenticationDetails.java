@@ -9,15 +9,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
 /**
- * This will be in Authentication#getDetails() This contains the jwtHeadersConfigId. See
- * JwtHeadersWebAuthDetailsSource
+ * This will be in Authentication#getDetails() This contains the jwtHeadersConfigId. See JwtHeadersWebAuthDetailsSource
  */
 public class JwtHeadersWebAuthenticationDetails extends WebAuthenticationDetails {
 
     public String jwtHeadersConfigId;
 
-    public JwtHeadersWebAuthenticationDetails(
-            String jwtHeadersConfigId, HttpServletRequest request) {
+    public JwtHeadersWebAuthenticationDetails(String jwtHeadersConfigId, HttpServletRequest request) {
         super(request);
         this.jwtHeadersConfigId = jwtHeadersConfigId;
     }

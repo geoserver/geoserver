@@ -5,6 +5,7 @@
  */
 package org.geoserver.security;
 
+import java.io.Serial;
 import java.util.Collection;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 /** An authentication based on a unique key. Allows the unique key to be retrieved later */
 public class KeyAuthenticationToken extends AbstractAuthenticationToken {
+    @Serial
     private static final long serialVersionUID = -6354705060521817602L;
 
     public static final String DEFAULT_URL_PARAM = "authkey";
@@ -23,10 +25,7 @@ public class KeyAuthenticationToken extends AbstractAuthenticationToken {
     }
 
     public KeyAuthenticationToken(
-            String key,
-            String authKeyParamName,
-            UserDetails user,
-            Collection<? extends GrantedAuthority> authorities) {
+            String key, String authKeyParamName, UserDetails user, Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
         this.key = key;
         setDetails(user);

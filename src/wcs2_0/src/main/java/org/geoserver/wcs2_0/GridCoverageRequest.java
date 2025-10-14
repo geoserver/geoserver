@@ -7,7 +7,7 @@ package org.geoserver.wcs2_0;
 
 import java.util.List;
 import java.util.Map;
-import javax.media.jai.Interpolation;
+import org.eclipse.imagen.Interpolation;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.sort.SortBy;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
@@ -132,13 +132,9 @@ public class GridCoverageRequest {
         result = prime * result + ((filter == null) ? 0 : filter.hashCode());
         result = prime * result + ((outputCRS == null) ? 0 : outputCRS.hashCode());
         result = prime * result + ((overviewPolicy == null) ? 0 : overviewPolicy.hashCode());
-        result =
-                prime * result
-                        + ((spatialInterpolation == null) ? 0 : spatialInterpolation.hashCode());
+        result = prime * result + ((spatialInterpolation == null) ? 0 : spatialInterpolation.hashCode());
         result = prime * result + ((spatialSubset == null) ? 0 : spatialSubset.hashCode());
-        result =
-                prime * result
-                        + ((temporalInterpolation == null) ? 0 : temporalInterpolation.hashCode());
+        result = prime * result + ((temporalInterpolation == null) ? 0 : temporalInterpolation.hashCode());
         result = prime * result + ((temporalSubset == null) ? 0 : temporalSubset.hashCode());
         return result;
     }

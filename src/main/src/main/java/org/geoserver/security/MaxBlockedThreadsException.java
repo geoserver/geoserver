@@ -4,6 +4,7 @@
  */
 package org.geoserver.security;
 
+import java.io.Serial;
 import org.springframework.security.core.AuthenticationException;
 
 /**
@@ -13,15 +14,16 @@ import org.springframework.security.core.AuthenticationException;
  */
 public class MaxBlockedThreadsException extends AuthenticationException {
 
+    @Serial
     private static final long serialVersionUID = -9016181675222375267L;
+
     private int count;
 
     public MaxBlockedThreadsException(int count) {
-        super(
-                "Too many failed logins waiting on delay already: "
-                        + count
-                        + ". Please wait a bit and try again."
-                        + ". A brute force attack to crack user's passwords may be underway.");
+        super("Too many failed logins waiting on delay already: "
+                + count
+                + ". Please wait a bit and try again."
+                + ". A brute force attack to crack user's passwords may be underway.");
         this.count = count;
     }
 

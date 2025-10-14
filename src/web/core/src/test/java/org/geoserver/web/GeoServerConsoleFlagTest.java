@@ -12,10 +12,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 
-/**
- * Test the JVM argument GEOSERVER_CONSOLE_DISABLED actually disables the GeoServer web console when
- * set
- */
+/** Test the JVM argument GEOSERVER_CONSOLE_DISABLED actually disables the GeoServer web console when set */
 public class GeoServerConsoleFlagTest extends GeoServerSystemTestSupport {
 
     private static final String CONSOLE_DISABLED_PUBLISHER = "filePublisher";
@@ -45,11 +42,9 @@ public class GeoServerConsoleFlagTest extends GeoServerSystemTestSupport {
         // fetches files instead of delegating requests to wicket
         SimpleUrlHandlerMapping mapping = getWebDispatcherMapping(true);
 
-        assertEquals(mapping.getUrlMap().get(WEB_MAPPING), CONSOLE_DISABLED_PUBLISHER);
-        assertEquals(mapping.getUrlMap().get(WEB_WILDCARD_MAPPING), CONSOLE_DISABLED_PUBLISHER);
-        assertEquals(
-                mapping.getUrlMap().get(WEB_RESOURCES_WILDCARD_MAPPING),
-                CONSOLE_DISABLED_PUBLISHER);
+        assertEquals(CONSOLE_DISABLED_PUBLISHER, mapping.getUrlMap().get(WEB_MAPPING));
+        assertEquals(CONSOLE_DISABLED_PUBLISHER, mapping.getUrlMap().get(WEB_WILDCARD_MAPPING));
+        assertEquals(CONSOLE_DISABLED_PUBLISHER, mapping.getUrlMap().get(WEB_RESOURCES_WILDCARD_MAPPING));
     }
 
     @Test
@@ -58,10 +53,9 @@ public class GeoServerConsoleFlagTest extends GeoServerSystemTestSupport {
         // the gui is displayed
         SimpleUrlHandlerMapping mapping = getWebDispatcherMapping(false);
 
-        assertEquals(mapping.getUrlMap().get(WEB_MAPPING), CONSOLE_ENABLED_PUBLISHER);
-        assertEquals(mapping.getUrlMap().get(WEB_WILDCARD_MAPPING), CONSOLE_ENABLED_PUBLISHER);
-        assertEquals(
-                mapping.getUrlMap().get(WEB_RESOURCES_WILDCARD_MAPPING), CONSOLE_ENABLED_PUBLISHER);
+        assertEquals(CONSOLE_ENABLED_PUBLISHER, mapping.getUrlMap().get(WEB_MAPPING));
+        assertEquals(CONSOLE_ENABLED_PUBLISHER, mapping.getUrlMap().get(WEB_WILDCARD_MAPPING));
+        assertEquals(CONSOLE_ENABLED_PUBLISHER, mapping.getUrlMap().get(WEB_RESOURCES_WILDCARD_MAPPING));
     }
 
     @After

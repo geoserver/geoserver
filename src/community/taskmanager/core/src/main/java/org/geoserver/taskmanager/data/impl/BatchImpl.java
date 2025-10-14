@@ -5,6 +5,7 @@
 package org.geoserver.taskmanager.data.impl;
 
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -39,6 +40,7 @@ import org.hibernate.annotations.FilterDef;
 @FilterDef(name = "activeElementFilter", defaultCondition = "removeStamp = 0")
 public class BatchImpl extends BaseImpl implements Batch {
 
+    @Serial
     private static final long serialVersionUID = 3321130631692899821L;
 
     @Id
@@ -56,20 +58,24 @@ public class BatchImpl extends BaseImpl implements Batch {
     @Filter(name = "activeElementFilter")
     private List<BatchElement> elements = new ArrayList<BatchElement>();
 
-    @Column private String workspace;
+    @Column
+    private String workspace;
 
     @Column(nullable = false)
     private String name;
 
     // stupid work-around
     // duplicate of name only set if configuration == null, just for unique constraint
-    @Column @XStreamOmitField private String nameNoConfig;
+    @Column
+    @XStreamOmitField
+    private String nameNoConfig;
 
     @ManyToOne
     @JoinColumn(name = "configuration", nullable = true)
     private ConfigurationImpl configuration;
 
-    @Column private String description;
+    @Column
+    private String description;
 
     @Column(nullable = true)
     private String frequency;
@@ -81,11 +87,7 @@ public class BatchImpl extends BaseImpl implements Batch {
     @XStreamOmitField
     private Long removeStamp = 0L;
 
-    @OneToMany(
-            fetch = FetchType.LAZY,
-            targetEntity = BatchRunImpl.class,
-            mappedBy = "batch",
-            cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, targetEntity = BatchRunImpl.class, mappedBy = "batch", cascade = CascadeType.ALL)
     @OrderBy("id")
     @XStreamOmitField
     private List<BatchRun> batchRuns = new ArrayList<BatchRun>();

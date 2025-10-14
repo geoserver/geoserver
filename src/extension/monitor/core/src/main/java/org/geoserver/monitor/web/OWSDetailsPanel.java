@@ -5,6 +5,7 @@
  */
 package org.geoserver.monitor.web;
 
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.Map;
 import org.geoserver.monitor.Monitor;
@@ -15,6 +16,7 @@ import org.geoserver.monitor.RequestDataVisitor;
 
 public class OWSDetailsPanel extends OWSSummaryChartBasePanel {
 
+    @Serial
     private static final long serialVersionUID = 8958233133832178632L;
 
     public OWSDetailsPanel(String id, Monitor monitor, String owsService) {
@@ -29,14 +31,12 @@ public class OWSDetailsPanel extends OWSSummaryChartBasePanel {
     @Override
     protected Map<String, Integer> gatherData(Monitor monitor) {
         DataGatherer g = new DataGatherer();
-        monitor.query(
-                new Query().properties("operation").filter("service", owsService, Comparison.EQ),
-                g);
+        monitor.query(new Query().properties("operation").filter("service", owsService, Comparison.EQ), g);
 
         return g.getData();
     }
 
-    class DataGatherer implements RequestDataVisitor {
+    static class DataGatherer implements RequestDataVisitor {
 
         HashMap<String, Integer> data = new HashMap<>();
 

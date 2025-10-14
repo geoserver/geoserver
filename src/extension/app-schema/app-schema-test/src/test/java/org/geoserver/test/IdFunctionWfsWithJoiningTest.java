@@ -13,9 +13,8 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 
 /**
- * WFS GetFeature to test GEOS-5618: using functions in idExpression with joining. If the function
- * is not translatable to SQL, it is not supported with joining. However, it should work without
- * joining.
+ * WFS GetFeature to test GEOS-5618: using functions in idExpression with joining. If the function is not translatable
+ * to SQL, it is not supported with joining. However, it should work without joining.
  *
  * @author Rini Angreani (CSIRO Earth Science and Resource Engineering)
  */
@@ -33,10 +32,12 @@ public class IdFunctionWfsWithJoiningTest extends AbstractAppSchemaTestSupport {
         LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
         assertEquals("ows:ExceptionReport", doc.getDocumentElement().getNodeName());
         String expected =
-                "java.lang.UnsupportedOperationException: idExpression 'getID()' for targetElement 'gsml:MappedFeature' cannot be translated into SQL, "
-                        + "therefore is not supported with joining!\nPlease make sure idExpression is mapped into existing database fields, "
-                        + "and only use functions that are supported by your database."
-                        + "\nIf this cannot be helped, you can turn off joining in app-schema.properties file.";
+                """
+                java.lang.UnsupportedOperationException: idExpression 'getID()' for targetElement 'gsml:MappedFeature' cannot be translated into SQL, \
+                therefore is not supported with joining!
+                Please make sure idExpression is mapped into existing database fields, \
+                and only use functions that are supported by your database.
+                If this cannot be helped, you can turn off joining in app-schema.properties file.""";
         String exceptionText = evaluate("//ows:ExceptionText", doc);
         assertTrue(exceptionText.startsWith(expected));
     }

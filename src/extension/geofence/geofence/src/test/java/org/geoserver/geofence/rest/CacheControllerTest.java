@@ -47,8 +47,7 @@ public class CacheControllerTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testGetInfoLegacy() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(RestBaseController.ROOT_PATH + "/ruleCache/info");
+        MockHttpServletResponse response = getAsServletResponse(RestBaseController.ROOT_PATH + "/ruleCache/info");
         assertEquals(200, response.getStatus());
         assertContentType(MediaType.TEXT_PLAIN_VALUE, response);
         String content = response.getContentAsString();
@@ -60,8 +59,7 @@ public class CacheControllerTest extends GeoServerSystemTestSupport {
     @Test
     public void testInvalidate() throws Exception {
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/geofence/ruleCache/invalidate");
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/geofence/ruleCache/invalidate");
         assertEquals(200, response.getStatus());
         assertContentType(MediaType.TEXT_PLAIN_VALUE, response);
         String content = response.getContentAsString();

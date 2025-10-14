@@ -6,20 +6,18 @@
 package org.geoserver.wfs.xml;
 
 import java.io.Reader;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.XmlRequestReader;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.wfs.CatalogFeatureTypeCache;
 import org.geoserver.wfs.CatalogNamespaceSupport;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.xml.gml3.AbstractGeometryTypeBinding;
-import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.gml2.FeatureTypeCache;
 import org.geotools.gml2.SrsSyntax;
@@ -42,8 +40,7 @@ import org.xml.sax.InputSource;
  */
 public class WFSXmlUtils {
 
-    public static final String ENTITY_EXPANSION_LIMIT =
-            "org.geoserver.wfs.xml.entityExpansionLimit";
+    public static final String ENTITY_EXPANSION_LIMIT = "org.geoserver.wfs.xml.entityExpansionLimit";
 
     public static final String XLINK_DEFAULT_PREFIX = "xlink";
 
@@ -79,8 +76,7 @@ public class WFSXmlUtils {
         // TODO: HACK, disabling validation for transaction
         if (!"Transaction".equalsIgnoreCase(requestReader.getElement().getLocalPart())) {
             if (!parser.getValidationErrors().isEmpty()) {
-                WFSException exception =
-                        new WFSException("Invalid request", "InvalidParameterValue");
+                WFSException exception = new WFSException("Invalid request", "InvalidParameterValue");
 
                 for (Exception error : parser.getValidationErrors()) {
                     exception.getExceptionText().add(error.getLocalizedMessage());
@@ -97,27 +93,10 @@ public class WFSXmlUtils {
         MutablePicoContainer context = config.getContext();
 
         // seed the cache with entries from the catalog
-        FeatureTypeCache featureTypeCache = new FeatureTypeCache();
-
-        Collection featureTypes = gs.getCatalog().getFeatureTypes();
-        for (Object type : featureTypes) {
-            FeatureTypeInfo meta = (FeatureTypeInfo) type;
-            if (!meta.enabled()) {
-                continue;
-            }
-
-            FeatureType featureType = null;
-            try {
-                featureType = meta.getFeatureType();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-
-            featureTypeCache.put(featureType);
-        }
+        FeatureTypeCache featureTypeCache = new CatalogFeatureTypeCache(gs.getCatalog());
 
         // add the wfs handler factory to handle feature elements
-        context.registerComponentInstance(featureTypeCache);
+        context.registerComponentInstance(FeatureTypeCache.class, featureTypeCache);
         context.registerComponentInstance(new WFSHandlerFactory(gs.getCatalog(), schemaBuilder));
     }
 
@@ -129,24 +108,20 @@ public class WFSXmlUtils {
         // note: it is important that this component adapter is non-caching so
         // that the setter property gets updated properly every time
         bindings.put(
-                qName,
-                new SetterInjectionComponentAdapter(
-                        qName,
-                        AbstractGeometryTypeBinding.class,
-                        new Parameter[] {
-                            new OptionalComponentParameter(CoordinateReferenceSystem.class),
-                            new DirectObjectParameter(config, Configuration.class),
-                            new DirectObjectParameter(getSrsSyntax(config), SrsSyntax.class)
-                        }));
+                qName, new SetterInjectionComponentAdapter(qName, AbstractGeometryTypeBinding.class, new Parameter[] {
+                    new OptionalComponentParameter(CoordinateReferenceSystem.class),
+                    new DirectObjectParameter(config, Configuration.class),
+                    new DirectObjectParameter(getSrsSyntax(config), SrsSyntax.class)
+                }));
     }
 
     public static SrsSyntax getSrsSyntax(Configuration obj) {
         for (Configuration dep : obj.getDependencies()) {
-            if (dep instanceof org.geotools.gml2.GMLConfiguration) {
-                return ((org.geotools.gml2.GMLConfiguration) dep).getSrsSyntax();
+            if (dep instanceof org.geotools.gml2.GMLConfiguration configuration) {
+                return configuration.getSrsSyntax();
             }
-            if (dep instanceof org.geotools.gml3.GMLConfiguration) {
-                return ((org.geotools.gml3.GMLConfiguration) dep).getSrsSyntax();
+            if (dep instanceof org.geotools.gml3.GMLConfiguration configuration) {
+                return configuration.getSrsSyntax();
             }
         }
         return null;
@@ -154,19 +129,18 @@ public class WFSXmlUtils {
 
     public static void setSrsSyntax(Configuration obj, SrsSyntax srsSyntax) {
         for (Configuration dep : obj.getDependencies()) {
-            if (dep instanceof org.geotools.gml2.GMLConfiguration) {
-                ((org.geotools.gml2.GMLConfiguration) dep).setSrsSyntax(srsSyntax);
+            if (dep instanceof org.geotools.gml2.GMLConfiguration configuration) {
+                configuration.setSrsSyntax(srsSyntax);
             }
-            if (dep instanceof org.geotools.gml3.GMLConfiguration) {
-                ((org.geotools.gml3.GMLConfiguration) dep).setSrsSyntax(srsSyntax);
+            if (dep instanceof org.geotools.gml3.GMLConfiguration configuration) {
+                configuration.setSrsSyntax(srsSyntax);
             }
         }
     }
 
     /**
      * Returns the Entity Expansion Limit configuration from system property
-     * "org.geoserver.wfs.xml.entityExpansionLimit". Returns 100 as default if no system property is
-     * configured.
+     * "org.geoserver.wfs.xml.entityExpansionLimit". Returns 100 as default if no system property is configured.
      */
     public static Integer getEntityExpansionLimitConfiguration() {
         return Optional.ofNullable(GeoServerExtensions.getProperty(ENTITY_EXPANSION_LIMIT))
@@ -185,8 +159,7 @@ public class WFSXmlUtils {
         }
 
         @Override
-        public boolean isResolvable(
-                PicoContainer container, ComponentAdapter adapter, Class expectedType) {
+        public boolean isResolvable(PicoContainer container, ComponentAdapter adapter, Class expectedType) {
             if (clazz.isAssignableFrom(expectedType)) {
                 return true;
             }
@@ -194,8 +167,7 @@ public class WFSXmlUtils {
         }
 
         @Override
-        public Object resolveInstance(
-                PicoContainer container, ComponentAdapter adapter, Class expectedType) {
+        public Object resolveInstance(PicoContainer container, ComponentAdapter adapter, Class expectedType) {
             if (clazz.isAssignableFrom(expectedType)) {
                 return obj;
             }

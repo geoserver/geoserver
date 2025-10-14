@@ -15,16 +15,13 @@ public class DescribeRecordTest extends CSWInternalTestSupport {
 
     @Test
     public void testBasicGetLocalSchemaRecord() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "csw?service=CSW&version=2.0.2&request=DescribeRecord&typeName=csw:Record");
+        Document dom = getAsDOM("csw?service=CSW&version=2.0.2&request=DescribeRecord&typeName=csw:Record");
         checkValidationErrors(dom);
         // print(dom);
 
         assertXpathEvaluatesTo("1", "count(//csw:SchemaComponent)", dom);
         assertXpathExists(
-                "//csw:SchemaComponent/xsd:schema[@targetNamespace='http://www.opengis.net/cat/csw/2.0.2']",
-                dom);
+                "//csw:SchemaComponent/xsd:schema[@targetNamespace='http://www.opengis.net/cat/csw/2.0.2']", dom);
 
         assertXpathEvaluatesTo("1", "count(//xsd:element[@name = 'BriefRecord'])", dom);
         assertXpathEvaluatesTo("1", "count(//xsd:element[@name = 'SummaryRecord'])", dom);
@@ -43,7 +40,6 @@ public class DescribeRecordTest extends CSWInternalTestSupport {
 
         assertXpathEvaluatesTo("1", "count(//csw:SchemaComponent)", dom);
         assertXpathExists(
-                "//csw:SchemaComponent/xsd:schema[@targetNamespace='http://www.opengis.net/cat/csw/2.0.2']",
-                dom);
+                "//csw:SchemaComponent/xsd:schema[@targetNamespace='http://www.opengis.net/cat/csw/2.0.2']", dom);
     }
 }

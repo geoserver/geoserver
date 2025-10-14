@@ -50,27 +50,23 @@ import org.geotools.util.factory.Hints;
 public abstract class NearestMatchFinder {
 
     /**
-     * Made available only for testing purposes, as there is no simple (non structured) reader
-     * supporting time but better to work off the "reference" one (the image mosaic)
+     * Made available only for testing purposes, as there is no simple (non structured) reader supporting time but
+     * better to work off the "reference" one (the image mosaic)
      */
     public static boolean ENABLE_STRUCTURED_READER_SUPPORT = true;
 
     /**
-     * Returns an implementation of {@link NearestMatchFinder} optimized for the given resource
-     * type, or throws an {@link IllegalArgumentException} in case the resource type is not
-     * supported
+     * Returns an implementation of {@link NearestMatchFinder} optimized for the given resource type, or throws an
+     * {@link IllegalArgumentException} in case the resource type is not supported
      */
-    public static NearestMatchFinder get(
-            ResourceInfo info, DimensionInfo dimensionInfo, String dimensionName)
+    public static NearestMatchFinder get(ResourceInfo info, DimensionInfo dimensionInfo, String dimensionName)
             throws IOException {
         Class<?> dataType = getDataTypeFromDimension(info, dimensionName);
         try {
             AcceptableRange acceptableRange =
-                    AcceptableRange.getAcceptableRange(
-                            dimensionInfo.getAcceptableInterval(), dataType);
+                    AcceptableRange.getAcceptableRange(dimensionInfo.getAcceptableInterval(), dataType);
             NearestFailBehavior nearestFailBehavior = dimensionInfo.getNearestFailBehavior();
-            if (info instanceof FeatureTypeInfo) {
-                FeatureTypeInfo featureType = (FeatureTypeInfo) info;
+            if (info instanceof FeatureTypeInfo featureType) {
                 return new Vector(
                         featureType,
                         dimensionInfo.getAttribute(),
@@ -78,12 +74,9 @@ public abstract class NearestMatchFinder {
                         acceptableRange,
                         nearestFailBehavior,
                         dataType);
-            } else if (info instanceof CoverageInfo) {
-                GridCoverageReader reader = ((CoverageInfo) info).getGridCoverageReader(null, null);
-                if (reader instanceof StructuredGridCoverage2DReader
-                        && ENABLE_STRUCTURED_READER_SUPPORT) {
-                    StructuredGridCoverage2DReader structured =
-                            (StructuredGridCoverage2DReader) reader;
+            } else if (info instanceof CoverageInfo coverageInfo) {
+                GridCoverageReader reader = coverageInfo.getGridCoverageReader(null, null);
+                if (reader instanceof StructuredGridCoverage2DReader structured && ENABLE_STRUCTURED_READER_SUPPORT) {
                     DimensionDescriptor dd = getDimensionDescriptor(structured, dimensionName);
                     return new StructuredReader(
                             structured,
@@ -92,18 +85,12 @@ public abstract class NearestMatchFinder {
                             acceptableRange,
                             nearestFailBehavior,
                             dataType);
-                } else if (reader instanceof GridCoverage2DReader) {
-                    return new Reader(
-                            (GridCoverage2DReader) reader,
-                            acceptableRange,
-                            nearestFailBehavior,
-                            dimensionName,
-                            dataType);
+                } else if (reader instanceof GridCoverage2DReader dReader) {
+                    return new Reader(dReader, acceptableRange, nearestFailBehavior, dimensionName, dataType);
                 }
             }
         } catch (ParseException e) {
-            throw new ServiceException(
-                    "Failed to apply nearest match search on " + info.prefixedName(), e);
+            throw new ServiceException("Failed to apply nearest match search on " + info.prefixedName(), e);
         }
 
         throw new IllegalArgumentException("No nearest match support for " + info);
@@ -115,12 +102,8 @@ public abstract class NearestMatchFinder {
         return structured.getDimensionDescriptors(coverageName).stream()
                 .filter(dd -> dimensionName.equalsIgnoreCase(dd.getName()))
                 .findFirst()
-                .orElseThrow(
-                        () ->
-                                new IllegalArgumentException(
-                                        "Could not find dimension"
-                                                + dimensionName
-                                                + "in grid coverage reader"));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Could not find dimension" + dimensionName + "in grid coverage reader"));
     }
 
     private static Class<?> getDataTypeFromDimension(ResourceInfo info, String dimensionName) {
@@ -133,8 +116,7 @@ public abstract class NearestMatchFinder {
         // if it's a custome dimension do custom logic based on the resourceinfo, e.g. pick the
         // attributes
         // from featuretype/structured readers and use strings for anything else
-        throw new IllegalArgumentException(
-                "Dimension " + dimensionName + " not supported for nearest match yet");
+        throw new IllegalArgumentException("Dimension " + dimensionName + " not supported for nearest match yet");
     }
 
     enum FilterDirection {
@@ -159,38 +141,32 @@ public abstract class NearestMatchFinder {
         this.attribute = FF.property(startAttribute);
         this.endAttribute = endAttribute == null ? null : FF.property(endAttribute);
         this.acceptableRange = acceptableRange;
-        this.nearestFailBehavior =
-                Optional.ofNullable(nearestFailBehavior).orElse(DimensionInfo.DEFAULT_NEAREST_FAIL);
+        this.nearestFailBehavior = Optional.ofNullable(nearestFailBehavior).orElse(DimensionInfo.DEFAULT_NEAREST_FAIL);
         this.dataType = dataType;
     }
 
     /**
-     * Finds the nearest available domain value to the give reference value. The result is always a
-     * "point" type, not a range, even if the domain is made of ranges (the WMS spec seems to
-     * indicate a instant value needs to be used for the used time in warning
+     * Finds the nearest available domain value to the give reference value. The result is always a "point" type, not a
+     * range, even if the domain is made of ranges (the WMS spec seems to indicate a instant value needs to be used for
+     * the used time in warning
      *
      * @param value The reference value
-     * @return The nearest value, or null if the domain was empty. If the nearest value
-     *     matches/overlaps the original value, then the original one is returned instead (this
-     *     allows to tell apart no match vs exact match vs nearest match and eventually set the WMS
-     *     HTTP warning head)
+     * @return The nearest value, or null if the domain was empty. If the nearest value matches/overlaps the original
+     *     value, then the original one is returned instead (this allows to tell apart no match vs exact match vs
+     *     nearest match and eventually set the WMS HTTP warning head)
      */
     public Object getNearest(Object value) throws IOException {
         if (value == null) return null;
         // simple point vs point comparison?
         if (endAttribute == null
-                && (!(value instanceof Range)
-                        || ((Range) value).getMinValue().equals(((Range) value).getMaxValue()))) {
-            Date date = (Date) (value instanceof Range ? ((Range) value).getMinValue() : value);
+                && (!(value instanceof Range) || ((Range) value).getMinValue().equals(((Range) value).getMaxValue()))) {
+            Date date = (Date) (value instanceof Range r ? r.getMinValue() : value);
             NearestVisitor visitor = new NearestVisitor(attribute, date);
             Filter filter = Filter.INCLUDE;
             if (acceptableRange != null) {
                 Range searchRange = acceptableRange.getSearchRange(date);
-                filter =
-                        FF.between(
-                                attribute,
-                                FF.literal(searchRange.getMinValue()),
-                                FF.literal(searchRange.getMaxValue()));
+                filter = FF.between(
+                        attribute, FF.literal(searchRange.getMinValue()), FF.literal(searchRange.getMaxValue()));
             }
             FeatureCollection features = getMatches(filter);
             features.accepts(visitor, null);
@@ -204,8 +180,7 @@ public abstract class NearestMatchFinder {
             // find the highest among the lower values
             Filter lowerFilter = buildComparisonFilter(value, HIGHEST_AMONG_LOWERS);
             FeatureCollection lowers = getMatches(lowerFilter);
-            MaxVisitor lowersVisitor =
-                    new MaxVisitor(endAttribute == null ? attribute : endAttribute);
+            MaxVisitor lowersVisitor = new MaxVisitor(endAttribute == null ? attribute : endAttribute);
             lowers.accepts(lowersVisitor, null);
             Comparable maxOfSmallers = (Comparable) lowersVisitor.getResult().getValue();
 
@@ -221,11 +196,11 @@ public abstract class NearestMatchFinder {
 
     protected Object closest(Object value, Object maxOfSmallers, Object minOfGreater) {
         // normalize ranges to significant instants
-        if (maxOfSmallers instanceof Range) {
-            maxOfSmallers = ((Range) maxOfSmallers).getMaxValue();
+        if (maxOfSmallers instanceof Range range) {
+            maxOfSmallers = range.getMaxValue();
         }
-        if (minOfGreater instanceof Range) {
-            minOfGreater = ((Range) minOfGreater).getMinValue();
+        if (minOfGreater instanceof Range range) {
+            minOfGreater = range.getMinValue();
         }
 
         Object result;
@@ -241,8 +216,7 @@ public abstract class NearestMatchFinder {
             if (minOfGreater == null) {
                 result = maxOfSmallers;
             } else {
-                if (value instanceof Range) {
-                    Range range = (Range) value;
+                if (value instanceof Range range) {
                     Object min = range.getMinValue();
                     Object max = range.getMaxValue();
                     double distanceBelow = distance(min, maxOfSmallers);
@@ -256,11 +230,11 @@ public abstract class NearestMatchFinder {
             }
         }
 
-        if (result instanceof Range) {
+        if (result instanceof Range range) {
             if (result == minOfGreater) {
-                return ((Range) result).getMaxValue();
+                return range.getMaxValue();
             } else {
-                return ((Range) result).getMinValue();
+                return range.getMinValue();
             }
         } else {
             return result;
@@ -277,14 +251,12 @@ public abstract class NearestMatchFinder {
             Date db = (Date) b;
             return Math.abs(da.getTime() - db.getTime());
         } else {
-            throw new IllegalArgumentException(
-                    "Nearest calculations on data type " + dataType + " are not supported");
+            throw new IllegalArgumentException("Nearest calculations on data type " + dataType + " are not supported");
         }
     }
 
     protected Filter buildComparisonFilter(Object value, FilterDirection direction) {
-        if (value instanceof Range) {
-            Range range = (Range) value;
+        if (value instanceof Range range) {
             Literal qlower = FF.literal(range.getMinValue());
             Literal qupper = FF.literal(range.getMaxValue());
             return buildComparisonFilter(direction, qlower, qupper);
@@ -300,15 +272,11 @@ public abstract class NearestMatchFinder {
      * @param resource the resource being nearest matched
      * @param dimensionName the name of the dimension
      * @param values the reference values for the nearest match search
-     * @param maxOutputTime a max time (in seconds) to produce the output. A ServiceException will
-     *     be thrown if the matches search is exceeding the specified time. Set to -1 for no
-     *     timeout.
+     * @param maxOutputTime a max time (in seconds) to produce the output. A ServiceException will be thrown if the
+     *     matches search is exceeding the specified time. Set to -1 for no timeout.
      */
     public List<Object> getMatches(
-            ResourceInfo resource,
-            String dimensionName,
-            List<Object> values,
-            final int maxOutputTime)
+            ResourceInfo resource, String dimensionName, List<Object> values, final int maxOutputTime)
             throws IOException {
         // if there is a max time set to produce an output, use it on this match,
         // as the input request might make the code go through a lot of nearest match queries
@@ -338,15 +306,10 @@ public abstract class NearestMatchFinder {
         return result;
     }
 
-    private void handleNearestFail(
-            ResourceInfo resource, String dimensionName, Object value, List<Object> result) {
+    private void handleNearestFail(ResourceInfo resource, String dimensionName, Object value, List<Object> result) {
         if (nearestFailBehavior == NearestFailBehavior.EXCEPTION && isWMSRequest())
             throw new ServiceException(
-                    "No nearest match found on "
-                            + resource.prefixedName()
-                            + " for "
-                            + dimensionName
-                            + " dimension",
+                    "No nearest match found on " + resource.prefixedName() + " for " + dimensionName + " dimension",
                     ServiceException.INVALID_DIMENSION_VALUE,
                     DimensionInfo.getDimensionKey(dimensionName));
         // no way to specify there is no match yet, so we'll use the original value, which
@@ -362,22 +325,19 @@ public abstract class NearestMatchFinder {
                 .orElse(false);
     }
 
-    private Filter buildComparisonFilter(
-            FilterDirection direction, Literal qlower, Literal qupper) {
+    private Filter buildComparisonFilter(FilterDirection direction, Literal qlower, Literal qupper) {
         PropertyName comparisonAttribute = getComparisonAttribute(direction);
         if (direction == HIGHEST_AMONG_LOWERS) {
             if (acceptableRange != null) {
                 Range searchRange = acceptableRange.getSearchRange(qlower.getValue());
-                return FF.between(
-                        comparisonAttribute, FF.literal(searchRange.getMinValue()), qlower);
+                return FF.between(comparisonAttribute, FF.literal(searchRange.getMinValue()), qlower);
             } else {
                 return FF.lessOrEqual(comparisonAttribute, qlower);
             }
         } else {
             if (acceptableRange != null) {
                 Range searchRange = acceptableRange.getSearchRange(qupper.getValue());
-                return FF.between(
-                        comparisonAttribute, qupper, FF.literal(searchRange.getMaxValue()));
+                return FF.between(comparisonAttribute, qupper, FF.literal(searchRange.getMaxValue()));
             } else {
                 return FF.greaterOrEqual(comparisonAttribute, qupper);
             }
@@ -417,9 +377,7 @@ public abstract class NearestMatchFinder {
         }
     }
 
-    /**
-     * Nearest match for {@link StructuredGridCoverage2DReader} leveraging the {@link GranuleSource}
-     */
+    /** Nearest match for {@link StructuredGridCoverage2DReader} leveraging the {@link GranuleSource} */
     private static class StructuredReader extends NearestMatchFinder {
         private final StructuredGridCoverage2DReader reader;
 
@@ -471,10 +429,7 @@ public abstract class NearestMatchFinder {
             Object maxOfSmallers = null;
             Object minOfGreater = null;
 
-            Range rangeFilter =
-                    this.acceptableRange != null
-                            ? this.acceptableRange.getSearchRange(value)
-                            : null;
+            Range rangeFilter = this.acceptableRange != null ? this.acceptableRange.getSearchRange(value) : null;
 
             for (Object d : domain) {
                 // skip undesired values
@@ -501,8 +456,8 @@ public abstract class NearestMatchFinder {
             if (rangeFilter == null) {
                 return true;
             }
-            if (domainValue instanceof Range) {
-                return rangeFilter.intersects((Range) domainValue);
+            if (domainValue instanceof Range range) {
+                return rangeFilter.intersects(range);
             } else {
                 return rangeFilter.contains((Comparable) domainValue);
             }
@@ -518,9 +473,8 @@ public abstract class NearestMatchFinder {
                     return compare((Range) b, a) * -1;
                 }
             } else if (a instanceof Range) {
-                if (b instanceof Range) {
+                if (b instanceof Range rb) {
                     Range ra = (Range) a;
-                    Range rb = (Range) b;
 
                     if (ra.intersects(rb)) {
                         return 0;
@@ -557,8 +511,7 @@ public abstract class NearestMatchFinder {
                 return accessor.getTimeDomain();
             } else {
                 throw new IllegalArgumentException(
-                        "Nearest match support on simple grid readers is supported only "
-                                + "for time at the moment");
+                        "Nearest match support on simple grid readers is supported only " + "for time at the moment");
             }
         }
 

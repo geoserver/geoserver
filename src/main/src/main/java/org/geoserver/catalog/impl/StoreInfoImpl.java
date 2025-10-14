@@ -47,6 +47,8 @@ public abstract class StoreInfoImpl implements StoreInfo {
 
     protected Date dateModified;
 
+    protected String modifiedBy;
+
     protected boolean disableOnConnFailure;
 
     protected StoreInfoImpl() {}
@@ -150,7 +152,7 @@ public abstract class StoreInfoImpl implements StoreInfo {
     }
 
     @Override
-    public <T extends Object> T getAdapter(Class<T> adapterClass, Map<?, ?> hints) {
+    public <T> T getAdapter(Class<T> adapterClass, Map<?, ?> hints) {
         // subclasses should override
         return null;
     }
@@ -191,9 +193,7 @@ public abstract class StoreInfoImpl implements StoreInfo {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result =
-                prime * result
-                        + ((connectionParameters == null) ? 0 : connectionParameters.hashCode());
+        result = prime * result + ((connectionParameters == null) ? 0 : connectionParameters.hashCode());
         result = prime * result + ((description == null) ? 0 : description.hashCode());
         result = prime * result + (enabled ? 1231 : 1237);
         result = prime * result + ((id == null) ? 0 : id.hashCode());
@@ -260,5 +260,15 @@ public abstract class StoreInfoImpl implements StoreInfo {
     @Override
     public void setDisableOnConnFailure(boolean disableOnConnFailure) {
         this.disableOnConnFailure = disableOnConnFailure;
+    }
+
+    @Override
+    public String getModifiedBy() {
+        return modifiedBy;
+    }
+
+    @Override
+    public void setModifiedBy(String userName) {
+        this.modifiedBy = userName;
     }
 }

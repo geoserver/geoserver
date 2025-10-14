@@ -21,7 +21,7 @@ import org.geoserver.platform.resource.Resources;
 import org.geotools.util.logging.Logging;
 
 /**
- * A mapper specifically thought for formats that do have a corresponding JAI image reader
+ * A mapper specifically thought for formats that do have a corresponding ImageN image reader
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -34,12 +34,11 @@ public class ImgMimeTypeMapper implements CoverageMimeTypeMapper {
         // no mapping let's go with the ImageIO reader code
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
 
-        final File sourceFile =
-                Resources.find(
-                        Resources.fromURL(
-                                Files.asResource(loader.getBaseDirectory()),
-                                cInfo.getStore().getURL()),
-                        true);
+        final File sourceFile = Resources.find(
+                Resources.fromURL(
+                        Files.asResource(loader.getBaseDirectory()),
+                        cInfo.getStore().getURL()),
+                true);
         if (sourceFile == null) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.fine("Original source is null");

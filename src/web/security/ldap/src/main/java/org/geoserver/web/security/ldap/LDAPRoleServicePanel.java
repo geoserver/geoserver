@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.security.ldap;
 
+import java.io.Serial;
 import java.util.Optional;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
@@ -20,6 +21,7 @@ import org.geoserver.security.web.role.RoleServicePanel;
 
 public class LDAPRoleServicePanel extends RoleServicePanel<LDAPRoleServiceConfig> {
 
+    @Serial
     private static final long serialVersionUID = -67788557484913489L;
 
     private static final String USE_NESTED_PARENT_GROUPS = "useNestedParentGroups";
@@ -27,9 +29,10 @@ public class LDAPRoleServicePanel extends RoleServicePanel<LDAPRoleServiceConfig
     private static final String NESTED_GROUP_SEARCH_FILTER = "nestedGroupSearchFilter";
     private static final String NESTED_SEARCH_FIELDS_CONTAINER = "nestedSearchFieldsContainer";
 
-    class LDAPAuthenticationPanel extends FormComponentPanel<String> {
+    static class LDAPAuthenticationPanel extends FormComponentPanel<String> {
 
         /** serialVersionUID */
+        @Serial
         private static final long serialVersionUID = 8919421089437979222L;
 
         public LDAPAuthenticationPanel(String id) {
@@ -58,43 +61,38 @@ public class LDAPRoleServicePanel extends RoleServicePanel<LDAPRoleServiceConfig
         add(new TextField<>("allGroupsSearchFilter"));
         add(new TextField<>("userFilter"));
         TextField<String> rolePrefixField = new TextField<>("rolePrefix");
-        rolePrefixField.setConvertEmptyInputStringToNull(
-                false); // empty string is a legitimate prefix value
+        rolePrefixField.setConvertEmptyInputStringToNull(false); // empty string is a legitimate prefix value
         add(rolePrefixField);
         add(new CheckBox("convertToUpperCase"));
-        add(
-                new AjaxCheckBox("bindBeforeGroupSearch") {
-                    private static final long serialVersionUID = -1675695153498067857L;
+        add(new AjaxCheckBox("bindBeforeGroupSearch") {
+            @Serial
+            private static final long serialVersionUID = -1675695153498067857L;
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        WebMarkupContainer c =
-                                (WebMarkupContainer)
-                                        LDAPRoleServicePanel.this.get(
-                                                "authenticationPanelContainer");
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                WebMarkupContainer c =
+                        (WebMarkupContainer) LDAPRoleServicePanel.this.get("authenticationPanelContainer");
 
-                        // reset any values that were set
-                        LDAPAuthenticationPanel ldapAuthenticationPanel =
-                                (LDAPAuthenticationPanel) c.get("authenticationPanel");
-                        ldapAuthenticationPanel.resetModel();
-                        ldapAuthenticationPanel.setVisible(getModelObject().booleanValue());
-                        target.add(c);
-                    }
-                });
+                // reset any values that were set
+                LDAPAuthenticationPanel ldapAuthenticationPanel =
+                        (LDAPAuthenticationPanel) c.get("authenticationPanel");
+                ldapAuthenticationPanel.resetModel();
+                ldapAuthenticationPanel.setVisible(getModelObject().booleanValue());
+                target.add(c);
+            }
+        });
         hierarchicalGroupsInit();
 
         LDAPAuthenticationPanel authPanel = new LDAPAuthenticationPanel("authenticationPanel");
         authPanel.setVisible(model.getObject().isBindBeforeGroupSearch());
-        add(
-                new WebMarkupContainer("authenticationPanelContainer")
-                        .add(authPanel)
-                        .setOutputMarkupId(true));
+        add(new WebMarkupContainer("authenticationPanelContainer")
+                .add(authPanel)
+                .setOutputMarkupId(true));
     }
 
     private void hierarchicalGroupsInit() {
         // hierarchical groups configurations
-        final WebMarkupContainer nestedSearchFieldsContainer =
-                new WebMarkupContainer(NESTED_SEARCH_FIELDS_CONTAINER);
+        final WebMarkupContainer nestedSearchFieldsContainer = new WebMarkupContainer(NESTED_SEARCH_FIELDS_CONTAINER);
         nestedSearchFieldsContainer.setOutputMarkupPlaceholderTag(true);
         nestedSearchFieldsContainer.setOutputMarkupId(true);
         add(nestedSearchFieldsContainer);
@@ -104,20 +102,18 @@ public class LDAPRoleServicePanel extends RoleServicePanel<LDAPRoleServiceConfig
         boolean useNestedActivated =
                 useNestedOpt.map(LDAPRoleServiceConfig::isUseNestedParentGroups).orElse(false);
         nestedSearchFieldsContainer.setVisible(useNestedActivated);
-        final AjaxCheckBox useNestedCheckbox =
-                new AjaxCheckBox(USE_NESTED_PARENT_GROUPS) {
-                    private static final long serialVersionUID = 1L;
+        final AjaxCheckBox useNestedCheckbox = new AjaxCheckBox(USE_NESTED_PARENT_GROUPS) {
+            @Serial
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        AjaxCheckBox cb =
-                                (AjaxCheckBox)
-                                        LDAPRoleServicePanel.this.get(USE_NESTED_PARENT_GROUPS);
-                        boolean value = cb.getModelObject();
-                        nestedSearchFieldsContainer.setVisible(value);
-                        target.add(nestedSearchFieldsContainer);
-                    }
-                };
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                AjaxCheckBox cb = (AjaxCheckBox) LDAPRoleServicePanel.this.get(USE_NESTED_PARENT_GROUPS);
+                boolean value = cb.getModelObject();
+                nestedSearchFieldsContainer.setVisible(value);
+                target.add(nestedSearchFieldsContainer);
+            }
+        };
         add(useNestedCheckbox);
         nestedSearchFieldsContainer.add(new TextField<>(MAX_GROUP_SEARCH_LEVEL));
         nestedSearchFieldsContainer.add(new TextField<>(NESTED_GROUP_SEARCH_FILTER));

@@ -1,0 +1,30 @@
+<assembly>
+  <id>monitor-micrometer-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>target</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>${artifactId}-${project.version}.jar</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>gs-monitor-micrometer-*.jar</include>
+        <include>micrometer-commons-*.jar</include>
+        <include>micrometer-core-*.jar</include>
+        <include>micrometer-registry-prometheus-*.jar</include>
+        <include>prometheus-metrics-config-*.jar</include>
+        <include>prometheus-metrics-exposition-textformats-*.jar</include>
+        <include>prometheus-metrics-model-*.jar</include>
+        <include>prometheus-metrics-tracer-common-*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

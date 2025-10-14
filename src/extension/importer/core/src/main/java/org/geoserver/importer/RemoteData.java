@@ -7,6 +7,7 @@ package org.geoserver.importer;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serial;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystem;
 import org.apache.commons.vfs2.FileSystemManager;
@@ -18,13 +19,14 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityManager;
 
 /**
- * Import data that will be fetched from a remote location during the init phase, similar to an
- * upload, but operated by GeoServer, and turned into another type of import data
+ * Import data that will be fetched from a remote location during the init phase, similar to an upload, but operated by
+ * GeoServer, and turned into another type of import data
  *
  * @author Andrea Aime - GeoSolutions
  */
 public class RemoteData extends ImportData {
 
+    @Serial
     private static final long serialVersionUID = -1748855285827081507L;
 
     String location;

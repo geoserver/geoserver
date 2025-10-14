@@ -6,6 +6,7 @@ package org.geoserver.ogcapi.v1.features;
 
 import static org.geoserver.ogcapi.JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE;
 import static org.geoserver.ogcapi.v1.features.JSONFGFeaturesResponse.COORD_REF_SYS;
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.both;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -53,16 +54,14 @@ public class FeatureTest extends FeaturesTestSupport {
         MockHttpServletResponse response =
                 getAsServletResponse("ogc/features/v1/collections/" + roadSegments + "/items");
         assertEquals(200, response.getStatus());
-        assertEquals(
-                "inline; filename=RoadSegments.json", response.getHeader("Content-Disposition"));
+        assertEquals("inline; filename=RoadSegments.json", response.getHeader("Content-Disposition"));
     }
 
     @Test
     public void testGetLayerAsGeoJson() throws Exception {
         String roadSegments = ResponseUtils.urlEncode(getLayerId(MockData.ROAD_SEGMENTS));
         MockHttpServletResponse response =
-                getAsMockHttpServletResponse(
-                        "ogc/features/v1/collections/" + roadSegments + "/items", 200);
+                getAsMockHttpServletResponse("ogc/features/v1/collections/" + roadSegments + "/items", 200);
         assertEquals(
                 "<http://www.opengis.net/def/crs/OGC/1.3/CRS84>",
                 response.getHeader(HttpHeaderContentCrsAppender.CRS_RESPONSE_HEADER));
@@ -83,24 +82,15 @@ public class FeatureTest extends FeaturesTestSupport {
         assertThat(selfLink.size(), greaterThan(0));
         assertThat(
                 (String) selfLink.get(0),
-                startsWith(
-                        "http://localhost:8080/geoserver/ogc/features/v1/collections/"
-                                + roadSegments
-                                + "?"));
+                startsWith("http://localhost:8080/geoserver/ogc/features/v1/collections/" + roadSegments + "?"));
     }
 
     @Test
-    @SuppressWarnings("unchecked") // matchers make for generic varargs
     public void testGetLayerAsGeoJsonReproject() throws Exception {
         String roadSegments = ResponseUtils.urlEncode(getLayerId(MockData.ROAD_SEGMENTS));
-        MockHttpServletResponse response =
-                getAsMockHttpServletResponse(
-                        "ogc/features/v1/collections/"
-                                + roadSegments
-                                + "/items?crs="
-                                + FeatureService.CRS_PREFIX
-                                + "3857",
-                        200);
+        MockHttpServletResponse response = getAsMockHttpServletResponse(
+                "ogc/features/v1/collections/" + roadSegments + "/items?crs=" + FeatureService.CRS_PREFIX + "3857",
+                200);
         assertEquals(
                 "<http://www.opengis.net/def/crs/EPSG/0/3857>",
                 response.getHeader(HttpHeaderContentCrsAppender.CRS_RESPONSE_HEADER));
@@ -109,9 +99,7 @@ public class FeatureTest extends FeaturesTestSupport {
         assertEquals(5, (int) json.read("features.length()", Integer.class));
         // get ordinates of RoadSegments.1107532045091, returns array[array[array[double]]]
         List<List<List<Double>>> result =
-                readSingle(
-                        json,
-                        "features[?(@.id=='RoadSegments.1107532045091')].geometry.coordinates");
+                readSingle(json, "features[?(@.id=='RoadSegments.1107532045091')].geometry.coordinates");
         // original feature:
         // RoadSegments.1107532045091=MULTILINESTRING ((-0.0014 -0.0024, -0.0014 0.0002))|
         //                            106|Dirt Road by Green Forest
@@ -124,13 +112,8 @@ public class FeatureTest extends FeaturesTestSupport {
     @Test
     public void testWorkspaceQualified() throws Exception {
         String roadSegments = MockData.ROAD_SEGMENTS.getLocalPart();
-        DocumentContext json =
-                getAsJSONPath(
-                        MockData.ROAD_SEGMENTS.getPrefix()
-                                + "/ogc/features/v1/collections/"
-                                + roadSegments
-                                + "/items",
-                        200);
+        DocumentContext json = getAsJSONPath(
+                MockData.ROAD_SEGMENTS.getPrefix() + "/ogc/features/v1/collections/" + roadSegments + "/items", 200);
         assertEquals("FeatureCollection", json.read("type", String.class));
         assertEquals(5, (int) json.read("features.length()", Integer.class));
         // check self link
@@ -147,26 +130,25 @@ public class FeatureTest extends FeaturesTestSupport {
         assertThat(selfLink.size(), greaterThan(0));
         assertThat(
                 (String) selfLink.get(0),
-                startsWith(
-                        "http://localhost:8080/geoserver/cite/ogc/features/v1/collections/"
-                                + roadSegments
-                                + "?"));
+                startsWith("http://localhost:8080/geoserver/cite/ogc/features/v1/collections/" + roadSegments + "?"));
     }
 
     @Test
     public void testBBoxFilter() throws Exception {
         String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
         DocumentContext json =
-                getAsJSONPath(
-                        "ogc/features/v1/collections/" + collectionName + "/items?bbox=35,0,60,3",
-                        200);
+                getAsJSONPath("ogc/features/v1/collections/" + collectionName + "/items?bbox=35,0,60,3", 200);
         assertEquals("FeatureCollection", json.read("type", String.class));
         // should return only f002 and f003
         assertEquals(2, (int) json.read("features.length()", Integer.class));
         assertEquals(
-                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class).size());
+                1,
+                json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class)
+                        .size());
         assertEquals(
-                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f002')]", List.class).size());
+                1,
+                json.read("features[?(@.id == 'PrimitiveGeoFeature.f002')]", List.class)
+                        .size());
     }
 
     @Test
@@ -174,20 +156,19 @@ public class FeatureTest extends FeaturesTestSupport {
         String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
         ReferencedEnvelope bbox = new ReferencedEnvelope(35, 60, 0, 3, DefaultGeographicCRS.WGS84);
         ReferencedEnvelope wmBox = bbox.transform(CRS.decode("EPSG:3857", true), true);
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/features/v1/collections/"
-                                + collectionName
-                                + "/items?"
-                                + bboxCrsQueryParameters(wmBox),
-                        200);
+        DocumentContext json = getAsJSONPath(
+                "ogc/features/v1/collections/" + collectionName + "/items?" + bboxCrsQueryParameters(wmBox), 200);
         assertEquals("FeatureCollection", json.read("type", String.class));
         // should return only f002 and f003
         assertEquals(2, (int) json.read("features.length()", Integer.class));
         assertEquals(
-                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class).size());
+                1,
+                json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class)
+                        .size());
         assertEquals(
-                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f002')]", List.class).size());
+                1,
+                json.read("features[?(@.id == 'PrimitiveGeoFeature.f002')]", List.class)
+                        .size());
     }
 
     private String bboxCrsQueryParameters(ReferencedEnvelope re) throws FactoryException {
@@ -201,80 +182,78 @@ public class FeatureTest extends FeaturesTestSupport {
     }
 
     private String crsQueryParameter(ReferencedEnvelope re) throws FactoryException {
-        return CRS.equalsIgnoreMetadata(
-                        re.getCoordinateReferenceSystem(), DefaultGeographicCRS.WGS84)
+        return CRS.equalsIgnoreMetadata(re.getCoordinateReferenceSystem(), DefaultGeographicCRS.WGS84)
                 ? FeatureService.DEFAULT_CRS
-                : FeatureService.CRS_PREFIX
-                        + CRS.lookupEpsgCode(re.getCoordinateReferenceSystem(), true);
+                : FeatureService.CRS_PREFIX + CRS.lookupEpsgCode(re.getCoordinateReferenceSystem(), true);
     }
 
     @Test
     public void testBBOXOGCAuthority() throws Exception {
         String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/features/v1/collections/"
-                                + collectionName
-                                + "/items?"
-                                + "bbox=35,0,60,3"
-                                + "&bbox-crs=http://www.opengis.net/def/crs/OGC/1.3/CRS84",
-                        200);
+        DocumentContext json = getAsJSONPath(
+                "ogc/features/v1/collections/"
+                        + collectionName
+                        + "/items?"
+                        + "bbox=35,0,60,3"
+                        + "&bbox-crs=http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+                200);
         assertEquals("FeatureCollection", json.read("type", String.class));
         // should return those two features only
         assertEquals(2, (int) json.read("features.length()", Integer.class));
         assertEquals(
-                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class).size());
+                1,
+                json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class)
+                        .size());
         assertEquals(
-                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f002')]", List.class).size());
+                1,
+                json.read("features[?(@.id == 'PrimitiveGeoFeature.f002')]", List.class)
+                        .size());
     }
 
     @Test
     public void testInvalidBBOXCRS() throws Exception {
         String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/features/v1/collections/"
-                                + collectionName
-                                + "/items?"
-                                + "bbox=35,0,60,3"
-                                + "&bbox-crs=http://www.opengis.net/def/crs/OGC/1.3/INVALID",
-                        400);
+        DocumentContext json = getAsJSONPath(
+                "ogc/features/v1/collections/"
+                        + collectionName
+                        + "/items?"
+                        + "bbox=35,0,60,3"
+                        + "&bbox-crs=http://www.opengis.net/def/crs/OGC/1.3/INVALID",
+                400);
         assertEquals(APIException.INVALID_PARAMETER_VALUE, json.read("code", String.class));
-        assertEquals(
-                "Invalid CRS: http://www.opengis.net/def/crs/OGC/1.3/INVALID",
-                json.read("description"));
+        assertEquals("Invalid CRS: http://www.opengis.net/def/crs/OGC/1.3/INVALID", json.read("description"));
     }
 
     @Test
     public void testBBoxDatelineCrossingFilter() throws Exception {
         String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
         DocumentContext json =
-                getAsJSONPath(
-                        "ogc/features/v1/collections/" + collectionName + "/items?bbox=170,0,60,3",
-                        200);
+                getAsJSONPath("ogc/features/v1/collections/" + collectionName + "/items?bbox=170,0,60,3", 200);
         assertEquals("FeatureCollection", json.read("type", String.class));
         // should return only f002 and f003
         assertEquals(2, (int) json.read("features.length()", Integer.class));
         assertEquals(
-                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class).size());
+                1,
+                json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class)
+                        .size());
         assertEquals(
-                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f002')]", List.class).size());
+                1,
+                json.read("features[?(@.id == 'PrimitiveGeoFeature.f002')]", List.class)
+                        .size());
     }
 
     @Test
     public void testCqlFilter() throws Exception {
         String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
         DocumentContext json =
-                getAsJSONPath(
-                        "ogc/features/v1/collections/"
-                                + collectionName
-                                + "/items?filter=name='name-f001'",
-                        200);
+                getAsJSONPath("ogc/features/v1/collections/" + collectionName + "/items?filter=name='name-f001'", 200);
         assertEquals("FeatureCollection", json.read("type", String.class));
         // should return only f001
         assertEquals(1, (int) json.read("features.length()", Integer.class));
         assertEquals(
-                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class).size());
+                1,
+                json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class)
+                        .size());
     }
 
     @Test
@@ -286,34 +265,36 @@ public class FeatureTest extends FeaturesTestSupport {
         getGeoServer().save(wfsInfo);
 
         String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/features/v1/collections/"
-                                + collectionName
-                                + "/items?filter=%7B%22op%22%3A%22%3D%22%2C%22args%22%3A%5B%7B%22property%22%3A%22name%22%7D%2C%22name-f001%22%5D%7D" // {"op":"=","args":[{"property":"name"},"name-f001"]}
-                                + "&filter-lang=cql2-json",
-                        200);
+        DocumentContext json = getAsJSONPath(
+                "ogc/features/v1/collections/"
+                        + collectionName
+                        + "/items?filter=%7B%22op%22%3A%22%3D%22%2C%22args%22%3A%5B%7B%22property%22%3A%22name%22%7D%2C%22name-f001%22%5D%7D" // {"op":"=","args":[{"property":"name"},"name-f001"]}
+                        + "&filter-lang=cql2-json",
+                200);
         assertEquals("FeatureCollection", json.read("type", String.class));
         // should return only f001
         assertEquals(1, (int) json.read("features.length()", Integer.class));
         assertEquals(
-                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class).size());
+                1,
+                json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class)
+                        .size());
     }
 
     @Test
     public void testCqlSpatialFilter() throws Exception {
         String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/features/v1/collections/"
-                                + collectionName
-                                + "/items?filter=BBOX(pointProperty,38,1,40,3)&filter-lang=cql-text",
-                        200);
+        DocumentContext json = getAsJSONPath(
+                "ogc/features/v1/collections/"
+                        + collectionName
+                        + "/items?filter=BBOX(pointProperty,38,1,40,3)&filter-lang=cql-text",
+                200);
         assertEquals("FeatureCollection", json.read("type", String.class));
         // should return only f001
         assertEquals(1, (int) json.read("features.length()", Integer.class));
         assertEquals(
-                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class).size());
+                1,
+                json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class)
+                        .size());
     }
 
     @Test
@@ -325,18 +306,19 @@ public class FeatureTest extends FeaturesTestSupport {
         getGeoServer().save(wfsInfo);
 
         String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/features/v1/collections/"
-                                + collectionName
-                                + "/items?filter=%7B%22op%22%3A%22s_intersects%22%2C%22args%22%3A%5B%7B%22property%22%3A%22pointProperty%22%7D%2C%7B%22bbox%22%3A%5B38%2C1%2C40%2C3%5D%7D%5D%7D" //
-                                + "&filter-lang=cql2-json",
-                        200);
+        DocumentContext json = getAsJSONPath(
+                "ogc/features/v1/collections/"
+                        + collectionName
+                        + "/items?filter=%7B%22op%22%3A%22s_intersects%22%2C%22args%22%3A%5B%7B%22property%22%3A%22pointProperty%22%7D%2C%7B%22bbox%22%3A%5B38%2C1%2C40%2C3%5D%7D%5D%7D" //
+                        + "&filter-lang=cql2-json",
+                200);
         assertEquals("FeatureCollection", json.read("type", String.class));
         // should return only f001
         assertEquals(1, (int) json.read("features.length()", Integer.class));
         assertEquals(
-                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class).size());
+                1,
+                json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class)
+                        .size());
     }
 
     @Test
@@ -345,18 +327,15 @@ public class FeatureTest extends FeaturesTestSupport {
         ReferencedEnvelope bbox = new ReferencedEnvelope(38, 40, 1, 3, DefaultGeographicCRS.WGS84);
         ReferencedEnvelope wmBox = bbox.transform(CRS.decode("EPSG:3857", true), true);
 
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/features/v1/collections/"
-                                + collectionName
-                                + "/items?"
-                                + filterCrsQueryParameters(wmBox),
-                        200);
+        DocumentContext json = getAsJSONPath(
+                "ogc/features/v1/collections/" + collectionName + "/items?" + filterCrsQueryParameters(wmBox), 200);
         assertEquals("FeatureCollection", json.read("type", String.class));
         // should return only f001
         assertEquals(1, (int) json.read("features.length()", Integer.class));
         assertEquals(
-                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class).size());
+                1,
+                json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class)
+                        .size());
     }
 
     private String filterCrsQueryParameters(ReferencedEnvelope re) throws FactoryException {
@@ -369,31 +348,24 @@ public class FeatureTest extends FeaturesTestSupport {
     public void testCqlFilterInvalidFilter() throws Exception {
         String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
 
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/features/v1/collections/"
-                                + collectionName
-                                + "/items?filter=THIS IS NOT A FILTER",
-                        400);
+        DocumentContext json = getAsJSONPath(
+                "ogc/features/v1/collections/" + collectionName + "/items?filter=THIS IS NOT A FILTER", 400);
         assertEquals("InvalidParameterValue", json.read("code", String.class));
-        assertThat(
-                json.read("description", String.class),
-                Matchers.containsString("THIS IS NOT A FILTER"));
+        assertThat(json.read("description", String.class), Matchers.containsString("THIS IS NOT A FILTER"));
     }
 
     @Test
     public void testCqlFilterInvalidCrs() throws Exception {
         String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
 
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/features/v1/collections/"
-                                + collectionName
-                                + "/items?filter=BBOX(pointProperty,38,1,40,3)&"
-                                + "filter-crs="
-                                + FeatureService.CRS_PREFIX
-                                + "0",
-                        400);
+        DocumentContext json = getAsJSONPath(
+                "ogc/features/v1/collections/"
+                        + collectionName
+                        + "/items?filter=BBOX(pointProperty,38,1,40,3)&"
+                        + "filter-crs="
+                        + FeatureService.CRS_PREFIX
+                        + "0",
+                400);
         assertEquals("InvalidParameterValue", json.read("code", String.class));
         assertThat(json.read("description", String.class), Matchers.containsString("EPSG:0"));
     }
@@ -401,12 +373,9 @@ public class FeatureTest extends FeaturesTestSupport {
     @Test
     public void testCqlFilterInvalidLanguage() throws Exception {
         String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/features/v1/collections/"
-                                + collectionName
-                                + "/items?filter=name='name-f001'&filter-lang=foo-bar",
-                        400);
+        DocumentContext json = getAsJSONPath(
+                "ogc/features/v1/collections/" + collectionName + "/items?filter=name='name-f001'&filter-lang=foo-bar",
+                400);
         assertEquals("InvalidParameterValue", json.read("code", String.class));
         assertThat(json.read("description", String.class), Matchers.containsString("foo-bar"));
     }
@@ -415,65 +384,64 @@ public class FeatureTest extends FeaturesTestSupport {
     public void testTimeFilter() throws Exception {
         String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
         DocumentContext json =
-                getAsJSONPath(
-                        "ogc/features/v1/collections/"
-                                + collectionName
-                                + "/items?datetime=2006-10-25",
-                        200);
+                getAsJSONPath("ogc/features/v1/collections/" + collectionName + "/items?datetime=2006-10-25", 200);
         assertEquals("FeatureCollection", json.read("type", String.class));
         // should return only f001
         assertEquals(1, (int) json.read("features.length()", Integer.class));
         assertEquals(
-                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class).size());
+                1,
+                json.read("features[?(@.id == 'PrimitiveGeoFeature.f001')]", List.class)
+                        .size());
     }
 
     @Test
     public void testTimeRangeFilter() throws Exception {
         String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/features/v1/collections/"
-                                + collectionName
-                                + "/items?datetime=2006-09-01/2006-10-23",
-                        200);
+        DocumentContext json = getAsJSONPath(
+                "ogc/features/v1/collections/" + collectionName + "/items?datetime=2006-09-01/2006-10-23", 200);
         assertEquals("FeatureCollection", json.read("type", String.class));
         assertEquals(2, (int) json.read("features.length()", Integer.class));
         assertEquals(
-                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f002')]", List.class).size());
+                1,
+                json.read("features[?(@.id == 'PrimitiveGeoFeature.f002')]", List.class)
+                        .size());
         assertEquals(
-                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f003')]", List.class).size());
+                1,
+                json.read("features[?(@.id == 'PrimitiveGeoFeature.f003')]", List.class)
+                        .size());
     }
 
     @Test
     public void testTimeDurationFilter() throws Exception {
         String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/features/v1/collections/"
-                                + collectionName
-                                + "/items?datetime=2006-09-01/P1M23DT12H31M12S",
-                        200);
+        DocumentContext json = getAsJSONPath(
+                "ogc/features/v1/collections/" + collectionName + "/items?datetime=2006-09-01/P1M23DT12H31M12S", 200);
         assertEquals("FeatureCollection", json.read("type", String.class));
         assertEquals(2, (int) json.read("features.length()", Integer.class));
         assertEquals(
-                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f002')]", List.class).size());
+                1,
+                json.read("features[?(@.id == 'PrimitiveGeoFeature.f002')]", List.class)
+                        .size());
         assertEquals(
-                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f003')]", List.class).size());
+                1,
+                json.read("features[?(@.id == 'PrimitiveGeoFeature.f003')]", List.class)
+                        .size());
     }
 
     @Test
     public void testCombinedSpaceTimeFilter() throws Exception {
         String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/features/v1/collections/"
-                                + collectionName
-                                + "/items?datetime=2006-09-01/2006-10-23&bbox=35,0,60,3",
-                        200);
+        DocumentContext json = getAsJSONPath(
+                "ogc/features/v1/collections/"
+                        + collectionName
+                        + "/items?datetime=2006-09-01/2006-10-23&bbox=35,0,60,3",
+                200);
         assertEquals("FeatureCollection", json.read("type", String.class));
         assertEquals(1, (int) json.read("features.length()", Integer.class));
         assertEquals(
-                1, json.read("features[?(@.id == 'PrimitiveGeoFeature.f002')]", List.class).size());
+                1,
+                json.read("features[?(@.id == 'PrimitiveGeoFeature.f002')]", List.class)
+                        .size());
     }
 
     @Test
@@ -485,11 +453,7 @@ public class FeatureTest extends FeaturesTestSupport {
         try {
             String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
             DocumentContext json =
-                    getAsJSONPath(
-                            "ogc/features/v1/collections/"
-                                    + collectionName
-                                    + "/items?sortby=name&limit=2",
-                            200);
+                    getAsJSONPath("ogc/features/v1/collections/" + collectionName + "/items?sortby=name&limit=2", 200);
             assertEquals("FeatureCollection", json.read("type", String.class));
             assertEquals(2, (int) json.read("features.length()", Integer.class));
             assertEquals(null, json.read("features[0].properties.name", String.class));
@@ -508,12 +472,8 @@ public class FeatureTest extends FeaturesTestSupport {
         getGeoServer().save(wfsInfo);
         try {
             String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
-            DocumentContext json =
-                    getAsJSONPath(
-                            "ogc/features/v1/collections/"
-                                    + collectionName
-                                    + "/items?sortby=%2Bname&limit=2",
-                            200);
+            DocumentContext json = getAsJSONPath(
+                    "ogc/features/v1/collections/" + collectionName + "/items?sortby=%2Bname&limit=2", 200);
             assertEquals("FeatureCollection", json.read("type", String.class));
             assertEquals(2, (int) json.read("features.length()", Integer.class));
             assertEquals(null, json.read("features[0].properties.name", String.class));
@@ -533,11 +493,7 @@ public class FeatureTest extends FeaturesTestSupport {
         try {
             String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
             DocumentContext json =
-                    getAsJSONPath(
-                            "ogc/features/v1/collections/"
-                                    + collectionName
-                                    + "/items?sortby=-name&limit=2",
-                            200);
+                    getAsJSONPath("ogc/features/v1/collections/" + collectionName + "/items?sortby=-name&limit=2", 200);
             assertEquals("FeatureCollection", json.read("type", String.class));
             assertEquals(2, (int) json.read("features.length()", Integer.class));
             assertEquals("name-f008", json.read("features[0].properties.name", String.class));
@@ -556,12 +512,9 @@ public class FeatureTest extends FeaturesTestSupport {
         getGeoServer().save(wfsInfo);
         try {
             String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
-            DocumentContext json =
-                    getAsJSONPath(
-                            "ogc/features/v1/collections/"
-                                    + collectionName
-                                    + "/items?sortby=booleanProperty,-intProperty",
-                            200);
+            DocumentContext json = getAsJSONPath(
+                    "ogc/features/v1/collections/" + collectionName + "/items?sortby=booleanProperty,-intProperty",
+                    200);
             assertEquals("FeatureCollection", json.read("type", String.class));
             assertEquals(5, (int) json.read("features.length()", Integer.class));
             assertEquals(null, json.read("features[0].properties.name", String.class));
@@ -583,12 +536,11 @@ public class FeatureTest extends FeaturesTestSupport {
         getGeoServer().save(wfsInfo);
         try {
             String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
-            DocumentContext json =
-                    getAsJSONPath(
-                            "ogc/features/v1/collections/"
-                                    + roadSegments
-                                    + "/items?ids=RoadSegments.1107532045088,RoadSegments.1107532045091",
-                            200);
+            DocumentContext json = getAsJSONPath(
+                    "ogc/features/v1/collections/"
+                            + roadSegments
+                            + "/items?ids=RoadSegments.1107532045088,RoadSegments.1107532045091",
+                    200);
             assertEquals("FeatureCollection", json.read("type", String.class));
             assertEquals(2, (int) json.read("features.length()", Integer.class));
             assertEquals("RoadSegments.1107532045088", json.read("features[0].id", String.class));
@@ -614,15 +566,14 @@ public class FeatureTest extends FeaturesTestSupport {
         try {
             String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
             String request =
-                    "{\n"
-                            + "  \"filter\": {\"op\":\"=\",\"args\":[{\"property\":\"name\"},\"name-f001\"]},"
-                            + "  \"filter-lang\": \"cql2-json\"\n"
-                            + "}";
+                    """
+                    {
+                      "filter": {"op":"=","args":[{"property":"name"},"name-f001"]},\
+                      "filter-lang": "cql2-json"
+                    }\
+                    """;
             DocumentContext json =
-                    postAsJSONPath(
-                            "ogc/features/v1/collections/" + collectionName + "/search",
-                            request,
-                            200);
+                    postAsJSONPath("ogc/features/v1/collections/" + collectionName + "/search", request, 200);
             assertEquals("FeatureCollection", json.read("type", String.class));
             // should return only f001
             assertEquals(1, (int) json.read("features.length()", Integer.class));
@@ -640,10 +591,12 @@ public class FeatureTest extends FeaturesTestSupport {
     public void testSearchCql2TextFilter() throws Exception {
         String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
         String request =
-                "{\n"
-                        + "  \"filter\": \"BBOX(pointProperty,38,1,40,3)\",\n"
-                        + "  \"filter-lang\": \"cql-text\"\n"
-                        + "}";
+                """
+                {
+                  "filter": "BBOX(pointProperty,38,1,40,3)",
+                  "filter-lang": "cql-text"
+                }\
+                """;
 
         WFSInfo wfsInfo = getGeoServer().getService(WFSInfo.class);
         FeatureConformance featureServiceInfo = FeatureConformance.configuration(wfsInfo);
@@ -651,10 +604,7 @@ public class FeatureTest extends FeaturesTestSupport {
         getGeoServer().save(wfsInfo);
         try {
             DocumentContext json =
-                    postAsJSONPath(
-                            "ogc/features/v1/collections/" + collectionName + "/search",
-                            request,
-                            200);
+                    postAsJSONPath("ogc/features/v1/collections/" + collectionName + "/search", request, 200);
             assertEquals("FeatureCollection", json.read("type", String.class));
             // should return only f001
             assertEquals(1, (int) json.read("features.length()", Integer.class));
@@ -675,15 +625,14 @@ public class FeatureTest extends FeaturesTestSupport {
         ReferencedEnvelope wmBox = bbox.transform(CRS.decode("EPSG:3857", true), true);
         String crsValue = crsQueryParameter(wmBox);
 
-        String request =
-                "{\n"
-                        + "  \"filter\": \"BBOX(pointProperty,"
-                        + bboxQueryParameter(wmBox)
-                        + ")\",\n"
-                        + " \"filter-lang\": \"cql-text\"\n,"
-                        + " \"filter-crs\": \""
-                        + crsValue
-                        + "\"\n}";
+        String request = "{\n"
+                + "  \"filter\": \"BBOX(pointProperty,"
+                + bboxQueryParameter(wmBox)
+                + ")\",\n"
+                + " \"filter-lang\": \"cql-text\"\n,"
+                + " \"filter-crs\": \""
+                + crsValue
+                + "\"\n}";
 
         WFSInfo wfsInfo = getGeoServer().getService(WFSInfo.class);
         FeatureConformance featureServiceInfo = FeatureConformance.configuration(wfsInfo);
@@ -691,10 +640,7 @@ public class FeatureTest extends FeaturesTestSupport {
         getGeoServer().save(wfsInfo);
         try {
             DocumentContext json =
-                    postAsJSONPath(
-                            "ogc/features/v1/collections/" + collectionName + "/search",
-                            request,
-                            200);
+                    postAsJSONPath("ogc/features/v1/collections/" + collectionName + "/search", request, 200);
             assertEquals("FeatureCollection", json.read("type", String.class));
             // should return only f001
             assertEquals(1, (int) json.read("features.length()", Integer.class));
@@ -718,10 +664,7 @@ public class FeatureTest extends FeaturesTestSupport {
             String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
             String request = "{\"bbox\":[35, 0, 60, 3]}";
             DocumentContext json =
-                    postAsJSONPath(
-                            "ogc/features/v1/collections/" + collectionName + "/search",
-                            request,
-                            200);
+                    postAsJSONPath("ogc/features/v1/collections/" + collectionName + "/search", request, 200);
             assertEquals("FeatureCollection", json.read("type", String.class));
             // should return only f002 and f003
             assertEquals(2, (int) json.read("features.length()", Integer.class));
@@ -749,10 +692,7 @@ public class FeatureTest extends FeaturesTestSupport {
             String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
             String request = "{\"bbox\":\"35,0,60,3\"}";
             DocumentContext json =
-                    postAsJSONPath(
-                            "ogc/features/v1/collections/" + collectionName + "/search",
-                            request,
-                            200);
+                    postAsJSONPath("ogc/features/v1/collections/" + collectionName + "/search", request, 200);
             assertEquals("FeatureCollection", json.read("type", String.class));
             // should return only f002 and f003
             assertEquals(2, (int) json.read("features.length()", Integer.class));
@@ -781,8 +721,7 @@ public class FeatureTest extends FeaturesTestSupport {
 
         // check this is disabled by default
         DocumentContext notFound =
-                postAsJSONPath(
-                        "ogc/features/v1/collections/" + collectionName + "/search", request, 404);
+                postAsJSONPath("ogc/features/v1/collections/" + collectionName + "/search", request, 404);
         assertEquals("NotFound", notFound.read("code", String.class));
 
         // enable
@@ -792,10 +731,7 @@ public class FeatureTest extends FeaturesTestSupport {
         getGeoServer().save(wfsInfo);
         try {
             DocumentContext json =
-                    postAsJSONPath(
-                            "ogc/features/v1/collections/" + collectionName + "/search",
-                            request,
-                            200);
+                    postAsJSONPath("ogc/features/v1/collections/" + collectionName + "/search", request, 200);
             assertEquals("FeatureCollection", json.read("type", String.class));
             // should return only f002 and f003
             assertEquals(2, (int) json.read("features.length()", Integer.class));
@@ -814,7 +750,6 @@ public class FeatureTest extends FeaturesTestSupport {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testSearchCRSFilter() throws Exception {
         WFSInfo wfsInfo = getGeoServer().getService(WFSInfo.class);
         FeatureConformance featureServiceInfo = FeatureConformance.configuration(wfsInfo);
@@ -825,18 +760,13 @@ public class FeatureTest extends FeaturesTestSupport {
             String crs = FeatureService.CRS_PREFIX + "3857";
             String request = "{\"crs\":\"" + crs + "\"}";
             DocumentContext json =
-                    postAsJSONPath(
-                            "ogc/features/v1/collections/" + roadSegments + "/search",
-                            request,
-                            200);
+                    postAsJSONPath("ogc/features/v1/collections/" + roadSegments + "/search", request, 200);
 
             assertEquals("FeatureCollection", json.read("type", String.class));
             assertEquals(5, (int) json.read("features.length()", Integer.class));
             // get ordinates of RoadSegments.1107532045091, returns array[array[array[double]]]
             List<List<List<Double>>> result =
-                    readSingle(
-                            json,
-                            "features[?(@.id=='RoadSegments.1107532045091')].geometry.coordinates");
+                    readSingle(json, "features[?(@.id=='RoadSegments.1107532045091')].geometry.coordinates");
             // original feature:
             // RoadSegments.1107532045091=MULTILINESTRING ((-0.0014 -0.0024, -0.0014 0.0002))|
             //                            106|Dirt Road by Green Forest
@@ -859,13 +789,9 @@ public class FeatureTest extends FeaturesTestSupport {
         getGeoServer().save(wfsInfo);
         try {
             String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
-            String request =
-                    "{\"ids\":[\"RoadSegments.1107532045088\",\"RoadSegments.1107532045091\"]}";
+            String request = "{\"ids\":[\"RoadSegments.1107532045088\",\"RoadSegments.1107532045091\"]}";
             DocumentContext json =
-                    postAsJSONPath(
-                            "ogc/features/v1/collections/" + roadSegments + "/search",
-                            request,
-                            200);
+                    postAsJSONPath("ogc/features/v1/collections/" + roadSegments + "/search", request, 200);
             assertEquals("FeatureCollection", json.read("type", String.class));
             assertEquals(2, (int) json.read("features.length()", Integer.class));
             assertEquals("RoadSegments.1107532045088", json.read("features[0].id", String.class));
@@ -888,10 +814,7 @@ public class FeatureTest extends FeaturesTestSupport {
             String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
             String request = "{\"ids\":\"RoadSegments.1107532045088,RoadSegments.1107532045091\"}";
             DocumentContext json =
-                    postAsJSONPath(
-                            "ogc/features/v1/collections/" + roadSegments + "/search",
-                            request,
-                            200);
+                    postAsJSONPath("ogc/features/v1/collections/" + roadSegments + "/search", request, 200);
             assertEquals("FeatureCollection", json.read("type", String.class));
             assertEquals(2, (int) json.read("features.length()", Integer.class));
             assertEquals("RoadSegments.1107532045088", json.read("features[0].id", String.class));
@@ -913,10 +836,7 @@ public class FeatureTest extends FeaturesTestSupport {
             String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
             String request = "{\"datetime\":\"2006-10-25\"}";
             DocumentContext json =
-                    postAsJSONPath(
-                            "ogc/features/v1/collections/" + collectionName + "/search",
-                            request,
-                            200);
+                    postAsJSONPath("ogc/features/v1/collections/" + collectionName + "/search", request, 200);
             assertEquals("FeatureCollection", json.read("type", String.class));
             // should return only f001
             assertEquals(1, (int) json.read("features.length()", Integer.class));
@@ -941,10 +861,7 @@ public class FeatureTest extends FeaturesTestSupport {
             String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
             String request = "{\"sortby\":[\"name\"],\"limit\":2}";
             DocumentContext json =
-                    postAsJSONPath(
-                            "ogc/features/v1/collections/" + collectionName + "/search",
-                            request,
-                            200);
+                    postAsJSONPath("ogc/features/v1/collections/" + collectionName + "/search", request, 200);
             assertEquals("FeatureCollection", json.read("type", String.class));
             assertEquals(2, (int) json.read("features.length()", Integer.class));
             assertEquals(null, json.read("features[0].properties.name", String.class));
@@ -967,10 +884,7 @@ public class FeatureTest extends FeaturesTestSupport {
             String collectionName = getLayerId(MockData.PRIMITIVEGEOFEATURE);
             String request = "{\"sortby\":\"name\",\"limit\":2}";
             DocumentContext json =
-                    postAsJSONPath(
-                            "ogc/features/v1/collections/" + collectionName + "/search",
-                            request,
-                            200);
+                    postAsJSONPath("ogc/features/v1/collections/" + collectionName + "/search", request, 200);
             assertEquals("FeatureCollection", json.read("type", String.class));
             assertEquals(2, (int) json.read("features.length()", Integer.class));
             assertEquals(null, json.read("features[0].properties.name", String.class));
@@ -983,14 +897,29 @@ public class FeatureTest extends FeaturesTestSupport {
     }
 
     @Test
+    public void testSearchNextLinkPresent() throws Exception {
+        WFSInfo wfsInfo = getGeoServer().getService(WFSInfo.class);
+        FeatureConformance featureServiceInfo = FeatureConformance.configuration(wfsInfo);
+        featureServiceInfo.setSearch(true); // enable
+        getGeoServer().save(wfsInfo);
+        try {
+            String roadSegments = getLayerId(MockData.PRIMITIVEGEOFEATURE);
+            String request = "{\"limit\":1}";
+            DocumentContext json =
+                    postAsJSONPath("ogc/features/v1/collections/" + roadSegments + "/search", request, 200);
+            assertEquals("FeatureCollection", json.read("type", String.class));
+            assertEquals(1, json.read("links[?(@.rel == 'next')]", List.class).size());
+        } finally {
+            featureServiceInfo.setSearch(null); // default
+            getGeoServer().save(wfsInfo);
+        }
+    }
+
+    @Test
     public void testSingleFeatureAsGeoJson() throws Exception {
         String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
         DocumentContext json =
-                getAsJSONPath(
-                        "ogc/features/v1/collections/"
-                                + roadSegments
-                                + "/items/RoadSegments.1107532045088",
-                        200);
+                getAsJSONPath("ogc/features/v1/collections/" + roadSegments + "/items/RoadSegments.1107532045088", 200);
         assertEquals("Feature", json.read("type", String.class));
         // check self link
         String geoJsonLinkPath = "links[?(@.type == 'application/geo+json')]";
@@ -998,9 +927,8 @@ public class FeatureTest extends FeaturesTestSupport {
         assertEquals(1, selfRels.size());
         assertEquals("self", selfRels.get(0));
         String href = (String) ((List) json.read(geoJsonLinkPath + "href")).get(0);
-        String expected =
-                "http://localhost:8080/geoserver/ogc/features/v1/collections/cite%3ARoadSegments"
-                        + "/items/RoadSegments.1107532045088?f=application%2Fgeo%2Bjson";
+        String expected = "http://localhost:8080/geoserver/ogc/features/v1/collections/cite%3ARoadSegments"
+                + "/items/RoadSegments.1107532045088?f=application%2Fgeo%2Bjson";
         assertEquals(expected, href);
         // check alternate link
         List alternatefRels = json.read("links[?(@.type == 'application/json')].rel");
@@ -1016,21 +944,16 @@ public class FeatureTest extends FeaturesTestSupport {
 
         String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
         MockHttpServletResponse response =
-                getAsMockHttpServletResponse(
-                        "ogc/features/v1/collections/" + roadSegments + "/items?limit=3", 200);
+                getAsMockHttpServletResponse("ogc/features/v1/collections/" + roadSegments + "/items?limit=3", 200);
         List<String> links = response.getHeaders("Link");
         assertThat(links, Matchers.hasSize(1));
-        assertEquals(
-                links.get(0),
-                "<" + expectedNextURL + ">; rel=\"next\"; type=\"application/geo+json\"");
+        assertEquals(links.get(0), "<" + expectedNextURL + ">; rel=\"next\"; type=\"application/geo+json\"");
 
         DocumentContext json = getAsJSONPath(response);
         assertEquals(3, (int) json.read("features.length()", Integer.class));
         // check the paging link is there
         assertThat(json.read("$.links[?(@.rel=='prev')].href"), Matchers.empty());
-        assertThat(
-                json.read("$.links[?(@.rel=='next')].href", JSONArray.class).get(0),
-                equalTo(expectedNextURL));
+        assertThat(json.read("$.links[?(@.rel=='next')].href", JSONArray.class).get(0), equalTo(expectedNextURL));
     }
 
     @Test
@@ -1041,30 +964,18 @@ public class FeatureTest extends FeaturesTestSupport {
                 "http://localhost:8080/geoserver/ogc/features/v1/collections/cite%3ARoadSegments/items?startIndex=4&limit=1";
 
         String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
-        MockHttpServletResponse response =
-                getAsMockHttpServletResponse(
-                        "ogc/features/v1/collections/"
-                                + roadSegments
-                                + "/items?startIndex=3&limit=1",
-                        200);
+        MockHttpServletResponse response = getAsMockHttpServletResponse(
+                "ogc/features/v1/collections/" + roadSegments + "/items?startIndex=3&limit=1", 200);
         List<String> links = response.getHeaders("Link");
         assertThat(links, Matchers.hasSize(2));
-        assertEquals(
-                "<" + expectedPrevURL + ">; rel=\"prev\"; type=\"application/geo+json\"",
-                links.get(0));
-        assertEquals(
-                "<" + expectedNextURL + ">; rel=\"next\"; type=\"application/geo+json\"",
-                links.get(1));
+        assertEquals("<" + expectedPrevURL + ">; rel=\"prev\"; type=\"application/geo+json\"", links.get(0));
+        assertEquals("<" + expectedNextURL + ">; rel=\"next\"; type=\"application/geo+json\"", links.get(1));
 
         DocumentContext json = getAsJSONPath(response);
         assertEquals(1, (int) json.read("features.length()", Integer.class));
         // check the paging link is there
-        assertThat(
-                json.read("$.links[?(@.rel=='prev')].href", JSONArray.class).get(0),
-                equalTo(expectedPrevURL));
-        assertThat(
-                json.read("$.links[?(@.rel=='next')].href", JSONArray.class).get(0),
-                equalTo(expectedNextURL));
+        assertThat(json.read("$.links[?(@.rel=='prev')].href", JSONArray.class).get(0), equalTo(expectedPrevURL));
+        assertThat(json.read("$.links[?(@.rel=='next')].href", JSONArray.class).get(0), equalTo(expectedNextURL));
     }
 
     @Test
@@ -1073,36 +984,25 @@ public class FeatureTest extends FeaturesTestSupport {
                 "http://localhost:8080/geoserver/ogc/features/v1/collections/cite%3ARoadSegments/items?startIndex=0&limit=3";
 
         String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
-        MockHttpServletResponse response =
-                getAsMockHttpServletResponse(
-                        "ogc/features/v1/collections/"
-                                + roadSegments
-                                + "/items?startIndex=3&limit=3",
-                        200);
+        MockHttpServletResponse response = getAsMockHttpServletResponse(
+                "ogc/features/v1/collections/" + roadSegments + "/items?startIndex=3&limit=3", 200);
         List<String> links = response.getHeaders("Link");
         assertThat(links, Matchers.hasSize(1));
-        assertEquals(
-                links.get(0),
-                "<" + expectedPrevLink + ">; rel=\"prev\"; type=\"application/geo+json\"");
+        assertEquals(links.get(0), "<" + expectedPrevLink + ">; rel=\"prev\"; type=\"application/geo+json\"");
 
         DocumentContext json = getAsJSONPath(response);
         assertEquals(2, (int) json.read("features.length()", Integer.class));
         // check the paging link is there
-        assertThat(
-                json.read("$.links[?(@.rel=='prev')].href", JSONArray.class).get(0),
-                equalTo(expectedPrevLink));
+        assertThat(json.read("$.links[?(@.rel=='prev')].href", JSONArray.class).get(0), equalTo(expectedPrevLink));
         assertThat(json.read("$.links[?(@.rel=='next')].href"), Matchers.empty());
     }
 
     @Test
     public void testErrorHandling() throws Exception {
         String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/features/v1/collections/" + roadSegments + "/items?limit=abc", 400);
+        DocumentContext json = getAsJSONPath("ogc/features/v1/collections/" + roadSegments + "/items?limit=abc", 400);
         assertEquals("InvalidParameterValue", json.read("code"));
-        assertThat(
-                json.read("description"), both(containsString("limit")).and(containsString("abc")));
+        assertThat(json.read("description"), both(containsString("limit")).and(containsString("abc")));
     }
 
     @Test
@@ -1114,7 +1014,8 @@ public class FeatureTest extends FeaturesTestSupport {
         // all elements expected are there
         // check the id of a known tag
         assertEquals(
-                "106", document.select("td:matches(RoadSegments\\.1107532045091) + td").text());
+                "106",
+                document.select("td:matches(RoadSegments\\.1107532045091) + td").text());
     }
 
     @Test
@@ -1131,10 +1032,7 @@ public class FeatureTest extends FeaturesTestSupport {
     public void testGetLayerAsHTMLPagingLinks() throws Exception {
         String roadSegments = ResponseUtils.urlEncode(getLayerId(MockData.ROAD_SEGMENTS));
         String urlBase = "ogc/features/v1/collections/" + roadSegments + "/items?f=html";
-        String expectedBase =
-                "http://localhost:8080/geoserver/ogc/features/v1/collections/"
-                        + roadSegments
-                        + "/items";
+        String expectedBase = "http://localhost:8080/geoserver/ogc/features/v1/collections/" + roadSegments + "/items";
 
         // first page, should only have next URL
         String firstPageURL = urlBase + "&limit=2";
@@ -1170,23 +1068,15 @@ public class FeatureTest extends FeaturesTestSupport {
 
     @Test
     public void testSpecialCharsInTypeName() throws Exception {
-        FeatureTypeInfo genericEntity =
-                getCatalog().getFeatureTypeByName(getLayerId(MockData.GENERICENTITY));
+        FeatureTypeInfo genericEntity = getCatalog().getFeatureTypeByName(getLayerId(MockData.GENERICENTITY));
         genericEntity.setName("EntitéGénérique");
         getCatalog().save(genericEntity);
         try {
-            String encodedLocalName =
-                    URLEncoder.encode(genericEntity.getName(), StandardCharsets.UTF_8.name());
-            String typeName =
-                    URLEncoder.encode(genericEntity.prefixedName(), StandardCharsets.UTF_8.name());
+            String encodedLocalName = URLEncoder.encode(genericEntity.getName(), StandardCharsets.UTF_8.name());
+            String typeName = URLEncoder.encode(genericEntity.prefixedName(), StandardCharsets.UTF_8.name());
             String encodedFeatureId = encodedLocalName + ".f004";
             DocumentContext json =
-                    getAsJSONPath(
-                            "ogc/features/v1/collections/"
-                                    + typeName
-                                    + "/items/"
-                                    + encodedFeatureId,
-                            200);
+                    getAsJSONPath("ogc/features/v1/collections/" + typeName + "/items/" + encodedFeatureId, 200);
 
             assertEquals("Feature", json.read("type", String.class));
             // check self link
@@ -1195,12 +1085,11 @@ public class FeatureTest extends FeaturesTestSupport {
             assertEquals(1, selfRels.size());
             assertEquals("self", selfRels.get(0));
             String href = (String) ((List) json.read(geoJsonLinkPath + "href")).get(0);
-            String expected =
-                    "http://localhost:8080/geoserver/ogc/features/v1/collections/"
-                            + typeName
-                            + "/items/"
-                            + encodedFeatureId
-                            + "?f=application%2Fgeo%2Bjson";
+            String expected = "http://localhost:8080/geoserver/ogc/features/v1/collections/"
+                    + typeName
+                    + "/items/"
+                    + encodedFeatureId
+                    + "?f=application%2Fgeo%2Bjson";
             assertEquals(expected, href);
             // check alternate link
             List alternatefRels = json.read("links[?(@.type == 'application/json')].rel");
@@ -1216,12 +1105,8 @@ public class FeatureTest extends FeaturesTestSupport {
     @Test
     public void testGetItemAsGeoJson() throws Exception {
         String primitiveLayer = ResponseUtils.urlEncode(getLayerId(MockData.PRIMITIVEGEOFEATURE));
-        MockHttpServletResponse response =
-                getAsMockHttpServletResponse(
-                        "ogc/features/v1/collections/"
-                                + primitiveLayer
-                                + "/items/PrimitiveGeoFeature.f002",
-                        200);
+        MockHttpServletResponse response = getAsMockHttpServletResponse(
+                "ogc/features/v1/collections/" + primitiveLayer + "/items/PrimitiveGeoFeature.f002", 200);
         assertEquals(
                 "<http://www.opengis.net/def/crs/OGC/1.3/CRS84>",
                 response.getHeader(HttpHeaderContentCrsAppender.CRS_RESPONSE_HEADER));
@@ -1243,22 +1128,15 @@ public class FeatureTest extends FeaturesTestSupport {
         assertThat(selfLink.size(), greaterThan(0));
         assertThat(
                 (String) selfLink.get(0),
-                startsWith(
-                        "http://localhost:8080/geoserver/ogc/features/v1/collections/"
-                                + primitiveLayer
-                                + "?"));
+                startsWith("http://localhost:8080/geoserver/ogc/features/v1/collections/" + primitiveLayer + "?"));
     }
 
     @Test
     public void testGetItemAsGeoJsonWithCRS() throws Exception {
         String primitiveLayer = ResponseUtils.urlEncode(getLayerId(MockData.PRIMITIVEGEOFEATURE));
-        MockHttpServletResponse response =
-                getAsMockHttpServletResponse(
-                        "ogc/features/v1/collections/"
-                                + primitiveLayer
-                                + "/items/PrimitiveGeoFeature.f002"
-                                + "?crs=CRS:84",
-                        200);
+        MockHttpServletResponse response = getAsMockHttpServletResponse(
+                "ogc/features/v1/collections/" + primitiveLayer + "/items/PrimitiveGeoFeature.f002" + "?crs=CRS:84",
+                200);
         assertEquals(
                 "<http://www.opengis.net/def/crs/OGC/1.3/CRS84>",
                 response.getHeader(HttpHeaderContentCrsAppender.CRS_RESPONSE_HEADER));
@@ -1280,23 +1158,19 @@ public class FeatureTest extends FeaturesTestSupport {
         assertThat(selfLink.size(), greaterThan(0));
         assertThat(
                 (String) selfLink.get(0),
-                startsWith(
-                        "http://localhost:8080/geoserver/ogc/features/v1/collections/"
-                                + primitiveLayer
-                                + "?"));
+                startsWith("http://localhost:8080/geoserver/ogc/features/v1/collections/" + primitiveLayer + "?"));
     }
 
     @Test
     public void testJSONFGSingleFeatureCRS84() throws Exception {
         String bridges = ResponseUtils.urlEncode(getLayerId(MockData.BRIDGES));
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/features/v1/collections/"
-                                + bridges
-                                + "/items/Bridges.1107531599613"
-                                + "?crs=CRS:84&f="
-                                + ResponseUtils.urlEncode(JSONFGFeaturesResponse.MIME_TYPE),
-                        200);
+        DocumentContext json = getAsJSONPath(
+                "ogc/features/v1/collections/"
+                        + bridges
+                        + "/items/Bridges.1107531599613"
+                        + "?crs=CRS:84&f="
+                        + ResponseUtils.urlEncode(JSONFGFeaturesResponse.MIME_TYPE),
+                200);
 
         assertEquals("Feature", json.read("type", String.class));
         // the coord ref sys is not included in the response, as it's the default one
@@ -1304,21 +1178,19 @@ public class FeatureTest extends FeaturesTestSupport {
         // we have geometry, but not place
         assertThrows(PathNotFoundException.class, () -> json.read("place"));
         assertEquals("Point", json.read("geometry.type"));
-        assertArrayEquals(
-                new double[] {2E-4, 7E-4}, json.read("geometry.coordinates", double[].class), 1e-4);
+        assertArrayEquals(new double[] {2E-4, 7E-4}, json.read("geometry.coordinates", double[].class), 1e-4);
     }
 
     @Test
     public void testJSONFGSingleFeatureWebMercator() throws Exception {
         String bridges = ResponseUtils.urlEncode(getLayerId(MockData.BRIDGES));
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/features/v1/collections/"
-                                + bridges
-                                + "/items/Bridges.1107531599613"
-                                + "?crs=EPSG:3857&f="
-                                + ResponseUtils.urlEncode(JSONFGFeaturesResponse.MIME_TYPE),
-                        200);
+        DocumentContext json = getAsJSONPath(
+                "ogc/features/v1/collections/"
+                        + bridges
+                        + "/items/Bridges.1107531599613"
+                        + "?crs=EPSG:3857&f="
+                        + ResponseUtils.urlEncode(JSONFGFeaturesResponse.MIME_TYPE),
+                200);
 
         assertEquals("Feature", json.read("type", String.class));
         // the coord ref sys is not included in the response, as it's the default one
@@ -1326,8 +1198,7 @@ public class FeatureTest extends FeaturesTestSupport {
         // we have place, but not geometry
         assertThrows(PathNotFoundException.class, () -> json.read("geometry"));
         assertEquals("Point", json.read("place.type"));
-        assertArrayEquals(
-                new double[] {22, 78}, json.read("place.coordinates", double[].class), 1d);
+        assertArrayEquals(new double[] {22, 78}, json.read("place.coordinates", double[].class), 1d);
         // check the link to the type information for single features
         DocumentContext typeLink = readSingleContext(json, "links[?(@.rel == 'type')]");
         assertEquals(SCHEMA_TYPE_VALUE, typeLink.read("type"));
@@ -1344,39 +1215,34 @@ public class FeatureTest extends FeaturesTestSupport {
     @Test
     public void testJSONFGSingleFeatureETRS89() throws Exception {
         String bridges = ResponseUtils.urlEncode(getLayerId(MockData.BRIDGES));
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/features/v1/collections/"
-                                + bridges
-                                + "/items/Bridges.1107531599613"
-                                + "?crs=http://www.opengis.net/def/crs/EPSG/0/4258&f="
-                                + ResponseUtils.urlEncode(JSONFGFeaturesResponse.MIME_TYPE),
-                        200);
+        DocumentContext json = getAsJSONPath(
+                "ogc/features/v1/collections/"
+                        + bridges
+                        + "/items/Bridges.1107531599613"
+                        + "?crs=http://www.opengis.net/def/crs/EPSG/0/4258&f="
+                        + ResponseUtils.urlEncode(JSONFGFeaturesResponse.MIME_TYPE),
+                200);
 
         assertEquals("Feature", json.read("type", String.class));
         // the coord ref sys is not included in the response, as it's the default one
-        assertEquals(
-                "http://www.opengis.net/def/crs/EPSG/0/4258",
-                json.read(COORD_REF_SYS, String.class));
+        assertEquals("http://www.opengis.net/def/crs/EPSG/0/4258", json.read(COORD_REF_SYS, String.class));
         // we have place, but not geometry
         assertThrows(PathNotFoundException.class, () -> json.read("geometry"));
         assertEquals("Point", json.read("place.type"));
         // mind that axis flip
-        assertArrayEquals(
-                new double[] {7E-4, 2E-4}, json.read("place.coordinates", double[].class), 1e-4);
+        assertArrayEquals(new double[] {7E-4, 2E-4}, json.read("place.coordinates", double[].class), 1e-4);
     }
 
     @Test
     public void testJSONFG_CRS84() throws Exception {
         String bridges = ResponseUtils.urlEncode(getLayerId(MockData.BRIDGES));
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/features/v1/collections/"
-                                + bridges
-                                + "/items"
-                                + "?crs=CRS:84&f="
-                                + ResponseUtils.urlEncode(JSONFGFeaturesResponse.MIME_TYPE),
-                        200);
+        DocumentContext json = getAsJSONPath(
+                "ogc/features/v1/collections/"
+                        + bridges
+                        + "/items"
+                        + "?crs=CRS:84&f="
+                        + ResponseUtils.urlEncode(JSONFGFeaturesResponse.MIME_TYPE),
+                200);
 
         assertEquals("FeatureCollection", json.read("type", String.class));
         // the coord ref sys is not included in the response, as it's the default one
@@ -1388,10 +1254,7 @@ public class FeatureTest extends FeaturesTestSupport {
         DocumentContext feature = readContext(json, "features[0]");
         assertThrows(PathNotFoundException.class, () -> feature.read("place"));
         assertEquals("Point", feature.read("geometry.type"));
-        assertArrayEquals(
-                new double[] {2E-4, 7E-4},
-                feature.read("geometry.coordinates", double[].class),
-                1e-4);
+        assertArrayEquals(new double[] {2E-4, 7E-4}, feature.read("geometry.coordinates", double[].class), 1e-4);
         assertEquals("Point", feature.read("geometry.type"));
         // check the link to the type information for collections
         DocumentContext typeLink = readSingleContext(json, "links[?(@.rel == 'type')]");
@@ -1404,14 +1267,13 @@ public class FeatureTest extends FeaturesTestSupport {
     @Test
     public void testJSONFGWebMercator() throws Exception {
         String bridges = ResponseUtils.urlEncode(getLayerId(MockData.BRIDGES));
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/features/v1/collections/"
-                                + bridges
-                                + "/items"
-                                + "?crs=EPSG:3857&f="
-                                + ResponseUtils.urlEncode(JSONFGFeaturesResponse.MIME_TYPE),
-                        200);
+        DocumentContext json = getAsJSONPath(
+                "ogc/features/v1/collections/"
+                        + bridges
+                        + "/items"
+                        + "?crs=EPSG:3857&f="
+                        + ResponseUtils.urlEncode(JSONFGFeaturesResponse.MIME_TYPE),
+                200);
 
         assertEquals("FeatureCollection", json.read("type", String.class));
         // the coord ref sys is included in the response, not the default
@@ -1420,7 +1282,102 @@ public class FeatureTest extends FeaturesTestSupport {
         DocumentContext feature = readContext(json, "features[0]");
         assertThrows(PathNotFoundException.class, () -> feature.read("geometry"));
         assertEquals("Point", feature.read("place.type"));
-        assertArrayEquals(
-                new double[] {22, 78}, feature.read("place.coordinates", double[].class), 1d);
+        assertArrayEquals(new double[] {22, 78}, feature.read("place.coordinates", double[].class), 1d);
+    }
+
+    @Test
+    public void testCharset() throws Exception {
+        String roadSegments = ResponseUtils.urlEncode(getLayerId(MockData.ROAD_SEGMENTS));
+        MockHttpServletResponse response = getAsServletResponse(
+                "ogc/features/v1/collections/" + roadSegments + "/items", StandardCharsets.UTF_8.name());
+        assertEquals(200, response.getStatus());
+        assertEquals("UTF-8", response.getCharacterEncoding());
+    }
+
+    @Test
+    public void testPropertySelectionItems() throws Exception {
+        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
+        FeatureConformance features = FeatureConformance.configuration(wfs);
+        features.setPropertySelection(true);
+        getGeoServer().save(wfs);
+        try {
+            // positive selection
+            String roadSegments = ResponseUtils.urlEncode(getLayerId(MockData.ROAD_SEGMENTS));
+            String basePath = "ogc/features/v1/collections/" + roadSegments + "/items";
+            DocumentContext fc = getAsJSONPath(basePath + "?properties=the_geom,FID", 200);
+            assertEquals("FeatureCollection", fc.read("type", String.class));
+            assertEquals(5, (int) fc.read("features.length()", Integer.class));
+            // check only the_geom and ID are present
+            DocumentContext feature = readContext(fc, "features[0]");
+            assertNotNull(feature.read("geometry"));
+            Map props = feature.read("properties", Map.class);
+            assertEquals(1, props.size());
+            assertNotNull(props.get("FID"));
+
+            // negative selection
+            fc = getAsJSONPath(
+                    "ogc/features/v1/collections/" + roadSegments + "/items?exclude-properties=the_geom,FID", 200);
+            assertEquals("FeatureCollection", fc.read("type", String.class));
+            assertEquals(5, (int) fc.read("features.length()", Integer.class));
+            // the_geom and ID are gone, NAME is available
+            feature = readContext(fc, "features[0]");
+            assertNull(feature.read("geometry"));
+            props = feature.read("properties", Map.class);
+            assertEquals(1, props.size());
+            assertNotNull(props.get("NAME"));
+
+            // both positive and negative (not allowed, bad request)
+            DocumentContext error = getAsJSONPath(
+                    "ogc/features/v1/collections/" + roadSegments
+                            + "/items?properties=the_geom,FID&exclude-properties=FID",
+                    400);
+            assertEquals("InvalidParameterValue", error.read("code"));
+            assertThat(
+                    error.read("description"),
+                    allOf(containsString("properties"), containsString("exclude-properties")));
+        } finally {
+            // restore defaults
+            features.setPropertySelection(null);
+            getGeoServer().save(wfs);
+        }
+    }
+
+    @Test
+    public void testPropertySelectionItem() throws Exception {
+        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
+        FeatureConformance features = FeatureConformance.configuration(wfs);
+        features.setPropertySelection(true);
+        getGeoServer().save(wfs);
+        try {
+            // positive selection
+            String roadSegments = ResponseUtils.urlEncode(getLayerId(MockData.ROAD_SEGMENTS));
+            String basePath = "ogc/features/v1/collections/" + roadSegments + "/items/RoadSegments.1107532045088";
+            DocumentContext feature = getAsJSONPath(basePath + "?properties=the_geom,FID", 200);
+            assertEquals("Feature", feature.read("type", String.class));
+            assertNotNull(feature.read("geometry"));
+            Map props = feature.read("properties", Map.class);
+            assertEquals(1, props.size());
+            assertNotNull(props.get("FID"));
+
+            // negative selection
+            feature = getAsJSONPath(basePath + "?exclude-properties=the_geom,FID", 200);
+            assertEquals("Feature", feature.read("type", String.class));
+            // the_geom and ID are gone, NAME is available
+            assertNull(feature.read("geometry"));
+            props = feature.read("properties", Map.class);
+            assertEquals(1, props.size());
+            assertNotNull(props.get("NAME"));
+
+            // both positive and negative (not allowed, bad request)
+            DocumentContext error = getAsJSONPath(basePath + "?properties=the_geom,FID&exclude-properties=FID", 400);
+            assertEquals("InvalidParameterValue", error.read("code"));
+            assertThat(
+                    error.read("description"),
+                    allOf(containsString("properties"), containsString("exclude-properties")));
+        } finally {
+            // restore defaults
+            features.setPropertySelection(null);
+            getGeoServer().save(wfs);
+        }
     }
 }

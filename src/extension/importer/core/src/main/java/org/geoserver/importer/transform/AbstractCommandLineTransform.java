@@ -8,6 +8,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +25,7 @@ import org.apache.commons.io.output.CountingOutputStream;
  */
 public abstract class AbstractCommandLineTransform extends AbstractTransform {
 
+    @Serial
     private static final long serialVersionUID = 5998049960852782644L;
 
     static final long DEFAULT_TIMEOUT = 60 * 60 * 1000; // one hour
@@ -73,13 +75,12 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform {
                 if (executor.isFailure(result)) {
                     // toString call is routed to ByteArrayOutputStream, which does the right string
                     // conversion
-                    throw new IOException(
-                            "Failed to execute command "
-                                    + cmd.toString()
-                                    + "\nStandard output is:\n"
-                                    + os.toString()
-                                    + "\nStandard error is:\n"
-                                    + es.toString());
+                    throw new IOException("Failed to execute command "
+                            + cmd.toString()
+                            + "\nStandard output is:\n"
+                            + os.toString()
+                            + "\nStandard error is:\n"
+                            + es.toString());
                 }
             } catch (Exception e) {
                 throw new IOException(

@@ -4,9 +4,6 @@
  */
 package org.geoserver.wps.gs.download.vertical;
 
-import it.geosolutions.jaiext.range.NoDataContainer;
-import it.geosolutions.jaiext.range.Range;
-import it.geosolutions.jaiext.range.RangeFactory;
 import java.awt.geom.AffineTransform;
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -19,10 +16,13 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.media.jai.JAI;
-import javax.media.jai.OperationRegistry;
-import javax.media.jai.PlanarImage;
-import javax.media.jai.registry.RenderedRegistryMode;
+import org.eclipse.imagen.ImageN;
+import org.eclipse.imagen.OperationRegistry;
+import org.eclipse.imagen.PlanarImage;
+import org.eclipse.imagen.media.range.NoDataContainer;
+import org.eclipse.imagen.media.range.Range;
+import org.eclipse.imagen.media.range.RangeFactory;
+import org.eclipse.imagen.registry.RenderedRegistryMode;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.wps.WPSException;
@@ -52,9 +52,8 @@ import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
 
 /**
- * A Resampling class applying a Vertical Grid Transform to an input coverage representing height
- * data expressed in a source VerticalCRS to produce an output coverage with heigh data expressed in
- * a target VerticalCRS.
+ * A Resampling class applying a Vertical Grid Transform to an input coverage representing height data expressed in a
+ * source VerticalCRS to produce an output coverage with heigh data expressed in a target VerticalCRS.
  */
 public class VerticalResampler {
 
@@ -62,8 +61,8 @@ public class VerticalResampler {
     private static final Logger LOGGER = Logging.getLogger(VerticalResampler.class);
 
     /** A cache containing the VerticalGridTransform for a <source,target> key mapping */
-    private static final SoftValueHashMap<String, VerticalGridTransform>
-            CRS_MAPPING_TO_VERTICAL_GRID_TRANSFORM = new SoftValueHashMap<>();
+    private static final SoftValueHashMap<String, VerticalGridTransform> CRS_MAPPING_TO_VERTICAL_GRID_TRANSFORM =
+            new SoftValueHashMap<>();
 
     private static final DefaultMathTransformFactory MT_FACTORY = new DefaultMathTransformFactory();
 
@@ -74,9 +73,7 @@ public class VerticalResampler {
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
         File geoserverDataDir = loader.getBaseDirectory();
         final String epsgPropertyFilePath =
-                "user_projections"
-                        + File.separatorChar
-                        + CoordinateOperationFactoryUsingWKT.FILENAME;
+                "user_projections" + File.separatorChar + CoordinateOperationFactoryUsingWKT.FILENAME;
         File epsgPropertiesFile = new File(geoserverDataDir, epsgPropertyFilePath);
 
         if (epsgPropertiesFile.exists()) {
@@ -87,45 +84,40 @@ public class VerticalResampler {
                 definitions.load(in);
             } catch (IOException e) {
                 throw new RuntimeException(
-                        "Exception occurred while parsing: "
-                                + epsgPropertiesFile
-                                + e.getLocalizedMessage());
+                        "Exception occurred while parsing: " + epsgPropertiesFile + e.getLocalizedMessage());
             }
             Set<Map.Entry<Object, Object>> entriesSet = definitions.entrySet();
             for (Map.Entry<Object, Object> entry : entriesSet) {
                 // Scan the mapping entries and process only the vertical offset ones
                 String value = (String) entry.getValue();
-                if (value.contains(
-                        VerticalGridTransform.Provider.VERTICAL_OFFSET_BY_GRID_INTERPOLATION_KEY)) {
+                if (value.contains(VerticalGridTransform.Provider.VERTICAL_OFFSET_BY_GRID_INTERPOLATION_KEY)) {
                     String key = (String) entry.getKey();
                     try {
                         MathTransform mt = MT_FACTORY.createFromWKT(value);
-                        if (mt instanceof VerticalGridTransform) {
-                            CRS_MAPPING_TO_VERTICAL_GRID_TRANSFORM.put(
-                                    key, (VerticalGridTransform) mt);
+                        if (mt instanceof VerticalGridTransform transform) {
+                            CRS_MAPPING_TO_VERTICAL_GRID_TRANSFORM.put(key, transform);
                         }
                     } catch (FactoryException e) {
                         if (LOGGER.isLoggable(Level.SEVERE)) {
-                            LOGGER.severe(
-                                    "Unable to parse the Vertical Grid Interpolation: "
-                                            + value
-                                            + "="
-                                            + key
-                                            + " due to "
-                                            + e.getLocalizedMessage());
+                            LOGGER.severe("Unable to parse the Vertical Grid Interpolation: "
+                                    + value
+                                    + "="
+                                    + key
+                                    + " due to "
+                                    + e.getLocalizedMessage());
                         }
                     }
                 }
             }
         }
 
-        OperationRegistry registry = JAI.getDefaultInstance().getOperationRegistry();
+        OperationRegistry registry = ImageN.getDefaultInstance().getOperationRegistry();
         VerticalTransformDescriptor descriptor = new VerticalTransformDescriptor();
         registry.registerDescriptor(descriptor);
         registry.registerFactory(
                 RenderedRegistryMode.MODE_NAME,
                 descriptor.getName(),
-                "it.geosolutions.jaiext",
+                "org.eclipse.imagen.media",
                 new VerticalTransformCRIF());
     }
 
@@ -163,19 +155,14 @@ public class VerticalResampler {
             }
         } else {
             throw new WPSException(
-                    "No Vertical Transformation has been found from "
-                            + sourceVerticalCRS
-                            + " to "
-                            + targetVerticalCRS);
+                    "No Vertical Transformation has been found from " + sourceVerticalCRS + " to " + targetVerticalCRS);
         }
     }
 
     /**
-     * Resample the provided gridCoverage by applying the underlying VerticalGridTransform, to
-     * adjust the height values.
+     * Resample the provided gridCoverage by applying the underlying VerticalGridTransform, to adjust the height values.
      */
-    public GridCoverage2D resample(GridCoverage2D gridCoverage)
-            throws FactoryException, TransformException {
+    public GridCoverage2D resample(GridCoverage2D gridCoverage) throws FactoryException, TransformException {
         CoordinateReferenceSystem inputCRS = gridCoverage.getCoordinateReferenceSystem();
         Envelope dataEnvelope = new ReferencedEnvelope(gridCoverage.getEnvelope());
         VerticalGridShift gridShift = verticalGridTransform.getVerticalGridShift();
@@ -190,13 +177,12 @@ public class VerticalResampler {
         ReferencedEnvelope gridEnvelope = new ReferencedEnvelope(gridShift.getValidArea());
         if (!gridEnvelope.intersects(dataEnvelope)) {
             if (LOGGER.isLoggable(Level.INFO)) {
-                LOGGER.info(
-                        "The computed GridCoverage doesn't intersect the valid area of the available grid.\""
-                                + " Data Envelope: "
-                                + dataEnvelope
-                                + " Vertical Grid File Envelope: "
-                                + gridEnvelope
-                                + ".\n Returning the coverage without vertical interpolation being applied");
+                LOGGER.info("The computed GridCoverage doesn't intersect the valid area of the available grid.\""
+                        + " Data Envelope: "
+                        + dataEnvelope
+                        + " Vertical Grid File Envelope: "
+                        + gridEnvelope
+                        + ".\n Returning the coverage without vertical interpolation being applied");
             }
             return gridCoverage;
         }
@@ -205,26 +191,23 @@ public class VerticalResampler {
 
         // Prepare concatenated transforms needed to go from input coverage pixels to the vertical
         // grid positions
-        MathTransform pixelToVerticalGridTransform =
-                sourceToGridCrsTransform != null
-                        ? ConcatenatedTransform.create(gridToCrs, sourceToGridCrsTransform)
-                        : gridToCrs;
+        MathTransform pixelToVerticalGridTransform = sourceToGridCrsTransform != null
+                ? ConcatenatedTransform.create(gridToCrs, sourceToGridCrsTransform)
+                : gridToCrs;
         double[] resolution = gridShift.getResolution();
 
         // Apply an half pixel translate to center on the Vertical Grid pixels
         AffineTransform halfPixelTranslate =
                 AffineTransform.getTranslateInstance(-resolution[0] / 2d, resolution[1] / 2d);
         pixelToVerticalGridTransform =
-                ConcatenatedTransform.create(
-                        pixelToVerticalGridTransform, new AffineTransform2D(halfPixelTranslate));
+                ConcatenatedTransform.create(pixelToVerticalGridTransform, new AffineTransform2D(halfPixelTranslate));
 
-        RenderedImage resultImage =
-                VerticalTransformDescriptor.create(
-                        pixelToVerticalGridTransform,
-                        verticalGridTransform,
-                        extractNoData(gridCoverage),
-                        null,
-                        new RenderedImage[] {gridCoverage.getRenderedImage()});
+        RenderedImage resultImage = VerticalTransformDescriptor.create(
+                pixelToVerticalGridTransform,
+                verticalGridTransform,
+                extractNoData(gridCoverage),
+                null,
+                new RenderedImage[] {gridCoverage.getRenderedImage()});
         if (resultImage == null) {
             throw new WPSException("Unable to create a raster with the updated vertical values.");
         }
@@ -244,8 +227,8 @@ public class VerticalResampler {
         if (noDataContainer == null) {
             RenderedImage image = PlanarImage.wrapRenderedImage(gridCoverage.getRenderedImage());
             Object property = image.getProperty(NoDataContainer.GC_NODATA);
-            if (property instanceof NoDataContainer) {
-                noDataContainer = ((NoDataContainer) property);
+            if (property instanceof NoDataContainer container) {
+                noDataContainer = container;
             }
         }
         if (noDataContainer != null) {

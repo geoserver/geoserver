@@ -21,11 +21,10 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.util.logging.Logging;
 
 /**
- * Special converter locator which can resolve relative urls relative to the GeoServer data
- * directory.
+ * Special converter locator which can resolve relative urls relative to the GeoServer data directory.
  *
- * <p>This converter locator will turn URL's of the form "file:data/..." into full path URL's such
- * as "file://var/lib/geoserver/data/...".
+ * <p>This converter locator will turn URL's of the form "file:data/..." into full path URL's such as
+ * "file://var/lib/geoserver/data/...".
  *
  * @author Justin Deoliveira, The Open Planning Project
  */

@@ -5,6 +5,7 @@
 
 package org.geoserver.solr;
 
+import java.io.Serial;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -24,13 +25,13 @@ import org.geoserver.web.wicket.ParamResourceModel;
 
 /**
  * Resource configuration panel to show a link to open SOLR attribute modal dialog <br>
- * If the SOLR attribute are not configured for current layer, the modal dialog will be open at
- * first resource configuration window opening <br>
- * After modal dialog is closed the resource page is reloaded and feature configuration table
- * updated
+ * If the SOLR attribute are not configured for current layer, the modal dialog will be open at first resource
+ * configuration window opening <br>
+ * After modal dialog is closed the resource page is reloaded and feature configuration table updated
  */
 public class SolrConfigurationPanel extends ResourceConfigurationPanel {
 
+    @Serial
     private static final long serialVersionUID = 3382530429105288433L;
 
     private LayerInfo _layerInfo;
@@ -49,53 +50,45 @@ public class SolrConfigurationPanel extends ResourceConfigurationPanel {
         final GSModalWindow modal = new GSModalWindow("modal");
         modal.setInitialWidth(800);
         modal.setTitle(new ParamResourceModel("modalTitle", SolrConfigurationPanel.this));
-        modal.setWindowClosedCallback(
-                (GSModalWindow.WindowClosedCallback)
-                        target -> {
-                            if (_layerInfo != null) {
-                                GeoServerApplication app = (GeoServerApplication) getApplication();
-                                FeatureTypeInfo ft = (FeatureTypeInfo) getResourceInfo();
+        modal.setWindowClosedCallback((GSModalWindow.WindowClosedCallback) target -> {
+            if (_layerInfo != null) {
+                GeoServerApplication app = (GeoServerApplication) getApplication();
+                FeatureTypeInfo ft = (FeatureTypeInfo) getResourceInfo();
 
-                                // Override _isNew state, based on resource informations into
-                                // catalog
-                                if (ft.getId() != null
-                                        && app.getCatalog()
-                                                        .getResource(ft.getId(), ResourceInfo.class)
-                                                != null) {
-                                    _isNew = false;
-                                } else {
-                                    _isNew = true;
-                                }
+                // Override _isNew state, based on resource informations into
+                // catalog
+                if (ft.getId() != null && app.getCatalog().getResource(ft.getId(), ResourceInfo.class) != null) {
+                    _isNew = false;
+                } else {
+                    _isNew = true;
+                }
 
-                                app.getCatalog().getResourcePool().clear(ft);
-                                app.getCatalog().getResourcePool().clear(ft.getStore());
-                                setResponsePage(new ResourceConfigurationPage(_layerInfo, _isNew));
-                            }
-                        });
+                app.getCatalog().getResourcePool().clear(ft);
+                app.getCatalog().getResourcePool().clear(ft.getStore());
+                setResponsePage(new ResourceConfigurationPage(_layerInfo, _isNew));
+            }
+        });
 
         if (fti.getId() == null) {
             modal.add(new OpenWindowOnLoadBehavior());
         }
 
-        modal.setContent(
-                new SolrConfigurationPage(panelId, model) {
-                    @Override
-                    void done(AjaxRequestTarget target, ResourceInfo resource) {
-                        ResourceConfigurationPage page =
-                                (ResourceConfigurationPage) SolrConfigurationPanel.this.getPage();
-                        page.updateResource(resource, target);
-                        modal.close(target);
-                    }
-                });
+        modal.setContent(new SolrConfigurationPage(panelId, model) {
+            @Override
+            void done(AjaxRequestTarget target, ResourceInfo resource) {
+                ResourceConfigurationPage page = (ResourceConfigurationPage) SolrConfigurationPanel.this.getPage();
+                page.updateResource(resource, target);
+                modal.close(target);
+            }
+        });
         add(modal);
 
-        AjaxLink findLink =
-                new AjaxLink("edit") {
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        modal.show(target);
-                    }
-                };
+        AjaxLink findLink = new AjaxLink("edit") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                modal.show(target);
+            }
+        };
         final Fragment attributePanel = new Fragment("solrPanel", "solrPanelFragment", this);
         attributePanel.setOutputMarkupId(true);
         add(attributePanel);

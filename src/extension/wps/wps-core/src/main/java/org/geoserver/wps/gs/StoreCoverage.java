@@ -50,9 +50,7 @@ public class StoreCoverage implements GeoServerProcess {
     }
 
     @DescribeResult(name = "coverageLocation", description = "URL at which raster can be accessed")
-    public URL execute(
-            @DescribeParameter(name = "coverage", description = "Input raster")
-                    GridCoverage2D coverage)
+    public URL execute(@DescribeParameter(name = "coverage", description = "Input raster") GridCoverage2D coverage)
             throws IOException {
         String fileName = coverage.getName().toString() + ".tif";
         final Resource resource = resources.getOutputResource(null, fileName);

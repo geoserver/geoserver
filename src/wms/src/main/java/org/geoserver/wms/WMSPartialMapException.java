@@ -7,9 +7,8 @@ package org.geoserver.wms;
 import org.geoserver.platform.ServiceException;
 
 /**
- * Extension of ServiceException for returning a WebMap with the exception. Used with WMS option
- * EXCEPTIONS=PARTIALMAP to return a partial image if there is an exception (such as a timeout)
- * thrown when rendering a WMS request.
+ * Extension of ServiceException for returning a WebMap with the exception. Used with WMS option EXCEPTIONS=PARTIALMAP
+ * to return a partial image if there is an exception (such as a timeout) thrown when rendering a WMS request.
  */
 public class WMSPartialMapException extends ServiceException {
     WebMap map;
@@ -58,8 +57,7 @@ public class WMSPartialMapException extends ServiceException {
      * @param locator The application specific locator for the exception.
      * @param map WebMap associated with the WMS request that threw the exception
      */
-    public WMSPartialMapException(
-            String message, Throwable cause, String code, String locator, WebMap map) {
+    public WMSPartialMapException(String message, Throwable cause, String code, String locator, WebMap map) {
         super(message, cause, code, locator);
         this.map = map;
     }

@@ -35,10 +35,9 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 /**
- * Extends responses from the {@link FeatureService} with tile handling links and the like. For the
- * time being, it allows only configured cached layers to be served, while allowing dynamic, non
- * cached filtering on them. We might want to extend it to full non cached tiles serving, but would
- * require a rewrite of the TileService machinery.
+ * Extends responses from the {@link FeatureService} with tile handling links and the like. For the time being, it
+ * allows only configured cached layers to be served, while allowing dynamic, non cached filtering on them. We might
+ * want to extend it to full non cached tiles serving, but would require a rewrite of the TileService machinery.
  */
 @Component
 public class TiledFeaturesExtension
@@ -61,8 +60,7 @@ public class TiledFeaturesExtension
     }
 
     @Override
-    public String getExtension(
-            Request dr, Map<String, Object> model, Charset charset, List htmlExtensionArguments)
+    public String getExtension(Request dr, Map<String, Object> model, Charset charset, List htmlExtensionArguments)
             throws IOException {
         if (dr.getService().equals(FEATURES)) {
             if (dr.getRequest().equals(REQ_LANDING)) {
@@ -95,12 +93,12 @@ public class TiledFeaturesExtension
     @Override
     public void apply(Request dr, AbstractDocument document) {
         if (dr.getService().equals(FEATURES)) {
-            if (document instanceof ConformanceDocument) {
-                extendConformanceClasses((ConformanceDocument) document);
-            } else if (document instanceof CollectionDocument) {
-                extendCollectionDocument((CollectionDocument) document);
-            } else if (document instanceof CollectionsDocument) {
-                extendCollectionsDocument((CollectionsDocument) document);
+            if (document instanceof ConformanceDocument conformanceDocument) {
+                extendConformanceClasses(conformanceDocument);
+            } else if (document instanceof CollectionDocument collectionDocument) {
+                extendCollectionDocument(collectionDocument);
+            } else if (document instanceof CollectionsDocument collectionsDocument) {
+                extendCollectionsDocument(collectionsDocument);
             } else if (document instanceof FeaturesLandingPage) {
                 extendLandingpage(document);
             }
@@ -153,12 +151,10 @@ public class TiledFeaturesExtension
     public void extendConformanceClasses(ConformanceDocument conformance) {
         conformance.getConformsTo().add(ConformanceClass.CORE);
         ConformanceDocument cd = tilesService.conformance();
-        cd.getConformsTo()
-                .forEach(
-                        c -> {
-                            if (!conformance.getConformsTo().contains(c))
-                                conformance.getConformsTo().add(c);
-                        });
+        cd.getConformsTo().forEach(c -> {
+            if (!conformance.getConformsTo().contains(c))
+                conformance.getConformsTo().add(c);
+        });
     }
 
     private void extendCollectionDocument(CollectionDocument collection) {

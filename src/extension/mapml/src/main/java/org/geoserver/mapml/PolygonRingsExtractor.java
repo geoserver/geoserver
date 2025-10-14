@@ -21,8 +21,7 @@ public class PolygonRingsExtractor implements GeometryFilter {
     /** Filters out all linework for polygonal elements */
     @Override
     public void filter(Geometry g) {
-        if (g instanceof Polygon) {
-            Polygon poly = (Polygon) g;
+        if (g instanceof Polygon poly) {
             rings.add(poly.getExteriorRing());
             for (int i = 0; i < poly.getNumInteriorRing(); i++) {
                 rings.add(poly.getInteriorRingN(i));

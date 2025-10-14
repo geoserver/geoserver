@@ -4,6 +4,7 @@
  */
 package org.geoserver.backuprestore.web;
 
+import java.io.Serial;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.geoserver.catalog.StoreInfo;
@@ -13,6 +14,7 @@ import org.geoserver.web.GeoServerApplication;
 /** Detachable model for a specific store. */
 public class StoreModel<T extends StoreInfo> extends LoadableDetachableModel<T> {
 
+    @Serial
     private static final long serialVersionUID = -2008934085507417813L;
 
     private ResourceFilePanel resourceFilePanel;
@@ -38,7 +40,8 @@ public class StoreModel<T extends StoreInfo> extends LoadableDetachableModel<T> 
         } else {
             name = null;
         }
-    };
+    }
+    ;
 
     @Override
     protected T load() {
@@ -53,27 +56,17 @@ public class StoreModel<T extends StoreInfo> extends LoadableDetachableModel<T> 
                 && resourceFilePanel.getStores() != null
                 && !resourceFilePanel.getStores().isEmpty()
                 && workspace.getObject() != null
-                && resourceFilePanel
-                        .getStores()
-                        .containsKey(((WorkspaceInfo) workspace.getObject()).getName())) {
-            for (StoreInfo st :
-                    resourceFilePanel
-                            .getStores()
-                            .get(((WorkspaceInfo) workspace.getObject()).getName())) {
+                && resourceFilePanel.getStores().containsKey(((WorkspaceInfo) workspace.getObject()).getName())) {
+            for (StoreInfo st : resourceFilePanel.getStores().get(((WorkspaceInfo) workspace.getObject()).getName())) {
                 if (st.getName().equals(name)) {
                     return (T) st;
                 }
             }
         }
 
-        StoreInfo store =
-                (T)
-                        GeoServerApplication.get()
-                                .getCatalog()
-                                .getStoreByName(
-                                        (WorkspaceInfo) workspace.getObject(),
-                                        name,
-                                        StoreInfo.class);
+        StoreInfo store = (T) GeoServerApplication.get()
+                .getCatalog()
+                .getStoreByName((WorkspaceInfo) workspace.getObject(), name, StoreInfo.class);
         if (store != null) {
             return (T) store;
         }

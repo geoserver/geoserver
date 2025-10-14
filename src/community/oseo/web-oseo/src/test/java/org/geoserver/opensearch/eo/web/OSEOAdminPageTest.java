@@ -5,10 +5,12 @@
 package org.geoserver.opensearch.eo.web;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.util.tester.FormTester;
+import org.geoserver.config.GeoServer;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,8 +29,7 @@ public class OSEOAdminPageTest extends OSEOWebTestSupport {
         tester.assertModelValue("form:maximumRecordsPerPage", OSEOInfo.DEFAULT_MAXIMUM_RECORDS);
         tester.assertModelValue("form:recordsPerPage", OSEOInfo.DEFAULT_RECORDS_PER_PAGE);
         tester.assertModelValue("form:aggregatesCacheTTL", OSEOInfo.DEFAULT_AGGR_CACHE_TTL);
-        tester.assertModelValue(
-                "form:aggregatesCacheTTLUnit", OSEOInfo.DEFAULT_AGGR_CACHE_TTL_UNIT);
+        tester.assertModelValue("form:aggregatesCacheTTLUnit", OSEOInfo.DEFAULT_AGGR_CACHE_TTL_UNIT);
         tester.assertModelValue("form:attribution", null);
         // print(tester.getLastRenderedPage(), true, true);
     }
@@ -107,5 +108,22 @@ public class OSEOAdminPageTest extends OSEOWebTestSupport {
         formTester.setValue(componentName, null);
         formTester.submit();
         assertEquals(1, tester.getMessages(FeedbackMessage.ERROR).size());
+    }
+
+    @Test
+    public void testSkipNumberMatched() throws Exception {
+        GeoServer gs = getGeoServer();
+        OSEOInfo oseo = gs.getService(OSEOInfo.class);
+        oseo.setSkipNumberMatched(false);
+        gs.save(oseo);
+
+        tester.startPage(OSEOAdminPage.class);
+        FormTester formTester = tester.newFormTester("form");
+        formTester.setValue("skipNumberMatched", "true");
+        formTester.submit("submit");
+        tester.assertNoErrorMessage();
+
+        oseo = gs.getService(OSEOInfo.class);
+        assertTrue(oseo.isSkipNumberMatched());
     }
 }

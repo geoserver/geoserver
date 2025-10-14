@@ -4,9 +4,9 @@
  */
 package org.geoserver.wms.topojson;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.geoserver.wms.topojson.TopoJSONBuilderFactory.MIME_TYPE;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
@@ -105,13 +105,12 @@ public class TopologyBuilder implements VectorTileBuilder {
         Topology topology = new Topology(screenToWorld, arcs, layers);
 
         final int threshold = 8096;
-        try (DeferredFileOutputStream out =
-                        DeferredFileOutputStream.builder()
-                                .setThreshold(threshold)
-                                .setPrefix("topology")
-                                .setSuffix(".topojson")
-                                .get();
-                Writer writer = new OutputStreamWriter(out, Charsets.UTF_8)) {
+        try (DeferredFileOutputStream out = DeferredFileOutputStream.builder()
+                        .setThreshold(threshold)
+                        .setPrefix("topology")
+                        .setSuffix(".topojson")
+                        .get();
+                Writer writer = new OutputStreamWriter(out, UTF_8)) {
             TopoJSONEncoder encoder = new TopoJSONEncoder();
 
             encoder.encode(topology, writer);
@@ -163,20 +162,20 @@ public class TopologyBuilder implements VectorTileBuilder {
 
         TopoGeom topoGeom;
 
-        if (geom instanceof Point) {
-            topoGeom = createPoint((Point) geom);
-        } else if (geom instanceof MultiPoint) {
-            topoGeom = createMultiPoint((MultiPoint) geom);
-        } else if (geom instanceof LineString) {
-            topoGeom = createLineString((LineString) geom);
-        } else if (geom instanceof MultiLineString) {
-            topoGeom = createMultiLineString((MultiLineString) geom);
-        } else if (geom instanceof Polygon) {
-            topoGeom = createPolygon((Polygon) geom);
-        } else if (geom instanceof MultiPolygon) {
-            topoGeom = createMultiPolygon((MultiPolygon) geom);
-        } else if (geom instanceof GeometryCollection) {
-            topoGeom = createGeometryCollection((GeometryCollection) geom);
+        if (geom instanceof Point point1) {
+            topoGeom = createPoint(point1);
+        } else if (geom instanceof MultiPoint point) {
+            topoGeom = createMultiPoint(point);
+        } else if (geom instanceof LineString string1) {
+            topoGeom = createLineString(string1);
+        } else if (geom instanceof MultiLineString string) {
+            topoGeom = createMultiLineString(string);
+        } else if (geom instanceof Polygon polygon1) {
+            topoGeom = createPolygon(polygon1);
+        } else if (geom instanceof MultiPolygon polygon) {
+            topoGeom = createMultiPolygon(polygon);
+        } else if (geom instanceof GeometryCollection collection) {
+            topoGeom = createGeometryCollection(collection);
         } else {
             throw new IllegalArgumentException("Unknown geometry type: " + geom.getGeometryType());
         }

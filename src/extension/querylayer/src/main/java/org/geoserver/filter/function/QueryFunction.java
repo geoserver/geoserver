@@ -41,12 +41,7 @@ public class QueryFunction extends FunctionImpl {
     boolean single;
 
     public QueryFunction(
-            Name name,
-            Catalog catalog,
-            List<Expression> args,
-            Literal fallback,
-            boolean single,
-            int maxResults) {
+            Name name, Catalog catalog, List<Expression> args, Literal fallback, boolean single, int maxResults) {
         if (args.size() < 3 || args.size() > 4) {
             throw new IllegalArgumentException(
                     "QuerySingle function requires 3 or 4 arguments (feature type qualified name, "
@@ -69,8 +64,7 @@ public class QueryFunction extends FunctionImpl {
             // extract layer
             String layerName = getParameters().get(0).evaluate(object, String.class);
             if (layerName == null) {
-                throw new IllegalArgumentException(
-                        "The first argument should be a vector layer name");
+                throw new IllegalArgumentException("The first argument should be a vector layer name");
             }
             FeatureTypeInfo ft = catalog.getFeatureTypeByName(layerName);
             if (ft == null) {
@@ -82,16 +76,15 @@ public class QueryFunction extends FunctionImpl {
             String attribute = getParameters().get(1).evaluate(object, String.class);
             if (attribute == null) {
                 throw new IllegalArgumentException(
-                        "The second argument of the query "
-                                + "function should be the attribute name");
+                        "The second argument of the query " + "function should be the attribute name");
             }
             CoordinateReferenceSystem crs = null;
             PropertyDescriptor ad = ft.getFeatureType().getDescriptor(attribute);
             if (ad == null) {
                 throw new IllegalArgumentException(
                         "Attribute " + attribute + " could not be found in layer " + layerName);
-            } else if (ad instanceof GeometryDescriptor) {
-                crs = ((GeometryDescriptor) ad).getCoordinateReferenceSystem();
+            } else if (ad instanceof GeometryDescriptor descriptor) {
+                crs = descriptor.getCoordinateReferenceSystem();
                 if (crs == null) {
                     crs = ft.getCRS();
                 }
@@ -101,17 +94,14 @@ public class QueryFunction extends FunctionImpl {
             String cql = getParameters().get(2).evaluate(object, String.class);
             if (cql == null) {
                 throw new IllegalArgumentException(
-                        "The third argument of the query "
-                                + "function should be a valid (E)CQL filter");
+                        "The third argument of the query " + "function should be a valid (E)CQL filter");
             }
             Filter filter;
             try {
                 filter = ECQL.toFilter(cql);
             } catch (Exception e) {
                 throw new IllegalArgumentException(
-                        "The third argument of the query "
-                                + "function should be a valid (E)CQL filter",
-                        e);
+                        "The third argument of the query " + "function should be a valid (E)CQL filter", e);
             }
 
             // perform the query
@@ -124,10 +114,9 @@ public class QueryFunction extends FunctionImpl {
                 while (fi.hasNext()) {
                     Feature f = fi.next();
                     Object value = f.getProperty(attribute).getValue();
-                    if (value instanceof Geometry && crs != null) {
+                    if (value instanceof Geometry geom && crs != null) {
                         // if the crs is not associated with the geometry do so, this
                         // way other code will get to know the crs (e.g. for reprojection purposes)
-                        Geometry geom = (Geometry) value;
                         geom.apply(new GeometryCRSFilter(crs));
                     }
                     results.add(value);
@@ -139,11 +128,7 @@ public class QueryFunction extends FunctionImpl {
             }
             if (maxResults > 0 && results.size() > maxResults && !single) {
                 throw new IllegalStateException(
-                        "The query in "
-                                + getName()
-                                + " returns too many "
-                                + "features, the limit is "
-                                + maxResults);
+                        "The query in " + getName() + " returns too many " + "features, the limit is " + maxResults);
             }
             if (maxResults == 1) {
                 return results.get(0);

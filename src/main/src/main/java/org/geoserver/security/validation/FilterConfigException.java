@@ -5,6 +5,8 @@
  */
 package org.geoserver.security.validation;
 
+import java.io.Serial;
+
 /**
  * Exception for filter configurations
  *
@@ -12,6 +14,7 @@ package org.geoserver.security.validation;
  */
 public class FilterConfigException extends SecurityConfigException {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public FilterConfigException(String errorId, Object... args) {
@@ -37,12 +40,10 @@ public class FilterConfigException extends SecurityConfigException {
 
     public static final String INVALID_ENTRY_POINT = "INVALID_ENTRY_POINT";
 
-    public static final String PRINCIPAL_HEADER_ATTRIBUTE_NEEDED =
-            "PRINCIPAL_HEADER_ATTRIBUTE_NEEDED";
+    public static final String PRINCIPAL_HEADER_ATTRIBUTE_NEEDED = "PRINCIPAL_HEADER_ATTRIBUTE_NEEDED";
     public static final String ROLES_HEADER_ATTRIBUTE_NEEDED = "ROLES_HEADER_ATTRIBUTE_NEEDED";
 
     public static final String SECURITY_METADATA_SOURCE_NEEDED = "SECURITY_METADATA_SOURCE_NEEDED";
-    public static final String UNKNOWN_SECURITY_METADATA_SOURCE =
-            "UNKNOWN_SECURITY_METADATA_SOURCE";
+    public static final String UNKNOWN_SECURITY_METADATA_SOURCE = "UNKNOWN_SECURITY_METADATA_SOURCE";
     public static final String NO_AUTH_ENTRY_POINT = "NO_AUTH_ENTRY_POINT";
 }

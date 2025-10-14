@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,6 +46,7 @@ import org.geotools.referencing.CRS;
 public class KMLFileFormat extends VectorFormat {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public static String KML_SRS = "EPSG:4326";
@@ -84,8 +86,7 @@ public class KMLFileFormat extends VectorFormat {
         return read(ft, file);
     }
 
-    public FeatureReader<SimpleFeatureType, SimpleFeature> read(
-            SimpleFeatureType featureType, File file) {
+    public FeatureReader<SimpleFeatureType, SimpleFeature> read(SimpleFeatureType featureType, File file) {
         try {
             return new KMLTransformingFeatureReader(featureType, new FileInputStream(file));
         } catch (Exception e) {
@@ -122,14 +123,12 @@ public class KMLFileFormat extends VectorFormat {
     }
 
     @Override
-    public StoreInfo createStore(ImportData data, WorkspaceInfo workspace, Catalog catalog)
-            throws IOException {
+    public StoreInfo createStore(ImportData data, WorkspaceInfo workspace, Catalog catalog) throws IOException {
         // null means no direct store imports can be performed
         return null;
     }
 
-    public Collection<SimpleFeatureType> parseFeatureTypes(String typeName, File file)
-            throws IOException {
+    public Collection<SimpleFeatureType> parseFeatureTypes(String typeName, File file) throws IOException {
         try (InputStream inputStream = new FileInputStream(file)) {
             return parseFeatureTypes(typeName, inputStream);
         }
@@ -174,28 +173,24 @@ public class KMLFileFormat extends VectorFormat {
         return ftb.buildFeatureType();
     }
 
-    public List<SimpleFeatureType> parseFeatureTypes(String typeName, InputStream inputStream)
-            throws IOException {
-        KMLRawReader reader =
-                new KMLRawReader(inputStream, KMLRawReader.ReadType.SCHEMA_AND_FEATURES);
+    public List<SimpleFeatureType> parseFeatureTypes(String typeName, InputStream inputStream) throws IOException {
+        KMLRawReader reader = new KMLRawReader(inputStream, KMLRawReader.ReadType.SCHEMA_AND_FEATURES);
         Set<String> untypedAttributes = new HashSet<>();
         List<String> schemaNames = new ArrayList<>();
         List<SimpleFeatureType> schemas = new ArrayList<>();
         SimpleFeatureType aggregateFeatureType = null;
-        for (Object object : reader) {
-            if (object instanceof SimpleFeature) {
-                SimpleFeature feature = (SimpleFeature) object;
+        while (reader.hasNext()) {
+            Object object = reader.next();
+            if (object instanceof SimpleFeature feature) {
                 SimpleFeatureType ft = feature.getFeatureType();
                 aggregateFeatureType = unionFeatureTypes(aggregateFeatureType, ft);
                 Map<Object, Object> userData = feature.getUserData();
                 @SuppressWarnings("unchecked")
-                Map<String, Object> untypedData =
-                        (Map<String, Object>) userData.get("UntypedExtendedData");
+                Map<String, Object> untypedData = (Map<String, Object>) userData.get("UntypedExtendedData");
                 if (untypedData != null) {
                     untypedAttributes.addAll(untypedData.keySet());
                 }
-            } else if (object instanceof SimpleFeatureType) {
-                SimpleFeatureType schema = (SimpleFeatureType) object;
+            } else if (object instanceof SimpleFeatureType schema) {
                 schemas.add(schema);
                 schemaNames.add(schema.getName().getLocalPart());
             }
@@ -216,8 +211,7 @@ public class KMLFileFormat extends VectorFormat {
     }
 
     @Override
-    public List<ImportTask> list(ImportData data, Catalog catalog, ProgressMonitor monitor)
-            throws IOException {
+    public List<ImportTask> list(ImportData data, Catalog catalog, ProgressMonitor monitor) throws IOException {
         File file = getFileFromData(data);
         CatalogBuilder cb = new CatalogBuilder(catalog);
         String baseName = typeNameFromFile(file);

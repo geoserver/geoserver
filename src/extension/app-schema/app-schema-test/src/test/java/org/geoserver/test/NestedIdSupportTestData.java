@@ -13,10 +13,7 @@ public class NestedIdSupportTestData extends AbstractAppSchemaMockData {
     @Override
     public void addContent() {
         addFeatureType(
-                GSML_PREFIX,
-                "MappedFeature",
-                "MappedFeaturePropertyfile.xml",
-                "MappedFeaturePropertyfile.properties");
+                GSML_PREFIX, "MappedFeature", "MappedFeaturePropertyfile.xml", "MappedFeaturePropertyfile.properties");
         addFeatureType(
                 GSML_PREFIX,
                 "GeologicUnit",
@@ -29,7 +26,6 @@ public class NestedIdSupportTestData extends AbstractAppSchemaMockData {
                 "CompositionPart.properties",
                 "ControlledConcept.xml",
                 "ControlledConcept.properties");
-        addFeatureType(
-                GSML_PREFIX, "Borehole", "borehole_nestedid.xml", "borehole_nestedid.properties");
+        addFeatureType(GSML_PREFIX, "Borehole", "borehole_nestedid.xml", "borehole_nestedid.properties");
     }
 }

@@ -14,6 +14,5 @@ public class MasterPasswordConfigValidator extends AbstractSecurityValidator {
         super(securityManager);
     }
 
-    public void validateMasterPasswordConfig(MasterPasswordConfig config)
-            throws SecurityConfigException {}
+    public void validateMasterPasswordConfig(MasterPasswordConfig config) throws SecurityConfigException {}
 }

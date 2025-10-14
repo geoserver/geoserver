@@ -33,8 +33,7 @@ public class AccessDataRuleInfoManager {
 
     private DataAccessRuleDAO dao;
 
-    static List<AccessMode> MODES =
-            Arrays.asList(AccessMode.READ, AccessMode.WRITE, AccessMode.ADMIN);
+    static List<AccessMode> MODES = Arrays.asList(AccessMode.READ, AccessMode.WRITE, AccessMode.ADMIN);
 
     public AccessDataRuleInfoManager() {
         this.dao = DataAccessRuleDAO.get();
@@ -55,12 +54,11 @@ public class AccessDataRuleInfoManager {
     }
 
     public String getWorkspaceName(CatalogInfo info) {
-        if (info instanceof WorkspaceInfo) {
-            return ((WorkspaceInfo) info).getName();
-        } else if (info instanceof LayerInfo) {
-            return ((LayerInfo) info).getResource().getStore().getWorkspace().getName();
-        } else if (info instanceof LayerGroupInfo) {
-            LayerGroupInfo group = (LayerGroupInfo) info;
+        if (info instanceof WorkspaceInfo workspaceInfo) {
+            return workspaceInfo.getName();
+        } else if (info instanceof LayerInfo layerInfo) {
+            return layerInfo.getResource().getStore().getWorkspace().getName();
+        } else if (info instanceof LayerGroupInfo group) {
             String wsName = group.getWorkspace() != null ? group.getWorkspace().getName() : null;
             return wsName;
         } else {
@@ -69,8 +67,8 @@ public class AccessDataRuleInfoManager {
     }
 
     public String getLayerName(CatalogInfo info) {
-        if (info instanceof PublishedInfo) {
-            return ((PublishedInfo) info).getName();
+        if (info instanceof PublishedInfo publishedInfo) {
+            return publishedInfo.getName();
         } else {
             return null;
         }
@@ -83,10 +81,8 @@ public class AccessDataRuleInfoManager {
 
     public Set<DataAccessRule> getWorkspaceDataAccessRules(String workspaceName) {
         return getRules().stream()
-                .filter(
-                        r ->
-                                r.getRoot().equalsIgnoreCase(workspaceName)
-                                        && r.getLayer().equals("*"))
+                .filter(r -> r.getRoot().equalsIgnoreCase(workspaceName)
+                        && r.getLayer().equals("*"))
                 .collect(Collectors.toSet());
     }
 
@@ -100,30 +96,27 @@ public class AccessDataRuleInfoManager {
     public Set<DataAccessRule> getLayerSecurityRule(String workspaceName, String layerName) {
 
         return getRules().stream()
-                .filter(
-                        r ->
-                                r.getRoot().equalsIgnoreCase(workspaceName)
-                                        && r.getLayer().equalsIgnoreCase(layerName))
+                .filter(r -> r.getRoot().equalsIgnoreCase(workspaceName)
+                        && r.getLayer().equalsIgnoreCase(layerName))
                 .collect(Collectors.toSet());
     }
 
     public Set<DataAccessRule> getResourceRule(String workspaceName, CatalogInfo info) {
         Set<DataAccessRule> rules = null;
-        if (info instanceof LayerInfo) {
-            rules = getLayerSecurityRule(workspaceName, ((PublishedInfo) info).getName());
+        if (info instanceof PublishedInfo layerInfo) {
+            rules = getLayerSecurityRule(workspaceName, layerInfo.getName());
         } else if (info instanceof LayerGroupInfo) {
-            if (workspaceName == null)
-                rules = getGlobalLayerGroupSecurityRule(((LayerGroupInfo) info).getName());
+            if (workspaceName == null) rules = getGlobalLayerGroupSecurityRule(((LayerGroupInfo) info).getName());
             else rules = getLayerSecurityRule(workspaceName, ((PublishedInfo) info).getName());
-        } else if (info instanceof WorkspaceInfo) {
-            rules = getWorkspaceDataAccessRules(((WorkspaceInfo) info).getName());
+        } else if (info instanceof WorkspaceInfo workspaceInfo) {
+            rules = getWorkspaceDataAccessRules(workspaceInfo.getName());
         }
         return rules;
     }
 
     /**
-     * Convert a <code>List</code> of {@Link DataAccessRule} to a <code>Set</code>> of {@Link
-     * DataAccessRuleInfo} suitable to be used as a model object by {@Link AccessDataRulePanel}
+     * Convert a <code>List</code> of {@Link DataAccessRule} to a <code>Set</code>> of {@Link DataAccessRuleInfo}
+     * suitable to be used as a model object by {@Link AccessDataRulePanel}
      */
     public List<DataAccessRuleInfo> mapTo(
             Set<DataAccessRule> rules, Set<String> authorities, String wsName, String layerName) {
@@ -135,14 +128,11 @@ public class AccessDataRuleInfoManager {
         for (String auth : authorities) {
             Set<AccessMode> modes = new HashSet<>(3);
             for (AccessMode mode : MODES) {
-                rules.stream()
-                        .filter(r -> r.getAccessMode() == mode)
-                        .forEach(
-                                r -> {
-                                    if (r.getRoles().contains(auth)) {
-                                        modes.add(mode);
-                                    }
-                                });
+                rules.stream().filter(r -> r.getAccessMode() == mode).forEach(r -> {
+                    if (r.getRoles().contains(auth)) {
+                        modes.add(mode);
+                    }
+                });
             }
             modeRoleMap.put(auth, modes);
         }
@@ -159,8 +149,7 @@ public class AccessDataRuleInfoManager {
         return models;
     }
 
-    public List<DataAccessRuleInfo> getNewInfoList(
-            String wsName, String layerName, Set<String> availableRoles) {
+    public List<DataAccessRuleInfo> getNewInfoList(String wsName, String layerName, Set<String> availableRoles) {
         List<DataAccessRuleInfo> rules = new ArrayList<>();
         for (String role : availableRoles) {
             DataAccessRuleInfo rule = new DataAccessRuleInfo(role, wsName, layerName);
@@ -173,8 +162,8 @@ public class AccessDataRuleInfoManager {
     }
 
     /**
-     * Convert a <code>List</code> of {@Link DataAccessRuleInfo} to a <code>Set</code>> of {@Link
-     * DataAccessRule} suitable to be by {@Link DataAccessRuleDAO}
+     * Convert a <code>List</code> of {@Link DataAccessRuleInfo} to a <code>Set</code>> of {@Link DataAccessRule}
+     * suitable to be by {@Link DataAccessRuleDAO}
      */
     public Set<DataAccessRule> mapFrom(
             List<DataAccessRuleInfo> newRules,
@@ -190,10 +179,9 @@ public class AccessDataRuleInfoManager {
             for (String auth : authorities) {
                 newRules.stream()
                         .filter(role -> role.getRoleName().equalsIgnoreCase(auth))
-                        .forEach(
-                                rule -> {
-                                    if (rule.hasMode(mode)) selectedRoles.add(auth);
-                                });
+                        .forEach(rule -> {
+                            if (rule.hasMode(mode)) selectedRoles.add(auth);
+                        });
             }
             modeRoleMap.put(mode, selectedRoles);
         }
@@ -248,10 +236,8 @@ public class AccessDataRuleInfoManager {
                 break;
             }
         }
-        if (!GeoServerApplication.get()
-                        .getBeanOfType(SecureCatalogImpl.class)
-                        .isDefaultAccessManager()
-                || !isAdmin) return false;
+        if (!GeoServerApplication.get().getBeanOfType(SecureCatalogImpl.class).isDefaultAccessManager() || !isAdmin)
+            return false;
         else return true;
     }
 }

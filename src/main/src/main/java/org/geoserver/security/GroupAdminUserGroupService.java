@@ -19,8 +19,8 @@ import org.geoserver.security.validation.UserGroupServiceException;
 /**
  * User group service wrapper that filters contents based on an authenticated group administrator.
  *
- * <p>This wrapper filters out the administrative roles {@link GeoServerRole#ADMIN_ROLE} and {@link
- * GeoServerRole#GROUP_ADMIN_ROLE}. It also forces read-only access to the role store.
+ * <p>This wrapper filters out the administrative roles {@link GeoServerRole#ADMIN_ROLE} and
+ * {@link GeoServerRole#GROUP_ADMIN_ROLE}. It also forces read-only access to the role store.
  *
  * @author Justin Deoliveira, OpenGeo
  */
@@ -76,10 +76,8 @@ public class GroupAdminUserGroupService extends AuthorizingUserGroupService {
 
         for (GeoServerUserGroup userGroup : userGroups) {
             if (!groups.contains(userGroup.getGroupname())) {
-                String msg =
-                        new UserGroupServiceException(
-                                        USER_IN_OTHER_GROUP_NOT_MODIFIABLE_$1, new Object[] {user})
-                                .getMessage();
+                String msg = new UserGroupServiceException(USER_IN_OTHER_GROUP_NOT_MODIFIABLE_$1, new Object[] {user})
+                        .getMessage();
                 throw new IOException(msg);
             }
         }

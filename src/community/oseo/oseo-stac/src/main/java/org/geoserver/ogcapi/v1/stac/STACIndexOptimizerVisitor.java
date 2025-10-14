@@ -16,8 +16,8 @@ import org.geotools.filter.function.JsonPointerFunction;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 
 /**
- * Find JSONPath numeric comparisons and forces the number to be a double so that the indices will
- * optimize the resulting queries
+ * Find JSONPath numeric comparisons and forces the number to be a double so that the indices will optimize the
+ * resulting queries
  */
 public class STACIndexOptimizerVisitor extends DuplicatingFilterVisitor {
     @Override
@@ -58,8 +58,7 @@ public class STACIndexOptimizerVisitor extends DuplicatingFilterVisitor {
         if (isJsonPointer(expr2)) {
             expr1 = forceDouble(expr1, extraData);
         }
-        return getFactory(extraData)
-                .greater(expr1, expr2, filter.isMatchingCase(), filter.getMatchAction());
+        return getFactory(extraData).greater(expr1, expr2, filter.isMatchingCase(), filter.getMatchAction());
     }
 
     @Override
@@ -72,8 +71,7 @@ public class STACIndexOptimizerVisitor extends DuplicatingFilterVisitor {
         if (isJsonPointer(expr2)) {
             expr1 = forceDouble(expr1, extraData);
         }
-        return getFactory(extraData)
-                .greaterOrEqual(expr1, expr2, filter.isMatchingCase(), filter.getMatchAction());
+        return getFactory(extraData).greaterOrEqual(expr1, expr2, filter.isMatchingCase(), filter.getMatchAction());
     }
 
     @Override
@@ -86,8 +84,7 @@ public class STACIndexOptimizerVisitor extends DuplicatingFilterVisitor {
         if (isJsonPointer(expr2)) {
             expr1 = forceDouble(expr1, extraData);
         }
-        return getFactory(extraData)
-                .less(expr1, expr2, filter.isMatchingCase(), filter.getMatchAction());
+        return getFactory(extraData).less(expr1, expr2, filter.isMatchingCase(), filter.getMatchAction());
     }
 
     @Override
@@ -100,8 +97,7 @@ public class STACIndexOptimizerVisitor extends DuplicatingFilterVisitor {
         if (isJsonPointer(expr2)) {
             expr1 = forceDouble(expr1, extraData);
         }
-        return getFactory(extraData)
-                .lessOrEqual(expr1, expr2, filter.isMatchingCase(), filter.getMatchAction());
+        return getFactory(extraData).lessOrEqual(expr1, expr2, filter.isMatchingCase(), filter.getMatchAction());
     }
 
     private boolean isJsonPointer(Expression expression) {
@@ -113,8 +109,7 @@ public class STACIndexOptimizerVisitor extends DuplicatingFilterVisitor {
     }
 
     private Expression forceDouble(Expression in, Object extraData) {
-        if (in instanceof Literal) {
-            Literal literalExp = (Literal) in;
+        if (in instanceof Literal literalExp) {
             if (literalExp.getValue() instanceof Number) {
                 Number numberLiteral = (Number) literalExp.getValue();
                 double converted = numberLiteral.doubleValue();

@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.data.store.panel;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.FormComponent;
@@ -20,12 +21,12 @@ import org.apache.wicket.model.IModel;
  */
 public class CheckBoxParamPanel extends Panel implements ParamPanel<Boolean> {
 
+    @Serial
     private static final long serialVersionUID = -8587266542399491587L;
 
     private CheckBox checkBox;
 
-    public CheckBoxParamPanel(
-            final String id, final IModel<Boolean> model, final IModel paramLabelModel) {
+    public CheckBoxParamPanel(final String id, final IModel<Boolean> model, final IModel paramLabelModel) {
         super(id, model);
         Label label = new Label("paramName", paramLabelModel);
         checkBox = new CheckBox("paramValue", model);

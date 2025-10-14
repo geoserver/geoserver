@@ -13,6 +13,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
+import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -54,6 +55,7 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.io.netcdf.NetCDFReader;
 import org.geotools.coverage.io.netcdf.crs.NetCDFCRSAuthorityFactory;
 import org.geotools.feature.NameImpl;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.util.DateRange;
@@ -82,14 +84,10 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
     private static final double ORIGINAL_FILL_VALUE = -9999.0d;
     private static final double ORIGINAL_PIXEL_VALUE = 9219.328d;
 
-    public static QName LATLONMOSAIC =
-            new QName(CiteTestData.WCS_URI, "2DLatLonCoverage", CiteTestData.WCS_PREFIX);
-    public static QName DUMMYMOSAIC =
-            new QName(CiteTestData.WCS_URI, "DummyCoverage", CiteTestData.WCS_PREFIX);
-    public static QName VISIBILITYCF =
-            new QName(CiteTestData.WCS_URI, "visibilityCF", CiteTestData.WCS_PREFIX);
-    public static QName VISIBILITYPACKED =
-            new QName(CiteTestData.WCS_URI, "visibilityPacked", CiteTestData.WCS_PREFIX);
+    public static QName LATLONMOSAIC = new QName(CiteTestData.WCS_URI, "2DLatLonCoverage", CiteTestData.WCS_PREFIX);
+    public static QName DUMMYMOSAIC = new QName(CiteTestData.WCS_URI, "DummyCoverage", CiteTestData.WCS_PREFIX);
+    public static QName VISIBILITYCF = new QName(CiteTestData.WCS_URI, "visibilityCF", CiteTestData.WCS_PREFIX);
+    public static QName VISIBILITYPACKED = new QName(CiteTestData.WCS_URI, "visibilityPacked", CiteTestData.WCS_PREFIX);
     public static QName VISIBILITYCOMPRESSED =
             new QName(CiteTestData.WCS_URI, "visibilityCompressed", CiteTestData.WCS_PREFIX);
     public static QName VISIBILITYCFPACKED =
@@ -99,10 +97,8 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
     public static QName TEMPERATURE_SURFACE =
             new QName(CiteTestData.WCS_URI, "Temperature_surface", CiteTestData.WCS_PREFIX);
 
-    public static QName BANDWITHCRS =
-            new QName(CiteTestData.WCS_URI, "Band1", CiteTestData.WCS_PREFIX);
-    private static final QName TIMESERIES =
-            new QName(MockData.SF_URI, "timeseries", MockData.SF_PREFIX);
+    public static QName BANDWITHCRS = new QName(CiteTestData.WCS_URI, "Band1", CiteTestData.WCS_PREFIX);
+    private static final QName TIMESERIES = new QName(MockData.SF_URI, "timeseries", MockData.SF_PREFIX);
 
     private static final String STANDARD_NAME = "visibility_in_air";
     private static final Section NETCDF_SECTION;
@@ -141,14 +137,11 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
     protected void onSetUp(SystemTestData testData) throws Exception {
         // workaround to add our custom multi dimensional format
         testData.addRasterLayer(TIMESERIES, "timeseries.zip", null, getCatalog());
-        setupRasterDimension(
-                TIMESERIES, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+        setupRasterDimension(TIMESERIES, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
 
         super.onSetUp(testData);
-        testData.addRasterLayer(
-                LATLONMOSAIC, "2DLatLonCoverage.zip", null, null, this.getClass(), getCatalog());
-        setupRasterDimension(
-                getLayerId(LATLONMOSAIC), ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        testData.addRasterLayer(LATLONMOSAIC, "2DLatLonCoverage.zip", null, null, this.getClass(), getCatalog());
+        setupRasterDimension(getLayerId(LATLONMOSAIC), ResourceInfo.TIME, DimensionPresentation.LIST, null);
         setupRasterDimension(
                 getLayerId(LATLONMOSAIC),
                 ResourceInfo.CUSTOM_DIMENSION_PREFIX + "BANDS",
@@ -160,41 +153,26 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         createCoverageView();
         addViewToCatalog();
 
-        testData.addRasterLayer(
-                VISIBILITYCF, "visibility.zip", null, null, this.getClass(), getCatalog());
+        testData.addRasterLayer(VISIBILITYCF, "visibility.zip", null, null, this.getClass(), getCatalog());
         setupNetCDFoutSettings(VISIBILITYCF);
 
-        testData.addRasterLayer(
-                VISIBILITYPACKED, "visibility.zip", null, null, this.getClass(), getCatalog());
+        testData.addRasterLayer(VISIBILITYPACKED, "visibility.zip", null, null, this.getClass(), getCatalog());
         setupNetCDFoutSettings(VISIBILITYPACKED);
 
-        testData.addRasterLayer(
-                VISIBILITYCFPACKED, "visibility.zip", null, null, this.getClass(), getCatalog());
+        testData.addRasterLayer(VISIBILITYCFPACKED, "visibility.zip", null, null, this.getClass(), getCatalog());
         setupNetCDFoutSettings(VISIBILITYCFPACKED);
 
-        testData.addRasterLayer(
-                VISIBILITYNANPACKED, "visibility.zip", null, null, this.getClass(), getCatalog());
+        testData.addRasterLayer(VISIBILITYNANPACKED, "visibility.zip", null, null, this.getClass(), getCatalog());
         setupNetCDFoutSettings(VISIBILITYNANPACKED, false);
 
-        testData.addRasterLayer(
-                VISIBILITYCOMPRESSED, "visibility.zip", null, null, this.getClass(), getCatalog());
+        testData.addRasterLayer(VISIBILITYCOMPRESSED, "visibility.zip", null, null, this.getClass(), getCatalog());
         setupNetCDFoutSettings(VISIBILITYCOMPRESSED);
 
-        testData.addRasterLayer(
-                BANDWITHCRS, "utm_esri_pe_string.nc", null, null, this.getClass(), getCatalog());
+        testData.addRasterLayer(BANDWITHCRS, "utm_esri_pe_string.nc", null, null, this.getClass(), getCatalog());
 
         testData.addRasterLayer(
-                TEMPERATURE_SURFACE,
-                "Temperature_surface.zip",
-                null,
-                null,
-                this.getClass(),
-                getCatalog());
-        setupRasterDimension(
-                getLayerId(TEMPERATURE_SURFACE),
-                ResourceInfo.TIME,
-                DimensionPresentation.LIST,
-                null);
+                TEMPERATURE_SURFACE, "Temperature_surface.zip", null, null, this.getClass(), getCatalog());
+        setupRasterDimension(getLayerId(TEMPERATURE_SURFACE), ResourceInfo.TIME, DimensionPresentation.LIST, null);
         configureTemperatureSurface();
     }
 
@@ -245,10 +223,9 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
     public void testRequestCoverage() throws Exception {
 
         // http response from the request inside the string
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "ows?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__2DLatLonCoverage&format=application/custom&subset=time,http://www.opengis.net/def/trs/ISO-8601/0/Gregorian UTC(\"2013-11-01T00:00:00.000Z\")&subset=BANDS(\"MyBand\")");
+        MockHttpServletResponse response = getAsServletResponse(
+                "ows?request=GetCoverage&service=WCS&version=2.0.1"
+                        + "&coverageId=wcs__2DLatLonCoverage&format=application/custom&subset=time,http://www.opengis.net/def/trs/ISO-8601/0/Gregorian UTC(\"2013-11-01T00:00:00.000Z\")&subset=BANDS(\"MyBand\")");
         assertNotNull(response);
         GridCoverage2D lastResult =
                 applicationContext.getBean(WCSResponseInterceptor.class).getLastResult();
@@ -271,10 +248,9 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         getGeoServer().save(wcsInfo);
         try {
             // http response from the request inside the string
-            MockHttpServletResponse response =
-                    getAsServletResponse(
-                            "ows?request=GetCoverage&service=WCS&version=2.0.1"
-                                    + "&coverageId=wcs__2DLatLonCoverage&format=application/custom&subset=time,http://www.opengis.net/def/trs/ISO-8601/0/Gregorian UTC(\"2013-11-01T00:00:00.000Z\")&subset=BANDS(\"MyBand\")");
+            MockHttpServletResponse response = getAsServletResponse(
+                    "ows?request=GetCoverage&service=WCS&version=2.0.1"
+                            + "&coverageId=wcs__2DLatLonCoverage&format=application/custom&subset=time,http://www.opengis.net/def/trs/ISO-8601/0/Gregorian UTC(\"2013-11-01T00:00:00.000Z\")&subset=BANDS(\"MyBand\")");
             assertNotNull(response);
             GridCoverage2D lastResult =
                     applicationContext.getBean(WCSResponseInterceptor.class).getLastResult();
@@ -298,10 +274,9 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
     public void testRequestCoverageView() throws Exception {
 
         // http response from the request inside the string
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "ows?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__dummyView&format=application/x-netcdf&subset=http://www.opengis.net/def/axis/OGC/0/time(\"2013-01-08T00:00:00.000Z\")");
+        MockHttpServletResponse response = getAsServletResponse(
+                "ows?request=GetCoverage&service=WCS&version=2.0.1"
+                        + "&coverageId=wcs__dummyView&format=application/x-netcdf&subset=http://www.opengis.net/def/axis/OGC/0/time(\"2013-01-08T00:00:00.000Z\")");
         assertNotNull(response);
 
         assertEquals("application/x-netcdf", response.getContentType());
@@ -324,15 +299,12 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         }
 
         // http response from the request inside the string
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "ows?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__dummyView&format=application/x-netcdf4&subset=http://www.opengis.net/def/axis/OGC/0/time(\"2013-01-08T00:00:00.000Z\")");
+        MockHttpServletResponse response = getAsServletResponse(
+                "ows?request=GetCoverage&service=WCS&version=2.0.1"
+                        + "&coverageId=wcs__dummyView&format=application/x-netcdf4&subset=http://www.opengis.net/def/axis/OGC/0/time(\"2013-01-08T00:00:00.000Z\")");
         assertNotNull(response);
 
-        assertEquals(
-                (isNC4Available ? "application/x-netcdf4" : "application/xml"),
-                response.getContentType());
+        assertEquals((isNC4Available ? "application/x-netcdf4" : "application/xml"), response.getContentType());
         if (isNC4Available) {
             byte[] netcdfOut = getBinary(response);
             File file = File.createTempFile("netcdf", "out.nc", new File("./target"));
@@ -351,10 +323,8 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         CoverageInfo info = getCatalog().getCoverageByName(new NameImpl("wcs", "visibilityCF"));
         assertTrue(info.getDimensions().get(0).getUnit().equalsIgnoreCase(ORIGINAL_UNIT));
 
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "ows?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__visibilityCF&format=application/x-netcdf");
+        MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__visibilityCF&format=application/x-netcdf");
         assertNotNull(response);
         byte[] netcdfOut = getBinary(response);
         File file = File.createTempFile("netcdf", "outCF.nc", new File("./target"));
@@ -398,15 +368,11 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         }
 
         // http response from the request inside the string
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "ows?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__visibilityCompressed&format=application/x-netcdf4");
+        MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__visibilityCompressed&format=application/x-netcdf4");
         assertNotNull(response);
 
-        assertEquals(
-                (isNC4Available ? "application/x-netcdf4" : "application/xml"),
-                response.getContentType());
+        assertEquals((isNC4Available ? "application/x-netcdf4" : "application/xml"), response.getContentType());
 
         if (isNC4Available) {
             byte[] netcdfOut = getBinary(response);
@@ -431,10 +397,8 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
     public void testRequestNetCDFDataPacking() throws Exception {
 
         // http response from the request inside the string
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "ows?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__visibilityPacked&format=application/x-netcdf");
+        MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__visibilityPacked&format=application/x-netcdf");
         assertNotNull(response);
         byte[] netcdfOut = getBinary(response);
         File file = File.createTempFile("netcdf", "outPK.nc", new File("./target"));
@@ -476,10 +440,8 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
     public void testRequestNetCDFCFDataPacking() throws Exception {
 
         // http response from the request inside the string
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "ows?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__visibilityCFPacked&format=application/x-netcdf");
+        MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__visibilityCFPacked&format=application/x-netcdf");
         assertNotNull(response);
         byte[] netcdfOut = getBinary(response);
         File file = File.createTempFile("netcdf", "outCFPK.nc", new File("./target"));
@@ -526,10 +488,8 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
     public void testRequestNetCDFNaNDataPacking() throws Exception {
 
         // http response from the request inside the string
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "ows?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__visibilityNaNPacked&format=application/x-netcdf");
+        MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__visibilityNaNPacked&format=application/x-netcdf");
         assertNotNull(response);
         byte[] netcdfOut = getBinary(response);
         File file = File.createTempFile("netcdf", "outNaNPK.nc", new File("./target"));
@@ -551,12 +511,10 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
     public void testRequestNetCDFCrs() throws Exception {
 
         // http response from the request inside the string
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "ows?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__Band1&format=application/x-netcdf"
-                                + "&subsettingcrs=http://www.opengis.net/def/crs/EPSG/0/4326"
-                                + "&subset=Long(-118,-116)&subset=Lat(56,58)");
+        MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__Band1&format=application/x-netcdf"
+                + "&subsettingcrs=http://www.opengis.net/def/crs/EPSG/0/4326"
+                + "&subset=Long(-118,-116)&subset=Lat(56,58)");
         // Original data was UTM 32611
         assertNotNull(response);
         byte[] netcdfOut = getBinary(response);
@@ -600,9 +558,8 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         final CatalogBuilder builder = new CatalogBuilder(cat);
         builder.setStore(storeInfo);
 
-        final CoverageInfo coverageInfo =
-                coverageView.createCoverageInfo("dummyView", storeInfo, builder);
-        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        final CoverageInfo coverageInfo = coverageView.createCoverageInfo("dummyView", storeInfo, builder);
+        coverageInfo.getParameters().put("USE_IMAGEN_IMAGEREAD", "false");
         cat.add(coverageInfo);
         final LayerInfo layerInfo = builder.buildLayer(coverageInfo);
         cat.add(layerInfo);
@@ -612,13 +569,11 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
     private void createCoverageView() throws Exception {
         final InputCoverageBand band1 = new InputCoverageBand("NO2", "0");
         final CoverageBand outputBand1 =
-                new CoverageBand(
-                        Collections.singletonList(band1), "NO2@0", 0, CompositionType.BAND_SELECT);
+                new CoverageBand(Collections.singletonList(band1), "NO2@0", 0, CompositionType.BAND_SELECT);
 
         final InputCoverageBand band2 = new InputCoverageBand("BrO", "0");
         final CoverageBand outputBand2 =
-                new CoverageBand(
-                        Collections.singletonList(band2), "BrO@0", 1, CompositionType.BAND_SELECT);
+                new CoverageBand(Collections.singletonList(band2), "BrO@0", 1, CompositionType.BAND_SELECT);
         final List<CoverageBand> coverageBands = new ArrayList<>(2);
         coverageBands.add(outputBand1);
         coverageBands.add(outputBand2);
@@ -630,8 +585,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
         NetCDFLayerSettingsContainer container = new NetCDFLayerSettingsContainer();
         container.setCopyAttributes(true);
         List<VariableAttribute> variableAttributes = new ArrayList<>();
-        variableAttributes.add(
-                new VariableAttribute("test-variable-attribute", "Test Variable Attribute"));
+        variableAttributes.add(new VariableAttribute("test-variable-attribute", "Test Variable Attribute"));
         variableAttributes.add(new VariableAttribute("Grib2_Parameter_Category", "Test Category"));
         container.setVariableAttributes(variableAttributes);
         List<ExtraVariable> extraVariables = new ArrayList<>();
@@ -649,8 +603,8 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
     }
 
     /**
-     * Test <code>Temperature_surface</code> extra variables, variable attributes, and global
-     * attributes of different types, for NetCDF-3 output.
+     * Test <code>Temperature_surface</code> extra variables, variable attributes, and global attributes of different
+     * types, for NetCDF-3 output.
      */
     @Test
     public void testExtraVariablesNetcdf3() throws Exception {
@@ -658,8 +612,8 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
     }
 
     /**
-     * Test <code>Temperature_surface</code> extra variables, variable attributes, and global
-     * attributes of different types, for NetCDF-4 output.
+     * Test <code>Temperature_surface</code> extra variables, variable attributes, and global attributes of different
+     * types, for NetCDF-4 output.
      */
     @Test
     public void testExtraVariablesNetcdf4() throws Exception {
@@ -668,24 +622,20 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
     }
 
     /**
-     * Check <code>Temperature_surface</code> extra variables, variable attributes, and global
-     * attributes of different type.
+     * Check <code>Temperature_surface</code> extra variables, variable attributes, and global attributes of different
+     * type.
      *
      * @param format the output format MIME type
      */
     private void checkExtraVariables(String format) throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?service=WCS&version=2.0.1&request=GetCoverage"
-                                + "&coverageid=wcs__Temperature_surface&format="
-                                + format);
+        MockHttpServletResponse response = getAsServletResponse("wcs?service=WCS&version=2.0.1&request=GetCoverage"
+                + "&coverageid=wcs__Temperature_surface&format="
+                + format);
         assertNotNull(response);
         assertEquals(200, response.getStatus());
         assertEquals(format, response.getContentType());
         byte[] responseBytes = getBinary(response);
-        File file =
-                File.createTempFile(
-                        "extra-variable-", "-wcs__Temperature_surface.nc", new File("./target"));
+        File file = File.createTempFile("extra-variable-", "-wcs__Temperature_surface.nc", new File("./target"));
         FileUtils.writeByteArrayToFile(file, responseBytes);
         try (NetcdfDataset dataset = NetcdfDatasets.openDataset(file.getAbsolutePath())) {
             assertNotNull(dataset);
@@ -718,7 +668,8 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
             assertEquals(1, rlonVar.getDimensions().size());
             assertEquals(rlonDim, rlonVar.getDimensions().get(0));
             assertEquals("grid_longitude", rlonVar.findAttribute("long_name").getStringValue());
-            assertEquals("grid_longitude", rlonVar.findAttribute("standard_name").getStringValue());
+            assertEquals(
+                    "grid_longitude", rlonVar.findAttribute("standard_name").getStringValue());
             assertEquals("degrees", rlonVar.findAttribute("units").getStringValue());
             assertArrayEquals(
                     new float[] {-30, -20, -10, 0, 10, 20, 30},
@@ -732,9 +683,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
             assertEquals("grid_latitude", rlatVar.findAttribute("standard_name").getStringValue());
             assertEquals("degrees", rlatVar.findAttribute("units").getStringValue());
             assertArrayEquals(
-                    new float[] {-20, -10, 0, 10, 20},
-                    (float[]) rlatVar.read().copyTo1DJavaArray(),
-                    (float) DELTA);
+                    new float[] {-20, -10, 0, 10, 20}, (float[]) rlatVar.read().copyTo1DJavaArray(), (float) DELTA);
             // check projection variable
             Variable projVar = dataset.findVariable("rotated_latitude_longitude");
             assertNotNull(projVar);
@@ -801,8 +750,7 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
                     reftimeVar.findAttribute("standard_name").getStringValue());
             assertEquals(
                     "GRIB reference time", reftimeVar.findAttribute("long_name").getStringValue());
-            assertArrayEquals(
-                    new double[] {6, 3}, (double[]) reftimeVar.read().copyTo1DJavaArray(), DELTA);
+            assertArrayEquals(new double[] {6, 3}, (double[]) reftimeVar.read().copyTo1DJavaArray(), DELTA);
             // scalar extra variable copied from source with dimensions ""
             Variable scalarReftimeVar = dataset.findVariable("scalar_forecast_reference_time");
             assertEquals(0, scalarReftimeVar.getDimensions().size());
@@ -844,12 +792,10 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
 
     @Test
     public void getTime() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=timeseries"
-                                + "&subset=time(\"2014-01-01T00:00:00Z\",\"2019-01-01T00:00:00Z\")"
-                                + "&format=application/custom");
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=timeseries"
+                + "&subset=time(\"2014-01-01T00:00:00Z\",\"2019-01-01T00:00:00Z\")"
+                + "&format=application/custom");
         assertNotNull(response);
         GridCoverage2D lastResult =
                 applicationContext.getBean(WCSResponseInterceptor.class).getLastResult();
@@ -867,6 +813,46 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
             calendar.setTime(((DateRange) c.getProperty("TIME")).getMinValue());
             assertEquals(0, calendar.get(Calendar.HOUR));
             assertEquals(startingYear++, calendar.get(Calendar.YEAR));
+        }
+    }
+
+    @Test
+    public void testClip() throws Exception {
+        // http response from the request inside the string
+        String wkt = "POLYGON((400000 6300000, 500000 6300000, 450000 6500000, 400000 6300000))";
+        MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__Band1&format=application/x-netcdf&clip=" + wkt);
+        assertNotNull(response);
+        byte[] netcdfOut = getBinary(response);
+        File file = File.createTempFile("netcdf", "outclip.nc", new File("./target"));
+        FileUtils.writeByteArrayToFile(file, netcdfOut);
+
+        NetCDFReader reader = null;
+        GridCoverage2D coverage = null;
+        try {
+            // check the general envelope has been cut
+            reader = new NetCDFReader(file, null);
+            GeneralBounds envelope = reader.getOriginalEnvelope();
+            int TOLERANCE = 4000;
+            assertEquals(400000, envelope.getMinimum(0), TOLERANCE);
+            assertEquals(500000, envelope.getMaximum(0), TOLERANCE);
+            assertEquals(6300000, envelope.getMinimum(1), TOLERANCE);
+            assertEquals(6500000, envelope.getMaximum(1), TOLERANCE);
+
+            // check the data has been cut
+            coverage = reader.read();
+            // .. outside of the triangle
+            Point2D.Double position = new Point2D.Double(410000, 6400000);
+            double[] pixel = new double[1];
+            coverage.evaluate(position, pixel);
+            assertEquals(0, pixel[0], 0d);
+            // .. inside the triangle
+            position = new Point2D.Double(450000, 6400000);
+            coverage.evaluate(position, pixel);
+            assertEquals(48, pixel[0], 0d);
+        } finally {
+            if (coverage != null) coverage.dispose(true);
+            if (reader != null) reader.dispose();
         }
     }
 }

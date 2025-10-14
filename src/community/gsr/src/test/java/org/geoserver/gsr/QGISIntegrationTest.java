@@ -62,15 +62,12 @@ public class QGISIntegrationTest extends ControllerTest {
         if (idField == null) {
             idField = result.getString("objectIdField");
         }
-        result =
-                (JSONObject)
-                        getAsJSON(
-                                getBaseURL()
-                                        + "cite/FeatureServer/2/query?f=json&where="
-                                        + idField
-                                        + "%3D"
-                                        + idField
-                                        + "&returnIdsOnly=true");
+        result = (JSONObject) getAsJSON(getBaseURL()
+                + "cite/FeatureServer/2/query?f=json&where="
+                + idField
+                + "%3D"
+                + idField
+                + "&returnIdsOnly=true");
 
         // Every 100 ids, get all features
         List<Long> ids = new ArrayList<>();
@@ -81,17 +78,14 @@ public class QGISIntegrationTest extends ControllerTest {
         }
         idString = idString.substring(1);
 
-        result =
-                (JSONObject)
-                        getAsJSON(
-                                getBaseURL()
-                                        + "cite/FeatureServer/2/query?f=json&objectIds="
-                                        + idString
-                                        + "&outFields="
-                                        + outFieldString
-                                        + "&inSR=4326&outSR=4326&returnGeometry=true"
-                                        + "&returnM=false&returnZ=false&geometry=-85.944465,37.997286,-85.442908,38.378011"
-                                        + "&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelEnvelopeIntersects");
+        result = (JSONObject) getAsJSON(getBaseURL()
+                + "cite/FeatureServer/2/query?f=json&objectIds="
+                + idString
+                + "&outFields="
+                + outFieldString
+                + "&inSR=4326&outSR=4326&returnGeometry=true"
+                + "&returnM=false&returnZ=false&geometry=-85.944465,37.997286,-85.442908,38.378011"
+                + "&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelEnvelopeIntersects");
 
         assertFalse(result.has("error"));
         assertFalse(result.toString().isEmpty());

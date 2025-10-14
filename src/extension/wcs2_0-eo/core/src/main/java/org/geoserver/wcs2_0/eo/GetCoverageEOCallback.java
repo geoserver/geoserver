@@ -22,8 +22,8 @@ import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.factory.CommonFactoryFinder;
 
 /**
- * Plugs into the GetCoverage request cycle and transforms a request for a single EO granule to one
- * against the coverage, but with the filter to limit it to the specified granule
+ * Plugs into the GetCoverage request cycle and transforms a request for a single EO granule to one against the
+ * coverage, but with the filter to limit it to the specified granule
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -40,11 +40,8 @@ public class GetCoverageEOCallback extends AbstractDispatcherCallback {
     @Override
     public Operation operationDispatched(Request request, Operation operation) {
         Object[] parameters = operation.getParameters();
-        if (parameters != null
-                && parameters.length > 0
-                && parameters[0] instanceof GetCoverageType) {
+        if (parameters != null && parameters.length > 0 && parameters[0] instanceof GetCoverageType gc) {
             // check we are going against a granule
-            GetCoverageType gc = (GetCoverageType) parameters[0];
             String coverageId = gc.getCoverageId();
             if (coverageId == null) {
                 throw new WCS20Exception(
@@ -64,9 +61,7 @@ public class GetCoverageEOCallback extends AbstractDispatcherCallback {
                 // check the filter actually matches one granule
                 if (!readerHasGranule(coverage, granuleFilter)) {
                     throw new WCS20Exception(
-                            "Could not locate coverage " + coverageId,
-                            WCS20ExceptionCode.NoSuchCoverage,
-                            "coverageId");
+                            "Could not locate coverage " + coverageId, WCS20ExceptionCode.NoSuchCoverage, "coverageId");
                 }
 
                 // set and/or merge with the previous filter
@@ -90,8 +85,7 @@ public class GetCoverageEOCallback extends AbstractDispatcherCallback {
             GranuleSource source = reader.getGranules(coverageName, true);
             return source.getCount(new Query(coverageName, granuleFilter)) > 0;
         } catch (IOException e) {
-            throw new WCS20Exception(
-                    "Could not determine if the coverage has the specified granule", e);
+            throw new WCS20Exception("Could not determine if the coverage has the specified granule", e);
         }
     }
 }

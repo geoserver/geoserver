@@ -11,8 +11,8 @@ import org.apache.wicket.Component;
 /**
  * Information about a component being plugged into a user interface.
  *
- * <p>Subclasses of this class are used to implement user interface "extension points". For an
- * example see {@link MenuPageInfo}.
+ * <p>Subclasses of this class are used to implement user interface "extension points". For an example see
+ * {@link MenuPageInfo}.
  *
  * @author Andrea Aime, The Open Planning Project
  * @author Justin Deoliveira, The Open Planning Project
@@ -43,9 +43,9 @@ public abstract class ComponentInfo<C extends Component> implements Serializable
     /**
      * The i18n key for the title of the component.
      *
-     * <p>The exact way this title is used depends one the component. For instance if the component
-     * is a page, the title could be the used for a link to the page. If the component is a panel in
-     * a tabbed panel, the title might be the label on the tab.
+     * <p>The exact way this title is used depends one the component. For instance if the component is a page, the title
+     * could be the used for a link to the page. If the component is a panel in a tabbed panel, the title might be the
+     * label on the tab.
      */
     public String getTitleKey() {
         return title;

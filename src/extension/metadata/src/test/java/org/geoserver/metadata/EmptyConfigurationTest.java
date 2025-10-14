@@ -16,10 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 /** Tests that metadata module works 'out of the box', without any configuration present yet. */
 public class EmptyConfigurationTest extends AbstractWicketMetadataTest {
 
-    @Autowired protected ConfigurationServiceImpl configService;
+    @Autowired
+    protected ConfigurationServiceImpl configService;
 
-    private File metadataRenamed =
-            new File(DATA_DIRECTORY.getDataDirectoryRoot(), "metadata.renamed");
+    private File metadataRenamed = new File(DATA_DIRECTORY.getDataDirectoryRoot(), "metadata.renamed");
 
     @Before
     public void initEmptyConfiguration() throws Exception {

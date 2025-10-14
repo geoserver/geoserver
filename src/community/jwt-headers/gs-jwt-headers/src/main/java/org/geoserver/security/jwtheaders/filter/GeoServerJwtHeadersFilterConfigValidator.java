@@ -15,8 +15,7 @@ import org.geotools.util.logging.Logging;
 /** Validate the configuration. */
 public class GeoServerJwtHeadersFilterConfigValidator extends FilterConfigValidator {
 
-    private static final Logger LOG =
-            Logging.getLogger(GeoServerJwtHeadersFilterConfigValidator.class);
+    private static final Logger LOG = Logging.getLogger(GeoServerJwtHeadersFilterConfigValidator.class);
 
     /**
      * Default constructor.
@@ -29,10 +28,9 @@ public class GeoServerJwtHeadersFilterConfigValidator extends FilterConfigValida
 
     /** Validates the configuration type and content. */
     @Override
-    public void validateFilterConfig(SecurityNamedServiceConfig config)
-            throws FilterConfigException {
-        if (config instanceof GeoServerJwtHeadersFilterConfig) {
-            validateGeoServerJwtHeadersFilterConfig((GeoServerJwtHeadersFilterConfig) config);
+    public void validateFilterConfig(SecurityNamedServiceConfig config) throws FilterConfigException {
+        if (config instanceof GeoServerJwtHeadersFilterConfig filterConfig) {
+            validateGeoServerJwtHeadersFilterConfig(filterConfig);
             super.validateFilterConfig(config);
         } else {
             throw new FilterConfigException(

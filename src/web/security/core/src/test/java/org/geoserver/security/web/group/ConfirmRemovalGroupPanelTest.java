@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.web.group;
 
+import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
@@ -16,42 +17,34 @@ import org.geoserver.web.FormTestPage;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ConfirmRemovalGroupPanelTest
-        extends AbstractConfirmRemovalPanelTest<GeoServerUserGroup> {
+public class ConfirmRemovalGroupPanelTest extends AbstractConfirmRemovalPanelTest<GeoServerUserGroup> {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     protected boolean disassociateRoles = false;
 
     @Override
     protected void setupPanel(final List<GeoServerUserGroup> roots) {
-        tester.startPage(
-                new FormTestPage(
-                        new ComponentBuilder() {
-                            private static final long serialVersionUID = 1L;
+        tester.startPage(new FormTestPage(new ComponentBuilder() {
+            @Serial
+            private static final long serialVersionUID = 1L;
 
-                            @Override
-                            public Component buildComponent(String id) {
-                                Model<Boolean> model = new Model<>(disassociateRoles);
-                                return new ConfirmRemovalGroupPanel(
-                                        id,
-                                        model,
-                                        roots.toArray(new GeoServerUserGroup[roots.size()])) {
-                                    @Override
-                                    protected IModel<String> canRemove(GeoServerUserGroup data) {
-                                        SelectionGroupRemovalLink link =
-                                                new SelectionGroupRemovalLink(
-                                                        getUserGroupServiceName(),
-                                                        "XXX",
-                                                        null,
-                                                        null,
-                                                        disassociateRoles);
-                                        return link.canRemove(data);
-                                    }
+            @Override
+            public Component buildComponent(String id) {
+                Model<Boolean> model = new Model<>(disassociateRoles);
+                return new ConfirmRemovalGroupPanel(id, model, roots.toArray(new GeoServerUserGroup[roots.size()])) {
+                    @Override
+                    protected IModel<String> canRemove(GeoServerUserGroup data) {
+                        SelectionGroupRemovalLink link = new SelectionGroupRemovalLink(
+                                getUserGroupServiceName(), "XXX", null, null, disassociateRoles);
+                        return link.canRemove(data);
+                    }
 
-                                    private static final long serialVersionUID = 1L;
-                                };
-                            }
-                        }));
+                    @Serial
+                    private static final long serialVersionUID = 1L;
+                };
+            }
+        }));
     }
 
     @Before

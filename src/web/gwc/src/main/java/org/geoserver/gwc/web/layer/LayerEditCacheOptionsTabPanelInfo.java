@@ -5,6 +5,7 @@
  */
 package org.geoserver.gwc.web.layer;
 
+import java.io.Serial;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.gwc.GWC;
@@ -16,6 +17,7 @@ import org.geoserver.web.publish.CommonPublishedEditTabPanelInfo;
 
 public class LayerEditCacheOptionsTabPanelInfo extends CommonPublishedEditTabPanelInfo {
 
+    @Serial
     private static final long serialVersionUID = 7917940832781227130L;
 
     @Override
@@ -42,8 +44,7 @@ public class LayerEditCacheOptionsTabPanelInfo extends CommonPublishedEditTabPan
             tileLayerInfo = info.clone();
         }
         if (isNew) tileLayerInfo.setEnabled(true);
-        final boolean initWithTileLayer =
-                (isNew && defaultSettings.isCacheLayersByDefault()) || tileLayer != null;
+        final boolean initWithTileLayer = (isNew && defaultSettings.isCacheLayersByDefault()) || tileLayer != null;
 
         if (!initWithTileLayer) {
             tileLayerInfo.setId(null); // indicate not to create the tile layer

@@ -6,6 +6,7 @@
 package org.geoserver.data.util;
 
 import java.awt.Color;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,15 +18,24 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geotools.api.coverage.grid.GridEnvelope;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.parameter.GeneralParameterDescriptor;
 import org.geotools.api.parameter.GeneralParameterValue;
 import org.geotools.api.parameter.ParameterDescriptor;
 import org.geotools.api.parameter.ParameterValue;
 import org.geotools.api.parameter.ParameterValueGroup;
+import org.geotools.api.referencing.datum.PixelInCell;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.coverage.grid.GeneralGridGeometry;
+import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridEnvelope2D;
+import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.filter.text.ecql.ECQL;
+import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.GeneralBounds;
 import org.geotools.parameter.DefaultParameterDescriptor;
 import org.geotools.referencing.CRS;
@@ -37,14 +47,14 @@ import org.geotools.util.Converters;
  */
 public class CoverageUtils {
 
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(CoverageUtils.class.toString());
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(CoverageUtils.class.toString());
     public static final int TRANSPARENT = 0;
     public static final int OPAQUE = 1;
 
     public static GeneralParameterValue[] getParameters(ParameterValueGroup params) {
         final List<GeneralParameterValue> parameters = new ArrayList<>();
-        final String readGeometryKey = AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString();
+        final String readGeometryKey =
+                AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString();
 
         if ((params != null) && (!params.values().isEmpty())) {
             List list = params.values();
@@ -71,15 +81,12 @@ public class CoverageUtils {
 
                     @SuppressWarnings("unchecked")
                     ParameterValue pv =
-                            new DefaultParameterDescriptor(_key, value.getClass(), null, value)
-                                    .createValue();
+                            new DefaultParameterDescriptor(_key, value.getClass(), null, value).createValue();
                     parameters.add(pv);
                 }
             }
 
-            return (!parameters.isEmpty())
-                    ? parameters.toArray(new GeneralParameterValue[parameters.size()])
-                    : null;
+            return (!parameters.isEmpty()) ? parameters.toArray(new GeneralParameterValue[parameters.size()]) : null;
         } else {
             return null;
         }
@@ -89,10 +96,10 @@ public class CoverageUtils {
         return getParameters(params, values, false);
     }
 
-    public static GeneralParameterValue[] getParameters(
-            ParameterValueGroup params, Map values, boolean readGeom) {
+    public static GeneralParameterValue[] getParameters(ParameterValueGroup params, Map values, boolean readGeom) {
         final List<ParameterValue<?>> parameters = new ArrayList<>();
-        final String readGeometryKey = AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString();
+        final String readGeometryKey =
+                AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString();
 
         if ((params != null) && (!params.values().isEmpty())) {
             final List<GeneralParameterValue> elements = params.values();
@@ -128,8 +135,7 @@ public class CoverageUtils {
                     final Object value = CoverageUtils.getCvParamValue(_key, val, values);
                     @SuppressWarnings("unchecked")
                     DefaultParameterDescriptor pd =
-                            new DefaultParameterDescriptor(
-                                    _key, descr.getValueClass(), null, value);
+                            new DefaultParameterDescriptor(_key, descr.getValueClass(), null, value);
                     parameters.add(pd.createValue());
                 }
             }
@@ -144,7 +150,8 @@ public class CoverageUtils {
 
     public static Map<String, Serializable> getParametersKVP(ParameterValueGroup params) {
         final Map<String, Serializable> parameters = new HashMap<>();
-        final String readGeometryKey = AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString();
+        final String readGeometryKey =
+                AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString();
 
         if ((params != null) && (!params.values().isEmpty())) {
             final List list = params.values();
@@ -179,8 +186,8 @@ public class CoverageUtils {
 
                     if (value == null) {
                         text = null;
-                    } else if (value instanceof String) {
-                        text = (String) value;
+                    } else if (value instanceof String string) {
+                        text = string;
                     } else {
                         text = value.toString();
                     }
@@ -204,8 +211,7 @@ public class CoverageUtils {
             if (key.equalsIgnoreCase("crs")) {
                 if ((getParamValue(paramValues, index) != null)
                         && (!getParamValue(paramValues, index).isEmpty())) {
-                    if ((paramValues.get(index) != null)
-                            && (!((String) paramValues.get(index)).isEmpty())) {
+                    if ((paramValues.get(index) != null) && (!((String) paramValues.get(index)).isEmpty())) {
                         value = CRS.parseWKT((String) paramValues.get(index));
                     }
                 } else {
@@ -218,7 +224,8 @@ public class CoverageUtils {
                     String tmp = getParamValue(paramValues, index);
 
                     if ((tmp.indexOf("[") > 0) && (tmp.indexOf("]") > tmp.indexOf("["))) {
-                        tmp = tmp.substring(tmp.indexOf("[") + 1, tmp.indexOf("]")).trim();
+                        tmp = tmp.substring(tmp.indexOf("[") + 1, tmp.indexOf("]"))
+                                .trim();
                         tmp = tmp.replaceAll(",", "");
 
                         String[] strCoords = tmp.split(" ");
@@ -229,10 +236,8 @@ public class CoverageUtils {
                                 coords[iT] = Double.parseDouble(strCoords[iT].trim());
                             }
 
-                            value =
-                                    new GeneralBounds(
-                                            new double[] {coords[0], coords[1]},
-                                            new double[] {coords[2], coords[3]});
+                            value = new GeneralBounds(
+                                    new double[] {coords[0], coords[1]}, new double[] {coords[2], coords[3]});
                         }
                     }
                 }
@@ -279,7 +284,8 @@ public class CoverageUtils {
                     String tmp = (String) params.get(key);
 
                     if ((tmp.indexOf("[") > 0) && (tmp.indexOf("]") > tmp.indexOf("["))) {
-                        tmp = tmp.substring(tmp.indexOf("[") + 1, tmp.indexOf("]")).trim();
+                        tmp = tmp.substring(tmp.indexOf("[") + 1, tmp.indexOf("]"))
+                                .trim();
                         tmp = tmp.replaceAll(",", "");
 
                         String[] strCoords = tmp.split(" ");
@@ -290,10 +296,8 @@ public class CoverageUtils {
                                 coords[iT] = Double.parseDouble(strCoords[iT].trim());
                             }
 
-                            value =
-                                    new GeneralBounds(
-                                            new double[] {coords[0], coords[1]},
-                                            new double[] {coords[2], coords[3]});
+                            value = new GeneralBounds(
+                                    new double[] {coords[0], coords[1]}, new double[] {coords[2], coords[3]});
                         }
                     }
                 }
@@ -305,7 +309,8 @@ public class CoverageUtils {
                     String tmp = (String) params.get(key);
 
                     if ((tmp.indexOf("[") > 0) && (tmp.indexOf("]") > tmp.indexOf("["))) {
-                        tmp = tmp.substring(tmp.indexOf("[") + 1, tmp.indexOf("]")).trim();
+                        tmp = tmp.substring(tmp.indexOf("[") + 1, tmp.indexOf("]"))
+                                .trim();
                         tmp = tmp.replaceAll(",", "");
 
                         String[] strCoords = tmp.split(" ");
@@ -316,20 +321,16 @@ public class CoverageUtils {
                                 coords[iT] = Double.parseDouble(strCoords[iT].trim());
                             }
 
-                            value =
-                                    new GeneralBounds(
-                                            new double[] {coords[0], coords[1]},
-                                            new double[] {coords[2], coords[3]});
+                            value = new GeneralBounds(
+                                    new double[] {coords[0], coords[1]}, new double[] {coords[2], coords[3]});
                         }
                     }
-                } else if ((params.get(key) != null)
-                        && params.get(key) instanceof GeneralGridGeometry) {
+                } else if ((params.get(key) != null) && params.get(key) instanceof GeneralGridGeometry) {
                     value = params.get(key);
                 }
             } else {
                 final Class<?> target = param.getDescriptor().getValueClass();
-                if (key.equalsIgnoreCase("InputTransparentColor")
-                        || key.equalsIgnoreCase("OutputTransparentColor")) {
+                if (key.equalsIgnoreCase("InputTransparentColor") || key.equalsIgnoreCase("OutputTransparentColor")) {
                     if (params.get(key) != null) {
                         value = Color.decode((String) params.get(key));
                     } else {
@@ -342,8 +343,7 @@ public class CoverageUtils {
                         String temp = (String) params.get(key);
                         String[] elements = temp.split(",");
                         final double[] backgroundValues = new double[elements.length];
-                        for (int i = 0; i < elements.length; i++)
-                            backgroundValues[i] = Double.valueOf(elements[i]);
+                        for (int i = 0; i < elements.length; i++) backgroundValues[i] = Double.valueOf(elements[i]);
                         value = backgroundValues;
                     }
                 } else if (key.equalsIgnoreCase("InputImageThresholdValue")) {
@@ -354,8 +354,8 @@ public class CoverageUtils {
                 } else if (key.equalsIgnoreCase("Filter")) {
                     Object sfilter = params.get(key);
                     if (sfilter != null) {
-                        if (sfilter instanceof String) {
-                            value = ECQL.toFilter((String) sfilter);
+                        if (sfilter instanceof String string) {
+                            value = ECQL.toFilter(string);
                         } else if (sfilter instanceof Filter) {
                             value = sfilter;
                         }
@@ -368,8 +368,7 @@ public class CoverageUtils {
                     if (value != null) {
                         Object converted = Converters.convert(value, target);
                         if (converted == null) {
-                            throw new RuntimeException(
-                                    "Failed to convert " + value + " to " + target.getName());
+                            throw new RuntimeException("Failed to convert " + value + " to " + target.getName());
                         } else {
                             value = converted;
                         }
@@ -387,8 +386,8 @@ public class CoverageUtils {
     }
 
     /**
-     * Merges the provided parameter in the read parameters, provided it's included in the specified
-     * descriptors with one of the aliases
+     * Merges the provided parameter in the read parameters, provided it's included in the specified descriptors with
+     * one of the aliases
      *
      * @param parameterDescriptors The parameter descriptors of the reader
      * @param readParameters The current set of reader parameters
@@ -418,16 +417,14 @@ public class CoverageUtils {
                 }
 
                 if (existingPvIndex >= 0) {
-                    GeneralParameterValue[] clone =
-                            new GeneralParameterValue[readParameters.length];
+                    GeneralParameterValue[] clone = new GeneralParameterValue[readParameters.length];
                     System.arraycopy(readParameters, 0, clone, 0, readParameters.length);
                     clone[existingPvIndex] = pv;
                     readParameters = clone;
 
                 } else {
                     // add to the list
-                    GeneralParameterValue[] clone =
-                            new GeneralParameterValue[readParameters.length + 1];
+                    GeneralParameterValue[] clone = new GeneralParameterValue[readParameters.length + 1];
                     System.arraycopy(readParameters, 0, clone, 0, readParameters.length);
                     clone[readParameters.length] = pv;
                     readParameters = clone;
@@ -439,5 +436,85 @@ public class CoverageUtils {
         }
 
         return readParameters;
+    }
+
+    /**
+     * This utility method can be used to read a small sample {@link GridCoverage2D} for inspection.
+     *
+     * @param reader the {@link GridCoverage2DReader} that we'll read the coverage from
+     * @param readParams the read params supported by the reader format
+     * @param parameters a KVP of parameters to be passed to the reader
+     * @param customParameters optional custom parameters to be passed to the reader
+     * @param directRead whether to forse a direct read (instead of using JAI)
+     * @return the small 5x5 grid coverage
+     * @throws IOException
+     * @throws TransformException
+     */
+    public static GridCoverage2D readSampleGridCoverage(
+            GridCoverage2DReader reader,
+            ParameterValueGroup readParams,
+            Map<String, Serializable> parameters,
+            Map<String, Serializable> customParameters,
+            boolean directRead)
+            throws IOException, TransformException {
+        //
+        // Now reading a fake small GridCoverage just to retrieve meta
+        // information about bands:
+        //
+        // - calculating a new envelope which is just 5x5 pixels
+        // - if it's a mosaic, limit the number of tiles we're going to read to one
+        //   (with time and elevation there might be hundreds of superimposed tiles)
+        // - reading the GridCoverage subset
+        //
+
+        final GridEnvelope2D testRange = getGridEnvelope2D(reader);
+
+        // build the corresponding envelope
+        final MathTransform gridToWorldCorner = reader.getOriginalGridToWorld(PixelInCell.CELL_CORNER);
+
+        final GeneralBounds testEnvelope = CRS.transform(gridToWorldCorner, new GeneralBounds(testRange.getBounds()));
+        testEnvelope.setCoordinateReferenceSystem(reader.getCoordinateReferenceSystem());
+
+        if (customParameters != null) {
+            parameters.putAll(customParameters);
+        }
+
+        // make sure mosaics with many superimposed tiles won't blow up with
+        // a "too many open files" exception
+        String maxAllowedTiles = ImageMosaicFormat.MAX_ALLOWED_TILES.getName().toString();
+        if (parameters.keySet().contains(maxAllowedTiles)) {
+            parameters.put(maxAllowedTiles, 1);
+        }
+
+        if (directRead) {
+            // Since the read sample image won't be greater than 5x5 pixels and we are limiting the
+            // number of granules to 1, we may do direct read instead of using JAI
+            String useImageNImageRead =
+                    ImageMosaicFormat.USE_IMAGEN_IMAGEREAD.getName().toString();
+            if (parameters.keySet().contains(useImageNImageRead)) {
+                parameters.put(useImageNImageRead, false);
+            }
+        }
+
+        parameters.put(
+                AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString(),
+                new GridGeometry2D(testRange, testEnvelope));
+
+        // try to read this coverage
+        return reader.read(getParameters(readParams, parameters, true));
+    }
+
+    private static GridEnvelope2D getGridEnvelope2D(GridCoverage2DReader reader) {
+        GridEnvelope originalRange = reader.getOriginalGridRange();
+        final int minX = originalRange.getLow(0);
+        final int minY = originalRange.getLow(1);
+        final int width = originalRange.getSpan(0);
+        final int height = originalRange.getSpan(1);
+        final int maxX = minX + (width <= 5 ? width : 5);
+        final int maxY = minY + (height <= 5 ? height : 5);
+
+        // we have to be sure that we are working against a valid grid range.
+        final GridEnvelope2D testRange = new GridEnvelope2D(minX, minY, maxX, maxY);
+        return testRange;
     }
 }

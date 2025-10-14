@@ -39,7 +39,8 @@ import javax.xml.bind.annotation.XmlValue;
 @XmlRootElement(name = "map-option", namespace = "http://www.w3.org/1999/xhtml")
 public class Option {
 
-    @XmlValue protected String content;
+    @XmlValue
+    protected String content;
 
     @XmlAttribute(name = "value")
     @XmlSchemaType(name = "anySimpleType")

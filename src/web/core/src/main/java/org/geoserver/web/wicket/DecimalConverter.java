@@ -12,9 +12,9 @@ import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.convert.converter.DoubleConverter;
 
 /**
- * A {@link IConverter} for {@code java.lang.Double} representations that allows for arbitrary
- * number of decimal places, since the default TextField rounds up doubles to three decimals. This
- * class will also handle positive and negative infinity symbols
+ * A {@link IConverter} for {@code java.lang.Double} representations that allows for arbitrary number of decimal places,
+ * since the default TextField rounds up doubles to three decimals. This class will also handle positive and negative
+ * infinity symbols
  */
 @SuppressWarnings("serial")
 public class DecimalConverter extends DoubleConverter {

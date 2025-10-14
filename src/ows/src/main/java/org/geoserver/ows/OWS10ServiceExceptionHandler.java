@@ -25,8 +25,8 @@ import org.geoserver.platform.ServiceException;
 import org.geotools.xsd.Encoder;
 
 /**
- * A default implementation of {@link ServiceExceptionHandler} which outputs as service exception in
- * a <code>ows:ExceptionReport</code> document.
+ * A default implementation of {@link ServiceExceptionHandler} which outputs as service exception in a <code>
+ * ows:ExceptionReport</code> document.
  *
  * <p>This service exception handler will generate an OWS exception report, see <a
  * href="http://schemas.opengis.net/ows/1.0.0/owsExceptionReport.xsd">owsExceptionReport.xsd</a> .
@@ -35,8 +35,7 @@ import org.geotools.xsd.Encoder;
  */
 public class OWS10ServiceExceptionHandler extends ServiceExceptionHandler {
 
-    private static String CONTENT_TYPE =
-            System.getProperty("ows10.exception.xml.responsetype", DEFAULT_XML_MIME_TYPE);
+    private static String CONTENT_TYPE = System.getProperty("ows10.exception.xml.responsetype", DEFAULT_XML_MIME_TYPE);
 
     protected boolean verboseExceptions = false;
 
@@ -109,9 +108,7 @@ public class OWS10ServiceExceptionHandler extends ServiceExceptionHandler {
         encoder.setLineWidth(60);
         encoder.setOmitXMLDeclaration(request.isSOAP());
 
-        String schemaLocation =
-                buildSchemaURL(
-                        baseURL(request.getHttpRequest()), "ows/1.0.0/owsExceptionReport.xsd");
+        String schemaLocation = buildSchemaURL(baseURL(request.getHttpRequest()), "ows/1.0.0/owsExceptionReport.xsd");
         encoder.setSchemaLocation(org.geoserver.ows.xml.v1_0.OWS.NAMESPACE, schemaLocation);
 
         try {
@@ -123,8 +120,7 @@ public class OWS10ServiceExceptionHandler extends ServiceExceptionHandler {
             // throw new RuntimeException(ex);
             // Hmm, not much we can do here.  I guess log the fact that we couldn't write out the
             // exception and be done with it...
-            LOGGER.log(
-                    Level.INFO, "Problem writing exception information back to calling client:", e);
+            LOGGER.log(Level.INFO, "Problem writing exception information back to calling client:", e);
         } finally {
             try {
                 request.getHttpResponse().getOutputStream().flush();

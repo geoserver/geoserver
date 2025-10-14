@@ -36,8 +36,7 @@ public class DDSMapResponse extends RenderedImageMapResponse {
     }
 
     @Override
-    public void formatImageOutputStream(
-            RenderedImage img, OutputStream os, WMSMapContent mapContent)
+    public void formatImageOutputStream(RenderedImage img, OutputStream os, WMSMapContent mapContent)
             throws ServiceException, IOException {
         BufferedImage bimg = convertRenderedImage(img);
         ByteBuffer bb = DDSConverter.convertToDxt3(bimg);
@@ -68,8 +67,8 @@ public class DDSMapResponse extends RenderedImageMapResponse {
      * http://www.jguru.com/faq/view.jsp?EID=114602)
      */
     protected BufferedImage convertRenderedImage(RenderedImage img) {
-        if (img instanceof BufferedImage) {
-            return (BufferedImage) img;
+        if (img instanceof BufferedImage image) {
+            return image;
         }
         ColorModel cm = img.getColorModel();
         int width = img.getWidth();

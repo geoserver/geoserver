@@ -111,26 +111,22 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
 
     @Test
     public void testCascadeGetMapOnto13() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wms?bbox=-90,-180,90,180"
-                                + "&styles=&layers="
-                                + WORLD4326_130
-                                + "&Format=image/png&request=GetMap&version=1.3.0&service=wms"
-                                + "&width=180&height=90&crs=EPSG:4326");
+        MockHttpServletResponse response = getAsServletResponse("wms?bbox=-90,-180,90,180"
+                + "&styles=&layers="
+                + WORLD4326_130
+                + "&Format=image/png&request=GetMap&version=1.3.0&service=wms"
+                + "&width=180&height=90&crs=EPSG:4326");
         // we'll get a service exception if the requests are not the ones expected
         checkImage(response, "image/png", 180, 90);
     }
 
     @Test
     public void testCascadeGetMapOnto11() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wms?bbox=-90,-180,90,180"
-                                + "&styles=&layers="
-                                + WORLD4326_110
-                                + "&Format=image/png&request=GetMap&version=1.3.0&service=wms"
-                                + "&width=180&height=90&crs=EPSG:4326");
+        MockHttpServletResponse response = getAsServletResponse("wms?bbox=-90,-180,90,180"
+                + "&styles=&layers="
+                + WORLD4326_110
+                + "&Format=image/png&request=GetMap&version=1.3.0&service=wms"
+                + "&width=180&height=90&crs=EPSG:4326");
         // we'll get a service exception if the requests are not the ones expected
         checkImage(response, "image/png", 180, 90);
     }
@@ -154,14 +150,13 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
     @Test
     public void testGetFeatureInfoReprojection() throws Exception {
         // do the get feature request using EPSG:4326
-        String url =
-                "wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetFeatureInfo&FORMAT=image/png&TRANSPARENT=true"
-                        + "&QUERY_LAYERS="
-                        + WORLD4326_130
-                        + "&STYLES&LAYERS="
-                        + WORLD4326_130
-                        + "&INFO_FORMAT=text/xml; subtype=gml/3.1.1"
-                        + "&FEATURE_COUNT=50&X=50&Y=50&CRS=EPSG:4326&WIDTH=101&HEIGHT=101&BBOX=44.3898919295,-103.829117187,44.4069939679,-103.804563429";
+        String url = "wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetFeatureInfo&FORMAT=image/png&TRANSPARENT=true"
+                + "&QUERY_LAYERS="
+                + WORLD4326_130
+                + "&STYLES&LAYERS="
+                + WORLD4326_130
+                + "&INFO_FORMAT=text/xml; subtype=gml/3.1.1"
+                + "&FEATURE_COUNT=50&X=50&Y=50&CRS=EPSG:4326&WIDTH=101&HEIGHT=101&BBOX=44.3898919295,-103.829117187,44.4069939679,-103.804563429";
         Document result = getAsDOM(url);
         // setup XPATH engine namespaces
         Map<String, String> namespaces = new HashMap<>();
@@ -176,18 +171,16 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
         xpath.setNamespaceContext(new SimpleNamespaceContext(namespaces));
         // check the response content, the features should have been reproject from EPSG:3857 to
         // EPSG:4326
-        String srs =
-                xpath.evaluate(
-                        "//wfs:FeatureCollection/gml:featureMembers/"
-                                + "gs:world4326_130[@gml:id='bugsites.55']/gs:the_geom/gml:Point/@srsName",
-                        result);
+        String srs = xpath.evaluate(
+                "//wfs:FeatureCollection/gml:featureMembers/"
+                        + "gs:world4326_130[@gml:id='bugsites.55']/gs:the_geom/gml:Point/@srsName",
+                result);
         assertThat(srs, notNullValue());
         assertThat(srs.contains("4326"), is(true));
-        String rawCoordinates =
-                xpath.evaluate(
-                        "//wfs:FeatureCollection/gml:featureMembers/"
-                                + "gs:world4326_130[@gml:id='bugsites.55']/gs:the_geom/gml:Point/gml:pos/text()",
-                        result);
+        String rawCoordinates = xpath.evaluate(
+                "//wfs:FeatureCollection/gml:featureMembers/"
+                        + "gs:world4326_130[@gml:id='bugsites.55']/gs:the_geom/gml:Point/gml:pos/text()",
+                result);
         assertThat(rawCoordinates, notNullValue());
         String[] coordinates = rawCoordinates.split(" ");
         assertThat(coordinates.length, is(2));
@@ -199,18 +192,16 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
         getGeoServer().save(wms);
         // execute the get feature info request
         result = getAsDOM(url);
-        srs =
-                xpath.evaluate(
-                        "//wfs:FeatureCollection/gml:featureMembers/"
-                                + "gs:world4326_130[@gml:id='bugsites.55']/gs:the_geom/gml:Point/@srsName",
-                        result);
+        srs = xpath.evaluate(
+                "//wfs:FeatureCollection/gml:featureMembers/"
+                        + "gs:world4326_130[@gml:id='bugsites.55']/gs:the_geom/gml:Point/@srsName",
+                result);
         assertThat(srs, notNullValue());
         assertThat(srs.contains("3857"), is(true));
-        rawCoordinates =
-                xpath.evaluate(
-                        "//wfs:FeatureCollection/gml:featureMembers/"
-                                + "gs:world4326_130[@gml:id='bugsites.55']/gs:the_geom/gml:Point/gml:pos/text()",
-                        result);
+        rawCoordinates = xpath.evaluate(
+                "//wfs:FeatureCollection/gml:featureMembers/"
+                        + "gs:world4326_130[@gml:id='bugsites.55']/gs:the_geom/gml:Point/gml:pos/text()",
+                result);
         assertThat(rawCoordinates, notNullValue());
         coordinates = rawCoordinates.split(" ");
         assertThat(coordinates.length, is(2));
@@ -223,13 +214,12 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
 
         LayerInfo info = getCatalog().getLayerByName("roads_wms_130");
 
-        String getMapRequest =
-                "wms?bbox=589434.85646865,4914006.33783702,609527.21021496,4928063.39801461"
-                        + "&styles=line1&layers="
-                        + info.getName()
-                        + "&Format=image/png"
-                        + "&request=GetMap&version=1.3.0&service=wms"
-                        + "&width=180&height=90&crs=EPSG:26713";
+        String getMapRequest = "wms?bbox=589434.85646865,4914006.33783702,609527.21021496,4928063.39801461"
+                + "&styles=line1&layers="
+                + info.getName()
+                + "&Format=image/png"
+                + "&request=GetMap&version=1.3.0&service=wms"
+                + "&width=180&height=90&crs=EPSG:26713";
 
         // the request should generate exepected remote WMS URL
         // e.g default remote style, correct image format
@@ -237,13 +227,12 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
         assertNotNull(response);
 
         // below request should force geoserver to request in default format
-        String getMapUnsupportedRequest =
-                "wms?bbox=589434.85646865,4914006.33783702,609527.21021496,4928063.39801461"
-                        + "&styles=line1&layers="
-                        + info.getName()
-                        + "&Format=image/gif"
-                        + "&request=GetMap&version=1.3.0&service=wms"
-                        + "&width=180&height=90&crs=EPSG:26713";
+        String getMapUnsupportedRequest = "wms?bbox=589434.85646865,4914006.33783702,609527.21021496,4928063.39801461"
+                + "&styles=line1&layers="
+                + info.getName()
+                + "&Format=image/gif"
+                + "&request=GetMap&version=1.3.0&service=wms"
+                + "&width=180&height=90&crs=EPSG:26713";
 
         // the request should generate exepected remote WMS URL
         // e.g default forced remote style and jpeg format in remote style
@@ -264,19 +253,14 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
                 (WMSLayerInfo) getCatalog().getLayerByName(WORLD4326_110).getResource();
         WebMapServer webMapServer = layerInfo.getStore().getWebMapServer(null);
         // setting URL of local file for mock response
-        webMapServer
-                .getCapabilities()
-                .getRequest()
-                .getGetLegendGraphic()
-                .setGet(rasterLegendresource);
+        webMapServer.getCapabilities().getRequest().getGetLegendGraphic().setGet(rasterLegendresource);
 
-        BufferedImage image =
-                getAsImage(
-                        "wms?service=WMS&version=1.3.0&request=GetLegendGraphic"
-                                + "&layer="
-                                + WORLD4326_110
-                                + "&format=image/png&width=20&height=20&transparent=true",
-                        "image/png");
+        BufferedImage image = getAsImage(
+                "wms?service=WMS&version=1.3.0&request=GetLegendGraphic"
+                        + "&layer="
+                        + WORLD4326_110
+                        + "&format=image/png&width=20&height=20&transparent=true",
+                "image/png");
 
         assertNotNull(image);
         ImageAssert.assertEquals(expected, image, 0);
@@ -291,12 +275,11 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
     @Test
     public void testCascadeGetLegendRequestJSON() throws Exception {
 
-        JSON dom =
-                getAsJSON(
-                        "wms?service=WMS&version=1.3.0&request=GetLegendGraphic"
-                                + "&layer=roads_wms_130"
-                                + "&format=application/json",
-                        HttpStatus.SC_OK);
+        JSON dom = getAsJSON(
+                "wms?service=WMS&version=1.3.0&request=GetLegendGraphic"
+                        + "&layer=roads_wms_130"
+                        + "&format=application/json",
+                HttpStatus.SC_OK);
 
         JSONObject responseJson = JSONObject.fromObject(dom.toString());
         assertFalse(responseJson.isEmpty());
@@ -305,12 +288,11 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
     @Test
     public void testCascadeLayerGroup() throws Exception {
 
-        String getMapRequest =
-                "wms?service=WMS&version=1.3.0"
-                        + "&request=GetMap"
-                        + "&layers=roads_group_130"
-                        + "&bbox=589434.85646865,4914006.33783702,609527.21021496,4928063.39801461"
-                        + "&width=768&height=537&srs=EPSG:26713&Format=image/png";
+        String getMapRequest = "wms?service=WMS&version=1.3.0"
+                + "&request=GetMap"
+                + "&layers=roads_group_130"
+                + "&bbox=589434.85646865,4914006.33783702,609527.21021496,4928063.39801461"
+                + "&width=768&height=537&srs=EPSG:26713&Format=image/png";
 
         // the request should generate exepected remote WMS URL
         // e.g default remote styles should include the forced remote style of one layer
@@ -323,11 +305,10 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
     @Test
     public void testLegacyCascadeLayerGroup() throws Exception {
 
-        String getMapRequest =
-                "wms?bbox=-90,-180,90,180"
-                        + "&styles=&layers=cascaded_legacy_group_130"
-                        + "&Format=image/png&request=GetMap&version=1.3.0&service=wms"
-                        + "&width=180&height=90&crs=EPSG:4326";
+        String getMapRequest = "wms?bbox=-90,-180,90,180"
+                + "&styles=&layers=cascaded_legacy_group_130"
+                + "&Format=image/png&request=GetMap&version=1.3.0&service=wms"
+                + "&width=180&height=90&crs=EPSG:4326";
 
         // the request should generate exepected remote WMS URL
         // e.g default remote styles should be empty in remote request
@@ -346,22 +327,15 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
                 new ReferencedEnvelope(groupLayer2.getResource().getNativeBoundingBox());
         // minx,miny,maxx,maxy
         String lyrBBox =
-                request1.getMinX()
-                        + ","
-                        + request1.getMinY()
-                        + ","
-                        + request1.getMaxX()
-                        + ","
-                        + request1.getMaxY();
+                request1.getMinX() + "," + request1.getMinY() + "," + request1.getMaxX() + "," + request1.getMaxY();
 
-        String getMapRequest =
-                "wms?service=WMS&version=1.3.0"
-                        + "&request=GetMap"
-                        + "&layers="
-                        + info.getName()
-                        + "&bbox="
-                        + lyrBBox
-                        + "&width=768&height=537&srs=EPSG:4326&Format=image/png";
+        String getMapRequest = "wms?service=WMS&version=1.3.0"
+                + "&request=GetMap"
+                + "&layers="
+                + info.getName()
+                + "&bbox="
+                + lyrBBox
+                + "&width=768&height=537&srs=EPSG:4326&Format=image/png";
 
         // should result in a request with both group layers present
         // should invoke expected Mock URL in which both layers are present
@@ -376,14 +350,13 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
 
         // minx,miny,maxx,maxy
         String lyrBBoxOutSideNativeBounds = "-10.0,0,-5.0,5";
-        getMapRequest =
-                "wms?service=WMS&version=1.3.0"
-                        + "&request=GetMap"
-                        + "&layers="
-                        + info.getName()
-                        + "&bbox="
-                        + lyrBBoxOutSideNativeBounds
-                        + "&width=768&height=537&srs=EPSG:4326&Format=image/png";
+        getMapRequest = "wms?service=WMS&version=1.3.0"
+                + "&request=GetMap"
+                + "&layers="
+                + info.getName()
+                + "&bbox="
+                + lyrBBoxOutSideNativeBounds
+                + "&width=768&height=537&srs=EPSG:4326&Format=image/png";
 
         // should result in a request with single group layers present
         // should invoke expected Mock URL in which only 1 layer is present
@@ -402,13 +375,7 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
                 new ReferencedEnvelope(groupLayer2.getResource().getNativeBoundingBox());
         // minx,miny,maxx,maxy
         String lyrBBox =
-                request1.getMinX()
-                        + ","
-                        + request1.getMinY()
-                        + ","
-                        + request1.getMaxX()
-                        + ","
-                        + request1.getMaxY();
+                request1.getMinX() + "," + request1.getMinY() + "," + request1.getMaxX() + "," + request1.getMaxY();
         // configure max scale on one of the layers
         // set max scale as small as possible to have it filtered
         WMSLayerInfo groupLayer1WMSResource =
@@ -417,14 +384,13 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
         groupLayer1WMSResource.setMaxScale(1000d);
         getCatalog().save(groupLayer1WMSResource);
 
-        String getMapRequest =
-                "wms?service=WMS&version=1.3.0"
-                        + "&request=GetMap"
-                        + "&layers="
-                        + info.getName()
-                        + "&bbox="
-                        + lyrBBox
-                        + "&width=768&height=537&srs=EPSG:4326&Format=image/png";
+        String getMapRequest = "wms?service=WMS&version=1.3.0"
+                + "&request=GetMap"
+                + "&layers="
+                + info.getName()
+                + "&bbox="
+                + lyrBBox
+                + "&width=768&height=537&srs=EPSG:4326&Format=image/png";
 
         // should result in a request with both group layers present
         // should invoke expected Mock URL in which both layers are present
@@ -446,29 +412,27 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
         BufferedImage expectedImage = ImageIO.read(exptectedResponse);
         String rasterMask =
                 "POLYGON((-14.50804652396198 55.579454354599356,34.53492222603802 55.579454354599356,34.53492222603802 32.400173313532584,-14.50804652396198 32.400173313532584,-14.50804652396198 55.579454354599356))";
-        BufferedImage response =
-                getAsImage(
-                        "wms?bbox=-90,-180,90,180"
-                                + "&styles=&layers="
-                                + WORLD4326_110
-                                + "&Format=image/png&request=GetMap&version=1.3.0&service=wms"
-                                + "&width=180&height=90&crs=EPSG:4326"
-                                + "&clip="
-                                + rasterMask,
-                        "image/png");
+        BufferedImage response = getAsImage(
+                "wms?bbox=-90,-180,90,180"
+                        + "&styles=&layers="
+                        + WORLD4326_110
+                        + "&Format=image/png&request=GetMap&version=1.3.0&service=wms"
+                        + "&width=180&height=90&crs=EPSG:4326"
+                        + "&clip="
+                        + rasterMask,
+                "image/png");
         ImageAssert.assertEquals(expectedImage, response, 100);
         String rasterMask900913 =
                 "srid=900913;POLYGON ((-1615028.3514525702 7475148.401208023, 3844409.956787858 7475148.401208023, 3844409.956787858 3815954.983140064, -1615028.3514525702 3815954.983140064, -1615028.3514525702 7475148.401208023))";
-        response =
-                getAsImage(
-                        "wms?bbox=-90,-180,90,180"
-                                + "&styles=&layers="
-                                + WORLD4326_110
-                                + "&Format=image/png&request=GetMap&version=1.3.0&service=wms"
-                                + "&width=180&height=90&crs=EPSG:4326"
-                                + "&clip="
-                                + rasterMask900913,
-                        "image/png");
+        response = getAsImage(
+                "wms?bbox=-90,-180,90,180"
+                        + "&styles=&layers="
+                        + WORLD4326_110
+                        + "&Format=image/png&request=GetMap&version=1.3.0&service=wms"
+                        + "&width=180&height=90&crs=EPSG:4326"
+                        + "&clip="
+                        + rasterMask900913,
+                "image/png");
         ImageAssert.assertEquals(expectedImage, response, 100);
     }
 
@@ -477,16 +441,15 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
 
         String wkt =
                 "POLYGON((-103.81422590870386 44.406335162406855,-103.81645750660425 44.39480642272217,-103.78839087147242 44.39210787899582,-103.78718924183374 44.40443430323224,-103.80598616261011 44.4091556783195,-103.81422590870386 44.406335162406855))";
-        String url =
-                "wms?SERVICE=WMS&VERSION=1.1.0&REQUEST=GetFeatureInfo&FORMAT=image/png&TRANSPARENT=true"
-                        + "&QUERY_LAYERS="
-                        + WORLD4326_110
-                        + "&STYLES&LAYERS="
-                        + WORLD4326_110
-                        + "&INFO_FORMAT=application/json"
-                        + "&FEATURE_COUNT=50&X=50&Y=50&SRS=EPSG:4326&WIDTH=101&HEIGHT=101&BBOX=-103.829117187,44.3898919295,-103.804563429,44.4069939679"
-                        + "&CLIP="
-                        + wkt;
+        String url = "wms?SERVICE=WMS&VERSION=1.1.0&REQUEST=GetFeatureInfo&FORMAT=image/png&TRANSPARENT=true"
+                + "&QUERY_LAYERS="
+                + WORLD4326_110
+                + "&STYLES&LAYERS="
+                + WORLD4326_110
+                + "&INFO_FORMAT=application/json"
+                + "&FEATURE_COUNT=50&X=50&Y=50&SRS=EPSG:4326&WIDTH=101&HEIGHT=101&BBOX=-103.829117187,44.3898919295,-103.804563429,44.4069939679"
+                + "&CLIP="
+                + wkt;
         String json = getAsString(url);
         assertNotNull(json);
         // assert no features were returned

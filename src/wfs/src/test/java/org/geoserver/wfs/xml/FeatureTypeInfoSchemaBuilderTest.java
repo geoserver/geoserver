@@ -52,14 +52,11 @@ public class FeatureTypeInfoSchemaBuilderTest extends WFSTestSupport {
 
         assertTrue(element.getType() instanceof XSDComplexTypeDefinition);
 
-        XSDElementDeclaration id =
-                Schemas.getChildElementDeclaration(
-                        element, new QName(SystemTestData.CGF_URI, "id"));
+        XSDElementDeclaration id = Schemas.getChildElementDeclaration(element, new QName(SystemTestData.CGF_URI, "id"));
         assertNotNull(id);
 
         XSDElementDeclaration lineStringProperty =
-                Schemas.getChildElementDeclaration(
-                        element, new QName(SystemTestData.CGF_URI, "lineStringProperty"));
+                Schemas.getChildElementDeclaration(element, new QName(SystemTestData.CGF_URI, "lineStringProperty"));
         assertNotNull(lineStringProperty);
 
         XSDTypeDefinition lineStringPropertyType = lineStringProperty.getType();
@@ -75,8 +72,7 @@ public class FeatureTypeInfoSchemaBuilderTest extends WFSTestSupport {
     @Override
     protected void setUpInternal(SystemTestData testData) throws Exception {
         super.setUpInternal(testData);
-        testData.addVectorLayer(
-                UUID_TEST, null, FeatureTypeInfoSchemaBuilderTest.class, getCatalog());
+        testData.addVectorLayer(UUID_TEST, null, FeatureTypeInfoSchemaBuilderTest.class, getCatalog());
     }
 
     protected XpathEngine xpath;
@@ -89,17 +85,12 @@ public class FeatureTypeInfoSchemaBuilderTest extends WFSTestSupport {
     @Test
     public void testUUID() throws Exception {
         Document dom =
-                getAsDOM(
-                        "wfs?service=wfs&version=1.1.0&request=DescribeFeatureType&typeName="
-                                + getLayerId(UUID_TEST));
-        assertEquals(
-                "1",
-                (xpath.evaluate("count(//xsd:element[@name='uuid' and @type='xsd:string'])", dom)));
+                getAsDOM("wfs?service=wfs&version=1.1.0&request=DescribeFeatureType&typeName=" + getLayerId(UUID_TEST));
+        assertEquals("1", (xpath.evaluate("count(//xsd:element[@name='uuid' and @type='xsd:string'])", dom)));
     }
 
     /**
-     * Tests that FeatureTypeSchemaBuilder converts AttributeDescriptor description text into
-     * xsd:documentation
+     * Tests that FeatureTypeSchemaBuilder converts AttributeDescriptor description text into xsd:documentation
      *
      * @throws Exception if any error occurs
      */
@@ -114,16 +105,15 @@ public class FeatureTypeInfoSchemaBuilderTest extends WFSTestSupport {
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         AttributeTypeBuilder ab = new AttributeTypeBuilder();
         AttributeDescriptor ad =
-                ab.binding(String.class)
-                        .nillable(false)
-                        .description("comments")
-                        .buildDescriptor("name");
+                ab.binding(String.class).nillable(false).description("comments").buildDescriptor("name");
 
         tb.add(ad);
         tb.setName(UUID_TEST.getLocalPart());
         FeatureType ft = tb.buildFeatureType();
         FeatureTypeInfo ftInfo = mock(FeatureTypeInfo.class);
-        expect(ftInfo.getNamespace()).andReturn(getCatalog().getDefaultNamespace()).anyTimes();
+        expect(ftInfo.getNamespace())
+                .andReturn(getCatalog().getDefaultNamespace())
+                .anyTimes();
         expect(ftInfo.getStore()).andReturn(dataStore).anyTimes();
         expect(ftInfo.getFeatureType()).andReturn(ft).anyTimes();
         expect(ftInfo.getName()).andReturn(UUID_TEST.getLocalPart()).anyTimes();

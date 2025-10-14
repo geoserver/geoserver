@@ -102,8 +102,7 @@ import org.xml.sax.helpers.AttributesImpl;
  * @author Gabriel Roldan
  * @version $Id
  * @see GetCapabilities#run(GetCapabilitiesRequest)
- * @see GetCapabilitiesResponse#write(Object, java.io.OutputStream,
- *     org.geoserver.platform.Operation)
+ * @see GetCapabilitiesResponse#write(Object, java.io.OutputStream, org.geoserver.platform.Operation)
  */
 public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
@@ -115,10 +114,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
     /** the WMS supported exception formats */
     static final String[] EXCEPTION_FORMATS = {"XML", "INIMAGE", "BLANK", "JSON"};
 
-    /**
-     * The geoserver base URL to append it the schemas/wms/1.3.0/exceptions_1_3_0.xsd schema
-     * location
-     */
+    /** The geoserver base URL to append it the schemas/wms/1.3.0/exceptions_1_3_0.xsd schema location */
     private String schemaBaseURL;
 
     /** The list of output formats to state as supported for the GetMap request */
@@ -129,17 +125,13 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
     private WMS wmsConfig;
 
-    /**
-     * whether to always include a root Layer element if there also if there is already a single top
-     * Layer element *
-     */
+    /** whether to always include a root Layer element if there also if there is already a single top Layer element * */
     private Boolean includeRootLayer = null;
 
     /**
      * Creates a new WMSCapsTransformer object.
      *
-     * @param schemaBaseUrl the base URL of the current request (usually
-     *     "http://host:port/geoserver")
+     * @param schemaBaseUrl the base URL of the current request (usually "http://host:port/geoserver")
      * @param getMapFormats the list of supported output formats to state for the GetMap request
      * @param extCapsProviders collection of providers of extended capabilities content
      */
@@ -166,8 +158,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
     /**
      * Optional root layer include / exclude flag
      *
-     * @param includeRootLayer whether to always include root Layer element , also if there is a
-     *     already single top Layer element
+     * @param includeRootLayer whether to always include root Layer element , also if there is a already single top
+     *     Layer element
      */
     public void setIncludeRootLayer(Boolean includeRootLayer) {
         this.includeRootLayer = includeRootLayer;
@@ -176,12 +168,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
     @Override
     public Translator createTranslator(ContentHandler handler) {
         return new Capabilities_1_3_0_Translator(
-                handler,
-                wmsConfig,
-                getMapFormats,
-                extCapsProviders,
-                schemaBaseURL,
-                includeRootLayer);
+                handler, wmsConfig, getMapFormats, extCapsProviders, schemaBaseURL, includeRootLayer);
     }
 
     /**
@@ -190,8 +177,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
      */
     private static class Capabilities_1_3_0_Translator extends TranslatorSupport {
 
-        private static final String XML_SCHEMA_INSTANCE =
-                "http://www.w3.org/2001/XMLSchema-instance";
+        private static final String XML_SCHEMA_INSTANCE = "http://www.w3.org/2001/XMLSchema-instance";
 
         private static final Logger LOGGER = Logging.getLogger(Capabilities_1_3_0_Translator.class);
 
@@ -199,10 +185,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
         private static final String XLINK_NS = "http://www.w3.org/1999/xlink";
 
-        /**
-         * The request from wich all the information needed to produce the capabilities document can
-         * be obtained
-         */
+        /** The request from wich all the information needed to produce the capabilities document can be obtained */
         private GetCapabilitiesRequest request;
 
         private Collection<GetMapOutputFormat> getMapFormats;
@@ -246,23 +229,21 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             this.extCapsProviders = extCapsProviders;
             this.schemaBaseURL = schemaBaseURL;
             this.serviceInfo = wmsConfig.getServiceInfo();
-            this.dimensionHelper =
-                    new DimensionHelper(Mode.WMS13, wmsConfig) {
+            this.dimensionHelper = new DimensionHelper(Mode.WMS13, wmsConfig) {
 
-                        @Override
-                        protected void element(String element, String content, Attributes atts) {
-                            Capabilities_1_3_0_Translator.this.element(element, content, atts);
-                        }
+                @Override
+                protected void element(String element, String content, Attributes atts) {
+                    Capabilities_1_3_0_Translator.this.element(element, content, atts);
+                }
 
-                        @Override
-                        protected void element(String element, String content) {
-                            Capabilities_1_3_0_Translator.this.element(element, content);
-                        }
-                    };
+                @Override
+                protected void element(String element, String content) {
+                    Capabilities_1_3_0_Translator.this.element(element, content);
+                }
+            };
             legendSample = GeoServerExtensions.bean(LegendSample.class);
-            this.skipping =
-                    ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS.equals(
-                            wmsConfig.getGeoServer().getGlobal().getResourceErrorHandling());
+            this.skipping = ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS.equals(
+                    wmsConfig.getGeoServer().getGlobal().getResourceErrorHandling());
 
             // register namespaces provided by extended capabilities
             for (ExtendedCapabilitiesProvider cp : extCapsProviders) {
@@ -295,10 +276,9 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             String[] acceptLanguages = request.getAcceptLanguages();
             this.i18nRequested = acceptLanguages != null;
             if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine(
-                        new StringBuffer("producing a capabilities document for ")
-                                .append(request)
-                                .toString());
+                LOGGER.fine(new StringBuffer("producing a capabilities document for ")
+                        .append(request)
+                        .toString());
             }
 
             Catalog catalog = wmsConfig.getCatalog();
@@ -306,27 +286,25 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             List<LayerGroupInfo> layerGroups = getLayerGroups(catalog);
             if (i18nRequested) {
                 this.internationalContentHelper =
-                        new InternationalContentHelper(
-                                request.getAcceptLanguages(), serviceInfo, layers, layerGroups);
+                        new InternationalContentHelper(request.getAcceptLanguages(), serviceInfo, layers, layerGroups);
             }
 
             String schemaLocation = buildSchemaLocation();
             String updateSequence = String.valueOf(wmsConfig.getUpdateSequence());
 
-            AttributesImpl rootAtts =
-                    attributes(
-                            "version",
-                            "1.3.0",
-                            "updateSequence",
-                            updateSequence,
-                            "xmlns",
-                            NAMESPACE,
-                            "xmlns:xlink",
-                            XLINK_NS,
-                            "xmlns:xsi",
-                            XML_SCHEMA_INSTANCE,
-                            "xsi:schemaLocation",
-                            schemaLocation);
+            AttributesImpl rootAtts = attributes(
+                    "version",
+                    "1.3.0",
+                    "updateSequence",
+                    updateSequence,
+                    "xmlns",
+                    NAMESPACE,
+                    "xmlns:xlink",
+                    XLINK_NS,
+                    "xmlns:xsi",
+                    XML_SCHEMA_INSTANCE,
+                    "xsi:schemaLocation",
+                    schemaLocation);
 
             start("WMS_Capabilities", rootAtts);
             handleService();
@@ -336,20 +314,14 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
         private List<LayerGroupInfo> getLayerGroups(Catalog catalog) {
             try (CloseableIterator<LayerGroupInfo> iter =
-                    catalog.list(
-                            LayerGroupInfo.class,
-                            buildLayerGroupCatalogFilter(),
-                            null,
-                            null,
-                            asc("name"))) {
+                    catalog.list(LayerGroupInfo.class, buildLayerGroupCatalogFilter(), null, null, asc("name"))) {
                 return Lists.newArrayList(iter);
             }
         }
 
         private List<LayerInfo> getLayers(Catalog catalog) {
             try (CloseableIterator<LayerInfo> iter =
-                    catalog.list(
-                            LayerInfo.class, buildLayersCatalogFilter(), null, null, asc("name"))) {
+                    catalog.list(LayerInfo.class, buildLayersCatalogFilter(), null, null, asc("name"))) {
                 return Lists.newArrayList(iter);
             }
         }
@@ -427,25 +399,20 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             GeoServer geoServer = wmsConfig.getGeoServer();
             ContactInfo contact = geoServer.getSettings().getContact();
 
-            String onlineResource =
-                    InternationalStringUtils.firstNonBlank(
-                            serviceInfo.getOnlineResource(),
-                            contact.getOnlineResource(),
-                            serviceInfo.getGeoServer().getSettings().getOnlineResource(),
-                            buildURL(request.getBaseUrl(), null, null, URLType.SERVICE));
+            String onlineResource = InternationalStringUtils.firstNonBlank(
+                    serviceInfo.getOnlineResource(),
+                    contact.getOnlineResource(),
+                    serviceInfo.getGeoServer().getSettings().getOnlineResource(),
+                    buildURL(request.getBaseUrl(), null, null, URLType.SERVICE));
             if (onlineResource != null) {
                 try {
                     new URL(onlineResource);
                 } catch (MalformedURLException e) {
                     LOGGER.log(
-                            Level.WARNING,
-                            "WMS online resource seems to be an invalid URL: '"
-                                    + onlineResource
-                                    + "'");
+                            Level.WARNING, "WMS online resource seems to be an invalid URL: '" + onlineResource + "'");
                 }
             }
-            AttributesImpl attributes =
-                    attributes("xlink:type", "simple", "xlink:href", onlineResource);
+            AttributesImpl attributes = attributes("xlink:type", "simple", "xlink:href", onlineResource);
             element("OnlineResource", null, attributes);
 
             encodeContactInfo(contact);
@@ -499,58 +466,38 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             start("ContactPersonPrimary");
             element(
                     "ContactPerson",
-                    internationalContentHelper.getNullableString(
-                            contact.getInternationalContactPerson()));
+                    internationalContentHelper.getNullableString(contact.getInternationalContactPerson()));
             element(
                     "ContactOrganization",
-                    internationalContentHelper.getNullableString(
-                            contact.getInternationalContactOrganization()));
+                    internationalContentHelper.getNullableString(contact.getInternationalContactOrganization()));
             end("ContactPersonPrimary");
 
             element(
                     "ContactPosition",
-                    internationalContentHelper.getNullableString(
-                            contact.getInternationalContactPosition()));
+                    internationalContentHelper.getNullableString(contact.getInternationalContactPosition()));
 
             start("ContactAddress");
-            element(
-                    "AddressType",
-                    internationalContentHelper.getNullableString(
-                            contact.getInternationalAddressType()));
-            element(
-                    "Address",
-                    internationalContentHelper.getNullableString(
-                            contact.getInternationalAddress()));
-            element(
-                    "City",
-                    internationalContentHelper.getNullableString(
-                            contact.getInternationalAddressCity()));
+            element("AddressType", internationalContentHelper.getNullableString(contact.getInternationalAddressType()));
+            element("Address", internationalContentHelper.getNullableString(contact.getInternationalAddress()));
+            element("City", internationalContentHelper.getNullableString(contact.getInternationalAddressCity()));
             element(
                     "StateOrProvince",
-                    internationalContentHelper.getNullableString(
-                            contact.getInternationalAddressState()));
+                    internationalContentHelper.getNullableString(contact.getInternationalAddressState()));
             element(
                     "PostCode",
-                    internationalContentHelper.getNullableString(
-                            contact.getInternationalAddressPostalCode()));
-            element(
-                    "Country",
-                    internationalContentHelper.getNullableString(
-                            contact.getInternationalAddressCountry()));
+                    internationalContentHelper.getNullableString(contact.getInternationalAddressPostalCode()));
+            element("Country", internationalContentHelper.getNullableString(contact.getInternationalAddressCountry()));
             end("ContactAddress");
 
             element(
                     "ContactVoiceTelephone",
-                    internationalContentHelper.getNullableString(
-                            contact.getInternationalContactVoice()));
+                    internationalContentHelper.getNullableString(contact.getInternationalContactVoice()));
             element(
                     "ContactFacsimileTelephone",
-                    internationalContentHelper.getNullableString(
-                            contact.getInternationalContactFacsimile()));
+                    internationalContentHelper.getNullableString(contact.getInternationalContactFacsimile()));
             element(
                     "ContactElectronicMailAddress",
-                    internationalContentHelper.getNullableString(
-                            contact.getInternationalContactEmail()));
+                    internationalContentHelper.getNullableString(contact.getInternationalContactEmail()));
 
             end("ContactInformation");
         }
@@ -636,9 +583,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             element("Format", WMS_CAPS_MIME);
 
             // build the service URL and make sure it ends with &
-            String serviceUrl =
-                    buildURL(
-                            request.getBaseUrl(), "ows", params("SERVICE", "WMS"), URLType.SERVICE);
+            String serviceUrl = buildURL(request.getBaseUrl(), "ows", params("SERVICE", "WMS"), URLType.SERVICE);
             serviceUrl = appendQueryString(serviceUrl, "");
 
             handleDcpType(serviceUrl, serviceUrl);
@@ -655,15 +600,14 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                     formats.add(format.getMimeType());
                 } else {
                     if (LOGGER.isLoggable(Level.WARNING)) {
-                        LOGGER.warning(
-                                "Map output format "
-                                        + format.getMimeType()
-                                        + " ("
-                                        + format.getClass()
-                                        + ")"
-                                        + " does "
-                                        + "not include mime type in output format names. Will be excluded from"
-                                        + " capabilities document.");
+                        LOGGER.warning("Map output format "
+                                + format.getMimeType()
+                                + " ("
+                                + format.getClass()
+                                + ")"
+                                + " does "
+                                + "not include mime type in output format names. Will be excluded from"
+                                + " capabilities document.");
                     }
                 }
             }
@@ -798,19 +742,17 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         /**
          * Handles the encoding of the layers elements.
          *
-         * <p>This method does a search over the SRS of all the layers to see if there are at least
-         * a common one, as needed by the spec: "<i>The root Layer element shall include a sequence
-         * of zero or more &lt;SRS&gt; elements listing all SRSes that are common to all subsidiary
-         * layers. Use a single SRS element with empty content (like so: "&lt;SRS&gt;&lt;/SRS&gt;")
-         * if there is no common SRS."</i>
+         * <p>This method does a search over the SRS of all the layers to see if there are at least a common one, as
+         * needed by the spec: "<i>The root Layer element shall include a sequence of zero or more &lt;SRS&gt; elements
+         * listing all SRSes that are common to all subsidiary layers. Use a single SRS element with empty content (like
+         * so: "&lt;SRS&gt;&lt;/SRS&gt;") if there is no common SRS."</i>
          *
-         * <p>By the other hand, this search is also used to collecto the whole latlon bbox, as
-         * stated by the spec: <i>"The bounding box metadata in Capabilities XML specify the minimum
-         * enclosing rectangle for the layer as a whole."</i>
+         * <p>By the other hand, this search is also used to collecto the whole latlon bbox, as stated by the spec:
+         * <i>"The bounding box metadata in Capabilities XML specify the minimum enclosing rectangle for the layer as a
+         * whole."</i>
          *
-         * @task TODO: manage this differently when we have the layer list of the WMS service
-         *     decoupled from the feature types configured for the server instance. (This involves
-         *     nested layers, gridcoverages, etc)
+         * @todo manage this differently when we have the layer list of the WMS service decoupled from the feature types
+         *     configured for the server instance. (This involves nested layers, gridcoverages, etc)
          */
         private void handleLayers(List<LayerInfo> layers, List<LayerGroupInfo> layerGroups) {
 
@@ -835,8 +777,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 try {
                     handleLayerGroups(layerGroups, false);
                 } catch (Exception e) {
-                    throw new RuntimeException(
-                            "Can't obtain Envelope of Layer-Groups: " + e.getMessage(), e);
+                    throw new RuntimeException("Can't obtain Envelope of Layer-Groups: " + e.getMessage(), e);
                 }
 
                 // now encode each layer individually
@@ -851,8 +792,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                     try {
                         handleLayerGroups(new ArrayList<>(layerGroups), true);
                     } catch (Exception e) {
-                        throw new RuntimeException(
-                                "Can't obtain Envelope of Layer-Groups: " + e.getMessage(), e);
+                        throw new RuntimeException("Can't obtain Envelope of Layer-Groups: " + e.getMessage(), e);
                     }
                 }
             }
@@ -871,11 +811,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         }
 
         private boolean includeRootLayer(
-                List<LayerInfo> layers,
-                List<LayerGroupInfo> layerGroups,
-                Set<LayerInfo> layersAlreadyProcessed) {
-            final PublishedInfo singleRoot =
-                    getSingleRoot(layers, layerGroups, layersAlreadyProcessed);
+                List<LayerInfo> layers, List<LayerGroupInfo> layerGroups, Set<LayerInfo> layersAlreadyProcessed) {
+            final PublishedInfo singleRoot = getSingleRoot(layers, layerGroups, layersAlreadyProcessed);
             // is there a single top element? if not, we have to include root
             if (singleRoot != null) {
                 // first we check if the user has specified a rootLayer param
@@ -884,9 +821,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 }
                 // then we check for layer / group level setting
                 Boolean layerIncludeRoot =
-                        singleRoot
-                                .getMetadata()
-                                .get(PublishedInfo.ROOT_IN_CAPABILITIES, Boolean.class);
+                        singleRoot.getMetadata().get(PublishedInfo.ROOT_IN_CAPABILITIES, Boolean.class);
                 if (layerIncludeRoot != null) {
                     return layerIncludeRoot.booleanValue();
                 }
@@ -897,13 +832,10 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         }
 
         private PublishedInfo getSingleRoot(
-                List<LayerInfo> layers,
-                List<LayerGroupInfo> layerGroups,
-                Set<LayerInfo> layersAlreadyProcessed) {
-            List<LayerInfo> rootLayers =
-                    layers.stream()
-                            .filter(layer -> includeLayer(layersAlreadyProcessed, layer))
-                            .collect(Collectors.toList());
+                List<LayerInfo> layers, List<LayerGroupInfo> layerGroups, Set<LayerInfo> layersAlreadyProcessed) {
+            List<LayerInfo> rootLayers = layers.stream()
+                    .filter(layer -> includeLayer(layersAlreadyProcessed, layer))
+                    .collect(Collectors.toList());
             List<LayerGroupInfo> rootGroups = filterNestedGroups(layerGroups);
             if (rootLayers.size() == 1 && rootGroups.isEmpty()) {
                 return rootLayers.get(0);
@@ -915,9 +847,9 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         }
 
         /**
-         * If the current request contains a namespace we build a filter using the provided property
-         * and request namespace and adds it to the provided filter. If the request doesn't contain
-         * a namespace the original filter is returned as is.
+         * If the current request contains a namespace we build a filter using the provided property and request
+         * namespace and adds it to the provided filter. If the request doesn't contain a namespace the original filter
+         * is returned as is.
          */
         private Filter addNameSpaceFilterIfNeed(Filter filter, String nameSpaceProperty) {
             String nameSpacePrefix = request.getNamespace();
@@ -929,15 +861,13 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         }
 
         /**
-         * Called by <code>handleLayers()</code>, writes down list of supported CRS's for the root
-         * Layer.
+         * Called by <code>handleLayers()</code>, writes down list of supported CRS's for the root Layer.
          *
-         * <p>If <code>epsgCodes</code> is not empty, the list of supported CRS identifiers written
-         * down to the capabilities document is limited to those in the <code>epsgCodes</code> list.
-         * Otherwise, all the GeoServer supported CRS identifiers are used.
+         * <p>If <code>epsgCodes</code> is not empty, the list of supported CRS identifiers written down to the
+         * capabilities document is limited to those in the <code>epsgCodes</code> list. Otherwise, all the GeoServer
+         * supported CRS identifiers are used.
          *
-         * @param epsgCodes possibly empty set of CRS identifiers to limit the number of SRS
-         *     elements to.
+         * @param epsgCodes possibly empty set of CRS identifiers to limit the number of SRS elements to.
          */
         private void handleRootCrsList(final Set<String> epsgCodes) {
             final Set<String> capabilitiesCrsIdentifiers;
@@ -977,9 +907,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         }
 
         /**
-         * Called by <code>handleLayers()</code>, iterates over the available layers and layers
-         * groups to summarize their LatLonBBox'es and write the aggregated bounds for the root
-         * layer.
+         * Called by <code>handleLayers()</code>, iterates over the available layers and layers groups to summarize
+         * their LatLonBBox'es and write the aggregated bounds for the root layer.
          *
          * @param layers available layers iterator
          * @param layersGroups available layer groups iterator
@@ -1010,14 +939,11 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 if (!CRS.equalsIgnoreMetadata(referencedEnvelope, DefaultGeographicCRS.WGS84)) {
                     try {
                         // we need to reproject the envelope to lat / lon
-                        referencedEnvelope =
-                                referencedEnvelope.transform(DefaultGeographicCRS.WGS84, true);
+                        referencedEnvelope = referencedEnvelope.transform(DefaultGeographicCRS.WGS84, true);
                     } catch (Exception exception) {
                         LOGGER.log(
                                 Level.WARNING,
-                                String.format(
-                                        "Failed to transform layer group '%s' bounds to WGS84.",
-                                        layerGroup.getName()),
+                                "Failed to transform layer group '%s' bounds to WGS84.".formatted(layerGroup.getName()),
                                 exception);
                     }
                 }
@@ -1033,16 +959,14 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
             handleGeographicBoundingBox(latlonBbox);
             handleBBox(latlonBbox, "CRS:84");
-            handleAdditionalBBox(
-                    new ReferencedEnvelope(latlonBbox, DefaultGeographicCRS.WGS84), null, null);
+            handleAdditionalBBox(new ReferencedEnvelope(latlonBbox, DefaultGeographicCRS.WGS84), null, null);
         }
 
         /**
-         * Helper method that expand a provided envelope to contain a resource envelope. If the
-         * extended envelope contains the world envelope TRUE is returned.
+         * Helper method that expand a provided envelope to contain a resource envelope. If the extended envelope
+         * contains the world envelope TRUE is returned.
          */
-        private boolean expandEnvelopeToContain(
-                Envelope world, Envelope envelope, Envelope resourceEnvelope) {
+        private boolean expandEnvelopeToContain(Envelope world, Envelope envelope, Envelope resourceEnvelope) {
             if (resourceEnvelope != null) {
                 envelope.expandToInclude(resourceEnvelope);
             }
@@ -1054,9 +978,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         }
 
         private void handleLayerTree(
-                final List<LayerInfo> layers,
-                Set<LayerInfo> layersAlreadyProcessed,
-                boolean isRoot) {
+                final List<LayerInfo> layers, Set<LayerInfo> layersAlreadyProcessed, boolean isRoot) {
             // Build a LayerTree only for the layers that have a wms path set. Process the ones that
             // don't first
             LayerTree nestedLayers = new LayerTree();
@@ -1114,16 +1036,11 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 // report what layer we failed on to help the admin locate and fix it
 
                 if (skipping) {
-                    LOGGER.log(
-                            Level.WARNING,
-                            "Error writing metadata; skipping layer: " + layer.getName(),
-                            e);
+                    LOGGER.log(Level.WARNING, "Error writing metadata; skipping layer: " + layer.getName(), e);
                     reset();
                 } else {
                     throw new ServiceException(
-                            "Error occurred trying to write out metadata for layer: "
-                                    + layer.getName(),
-                            e);
+                            "Error occurred trying to write out metadata for layer: " + layer.getName(), e);
                 }
             }
         }
@@ -1147,8 +1064,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             qatts.addAttribute("", "opaque", "opaque", "", opaque ? "1" : "0");
             Integer cascadedHopCount = wmsConfig.getCascadedHopCount(layer);
             if (cascadedHopCount != null) {
-                qatts.addAttribute(
-                        "", "cascaded", "cascaded", "", String.valueOf(cascadedHopCount));
+                qatts.addAttribute("", "cascaded", "cascaded", "", String.valueOf(cascadedHopCount));
             }
 
             String layerName = layer.prefixedName();
@@ -1178,8 +1094,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             try {
                 bbox = layer.getResource().boundingBox();
             } catch (Exception e) {
-                throw new RuntimeException(
-                        "Unexpected error obtaining bounding box for layer " + layer.getName(), e);
+                throw new RuntimeException("Unexpected error obtaining bounding box for layer " + layer.getName(), e);
             }
             // the native bbox might be null
             if (bbox != null) {
@@ -1234,13 +1149,11 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         private void handleScaleDenominator(final PublishedInfo layer) {
 
             try {
-                NumberRange<Double> scaleDenominators =
-                        CapabilityUtil.searchMinMaxScaleDenominator(layer);
+                NumberRange<Double> scaleDenominators = CapabilityUtil.searchMinMaxScaleDenominator(layer);
 
                 // allow extension points to customize
                 for (ExtendedCapabilitiesProvider provider : extCapsProviders) {
-                    scaleDenominators =
-                            provider.overrideScaleDenominators(layer, scaleDenominators);
+                    scaleDenominators = provider.overrideScaleDenominators(layer, scaleDenominators);
                 }
 
                 if (scaleDenominators.getMinimum() != 0.0) {
@@ -1263,8 +1176,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
          * @param defaultStyle the default style for the layer
          * @param styles the list of styles for the layer
          */
-        private void handleLayerStyles(
-                String layerName, StyleInfo defaultStyle, Set<StyleInfo> styles) {
+        private void handleLayerStyles(String layerName, StyleInfo defaultStyle, Set<StyleInfo> styles) {
             // if WMSLayerInfo do nothing for the moment, we may want to list the set of cascaded
             // named styles
             // in the future (when we add support for that)
@@ -1299,16 +1211,10 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         private void handleLayerGroupDefaultStyle(String layerName) {
             start("Style");
             element("Name", CapabilityUtil.getGroupDefaultStyleName(layerName));
-            element(
-                    "Title",
-                    LAYER_GROUP_STYLE_TITLE_PREFIX
-                            .concat(layerName)
-                            .concat(LAYER_GROUP_STYLE_TITLE_SUFFIX));
+            element("Title", LAYER_GROUP_STYLE_TITLE_PREFIX.concat(layerName).concat(LAYER_GROUP_STYLE_TITLE_SUFFIX));
             element(
                     "Abstract",
-                    LAYER_GROUP_STYLE_ABSTRACT_PREFIX
-                            .concat(layerName)
-                            .concat(LAYER_GROUP_STYLE_ABSTRACT_SUFFIX));
+                    LAYER_GROUP_STYLE_ABSTRACT_PREFIX.concat(layerName).concat(LAYER_GROUP_STYLE_ABSTRACT_SUFFIX));
             handleLegendURL(layerName, null, null, null);
             end("Style");
         }
@@ -1382,8 +1288,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             return layersAlreadyProcessed;
         }
 
-        private void getLayersInGroup(
-                LayerGroupInfo layerGroup, Set<LayerInfo> layersAlreadyProcessed) {
+        private void getLayersInGroup(LayerGroupInfo layerGroup, Set<LayerInfo> layersAlreadyProcessed) {
 
             if (LayerGroupInfo.Mode.EO.equals(layerGroup.getMode())) {
                 layersAlreadyProcessed.add(layerGroup.getRootLayer());
@@ -1395,10 +1300,9 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 layersAlreadyProcessed.addAll(layerGroup.layers());
             } else if (!LayerGroupInfo.Mode.SINGLE.equals(layerGroup.getMode())) {
                 for (PublishedInfo child : layerGroup.getLayers()) {
-                    if (child instanceof LayerInfo) {
-                        LayerInfo layer = (LayerInfo) child;
+                    if (child instanceof LayerInfo layer) {
                         if (isExposable(layer)) {
-                            layersAlreadyProcessed.add((LayerInfo) child);
+                            layersAlreadyProcessed.add(layer);
                         }
                     } else {
                         getLayersInGroup((LayerGroupInfo) child, layersAlreadyProcessed);
@@ -1439,8 +1343,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                             reset();
                         } else {
                             throw new ServiceException(
-                                    "Error occurred trying to write out metadata for layer group: "
-                                            + group.getName(),
+                                    "Error occurred trying to write out metadata for layer group: " + group.getName(),
                                     e);
                         }
                     }
@@ -1448,10 +1351,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             }
         }
 
-        /**
-         * Returns a list of top level groups, that is, the ones that are not nested within other
-         * layer groups
-         */
+        /** Returns a list of top level groups, that is, the ones that are not nested within other layer groups */
         private List<LayerGroupInfo> filterNestedGroups(List<LayerGroupInfo> allGroups) {
             LinkedHashSet<LayerGroupInfo> result = new LinkedHashSet<>(allGroups);
             for (LayerGroupInfo group : allGroups) {
@@ -1484,15 +1384,13 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             handleKeywordList(layerGroup.getKeywords());
 
             final ReferencedEnvelope layerGroupBounds = layerGroup.getBounds();
-            final ReferencedEnvelope latLonBounds =
-                    layerGroupBounds.transform(DefaultGeographicCRS.WGS84, true);
+            final ReferencedEnvelope latLonBounds = layerGroupBounds.transform(DefaultGeographicCRS.WGS84, true);
 
-            String authority =
-                    layerGroupBounds
-                            .getCoordinateReferenceSystem()
-                            .getIdentifiers()
-                            .toArray()[0]
-                            .toString();
+            String authority = layerGroupBounds
+                    .getCoordinateReferenceSystem()
+                    .getIdentifiers()
+                    .toArray()[0]
+                    .toString();
 
             if (isRoot) {
                 Set<String> srsList = getServiceSRSList();
@@ -1543,8 +1441,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 metadataLinks = aggregatedLinks;
             }
             handleMetadataList(metadataLinks);
-            if (CapabilityUtil.encodeGroupDefaultStyle(wmsConfig, layerGroup))
-                handleLayerGroupDefaultStyle(layerName);
+            if (CapabilityUtil.encodeGroupDefaultStyle(wmsConfig, layerGroup)) handleLayerGroupDefaultStyle(layerName);
             if (isSingleOrOpaque(layerGroup))
                 // add the layer group style
                 handleLayerGroupStyles(layerName, layerGroup.getLayerGroupStyles());
@@ -1558,10 +1455,9 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             if (!LayerGroupInfo.Mode.OPAQUE_CONTAINER.equals(layerGroup.getMode())
                     && !LayerGroupInfo.Mode.SINGLE.equals(layerGroup.getMode())) {
                 for (PublishedInfo child : layerGroup.getLayers()) {
-                    if (child instanceof LayerInfo) {
-                        LayerInfo layer = (LayerInfo) child;
+                    if (child instanceof LayerInfo layer) {
                         if (isExposable(layer)) {
-                            handleLayer((LayerInfo) child, false);
+                            handleLayer(layer, false);
                         }
                     } else {
                         handleLayerGroup((LayerGroupInfo) child, false);
@@ -1585,11 +1481,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
                 boolean titleGood = (title != null),
                         urlGood = (url != null),
-                        logoGood =
-                                (logoURL != null
-                                        && logoType != null
-                                        && logoWidth > 0
-                                        && logoHeight > 0);
+                        logoGood = (logoURL != null && logoType != null && logoWidth > 0 && logoHeight > 0);
 
                 if (titleGood || urlGood || logoGood) {
                     start("Attribution");
@@ -1625,20 +1517,19 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         }
 
         /**
-         * Writes layer LegendURL pointing to the user supplied icon URL, if any, or to the proper
-         * GetLegendGraphic operation if an URL was not supplied.
+         * Writes layer LegendURL pointing to the user supplied icon URL, if any, or to the proper GetLegendGraphic
+         * operation if an URL was not supplied.
          *
-         * <p>It is common practice to supply a URL to a WMS accessible legend graphic when it is
-         * difficult to create a dynamic legend for a layer.
+         * <p>It is common practice to supply a URL to a WMS accessible legend graphic when it is difficult to create a
+         * dynamic legend for a layer.
          *
          * @param layerName The layer prefixed name
-         * @param legend The user specified legend url. If null a default url pointing back to the
-         *     GetLegendGraphic operation will be automatically created.
+         * @param legend The user specified legend url. If null a default url pointing back to the GetLegendGraphic
+         *     operation will be automatically created.
          * @param style The style for the layer.
          * @param sampleStyle The style to use for sample sizing.
          */
-        protected void handleLegendURL(
-                String layerName, LegendInfo legend, StyleInfo style, StyleInfo sampleStyle) {
+        protected void handleLegendURL(String layerName, LegendInfo legend, StyleInfo style, StyleInfo sampleStyle) {
 
             int legendWidth = GetLegendGraphicRequest.DEFAULT_WIDTH;
             int legendHeight = GetLegendGraphicRequest.DEFAULT_HEIGHT;
@@ -1671,12 +1562,10 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
             if (null == wmsConfig.getLegendGraphicOutputFormat(defaultFormat)) {
                 if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.warning(
-                            new StringBuffer("Default legend format (")
-                                    .append(defaultFormat)
-                                    .append(
-                                            ")is not supported (jai not available?), can't add LegendURL element")
-                                    .toString());
+                    LOGGER.warning(new StringBuffer("Default legend format (")
+                            .append(defaultFormat)
+                            .append(")is not supported (jai not available?), can't add LegendURL element")
+                            .toString());
                 }
 
                 return;
@@ -1697,28 +1586,21 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
             // encode the Legend width and height in the URL too if we have a static legend
             boolean hasExternalGraphic = legend != null && legend.getOnlineResource() != null;
-            Map<String, String> params =
-                    params(
-                            "service",
-                            "WMS",
-                            "version",
-                            request.getVersion(),
-                            "request",
-                            "GetLegendGraphic",
-                            "format",
-                            defaultFormat,
-                            "width",
-                            String.valueOf(
-                                    hasExternalGraphic
-                                            ? legendWidth
-                                            : GetLegendGraphicRequest.DEFAULT_WIDTH),
-                            "height",
-                            String.valueOf(
-                                    hasExternalGraphic
-                                            ? legendHeight
-                                            : GetLegendGraphicRequest.DEFAULT_HEIGHT),
-                            "layer",
-                            layerName);
+            Map<String, String> params = params(
+                    "service",
+                    "WMS",
+                    "version",
+                    request.getVersion(),
+                    "request",
+                    "GetLegendGraphic",
+                    "format",
+                    defaultFormat,
+                    "width",
+                    String.valueOf(hasExternalGraphic ? legendWidth : GetLegendGraphicRequest.DEFAULT_WIDTH),
+                    "height",
+                    String.valueOf(hasExternalGraphic ? legendHeight : GetLegendGraphicRequest.DEFAULT_HEIGHT),
+                    "layer",
+                    layerName);
             if (style != null) {
                 params.put("style", style.getName());
             }
@@ -1769,19 +1651,17 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 maxy = tmp;
             }
 
-            AttributesImpl bboxAtts =
-                    attributes(
-                            "CRS", srs, //
-                            "minx", minx, //
-                            "miny", miny, //
-                            "maxx", maxx, //
-                            "maxy", maxy);
+            AttributesImpl bboxAtts = attributes(
+                    "CRS", srs, //
+                    "minx", minx, //
+                    "miny", miny, //
+                    "maxx", maxx, //
+                    "maxy", maxy);
 
             element("BoundingBox", null, bboxAtts);
         }
 
-        private void handleAdditionalBBox(
-                ReferencedEnvelope bbox, String crs, PublishedInfo layer) {
+        private void handleAdditionalBBox(ReferencedEnvelope bbox, String crs, PublishedInfo layer) {
             if (serviceInfo.isBBOXForEachCRS() && !serviceInfo.getSRS().isEmpty()) {
                 // output bounding box for each supported service srs
                 for (String srs : serviceInfo.getSRS()) {
@@ -1805,25 +1685,20 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                                             targetCrs, bbox.getCoordinateReferenceSystem());
                             if (handler == null) {
                                 // Still no luck. Report the original issue
-                                LOGGER.warning(
-                                        String.format(
-                                                "Unable to transform bounding box for '%s' layer"
-                                                        + " to %s",
-                                                layer != null ? layer.getName() : "root", srs));
+                                LOGGER.warning(String.format(
+                                        "Unable to transform bounding box for '%s' layer" + " to %s",
+                                        layer != null ? layer.getName() : "root", srs));
                                 if (LOGGER.isLoggable(Level.FINE)) {
                                     LOGGER.log(Level.FINE, e.getLocalizedMessage(), e);
                                 }
                             } else {
-                                ReferencedEnvelope tbbox =
-                                        handler.transformEnvelope(bbox, targetCrs);
+                                ReferencedEnvelope tbbox = handler.transformEnvelope(bbox, targetCrs);
                                 handleBBox(tbbox, srs);
                             }
                         } catch (FactoryException | TransformException e1) {
-                            LOGGER.warning(
-                                    String.format(
-                                            "Unable to transform bounding box for '%s' layer"
-                                                    + " to %s",
-                                            layer != null ? layer.getName() : "root", srs));
+                            LOGGER.warning(String.format(
+                                    "Unable to transform bounding box for '%s' layer" + " to %s",
+                                    layer != null ? layer.getName() : "root", srs));
                             if (LOGGER.isLoggable(Level.FINE)) {
                                 LOGGER.log(Level.FINE, e1.getLocalizedMessage(), e1);
                             }
@@ -1877,11 +1752,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 authority = identifier.getAuthority();
                 id = identifier.getIdentifier();
                 if (authority == null || id == null) {
-                    LOGGER.warning(
-                            "Ignoring layer Identifier, authority: "
-                                    + authority
-                                    + ", identifier: "
-                                    + id);
+                    LOGGER.warning("Ignoring layer Identifier, authority: " + authority + ", identifier: " + id);
                     continue;
                 }
                 atts.clear();
@@ -1901,12 +1772,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 element("Abstract", groupStyle.getAbstract());
 
             } else {
-                String title =
-                        internationalContentHelper.getString(
-                                groupStyle.getInternationalTitle(), false);
-                String abstrct =
-                        internationalContentHelper.getString(
-                                groupStyle.getInternationalAbstract(), true);
+                String title = internationalContentHelper.getString(groupStyle.getInternationalTitle(), false);
+                String abstrct = internationalContentHelper.getString(groupStyle.getInternationalAbstract(), true);
                 element("Title", title);
                 element("Abstract", abstrct);
             }
@@ -1949,20 +1816,13 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 if (StringUtils.isBlank(titleValue)) titleValue = serviceInfo.getTitle();
                 if (StringUtils.isBlank(abstractValue)) abstractValue = serviceInfo.getAbstract();
             } else {
-                titleValue =
-                        internationalContentHelper.getString(
-                                serviceInfo.getInternationalRootLayerTitle(), true);
+                titleValue = internationalContentHelper.getString(serviceInfo.getInternationalRootLayerTitle(), true);
                 abstractValue =
-                        internationalContentHelper.getString(
-                                serviceInfo.getInternationalRootLayerAbstract(), true);
+                        internationalContentHelper.getString(serviceInfo.getInternationalRootLayerAbstract(), true);
                 if (StringUtils.isBlank(titleValue))
-                    titleValue =
-                            internationalContentHelper.getString(
-                                    serviceInfo.getInternationalTitle(), false);
+                    titleValue = internationalContentHelper.getString(serviceInfo.getInternationalTitle(), false);
                 if (StringUtils.isBlank(abstractValue))
-                    abstractValue =
-                            internationalContentHelper.getString(
-                                    serviceInfo.getInternationalAbstract(), false);
+                    abstractValue = internationalContentHelper.getString(serviceInfo.getInternationalAbstract(), false);
             }
             element("Title", titleValue);
             element("Abstract", abstractValue);

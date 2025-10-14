@@ -12,6 +12,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.Map;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
@@ -20,8 +21,7 @@ import org.geotools.api.style.Style;
 import org.geotools.util.URLs;
 
 /**
- * Stores the values of dynamic style properties needed to generate an icon for a particular
- * feature.
+ * Stores the values of dynamic style properties needed to generate an icon for a particular feature.
  *
  * @author David Winslow, OpenGeo
  * @author Kevin Smith, OpenGeo
@@ -35,7 +35,7 @@ public abstract class IconProperties {
 
     public abstract Double getHeading();
 
-    public abstract String href(String baseURL, String workspace, String styleName);
+    public abstract String href(String baseURL, WorkspaceInfo workspace, String styleName);
 
     public abstract Style inject(Style base);
 
@@ -46,10 +46,7 @@ public abstract class IconProperties {
     public abstract boolean isExternal();
 
     public static IconProperties generator(
-            final Double opacity,
-            final Double scale,
-            final Double heading,
-            final Map<String, String> styleProperties) {
+            final Double opacity, final Double scale, final Double heading, final Map<String, String> styleProperties) {
         return new IconProperties() {
             @Override
             public Double getOpacity() {
@@ -72,21 +69,16 @@ public abstract class IconProperties {
             }
 
             @Override
-            public String href(String baseURL, String workspace, String styleName) {
+            public String href(String baseURL, WorkspaceInfo workspace, String styleName) {
                 String stylePathFragment;
                 if (workspace != null) {
                     stylePathFragment =
-                            ResponseUtils.urlEncode(workspace)
-                                    + "/"
-                                    + ResponseUtils.urlEncode(styleName);
+                            ResponseUtils.urlEncode(workspace.getName()) + "/" + ResponseUtils.urlEncode(styleName);
                 } else {
                     stylePathFragment = ResponseUtils.urlEncode(styleName);
                 }
                 return ResponseUtils.buildURL(
-                        baseURL,
-                        "kml/icon/" + stylePathFragment,
-                        styleProperties,
-                        URLType.RESOURCE);
+                        baseURL, "kml/icon/" + stylePathFragment, styleProperties, URLType.RESOURCE);
             }
 
             @Override
@@ -111,7 +103,7 @@ public abstract class IconProperties {
                     final byte[] hash = digest.digest();
                     final StringBuilder builder = new StringBuilder();
                     for (byte b : hash) {
-                        builder.append(String.format("%02x", b));
+                        builder.append("%02x".formatted(b));
                     }
                     return builder.toString();
                 } catch (NoSuchAlgorithmException e) {
@@ -140,7 +132,7 @@ public abstract class IconProperties {
             }
 
             @Override
-            public String href(String baseURL, String workspace, String styleName) {
+            public String href(String baseURL, WorkspaceInfo workspace, String styleName) {
 
                 try {
                     URL target = new URL(url);
@@ -148,52 +140,36 @@ public abstract class IconProperties {
 
                     if ("file".equals(graphicProtocol)) {
                         File file = URLs.urlToFile(target);
-                        File styles = null;
-                        File graphicFile = null;
-
+                        File styles;
+                        File workspaceStyles = null;
                         if (file.isAbsolute()) {
                             GeoServerDataDirectory dataDir =
-                                    (GeoServerDataDirectory)
-                                            GeoServerExtensions.bean("dataDirectory");
+                                    (GeoServerDataDirectory) GeoServerExtensions.bean("dataDirectory");
                             // we grab the canonical path to make sure we can compare them, no
                             // relative parts in them and so on
                             styles = dataDir.getStyles().dir().getCanonicalFile();
-                            file = graphicFile = file.getCanonicalFile();
+                            if (workspace != null) {
+                                workspaceStyles =
+                                        dataDir.getStyles(workspace).dir().getCanonicalFile();
+                            }
+                            file = file.getCanonicalFile();
                             if (file.getAbsolutePath().startsWith(styles.getAbsolutePath())) {
                                 // ok, part of the styles directory, extract only the relative path
-                                String relativePath =
-                                        file.getAbsolutePath()
-                                                .substring(styles.getAbsolutePath().length() + 1);
-                                file = new File(relativePath);
-                            } else {
-                                // we wont' transform this, other dirs are not published
-                                file = null;
+                                return buildGraphicURL(baseURL, "styles", styles, file);
+                            } else if (workspaceStyles != null
+                                    && file.getAbsolutePath().startsWith(workspaceStyles.getAbsolutePath())) {
+                                // part of the workspace styles directory
+                                return buildGraphicURL(baseURL, "styles/" + workspace.getName(), workspaceStyles, file);
                             }
-
-                            // rebuild the icon href accordingly
-                            if (file != null && styles != null) {
-                                return ResponseUtils.buildURL(
-                                        baseURL,
-                                        "styles/" + styles.toURI().relativize(graphicFile.toURI()),
-                                        null,
-                                        URLType.RESOURCE);
-                            } else {
-                                // we don't know how to handle this then...
-                                return null;
-                            }
+                            // we won't transform this, other dirs are not published
+                            return null;
                         }
                         return ResponseUtils.buildURL(
-                                baseURL,
-                                "styles/" + target.getPath(),
-                                Collections.emptyMap(),
-                                URLType.RESOURCE);
-                    } else if (!("http".equals(graphicProtocol)
-                            || "https".equals(graphicProtocol))) {
+                                baseURL, "styles/" + target.getPath(), Collections.emptyMap(), URLType.RESOURCE);
+                    } else if (!("http".equals(graphicProtocol) || "https".equals(graphicProtocol))) {
                         return null;
                     }
 
-                    // return ResponseUtils.buildURL(baseURL, "rest/render/kml/icon/" + styleName,
-                    // styleProperties, URLType.RESOURCE);
                     return url;
                 } catch (Exception ex) {
                     throw new IllegalStateException(ex);
@@ -218,6 +194,12 @@ public abstract class IconProperties {
             @Override
             public String getIconName(Style style) {
                 throw new RuntimeException("An implementation is missing");
+            }
+
+            private String buildGraphicURL(String baseURL, String styleRelativeUrl, File styleDir, File graphicFile) {
+                String relativePath =
+                        styleDir.toURI().relativize(graphicFile.toURI()).toString();
+                return ResponseUtils.buildURL(baseURL, styleRelativeUrl + "/" + relativePath, null, URLType.RESOURCE);
             }
         };
     }

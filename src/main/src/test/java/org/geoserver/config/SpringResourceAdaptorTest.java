@@ -73,7 +73,7 @@ public class SpringResourceAdaptorTest {
         try (InputStream is = springResource.getInputStream()) {
             assertNotNull(is);
             String content = org.apache.commons.io.IOUtils.toString(is, StandardCharsets.UTF_8);
-            assertEquals(content, CONTENT);
+            assertEquals(CONTENT, content);
         }
     }
 
@@ -86,10 +86,12 @@ public class SpringResourceAdaptorTest {
         SpringResourceAdaptor springResource = new SpringResourceAdaptor(directoryResource);
 
         assertFalse(springResource.isReadable());
-        assertEquals(springResource.contentLength(), 0);
+        assertEquals(0, springResource.contentLength());
 
         assertNotNull(springResource.getFile());
-        assertThrows(FileNotFoundException.class, () -> springResource.getInputStream().close());
+        assertThrows(
+                FileNotFoundException.class,
+                () -> springResource.getInputStream().close());
     }
 
     @Test
@@ -101,10 +103,12 @@ public class SpringResourceAdaptorTest {
         SpringResourceAdaptor springResource = new SpringResourceAdaptor(missingResource);
 
         assertFalse(springResource.isReadable());
-        assertEquals(springResource.contentLength(), 0);
+        assertEquals(0, springResource.contentLength());
 
         assertThrows(FileNotFoundException.class, springResource::getFile);
-        assertThrows(FileNotFoundException.class, () -> springResource.getInputStream().close());
+        assertThrows(
+                FileNotFoundException.class,
+                () -> springResource.getInputStream().close());
 
         // must not be created unintentionally.
         assertFalse(Resources.exists(missingResource));

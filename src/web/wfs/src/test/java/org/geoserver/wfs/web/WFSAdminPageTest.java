@@ -5,6 +5,7 @@
  */
 package org.geoserver.wfs.web;
 
+import static org.geoserver.web.services.BaseServiceAdminPage.WORKSPACE_ADMIN_SERVICE_ACCESS;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -12,18 +13,55 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Collections;
 import java.util.Locale;
+import java.util.Properties;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
+import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.config.GeoServer;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.ows.util.OwsUtils;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.security.impl.DefaultFileAccessManager;
+import org.geoserver.web.GeoServerLoginPage;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.UnauthorizedPage;
 import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.WFSInfo;
 import org.geotools.api.util.InternationalString;
+import org.junit.Before;
 import org.junit.Test;
 
 public class WFSAdminPageTest extends GeoServerWicketTestSupport {
+    private static final String ROLE_CITE = "ROLE_CITE";
+    public static final String CITE_WFS_TITLE = "This is the CITE WFS service";
+    public static final String GLOBAL_WFS_TITLE = "This is the global WFS service";
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+    }
+
+    @Before
+    public void cleanupService() {
+        GeoServer gs = getGeoServer();
+        WFSInfo wfs = gs.getService(WFSInfo.class);
+        wfs.setTitle(null);
+        gs.save(wfs);
+
+        WorkspaceInfo citeWorkspace = getCatalog().getWorkspaceByName("cite");
+        WFSInfo citeWFS = gs.getService(citeWorkspace, WFSInfo.class);
+        if (citeWFS != null) {
+            gs.remove(citeWFS);
+        }
+    }
+
     @Test
     public void testValues() throws Exception {
         WFSInfo wfs = getGeoServerApplication().getGeoServer().getService(WFSInfo.class);
@@ -32,16 +70,15 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
         tester.startPage(WFSAdminPage.class);
         tester.assertModelValue("form:maxFeatures", wfs.getMaxFeatures());
         tester.assertModelValue("form:csvDateFormat", wfs.getCsvDateFormat());
-        tester.assertModelValue(
-                "form:maxNumberOfFeaturesForPreview", wfs.getMaxNumberOfFeaturesForPreview());
+        tester.assertModelValue("form:maxNumberOfFeaturesForPreview", wfs.getMaxNumberOfFeaturesForPreview());
         tester.assertModelValue("form:keywords", wfs.getKeywords());
         tester.assertModelValue(
-                "form:getFeatureOutputTypes:outputTypeCheckingEnabled",
-                wfs.isGetFeatureOutputTypeCheckingEnabled());
+                "form:getFeatureOutputTypes:outputTypeCheckingEnabled", wfs.isGetFeatureOutputTypeCheckingEnabled());
     }
 
     @Test
     public void testChangesToValues() throws Exception {
+
         String testValue1 = "100", testValue2 = "0";
         WFSInfo wfs = getGeoServerApplication().getGeoServer().getService(WFSInfo.class);
         login();
@@ -75,18 +112,18 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
         tester.startPage(WFSAdminPage.class);
         ft = tester.newFormTester("form");
         ft.setValue("getFeatureOutputTypes:outputTypeCheckingEnabled", true);
-        ft.getForm()
-                .get("getFeatureOutputTypes:palette")
-                .setDefaultModelObject(Collections.singleton("KML"));
+        ft.getForm().get("getFeatureOutputTypes:palette").setDefaultModelObject(Collections.singleton("KML"));
         ft.submit("submit");
         wfs = getGeoServerApplication().getGeoServer().getService(WFSInfo.class);
-        assertTrue(
-                "getFeatureOutputTypeCheckingEnabled= true",
-                wfs.isGetFeatureOutputTypeCheckingEnabled());
-        assertEquals(
-                "getFeatureOutputTypes= KML",
-                Collections.singleton("KML"),
-                wfs.getGetFeatureOutputTypes());
+        assertTrue("getFeatureOutputTypeCheckingEnabled= true", wfs.isGetFeatureOutputTypeCheckingEnabled());
+        assertEquals("getFeatureOutputTypes= KML", Collections.singleton("KML"), wfs.getGetFeatureOutputTypes());
+        // test disableStoredQueries
+        tester.startPage(WFSAdminPage.class);
+        ft = tester.newFormTester("form");
+        ft.setValue("disableStoredQueriesManagement", true);
+        ft.submit("submit");
+        wfs = getGeoServerApplication().getGeoServer().getService(WFSInfo.class);
+        assertTrue("disableStoredQueriesManagement = true", wfs.isDisableStoredQueriesManagement());
     }
 
     @Test
@@ -128,8 +165,7 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
         tester.startPage(new WFSAdminPage());
         // check that GML MIME type overriding is disabled
         tester.assertComponent("form:gml32:forceGmlMimeType", CheckBox.class);
-        CheckBox checkbox =
-                (CheckBox) tester.getComponentFromLastRenderedPage("form:gml32:forceGmlMimeType");
+        CheckBox checkbox = (CheckBox) tester.getComponentFromLastRenderedPage("form:gml32:forceGmlMimeType");
         assertThat(checkbox.getModelObject(), is(false));
         // MIME type drop down choice should be invisible
         tester.assertInvisible("form:gml32:mimeTypeToForce");
@@ -182,38 +218,27 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
         tester.startPage(new WFSAdminPage());
         FormTester form = tester.newFormTester("form");
         // enable i18n for title and add two entries
-        form.setValue(
-                "serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox",
-                true);
+        form.setValue("serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox", true);
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox",
-                "change");
+                "form:serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox", "change");
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew",
-                "click");
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew", "click");
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew",
-                "click");
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew", "click");
 
         // enable i18n for abstract and add two entries
-        form.setValue(
-                "serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox",
-                true);
+        form.setValue("serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox", true);
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox",
-                "change");
+                "form:serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox", "change");
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew",
-                "click");
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew", "click");
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew",
-                "click");
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew", "click");
         // figure out the locales used in the test (might not be stable across JVMs)
         @SuppressWarnings("unchecked")
-        DropDownChoice<Locale> select =
-                (DropDownChoice)
-                        tester.getComponentFromLastRenderedPage(
-                                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select");
+        DropDownChoice<Locale> select = (DropDownChoice)
+                tester.getComponentFromLastRenderedPage(
+                        "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select");
         Locale l10 = select.getChoices().get(10);
         Locale l20 = select.getChoices().get(20);
 
@@ -278,7 +303,108 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
         ft.submit("submit");
         assertNotNull(getGeoServer().getService(WFSInfo.class).getCsvDateFormat());
         assertEquals(
-                getGeoServer().getService(WFSInfo.class).getCsvDateFormat(),
-                "yyyy-MM-dd'T'HH:mm:ss'Z'");
+                "yyyy-MM-dd'T'HH:mm:ss'Z'",
+                getGeoServer().getService(WFSInfo.class).getCsvDateFormat());
+    }
+
+    @Test
+    public void testWorkspaceAdminFlagOn() throws IOException {
+        System.setProperty(WORKSPACE_ADMIN_SERVICE_ACCESS, "true");
+        // setup a CITE workspace WFS service
+        WorkspaceInfo citeWorkspace = getCatalog().getWorkspaceByName("cite");
+        GeoServer gs = getGeoServer();
+        WFSInfo wfs = gs.getService(WFSInfo.class);
+        wfs.setTitle(GLOBAL_WFS_TITLE);
+        gs.save(wfs);
+
+        WFSInfo citeWfs = gs.getFactory().create(WFSInfo.class);
+        OwsUtils.copy(wfs, citeWfs, WFSInfo.class);
+        citeWfs.setWorkspace(citeWorkspace);
+        citeWfs.setTitle(CITE_WFS_TITLE);
+        gs.add(citeWfs);
+
+        // setup a sandbox by security config
+        Resource layerSecurity = getDataDirectory().get("security/layers.properties");
+        Properties properties = new Properties();
+        properties.put("cite.*.a", ROLE_CITE);
+        try (OutputStream os = layerSecurity.out()) {
+            properties.store(os, "sandbox");
+        }
+        DefaultFileAccessManager fam = GeoServerExtensions.bean(DefaultFileAccessManager.class, applicationContext);
+        fam.reload();
+
+        logout();
+
+        // global service page, cannot be accessed as anonymous
+        tester.startPage(WFSAdminPage.class);
+        tester.assertRenderedPage(GeoServerLoginPage.class);
+
+        // login as workspace admin (logout happens as @After in base class)
+        login("cite", "pwd", ROLE_CITE);
+
+        // global service page, still no joy, not a global admin
+        tester.startPage(WFSAdminPage.class);
+        tester.assertRenderedPage(UnauthorizedPage.class);
+
+        // ok, can access with the right workspace
+        tester.startPage(WFSAdminPage.class, new PageParameters().add("workspace", "cite"));
+        tester.assertRenderedPage(WFSAdminPage.class);
+
+        // now log as admin and check the global service page is rendered
+        loginAsAdmin();
+        tester.startPage(WFSAdminPage.class);
+        tester.assertRenderedPage(WFSAdminPage.class);
+
+        System.clearProperty(WORKSPACE_ADMIN_SERVICE_ACCESS);
+    }
+
+    @Test
+    public void testWorkspaceAdminFlagOff() throws IOException {
+        System.clearProperty(WORKSPACE_ADMIN_SERVICE_ACCESS);
+
+        // setup a CITE workspace WFS service
+        WorkspaceInfo citeWorkspace = getCatalog().getWorkspaceByName("cite");
+        GeoServer gs = getGeoServer();
+        WFSInfo wfs = gs.getService(WFSInfo.class);
+        wfs.setTitle(GLOBAL_WFS_TITLE);
+        gs.save(wfs);
+
+        WFSInfo citeWfs = gs.getFactory().create(WFSInfo.class);
+        OwsUtils.copy(wfs, citeWfs, WFSInfo.class);
+        citeWfs.setWorkspace(citeWorkspace);
+        citeWfs.setTitle(CITE_WFS_TITLE);
+        gs.add(citeWfs);
+
+        // setup a sandbox by security config
+        Resource layerSecurity = getDataDirectory().get("security/layers.properties");
+        Properties properties = new Properties();
+        properties.put("cite.*.a", ROLE_CITE);
+        try (OutputStream os = layerSecurity.out()) {
+            properties.store(os, "sandbox");
+        }
+        DefaultFileAccessManager fam = GeoServerExtensions.bean(DefaultFileAccessManager.class, applicationContext);
+        fam.reload();
+
+        logout();
+
+        // global service page, cannot be accessed as anonymous
+        tester.startPage(WFSAdminPage.class);
+        tester.assertRenderedPage(GeoServerLoginPage.class);
+
+        // login as workspace admin (logout happens as @After in base class)
+        login("cite", "pwd", ROLE_CITE);
+
+        // global service page, still no joy, not a global admin
+        tester.startPage(WFSAdminPage.class);
+        tester.assertRenderedPage(UnauthorizedPage.class);
+
+        // cannot access with the workspace
+        tester.startPage(WFSAdminPage.class, new PageParameters().add("workspace", "cite"));
+        tester.assertRenderedPage(UnauthorizedPage.class);
+
+        // now log as admin and check the global service page is rendered
+        loginAsAdmin();
+        tester.startPage(WFSAdminPage.class);
+        tester.assertRenderedPage(WFSAdminPage.class);
     }
 }

@@ -26,8 +26,8 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 /**
- * An object which contains information about the current API request. If the current request is a
- * API one, it can be retrieved using the {@link APIRequestInfo#get()} method
+ * An object which contains information about the current API request. If the current request is a API one, it can be
+ * retrieved using the {@link APIRequestInfo#get()} method
  */
 public class APIRequestInfo {
 
@@ -44,11 +44,8 @@ public class APIRequestInfo {
     APIDispatcher dispatcher;
     Object result;
 
-    /**
-     * Constructs a {@link APIRequestInfo} object, generating content based on the passed request.
-     */
-    public APIRequestInfo(
-            HttpServletRequest request, HttpServletResponse response, APIDispatcher dispatcher) {
+    /** Constructs a {@link APIRequestInfo} object, generating content based on the passed request. */
+    public APIRequestInfo(HttpServletRequest request, HttpServletResponse response, APIDispatcher dispatcher) {
         this.dispatcher = dispatcher;
         this.request = request;
         this.response = response;
@@ -76,19 +73,17 @@ public class APIRequestInfo {
     }
 
     /**
-     * Returns the APIRequestInfo from the current {@link RequestContextHolder}, or {@code null}
-     * indicating there's no OGC API request bound to the calling thread
+     * Returns the APIRequestInfo from the current {@link RequestContextHolder}, or {@code null} indicating there's no
+     * OGC API request bound to the calling thread
      */
     public static APIRequestInfo get() {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         if (requestAttributes == null) return null;
-        return (APIRequestInfo)
-                requestAttributes.getAttribute(APIRequestInfo.KEY, RequestAttributes.SCOPE_REQUEST);
+        return (APIRequestInfo) requestAttributes.getAttribute(APIRequestInfo.KEY, RequestAttributes.SCOPE_REQUEST);
     }
 
     /**
-     * Returns the query map as a simple String to String map, removing eventual repeated parameters
-     * and empty ones
+     * Returns the query map as a simple String to String map, removing eventual repeated parameters and empty ones
      *
      * @return query map
      */
@@ -118,13 +113,12 @@ public class APIRequestInfo {
         if (requestAttributes == null) {
             throw new IllegalStateException("Request attributes are not set");
         }
-        requestAttributes.setAttribute(
-                APIRequestInfo.KEY, requestInfo, RequestAttributes.SCOPE_REQUEST);
+        requestAttributes.setAttribute(APIRequestInfo.KEY, requestInfo, RequestAttributes.SCOPE_REQUEST);
     }
 
     /**
-     * Returns the requested media types (the resolver will fill in defaults in case none was
-     * provided in the "f" parameter or in the Accept header
+     * Returns the requested media types (the resolver will fill in defaults in case none was provided in the "f"
+     * parameter or in the Accept header
      */
     public List<MediaType> getRequestedMediaTypes() {
         return requestedMediaTypes;
@@ -145,8 +139,7 @@ public class APIRequestInfo {
 
     /** Returns true if no indication was given as to what media type is to be returned */
     public boolean isAnyMediaTypeAccepted() {
-        return requestedMediaTypes == null
-                || ContentNegotiationManager.MEDIA_TYPE_ALL_LIST.equals(requestedMediaTypes);
+        return requestedMediaTypes == null || ContentNegotiationManager.MEDIA_TYPE_ALL_LIST.equals(requestedMediaTypes);
     }
 
     /** Returns true if the given format has been requested */
@@ -194,8 +187,8 @@ public class APIRequestInfo {
     }
 
     /**
-     * Returns the landing page for the current service. Can be called only after the service has
-     * been looked up, will otherwise throw a descriptive exception.
+     * Returns the landing page for the current service. Can be called only after the service has been looked up, will
+     * otherwise throw a descriptive exception.
      */
     public String getServiceLandingPage() {
         return Optional.ofNullable(Dispatcher.REQUEST.get())
@@ -205,9 +198,8 @@ public class APIRequestInfo {
                 .map(c -> APIDispatcher.getApiServiceAnnotation(c))
                 .map(a -> a.landingPage())
                 .orElseThrow(
-                        () ->
-                                new RuntimeException(
-                                        "Could not find a service base URL at this stage, maybe the service has not been dispatched yet"));
+                        () -> new RuntimeException(
+                                "Could not find a service base URL at this stage, maybe the service has not been dispatched yet"));
     }
 
     /** Returns the service handling the request */
@@ -223,8 +215,9 @@ public class APIRequestInfo {
      * @return
      */
     public String getRequestPath() {
-        String pathInfo = request.getPathInfo();
         String servletPath = request.getServletPath();
+        String pathInfo = request.getPathInfo();
+
         return ResponseUtils.appendPath(servletPath, pathInfo);
     }
 

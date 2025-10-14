@@ -41,9 +41,7 @@ public class MapLayerInfoKvpParser extends KvpParser {
         this.styles = KvpUtils.readFlat(styles);
     }
 
-    /**
-     * Returns whether the specified resource must be skipped in the context of the current request.
-     */
+    /** Returns whether the specified resource must be skipped in the context of the current request. */
     protected boolean skipResource(Object theResource) {
         return false;
     }
@@ -63,8 +61,7 @@ public class MapLayerInfoKvpParser extends KvpParser {
             LayerInfo layerInfo = wms.getLayerByName(layerName);
             if (layerInfo == null) {
                 LayerGroupInfo groupInfo = wms.getLayerGroupByName(layerName);
-                if (groupInfo == null
-                        || LayerGroupInfo.Mode.CONTAINER.equals(groupInfo.getMode())) {
+                if (groupInfo == null || LayerGroupInfo.Mode.CONTAINER.equals(groupInfo.getMode())) {
                     throw new ServiceException(
                             layerName + ": no such layer on this server",
                             "LayerNotDefined",

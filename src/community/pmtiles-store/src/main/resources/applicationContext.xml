@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~  (c) 2019 Open Source Geospatial Foundation - all rights reserved
+  ~  This code is licensed under the GPL 2.0 license, available at the root
+  ~  application directory.
+  ~
+  -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+             http://www.springframework.org/schema/beans
+             http://www.springframework.org/schema/beans/spring-beans.xsd"
+>
+
+  <bean id="pmtilesDataStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
+    <property name="id" value="pmtilesDataStorePanel"/>
+    <property name="factoryClass" value="org.geotools.pmtiles.store.PMTilesDataStoreFactory"/>
+    <property name="componentClass" value="org.geoserver.pmtiles.web.data.PMTilesDataStoreEditPanel"/>
+    <property name="iconBase" value="org.geoserver.pmtiles.web.data.PMTilesDataStoreEditPanel"/>
+    <property name="icon" value="protomaps_icon.svg" />
+  </bean>
+</beans>

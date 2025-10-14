@@ -4,7 +4,9 @@
  */
 package org.geoserver.opensearch.eo;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import org.geoserver.opensearch.eo.response.AtomSearchResponse;
 import org.geoserver.opensearch.eo.response.GeoJSONSearchResponse;
@@ -30,36 +32,20 @@ public class OSEODispatcherCallback extends AbstractDispatcherCallback {
         final Map kvp = request.getKvp();
         final Map rawKvp = request.getRawKvp();
         if ("oseo".equalsIgnoreCase(request.getService())) {
-            if (kvp.isEmpty()) {
-                if ("description".equals(request.getRequest())) {
-                    kvp.put("service", "oseo");
-                    // the raw kvp is normally not even initialized
-                    request.setRawKvp(kvp);
-                } else if ("search".equals(request.getRequest())) {
-                    kvp.put("service", "oseo");
-                    if (!kvp.containsKey("httpAccept"))
-                        kvp.put("httpAccept", AtomSearchResponse.MIME);
-                }
-                // make sure the raw kvp is not empty, ever (the current code
-                // leaves it empty if the request has no search params)
-                request.setRawKvp(kvp);
-            } else {
-                // skip everything that has an empty value, in OpenSearch it should be ignored
-                // (clients following the template to the letter will create keys with empty value)
-                for (String key : new HashSet<String>(request.getRawKvp().keySet())) {
-                    Object value = rawKvp.get(key);
-                    if ((!(value instanceof String) || !StringUtils.hasText((String) value))
-                            && !(value instanceof String[])) {
-                        rawKvp.remove(key);
-                        kvp.remove(key);
-                    }
-                }
+            if ("description".equalsIgnoreCase(request.getRequest())) {
+                kvp.put("service", "oseo");
+                kvp.put("request", "description");
+            } else if ("search".equalsIgnoreCase(request.getRequest())) {
+                kvp.put("service", "oseo");
+                kvp.put("request", "search");
+                if (!kvp.containsKey("httpAccept")) kvp.put("httpAccept", AtomSearchResponse.MIME);
             }
+            // skip everything that has an empty value, in OpenSearch it should be ignored
+            // (clients following the template to the letter will create keys with empty value)
+            cleanupRequestParams(request, rawKvp, kvp);
 
             // backwards compatibility, parentId got renamed to parentIdentifier
-            if (rawKvp != null
-                    && rawKvp.containsKey(PARENT_ID)
-                    && !rawKvp.containsKey(PARENT_IDENTIFIER)) {
+            if (rawKvp != null && rawKvp.containsKey(PARENT_ID) && !rawKvp.containsKey(PARENT_IDENTIFIER)) {
                 rawKvp.put(PARENT_IDENTIFIER, rawKvp.get(PARENT_ID));
             }
             if (kvp != null && kvp.containsKey(PARENT_ID) && !kvp.containsKey(PARENT_IDENTIFIER)) {
@@ -69,12 +55,48 @@ public class OSEODispatcherCallback extends AbstractDispatcherCallback {
         return service;
     }
 
+    private void cleanupRequestParams(Request request, Map rawKvp, Map kvp) {
+        if (rawKvp == null) {
+            return;
+        }
+        for (String key : new HashSet<>(request.getRawKvp().keySet())) {
+            Object value = rawKvp.get(key);
+            // Some clients are sending the same search parameter twice
+            // once with a value and once as an empty value.
+            // Let's handle it gracefully with some cleanup
+            if (value instanceof String[] values) {
+                List<String> cleaned = new ArrayList<>();
+
+                for (String v : values) {
+                    if (StringUtils.hasText(v)) {
+                        cleaned.add(v);
+                    }
+                }
+
+                if (cleaned.isEmpty()) {
+                    rawKvp.remove(key);
+                    kvp.remove(key);
+                } else if (cleaned.size() == 1) {
+                    // If only one value remains, simplify to a single String
+                    rawKvp.put(key, cleaned.get(0));
+                    kvp.put(key, cleaned.get(0));
+                } else {
+                    rawKvp.put(key, cleaned.toArray(new String[0]));
+                    kvp.put(key, cleaned.toArray(new String[0]));
+                }
+            } else if (!(value instanceof String) || !StringUtils.hasText((String) value)) {
+                rawKvp.remove(key);
+                kvp.remove(key);
+            }
+        }
+    }
+
     @Override
     public Operation operationDispatched(Request request, Operation operation) {
         // set the output format from httpAccept, to make multiple output formats for a single
         // response work in the OGC dispatcher
         String format = (String) request.getKvp().get("httpAccept");
-        boolean searchRequest = "search".equals(request.getRequest());
+        boolean searchRequest = "search".equalsIgnoreCase(request.getRequest());
         if (format != null) {
             // leniency for shortcut names
             if ("atom".equals(format) && searchRequest) {

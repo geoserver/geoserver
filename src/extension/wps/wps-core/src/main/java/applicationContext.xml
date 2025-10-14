@@ -201,7 +201,7 @@
     <bean id="interpolationPPIO" class="org.geoserver.wps.ppio.InterpolationPPIO" />
     <bean id="sldStylePPIO" class="org.geoserver.wps.ppio.SLDStylePPIO" />
     <bean id="urlPPIO" class="org.geoserver.wps.ppio.URLPPIO" />
-    <bean id="jaitoolsRangePPIO" class="org.geoserver.wps.ppio.JAIToolsRangePPIO"/>
+    <bean id="jaiextRangePPIO" class="org.geoserver.wps.ppio.JAIExtRangePPIO"/>
     <bean id="rawDataPPIO" class="org.geoserver.wps.ppio.RawDataPPIO">
       <constructor-arg ref="wpsResourceManager" />
     </bean>
@@ -214,6 +214,8 @@
     <bean id="geoJsonFeatureCollectionPPIO" class="org.geoserver.wps.ppio.GeoJSONPPIO.FeatureCollections">
         <constructor-arg ref="geoServer"/>
     </bean>
+    <bean id="valuesAtPointPPIO" class="org.geoserver.wps.ppio.ValuesAtPointPPIO" />
+    
     <bean id="classificationStatsPPIO" class="org.geoserver.wps.gs.ClassificationStatsPPIO"/>
 
     <!-- Register the GeoServer factory and processes -->
@@ -236,6 +238,9 @@
     <bean id="storeCoverageProcess" class="org.geoserver.wps.gs.StoreCoverage" >
       <constructor-arg index="0" ref="wpsResourceManager"></constructor-arg>
     </bean>
+    <bean id="spatioTemporalStatisticsProcess" class="org.geoserver.wps.gs.SpatioTemporalZonalStatistics">
+        <constructor-arg index="0" ref="catalog"/>
+    </bean>
 
     <bean id="georectifyConfiguration" class="org.geoserver.wps.gs.GeorectifyConfiguration" /> 
     <bean id="georectifyCoverage" class="org.geoserver.wps.gs.GeorectifyCoverage">
@@ -245,6 +250,10 @@
     
     <bean id="getFullCoverage" class="org.geoserver.wps.gs.GetFullCoverage">
       <constructor-arg index="0" ref="catalog"/>
+    </bean>
+
+    <bean id="getCoveragesValue" class="org.geoserver.wps.gs.GetCoveragesValue">
+        <constructor-arg index="0" ref="catalog"/>
     </bean>
     
     <!--

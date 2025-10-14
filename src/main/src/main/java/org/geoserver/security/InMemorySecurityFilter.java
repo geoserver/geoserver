@@ -27,10 +27,8 @@ public class InMemorySecurityFilter extends InternalVolatileFunction {
     Authentication user;
 
     /** Returns a filter that will check if the object passed to it can be accessed by the user */
-    public static Filter buildUserAccessFilter(
-            ResourceAccessManager resourceAccesssManager, Authentication user) {
-        org.geotools.api.filter.expression.Function visible =
-                new InMemorySecurityFilter(resourceAccesssManager, user);
+    public static Filter buildUserAccessFilter(ResourceAccessManager resourceAccesssManager, Authentication user) {
+        org.geotools.api.filter.expression.Function visible = new InMemorySecurityFilter(resourceAccesssManager, user);
 
         FilterFactory factory = Predicates.factory;
 
@@ -40,8 +38,7 @@ public class InMemorySecurityFilter extends InternalVolatileFunction {
         return filter;
     }
 
-    public InMemorySecurityFilter(
-            ResourceAccessManager resourceAccesssManager, Authentication user) {
+    public InMemorySecurityFilter(ResourceAccessManager resourceAccesssManager, Authentication user) {
         super();
         this.resourceAccesssManager = resourceAccesssManager;
         this.user = user;
@@ -58,16 +55,14 @@ public class InMemorySecurityFilter extends InternalVolatileFunction {
     @Override
     public Boolean evaluate(Object object) {
         CatalogInfo info = (CatalogInfo) object;
-        if (info instanceof NamespaceInfo) {
-            info = getCatalog().getWorkspaceByName(((NamespaceInfo) info).getPrefix());
+        if (info instanceof NamespaceInfo namespaceInfo) {
+            info = getCatalog().getWorkspaceByName(namespaceInfo.getPrefix());
         }
         if (info == null) {
             return false;
         }
         WrapperPolicy policy =
-                getSecurityWrapper()
-                        .buildWrapperPolicy(
-                                resourceAccesssManager, user, info, MixedModeBehavior.HIDE);
+                getSecurityWrapper().buildWrapperPolicy(resourceAccesssManager, user, info, MixedModeBehavior.HIDE);
         AccessLevel accessLevel = policy.getAccessLevel();
         boolean visible = !AccessLevel.HIDDEN.equals(accessLevel);
         return Boolean.valueOf(visible);

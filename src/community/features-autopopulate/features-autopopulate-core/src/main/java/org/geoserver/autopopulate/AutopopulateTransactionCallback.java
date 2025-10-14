@@ -43,37 +43,34 @@ import org.geotools.feature.NameImpl;
 import org.geotools.util.logging.Logging;
 
 /**
- * Listens to transactions (so far only issued by WFS), and autopopulates the feature type
- * attributes according to the values retrieved from the properties file.
+ * Listens to transactions (so far only issued by WFS), and autopopulates the feature type attributes according to the
+ * values retrieved from the properties file.
  *
- * <p>A Spring bean singleton of this class needs to be declared in order for GeoServer transactions
- * to pick it up automatically and forward transaction events to it.
+ * <p>A Spring bean singleton of this class needs to be declared in order for GeoServer transactions to pick it up
+ * automatically and forward transaction events to it.
  *
- * <p>The plugin uses a custom TransactionCallback that alters the insert/update WFS-T operations,
- * forcing in specific values into them, based on configuration files.
+ * <p>The plugin uses a custom TransactionCallback that alters the insert/update WFS-T operations, forcing in specific
+ * values into them, based on configuration files.
  *
- * <p>To support configuration for multiple layers, the easiest thing is to place a configuration,
- * file in the directories of the layers themselves, pretty much like the featureinfo templates.
+ * <p>To support configuration for multiple layers, the easiest thing is to place a configuration, file in the
+ * directories of the layers themselves, pretty much like the featureinfo templates.
  *
- * <p>A "transactionCustomizer.properties" file that contains a set of names and CQL expressions
- * e.g.:
+ * <p>A "transactionCustomizer.properties" file that contains a set of names and CQL expressions e.g.:
  *
  * <pre>
  * UTENTE=env('GSUSER') # this will be replaced with the current user see @EnviromentInjectionCallback
  * AGGIORNAMENTO=now()  # this will be replaced with the current date
  * </pre>
  *
- * <p>To keep things simple, the expressions will just use environment variables, but not see the
- * other values provided in the update/insert, and will not be differentiated by insert/update
- * cases.
+ * <p>To keep things simple, the expressions will just use environment variables, but not see the other values provided
+ * in the update/insert, and will not be differentiated by insert/update cases.
  *
  * @author Alessio Fabiani, GeoSolutions SRL, alessio.fabiani@geosolutionsgroup.com
  * @see TransactionCallback
  */
 public class AutopopulateTransactionCallback implements TransactionCallback {
 
-    public static final String TRANSACTION_CUSTOMIZER_PROPERTIES =
-            "transactionCustomizer.properties";
+    public static final String TRANSACTION_CUSTOMIZER_PROPERTIES = "transactionCustomizer.properties";
     /** logger */
     private static final Logger LOGGER = Logging.getLogger(AutopopulateTransactionCallback.class);
     /** The GeoServer catalog */
@@ -121,8 +118,7 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
      * @see TransactionCallback#afterTransaction(TransactionRequest, TransactionResponse, boolean)
      */
     @Override
-    public void afterTransaction(
-            final TransactionRequest request, TransactionResponse result, boolean committed) {
+    public void afterTransaction(final TransactionRequest request, TransactionResponse result, boolean committed) {
         // nothing to do
     }
 
@@ -136,17 +132,15 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
     }
 
     /**
-     * Collects "transactionCustomizer.properties" file that contains a set of names and CQL
-     * expressions, e.g.:
+     * Collects "transactionCustomizer.properties" file that contains a set of names and CQL expressions, e.g.:
      *
      * <pre>
      *  UTENTE=env('GSUSER')
      *  AGGIORNAMENTO=now()
      *  </pre>
      *
-     * <p>To keep things simple, the expressions will just use environment variables, but not see
-     * the other values provided in the update/insert, and will not be differentiated by
-     * insert/update cases.
+     * <p>To keep things simple, the expressions will just use environment variables, but not see the other values
+     * provided in the update/insert, and will not be differentiated by insert/update cases.
      *
      * @see TransactionCallback#beforeTransaction(TransactionRequest)
      */
@@ -158,35 +152,29 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
 
         List<TransactionElement> newElements = new ArrayList<>();
         for (TransactionElement element : request.getElements()) {
-            if (element instanceof Insert) {
+            if (element instanceof Insert insertElement) {
                 List<SimpleFeature> newFeatures = new ArrayList<>();
                 for (Object of : affectedFeatures(element)) {
-                    if (of instanceof SimpleFeature) {
+                    if (of instanceof SimpleFeature feature) {
                         try {
                             LOGGER.fine("Inserting feature: " + of);
-                            SimpleFeature transformed = applyTemplate((SimpleFeature) of);
+                            SimpleFeature transformed = applyTemplate(feature);
                             LOGGER.fine("... transformed: " + transformed);
                             newFeatures.add(transformed);
                         } catch (RuntimeException | IOException e) {
                             // Do never make the transaction fail due to an
                             // AutopopulateTransactionCallback error.
                             // Yell on the logs though
-                            LOGGER.log(
-                                    Level.WARNING,
-                                    "Error pre computing the transaction's affected attributes",
-                                    e);
-                            newFeatures.add((SimpleFeature) of);
+                            LOGGER.log(Level.WARNING, "Error pre computing the transaction's affected attributes", e);
+                            newFeatures.add(feature);
                         }
                     }
                 }
-                Insert insertElement = (Insert) element;
                 insertElement.setFeatures(newFeatures);
                 newElements.add(element);
-            } else if (element instanceof Update) {
-                FeatureTypeInfo featureTypeInfo =
-                        getFeatureTypeInfo(new NameImpl(element.getTypeName()));
+            } else if (element instanceof Update updateElement) {
+                FeatureTypeInfo featureTypeInfo = getFeatureTypeInfo(new NameImpl(element.getTypeName()));
                 try {
-                    Update updateElement = (Update) element;
                     SimpleFeature feature = getTransactionFeatureTemplate(updateElement);
                     LOGGER.fine("Updating feature: " + feature);
                     SimpleFeature transformed = applyTemplate(feature);
@@ -199,10 +187,9 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
                                     .forEach(prop -> prop.setValue(prop.getValue()));
                         } else {
                             Property updateProperty = updateElement.createProperty();
-                            updateProperty.setName(
-                                    new QName(
-                                            featureTypeInfo.getNamespace().getURI(),
-                                            p.getName().getLocalPart()));
+                            updateProperty.setName(new QName(
+                                    featureTypeInfo.getNamespace().getURI(),
+                                    p.getName().getLocalPart()));
                             updateProperty.setValue(p.getValue());
                             properties.add(updateProperty);
                         }
@@ -212,10 +199,7 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
                     // Do never make the transaction fail due to an
                     // AutopopulateTransactionCallback error.
                     // Yell on the logs though
-                    LOGGER.log(
-                            Level.WARNING,
-                            "Error pre computing the transaction's affected attributes",
-                            e);
+                    LOGGER.log(Level.WARNING, "Error pre computing the transaction's affected attributes", e);
                 }
                 newElements.add(element);
             } else if (element instanceof Delete) {
@@ -253,8 +237,7 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
     private FeatureTypeInfo getFeatureTypeInfo(Name featureTypeName) {
         FeatureTypeInfo featureTypeInfo = catalog.getFeatureTypeByName(featureTypeName);
         if (featureTypeInfo == null) {
-            throw new RuntimeException(
-                    String.format("Couldn't find feature type info ''%s.", featureTypeName));
+            throw new RuntimeException("Couldn't find feature type info ''%s.".formatted(featureTypeName));
         }
         return featureTypeInfo;
     }
@@ -310,10 +293,10 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
      * @return List of affected features
      */
     private List affectedFeatures(TransactionElement element) {
-        if (element instanceof Insert) {
-            return ((Insert) element).getFeatures();
-        } else if (element instanceof Replace) {
-            return ((Replace) element).getFeatures();
+        if (element instanceof Insert insert) {
+            return insert.getFeatures();
+        } else if (element instanceof Replace replace) {
+            return replace.getFeatures();
         }
         return new ArrayList<>();
     }
@@ -322,15 +305,14 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
      * Check/alter feature collections and filters before a change hits the datastore.
      *
      * <p><b>Note</b> that caution should be exercised when relying on feature identifiers from a
-     * {@link TransactionEventType#POST_INSERT} event. Depending on the type of store, those
-     * identifiers may be reliable. Essentially, they can only be relied upon in the case of a
-     * spatial dbms (such as PostGIS) is being used.
+     * {@link TransactionEventType#POST_INSERT} event. Depending on the type of store, those identifiers may be
+     * reliable. Essentially, they can only be relied upon in the case of a spatial dbms (such as PostGIS) is being
+     * used.
      *
      * @return SimpleFeature the feature to be persisted
      */
     private SimpleFeature applyTemplate(SimpleFeature source) throws IOException {
-        AutopopulateTemplate t =
-                lookupTemplate(source.getFeatureType(), TRANSACTION_CUSTOMIZER_PROPERTIES);
+        AutopopulateTemplate t = lookupTemplate(source.getFeatureType(), TRANSACTION_CUSTOMIZER_PROPERTIES);
         if (t != null) {
             for (Map.Entry<String, String> entry : t.getAllProperties().entrySet()) {
                 String key = entry.getKey();
@@ -346,11 +328,10 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
     }
 
     /**
-     * Returns the template for the specified feature type. Looking up templates is pretty
-     * expensive, so we cache templates by feature type and template.
+     * Returns the template for the specified feature type. Looking up templates is pretty expensive, so we cache
+     * templates by feature type and template.
      */
-    public AutopopulateTemplate lookupTemplate(SimpleFeatureType featureType, String path)
-            throws IOException {
+    public AutopopulateTemplate lookupTemplate(SimpleFeatureType featureType, String path) throws IOException {
 
         // lookup the cache first
         TemplateKey key = new TemplateKey(featureType, path);
@@ -358,12 +339,10 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
         if (t != null && !t.needsReload()) return t;
 
         // if not found, load the template
-        GeoServerResourceLoader resourceLoader =
-                GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        GeoServerResourceLoader resourceLoader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
         Catalog catalog = (Catalog) GeoServerExtensions.bean("catalog");
         FeatureTypeInfo feature = catalog.getFeatureTypeByName(featureType.getTypeName());
-        AutopopulateTemplateLoader templateLoader =
-                new AutopopulateTemplateLoader(resourceLoader, feature);
+        AutopopulateTemplateLoader templateLoader = new AutopopulateTemplateLoader(resourceLoader, feature);
         t = templateLoader.loadTemplate(path);
         templateCache.put(key, t);
         return t;

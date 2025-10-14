@@ -17,7 +17,6 @@ import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.csw.feature.AbstractFeatureCollection;
 import org.geoserver.csw.feature.MemoryFeatureCollection;
-import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geoserver.csw.records.RecordDescriptor;
 import org.geotools.api.feature.Feature;
 import org.geotools.api.feature.type.FeatureType;
@@ -32,21 +31,18 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 
 /**
- * Internal Catalog Store Feature Collection Creates a Catalog Store from a GeoServer Catalog
- * instance and a Mapping Will map data from GeoServer catalog to a particular CSW Record Type,
- * provided in Record Descriptor
+ * Internal Catalog Store Feature Collection Creates a Catalog Store from a GeoServer Catalog instance and a Mapping
+ * Will map data from GeoServer catalog to a particular CSW Record Type, provided in Record Descriptor
  *
  * @author Niels Charlier
  */
 class CatalogStoreFeatureCollection extends AbstractFeatureCollection<FeatureType, Feature> {
 
-    private final class ResourceFilterVisitor extends DuplicatingFilterVisitor {
+    private static final class ResourceFilterVisitor extends DuplicatingFilterVisitor {
         @Override
         public Object visit(PropertyName expression, Object extraData) {
             return getFactory(extraData)
-                    .property(
-                            "resource." + expression.getPropertyName(),
-                            expression.getNamespaceContext());
+                    .property("resource." + expression.getPropertyName(), expression.getNamespaceContext());
         }
     }
 
@@ -80,7 +76,7 @@ class CatalogStoreFeatureCollection extends AbstractFeatureCollection<FeatureTyp
             CatalogStoreMapping mapping,
             RecordDescriptor rd,
             Map<String, String> interpolationProperties) {
-        super(CSWRecordDescriptor.RECORD_TYPE);
+        super(rd.getFeatureType());
         this.offset = offset;
         this.count = count;
         this.filter = filter;
@@ -94,14 +90,7 @@ class CatalogStoreFeatureCollection extends AbstractFeatureCollection<FeatureTyp
     @Override
     protected Iterator<Feature> openIterator() {
         return new CatalogStoreFeatureIterator(
-                offset,
-                count,
-                sortOrder,
-                catalogFilter(),
-                catalog,
-                mapping,
-                rd,
-                interpolationProperties);
+                offset, count, sortOrder, catalogFilter(), catalog, mapping, rd, interpolationProperties);
     }
 
     @Override
@@ -120,14 +109,13 @@ class CatalogStoreFeatureCollection extends AbstractFeatureCollection<FeatureTyp
     }
 
     private Filter catalogFilter() {
-        Filter filter =
-                Predicates.and(
-                        // ignore catalog info's that are not enabled
-                        Predicates.equal("enabled", true),
-                        // ignore catalog info's that are not advertised
-                        Predicates.equal("advertised", true),
-                        // ignore catalog info's without id
-                        ff.not(ff.isNull(this.mapping.getIdentifierElement().getContent())));
+        Filter filter = Predicates.and(
+                // ignore catalog info's that are not enabled
+                Predicates.equal("enabled", true),
+                // ignore catalog info's that are not advertised
+                Predicates.equal("advertised", true),
+                // ignore catalog info's without id
+                ff.not(ff.isNull(this.mapping.getIdentifierElement().getContent())));
         filter = Predicates.and(this.filter, filter);
         // build filter compatible with layers
         List<Filter> filtersL = new ArrayList<>();
@@ -145,8 +133,7 @@ class CatalogStoreFeatureCollection extends AbstractFeatureCollection<FeatureTyp
 
     @Override
     public int size() {
-        int remainingSize =
-                catalog.getFacade().count(PublishedInfo.class, catalogFilter()) - offset;
+        int remainingSize = catalog.getFacade().count(PublishedInfo.class, catalogFilter()) - offset;
         return Math.min(count, Math.max(0, remainingSize));
     }
 }

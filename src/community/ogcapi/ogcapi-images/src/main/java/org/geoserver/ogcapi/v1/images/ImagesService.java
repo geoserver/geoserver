@@ -104,8 +104,7 @@ public class ImagesService implements ApplicationContextAware {
     static final Logger LOGGER = Logging.getLogger(ImagesService.class);
 
     static final String IMAGES_CORE = "http://www.opengis.net/spec/ogcapi-images-1/1.0/req/core";
-    static final String IMAGES_TRANSACTIONAL =
-            "http://www.opengis.net/spec/ogcapi-images-1/1.0/req/transactional";
+    static final String IMAGES_TRANSACTIONAL = "http://www.opengis.net/spec/ogcapi-images-1/1.0/req/transactional";
 
     public static String IMAGE_ID = "OGCImages:ImageId";
     public static String COLLECTION_ID = "OGCImages:CollectionId";
@@ -152,22 +151,14 @@ public class ImagesService implements ApplicationContextAware {
     @HTMLResponseBody(templateName = "conformance.ftl", fileName = "conformance.html")
     public ConformanceDocument conformance() {
         List<String> classes =
-                Arrays.asList(
-                        ConformanceClass.CORE,
-                        ConformanceClass.COLLECTIONS,
-                        IMAGES_CORE,
-                        IMAGES_TRANSACTIONAL);
+                Arrays.asList(ConformanceClass.CORE, ConformanceClass.COLLECTIONS, IMAGES_CORE, IMAGES_TRANSACTIONAL);
         return new ConformanceDocument(DISPLAY_NAME, classes);
     }
 
     @GetMapping(
             path = {"openapi", "openapi.json", "openapi.yaml"},
             name = "getApi",
-            produces = {
-                OPEN_API_MEDIA_TYPE_VALUE,
-                APPLICATION_YAML_VALUE,
-                MediaType.TEXT_XML_VALUE
-            })
+            produces = {OPEN_API_MEDIA_TYPE_VALUE, APPLICATION_YAML_VALUE, MediaType.TEXT_XML_VALUE})
     @ResponseBody
     @HTMLResponseBody(templateName = "api.ftl", fileName = "api.html")
     public OpenAPI api() throws IOException {
@@ -184,8 +175,7 @@ public class ImagesService implements ApplicationContextAware {
     @GetMapping(path = "collections/{collectionId}", name = "describeCollection")
     @ResponseBody
     @HTMLResponseBody(templateName = "collection.ftl", fileName = "collection.html")
-    public ImagesCollectionDocument collection(
-            @PathVariable(name = "collectionId") String collectionId)
+    public ImagesCollectionDocument collection(@PathVariable(name = "collectionId") String collectionId)
             throws FactoryException, TransformException, IOException {
         CoverageInfo coverage = getStructuredCoverageInfo(collectionId);
         ImagesCollectionDocument collection = new ImagesCollectionDocument(coverage, false);
@@ -196,8 +186,7 @@ public class ImagesService implements ApplicationContextAware {
     private CoverageInfo getStructuredCoverageInfo(String collectionId) throws IOException {
         CoverageInfo coverageInfo = geoServer.getCatalog().getCoverageByName(collectionId);
         if (coverageInfo != null
-                && coverageInfo.getGridCoverageReader(null, null)
-                        instanceof StructuredGridCoverage2DReader) {
+                && coverageInfo.getGridCoverageReader(null, null) instanceof StructuredGridCoverage2DReader) {
             return coverageInfo;
         }
 
@@ -227,11 +216,10 @@ public class ImagesService implements ApplicationContextAware {
         String nativeName = coverage.getNativeCoverageName();
         if (time != null) {
             List<DimensionDescriptor> descriptors = reader.getDimensionDescriptors(nativeName);
-            Optional<DimensionDescriptor> timeDescriptor =
-                    descriptors.stream()
-                            .filter(dd -> "time".equalsIgnoreCase(dd.getName()))
-                            .findFirst();
-            if (!timeDescriptor.isPresent()) {
+            Optional<DimensionDescriptor> timeDescriptor = descriptors.stream()
+                    .filter(dd -> "time".equalsIgnoreCase(dd.getName()))
+                    .findFirst();
+            if (timeDescriptor.isEmpty()) {
                 throw new APIException(
                         APIException.INVALID_PARAMETER,
                         "Time not supported for this image collection",
@@ -259,33 +247,25 @@ public class ImagesService implements ApplicationContextAware {
         // if single image is not found, throw a 400
         if (imageId != null && granules.isEmpty()) {
             throw new ResourceNotFoundException(
-                    "Image with id "
-                            + imageId
-                            + " could not be found in collection "
-                            + collectionId);
+                    "Image with id " + imageId + " could not be found in collection " + collectionId);
         }
 
         // transforms granule source attribute names
-        SimpleFeatureCollection remapped =
-                remapGranules(granules, reader.getDimensionDescriptors(nativeName));
+        SimpleFeatureCollection remapped = remapGranules(granules, reader.getDimensionDescriptors(nativeName));
 
-        return wrapInImageResponse(
-                coverage, filter, startIndex, limit, bbox, time, imageId, remapped);
+        return wrapInImageResponse(coverage, filter, startIndex, limit, bbox, time, imageId, remapped);
     }
 
     @GetMapping(path = "collections/{collectionId}/images/{imageId:.+}", name = "getImage")
     @ResponseBody
     @HTMLResponseBody(templateName = "image.ftl", fileName = "image.html")
     public ImagesResponse image(
-            @PathVariable(name = "collectionId") String collectionId,
-            @PathVariable(name = "imageId") String imageId)
+            @PathVariable(name = "collectionId") String collectionId, @PathVariable(name = "imageId") String imageId)
             throws Exception {
         return images(collectionId, 0, null, null, null, imageId);
     }
 
-    @GetMapping(
-            path = "collections/{collectionId}/images/{imageId:.+}/assets/{assetId:.+}",
-            name = "getAsset")
+    @GetMapping(path = "collections/{collectionId}/images/{imageId:.+}/assets/{assetId:.+}", name = "getAsset")
     public void asset(
             @PathVariable(name = "collectionId") String collectionId,
             @PathVariable(name = "imageId") String imageId,
@@ -296,10 +276,7 @@ public class ImagesService implements ApplicationContextAware {
         Object fileGroupCandidate = granule.getUserData().get(GranuleSource.FILES);
         if (!(fileGroupCandidate instanceof FileGroupProvider.FileGroup)) {
             throw new ResourceNotFoundException(
-                    "Could not find assets for image "
-                            + imageId
-                            + " in collection "
-                            + collectionId);
+                    "Could not find assets for image " + imageId + " in collection " + collectionId);
         }
 
         // look for the right file
@@ -308,24 +285,19 @@ public class ImagesService implements ApplicationContextAware {
         if (assetHasher.matches(files.getMainFile(), assetId)) {
             asset = Optional.of(files.getMainFile());
         } else {
-            asset =
-                    files.getSupportFiles().stream()
-                            .filter(f -> assetHasher.matches(f, assetId))
-                            .findFirst();
+            asset = files.getSupportFiles().stream()
+                    .filter(f -> assetHasher.matches(f, assetId))
+                    .findFirst();
         }
-        if (!asset.isPresent()) {
+        if (asset.isEmpty()) {
             throw new APIException(
                     APIException.NOT_FOUND,
-                    "Cannot find asset with id "
-                            + assetId
-                            + " in image  "
-                            + imageId
-                            + " in collection "
-                            + collectionId,
+                    "Cannot find asset with id " + assetId + " in image  " + imageId + " in collection " + collectionId,
                     HttpStatus.NOT_FOUND);
         }
         response.setHeader(
-                HttpHeaders.CONTENT_TYPE, MimeTypeSupport.guessMimeType(asset.get().getName()));
+                HttpHeaders.CONTENT_TYPE,
+                MimeTypeSupport.guessMimeType(asset.get().getName()));
         response.setStatus(HttpStatus.OK.value());
         try (FileInputStream fis = new FileInputStream(asset.get())) {
             IOUtils.copy(fis, response.getOutputStream());
@@ -333,8 +305,7 @@ public class ImagesService implements ApplicationContextAware {
     }
 
     private SimpleFeature getFeatureForImageId(
-            @PathVariable(name = "collectionId") String collectionId,
-            @PathVariable(name = "imageId") String imageId)
+            @PathVariable(name = "collectionId") String collectionId, @PathVariable(name = "imageId") String imageId)
             throws Exception {
         ImagesResponse ir = images(collectionId, 0, null, null, null, imageId);
         SimpleFeatureCollection granules =
@@ -343,14 +314,12 @@ public class ImagesService implements ApplicationContextAware {
     }
 
     private SimpleFeatureCollection remapGranules(
-            SimpleFeatureCollection granules, List<DimensionDescriptor> dimensionDescriptors)
-            throws IOException {
+            SimpleFeatureCollection granules, List<DimensionDescriptor> dimensionDescriptors) throws IOException {
         // remap the time attribute to "datetime", if needed
 
-        Optional<DimensionDescriptor> maybeDescriptor =
-                dimensionDescriptors.stream()
-                        .filter(dd -> "time".equalsIgnoreCase(dd.getName()))
-                        .findFirst();
+        Optional<DimensionDescriptor> maybeDescriptor = dimensionDescriptors.stream()
+                .filter(dd -> "time".equalsIgnoreCase(dd.getName()))
+                .findFirst();
         if (maybeDescriptor.isPresent()
                 && "datetime".equals(maybeDescriptor.get().getStartAttribute())) {
             return granules;
@@ -360,33 +329,27 @@ public class ImagesService implements ApplicationContextAware {
         // like myCCAttribute -> eo:cloudCover for example
 
         // remapping requires a FeatureSource, no problem
-        List<Definition> definitions =
-                granules.getSchema().getAttributeDescriptors().stream()
-                        .map(
-                                d -> {
-                                    String outputName = d.getLocalName();
-                                    if (maybeDescriptor.isPresent()
-                                            && maybeDescriptor
-                                                    .get()
-                                                    .getStartAttribute()
-                                                    .equals(d.getLocalName())) {
-                                        outputName = "datetime";
-                                    }
-                                    return new Definition(
-                                            outputName,
-                                            FF.property(d.getLocalName()),
-                                            d.getType().getBinding());
-                                })
-                        .collect(toList());
+        List<Definition> definitions = granules.getSchema().getAttributeDescriptors().stream()
+                .map(d -> {
+                    String outputName = d.getLocalName();
+                    if (maybeDescriptor.isPresent()
+                            && maybeDescriptor.get().getStartAttribute().equals(d.getLocalName())) {
+                        outputName = "datetime";
+                    }
+                    return new Definition(
+                            outputName,
+                            FF.property(d.getLocalName()),
+                            d.getType().getBinding());
+                })
+                .collect(toList());
         // if there was no time descriptor to use, add a fake one with a fixed date
-        if (!maybeDescriptor.isPresent()) {
+        if (maybeDescriptor.isEmpty()) {
             definitions.add(new Definition("datetime", FF.literal(new Timestamp(0))));
         }
 
         SimpleFeatureSource granulesSource = DataUtilities.source(granules);
         TransformFeatureSource remappedSource =
-                new TransformFeatureSource(
-                        granulesSource, granules.getSchema().getName(), definitions);
+                new TransformFeatureSource(granulesSource, granules.getSchema().getName(), definitions);
         return remappedSource.getFeatures(Query.ALL);
     }
 
@@ -400,15 +363,13 @@ public class ImagesService implements ApplicationContextAware {
             String imageId,
             SimpleFeatureCollection granules) {
         // build the request in a way core WFS machinery can understand it
-        GetFeatureRequest request =
-                GetFeatureRequest.adapt(Wfs20Factory.eINSTANCE.createGetFeatureType());
+        GetFeatureRequest request = GetFeatureRequest.adapt(Wfs20Factory.eINSTANCE.createGetFeatureType());
 
         // store information about single vs multi request
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         if (requestAttributes != null) {
             requestAttributes.setAttribute(IMAGE_ID, imageId, RequestAttributes.SCOPE_REQUEST);
-            requestAttributes.setAttribute(
-                    COLLECTION_ID, coverage.prefixedName(), RequestAttributes.SCOPE_REQUEST);
+            requestAttributes.setAttribute(COLLECTION_ID, coverage.prefixedName(), RequestAttributes.SCOPE_REQUEST);
         }
 
         // build a response compatible with the GeoJSON encoding machinery
@@ -420,18 +381,11 @@ public class ImagesService implements ApplicationContextAware {
         result.getFeature().add(granules);
         result.setGetFeatureById(imageId != null);
 
-        String imagesPath =
-                "ogc/images/v1/collections/"
-                        + ResponseUtils.urlEncode(coverage.prefixedName())
-                        + "/images";
+        String imagesPath = "ogc/images/v1/collections/" + ResponseUtils.urlEncode(coverage.prefixedName()) + "/images";
 
         // copy over the request parameters, removing the paging ones
-        Map<String, String> kvp =
-                APIRequestInfo.get().getRequest().getParameterMap().entrySet().stream()
-                        .collect(
-                                Collectors.toMap(
-                                        e -> e.getKey(),
-                                        e -> e.getValue() != null ? e.getValue()[0] : null));
+        Map<String, String> kvp = APIRequestInfo.get().getRequest().getParameterMap().entrySet().stream()
+                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue() != null ? e.getValue()[0] : null));
         kvp.remove("startIndex");
         kvp.remove("limit");
 
@@ -458,12 +412,10 @@ public class ImagesService implements ApplicationContextAware {
     }
 
     private String buildURL(String itemsPath, Map<String, String> kvp) {
-        return ResponseUtils.buildURL(
-                APIRequestInfo.get().getBaseURL(), itemsPath, kvp, URLType.SERVICE);
+        return ResponseUtils.buildURL(APIRequestInfo.get().getBaseURL(), itemsPath, kvp, URLType.SERVICE);
     }
 
-    private Filter buildTimeFilter(DimensionDescriptor descriptor, String time)
-            throws ParseException {
+    private Filter buildTimeFilter(DimensionDescriptor descriptor, String time) throws ParseException {
         @SuppressWarnings("unchecked")
         List<Object> times = new ArrayList<>(timeParser.parse(time));
         if (times.isEmpty() || times.size() > 1) {
@@ -474,8 +426,7 @@ public class ImagesService implements ApplicationContextAware {
         }
 
         DimensionFilterBuilder filterBuilder = new DimensionFilterBuilder(FF);
-        filterBuilder.appendFilters(
-                descriptor.getStartAttribute(), descriptor.getEndAttribute(), times);
+        filterBuilder.appendFilters(descriptor.getStartAttribute(), descriptor.getEndAttribute(), times);
         return filterBuilder.getFilter();
     }
 
@@ -489,16 +440,13 @@ public class ImagesService implements ApplicationContextAware {
         }
     }
 
-    public Filter buildBBOXFilter(@RequestParam(name = "bbox", required = false) String bbox)
-            throws Exception {
+    public Filter buildBBOXFilter(@RequestParam(name = "bbox", required = false) String bbox) throws Exception {
         Object parsed = bboxParser.parse(bbox);
-        if (parsed instanceof ReferencedEnvelope) {
-            return FF.bbox(FF.property(""), (ReferencedEnvelope) parsed);
-        } else if (parsed instanceof ReferencedEnvelope[]) {
+        if (parsed instanceof ReferencedEnvelope envelope) {
+            return FF.bbox(FF.property(""), envelope);
+        } else if (parsed instanceof ReferencedEnvelope[] envelopes) {
             List<Filter> filters =
-                    Stream.of((ReferencedEnvelope[]) parsed)
-                            .map(e -> FF.bbox(FF.property(""), e))
-                            .collect(toList());
+                    Stream.of(envelopes).map(e -> FF.bbox(FF.property(""), e)).collect(toList());
             return FF.or(filters);
         } else {
             throw new IllegalArgumentException("Could not understand parsed bbox " + parsed);
@@ -518,30 +466,25 @@ public class ImagesService implements ApplicationContextAware {
         String storeName = store.getName();
         if (filename == null) {
             filename =
-                    UUID.randomUUID().toString()
-                            + "."
-                            + MimeTypeSupport.guessFileExtension(request.getContentType());
+                    UUID.randomUUID().toString() + "." + MimeTypeSupport.guessFileExtension(request.getContentType());
         }
-        Resource uploadRoot =
-                RESTUtils.createUploadRoot(geoServer.getCatalog(), workspace, storeName, true);
-        Resource uploadedResource =
-                RESTUtils.handleBinUpload(filename, uploadRoot, false, request, workspace);
+        Resource uploadRoot = RESTUtils.createUploadRoot(geoServer.getCatalog(), workspace, storeName, true);
+        Resource uploadedResource = RESTUtils.handleBinUpload(filename, uploadRoot, false, request, workspace);
 
         List<Resource> resources = new ArrayList<>();
         if (isZipFile(request)) {
-            RESTUtils.unzipFile(
-                    uploadedResource, uploadRoot, workspace, storeName, resources, false);
+            RESTUtils.unzipFile(uploadedResource, uploadRoot, workspace, storeName, resources, false);
             // remove the zip, not needed any longer
             uploadedResource.delete();
         } else {
             resources.add(uploadedResource);
         }
 
-        List<File> uploadedFiles = resources.stream().map(r -> Resources.find(r)).collect(toList());
+        List<File> uploadedFiles =
+                resources.stream().map(r -> Resources.find(r)).collect(toList());
         StructuredGridCoverage2DReader sr =
                 (StructuredGridCoverage2DReader) coverageInfo.getGridCoverageReader(null, null);
-        List<HarvestedSource> harvested =
-                sr.harvest(null, uploadedFiles, GeoTools.getDefaultHints());
+        List<HarvestedSource> harvested = sr.harvest(null, uploadedFiles, GeoTools.getDefaultHints());
         if (harvested == null || harvested.isEmpty() || !harvested.get(0).success()) {
             throw new APIException(
                     APIException.NO_APPLICABLE_CODE,
@@ -550,31 +493,25 @@ public class ImagesService implements ApplicationContextAware {
         }
         HttpHeaders headers = new HttpHeaders();
         String featureId =
-                getFeatureIdFor(
-                        harvested.get(0),
-                        sr.getGranules(coverageInfo.getNativeCoverageName(), true));
+                getFeatureIdFor(harvested.get(0), sr.getGranules(coverageInfo.getNativeCoverageName(), true));
         if (featureId != null) {
-            String href =
-                    ResponseUtils.buildURL(
-                            APIRequestInfo.get().getBaseURL(),
-                            "ogc/images/v1/collections/"
-                                    + ResponseUtils.urlEncode(collectionId)
-                                    + "/images/"
-                                    + ResponseUtils.urlEncode(featureId),
-                            null,
-                            URLType.SERVICE);
+            String href = ResponseUtils.buildURL(
+                    APIRequestInfo.get().getBaseURL(),
+                    "ogc/images/v1/collections/"
+                            + ResponseUtils.urlEncode(collectionId)
+                            + "/images/"
+                            + ResponseUtils.urlEncode(featureId),
+                    null,
+                    URLType.SERVICE);
             headers.add(HttpHeaders.LOCATION, href);
         }
-        imageListeners.imageAdded(
-                coverageInfo,
-                sr.getGranules(coverageInfo.getNativeCoverageName(), true),
-                featureId);
+        imageListeners.imageAdded(coverageInfo, sr.getGranules(coverageInfo.getNativeCoverageName(), true), featureId);
         return new ResponseEntity<>("", headers, HttpStatus.CREATED);
     }
 
     /**
-     * Clunky non scalable implementation, the harvest API should be modified to return the feature
-     * after it has been inserted in the catalog...
+     * Clunky non scalable implementation, the harvest API should be modified to return the feature after it has been
+     * inserted in the catalog...
      *
      * @return The id, or null if it could not be found
      */
@@ -612,37 +549,29 @@ public class ImagesService implements ApplicationContextAware {
     /** Recognizes zip types, including one added specifically for the images API */
     private boolean isZipFile(HttpServletRequest request) {
         return request.getContentType()
-                        .startsWith(
-                                "application/vnd.ogc.multipart;container=application/x-zip-compressed")
+                        .startsWith("application/vnd.ogc.multipart;container=application/x-zip-compressed")
                 || RESTUtils.isZipMediaType(request);
     }
 
     @PutMapping(path = "collections/{collectionId}/images/{imageId:.+}", name = "updateImage")
     public void putImage(
-            @PathVariable(name = "collectionId") String collectionId,
-            @PathVariable(name = "imageId") String imageId)
+            @PathVariable(name = "collectionId") String collectionId, @PathVariable(name = "imageId") String imageId)
             throws Exception {
         throw new APIException(
-                APIException.NOT_IMPLEMENTED,
-                "PUT on single images is not supported yet",
-                HttpStatus.NOT_IMPLEMENTED);
+                APIException.NOT_IMPLEMENTED, "PUT on single images is not supported yet", HttpStatus.NOT_IMPLEMENTED);
     }
 
     @DeleteMapping(path = "collections/{collectionId}/images/{imageId:.+}", name = "deleteImage")
     @ResponseBody
     public ResponseEntity deleteImage(
-            @PathVariable(name = "collectionId") String collectionId,
-            @PathVariable(name = "imageId") String imageId)
+            @PathVariable(name = "collectionId") String collectionId, @PathVariable(name = "imageId") String imageId)
             throws Exception {
         CoverageInfo info = getStructuredCoverageInfo(collectionId);
-        StructuredGridCoverage2DReader reader =
-                (StructuredGridCoverage2DReader) info.getGridCoverageReader(null, null);
+        StructuredGridCoverage2DReader reader = (StructuredGridCoverage2DReader) info.getGridCoverageReader(null, null);
         GranuleSource source = reader.getGranules(info.getNativeCoverageName(), false);
         if (!(source instanceof GranuleStore)) {
             throw new APIException(
-                    APIException.NOT_IMPLEMENTED,
-                    "Write not supported on this reader",
-                    HttpStatus.NOT_IMPLEMENTED);
+                    APIException.NOT_IMPLEMENTED, "Write not supported on this reader", HttpStatus.NOT_IMPLEMENTED);
         }
 
         SimpleFeature feature = getFeatureForImageId(collectionId, imageId);
@@ -658,7 +587,6 @@ public class ImagesService implements ApplicationContextAware {
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.imageListeners =
-                new ImageListenerSupport(GeoServerExtensions.extensions(ImageListener.class));
+        this.imageListeners = new ImageListenerSupport(GeoServerExtensions.extensions(ImageListener.class));
     }
 }

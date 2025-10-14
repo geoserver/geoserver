@@ -4,6 +4,7 @@
  */
 package org.geoserver.metadata.web.panel.attribute;
 
+import java.io.Serial;
 import java.util.List;
 import java.util.Map;
 import org.apache.wicket.Component;
@@ -22,12 +23,13 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 
 /**
- * Entry point for the gui generation. This parses the configuration and adds simple fields, complex
- * fields (composition of multiple simple fields) and lists of simple or complex fields.
+ * Entry point for the gui generation. This parses the configuration and adds simple fields, complex fields (composition
+ * of multiple simple fields) and lists of simple or complex fields.
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
 public class AttributesTablePanel extends Panel {
+    @Serial
     private static final long serialVersionUID = 1297739738862860160L;
 
     private ResourceInfo rInfo;
@@ -41,8 +43,7 @@ public class AttributesTablePanel extends Panel {
         super(id, metadataModel);
         this.rInfo = rInfo;
 
-        GeoServerTablePanel<AttributeConfiguration> tablePanel =
-                createAttributesTablePanel(dataProvider, derivedAtts);
+        GeoServerTablePanel<AttributeConfiguration> tablePanel = createAttributesTablePanel(dataProvider, derivedAtts);
         tablePanel.setPageable(false);
         tablePanel.setFilterVisible(false);
         tablePanel.setFilterable(false);
@@ -54,10 +55,10 @@ public class AttributesTablePanel extends Panel {
     }
 
     private GeoServerTablePanel<AttributeConfiguration> createAttributesTablePanel(
-            GeoServerDataProvider<AttributeConfiguration> dataProvider,
-            Map<String, List<Integer>> derivedAtts) {
+            GeoServerDataProvider<AttributeConfiguration> dataProvider, Map<String, List<Integer>> derivedAtts) {
 
         return new GeoServerTablePanel<>("attributesTablePanel", dataProvider) {
+            @Serial
             private static final long serialVersionUID = 5267842353156378075L;
 
             @Override
@@ -72,26 +73,25 @@ public class AttributesTablePanel extends Panel {
                 if (property.equals(AttributeDataProvider.VALUE)) {
                     AttributeConfiguration attributeConfiguration = itemModel.getObject();
                     if (OccurrenceEnum.SINGLE.equals(attributeConfiguration.getOccurrence())) {
-                        Component component =
-                                EditorFactory.getInstance()
-                                        .create(
-                                                attributeConfiguration,
-                                                id,
-                                                getMetadataModel().getObject(),
-                                                rInfo);
+                        Component component = EditorFactory.getInstance()
+                                .create(
+                                        attributeConfiguration,
+                                        id,
+                                        getMetadataModel().getObject(),
+                                        rInfo);
                         // disable components with values from the templates
                         if (component != null
                                 && derivedAtts != null
                                 && derivedAtts.containsKey(attributeConfiguration.getKey())) {
-                            boolean disableInput =
-                                    !derivedAtts.get(attributeConfiguration.getKey()).isEmpty();
+                            boolean disableInput = !derivedAtts
+                                    .get(attributeConfiguration.getKey())
+                                    .isEmpty();
                             component.setEnabled(!disableInput);
                         }
                         return component;
                     } else if (attributeConfiguration.getFieldType() == FieldTypeEnum.COMPLEX) {
                         RepeatableComplexAttributeDataProvider repeatableDataProvider =
-                                new RepeatableComplexAttributeDataProvider(
-                                        attributeConfiguration, getMetadataModel());
+                                new RepeatableComplexAttributeDataProvider(attributeConfiguration, getMetadataModel());
 
                         return new RepeatableComplexAttributesTablePanel(
                                 id,
@@ -105,8 +105,7 @@ public class AttributesTablePanel extends Panel {
                                 rInfo);
                     } else {
                         RepeatableAttributeDataProvider<String> repeatableDataProvider =
-                                new RepeatableAttributeDataProvider<>(
-                                        attributeConfiguration, getMetadataModel());
+                                new RepeatableAttributeDataProvider<>(attributeConfiguration, getMetadataModel());
                         return new RepeatableAttributesTablePanel(
                                 id, repeatableDataProvider, getMetadataModel(), derivedAtts, rInfo);
                     }
@@ -118,8 +117,7 @@ public class AttributesTablePanel extends Panel {
 
     /** Try to find the label from the resource bundle */
     private String resolveLabelValue(AttributeConfiguration attribute) {
-        return getString(
-                AttributeConfiguration.PREFIX + attribute.getKey(), null, attribute.getLabel());
+        return getString(AttributeConfiguration.PREFIX + attribute.getKey(), null, attribute.getLabel());
     }
 
     @SuppressWarnings("unchecked")

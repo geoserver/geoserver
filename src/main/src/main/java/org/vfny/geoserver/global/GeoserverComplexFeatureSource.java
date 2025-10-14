@@ -5,6 +5,7 @@
 package org.vfny.geoserver.global;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.Objects;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.security.decorators.DecoratingFeatureSource;
@@ -23,20 +24,19 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 /**
  * Geoserver wrapper for a complex features feature source.
  *
- * <p>Handles the final query build taking into account the definition query from the
- * FeatureTypeInfo if exists.
+ * <p>Handles the final query build taking into account the definition query from the FeatureTypeInfo if exists.
  *
  * @author Fernando Miño - Geosolutions
  */
 public class GeoserverComplexFeatureSource extends DecoratingFeatureSource<FeatureType, Feature> {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     protected static final FilterFactory FF = CommonFactoryFinder.getFilterFactory(null);
     /** provided FeatureTypeInfo for getting the declared query and more */
     private final FeatureTypeInfo ftypeInfo;
 
-    public GeoserverComplexFeatureSource(
-            FeatureSource<FeatureType, Feature> delegate, FeatureTypeInfo ftypeInfo)
+    public GeoserverComplexFeatureSource(FeatureSource<FeatureType, Feature> delegate, FeatureTypeInfo ftypeInfo)
             throws DataSourceException {
         super(delegate);
         this.ftypeInfo = Objects.requireNonNull(ftypeInfo);
@@ -64,13 +64,9 @@ public class GeoserverComplexFeatureSource extends DecoratingFeatureSource<Featu
         return delegate.getBounds(getDefaultQuery());
     }
 
-    /**
-     * Builds and return the default Query for this layer's featureType when no request query is
-     * provided.
-     */
+    /** Builds and return the default Query for this layer's featureType when no request query is provided. */
     protected Query getDefaultQuery() throws DataSourceException {
-        return new Query(
-                ftypeInfo.getQualifiedNativeName().getLocalPart(), buildFilter(Filter.INCLUDE));
+        return new Query(ftypeInfo.getQualifiedNativeName().getLocalPart(), buildFilter(Filter.INCLUDE));
     }
 
     @Override
@@ -86,8 +82,8 @@ public class GeoserverComplexFeatureSource extends DecoratingFeatureSource<Featu
     }
 
     /**
-     * Builds the final query mixing the request query with the layer default configured query (if
-     * exists) with a conjunction (and operator).
+     * Builds the final query mixing the request query with the layer default configured query (if exists) with a
+     * conjunction (and operator).
      *
      * @param query the requested query.
      * @return the final mixed query.
@@ -100,8 +96,8 @@ public class GeoserverComplexFeatureSource extends DecoratingFeatureSource<Featu
     }
 
     /**
-     * Builds the final filter mixing the request filter with the layer default configured filter
-     * (if exists) with a conjunction (and operator).
+     * Builds the final filter mixing the request filter with the layer default configured filter (if exists) with a
+     * conjunction (and operator).
      *
      * @param filter the requested filter.
      * @return the final mixed filter.

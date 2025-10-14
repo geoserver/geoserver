@@ -19,7 +19,7 @@ import org.geotools.kml.v22.KML;
 import org.geotools.kml.v22.KMLConfiguration;
 import org.geotools.xsd.PullParser;
 
-public class KMLRawReader implements Iterable<Object>, Iterator<Object> {
+public class KMLRawReader implements Iterator<Object> {
 
     private final PullParser parser;
 
@@ -38,34 +38,24 @@ public class KMLRawReader implements Iterable<Object>, Iterator<Object> {
         this(inputStream, readType, null);
     }
 
-    public KMLRawReader(
-            InputStream inputStream,
-            KMLRawReader.ReadType readType,
-            SimpleFeatureType featureType) {
+    public KMLRawReader(InputStream inputStream, KMLRawReader.ReadType readType, SimpleFeatureType featureType) {
         if (KMLRawReader.ReadType.SCHEMA_AND_FEATURES.equals(readType)) {
             if (featureType == null) {
-                parser =
-                        new PullParser(
-                                new KMLConfiguration(), inputStream, KML.Placemark, KML.Schema);
+                parser = new PullParser(new KMLConfiguration(), inputStream, KML.Placemark, KML.Schema);
             } else {
-                parser =
-                        new PullParser(
-                                new KMLConfiguration(),
-                                inputStream,
-                                pullParserArgs(
-                                        featureTypeSchemaNames(featureType),
-                                        KML.Placemark,
-                                        KML.Schema));
+                parser = new PullParser(
+                        new KMLConfiguration(),
+                        inputStream,
+                        pullParserArgs(featureTypeSchemaNames(featureType), KML.Placemark, KML.Schema));
             }
         } else if (KMLRawReader.ReadType.FEATURES.equals(readType)) {
             if (featureType == null) {
                 parser = new PullParser(new KMLConfiguration(), inputStream, KML.Placemark);
             } else {
-                parser =
-                        new PullParser(
-                                new KMLConfiguration(),
-                                inputStream,
-                                pullParserArgs(featureTypeSchemaNames(featureType), KML.Placemark));
+                parser = new PullParser(
+                        new KMLConfiguration(),
+                        inputStream,
+                        pullParserArgs(featureTypeSchemaNames(featureType), KML.Placemark));
             }
         } else {
             throw new IllegalArgumentException("Unknown parse read type: " + readType.toString());
@@ -76,12 +66,7 @@ public class KMLRawReader implements Iterable<Object>, Iterator<Object> {
     private Object[] pullParserArgs(List<QName> featureTypeSchemaNames, Object... args) {
         Object[] parserArgs = new Object[featureTypeSchemaNames.size() + args.length];
         System.arraycopy(args, 0, parserArgs, 0, args.length);
-        System.arraycopy(
-                featureTypeSchemaNames.toArray(),
-                0,
-                parserArgs,
-                args.length,
-                featureTypeSchemaNames.size());
+        System.arraycopy(featureTypeSchemaNames.toArray(), 0, parserArgs, args.length, featureTypeSchemaNames.size());
         return parserArgs;
     }
 
@@ -139,11 +124,6 @@ public class KMLRawReader implements Iterable<Object>, Iterator<Object> {
             throw new NoSuchElementException();
         }
         return feature;
-    }
-
-    @Override
-    public Iterator<Object> iterator() {
-        return this;
     }
 
     @Override

@@ -7,8 +7,8 @@ package org.geoserver.catalog.event;
 import org.geoserver.catalog.CatalogException;
 
 /**
- * A base class for {@link CatalogListener} that implements all listener methods without any action.
- * Useful for listeners that are only interested in a subset of events.
+ * A base class for {@link CatalogListener} that implements all listener methods without any action. Useful for
+ * listeners that are only interested in a subset of events.
  */
 public class AbstractCatalogListener implements CatalogListener {
 

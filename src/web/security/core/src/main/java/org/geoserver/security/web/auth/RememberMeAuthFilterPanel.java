@@ -14,11 +14,9 @@ import org.geoserver.security.filter.GeoServerRememberMeAuthenticationFilter;
  *
  * @author Justin Deoliveira, OpenGeo
  */
-public class RememberMeAuthFilterPanel
-        extends AuthenticationFilterPanel<RememberMeAuthenticationFilterConfig> {
+public class RememberMeAuthFilterPanel extends AuthenticationFilterPanel<RememberMeAuthenticationFilterConfig> {
 
-    public RememberMeAuthFilterPanel(
-            String id, IModel<RememberMeAuthenticationFilterConfig> model) {
+    public RememberMeAuthFilterPanel(String id, IModel<RememberMeAuthenticationFilterConfig> model) {
         super(id, model);
     }
 }

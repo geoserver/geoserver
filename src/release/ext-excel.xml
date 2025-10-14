@@ -9,7 +9,8 @@
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
-        <include>gs-excel-*.jar</include>
+        <include>gs-excel-core-*.jar</include>
+        <include>gs-excel-wfs-*.jar</include>
         <include>poi-*.jar</include>
         <include>xmlbeans-*.jar</include>
         <include>dom4j-*.jar</include>

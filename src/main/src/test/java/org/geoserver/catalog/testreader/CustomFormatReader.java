@@ -20,8 +20,8 @@ import java.util.Map;
 import java.util.TreeSet;
 import javax.imageio.spi.ImageInputStreamSpi;
 import javax.imageio.stream.ImageInputStream;
-import javax.media.jai.JAI;
-import javax.media.jai.PlanarImage;
+import org.eclipse.imagen.ImageN;
+import org.eclipse.imagen.PlanarImage;
 import org.geotools.api.coverage.grid.Format;
 import org.geotools.api.parameter.GeneralParameterValue;
 import org.geotools.api.parameter.ParameterValue;
@@ -47,8 +47,7 @@ import org.geotools.util.factory.Hints;
  */
 public final class CustomFormatReader extends AbstractGridCoverage2DReader {
 
-    private static final String MY_DIMENSION_DOMAIN =
-            CustomFormat.CUSTOM_DIMENSION_NAME + "_DOMAIN";
+    private static final String MY_DIMENSION_DOMAIN = CustomFormat.CUSTOM_DIMENSION_NAME + "_DOMAIN";
     private static final String HAS_MY_DIMENSION_DOMAIN = "HAS_" + MY_DIMENSION_DOMAIN;
     private static final String MY_DIMENSION_DATATYPE = MY_DIMENSION_DOMAIN + "_DATATYPE";
 
@@ -62,8 +61,8 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
 
     public CustomFormatReader(Object source, Hints hints) throws IOException {
         super(source, hints);
-        if (source instanceof File) {
-            this.dataDirectory = (File) source;
+        if (source instanceof File file) {
+            this.dataDirectory = file;
             initReaderFromFile(hints);
         } else {
             throw new IllegalArgumentException("Invalid source object");
@@ -76,14 +75,11 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
     }
 
     @Override
-    public GridCoverage2D read(GeneralParameterValue[] params) throws IOException {
+    public GridCoverage2D read(GeneralParameterValue... params) throws IOException {
         boolean haveDimension = false;
         final List<GridCoverage2D> returnValues = new ArrayList<>();
         for (GeneralParameterValue p : params) {
-            if (p.getDescriptor()
-                    .getName()
-                    .toString()
-                    .equalsIgnoreCase(CustomFormat.CUSTOM_DIMENSION_NAME)) {
+            if (p.getDescriptor().getName().toString().equalsIgnoreCase(CustomFormat.CUSTOM_DIMENSION_NAME)) {
                 haveDimension = true;
                 final List<?> value = extractValue(p);
                 for (Object o : value) {
@@ -212,7 +208,7 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
     private static synchronized RenderedImage readImage(File inFile) throws IOException {
         final ParameterBlock readParams = new ParameterBlock();
         ImageInputStreamSpi lSpi = ImageIOExt.getImageInputStreamSPI(inFile);
-        @SuppressWarnings("PMD.CloseResource") // stream will be closed along with JAI op
+        @SuppressWarnings("PMD.CloseResource") // stream will be closed along with ImageN op
         ImageInputStream lImgIn = lSpi.createInputStreamInstance(inFile, false, null);
         readParams.add(lImgIn);
         readParams.add(0);
@@ -223,7 +219,7 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
         readParams.add(null);
         readParams.add(null);
         readParams.add(READER_SPI.createReaderInstance());
-        PlanarImage lImage = JAI.create("ImageRead", readParams, null);
+        PlanarImage lImage = ImageN.create("ImageRead", readParams, null);
         final String lFileName = inFile.getName();
         final int lExtIndex = lFileName.lastIndexOf('.');
         final String lFileNameNoExt = lExtIndex < 0 ? lFileName : lFileName.substring(0, lExtIndex);
@@ -240,18 +236,16 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
 
     /** Creates a {@link GridCoverage2D} for the provided {@link RenderedImage}. */
     private GridCoverage2D createCoverage(String name, RenderedImage image) {
-        Category noDataCategory =
-                new Category(
-                        Vocabulary.formatInternational(VocabularyKeys.NODATA),
-                        new Color[] {new Color(0, 0, 0, 0)},
-                        NumberRange.create(DEFAULT_NODATA, DEFAULT_NODATA));
+        Category noDataCategory = new Category(
+                Vocabulary.formatInternational(VocabularyKeys.NODATA),
+                new Color[] {new Color(0, 0, 0, 0)},
+                NumberRange.create(DEFAULT_NODATA, DEFAULT_NODATA));
         Category[] categories = {noDataCategory};
         GridSampleDimension[] bands = new GridSampleDimension[1];
         bands[0] = new GridSampleDimension(null, categories, null);
         final Map<String, Object> properties = new HashMap<>();
         CoverageUtilities.setNoDataProperty(properties, DEFAULT_NODATA);
-        return this.coverageFactory.create(
-                name, image, this.originalEnvelope, bands, null, properties);
+        return this.coverageFactory.create(name, image, this.originalEnvelope, bands, null, properties);
     }
 
     private static boolean isDataFile(String filename) {
@@ -260,15 +254,13 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
 
     /** Helper for read method. */
     private static List<?> extractValue(GeneralParameterValue param) {
-        if (param instanceof ParameterValue<?>) {
-            final Object paramVal = ((ParameterValue<?>) param).getValue();
+        if (param instanceof ParameterValue<?> value) {
+            final Object paramVal = value.getValue();
             if (paramVal != null) {
-                if (paramVal instanceof List) {
-                    final List<?> list = (List<?>) paramVal;
+                if (paramVal instanceof List<?> list) {
                     return list;
                 } else {
-                    throw new UnsupportedOperationException(
-                            "Custom dimension value must be a list");
+                    throw new UnsupportedOperationException("Custom dimension value must be a list");
                 }
             }
         }

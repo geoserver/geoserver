@@ -42,8 +42,7 @@ public class GWCConfigPersister {
 
     private GWCConfig config;
 
-    public GWCConfigPersister(
-            final XStreamPersisterFactory xspf, final GeoServerResourceLoader resourceLoader) {
+    public GWCConfigPersister(final XStreamPersisterFactory xspf, final GeoServerResourceLoader resourceLoader) {
         this.persisterFactory = xspf;
         this.resourceLoader = resourceLoader;
     }
@@ -89,8 +88,8 @@ public class GWCConfigPersister {
     }
 
     /**
-     * Saves and applies the integrated GWC's GeoServer specific configuration to the {@code <data
-     * dir>/gwc-gs.xml} file.
+     * Saves and applies the integrated GWC's GeoServer specific configuration to the {@code <data dir>/gwc-gs.xml}
+     * file.
      */
     public void save(final GWCConfig config) throws IOException {
         LOGGER.finer("Saving integrated GWC configuration");
@@ -114,10 +113,7 @@ public class GWCConfigPersister {
         xs.alias("defaultOtherCacheFormats", HashSet.class);
         xs.alias("InnerCacheConfiguration", CacheConfiguration.class);
         xs.alias("warning", DimensionWarning.WarningType.class);
-        xs.allowTypes(
-                new Class[] {
-                    GWCConfig.class, CacheConfiguration.class, DimensionWarning.WarningType.class
-                });
+        xs.allowTypes(new Class[] {GWCConfig.class, CacheConfiguration.class, DimensionWarning.WarningType.class});
         xs.addDefaultImplementation(LinkedHashSet.class, Set.class);
     }
 

@@ -32,13 +32,12 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.validation.Validator;
 
 /**
- * A process filter that applies the well known input validators to the process parameters, so that
- * DescribeFeatureType can advertise them to the world
+ * A process filter that applies the well known input validators to the process parameters, so that DescribeFeatureType
+ * can advertise them to the world
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class ProcessLimitsFilter
-        implements ProcessFilter, ApplicationContextAware, ExtensionPriority {
+public class ProcessLimitsFilter implements ProcessFilter, ApplicationContextAware, ExtensionPriority {
 
     static final Logger LOGGER = Logging.getLogger(ProcessLimitsFilter.class);
 
@@ -100,21 +99,19 @@ public class ProcessLimitsFilter
                         processInfo != null ? processInfo.getValidators() : EMPTY_MULTIMAP;
                 // clone just to be on the safe side
                 HashMap<String, Parameter<?>> params = new LinkedHashMap<>(result);
-                for (String paramName : params.keySet()) {
+                for (String paramName : List.copyOf(params.keySet())) {
                     Parameter<?> param = params.get(paramName);
                     Collection<WPSInputValidator> validators = validatorsMap.get(paramName);
                     // can we skip to build a clone?
                     if (validators == null
-                            && (maxComplexInputSize <= 0
-                                    || !ProcessParameterIO.isComplex(param, applicationContext))) {
+                            && (maxComplexInputSize <= 0 || !ProcessParameterIO.isComplex(param, applicationContext))) {
                         continue;
                     }
 
                     // setup the global size limits. non complex params will just ignore it
                     Map<String, Object> metadataClone = new HashMap<>(param.metadata);
                     if (wps.getMaxComplexInputSize() > 0) {
-                        metadataClone.put(
-                                MaxSizeValidator.PARAMETER_KEY, wps.getMaxComplexInputSize());
+                        metadataClone.put(MaxSizeValidator.PARAMETER_KEY, wps.getMaxComplexInputSize());
                     }
 
                     // collect all validator overrides
@@ -122,15 +119,12 @@ public class ProcessLimitsFilter
                     if (validators != null) {
                         metadataClone.put(VALIDATORS_KEY, validators);
                         for (Validator validator : validators) {
-                            if (validator instanceof MaxSizeValidator) {
-                                MaxSizeValidator msv = (MaxSizeValidator) validator;
+                            if (validator instanceof MaxSizeValidator msv) {
                                 int maxSizeMB = msv.getMaxSizeMB();
                                 metadataClone.put(MaxSizeValidator.PARAMETER_KEY, maxSizeMB);
-                            } else if (validator instanceof NumberRangeValidator) {
-                                NumberRangeValidator rv = (NumberRangeValidator) validator;
+                            } else if (validator instanceof NumberRangeValidator rv) {
                                 validate(param, metadataClone, rv);
-                            } else if (validator instanceof MultiplicityValidator) {
-                                MultiplicityValidator mv = (MultiplicityValidator) validator;
+                            } else if (validator instanceof MultiplicityValidator mv) {
                                 int max = mv.getMaxInstances();
                                 if (max < maxOccurs) {
                                     maxOccurs = max;
@@ -141,17 +135,16 @@ public class ProcessLimitsFilter
 
                     // rebuild the param and put it in the params
                     @SuppressWarnings("unchecked")
-                    Parameter<?> substitute =
-                            new Parameter(
-                                    param.key,
-                                    param.type,
-                                    param.title,
-                                    param.description,
-                                    param.required,
-                                    param.minOccurs,
-                                    maxOccurs,
-                                    param.sample,
-                                    metadataClone);
+                    Parameter<?> substitute = new Parameter(
+                            param.key,
+                            param.type,
+                            param.title,
+                            param.description,
+                            param.required,
+                            param.minOccurs,
+                            maxOccurs,
+                            param.sample,
+                            metadataClone);
                     params.put(param.key, substitute);
                 }
 
@@ -160,19 +153,16 @@ public class ProcessLimitsFilter
         }
 
         @SuppressWarnings("unchecked")
-        private void validate(
-                Parameter<?> param, Map<String, Object> metadataClone, NumberRangeValidator rv) {
+        private void validate(Parameter<?> param, Map<String, Object> metadataClone, NumberRangeValidator rv) {
             Range<?> range = rv.getRange();
             Comparable min = (Comparable) param.metadata.get(Parameter.MIN);
             Comparable max = (Comparable) param.metadata.get(Parameter.MAX);
             boolean restricting = false;
-            if (range.getMinValue() != null
-                    && (min == null || min.compareTo(range.getMinValue()) < 0)) {
+            if (range.getMinValue() != null && (min == null || min.compareTo(range.getMinValue()) < 0)) {
                 min = range.getMinValue();
                 restricting = true;
             }
-            if (range.getMaxValue() != null
-                    && (max == null || max.compareTo(range.getMaxValue()) > 0)) {
+            if (range.getMaxValue() != null && (max == null || max.compareTo(range.getMaxValue()) > 0)) {
                 max = range.getMaxValue();
                 restricting = true;
             }

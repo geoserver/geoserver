@@ -43,8 +43,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
     /** Enable the Spring Security auth filters */
     @Override
     protected List<javax.servlet.Filter> getFilters() {
-        return Collections.singletonList(
-                (javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
+        return Collections.singletonList((javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
     }
 
     @Override
@@ -57,10 +56,9 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
                 WMSDimensionsTestSupport.class,
                 getCatalog());
 
-        GeoServerUserGroupStore ugStore =
-                getSecurityManager()
-                        .loadUserGroupService(AbstractUserGroupService.DEFAULT_NAME)
-                        .createStore();
+        GeoServerUserGroupStore ugStore = getSecurityManager()
+                .loadUserGroupService(AbstractUserGroupService.DEFAULT_NAME)
+                .createStore();
         ugStore.addUser(ugStore.createUserObject("admin2", "geoserver", true));
         ugStore.store();
     }
@@ -99,33 +97,22 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
 
     @Test
     public void testDefaultElevationUnits() throws Exception {
-        setupVectorDimension(
-                ResourceInfo.ELEVATION, "elevation", DimensionPresentation.LIST, null, null, null);
+        setupVectorDimension(ResourceInfo.ELEVATION, "elevation", DimensionPresentation.LIST, null, null, null);
         Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
 
-        assertXpathEvaluatesTo(
-                DimensionInfo.ELEVATION_UNITS, "//wms:Layer/wms:Dimension/@units", dom);
-        assertXpathEvaluatesTo(
-                DimensionInfo.ELEVATION_UNIT_SYMBOL, "//wms:Layer/wms:Dimension/@unitSymbol", dom);
+        assertXpathEvaluatesTo(DimensionInfo.ELEVATION_UNITS, "//wms:Layer/wms:Dimension/@units", dom);
+        assertXpathEvaluatesTo(DimensionInfo.ELEVATION_UNIT_SYMBOL, "//wms:Layer/wms:Dimension/@unitSymbol", dom);
     }
 
     @Test
     public void testEmptyDataSet() throws Exception {
         for (DimensionPresentation p : DimensionPresentation.values()) {
-            setupVectorDimension(
-                    V_TIME_ELEVATION_EMPTY.getLocalPart(),
-                    ResourceInfo.TIME,
-                    "time",
-                    p,
-                    null,
-                    null,
-                    null);
+            setupVectorDimension(V_TIME_ELEVATION_EMPTY.getLocalPart(), ResourceInfo.TIME, "time", p, null, null, null);
             checkEmptyTimeDimensionAndExtent();
         }
 
         // clear time metadata
-        FeatureTypeInfo info =
-                getCatalog().getFeatureTypeByName(V_TIME_ELEVATION_EMPTY.getLocalPart());
+        FeatureTypeInfo info = getCatalog().getFeatureTypeByName(V_TIME_ELEVATION_EMPTY.getLocalPart());
         info.getMetadata().remove(ResourceInfo.TIME);
         getCatalog().save(info);
 
@@ -167,23 +154,14 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         assertXpathEvaluatesTo("ISO8601", "//wms:Layer/wms:Dimension/@units", dom);
         // check we have the extent
         assertXpathEvaluatesTo("time", "//wms:Layer/wms:Dimension/@name", dom);
-        assertXpathEvaluatesTo(
-                DimensionDefaultValueSetting.TIME_CURRENT,
-                "//wms:Layer/wms:Dimension/@default",
-                dom);
+        assertXpathEvaluatesTo(DimensionDefaultValueSetting.TIME_CURRENT, "//wms:Layer/wms:Dimension/@default", dom);
         // and that it is empty
         assertXpathEvaluatesTo("", "//wms:Layer/wms:Dimension", dom);
     }
 
     @Test
     public void testElevationList() throws Exception {
-        setupVectorDimension(
-                ResourceInfo.ELEVATION,
-                "elevation",
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
+        setupVectorDimension(ResourceInfo.ELEVATION, "elevation", DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
 
         Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
         // print(dom);
@@ -252,12 +230,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
     @Test
     public void testElevationDiscrerteNoResolution() throws Exception {
         setupVectorDimension(
-                ResourceInfo.ELEVATION,
-                "elevation",
-                DimensionPresentation.DISCRETE_INTERVAL,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
+                ResourceInfo.ELEVATION, "elevation", DimensionPresentation.DISCRETE_INTERVAL, null, UNITS, UNIT_SYMBOL);
 
         Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
         // print(dom);
@@ -277,12 +250,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
     @Test
     public void testElevationDiscrerteManualResolution() throws Exception {
         setupVectorDimension(
-                ResourceInfo.ELEVATION,
-                "elevation",
-                DimensionPresentation.DISCRETE_INTERVAL,
-                2.0,
-                UNITS,
-                UNIT_SYMBOL);
+                ResourceInfo.ELEVATION, "elevation", DimensionPresentation.DISCRETE_INTERVAL, 2.0, UNITS, UNIT_SYMBOL);
 
         Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
         // print(dom);
@@ -327,8 +295,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
 
     @Test
     public void testTimeList() throws Exception {
-        setupVectorDimension(
-                ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
+        setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
 
         Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
         // print(dom);
@@ -341,10 +308,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         assertXpathEvaluatesTo("1", "count(//wms:Layer/wms:Dimension)", dom);
         assertXpathEvaluatesTo("time", "//wms:Layer/wms:Dimension/@name", dom);
         assertXpathEvaluatesTo("", "//wms:Layer/wms:Dimension/@nearestValue", dom);
-        assertXpathEvaluatesTo(
-                DimensionDefaultValueSetting.TIME_CURRENT,
-                "//wms:Layer/wms:Dimension/@default",
-                dom);
+        assertXpathEvaluatesTo(DimensionDefaultValueSetting.TIME_CURRENT, "//wms:Layer/wms:Dimension/@default", dom);
         assertXpathEvaluatesTo(
                 "2011-05-01T00:00:00.000Z,2011-05-02T00:00:00.000Z,2011-05-03T00:00:00.000Z,2011-05-04T00:00:00.000Z",
                 "//wms:Layer/wms:Dimension",
@@ -353,8 +317,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
 
     @Test
     public void testNearestMatch() throws Exception {
-        setupVectorDimension(
-                ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
+        setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
         setupNearestMatch(V_TIME_ELEVATION, ResourceInfo.TIME, true);
 
         Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
@@ -371,13 +334,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
 
     @Test
     public void testTimeContinuous() throws Exception {
-        setupVectorDimension(
-                ResourceInfo.TIME,
-                "time",
-                DimensionPresentation.CONTINUOUS_INTERVAL,
-                null,
-                null,
-                null);
+        setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.CONTINUOUS_INTERVAL, null, null, null);
 
         Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
         // print(dom);
@@ -389,26 +346,15 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         // check we have the extent
         assertXpathEvaluatesTo("1", "count(//wms:Layer/wms:Dimension)", dom);
         assertXpathEvaluatesTo("time", "//wms:Layer/wms:Dimension/@name", dom);
+        assertXpathEvaluatesTo(DimensionDefaultValueSetting.TIME_CURRENT, "//wms:Layer/wms:Dimension/@default", dom);
         assertXpathEvaluatesTo(
-                DimensionDefaultValueSetting.TIME_CURRENT,
-                "//wms:Layer/wms:Dimension/@default",
-                dom);
-        assertXpathEvaluatesTo(
-                "2011-05-01T00:00:00.000Z/2011-05-04T00:00:00.000Z/PT1S",
-                "//wms:Layer/wms:Dimension",
-                dom);
+                "2011-05-01T00:00:00.000Z/2011-05-04T00:00:00.000Z/PT1S", "//wms:Layer/wms:Dimension", dom);
     }
 
     @Test
     public void testTimeContinuousWithEnd() throws Exception {
         setupVectorDimensionWithEnd(
-                ResourceInfo.TIME,
-                "startTime",
-                "endTime",
-                DimensionPresentation.CONTINUOUS_INTERVAL,
-                null,
-                null,
-                null);
+                ResourceInfo.TIME, "startTime", "endTime", DimensionPresentation.CONTINUOUS_INTERVAL, null, null, null);
 
         Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
         // print(dom);
@@ -420,14 +366,9 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         // check we have the extent
         assertXpathEvaluatesTo("1", "count(//wms:Layer/wms:Dimension)", dom);
         assertXpathEvaluatesTo("time", "//wms:Layer/wms:Dimension/@name", dom);
+        assertXpathEvaluatesTo(DimensionDefaultValueSetting.TIME_CURRENT, "//wms:Layer/wms:Dimension/@default", dom);
         assertXpathEvaluatesTo(
-                DimensionDefaultValueSetting.TIME_CURRENT,
-                "//wms:Layer/wms:Dimension/@default",
-                dom);
-        assertXpathEvaluatesTo(
-                "2012-02-11T00:00:00.000Z/2012-02-14T00:00:00.000Z/PT1S",
-                "//wms:Layer/wms:Dimension",
-                dom);
+                "2012-02-11T00:00:00.000Z/2012-02-14T00:00:00.000Z/PT1S", "//wms:Layer/wms:Dimension", dom);
     }
 
     @Test
@@ -450,14 +391,9 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         // check we have the extent
         assertXpathEvaluatesTo("1", "count(//wms:Layer/wms:Dimension)", dom);
         assertXpathEvaluatesTo("time", "//wms:Layer/wms:Dimension/@name", dom);
+        assertXpathEvaluatesTo(DimensionDefaultValueSetting.TIME_CURRENT, "//wms:Layer/wms:Dimension/@default", dom);
         assertXpathEvaluatesTo(
-                DimensionDefaultValueSetting.TIME_CURRENT,
-                "//wms:Layer/wms:Dimension/@default",
-                dom);
-        assertXpathEvaluatesTo(
-                "2011-05-01T00:00:00.000Z/2011-05-04T00:00:00.000Z/P1D",
-                "//wms:Layer/wms:Dimension",
-                dom);
+                "2011-05-01T00:00:00.000Z/2011-05-04T00:00:00.000Z/P1D", "//wms:Layer/wms:Dimension", dom);
     }
 
     @Test
@@ -481,27 +417,15 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         // check we have the extent
         assertXpathEvaluatesTo("1", "count(//wms:Layer/wms:Dimension)", dom);
         assertXpathEvaluatesTo("time", "//wms:Layer/wms:Dimension/@name", dom);
+        assertXpathEvaluatesTo(DimensionDefaultValueSetting.TIME_CURRENT, "//wms:Layer/wms:Dimension/@default", dom);
         assertXpathEvaluatesTo(
-                DimensionDefaultValueSetting.TIME_CURRENT,
-                "//wms:Layer/wms:Dimension/@default",
-                dom);
-        assertXpathEvaluatesTo(
-                "2012-02-11T00:00:00.000Z/2012-02-14T00:00:00.000Z/P1D",
-                "//wms:Layer/wms:Dimension",
-                dom);
+                "2012-02-11T00:00:00.000Z/2012-02-14T00:00:00.000Z/P1D", "//wms:Layer/wms:Dimension", dom);
     }
 
     @Test
     public void testTimeElevation() throws Exception {
-        setupVectorDimension(
-                ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
-        setupVectorDimension(
-                ResourceInfo.ELEVATION,
-                "elevation",
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
+        setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
+        setupVectorDimension(ResourceInfo.ELEVATION, "elevation", DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
 
         Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
         // print(dom);
@@ -509,20 +433,16 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         // check both dimension has been declared
         assertXpathEvaluatesTo("2", "count(//wms:Layer/wms:Dimension)", dom);
         assertXpathEvaluatesTo(UNITS, "//wms:Layer/wms:Dimension[@name='elevation']/@units", dom);
-        assertXpathEvaluatesTo(
-                UNIT_SYMBOL, "//wms:Layer/wms:Dimension[@name='elevation']/@unitSymbol", dom);
+        assertXpathEvaluatesTo(UNIT_SYMBOL, "//wms:Layer/wms:Dimension[@name='elevation']/@unitSymbol", dom);
         assertXpathEvaluatesTo("ISO8601", "//wms:Layer/wms:Dimension[@name='time']/@units", dom);
         // check we have the extent for elevation
         assertXpathEvaluatesTo("1", "count(//wms:Layer/wms:Dimension[@name='elevation'])", dom);
         assertXpathEvaluatesTo("0.0", "//wms:Layer/wms:Dimension[@name='elevation']/@default", dom);
-        assertXpathEvaluatesTo(
-                "0.0,1.0,2.0,3.0", "//wms:Layer/wms:Dimension[@name='elevation']", dom);
+        assertXpathEvaluatesTo("0.0,1.0,2.0,3.0", "//wms:Layer/wms:Dimension[@name='elevation']", dom);
         // check we have the extent for time
         assertXpathEvaluatesTo("1", "count(//wms:Layer/wms:Dimension[@name='time'])", dom);
         assertXpathEvaluatesTo(
-                DimensionDefaultValueSetting.TIME_CURRENT,
-                "//wms:Layer/wms:Dimension[@name='time']/@default",
-                dom);
+                DimensionDefaultValueSetting.TIME_CURRENT, "//wms:Layer/wms:Dimension[@name='time']/@default", dom);
         assertXpathEvaluatesTo(
                 "2011-05-01T00:00:00.000Z,2011-05-02T00:00:00.000Z,2011-05-03T00:00:00.000Z,2011-05-04T00:00:00.000Z",
                 "//wms:Layer/wms:Dimension[@name='time']",
@@ -534,8 +454,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
         defaultValueSetting.setStrategyType(Strategy.FIXED);
         defaultValueSetting.setReferenceValue("P1M/PRESENT");
-        setupResourceDimensionDefaultValue(
-                V_TIME_ELEVATION, ResourceInfo.TIME, defaultValueSetting);
+        setupResourceDimensionDefaultValue(V_TIME_ELEVATION, ResourceInfo.TIME, defaultValueSetting);
 
         Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
         // print(dom);
@@ -550,8 +469,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
         defaultValueSetting.setStrategyType(Strategy.FIXED);
         defaultValueSetting.setReferenceValue("-100/0");
-        setupResourceDimensionDefaultValue(
-                V_TIME_ELEVATION, ResourceInfo.ELEVATION, defaultValueSetting);
+        setupResourceDimensionDefaultValue(V_TIME_ELEVATION, ResourceInfo.ELEVATION, defaultValueSetting);
 
         Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
         // print(dom);
@@ -563,8 +481,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
 
     @Test
     public void testCustomList() throws Exception {
-        setupVectorDimension(
-                "dim_custom", "elevation", DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupVectorDimension("dim_custom", "elevation", DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
         FeatureTypeInfo info = getCatalog().getFeatureTypeByName("TimeElevation");
         DimensionInfo dimInfo = (DimensionInfo) info.getMetadata().get("dim_custom");
         DimensionDefaultValueSetting setting = new DimensionDefaultValueSetting();
@@ -589,12 +506,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
     @Test
     public void testCustomContinuous() throws Exception {
         setupVectorDimension(
-                "dim_custom",
-                "elevation",
-                DimensionPresentation.CONTINUOUS_INTERVAL,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
+                "dim_custom", "elevation", DimensionPresentation.CONTINUOUS_INTERVAL, null, UNITS, UNIT_SYMBOL);
 
         Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
         // print(dom);
@@ -639,13 +551,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
 
     @Test
     public void testCustomDiscreteInterval() throws Exception {
-        setupVectorDimension(
-                "dim_custom",
-                "lwidth",
-                DimensionPresentation.DISCRETE_INTERVAL,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
+        setupVectorDimension("dim_custom", "lwidth", DimensionPresentation.DISCRETE_INTERVAL, null, UNITS, UNIT_SYMBOL);
 
         Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
         print(dom);
@@ -690,8 +596,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
 
     @Test
     public void testCustomContinuousDate() throws Exception {
-        setupVectorDimension(
-                "dim_custom", "time", DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupVectorDimension("dim_custom", "time", DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
         Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
         assertXpathEvaluatesTo(
                 "2011-05-01T00:00:00Z",
@@ -705,20 +610,13 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         Catalog catalog = getCatalog();
         TestResourceAccessManager tam = getResourceAccessManager();
 
-        setupVectorDimension(
-                ResourceInfo.ELEVATION,
-                "elevation",
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
+        setupVectorDimension(ResourceInfo.ELEVATION, "elevation", DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
 
         FeatureTypeInfo featureTypeInfo = catalog.getFeatureTypeByName("sf:TimeElevation");
         tam.putLimits(
                 "admin2",
                 featureTypeInfo,
-                new VectorAccessLimits(
-                        CatalogMode.CHALLENGE, null, Filter.EXCLUDE, null, Filter.EXCLUDE));
+                new VectorAccessLimits(CatalogMode.CHALLENGE, null, Filter.EXCLUDE, null, Filter.EXCLUDE));
 
         setRequestAuth("admin2", "geoserver");
         Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
@@ -753,9 +651,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         assertXpathEvaluatesTo("1", "count(//wms:Layer/wms:Dimension)", dom);
         assertXpathEvaluatesTo("time", "//wms:Layer/wms:Dimension/@name", dom);
         assertXpathEvaluatesTo(
-                "2014-01-24T13:25:00.000Z/2021-01-01T00:00:00.000Z/PT12H",
-                "//wms:Layer/wms:Dimension",
-                dom);
+                "2014-01-24T13:25:00.000Z/2021-01-01T00:00:00.000Z/PT12H", "//wms:Layer/wms:Dimension", dom);
     }
 
     @Test
@@ -763,13 +659,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         String startValue = "2014-01-24T13:25:00.000Z";
         String endValue = "2021";
 
-        setupVectorDimension(
-                ResourceInfo.TIME,
-                "time",
-                DimensionPresentation.CONTINUOUS_INTERVAL,
-                null,
-                null,
-                null);
+        setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.CONTINUOUS_INTERVAL, null, null, null);
 
         setupVectorStartAndEndValues(V_TIME_ELEVATION, ResourceInfo.TIME, startValue, endValue);
 
@@ -778,9 +668,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         assertXpathEvaluatesTo("1", "count(//wms:Layer/wms:Dimension)", dom);
         assertXpathEvaluatesTo("time", "//wms:Layer/wms:Dimension/@name", dom);
         assertXpathEvaluatesTo(
-                "2014-01-24T13:25:00.000Z/2021-01-01T00:00:00.000Z/PT1S",
-                "//wms:Layer/wms:Dimension",
-                dom);
+                "2014-01-24T13:25:00.000Z/2021-01-01T00:00:00.000Z/PT1S", "//wms:Layer/wms:Dimension", dom);
     }
 
     @Test
@@ -788,16 +676,9 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         String startValue = "-11034.0";
         String endValue = "8848.86";
 
-        setupVectorDimension(
-                ResourceInfo.ELEVATION,
-                "time",
-                DimensionPresentation.DISCRETE_INTERVAL,
-                1.0,
-                null,
-                null);
+        setupVectorDimension(ResourceInfo.ELEVATION, "time", DimensionPresentation.DISCRETE_INTERVAL, 1.0, null, null);
 
-        setupVectorStartAndEndValues(
-                V_TIME_ELEVATION, ResourceInfo.ELEVATION, startValue, endValue);
+        setupVectorStartAndEndValues(V_TIME_ELEVATION, ResourceInfo.ELEVATION, startValue, endValue);
 
         Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
 
@@ -812,15 +693,9 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         String endValue = "8848.86";
 
         setupVectorDimension(
-                ResourceInfo.ELEVATION,
-                "time",
-                DimensionPresentation.CONTINUOUS_INTERVAL,
-                null,
-                null,
-                null);
+                ResourceInfo.ELEVATION, "time", DimensionPresentation.CONTINUOUS_INTERVAL, null, null, null);
 
-        setupVectorStartAndEndValues(
-                V_TIME_ELEVATION, ResourceInfo.ELEVATION, startValue, endValue);
+        setupVectorStartAndEndValues(V_TIME_ELEVATION, ResourceInfo.ELEVATION, startValue, endValue);
 
         Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
 
@@ -834,13 +709,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         String startValue = "-3";
         String endValue = "8848.86";
 
-        setupVectorDimension(
-                "dim_custom",
-                "custom",
-                DimensionPresentation.DISCRETE_INTERVAL,
-                1.0,
-                UNITS,
-                UNIT_SYMBOL);
+        setupVectorDimension("dim_custom", "custom", DimensionPresentation.DISCRETE_INTERVAL, 1.0, UNITS, UNIT_SYMBOL);
 
         FeatureTypeInfo info = getCatalog().getFeatureTypeByName("TimeElevation");
         info.getMetadata().get("dim_custom", DimensionInfo.class).setStartValue(startValue);
@@ -881,9 +750,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         assertXpathEvaluatesTo(UNITS, "//wms:Layer/wms:Dimension/@units", dom);
         assertXpathEvaluatesTo(UNIT_SYMBOL, "//wms:Layer/wms:Dimension/@unitSymbol", dom);
         assertXpathEvaluatesTo(
-                "2021-01-01T00:00:00.000Z/2022-04-05T01:20:00.000Z/P1D",
-                "//wms:Layer/wms:Dimension",
-                dom);
+                "2021-01-01T00:00:00.000Z/2022-04-05T01:20:00.000Z/P1D", "//wms:Layer/wms:Dimension", dom);
     }
 
     protected TestResourceAccessManager getResourceAccessManager() {

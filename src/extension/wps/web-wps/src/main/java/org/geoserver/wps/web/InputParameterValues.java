@@ -24,8 +24,7 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.process.ProcessFactory;
 
 /**
- * Contains the set of values for a single parameter. For most input parameters it will be just one
- * value actually
+ * Contains the set of values for a single parameter. For most input parameters it will be just one value actually
  *
  * @author Andrea Aime - OpenGeo
  */

@@ -14,8 +14,7 @@ import org.locationtech.jts.geom.Geometry;
 /** Returns the maximum Y value of the given geometry */
 public class MaxYFunction extends FunctionImpl {
 
-    public static FunctionName NAME =
-            new FunctionNameImpl("maxy", Double.class, parameter("geometry", Geometry.class));
+    public static FunctionName NAME = new FunctionNameImpl("maxy", Double.class, parameter("geometry", Geometry.class));
 
     public MaxYFunction() {
         this.functionName = NAME;

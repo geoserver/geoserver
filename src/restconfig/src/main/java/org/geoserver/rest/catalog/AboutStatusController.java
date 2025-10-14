@@ -4,12 +4,12 @@
  */
 package org.geoserver.rest.catalog;
 
+import static org.geoserver.template.GeoServerMemberAccessPolicy.FULL_ACCESS;
 import static org.geoserver.template.TemplateUtils.FM_VERSION;
 
 import com.thoughtworks.xstream.XStream;
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.ext.beans.CollectionModel;
-import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.ObjectWrapper;
 import freemarker.template.SimpleHash;
 import freemarker.template.TemplateModel;
@@ -28,6 +28,7 @@ import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.wrapper.RestWrapper;
+import org.geoserver.template.TemplateUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -40,29 +41,25 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(
         path = RestBaseController.ROOT_PATH + "/about/status",
-        produces = {
-            MediaType.TEXT_HTML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE
-        })
+        produces = {MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
 public class AboutStatusController extends RestBaseController {
+
+    private final BeansWrapper wrapper = TemplateUtils.getSafeWrapper(null, FULL_ACCESS, null);
 
     @GetMapping
     protected RestWrapper<ModuleStatus> statusGet() throws Exception {
-        List<ModuleStatus> applicationStatus =
-                GeoServerExtensions.extensions(ModuleStatus.class).stream()
-                        .map(ModuleStatusImpl::new)
-                        .collect(Collectors.toList());
+        List<ModuleStatus> applicationStatus = GeoServerExtensions.extensions(ModuleStatus.class).stream()
+                .map(ModuleStatusImpl::new)
+                .collect(Collectors.toList());
         return wrapList(applicationStatus, ModuleStatus.class);
     }
 
     @GetMapping(value = "/{target}")
     protected RestWrapper<ModuleStatus> statusGet(@PathVariable String target) throws Exception {
-        List<ModuleStatus> applicationStatus =
-                GeoServerExtensions.extensions(ModuleStatus.class).stream()
-                        .map(ModuleStatusImpl::new)
-                        .filter(getModule(target))
-                        .collect(Collectors.toList());
+        List<ModuleStatus> applicationStatus = GeoServerExtensions.extensions(ModuleStatus.class).stream()
+                .map(ModuleStatusImpl::new)
+                .filter(getModule(target))
+                .collect(Collectors.toList());
         if (applicationStatus.isEmpty()) {
             throw new RestException("No such module: " + target, HttpStatus.NOT_FOUND);
         }
@@ -91,44 +88,40 @@ public class AboutStatusController extends RestBaseController {
 
     @Override
     public boolean supports(
-            MethodParameter methodParameter,
-            Type targetType,
-            Class<? extends HttpMessageConverter<?>> converterType) {
+            MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return ModuleStatus.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
     @Override
     protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
-        return new BeansWrapper(FM_VERSION) {
+        BeansWrapper temp = new BeansWrapper(FM_VERSION) {
+            @Override
+            public TemplateModel wrap(Object object) throws TemplateModelException {
+                if (object instanceof ModuleStatus status) {
+                    return wrapModuleStatus(status);
+                }
+                return super.wrap(object);
+            }
+        };
+        BeansWrapper inner = TemplateUtils.getSafeWrapper(temp, FULL_ACCESS, null);
+        BeansWrapper outer = new BeansWrapper(FM_VERSION) {
             @Override
             public TemplateModel wrap(Object obj) throws TemplateModelException {
-                if (obj instanceof List) { // we expect List of ModuleStatus
-                    List<?> list = (List<?>) obj;
-                    SimpleHash hash = new SimpleHash(new DefaultObjectWrapper(FM_VERSION));
-                    CollectionModel valuesModel =
-                            new CollectionModel(
-                                    list,
-                                    new BeansWrapper(FM_VERSION) {
-                                        @Override
-                                        public TemplateModel wrap(Object object)
-                                                throws TemplateModelException {
-                                            if (object instanceof ModuleStatus) {
-                                                return wrapModleStatus((ModuleStatus) object);
-                                            }
-                                            return super.wrap(object);
-                                        }
-                                    });
+                if (obj instanceof List<?> list) { // we expect List of ModuleStatus
+                    SimpleHash hash = new SimpleHash(wrapper);
+                    CollectionModel valuesModel = new CollectionModel(list, inner);
                     hash.put("values", valuesModel);
                     return hash;
                 }
                 return super.wrap(obj);
             }
         };
+        return TemplateUtils.getSafeWrapper(outer, FULL_ACCESS, null);
     }
 
-    private SimpleHash wrapModleStatus(ModuleStatus object) {
+    private SimpleHash wrapModuleStatus(ModuleStatus object) {
         ModuleStatus status = object;
-        SimpleHash hash = new SimpleHash(new DefaultObjectWrapper(FM_VERSION));
+        SimpleHash hash = new SimpleHash(this.wrapper);
         hash.put("module", status.getModule());
         hash.put("name", status.getName());
         hash.put("isAvailable", Boolean.toString(status.isAvailable()));
@@ -145,9 +138,7 @@ public class AboutStatusController extends RestBaseController {
 
     private String escapeMessage(String message) {
         String noControlChars =
-                message.replaceAll("\u001b", "ESC")
-                        .replaceAll("\u0008", "BACK")
-                        .replaceAll("\u0007", "BELL");
+                message.replaceAll("\u001b", "ESC").replaceAll("\u0008", "BACK").replaceAll("\u0007", "BELL");
         String escaped = StringEscapeUtils.escapeXml10(noControlChars).replaceAll("\n", "<br/>");
         return escaped;
     }

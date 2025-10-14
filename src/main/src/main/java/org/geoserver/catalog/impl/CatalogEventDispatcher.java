@@ -44,9 +44,7 @@ public class CatalogEventDispatcher {
 
     public void removeListeners(Class<? extends CatalogListener> listenerClass) {
         new ArrayList<>(listeners)
-                .stream()
-                        .filter(l -> listenerClass.isInstance(l))
-                        .forEach(l -> listeners.remove(l));
+                .stream().filter(l -> listenerClass.isInstance(l)).forEach(l -> listeners.remove(l));
     }
 
     public void dispatch(CatalogEvent event) {
@@ -54,23 +52,22 @@ public class CatalogEventDispatcher {
 
         for (CatalogListener listener : listeners) {
             try {
-                if (event instanceof CatalogAddEvent) {
-                    listener.handleAddEvent((CatalogAddEvent) event);
-                } else if (event instanceof CatalogRemoveEvent) {
-                    listener.handleRemoveEvent((CatalogRemoveEvent) event);
-                } else if (event instanceof CatalogModifyEvent) {
-                    listener.handleModifyEvent((CatalogModifyEvent) event);
-                } else if (event instanceof CatalogPostModifyEvent) {
-                    listener.handlePostModifyEvent((CatalogPostModifyEvent) event);
-                } else if (event instanceof CatalogBeforeAddEvent) {
-                    listener.handlePreAddEvent((CatalogBeforeAddEvent) event);
+                if (event instanceof CatalogAddEvent addEvent1) {
+                    listener.handleAddEvent(addEvent1);
+                } else if (event instanceof CatalogRemoveEvent removeEvent) {
+                    listener.handleRemoveEvent(removeEvent);
+                } else if (event instanceof CatalogModifyEvent modifyEvent1) {
+                    listener.handleModifyEvent(modifyEvent1);
+                } else if (event instanceof CatalogPostModifyEvent modifyEvent) {
+                    listener.handlePostModifyEvent(modifyEvent);
+                } else if (event instanceof CatalogBeforeAddEvent addEvent) {
+                    listener.handlePreAddEvent(addEvent);
                 }
             } catch (Throwable t) {
-                if (t instanceof CatalogException && toThrow == null) {
-                    toThrow = (CatalogException) t;
+                if (t instanceof CatalogException exception && toThrow == null) {
+                    toThrow = exception;
                 } else if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.log(
-                            Level.WARNING, "Catalog listener threw exception handling event.", t);
+                    LOGGER.log(Level.WARNING, "Catalog listener threw exception handling event.", t);
                 }
             }
         }

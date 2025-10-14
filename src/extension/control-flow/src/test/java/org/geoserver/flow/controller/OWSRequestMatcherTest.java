@@ -12,8 +12,8 @@ import org.geoserver.ows.Request;
 import org.junit.Test;
 
 /**
- * This test just checks the basic OWS flow controller matches requests as expecte, for a
- * concurrency test see {@link GlobalFlowControllerTest}
+ * This test just checks the basic OWS flow controller matches requests as expecte, for a concurrency test see
+ * {@link GlobalFlowControllerTest}
  *
  * @author Andrea Aime - OpenGeo
  */

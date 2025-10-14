@@ -5,14 +5,16 @@
 package org.geoserver.taskmanager.web.panel;
 
 import java.io.InputStream;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.OnLoadHeaderItem;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
@@ -38,6 +40,7 @@ public class FileUploadPanel extends Panel {
 
     private FeedbackPanel feedbackPanel;
 
+    @Serial
     private static final long serialVersionUID = -1821529746678003578L;
 
     private IModel<String> fileNameModel;
@@ -74,8 +77,10 @@ public class FileUploadPanel extends Panel {
                 new DropDownChoice<String>(
                         "fileServiceSelection",
                         new Model<String>(),
-                        new ArrayList<String>(TaskManagerBeans.get().getFileServices().names()),
+                        new ArrayList<String>(
+                                TaskManagerBeans.get().getFileServices().names()),
                         new IChoiceRenderer<String>() {
+                            @Serial
                             private static final long serialVersionUID = -1102965730550597918L;
 
                             @Override
@@ -92,11 +97,11 @@ public class FileUploadPanel extends Panel {
                             }
 
                             @Override
-                            public String getObject(
-                                    String id, IModel<? extends List<? extends String>> choices) {
+                            public String getObject(String id, IModel<? extends List<? extends String>> choices) {
                                 return id;
                             }
                         }) {
+                    @Serial
                     private static final long serialVersionUID = 2231004332244002574L;
 
                     @Override
@@ -106,30 +111,29 @@ public class FileUploadPanel extends Panel {
                 };
         add(fileServiceChoice.setNullValid(false));
 
-        folderChoice =
-                new DropDownChoice<String>(
-                        "folderSelection", new Model<String>(), new ArrayList<>()) {
-                    private static final long serialVersionUID = 3543687800810146647L;
+        folderChoice = new DropDownChoice<String>("folderSelection", new Model<String>(), new ArrayList<>()) {
+            @Serial
+            private static final long serialVersionUID = 3543687800810146647L;
 
-                    @Override
-                    public boolean isRequired() {
-                        return hasBeenSubmitted();
-                    }
-                };
+            @Override
+            public boolean isRequired() {
+                return hasBeenSubmitted();
+            }
+        };
         folderChoice.setOutputMarkupId(true);
         add(folderChoice);
 
-        fileServiceChoice.add(
-                new AjaxFormComponentUpdatingBehavior("change") {
-                    private static final long serialVersionUID = 1L;
+        fileServiceChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
+            @Serial
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        updateFolders();
-                        target.add(folderChoice);
-                        target.add(addFolderButton);
-                    }
-                });
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                updateFolders();
+                target.add(folderChoice);
+                target.add(addFolderButton);
+            }
+        });
 
         addFolderButton = createAddFolderButton(folderChoice);
         addFolderButton.setVisible(false);
@@ -137,15 +141,15 @@ public class FileUploadPanel extends Panel {
 
         add(addFolderButton);
         add(
-                fileUploadField =
-                        new FileUploadField("fileInput") {
-                            private static final long serialVersionUID = 4614183848423156996L;
+                fileUploadField = new FileUploadField("fileInput") {
+                    @Serial
+                    private static final long serialVersionUID = 4614183848423156996L;
 
-                            @Override
-                            public boolean isRequired() {
-                                return hasBeenSubmitted();
-                            }
-                        });
+                    @Override
+                    public boolean isRequired() {
+                        return hasBeenSubmitted();
+                    }
+                });
 
         add(new CheckBox("prepare", prepareModel));
 
@@ -156,10 +160,9 @@ public class FileUploadPanel extends Panel {
     }
 
     protected void updateFolders() {
-        FileService service =
-                TaskManagerBeans.get()
-                        .getFileServices()
-                        .get(fileServiceChoice.getModel().getObject());
+        FileService service = TaskManagerBeans.get()
+                .getFileServices()
+                .get(fileServiceChoice.getModel().getObject());
         List<String> availableFolders = new ArrayList<String>();
         if (service != null) {
             List<String> paths = service.listSubfolders();
@@ -186,13 +189,11 @@ public class FileUploadPanel extends Panel {
         final List<FileUpload> uploads = fileUploadField.getFileUploads();
         if (uploads != null) {
             for (FileUpload upload : uploads) {
-                FileService fileService =
-                        TaskManagerBeans.get()
-                                .getFileServices()
-                                .get(fileServiceChoice.getModel().getObject());
+                FileService fileService = TaskManagerBeans.get()
+                        .getFileServices()
+                        .get(fileServiceChoice.getModel().getObject());
                 try {
-                    String filePath =
-                            folderChoice.getModelObject() + "/" + upload.getClientFileName();
+                    String filePath = folderChoice.getModelObject() + "/" + upload.getClientFileName();
                     if (fileService.checkFileExists(filePath)) {
                         fileService.delete(filePath);
                     }
@@ -212,6 +213,7 @@ public class FileUploadPanel extends Panel {
     protected AjaxSubmitLink createAddFolderButton(DropDownChoice<String> folderChoice) {
         return new AjaxSubmitLink("addNew") {
 
+            @Serial
             private static final long serialVersionUID = 7320342263365531859L;
 
             @Override
@@ -219,38 +221,36 @@ public class FileUploadPanel extends Panel {
                 dialog.setTitle(new ParamResourceModel("createFolder", FileUploadPanel.this));
                 dialog.setInitialHeight(100);
                 dialog.setInitialWidth(630);
-                dialog.showOkCancel(
-                        target,
-                        new GeoServerDialog.DialogDelegate() {
+                dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
-                            private static final long serialVersionUID = 7410393012930249966L;
+                    @Serial
+                    private static final long serialVersionUID = 7410393012930249966L;
 
-                            private TextFieldPanel panel;
+                    private TextFieldPanel panel;
 
-                            @Override
-                            protected Component getContents(String id) {
-                                panel = new TextFieldPanel(id, new Model<>());
-                                panel.add(new PreventSubmitOnEnterBehavior());
-                                panel.getTextField().setRequired(true);
-                                panel.setOutputMarkupId(true);
-                                return panel;
-                            }
+                    @Override
+                    protected Component getContents(String id) {
+                        panel = new TextFieldPanel(id, new Model<>());
+                        panel.getTextField().setRequired(true);
+                        panel.setOutputMarkupId(true);
+                        panel.add(new PreventSubmitOnEnterBehavior(panel.getMarkupId()));
+                        return panel;
+                    }
 
-                            @Override
-                            protected boolean onSubmit(
-                                    AjaxRequestTarget target, Component contents) {
-                                target.add(panel);
+                    @Override
+                    protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                        target.add(panel);
 
-                                List<String> availableFolders = new ArrayList<String>();
-                                availableFolders.addAll(folderChoice.getChoicesModel().getObject());
-                                String folderName = panel.getTextField().getModel().getObject();
-                                availableFolders.add(folderName);
-                                folderChoice.setChoices(availableFolders);
-                                folderChoice.setModelObject(folderName);
-                                target.add(folderChoice);
-                                return true;
-                            }
-                        });
+                        List<String> availableFolders = new ArrayList<String>();
+                        availableFolders.addAll(folderChoice.getChoicesModel().getObject());
+                        String folderName = panel.getTextField().getModel().getObject();
+                        availableFolders.add(folderName);
+                        folderChoice.setChoices(availableFolders);
+                        folderChoice.setModelObject(folderName);
+                        target.add(folderChoice);
+                        return true;
+                    }
+                });
             }
         };
     }
@@ -260,18 +260,25 @@ public class FileUploadPanel extends Panel {
     }
 
     public class PreventSubmitOnEnterBehavior extends Behavior {
+        @Serial
         private static final long serialVersionUID = 1496517082650792177L;
 
-        public PreventSubmitOnEnterBehavior() {}
+        private final String id;
+
+        public PreventSubmitOnEnterBehavior(String id) {
+            this.id = id;
+        }
 
         @Override
-        public void bind(Component component) {
-            super.bind(component);
-
-            component.add(
-                    AttributeModifier.replace(
-                            "onkeydown",
-                            Model.of("if(event.keyCode == 13) {event.preventDefault();}")));
+        public void renderHead(Component component, IHeaderResponse response) {
+            super.renderHead(component, response);
+            response.render(OnLoadHeaderItem.forScript("document.getElementById('"
+                    + this.id
+                    + "').addEventListener('keydown', function(event) {\n"
+                    + "    if (event.keyCode == 13) {\n"
+                    + "        event.preventDefault();\n"
+                    + "    }\n"
+                    + "});"));
         }
     }
 }

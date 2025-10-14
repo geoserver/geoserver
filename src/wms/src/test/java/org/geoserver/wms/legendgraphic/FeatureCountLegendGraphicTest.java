@@ -45,79 +45,63 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
         super.onSetUp(testData);
         Catalog catalog = getCatalog();
         testData.addStyle("Population", "Population.sld", GetMapIntegrationTest.class, catalog);
-        testData.addStyle(
-                "PopulationElse",
-                "PopulationElse.sld",
-                FeatureCountLegendGraphicTest.class,
-                catalog);
-        testData.addStyle(
-                "scaleDependent", "scaleDependent.sld", GetLegendGraphicTest.class, catalog);
+        testData.addStyle("PopulationElse", "PopulationElse.sld", FeatureCountLegendGraphicTest.class, catalog);
+        testData.addStyle("scaleDependent", "scaleDependent.sld", GetLegendGraphicTest.class, catalog);
         testData.addVectorLayer(
-                SF_STATES,
-                Collections.emptyMap(),
-                "states.properties",
-                GetMapIntegrationTest.class,
-                catalog);
+                SF_STATES, Collections.emptyMap(), "states.properties", GetMapIntegrationTest.class, catalog);
     }
 
     @Before
     public void setupLegendProducer() throws Exception {
         this.ruleSets.clear();
-        this.legendProducer =
-                new BufferedImageLegendGraphicBuilder() {
-                    public String getContentType() {
-                        return "image/png";
-                    }
+        this.legendProducer = new BufferedImageLegendGraphicBuilder() {
+            public String getContentType() {
+                return "image/png";
+            }
 
-                    @Override
-                    protected Rule[] updateRuleTitles(
-                            FeatureCountProcessor processor,
-                            LegendRequest legend,
-                            Rule[] applicableRules) {
-                        Rule[] updatedRules =
-                                super.updateRuleTitles(processor, legend, applicableRules);
-                        FeatureCountLegendGraphicTest.this.ruleSets.add(updatedRules);
-                        return updatedRules;
-                    }
-                };
+            @Override
+            protected Rule[] updateRuleTitles(
+                    FeatureCountProcessor processor, LegendRequest legend, Rule[] applicableRules) {
+                Rule[] updatedRules = super.updateRuleTitles(processor, legend, applicableRules);
+                FeatureCountLegendGraphicTest.this.ruleSets.add(updatedRules);
+                return updatedRules;
+            }
+        };
     }
 
     @Test
     public void testBasicPolygonsNoCount() throws Exception {
-        runGetLegendGraphics(
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                        + "&layer="
-                        + getLayerId(MockData.BASIC_POLYGONS)
-                        + "&format=image/png");
+        runGetLegendGraphics("wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                + "&layer="
+                + getLayerId(MockData.BASIC_POLYGONS)
+                + "&format=image/png");
 
         assertEquals(0, ruleSets.size());
     }
 
     @Test
     public void testBasicPolygonsNoLabels() throws Exception {
-        runGetLegendGraphics(
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                        + "&layer="
-                        + getLayerId(MockData.BASIC_POLYGONS)
-                        + "&style="
-                        + "&format=image/png&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=30,0,40,10"
-                        + "&legend_options="
-                        + GetLegendGraphicRequest.COUNT_MATCHED_KEY
-                        + ":true;forceLabels:off");
+        runGetLegendGraphics("wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                + "&layer="
+                + getLayerId(MockData.BASIC_POLYGONS)
+                + "&style="
+                + "&format=image/png&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=30,0,40,10"
+                + "&legend_options="
+                + GetLegendGraphicRequest.COUNT_MATCHED_KEY
+                + ":true;forceLabels:off");
         assertEquals(0, ruleSets.size());
     }
 
     @Test
     public void testBasicPolygonsNoFeatures() throws Exception {
-        runGetLegendGraphics(
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                        + "&layer="
-                        + getLayerId(MockData.BASIC_POLYGONS)
-                        + "&style="
-                        + "&format=image/png&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=30,0,40,10"
-                        + "&legend_options="
-                        + GetLegendGraphicRequest.COUNT_MATCHED_KEY
-                        + ":true");
+        runGetLegendGraphics("wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                + "&layer="
+                + getLayerId(MockData.BASIC_POLYGONS)
+                + "&style="
+                + "&format=image/png&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=30,0,40,10"
+                + "&legend_options="
+                + GetLegendGraphicRequest.COUNT_MATCHED_KEY
+                + ":true");
 
         assertEquals(1, ruleSets.size());
         Rule[] rules = ruleSets.get(0);
@@ -127,15 +111,14 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
 
     @Test
     public void testBasicPolygonsTwoFeatures() throws Exception {
-        runGetLegendGraphics(
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
-                        + "&layer="
-                        + getLayerId(MockData.BASIC_POLYGONS)
-                        + "&style="
-                        + "&format=image/png&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=-2.4,1.4,0.4,4.2"
-                        + "&legend_options="
-                        + GetLegendGraphicRequest.COUNT_MATCHED_KEY
-                        + ":true");
+        runGetLegendGraphics("wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                + "&layer="
+                + getLayerId(MockData.BASIC_POLYGONS)
+                + "&style="
+                + "&format=image/png&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=-2.4,1.4,0.4,4.2"
+                + "&legend_options="
+                + GetLegendGraphicRequest.COUNT_MATCHED_KEY
+                + ":true");
 
         assertEquals(1, ruleSets.size());
         Rule[] rules = ruleSets.get(0);
@@ -145,15 +128,14 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
 
     @Test
     public void testBasicPolygonsTwoFeaturesWms13() throws Exception {
-        runGetLegendGraphics(
-                "wms?service=WMS&version=1.3.0&request=GetLegendGraphic"
-                        + "&layer="
-                        + getLayerId(MockData.BASIC_POLYGONS)
-                        + "&style="
-                        + "&format=image/png&CRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=1.4,-2.4,4.2,0.4"
-                        + "&legend_options="
-                        + GetLegendGraphicRequest.COUNT_MATCHED_KEY
-                        + ":true");
+        runGetLegendGraphics("wms?service=WMS&version=1.3.0&request=GetLegendGraphic"
+                + "&layer="
+                + getLayerId(MockData.BASIC_POLYGONS)
+                + "&style="
+                + "&format=image/png&CRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=1.4,-2.4,4.2,0.4"
+                + "&legend_options="
+                + GetLegendGraphicRequest.COUNT_MATCHED_KEY
+                + ":true");
 
         assertEquals(1, ruleSets.size());
         Rule[] rules = ruleSets.get(0);
@@ -163,15 +145,14 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
 
     @Test
     public void testBasicPolygonsAllFeatures() throws Exception {
-        runGetLegendGraphics(
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
-                        + "&layer="
-                        + getLayerId(MockData.BASIC_POLYGONS)
-                        + "&style="
-                        + "&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=-180,-90,180,90"
-                        + "&legend_options="
-                        + GetLegendGraphicRequest.COUNT_MATCHED_KEY
-                        + ":true");
+        runGetLegendGraphics("wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
+                + "&layer="
+                + getLayerId(MockData.BASIC_POLYGONS)
+                + "&style="
+                + "&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=-180,-90,180,90"
+                + "&legend_options="
+                + GetLegendGraphicRequest.COUNT_MATCHED_KEY
+                + ":true");
 
         assertEquals(1, ruleSets.size());
         Rule[] rules = ruleSets.get(0);
@@ -181,16 +162,15 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
 
     @Test
     public void testStatesFull() throws Exception {
-        runGetLegendGraphics(
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
-                        + "&layer="
-                        + getLayerId(SF_STATES)
-                        + "&style=Population&width=550&height=250&srs=EPSG:4326" //
-                        + "&bbox="
-                        + "-130,24,-66,50"
-                        + "&legend_options="
-                        + GetLegendGraphicRequest.COUNT_MATCHED_KEY
-                        + ":true");
+        runGetLegendGraphics("wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
+                + "&layer="
+                + getLayerId(SF_STATES)
+                + "&style=Population&width=550&height=250&srs=EPSG:4326" //
+                + "&bbox="
+                + "-130,24,-66,50"
+                + "&legend_options="
+                + GetLegendGraphicRequest.COUNT_MATCHED_KEY
+                + ":true");
         assertEquals(1, ruleSets.size());
         Rule[] rules = ruleSets.get(0);
         logLabels(rules);
@@ -205,16 +185,15 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
 
     @Test
     public void testStatesElse() throws Exception {
-        runGetLegendGraphics(
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
-                        + "&layer="
-                        + getLayerId(SF_STATES)
-                        + "&style=PopulationElse&width=550&height=250&srs=EPSG:4326" //
-                        + "&bbox="
-                        + "-130,24,-66,50"
-                        + "&legend_options="
-                        + GetLegendGraphicRequest.COUNT_MATCHED_KEY
-                        + ":true");
+        runGetLegendGraphics("wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
+                + "&layer="
+                + getLayerId(SF_STATES)
+                + "&style=PopulationElse&width=550&height=250&srs=EPSG:4326" //
+                + "&bbox="
+                + "-130,24,-66,50"
+                + "&legend_options="
+                + GetLegendGraphicRequest.COUNT_MATCHED_KEY
+                + ":true");
         assertEquals(1, ruleSets.size());
         Rule[] rules = ruleSets.get(0);
         logLabels(rules);
@@ -226,15 +205,14 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
 
     @Test
     public void testStatesMissingBbox() throws Exception {
-        runGetLegendGraphics(
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
-                        + "&layer="
-                        + getLayerId(SF_STATES)
-                        + "&style=Population"
-                        + "&width=550&height=250&srs=EPSG:4326"
-                        + "&legend_options="
-                        + GetLegendGraphicRequest.COUNT_MATCHED_KEY
-                        + ":true");
+        runGetLegendGraphics("wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
+                + "&layer="
+                + getLayerId(SF_STATES)
+                + "&style=Population"
+                + "&width=550&height=250&srs=EPSG:4326"
+                + "&legend_options="
+                + GetLegendGraphicRequest.COUNT_MATCHED_KEY
+                + ":true");
         assertEquals(1, ruleSets.size());
         Rule[] rules = ruleSets.get(0);
         logLabels(rules);
@@ -249,16 +227,15 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
 
     @Test
     public void testStatesMissingHeightWidth() throws Exception {
-        runGetLegendGraphics(
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
-                        + "&layer="
-                        + getLayerId(SF_STATES)
-                        + "&style=Population"
-                        + "&srs=EPSG:4326&bbox="
-                        + "-130,24,-66,50"
-                        + "&legend_options="
-                        + GetLegendGraphicRequest.COUNT_MATCHED_KEY
-                        + ":true");
+        runGetLegendGraphics("wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
+                + "&layer="
+                + getLayerId(SF_STATES)
+                + "&style=Population"
+                + "&srs=EPSG:4326&bbox="
+                + "-130,24,-66,50"
+                + "&legend_options="
+                + GetLegendGraphicRequest.COUNT_MATCHED_KEY
+                + ":true");
         assertEquals(1, ruleSets.size());
         Rule[] rules = ruleSets.get(0);
         logLabels(rules);
@@ -273,16 +250,15 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
 
     @Test
     public void testStatesMissingHeightWidthSrs() throws Exception {
-        runGetLegendGraphics(
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
-                        + "&layer="
-                        + getLayerId(SF_STATES)
-                        + "&style=Population"
-                        + "&bbox="
-                        + "-130,24,-66,50"
-                        + "&legend_options="
-                        + GetLegendGraphicRequest.COUNT_MATCHED_KEY
-                        + ":true");
+        runGetLegendGraphics("wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
+                + "&layer="
+                + getLayerId(SF_STATES)
+                + "&style=Population"
+                + "&bbox="
+                + "-130,24,-66,50"
+                + "&legend_options="
+                + GetLegendGraphicRequest.COUNT_MATCHED_KEY
+                + ":true");
         assertEquals(1, ruleSets.size());
         Rule[] rules = ruleSets.get(0);
         logLabels(rules);
@@ -297,15 +273,14 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
 
     @Test
     public void testStatesMissingBboxSrs() throws Exception {
-        runGetLegendGraphics(
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
-                        + "&layer="
-                        + getLayerId(SF_STATES)
-                        + "&style=Population"
-                        + "&width=550&height=250"
-                        + "&legend_options="
-                        + GetLegendGraphicRequest.COUNT_MATCHED_KEY
-                        + ":true");
+        runGetLegendGraphics("wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
+                + "&layer="
+                + getLayerId(SF_STATES)
+                + "&style=Population"
+                + "&width=550&height=250"
+                + "&legend_options="
+                + GetLegendGraphicRequest.COUNT_MATCHED_KEY
+                + ":true");
         assertEquals(1, ruleSets.size());
         Rule[] rules = ruleSets.get(0);
         logLabels(rules);
@@ -320,14 +295,13 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
 
     @Test
     public void testStatesMissingHeightWidthBboxSrs() throws Exception {
-        runGetLegendGraphics(
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
-                        + "&layer="
-                        + getLayerId(SF_STATES)
-                        + "&style=Population"
-                        + "&legend_options="
-                        + GetLegendGraphicRequest.COUNT_MATCHED_KEY
-                        + ":true");
+        runGetLegendGraphics("wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
+                + "&layer="
+                + getLayerId(SF_STATES)
+                + "&style=Population"
+                + "&legend_options="
+                + GetLegendGraphicRequest.COUNT_MATCHED_KEY
+                + ":true");
         assertEquals(1, ruleSets.size());
         Rule[] rules = ruleSets.get(0);
         logLabels(rules);
@@ -342,14 +316,13 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
 
     @Test
     public void testStatesMissingHeightWidthBboxSrsOnWMS13() throws Exception {
-        runGetLegendGraphics(
-                "wms?service=WMS&version=1.3.0&request=GetLegendGraphic&format=image/png"
-                        + "&layer="
-                        + getLayerId(SF_STATES)
-                        + "&style=Population"
-                        + "&legend_options="
-                        + GetLegendGraphicRequest.COUNT_MATCHED_KEY
-                        + ":true");
+        runGetLegendGraphics("wms?service=WMS&version=1.3.0&request=GetLegendGraphic&format=image/png"
+                + "&layer="
+                + getLayerId(SF_STATES)
+                + "&style=Population"
+                + "&legend_options="
+                + GetLegendGraphicRequest.COUNT_MATCHED_KEY
+                + ":true");
         assertEquals(1, ruleSets.size());
         Rule[] rules = ruleSets.get(0);
         logLabels(rules);
@@ -364,17 +337,16 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
 
     @Test
     public void testStatesCqlFilter() throws Exception {
-        runGetLegendGraphics(
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
-                        + "&layer="
-                        + getLayerId(SF_STATES)
-                        + "&style=Population&width=550&height=250&srs=EPSG:4326" //
-                        + "&bbox="
-                        + "-130,24,-66,50"
-                        + "&legend_options="
-                        + GetLegendGraphicRequest.COUNT_MATCHED_KEY
-                        + ":true"
-                        + "&CQL_FILTER=PERSONS < 2000000");
+        runGetLegendGraphics("wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
+                + "&layer="
+                + getLayerId(SF_STATES)
+                + "&style=Population&width=550&height=250&srs=EPSG:4326" //
+                + "&bbox="
+                + "-130,24,-66,50"
+                + "&legend_options="
+                + GetLegendGraphicRequest.COUNT_MATCHED_KEY
+                + ":true"
+                + "&CQL_FILTER=PERSONS < 2000000");
         assertEquals(1, ruleSets.size());
         Rule[] rules = ruleSets.get(0);
         logLabels(rules);
@@ -387,19 +359,18 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
 
     @Test
     public void testStatesCqlFilterHideEmptyRules() throws Exception {
-        runGetLegendGraphics(
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
-                        + "&layer="
-                        + getLayerId(SF_STATES)
-                        + "&style=Population&width=550&height=250&srs=EPSG:4326" //
-                        + "&bbox="
-                        + "-130,24,-66,50"
-                        + "&legend_options="
-                        + GetLegendGraphicRequest.COUNT_MATCHED_KEY
-                        + ":true;"
-                        + GetLegendGraphicRequest.HIDE_EMPTY_RULES
-                        + ":true"
-                        + "&CQL_FILTER=PERSONS < 2000000");
+        runGetLegendGraphics("wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
+                + "&layer="
+                + getLayerId(SF_STATES)
+                + "&style=Population&width=550&height=250&srs=EPSG:4326" //
+                + "&bbox="
+                + "-130,24,-66,50"
+                + "&legend_options="
+                + GetLegendGraphicRequest.COUNT_MATCHED_KEY
+                + ":true;"
+                + GetLegendGraphicRequest.HIDE_EMPTY_RULES
+                + ":true"
+                + "&CQL_FILTER=PERSONS < 2000000");
         assertEquals(1, ruleSets.size());
         Rule[] rules = ruleSets.get(0);
         logLabels(rules);
@@ -410,17 +381,16 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
 
     @Test
     public void testStatesCqlFilterHideEmptyRulesWithoutCount() throws Exception {
-        runGetLegendGraphics(
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
-                        + "&layer="
-                        + getLayerId(SF_STATES)
-                        + "&style=Population&width=550&height=250&srs=EPSG:4326" //
-                        + "&bbox="
-                        + "-130,24,-66,50"
-                        + "&legend_options="
-                        + GetLegendGraphicRequest.HIDE_EMPTY_RULES
-                        + ":true"
-                        + "&CQL_FILTER=PERSONS < 2000000");
+        runGetLegendGraphics("wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
+                + "&layer="
+                + getLayerId(SF_STATES)
+                + "&style=Population&width=550&height=250&srs=EPSG:4326" //
+                + "&bbox="
+                + "-130,24,-66,50"
+                + "&legend_options="
+                + GetLegendGraphicRequest.HIDE_EMPTY_RULES
+                + ":true"
+                + "&CQL_FILTER=PERSONS < 2000000");
         assertEquals(1, ruleSets.size());
         Rule[] rules = ruleSets.get(0);
         logLabels(rules);
@@ -431,17 +401,16 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
 
     @Test
     public void testStatesMatchFirst() throws Exception {
-        String requestURL =
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
-                        + "&layer="
-                        + getLayerId(SF_STATES)
-                        + "&style=Population&width=550&height=250&srs=EPSG:4326" //
-                        + "&bbox="
-                        + "-130,24,-66,50" //
-                        + "&legend_options="
-                        + GetLegendGraphicRequest.COUNT_MATCHED_KEY
-                        + ":true"
-                        + "&CQL_FILTER=PERSONS < 2000000";
+        String requestURL = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
+                + "&layer="
+                + getLayerId(SF_STATES)
+                + "&style=Population&width=550&height=250&srs=EPSG:4326" //
+                + "&bbox="
+                + "-130,24,-66,50" //
+                + "&legend_options="
+                + GetLegendGraphicRequest.COUNT_MATCHED_KEY
+                + ":true"
+                + "&CQL_FILTER=PERSONS < 2000000";
 
         Map<String, Object> rawKvp = caseInsensitiveKvp(KvpUtils.parseQueryString(requestURL));
         Map kvp = parseKvp(rawKvp);
@@ -451,18 +420,15 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
         // switch the FTS to match first, the last rule should never be hit
         final LegendRequest legend = request.getLegends().get(0);
         final Style style = legend.getStyle();
-        DuplicatingStyleVisitor matchFirstCloner =
-                new DuplicatingStyleVisitor() {
-                    @Override
-                    public void visit(FeatureTypeStyle fts) {
-                        super.visit(fts);
-                        FeatureTypeStyle copy = (FeatureTypeStyle) pages.peek();
-                        copy.getOptions()
-                                .put(
-                                        FeatureTypeStyle.KEY_EVALUATION_MODE,
-                                        FeatureTypeStyle.VALUE_EVALUATION_MODE_FIRST);
-                    }
-                };
+        DuplicatingStyleVisitor matchFirstCloner = new DuplicatingStyleVisitor() {
+            @Override
+            public void visit(FeatureTypeStyle fts) {
+                super.visit(fts);
+                FeatureTypeStyle copy = (FeatureTypeStyle) pages.peek();
+                copy.getOptions()
+                        .put(FeatureTypeStyle.KEY_EVALUATION_MODE, FeatureTypeStyle.VALUE_EVALUATION_MODE_FIRST);
+            }
+        };
         style.accept(matchFirstCloner);
         legend.setStyle((Style) matchFirstCloner.getCopy());
 
@@ -482,13 +448,12 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
 
     @Test
     public void testCountOnGroup() throws Exception {
-        String url =
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
-                        + "&layer=nature&width=100&height=100"
-                        + "&srs=epsg:4326&bbox=-0.002,-0.003,0.005,0.002"
-                        + "&legend_options="
-                        + GetLegendGraphicRequest.COUNT_MATCHED_KEY
-                        + ":true";
+        String url = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
+                + "&layer=nature&width=100&height=100"
+                + "&srs=epsg:4326&bbox=-0.002,-0.003,0.005,0.002"
+                + "&legend_options="
+                + GetLegendGraphicRequest.COUNT_MATCHED_KEY
+                + ":true";
         runGetLegendGraphics(url);
 
         for (Rule[] rules : ruleSets) {
@@ -509,40 +474,35 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
     public void testScaleDependentHittingScale() throws Exception {
         // somewhere around 60k
         testScaleDependent(
-                "-109.11157608032227,36.97002410888672,-108.97974014282227,37.02667236328125",
-                "TheRule (4)");
+                "-109.11157608032227,36.97002410888672,-108.97974014282227,37.02667236328125", "TheRule (4)");
     }
 
     @Test
     public void testScaleDependentBelowMinScale() throws Exception {
         // around 4k
         testScaleDependent(
-                "-109.05228853225708,36.994850635528564,-109.04404878616333,36.99839115142822",
-                "TheRule (0)");
+                "-109.05228853225708,36.994850635528564,-109.04404878616333,36.99839115142822", "TheRule (0)");
     }
 
     @Test
     public void testScaleDependentAboveMaxScale() throws Exception {
         // around 273k
         testScaleDependent(
-                "-109.31121826171875,36.88041687011719,-108.78387451171875,37.10700988769531",
-                "TheRule (0)");
+                "-109.31121826171875,36.88041687011719,-108.78387451171875,37.10700988769531", "TheRule (0)");
     }
 
-    protected void testScaleDependent(String bboxSpecification, String expectedLabel)
-            throws Exception {
+    protected void testScaleDependent(String bboxSpecification, String expectedLabel) throws Exception {
         // around 4k
-        String requestURL =
-                "wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
-                        + "&layer="
-                        + getLayerId(SF_STATES)
-                        + "&style=scaleDependent&width=20&height=20&srs=EPSG:4326" //
-                        + "&bbox="
-                        + bboxSpecification
-                        + "&legend_options="
-                        + GetLegendGraphicRequest.COUNT_MATCHED_KEY
-                        + ":true"
-                        + "&srcwidht=768&srcheight=300";
+        String requestURL = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
+                + "&layer="
+                + getLayerId(SF_STATES)
+                + "&style=scaleDependent&width=20&height=20&srs=EPSG:4326" //
+                + "&bbox="
+                + bboxSpecification
+                + "&legend_options="
+                + GetLegendGraphicRequest.COUNT_MATCHED_KEY
+                + ":true"
+                + "&srcwidht=768&srcheight=300";
 
         Map<String, Object> rawKvp = caseInsensitiveKvp(KvpUtils.parseQueryString(requestURL));
         Map kvp = parseKvp(rawKvp);

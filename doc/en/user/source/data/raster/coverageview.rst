@@ -16,7 +16,17 @@ A link :guilabel:`Configure new Coverage view...` also appears:
 .. figure:: images/coverageviewnewlayer.png
    :align: center
 
-Selecting the :guilabel:`Configure new Coverage view...` link opens a new page where you can configure the coverage view:
+Selecting the :guilabel:`Configure new Coverage view...` link opens a new page where you can configure the coverage view.
+
+Band select mode
+----------------
+
+By default, the CoverageView are composed in Band select mode.
+
+.. figure:: images/coverageviewbandselect.png
+   :align: center
+
+Allowing the user to select certain coverages/bands from the provided list to be part of the output.
 
 .. figure:: images/newcoverageview.png
    :align: center
@@ -58,6 +68,76 @@ Once all the properties of the layer have been configured, by selecting the :gui
 
 .. figure:: images/coverageviewavailablelayers.png
    :align: center
+
+Jiffle expressions to create coverage views
+-------------------------------------------
+A dropdown selector allows users to choose an alternative band composition mode: Jiffle.
+
+.. figure:: images/coverageviewjiffleselect.png
+   :align: center
+
+This mode enables support for Jiffle expressions in the coverage view setup. When this mode is selected, a summary of all available coverages and bands is displayed.
+
+For instance, an ImageMosaic based on Sentinel-2 coverages would produce a summary similar to the example below:
+
+.. figure:: images/coverageviewsentinelbands.png
+   :align: center
+
+
+Whilst a simple True Marble Image stored on a world.tif file, with 3 RGB bands will be reported like this:
+
+.. figure:: images/coverageviewworldbands.png
+   :align: center
+
+Defining the Jiffle Expression
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The Output Name text area allows to define the output variable to be produced.
+
+The Jiffle Script text area allows to define a Jiffle expression to produce that output.
+
+For example, using the Sentinel-2 dataset, an NDVI single output band can be defined by combining the B04 and B08 bands using the following formula
+
+.. figure:: images/coverageviewndvijiffle.png
+   :align: center
+
+
+Upon saving, the output band will be reported in the coverage band details:
+
+.. figure:: images/coverageviewndvidetails.png
+   :align: center
+
+
+If the output needs to consist of multiple bands, an index-based syntax should be used, as shown below:
+
+.. figure:: images/coverageview3bandsout.png
+   :align: center
+
+Where the same output name is used for all the bands (i.e. result) and bands are specified by index.
+
+In that case, the band details of the coverage view will look like this:
+
+.. figure:: images/coverageview3bandsdetails.png
+   :align: center
+
+
+Finally, a dropdown selector allows selection of one of the inputs to serve as a reference for the internal logic - for example, when retrieving available time values in a time series context.
+
+.. figure:: images/coverageviewreferenceinput.png
+   :align: center
+
+This selection is necessary because some input bands used in the view (for example auxiliary bands as quality flags or masks) may have missing granules or lack data, so a clear reference input must be explicitly specified.
+
+The selected input must be one that is used in the Jiffle expression. If it isn’t, an error will be raised when attempting to save the view.
+
+There is an option that allows GeoServer to handle missing input coverages more gracefully when composing multi-band views.
+
+.. figure:: images/fillcoverageview.png
+   :align: center
+
+* By default, this option is disabled. In that case, if any of the input coverages are missing (null) for a given request, the entire CoverageView will return empty because some required inputs are missing.
+* When enabled, GeoServer will generate a synthetic coverage band filled with the appropriate NoData value for each missing input, allowing the view to remain complete and defined.
+* The NoData value is derived from the coverage itself—either defined directly in the data or, in the case of an ImageMosaic, eventually specified in the associated .properties file.
+*  This behavior applies only when at least one input coverage is available. If all inputs are missing, the request is assumed to either lie outside the view’s data extent or lack all required inputs, and no synthetic coverage will be generated.
 
 Heterogeneous coverage views
 ----------------------------

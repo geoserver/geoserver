@@ -107,49 +107,42 @@ public abstract class StyleHandler {
      * Parses a style resource.
      *
      * @param input The style input, see {@link #toReader(Object)} for accepted inputs.
-     * @param version Optional version of the format, maybe <code>null</code>
-     * @param resourceLocator Optional locator for resources (icons, etc...) referenced by the
-     *     style, may be <code>null</code>.
+     * @param version Optional version of the format, maybe {@code null}
+     * @param resourceLocator Optional locator for resources (icons, etc...) referenced by the style, may be <code>null
+     *     </code>.
      * @param entityResolver Optional entity resolver for XML based formats, may be <code>null
      *     </code>.
      */
     public abstract StyledLayerDescriptor parse(
-            Object input,
-            Version version,
-            ResourceLocator resourceLocator,
-            EntityResolver entityResolver)
+            Object input, Version version, ResourceLocator resourceLocator, EntityResolver entityResolver)
             throws IOException;
 
     /**
      * Encodes a style.
      *
-     * <p>Handlers that don't support encoding should throw {@link
-     * java.lang.UnsupportedOperationException}.
+     * <p>Handlers that don't support encoding should throw {@link java.lang.UnsupportedOperationException}.
      *
      * @param sld The style to encode.
-     * @param version The version of the format to use to encode the style, may be <code>null</code>
-     *     .
+     * @param version The version of the format to use to encode the style, may be {@code null} .
      * @param pretty Flag controlling whether or not the style should be encoded in pretty form.
      * @param output The stream to write the encoded style to.
      */
-    public abstract void encode(
-            StyledLayerDescriptor sld, Version version, boolean pretty, OutputStream output)
+    public abstract void encode(StyledLayerDescriptor sld, Version version, boolean pretty, OutputStream output)
             throws IOException;
 
     /**
      * Validates a style resource.
      *
-     * <p>For handlers that don't support an extended form of validation (like against an XML
-     * schema) this implementation should at a minimum attempt to parse the input and return any
-     * parsing errors.
+     * <p>For handlers that don't support an extended form of validation (like against an XML schema) this
+     * implementation should at a minimum attempt to parse the input and return any parsing errors.
      *
      * @param input The style input, see {@link #toReader(Object)} for accepted inputs.
      * @param version The version of the format to use to validate the style, may be <code>null
      *     </code>.
      * @return Any validation errors, or empty list if the style is valid.
      */
-    public abstract List<Exception> validate(
-            Object input, Version version, EntityResolver entityResolver) throws IOException;
+    public abstract List<Exception> validate(Object input, Version version, EntityResolver entityResolver)
+            throws IOException;
 
     /** Returns the format mime type for the specified version. */
     public abstract String mimeType(Version version);
@@ -157,8 +150,8 @@ public abstract class StyleHandler {
     /**
      * Returns the format version for the specified mime type.
      *
-     * <p>This method should only be overriden by formats that support multiple versions. The
-     * default implementation just returns 1.0.0.
+     * <p>This method should only be overriden by formats that support multiple versions. The default implementation
+     * just returns 1.0.0.
      */
     public Version versionForMimeType(String mimeType) {
         return new Version("1.0.0");
@@ -167,8 +160,8 @@ public abstract class StyleHandler {
     /**
      * Determines the version of the format/language of the specified style resource.
      *
-     * <p>This method should only be overriden by formats that support multiple versions. The
-     * default implementation just returns 1.0.0.
+     * <p>This method should only be overriden by formats that support multiple versions. The default implementation
+     * just returns 1.0.0.
      *
      * @param input The style input, see {@link #toReader(Object)} for accepted inputs.
      */
@@ -179,32 +172,31 @@ public abstract class StyleHandler {
     /**
      * Turns input into a Reader.
      *
-     * @param input A {@link Reader}, {@link java.io.InputStream}, {@link File}, or {@link
-     *     Resource}.
+     * @param input A {@link Reader}, {@link java.io.InputStream}, {@link File}, or {@link Resource}.
      */
     protected Reader toReader(Object input) throws IOException {
-        if (input instanceof Reader) {
-            return (Reader) input;
+        if (input instanceof Reader reader) {
+            return reader;
         }
 
-        if (input instanceof InputStream) {
-            return new InputStreamReader((InputStream) input);
+        if (input instanceof InputStream stream) {
+            return new InputStreamReader(stream);
         }
 
-        if (input instanceof String) {
-            return new StringReader((String) input);
+        if (input instanceof String string) {
+            return new StringReader(string);
         }
 
-        if (input instanceof URL) {
-            return new InputStreamReader(((URL) input).openStream());
+        if (input instanceof URL rL) {
+            return new InputStreamReader(rL.openStream());
         }
 
-        if (input instanceof File) {
-            return new FileReader((File) input);
+        if (input instanceof File file) {
+            return new FileReader(file);
         }
 
-        if (input instanceof Resource) {
-            return toReader(((Resource) input).in());
+        if (input instanceof Resource resource) {
+            return toReader(resource.in());
         }
 
         throw new IllegalArgumentException("Unable to turn " + input + " into reader");
@@ -219,19 +211,15 @@ public abstract class StyleHandler {
     }
 
     /**
-     * Returns true if the handler in question supports encoding (that is, calling {@link
-     * #encode(StyledLayerDescriptor, Version, boolean, OutputStream)} won't throw an
-     * UnsupportedOperationException. By default returns "false", subclasses implementing encoding
-     * should override.
+     * Returns true if the handler in question supports encoding (that is, calling {@link #encode(StyledLayerDescriptor,
+     * Version, boolean, OutputStream)} won't throw an UnsupportedOperationException. By default returns "false",
+     * subclasses implementing encoding should override.
      */
     public boolean supportsEncoding(Version version) {
         return false;
     }
 
-    /**
-     * Returns a URL where the style specification can be found, or null if no specification is
-     * available
-     */
+    /** Returns a URL where the style specification can be found, or null if no specification is available */
     public URL getSpecification(Version version) throws MalformedURLException {
         return null;
     }

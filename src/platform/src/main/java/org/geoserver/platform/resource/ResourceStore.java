@@ -38,11 +38,11 @@ package org.geoserver.platform.resource;
  * </code>
  * </pre>
  *
- * The base directory is available using {@link Paths#BASE} (as {@code ""}) but relative paths
- * ({@code "."} and {@code ".."}) are not supported.
+ * The base directory is available using {@link Paths#BASE} (as {@code ""}) but relative paths ({@code "."} and
+ * {@code ".."}) are not supported.
  *
- * <p>This abstraction assumes a unix like file system, all paths are relative and use forward slash
- * {@code /} as the separator.
+ * <p>This abstraction assumes a unix like file system, all paths are relative and use forward slash {@code /} as the
+ * separator.
  *
  * @see Resources
  * @see Resource
@@ -51,22 +51,21 @@ public interface ResourceStore {
     /**
      * Empty placeholder for ResourceStore.
      *
-     * <p>Empty placeholder intended for test cases (used as spring context default when a base
-     * directory is not provided). This implementation prevents client code from requiring null
-     * checks on {@link ResourceStore#get(String)}. IllegalStateException are thrown by in(), out()
-     * and file() which are the usual methods clients require error handling.
+     * <p>Empty placeholder intended for test cases (used as spring context default when a base directory is not
+     * provided). This implementation prevents client code from requiring null checks on
+     * {@link ResourceStore#get(String)}. IllegalStateException are thrown by in(), out() and file() which are the usual
+     * methods clients require error handling.
      */
     public static ResourceStore EMPTY = new NullResourceStore();
 
     /**
      * Path based resource access.
      *
-     * <p>The returned Resource acts as a handle, and may be UNDEFINED. In general Resources are
-     * created in a lazy fashion when used for the first time.
+     * <p>The returned Resource acts as a handle, and may be UNDEFINED. In general Resources are created in a lazy
+     * fashion when used for the first time.
      *
      * @param path Path (using unix conventions, forward slash as separator) of requested resource
-     * @return Resource at the indicated location (null is never returned although Resource may be
-     *     UNDEFINED).
+     * @return Resource at the indicated location (null is never returned although Resource may be UNDEFINED).
      * @throws IllegalArgumentException If path is invalid
      */
     Resource get(String path);
@@ -74,9 +73,8 @@ public interface ResourceStore {
     /**
      * Remove resource at indicated path (including individual resources or directories).
      *
-     * <p>Returns <code>true</code> if Resource existed and was successfully removed. For read-only
-     * content (or if a security check) prevents the resource from being removed <code>false</code>
-     * is returned.
+     * <p>Returns <code>true</code> if Resource existed and was successfully removed. For read-only content (or if a
+     * security check) prevents the resource from being removed <code>false</code> is returned.
      *
      * @param path Path of resource to remove (using unix conventions, forward slash as separator)
      * @return <code>false</code> if doesn't exist or unable to remove

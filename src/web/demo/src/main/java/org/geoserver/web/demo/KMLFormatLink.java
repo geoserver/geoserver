@@ -11,11 +11,10 @@ public class KMLFormatLink extends CommonFormatLink {
 
     @Override
     public ExternalLink getFormatLink(PreviewLayer layer) {
-        ExternalLink kmlLink =
-                new ExternalLink(
-                        this.getComponentId(),
-                        layer.getKmlLink(),
-                        (new StringResourceModel(this.getTitleKey(), null, null)).getString());
+        ExternalLink kmlLink = new ExternalLink(
+                this.getComponentId(),
+                layer.getKmlLink(),
+                (new StringResourceModel(this.getTitleKey(), null, null)).getString());
         kmlLink.setVisible(layer.hasServiceSupport("WMS"));
         return kmlLink;
     }

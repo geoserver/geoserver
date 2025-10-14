@@ -6,6 +6,7 @@
 
 package org.geoserver.gwc.web.layer;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -22,13 +23,13 @@ import org.geoserver.gwc.layer.StyleParameterFilter;
  *
  * @author Kevin Smith, OpenGeo
  */
-public class StyleParameterFilterSubform
-        extends AbstractParameterFilterSubform<StyleParameterFilter> {
+public class StyleParameterFilterSubform extends AbstractParameterFilterSubform<StyleParameterFilter> {
 
     /** Model Set<String> as a List<String> and optionally add a dummy element at the beginning. */
     static class SetAsListModel implements IModel<List<String>> {
 
         /** serialVersionUID */
+        @Serial
         private static final long serialVersionUID = 1L;
 
         private final IModel<Set<String>> realModel;
@@ -87,6 +88,7 @@ public class StyleParameterFilterSubform
 
     static class LabelledEmptyStringModel implements IModel<String> {
 
+        @Serial
         private static final long serialVersionUID = 7591957769540603345L;
 
         private final IModel<String> realModel;
@@ -123,13 +125,11 @@ public class StyleParameterFilterSubform
             }
         }
     }
-    /**
-     * Model Set<String> as a List<String> and add an option to represent the set being {@literal
-     * null}
-     */
+    /** Model Set<String> as a List<String> and add an option to represent the set being {@literal null} */
     static class NullableSetAsListModel implements IModel<List<String>> {
 
         /** serialVersionUID */
+        @Serial
         private static final long serialVersionUID = 1L;
 
         private final IModel<Set<String>> realModel;
@@ -187,6 +187,7 @@ public class StyleParameterFilterSubform
     }
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public StyleParameterFilterSubform(String id, IModel<StyleParameterFilter> model) {
@@ -207,17 +208,14 @@ public class StyleParameterFilterSubform
         final IModel<List<String>> selectedStylesModel =
                 new NullableSetAsListModel(new PropertyModel<>(getModel(), "styles"), allStyles);
         final IModel<String> selectedDefaultModel =
-                new LabelledEmptyStringModel(
-                        new PropertyModel<>(getModel(), "realDefault"), layerDefault);
+                new LabelledEmptyStringModel(new PropertyModel<>(getModel(), "realDefault"), layerDefault);
 
         final Component defaultValue =
-                new DropDownChoice<>(
-                        "defaultValue", selectedDefaultModel, availableStylesModelDefault);
+                new DropDownChoice<>("defaultValue", selectedDefaultModel, availableStylesModelDefault);
         add(defaultValue);
 
         final CheckBoxMultipleChoice<String> styles =
-                new CheckBoxMultipleChoice<>(
-                        "styles", selectedStylesModel, availableStylesModelAllowed);
+                new CheckBoxMultipleChoice<>("styles", selectedStylesModel, availableStylesModelAllowed);
         styles.setPrefix("<li>");
         styles.setSuffix("</li>");
         add(styles);

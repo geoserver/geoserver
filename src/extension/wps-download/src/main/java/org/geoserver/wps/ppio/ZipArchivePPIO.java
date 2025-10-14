@@ -40,8 +40,7 @@ public class ZipArchivePPIO extends BinaryPPIO {
     /** Instantiates a new zip archive ppio. */
     public ZipArchivePPIO(int compressionLevel) {
         super(File.class, File.class, "application/zip");
-        if (compressionLevel < ZipOutputStream.STORED
-                || compressionLevel > ZipOutputStream.DEFLATED) {
+        if (compressionLevel < ZipOutputStream.STORED || compressionLevel > ZipOutputStream.DEFLATED) {
             throw new IllegalArgumentException("Invalid Compression Level: " + compressionLevel);
         }
         this.compressionLevel = compressionLevel;
@@ -68,11 +67,11 @@ public class ZipArchivePPIO extends BinaryPPIO {
     @Override
     public void encode(final Object output, OutputStream os) throws Exception {
         // avoid double zipping
-        if (output instanceof File && isZpFile((File) output)) {
+        if (output instanceof File file && isZpFile(file)) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "File is already a zip, we have only to copy it");
             }
-            FileUtils.copyFile((File) output, os);
+            FileUtils.copyFile(file, os);
             return;
         }
 
@@ -80,11 +79,11 @@ public class ZipArchivePPIO extends BinaryPPIO {
         zipout.setLevel(compressionLevel);
 
         // directory
-        if (output instanceof File) {
+        if (output instanceof File file2) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Zipping the file");
             }
-            final File file = ((File) output);
+            final File file = file2;
             if (file.isDirectory()) {
                 IOUtils.zipDirectory(file, zipout, FileFilterUtils.trueFileFilter());
             } else {
@@ -93,16 +92,15 @@ public class ZipArchivePPIO extends BinaryPPIO {
             }
         } else {
             // list of files
-            if (output instanceof Collection) {
+            if (output instanceof Collection collection) {
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.log(Level.FINE, "Zipping the collection");
                 }
                 // create temp dir
-                final Collection collection = (Collection) output;
                 for (Object obj : collection) {
-                    if (obj instanceof File) {
+                    if (obj instanceof File file1) {
                         // convert to file and add to zip
-                        final File file = ((File) obj);
+                        final File file = file1;
                         if (file.isDirectory()) {
                             IOUtils.zipDirectory(file, zipout, FileFilterUtils.trueFileFilter());
                         } else {
@@ -142,8 +140,8 @@ public class ZipArchivePPIO extends BinaryPPIO {
     /**
      * This method zip the provided file to the provided {@link ZipOutputStream}.
      *
-     * <p>It throws {@link IllegalArgumentException} in case the provided file does not exists or is
-     * not a readable file.
+     * <p>It throws {@link IllegalArgumentException} in case the provided file does not exists or is not a readable
+     * file.
      *
      * @param file the {@link File} to zip
      * @param zipout the {@link ZipOutputStream} to write to
@@ -158,8 +156,8 @@ public class ZipArchivePPIO extends BinaryPPIO {
     /**
      * This method tells us if the provided {@link File} is a Zip File.
      *
-     * <p>It throws {@link IllegalArgumentException} in case the provided file does not exists or is
-     * not a readable file.
+     * <p>It throws {@link IllegalArgumentException} in case the provided file does not exists or is not a readable
+     * file.
      *
      * @param file the {@link File} to check for zip
      * @throws IOException in case something bad happen
@@ -195,16 +193,15 @@ public class ZipArchivePPIO extends BinaryPPIO {
     /**
      * This method zip the provided file to the provided {@link ZipOutputStream}.
      *
-     * <p>It throws {@link IllegalArgumentException} in case the provided file does not exists or is
-     * not a readable file.
+     * <p>It throws {@link IllegalArgumentException} in case the provided file does not exists or is not a readable
+     * file.
      *
      * @param file the {@link File} to zip
      * @param zipout the {@link ZipOutputStream} to write to
      * @param buffer the buffer to use for reading/writing
      * @throws IOException in case something bad happen
      */
-    private static void zipFileInternal(File file, ZipOutputStream zipout, byte[] buffer)
-            throws IOException {
+    private static void zipFileInternal(File file, ZipOutputStream zipout, byte[] buffer) throws IOException {
         if (file == null || !file.exists() || !file.canRead()) {
             throw new IllegalArgumentException(
                     "Provided File is not valid and/or reqadable! --> File:" + file != null

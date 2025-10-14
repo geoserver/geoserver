@@ -270,12 +270,9 @@ public class UserRoleRestControllerTest extends GeoServerTestSupport {
         usersController.insertGroup(USER_SERVICE, "clowns");
         usersController.associateUserToGroup(USER_SERVICE, "pipo", "clowns");
 
-        RestException exception =
-                assertThrows(
-                        RestException.class,
-                        () -> {
-                            usersController.associateUserToGroup(USER_SERVICE, "pipo", "clowns");
-                        });
+        RestException exception = assertThrows(RestException.class, () -> {
+            usersController.associateUserToGroup(USER_SERVICE, "pipo", "clowns");
+        });
 
         assertEquals("Username already associated with this groupname", exception.getMessage());
         assertEquals(HttpStatus.OK, exception.getStatus());

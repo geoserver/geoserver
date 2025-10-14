@@ -27,7 +27,9 @@ import org.xml.sax.SAXException;
 @Repository
 public class LocalDocumentReaderMock implements RemoteDocumentReader {
     static final Logger LOGGER = Logging.getLogger(LocalDocumentReaderMock.class);
-    @Autowired private GeoServerDataDirectory dataDirectory;
+
+    @Autowired
+    private GeoServerDataDirectory dataDirectory;
 
     @Override
     public Document readDocument(URL url) throws IOException {

@@ -92,42 +92,34 @@ public class SecuredFeatureSourceTest extends SecureObjectsTest {
     }
 
     @Test
-    public <T extends FeatureType, F extends Feature> void testReadOnlyFeatureSourceDataAccess()
-            throws Exception {
+    public <T extends FeatureType, F extends Feature> void testReadOnlyFeatureSourceDataAccess() throws Exception {
         // build the mock up
-        @SuppressWarnings("unchecked")
         DataAccess<T, F> da = createNiceMock(DataAccess.class);
         replay(da);
-        @SuppressWarnings("unchecked")
         FeatureSource<T, F> fs = createNiceMock(FeatureSource.class);
         expect(fs.getDataStore()).andReturn(da);
         replay(fs);
 
-        SecuredFeatureSource<T, F> ro =
-                new SecuredFeatureSource<>(fs, WrapperPolicy.readOnlyChallenge(null));
+        SecuredFeatureSource<T, F> ro = new SecuredFeatureSource<>(fs, WrapperPolicy.readOnlyChallenge(null));
         assertTrue(ro.getDataStore() instanceof ReadOnlyDataAccess);
     }
 
     @Test
-    public <T extends FeatureType, F extends Feature>
-            void testSecuredFeatureSourceLoggingWithComplex() throws Exception {
+    public <T extends FeatureType, F extends Feature> void testSecuredFeatureSourceLoggingWithComplex()
+            throws Exception {
         // build up the mock
         @SuppressWarnings("unchecked")
         T schema = (T) createNiceMock(ComplexFeatureTypeImpl.class);
         expect(schema.getName()).andReturn(new NameImpl("testComplexFt"));
-        @SuppressWarnings("unchecked")
         List<PropertyDescriptor> descriptors = createNiceMock(List.class);
         expect(descriptors.size()).andReturn(3).anyTimes();
         replay(descriptors);
         expect(schema.getDescriptors()).andReturn(descriptors).anyTimes();
         replay(schema);
-        @SuppressWarnings("unchecked")
         DataAccess<T, F> store = createNiceMock(DataAccess.class);
         replay(store);
-        @SuppressWarnings("unchecked")
         FeatureStore<T, F> fStore = createNiceMock(FeatureStore.class);
         expect(fStore.getSchema()).andReturn(schema).anyTimes();
-        @SuppressWarnings("unchecked")
         FeatureCollection<T, F> fc = createNiceMock(FeatureCollection.class);
         expect(fStore.getDataStore()).andReturn(store);
         expect(fStore.getFeatures()).andReturn(fc).anyTimes();
@@ -158,8 +150,7 @@ public class SecuredFeatureSourceTest extends SecureObjectsTest {
         customLogHandler.setLevel(Level.SEVERE);
         logger.addHandler(customLogHandler);
         try {
-            SecuredFeatureStore ro =
-                    new SecuredFeatureStore<>(fStore, WrapperPolicy.readOnlyHide(null));
+            SecuredFeatureStore ro = new SecuredFeatureStore<>(fStore, WrapperPolicy.readOnlyHide(null));
             Query q = new Query("testComplextFt");
             List<PropertyName> pnames = new ArrayList<>(1);
             FilterFactory ff = CommonFactoryFinder.getFilterFactory();

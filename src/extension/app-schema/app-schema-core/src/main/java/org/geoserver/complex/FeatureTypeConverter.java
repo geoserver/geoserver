@@ -25,9 +25,7 @@ import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.util.logging.Logging;
 import org.xml.sax.helpers.NamespaceSupport;
 
-/**
- * Converts a complex feature type to a simple one based on the provided transformation rules map.
- */
+/** Converts a complex feature type to a simple one based on the provided transformation rules map. */
 class FeatureTypeConverter {
 
     private static final Logger LOGGER = Logging.getLogger(FeatureTypeConverter.class);
@@ -39,8 +37,7 @@ class FeatureTypeConverter {
 
     private List<AttributeDescriptor> processedDescriptors = new ArrayList<>();
 
-    public FeatureTypeConverter(
-            FeatureType featureType, Map<String, String> rules, NamespaceSupport namespaceSupport) {
+    public FeatureTypeConverter(FeatureType featureType, Map<String, String> rules, NamespaceSupport namespaceSupport) {
         this.featureType = requireNonNull(featureType);
         this.rules = requireNonNull(rules);
         this.namespaceSupport = requireNonNull(namespaceSupport);
@@ -62,10 +59,7 @@ class FeatureTypeConverter {
         return simpleFeatureType;
     }
 
-    /**
-     * Process all the attributes to find simple attributes by convention and complex attributes by
-     * rules.
-     */
+    /** Process all the attributes to find simple attributes by convention and complex attributes by rules. */
     private void processAllAttributes() {
         processRules();
         Collection<PropertyDescriptor> descriptors = featureType.getDescriptors();
@@ -85,13 +79,9 @@ class FeatureTypeConverter {
     private void processRule(Entry<String, String> rule) {
         // get the descriptor
         Optional<AttributeDescriptor> descriptorOpt = getDescriptor(rule.getValue());
-        if (!descriptorOpt.isPresent()) {
-            LOGGER.warning(
-                    () ->
-                            "Descriptor for attribute: '"
-                                    + rule.getValue()
-                                    + "' not found on feature type: "
-                                    + featureType);
+        if (descriptorOpt.isEmpty()) {
+            LOGGER.warning(() ->
+                    "Descriptor for attribute: '" + rule.getValue() + "' not found on feature type: " + featureType);
             return;
         }
         AttributeDescriptor descriptor = descriptorOpt.get();
@@ -103,8 +93,8 @@ class FeatureTypeConverter {
     }
 
     /**
-     * Checks if the provided descriptor belongs to a simple attribute. If it accomplish this rule,
-     * the descriptor is added to the new feature type.
+     * Checks if the provided descriptor belongs to a simple attribute. If it accomplish this rule, the descriptor is
+     * added to the new feature type.
      *
      * @return true if a simple attribute is found and was added
      */
@@ -112,11 +102,11 @@ class FeatureTypeConverter {
         // check if current descriptor was already processed
         if (processedDescriptors.contains(descriptor)) return false;
         // if it is a geometry descriptor, pass the original
-        if (descriptor instanceof GeometryDescriptor) {
-            processGeometryDescriptor((GeometryDescriptor) descriptor);
+        if (descriptor instanceof GeometryDescriptor geometryDescriptor) {
+            processGeometryDescriptor(geometryDescriptor);
             return true;
-        } else if (descriptor instanceof AttributeDescriptor) {
-            return processAttributeDescriptor((AttributeDescriptor) descriptor);
+        } else if (descriptor instanceof AttributeDescriptor attributeDescriptor) {
+            return processAttributeDescriptor(attributeDescriptor);
         }
         return false;
     }
@@ -160,8 +150,7 @@ class FeatureTypeConverter {
         // if namespace is null return true
         if (descriptor.getName().getNamespaceURI() == null) return true;
         // if namespace is GML return true
-        if (descriptor.getName().getNamespaceURI().startsWith("http://www.opengis.net/gml"))
-            return true;
+        if (descriptor.getName().getNamespaceURI().startsWith("http://www.opengis.net/gml")) return true;
         return false;
     }
 

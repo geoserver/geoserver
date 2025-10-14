@@ -6,6 +6,7 @@
 
 package org.geoserver.security.config;
 
+import java.io.Serial;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
@@ -16,13 +17,14 @@ import org.springframework.security.web.AuthenticationEntryPoint;
  */
 public abstract class SecurityFilterConfig extends BaseSecurityNamedServiceConfig {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
      * Determines if the filter provides an {@link AuthenticationEntryPoint}.
      *
-     * <p>If <code>true</code>, the corresponding {@link GeoServerSecurityFilter} class must return
-     * non-null from the method {@link GeoServerSecurityFilter#getAuthenticationEntryPoint()}.
+     * <p>If <code>true</code>, the corresponding {@link GeoServerSecurityFilter} class must return non-null from the
+     * method {@link GeoServerSecurityFilter#getAuthenticationEntryPoint()}.
      *
      * @return true if the corresponding filter provides an {@link AuthenticationEntryPoint} object.
      */

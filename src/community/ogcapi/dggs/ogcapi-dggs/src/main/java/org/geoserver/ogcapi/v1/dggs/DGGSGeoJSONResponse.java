@@ -33,10 +33,7 @@ public class DGGSGeoJSONResponse extends RFCGeoJSONFeaturesResponse {
 
     @Override
     protected void writeLinks(
-            FeatureCollectionResponse response,
-            Operation operation,
-            GeoJSONBuilder jw,
-            String featureId) {
+            FeatureCollectionResponse response, Operation operation, GeoJSONBuilder jw, String featureId) {
         APIRequestInfo requestInfo = APIRequestInfo.get();
         if (null == requestInfo) {
             // request comes from WFS, not from ogcapi
@@ -49,33 +46,18 @@ public class DGGSGeoJSONResponse extends RFCGeoJSONFeaturesResponse {
         // paging links
         if (response != null) {
             if (response.getPrevious() != null) {
-                writeLink(
-                        jw,
-                        "Previous page",
-                        OGCAPIMediaTypes.GEOJSON_VALUE,
-                        "prev",
-                        response.getPrevious());
+                writeLink(jw, "Previous page", OGCAPIMediaTypes.GEOJSON_VALUE, "prev", response.getPrevious());
             }
             if (response.getNext() != null) {
-                writeLink(
-                        jw,
-                        "Next page",
-                        OGCAPIMediaTypes.GEOJSON_VALUE,
-                        "next",
-                        response.getNext());
+                writeLink(jw, "Next page", OGCAPIMediaTypes.GEOJSON_VALUE, "next", response.getNext());
             }
         }
-        Collection<MediaType> formats =
-                requestInfo.getProducibleMediaTypes(FeaturesResponse.class, true);
+        Collection<MediaType> formats = requestInfo.getProducibleMediaTypes(FeaturesResponse.class, true);
         for (MediaType format : formats) {
             Map<String, String> kvp = APIRequestInfo.get().getSimpleQueryMap();
             kvp.put("f", format.toString());
-            String href =
-                    ResponseUtils.buildURL(
-                            baseUrl,
-                            APIRequestInfo.get().getRequestPath(),
-                            kvp,
-                            URLMangler.URLType.SERVICE);
+            String href = ResponseUtils.buildURL(
+                    baseUrl, APIRequestInfo.get().getRequestPath(), kvp, URLMangler.URLType.SERVICE);
             String linkType = Link.REL_ALTERNATE;
             String linkTitle = "This document as " + format;
             if (format.toString().equals(OGCAPIMediaTypes.GEOJSON_VALUE)) {
@@ -87,16 +69,13 @@ public class DGGSGeoJSONResponse extends RFCGeoJSONFeaturesResponse {
         // backpointer to the collection
         FeatureTypeInfo featureType = getFeatureType(request);
         if (featureType != null) {
-            String basePath =
-                    "ogc/dggs/collections/" + ResponseUtils.urlEncode(featureType.prefixedName());
-            for (MediaType format :
-                    requestInfo.getProducibleMediaTypes(CollectionDocument.class, true)) {
-                String href =
-                        ResponseUtils.buildURL(
-                                baseUrl,
-                                basePath,
-                                Collections.singletonMap("f", format.toString()),
-                                URLMangler.URLType.SERVICE);
+            String basePath = "ogc/dggs/collections/" + ResponseUtils.urlEncode(featureType.prefixedName());
+            for (MediaType format : requestInfo.getProducibleMediaTypes(CollectionDocument.class, true)) {
+                String href = ResponseUtils.buildURL(
+                        baseUrl,
+                        basePath,
+                        Collections.singletonMap("f", format.toString()),
+                        URLMangler.URLType.SERVICE);
                 String linkType = Link.REL_COLLECTION;
                 String linkTitle = "The collection description as " + format;
                 writeLink(jw, linkTitle, format.toString(), linkType, href);
@@ -107,6 +86,7 @@ public class DGGSGeoJSONResponse extends RFCGeoJSONFeaturesResponse {
 
     @Override
     public boolean canHandle(Operation operation) {
-        return operation.getService() != null && "DGGS".equals(operation.getService().getId());
+        return operation.getService() != null
+                && "DGGS".equals(operation.getService().getId());
     }
 }

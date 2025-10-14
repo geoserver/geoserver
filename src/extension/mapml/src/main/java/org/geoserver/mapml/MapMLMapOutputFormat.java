@@ -20,7 +20,6 @@ import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
-import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
@@ -36,8 +35,7 @@ public class MapMLMapOutputFormat implements GetMapOutputFormat {
     private GeoServer geoServer;
     private final Set<String> OUTPUT_FORMATS =
             Collections.unmodifiableSet(new HashSet<>(List.of(MapMLConstants.MAPML_MIME_TYPE)));
-    static final MapProducerCapabilities MAPML_CAPABILITIES =
-            new MapProducerCapabilities(false, true, true);
+    static final MapProducerCapabilities MAPML_CAPABILITIES = new MapProducerCapabilities(false, true, true);
 
     /**
      * Constructor
@@ -63,36 +61,21 @@ public class MapMLMapOutputFormat implements GetMapOutputFormat {
         Request request = Dispatcher.REQUEST.get();
         Mapml mapMLDocument;
         if (isFeaturesRequest(request)) {
-            if (mapContent.layers() != null && mapContent.layers().size() > 1) {
-                throw new ServiceException(
-                        "MapML WMS Feature format does not currently support Multiple Feature Type output.");
-            }
-            if (!mapContent.getRequest().getLayers().isEmpty()
-                    && MapLayerInfo.TYPE_VECTOR
-                            != mapContent.getRequest().getLayers().get(0).getType()) {
-                throw new ServiceException(
-                        "MapML WMS Feature format does not currently support non-vector layers.");
-            }
             List<Query> queries = StyleQueryUtil.getStyleQuery(mapContent.layers(), mapContent);
-            Query query = null;
-            if (queries != null && !queries.isEmpty()) {
-                if (queries.size() > 1) {
-                    throw new ServiceException(
-                            "MapML WMS Feature format does not currently support Multiple Feature Type output.");
-                }
-                query = queries.get(0);
-            }
-            MapMLFeaturesBuilder builder = new MapMLFeaturesBuilder(mapContent, geoServer, query);
+            MapMLFeaturesBuilder builder =
+                    new MapMLFeaturesBuilder(mapContent, geoServer, queries, request.getHttpRequest());
             builder.setSkipAttributes(isSkipAttributes(request));
             builder.setSkipHeadStyles(isSkipHeadStyles(request));
             mapMLDocument = builder.getMapMLDocument();
         } else {
             MapMLDocumentBuilder mapMLDocumentBuilder =
-                    new MapMLDocumentBuilder(mapContent, wms, geoServer, request.getHttpRequest());
+                    new MapMLDocumentBuilder(mapContent, wms, request.getHttpRequest());
             mapMLDocument = mapMLDocumentBuilder.getMapMLDocument();
         }
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        encoder.encode(mapMLDocument, bos);
+        // write to output based on global verbose setting
+        boolean verbose = geoServer.getGlobal().getSettings().isVerbose();
+        encoder.encode(mapMLDocument, bos, verbose);
         return new RawMap(mapContent, bos, MapMLConstants.MAPML_MIME_TYPE);
     }
 

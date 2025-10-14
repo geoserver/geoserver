@@ -24,8 +24,10 @@ if [ ! -f "$file" ]; then
     exit 1
 fi
 
-# Count the number of failed test-method elements
-num_failed=$(xmlstarlet sel -t -v "count(//test-method[@status='FAIL'])" "$file")
+# Count the number of failed tests based on the header:
+# some test method may FAIL and that will just disable an optional conformance class
+
+num_failed=$(xmlstarlet sel -t -v "//testng-results/@failed" "$file")
 
 if [ "$num_failed" -eq 0 ]; then
     echo "No failed tests found in $file"
@@ -33,8 +35,8 @@ if [ "$num_failed" -eq 0 ]; then
 fi
 
 # Use xmlstarlet to find and print the full contents of failed test-method elements
-echo "Full Contents of Failed Test Methods:"
-echo "-------------------------------------"
+echo "Full Contents of Failed Test Methods (some might just be disabling optional conformance classes):"
+echo "-------------------------------------------------------------------------------------------------"
 
 output=$(xmlstarlet sel -t \
     -m "//test-method[@status='FAIL']" \

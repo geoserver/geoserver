@@ -4,6 +4,7 @@
  */
 package org.geoserver.security;
 
+import java.io.Serial;
 import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
 import org.geoserver.security.config.SecurityUserGroupServiceConfig;
 
@@ -16,12 +17,12 @@ public class WebServiceBodyResponseUserGroupServiceConfig extends BaseSecurityNa
         implements SecurityUserGroupServiceConfig {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 4071134289430150933L;
 
     public WebServiceBodyResponseUserGroupServiceConfig() {}
 
-    public WebServiceBodyResponseUserGroupServiceConfig(
-            WebServiceBodyResponseUserGroupServiceConfig other) {
+    public WebServiceBodyResponseUserGroupServiceConfig(WebServiceBodyResponseUserGroupServiceConfig other) {
         super(other);
     }
 
@@ -74,8 +75,7 @@ public class WebServiceBodyResponseUserGroupServiceConfig extends BaseSecurityNa
     }
 
     /**
-     * Optional static comma-separated list of available Groups from the webservice response. They
-     * must be in the form
+     * Optional static comma-separated list of available Groups from the webservice response. They must be in the form
      *
      * <pre>"GROUP_&lt;ROLENAME 1&gt;, ..., GROUP_&lt;ROLENAME N&gt;"</pre>
      *
@@ -92,8 +92,7 @@ public class WebServiceBodyResponseUserGroupServiceConfig extends BaseSecurityNa
     }
 
     /**
-     * Optional static comma-separated list of available Groups from the webservice response. They
-     * must be in the form
+     * Optional static comma-separated list of available Groups from the webservice response. They must be in the form
      *
      * <pre>"GROUP_&lt;ROLENAME 1&gt;, ..., GROUP_&lt;ROLENAME N&gt;"</pre>
      *
@@ -110,8 +109,8 @@ public class WebServiceBodyResponseUserGroupServiceConfig extends BaseSecurityNa
     }
 
     /**
-     * Optional name of the Role Service to use for Roles resolution. If null it will use the
-     * Security Default Active Service.
+     * Optional name of the Role Service to use for Roles resolution. If null it will use the Security Default Active
+     * Service.
      *
      * @return the roleServiceName
      */
@@ -120,8 +119,8 @@ public class WebServiceBodyResponseUserGroupServiceConfig extends BaseSecurityNa
     }
 
     /**
-     * Optional name of the Role Service to use for Roles resolution. If null it will use the
-     * Security Default Active Service.
+     * Optional name of the Role Service to use for Roles resolution. If null it will use the Security Default Active
+     * Service.
      *
      * @param roleServiceName the roleServiceName to set
      */

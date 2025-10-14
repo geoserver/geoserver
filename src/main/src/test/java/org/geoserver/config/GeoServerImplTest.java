@@ -69,12 +69,10 @@ public class GeoServerImplTest {
         GeoServerInfo global1 = geoServer.getFactory().createGlobal();
         GeoServerInfo global2 = geoServer.getFactory().createGlobal();
         global1.setGlobalServices(true);
-        global1.setXmlExternalEntitiesEnabled(false);
         global1.getSettings().setVerbose(false);
         global1.getSettings().setVerboseExceptions(false);
 
         global2.setGlobalServices(true);
-        global2.setXmlExternalEntitiesEnabled(false);
         global2.getSettings().setVerbose(false);
         global2.getSettings().setVerboseExceptions(false);
         assertEquals(global1, global2);
@@ -169,10 +167,7 @@ public class GeoServerImplTest {
 
         @Override
         public void handleGlobalChange(
-                GeoServerInfo global,
-                List<String> propertyNames,
-                List<Object> oldValues,
-                List<Object> newValues) {
+                GeoServerInfo global, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
             gPropertyNames.addAll(propertyNames);
             gOldValues.addAll(oldValues);
             gNewValues.addAll(newValues);
@@ -180,10 +175,7 @@ public class GeoServerImplTest {
 
         @Override
         public void handleServiceChange(
-                ServiceInfo service,
-                List<String> propertyNames,
-                List<Object> oldValues,
-                List<Object> newValues) {
+                ServiceInfo service, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
 
             sPropertyNames.addAll(propertyNames);
             sOldValues.addAll(oldValues);
@@ -320,9 +312,7 @@ public class GeoServerImplTest {
     }
 
     private List<WorkspaceInfo> addWorkspaces(int count) {
-        return IntStream.range(0, count)
-                .mapToObj(this::createWorkspace)
-                .collect(Collectors.toList());
+        return IntStream.range(0, count).mapToObj(this::createWorkspace).collect(Collectors.toList());
     }
 
     private WorkspaceInfo createWorkspace(int i) {

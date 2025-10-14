@@ -39,8 +39,8 @@ import org.geotools.feature.FeatureCollection;
  * @param <T>
  * @param <F>
  */
-public class SecuredFeatureStore<T extends FeatureType, F extends Feature>
-        extends SecuredFeatureSource<T, F> implements FeatureStore<T, F> {
+public class SecuredFeatureStore<T extends FeatureType, F extends Feature> extends SecuredFeatureSource<T, F>
+        implements FeatureStore<T, F> {
 
     Transaction transaction;
 
@@ -55,8 +55,7 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature>
     public List<FeatureId> addFeatures(FeatureCollection<T, F> collection) throws IOException {
         Query writeQuery = getWriteQuery(policy);
 
-        if (writeQuery.getFilter() == Filter.EXCLUDE
-                || writeQuery.getPropertyNames() == Query.NO_NAMES) {
+        if (writeQuery.getFilter() == Filter.EXCLUDE || writeQuery.getPropertyNames() == Query.NO_NAMES) {
             throw unsupportedOperation();
         } else if (writeQuery == Query.ALL) {
             // make sure it behaves like native when no write limits are imposed (even if this
@@ -83,18 +82,16 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature>
                 return storeDelegate.addFeatures(collection);
             } else {
                 if (collection.getSchema() instanceof SimpleFeatureType
-                        && storeDelegate instanceof SimpleFeatureStore) {
+                        && storeDelegate instanceof SimpleFeatureStore store) {
                     // see if the user specified the value of any attribute she cannot write
-                    final SimpleFeatureCollection simpleCollection =
-                            (SimpleFeatureCollection) collection;
+                    final SimpleFeatureCollection simpleCollection = (SimpleFeatureCollection) collection;
 
                     // wrap it with a collection that will check if any non writable attribute has
                     // been given a value
                     List<String> writableAttributes = Arrays.asList(writeQuery.getPropertyNames());
-                    CheckAttributesFeatureCollection checker =
-                            new CheckAttributesFeatureCollection(
-                                    simpleCollection, writableAttributes, policy.getResponse());
-                    return ((SimpleFeatureStore) storeDelegate).addFeatures(checker);
+                    CheckAttributesFeatureCollection checker = new CheckAttributesFeatureCollection(
+                            simpleCollection, writableAttributes, policy.getResponse());
+                    return store.addFeatures(checker);
                 } else {
                     // TODO: add retyping to shave off attributes we cannot write
                     LOGGER.log(
@@ -108,8 +105,7 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature>
         }
     }
 
-    public void modifyFeatures(AttributeDescriptor[] types, Object[] values, Filter filter)
-            throws IOException {
+    public void modifyFeatures(AttributeDescriptor[] types, Object[] values, Filter filter) throws IOException {
         Name[] names = new Name[types.length];
         for (int i = 0; i < types.length; i++) {
             names[i] = types[i].getName();
@@ -124,8 +120,7 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature>
         if (writeQuery == Query.ALL) {
             storeDelegate.modifyFeatures(names, values, filter);
             return;
-        } else if (writeQuery.getFilter() == Filter.EXCLUDE
-                || writeQuery.getPropertyNames() == Query.NO_NAMES) {
+        } else if (writeQuery.getFilter() == Filter.EXCLUDE || writeQuery.getPropertyNames() == Query.NO_NAMES) {
             throw unsupportedOperation();
         }
 
@@ -159,8 +154,7 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature>
     }
 
     @Override
-    public void modifyFeatures(Name attributeName, Object attributeValue, Filter filter)
-            throws IOException {
+    public void modifyFeatures(Name attributeName, Object attributeValue, Filter filter) throws IOException {
         modifyFeatures(new Name[] {attributeName}, new Object[] {attributeValue}, filter);
     }
 
@@ -170,8 +164,7 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature>
         Query writeQuery = getWriteQuery(policy);
         if (writeQuery == Query.ALL) {
             storeDelegate.removeFeatures(filter);
-        } else if (writeQuery.getFilter() == Filter.EXCLUDE
-                || writeQuery.getPropertyNames() == Query.NO_NAMES) {
+        } else if (writeQuery.getFilter() == Filter.EXCLUDE || writeQuery.getPropertyNames() == Query.NO_NAMES) {
             throw unsupportedOperation();
         }
 
@@ -198,10 +191,9 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature>
     }
 
     /**
-     * Notifies the caller the requested operation is not supported, using a plain {@link
-     * UnsupportedOperationException} in case we have to conceal the fact the data is actually
-     * writable, using an Spring security exception otherwise to force an authentication from the
-     * user
+     * Notifies the caller the requested operation is not supported, using a plain {@link UnsupportedOperationException}
+     * in case we have to conceal the fact the data is actually writable, using an Spring security exception otherwise
+     * to force an authentication from the user
      */
     protected RuntimeException unsupportedOperation() {
         String typeName = getSchema().getName().getLocalPart();

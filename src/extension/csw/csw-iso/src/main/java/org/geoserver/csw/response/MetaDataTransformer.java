@@ -27,8 +27,8 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
 /**
- * Encodes a FeatureCollection containing {@link MetaDataDescriptor} features into the specified XML
- * according to the chosen profile, brief, summary or full
+ * Encodes a FeatureCollection containing {@link MetaDataDescriptor} features into the specified XML according to the
+ * chosen profile, brief, summary or full
  *
  * @author Niels Charlier
  */
@@ -71,62 +71,52 @@ public class MetaDataTransformer extends AbstractRecordTransformer {
         }
 
         private void encodeProperty(Feature f, Property p) {
-            if (p instanceof ComplexAttribute) {
+            if (p instanceof ComplexAttribute attribute) {
 
                 String prefix =
                         MetaDataDescriptor.NAMESPACES.getPrefix(p.getName().getNamespaceURI());
 
                 AttributesImpl atts = new AttributesImpl();
                 if (p.isNillable()) {
-                    Property prop =
-                            ((ComplexAttribute) p)
-                                    .getProperty(ComplexFeatureConstants.SIMPLE_CONTENT);
-                    boolean nil =
-                            prop == null || prop.getValue() == null || prop.getValue().equals("");
+                    Property prop = attribute.getProperty(ComplexFeatureConstants.SIMPLE_CONTENT);
+                    boolean nil = prop == null
+                            || prop.getValue() == null
+                            || prop.getValue().equals("");
                     if (nil) {
-                        atts.addAttribute(
-                                "http://www.w3.org/2001/XMLSchema-instance",
-                                "nil",
-                                "xsi:nil",
-                                "",
-                                "true");
+                        atts.addAttribute("http://www.w3.org/2001/XMLSchema-instance", "nil", "xsi:nil", "", "true");
                     }
                 }
 
-                for (Property p2 : ((ComplexAttribute) p).getProperties()) {
+                for (Property p2 : attribute.getProperties()) {
                     if (p2.getName().getLocalPart().substring(0, 1).equals("@")) {
                         String name = p2.getName().getLocalPart().substring(1);
                         String ns = p2.getName().getNamespaceURI();
-                        String qName =
-                                ns == null
-                                        ? name
-                                        : MetaDataDescriptor.NAMESPACES.getPrefix(
-                                                        p2.getName().getNamespaceURI())
-                                                + ":"
-                                                + name;
+                        String qName = ns == null
+                                ? name
+                                : MetaDataDescriptor.NAMESPACES.getPrefix(
+                                                p2.getName().getNamespaceURI())
+                                        + ":"
+                                        + name;
                         atts.addAttribute(ns, name, qName, "", p2.getValue().toString());
                     }
                 }
 
                 start(prefix + ":" + p.getName().getLocalPart(), atts);
 
-                Property pSimple =
-                        ((ComplexAttribute) p).getProperty(ComplexFeatureConstants.SIMPLE_CONTENT);
+                Property pSimple = attribute.getProperty(ComplexFeatureConstants.SIMPLE_CONTENT);
                 if (pSimple != null) {
                     chars(pSimple.getValue().toString());
                 }
 
                 for (PropertyDescriptor pd : ((ComplexType) p.getType()).getDescriptors()) {
                     if (!pd.getName().getLocalPart().substring(0, 1).equals("@")) {
-                        encodeProperties(f, ((ComplexAttribute) p).getProperties(pd.getName()));
+                        encodeProperties(f, attribute.getProperties(pd.getName()));
                         @SuppressWarnings("unchecked")
-                        Collection<PropertyDescriptor> substitionGroup =
-                                (Collection<PropertyDescriptor>)
-                                        pd.getUserData().get("substitutionGroup");
+                        Collection<PropertyDescriptor> substitionGroup = (Collection<PropertyDescriptor>)
+                                pd.getUserData().get("substitutionGroup");
                         if (substitionGroup != null) {
                             for (PropertyDescriptor pdSub : substitionGroup) {
-                                encodeProperties(
-                                        f, ((ComplexAttribute) p).getProperties(pdSub.getName()));
+                                encodeProperties(f, attribute.getProperties(pdSub.getName()));
                             }
                         }
                     }
@@ -140,14 +130,11 @@ public class MetaDataTransformer extends AbstractRecordTransformer {
                 // aggregate)
                 @SuppressWarnings("unchecked")
                 List<ReferencedEnvelope> originalBoxes =
-                        (List<ReferencedEnvelope>)
-                                p.getUserData().get(GenericRecordBuilder.ORIGINAL_BBOXES);
+                        (List<ReferencedEnvelope>) p.getUserData().get(GenericRecordBuilder.ORIGINAL_BBOXES);
                 for (ReferencedEnvelope re : originalBoxes) {
                     try {
                         ReferencedEnvelope wgs84re =
-                                re.transform(
-                                        CRS.decode(AbstractRecordDescriptor.DEFAULT_CRS_NAME),
-                                        true);
+                                re.transform(CRS.decode(AbstractRecordDescriptor.DEFAULT_CRS_NAME), true);
 
                         String minx = String.valueOf(wgs84re.getMinX());
                         String miny = String.valueOf(wgs84re.getMinY());
@@ -185,8 +172,7 @@ public class MetaDataTransformer extends AbstractRecordTransformer {
             String prefix = MetaDataDescriptor.NAMESPACES.getPrefix(dn.getNamespaceURI());
             AttributesImpl attributes = new AttributesImpl();
             if (p.isNillable() && Strings.isNullOrEmpty(value)) {
-                attributes.addAttribute(
-                        "http://www.w3.org/2001/XMLSchema-instance", "nil", "xsi:nil", "", "true");
+                attributes.addAttribute("http://www.w3.org/2001/XMLSchema-instance", "nil", "xsi:nil", "", "true");
             }
             element(prefix + ":" + name, value, attributes);
         }

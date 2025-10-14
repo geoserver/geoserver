@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.web;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
@@ -21,31 +22,26 @@ import org.geoserver.security.AuthenticationKeyMapper;
 public class AuthenticationKeyMapperChoice extends DropDownChoice<String> {
 
     /** */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public AuthenticationKeyMapperChoice(String id) {
-        super(
-                id,
-                new AuthenticationKeyMapperNamesModel(),
-                new AuthenticationKeyMapperChoiceRenderer());
+        super(id, new AuthenticationKeyMapperNamesModel(), new AuthenticationKeyMapperChoiceRenderer());
     }
 
     public AuthenticationKeyMapperChoice(String id, IModel<String> model) {
-        super(
-                id,
-                model,
-                new AuthenticationKeyMapperNamesModel(),
-                new AuthenticationKeyMapperChoiceRenderer());
+        super(id, model, new AuthenticationKeyMapperNamesModel(), new AuthenticationKeyMapperChoiceRenderer());
     }
 
     static class AuthenticationKeyMapperNamesModel implements IModel<List<String>> {
 
+        @Serial
         private static final long serialVersionUID = 1L;
+
         List<String> mapperNames;
 
         AuthenticationKeyMapperNamesModel() {
-            List<AuthenticationKeyMapper> mappers =
-                    GeoServerExtensions.extensions(AuthenticationKeyMapper.class);
+            List<AuthenticationKeyMapper> mappers = GeoServerExtensions.extensions(AuthenticationKeyMapper.class);
             this.mapperNames = new ArrayList<>();
             for (AuthenticationKeyMapper mapper : mappers) {
                 this.mapperNames.add(mapper.getBeanName());
@@ -73,13 +69,13 @@ public class AuthenticationKeyMapperChoice extends DropDownChoice<String> {
     }
 
     static class AuthenticationKeyMapperChoiceRenderer extends ChoiceRenderer<String> {
+        @Serial
         private static final long serialVersionUID = 1L;
 
         @Override
         public Object getDisplayValue(String object) {
             // do a resource lookup
-            return new StringResourceModel(
-                            AuthenticationKeyFilterPanel.class.getSimpleName() + "." + object)
+            return new StringResourceModel(AuthenticationKeyFilterPanel.class.getSimpleName() + "." + object)
                     .setParameters(object)
                     .getObject();
         }

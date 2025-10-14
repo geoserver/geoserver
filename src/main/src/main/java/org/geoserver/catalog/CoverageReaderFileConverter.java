@@ -31,28 +31,27 @@ public class CoverageReaderFileConverter implements CoverageReaderInputObjectCon
     }
 
     /**
-     * Performs the conversion of the input object to a file object. If this converter is not able
-     * to convert the input to a File, an empty {@link Optional} will be returned.
+     * Performs the conversion of the input object to a file object. If this converter is not able to convert the input
+     * to a File, an empty {@link Optional} will be returned.
      *
      * @param input The input object.
-     * @param coverageInfo The grid coverage metadata, may be <code>null</code>.
-     * @param hints Hints to use when loading the coverage, may be <code>null</code>.
+     * @param coverageInfo The grid coverage metadata, may be {@code null}.
+     * @param hints Hints to use when loading the coverage, may be {@code null}.
      * @return
      */
     @Override
-    public Optional<File> convert(
-            Object input, @Nullable CoverageInfo coverageInfo, @Nullable Hints hints) {
+    public Optional<File> convert(Object input, @Nullable CoverageInfo coverageInfo, @Nullable Hints hints) {
         return convert(input, coverageInfo, null, hints);
     }
 
     /**
-     * Performs the conversion of the input object to a file object. If this converter is not able
-     * to convert the input to a File, an empty {@link Optional} will be returned.
+     * Performs the conversion of the input object to a file object. If this converter is not able to convert the input
+     * to a File, an empty {@link Optional} will be returned.
      *
      * @param input The input object.
-     * @param coverageInfo The grid coverage metadata, may be <code>null</code>.
-     * @param coverageStoreInfo The grid coverage store metadata, may be <code>null</code>.
-     * @param hints Hints to use when loading the coverage, may be <code>null</code>.
+     * @param coverageInfo The grid coverage metadata, may be {@code null}.
+     * @param coverageStoreInfo The grid coverage store metadata, may be {@code null}.
+     * @param hints Hints to use when loading the coverage, may be {@code null}.
      * @return
      */
     @Override
@@ -72,8 +71,7 @@ public class CoverageReaderFileConverter implements CoverageReaderInputObjectCon
      * Checks to see if the input string is a file URI.
      *
      * @param input The input string.
-     * @return Value representing whether or not this converter is able to convert the provided
-     *     input to File.
+     * @return Value representing whether or not this converter is able to convert the provided input to File.
      */
     protected boolean canConvert(String input) {
         boolean canConvert = false;

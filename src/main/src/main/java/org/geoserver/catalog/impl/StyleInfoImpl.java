@@ -48,6 +48,8 @@ public class StyleInfoImpl implements StyleInfo {
 
     protected Date dateModified;
 
+    protected String modifiedBy;
+
     protected StyleInfoImpl() {}
 
     public StyleInfoImpl(Catalog catalog) {
@@ -126,8 +128,7 @@ public class StyleInfoImpl implements StyleInfo {
         // for capability document request
         // remote style does not exist in local catalog
         // do not look for this style inside ResourcePool
-        if (metadata != null)
-            if (metadata.containsKey(IS_REMOTE)) return WMSLayerInfoImpl.getStyleInfo(this);
+        if (metadata != null) if (metadata.containsKey(IS_REMOTE)) return WMSLayerInfoImpl.getStyleInfo(this);
         return catalog.getResourcePool().getStyle(this);
     }
 
@@ -217,11 +218,7 @@ public class StyleInfoImpl implements StyleInfo {
 
     @Override
     public String toString() {
-        return new StringBuilder(getClass().getSimpleName())
-                .append('[')
-                .append(prefixedName())
-                .append(']')
-                .toString();
+        return getClass().getSimpleName() + '[' + prefixedName() + ']';
     }
 
     @Override
@@ -269,5 +266,15 @@ public class StyleInfoImpl implements StyleInfo {
     @Override
     public void setDateModified(Date dateModified) {
         this.dateModified = dateModified;
+    }
+
+    @Override
+    public String getModifiedBy() {
+        return modifiedBy;
+    }
+
+    @Override
+    public void setModifiedBy(String userName) {
+        this.modifiedBy = userName;
     }
 }

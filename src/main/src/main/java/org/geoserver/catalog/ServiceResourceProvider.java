@@ -33,17 +33,15 @@ public class ServiceResourceProvider implements ApplicationContextAware {
     /**
      * List of available service types for a resource.
      *
-     * <p>This list checks resource compatibility, using {@link ServiceResourceVoter}. The list
-     * should be checked against {@link ResourceInfo#getDisabledServices()} if the user has disabled
-     * any specific service types as provided by {@link
-     * org.geoserver.security.DisabledServiceResourceFilter#disabledServices(ResourceInfo)}.
+     * <p>This list checks resource compatibility, using {@link ServiceResourceVoter}. The list should be checked
+     * against {@link ResourceInfo#getDisabledServices()} if the user has disabled any specific service types as
+     * provided by {@link org.geoserver.security.DisabledServiceResourceFilter#disabledServices(ResourceInfo)}.
      *
      * @return list of service types for a resource
      */
     public List<String> getServicesForResource(ResourceInfo resource) {
         List<String> services = servicesList();
-        List<ServiceResourceVoter> voters =
-                GeoServerExtensions.extensions(ServiceResourceVoter.class, context);
+        List<ServiceResourceVoter> voters = GeoServerExtensions.extensions(ServiceResourceVoter.class, context);
         return services.stream()
                 .filter(s -> !isServiceHidden(resource, s, voters))
                 .collect(Collectors.toCollection(ArrayList::new));
@@ -67,8 +65,7 @@ public class ServiceResourceProvider implements ApplicationContextAware {
      * @param voters Voters available to check resource compatibility with service
      * @return True if any voter declares resource incompatible with the service type
      */
-    private boolean isServiceHidden(
-            ResourceInfo resource, String serviceType, List<ServiceResourceVoter> voters) {
+    private boolean isServiceHidden(ResourceInfo resource, String serviceType, List<ServiceResourceVoter> voters) {
         return voters.stream().anyMatch(v -> v.hideService(serviceType, resource));
     }
 
@@ -78,9 +75,7 @@ public class ServiceResourceProvider implements ApplicationContextAware {
      * @return list of all service types
      */
     private List<String> servicesList() {
-        return geoServer.getServices().stream()
-                .map(si -> si.getType())
-                .collect(Collectors.toList());
+        return geoServer.getServices().stream().map(si -> si.getType()).collect(Collectors.toList());
     }
 
     @Override

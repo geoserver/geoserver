@@ -73,8 +73,10 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
         ft.submit("submit");
         List errors = tester.getMessages(FeedbackMessage.ERROR);
         assertEquals(1, errors.size());
-        assertTrue(
-                ((ValidationErrorFeedback) errors.get(0)).getMessage().toString().contains("bla"));
+        assertTrue(((ValidationErrorFeedback) errors.get(0))
+                .getMessage()
+                .toString()
+                .contains("bla"));
         tester.assertRenderedPage(WMSAdminPage.class);
     }
 
@@ -95,7 +97,7 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
         ft.setValue("rootLayerEnabled", false);
         ft.submit("submit");
         tester.assertNoErrorMessage();
-        assertEquals(wms.getMetadata().get(WMS.ROOT_LAYER_IN_CAPABILITIES_KEY), false);
+        assertFalse((Boolean) wms.getMetadata().get(WMS.ROOT_LAYER_IN_CAPABILITIES_KEY));
     }
 
     @Test
@@ -106,8 +108,8 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
         ft.setValue("rootLayerTitleAndAbstract:abstract", "abstract test");
         ft.submit("submit");
         tester.assertNoErrorMessage();
-        assertEquals(wms.getRootLayerTitle(), "test");
-        assertEquals(wms.getRootLayerAbstract(), "abstract test");
+        assertEquals("test", wms.getRootLayerTitle());
+        assertEquals("abstract test", wms.getRootLayerAbstract());
     }
 
     @Test
@@ -117,7 +119,7 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
         ft.setValue("aph.densify", true);
         ft.submit("submit");
         tester.assertNoErrorMessage();
-        assertEquals(wms.getMetadata().get(WMS.ADVANCED_PROJECTION_DENSIFICATION_KEY), true);
+        assertTrue((Boolean) wms.getMetadata().get(WMS.ADVANCED_PROJECTION_DENSIFICATION_KEY));
     }
 
     @Test
@@ -127,7 +129,7 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
         ft.setValue("aph.dlh", true);
         ft.submit("submit");
         tester.assertNoErrorMessage();
-        assertEquals(wms.getMetadata().get(WMS.DATELINE_WRAPPING_HEURISTIC_KEY), true);
+        assertTrue((Boolean) wms.getMetadata().get(WMS.DATELINE_WRAPPING_HEURISTIC_KEY));
     }
 
     @Test
@@ -203,38 +205,27 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
         tester.startPage(WMSAdminPage.class);
         FormTester form = tester.newFormTester("form");
         // enable i18n for title and add two entries
-        form.setValue(
-                "serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox",
-                true);
+        form.setValue("serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox", true);
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox",
-                "change");
+                "form:serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox", "change");
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew",
-                "click");
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew", "click");
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew",
-                "click");
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew", "click");
 
         // enable i18n for abstract and add two entries
-        form.setValue(
-                "serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox",
-                true);
+        form.setValue("serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox", true);
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox",
-                "change");
+                "form:serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox", "change");
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew",
-                "click");
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew", "click");
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew",
-                "click");
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew", "click");
         // figure out the locales used in the test (might not be stable across JVMs)
         @SuppressWarnings("unchecked")
-        DropDownChoice<Locale> select =
-                (DropDownChoice)
-                        tester.getComponentFromLastRenderedPage(
-                                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select");
+        DropDownChoice<Locale> select = (DropDownChoice)
+                tester.getComponentFromLastRenderedPage(
+                        "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select");
         Locale l10 = select.getChoices().get(10);
         Locale l20 = select.getChoices().get(20);
 
@@ -306,19 +297,19 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
         ft.submit("submit");
         assertEquals(
                 allowedUrlForAuthForwarding,
-                getGeoServer().getService(WMSInfo.class).getAllowedURLsForAuthForwarding().get(0));
+                getGeoServer()
+                        .getService(WMSInfo.class)
+                        .getAllowedURLsForAuthForwarding()
+                        .get(0));
 
         tester.startPage(WMSAdminPage.class);
         ft = tester.newFormTester("form");
-        allowedUrlForAuthForwarding =
-                "invalid-remote-url\n" + "htPP://invalidhttpurl\n" + "http://validurl";
+        allowedUrlForAuthForwarding = "invalid-remote-url\n" + "htPP://invalidhttpurl\n" + "http://validurl";
 
         ft.setValue("allowedURLsForAuthForwarding", allowedUrlForAuthForwarding);
         ft.submit("submit");
         String reportedInvalidURLs = "invalid-remote-url, htPP://invalidhttpurl";
-        tester.assertErrorMessages(
-                String.format(
-                        "The provided values are not valid HTTP urls: [%s]", reportedInvalidURLs));
+        tester.assertErrorMessages("The provided values are not valid HTTP urls: [%s]".formatted(reportedInvalidURLs));
     }
 
     /** Comprehensive test as a drop-down with default value is a tricky component to test. */

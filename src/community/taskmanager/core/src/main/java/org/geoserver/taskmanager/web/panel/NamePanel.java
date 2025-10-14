@@ -4,6 +4,7 @@
  */
 package org.geoserver.taskmanager.web.panel;
 
+import java.io.Serial;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -11,6 +12,7 @@ import org.apache.wicket.model.IModel;
 
 public class NamePanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -1829729746678003578L;
 
     public NamePanel(String id, IModel<String> model) {

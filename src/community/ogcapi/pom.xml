@@ -10,7 +10,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.27-SNAPSHOT</version>
+    <version>3.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.community</groupId>
@@ -32,12 +32,15 @@
     <module>dggs</module>
     <module>ogcapi-coverages</module>
     <module>ogcapi-coverages-assembly</module>
+    <module>ogcapi-processes</module>
+    <module>ogcapi-processes-assembly</module>
 
     <module>web-coverages</module>
     <module>web-images</module>
     <module>web-maps</module>
     <module>web-styles</module>
     <module>web-tiles</module>
+    <module>web-processes</module>
 
   </modules>
 

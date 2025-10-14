@@ -56,8 +56,7 @@ class TimeDimensionHelper {
 
     long resolutionValue;
 
-    public TimeDimensionHelper(DimensionInfo timeDimension, GridCoverage2DReader reader)
-            throws IOException {
+    public TimeDimensionHelper(DimensionInfo timeDimension, GridCoverage2DReader reader) throws IOException {
         this.timeDimension = timeDimension;
         this.accessor = new ReaderDimensionsAccessor(reader);
 
@@ -79,9 +78,8 @@ class TimeDimensionHelper {
             }
         }
         // uh oh? it's a value in milliseconds?
-        throw new WcsException(
-                "Dimension's resolution requires milliseconds for full representation, "
-                        + "but this cannot be represented in the domain set output");
+        throw new WcsException("Dimension's resolution requires milliseconds for full representation, "
+                + "but this cannot be represented in the domain set output");
     }
 
     public DimensionInfo getTimeDimension() {
@@ -117,12 +115,10 @@ class TimeDimensionHelper {
     }
 
     private String format(Object time) {
-        if (time instanceof Date) {
-            return format((Date) time);
-        } else if (time instanceof DateRange) {
-            // hack, we should probably look into description of partitioned coverages?
-            // or report the mid time?
-            DateRange range = (DateRange) time;
+        if (time instanceof Date date) {
+            return format(date);
+        } else if (time instanceof DateRange range) {
+            // hack, we should probably look into description of partitioned coverages? or report the mid time?
             return timeStampFormatter.format(range.getMinValue())
                     + "/"
                     + timeStampFormatter.format(range.getMaxValue());
@@ -147,10 +143,7 @@ class TimeDimensionHelper {
         return timeDimension.getPresentation();
     }
 
-    /**
-     * Returns the resolution unit, choosing among "year", "month", "day", "hour", "minute",
-     * "second"
-     */
+    /** Returns the resolution unit, choosing among "year", "month", "day", "hour", "minute", "second" */
     public String getResolutionUnit() {
         return resolutionUnit;
     }

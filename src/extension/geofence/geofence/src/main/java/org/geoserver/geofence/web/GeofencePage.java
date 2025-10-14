@@ -5,6 +5,7 @@
 package org.geoserver.geofence.web;
 
 import com.google.common.cache.LoadingCache;
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -44,6 +45,7 @@ import org.geoserver.web.wicket.model.ExtPropertyModel;
 // TODO WICKET8 - Verify this page works OK
 public class GeofencePage extends GeoServerSecuredPage {
 
+    @Serial
     private static final long serialVersionUID = 5845823599005718408L;
 
     /** Configuration object. */
@@ -53,8 +55,7 @@ public class GeofencePage extends GeoServerSecuredPage {
 
     public GeofencePage() {
         // extracts cfg object from the registered probe instance
-        GeoFenceConfigurationManager configManager =
-                GeoServerExtensions.bean(GeoFenceConfigurationManager.class);
+        GeoFenceConfigurationManager configManager = GeoServerExtensions.bean(GeoFenceConfigurationManager.class);
 
         config = configManager.getConfiguration().clone();
         cacheParams = configManager.getCacheConfiguration().clone();
@@ -62,43 +63,32 @@ public class GeofencePage extends GeoServerSecuredPage {
         final IModel<GeoFenceConfiguration> configModel = getGeoFenceConfigModel();
         final IModel<CacheConfiguration> cacheModel = getCacheConfigModel();
         Form<IModel<GeoFenceConfiguration>> form =
-                new Form<>(
-                        "form",
-                        new CompoundPropertyModel<IModel<GeoFenceConfiguration>>(configModel));
+                new Form<>("form", new CompoundPropertyModel<IModel<GeoFenceConfiguration>>(configModel));
         form.setOutputMarkupId(true);
         add(form);
-        form.add(
-                new TextField<>("instanceName", new PropertyModel<>(configModel, "instanceName"))
-                        .setRequired(true));
+        form.add(new TextField<>("instanceName", new PropertyModel<>(configModel, "instanceName")).setRequired(true));
         // .setVisible(!config.isInternal());
-        form.add(
-                new TextField<>(
-                                "servicesUrl",
-                                new ExtPropertyModel<String>(configModel, "servicesUrl")
-                                        .setReadOnly(config.isInternal()))
-                        .setRequired(true)
-                        .setEnabled(!config.isInternal()));
+        form.add(new TextField<>(
+                        "servicesUrl",
+                        new ExtPropertyModel<String>(configModel, "servicesUrl").setReadOnly(config.isInternal()))
+                .setRequired(true)
+                .setEnabled(!config.isInternal()));
 
         form.add(
                 new AjaxSubmitLink("test") {
+                    @Serial
                     private static final long serialVersionUID = -91239899377941223L;
 
                     @Override
                     protected void onSubmit(AjaxRequestTarget target) {
                         ((FormComponent<?>) form.get("servicesUrl")).processInput();
-                        String servicesUrl =
-                                (String)
-                                        ((FormComponent<?>) form.get("servicesUrl"))
-                                                .getConvertedInput();
+                        String servicesUrl = (String) ((FormComponent<?>) form.get("servicesUrl")).getConvertedInput();
                         RuleReaderService ruleReader = getRuleReaderService(servicesUrl);
                         try {
                             ruleReader.getMatchingRules(new RuleFilter());
 
-                            info(
-                                    new StringResourceModel(
-                                                    GeofencePage.class.getSimpleName()
-                                                            + ".connectionSuccessful")
-                                            .getObject());
+                            info(new StringResourceModel(GeofencePage.class.getSimpleName() + ".connectionSuccessful")
+                                    .getObject());
                         } catch (Exception e) {
                             error(e);
                             LOGGER.log(Level.WARNING, e.getMessage(), e);
@@ -113,13 +103,10 @@ public class GeofencePage extends GeoServerSecuredPage {
                     @SuppressWarnings("deprecation")
                     private RuleReaderService getRuleReaderService(String servicesUrl) {
                         if (config.isInternal()) {
-                            return (RuleReaderService)
-                                    GeoServerExtensions.bean("ruleReaderService");
+                            return (RuleReaderService) GeoServerExtensions.bean("ruleReaderService");
                         } else {
-                            org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean
-                                    invoker =
-                                            new org.springframework.remoting.httpinvoker
-                                                    .HttpInvokerProxyFactoryBean();
+                            org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean invoker =
+                                    new org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean();
                             invoker.setServiceUrl(servicesUrl);
                             invoker.setServiceInterface(RuleReaderService.class);
                             invoker.afterPropertiesSet();
@@ -128,64 +115,50 @@ public class GeofencePage extends GeoServerSecuredPage {
                     }
                 }.setDefaultFormProcessing(false));
 
-        form.add(
-                new CheckBox(
-                        "allowRemoteAndInlineLayers",
-                        new PropertyModel<>(configModel, "allowRemoteAndInlineLayers")));
-        form.add(
-                new CheckBox(
-                        "grantWriteToWorkspacesToAuthenticatedUsers",
-                        new PropertyModel<>(
-                                configModel, "grantWriteToWorkspacesToAuthenticatedUsers")));
-        form.add(
-                new CheckBox(
-                        "useRolesToFilter", new PropertyModel<>(configModel, "useRolesToFilter")));
+        form.add(new CheckBox(
+                "allowRemoteAndInlineLayers", new PropertyModel<>(configModel, "allowRemoteAndInlineLayers")));
+        form.add(new CheckBox(
+                "grantWriteToWorkspacesToAuthenticatedUsers",
+                new PropertyModel<>(configModel, "grantWriteToWorkspacesToAuthenticatedUsers")));
+        form.add(new CheckBox("useRolesToFilter", new PropertyModel<>(configModel, "useRolesToFilter")));
 
-        form.add(
-                new TextField<>(
-                        "acceptedRoles", new PropertyModel<>(configModel, "acceptedRoles")));
+        form.add(new TextField<>("acceptedRoles", new PropertyModel<>(configModel, "acceptedRoles")));
 
-        Button submit =
-                new Button("submit") {
-                    private static final long serialVersionUID = 1L;
+        Button submit = new Button("submit") {
+            @Serial
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    public void onSubmit() {
-                        try {
-                            // save the changed configuration
-                            GeoServerExtensions.bean(GeoFenceConfigurationController.class)
-                                    .storeConfiguration(config, cacheParams);
-                            doReturn();
-                        } catch (Exception e) {
-                            LOGGER.log(Level.WARNING, "Save error", e);
-                            error(e);
-                        }
-                    }
-                };
+            @Override
+            public void onSubmit() {
+                try {
+                    // save the changed configuration
+                    GeoServerExtensions.bean(GeoFenceConfigurationController.class)
+                            .storeConfiguration(config, cacheParams);
+                    doReturn();
+                } catch (Exception e) {
+                    LOGGER.log(Level.WARNING, "Save error", e);
+                    error(e);
+                }
+            }
+        };
         form.add(submit);
 
-        Button cancel =
-                new Button("cancel") {
-                    private static final long serialVersionUID = 1L;
+        Button cancel = new Button("cancel") {
+            @Serial
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    public void onSubmit() {
-                        doReturn();
-                    }
-                }.setDefaultFormProcessing(false);
+            @Override
+            public void onSubmit() {
+                doReturn();
+            }
+        }.setDefaultFormProcessing(false);
         form.add(cancel);
 
-        form.add(
-                new TextField<>("cacheSize", new PropertyModel<>(cacheModel, "size"))
-                        .setRequired(true));
+        form.add(new TextField<>("cacheSize", new PropertyModel<>(cacheModel, "size")).setRequired(true));
 
-        form.add(
-                new TextField<>("cacheRefresh", new PropertyModel<>(cacheModel, "refreshMilliSec"))
-                        .setRequired(true));
+        form.add(new TextField<>("cacheRefresh", new PropertyModel<>(cacheModel, "refreshMilliSec")).setRequired(true));
 
-        form.add(
-                new TextField<>("cacheExpire", new PropertyModel<>(cacheModel, "expireMilliSec"))
-                        .setRequired(true));
+        form.add(new TextField<>("cacheExpire", new PropertyModel<>(cacheModel, "expireMilliSec")).setRequired(true));
 
         CacheManager cacheManager = GeoServerExtensions.bean(CacheManager.class);
         updateStatsValues(cacheManager);
@@ -200,17 +173,15 @@ public class GeofencePage extends GeoServerSecuredPage {
         form.add(
                 new AjaxSubmitLink("invalidate") {
 
+                    @Serial
                     private static final long serialVersionUID = 3847903240475052867L;
 
                     @Override
                     protected void onSubmit(AjaxRequestTarget target) {
                         CacheManager cacheManager = GeoServerExtensions.bean(CacheManager.class);
                         cacheManager.invalidateAll();
-                        info(
-                                new StringResourceModel(
-                                                GeofencePage.class.getSimpleName()
-                                                        + ".cacheInvalidated")
-                                        .getObject());
+                        info(new StringResourceModel(GeofencePage.class.getSimpleName() + ".cacheInvalidated")
+                                .getObject());
                         updateStatsValues(cacheManager);
                         for (Label label : statsLabels) {
                             target.add(label);

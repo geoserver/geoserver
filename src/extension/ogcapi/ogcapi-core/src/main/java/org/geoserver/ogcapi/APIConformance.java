@@ -10,11 +10,11 @@ import java.util.Objects;
 /**
  * Service capability or feature, identified by conformance class.
  *
- * <p>OGCAPI Web Services are defined with core functionality, strictly extended with additional,
- * optional, functionality identified by "conformance class".
+ * <p>OGCAPI Web Services are defined with core functionality, strictly extended with additional, optional,
+ * functionality identified by "conformance class".
  *
- * <p>By comparison OGC Open Web Services can be extended using application profiles with
- * additional, optional, functionality.
+ * <p>By comparison OGC Open Web Services can be extended using application profiles with additional, optional,
+ * functionality.
  */
 @SuppressWarnings("serial")
 public class APIConformance implements Serializable {
@@ -37,8 +37,8 @@ public class APIConformance implements Serializable {
         /**
          * Draft standard being developed by OGC membership or other official organization.
          *
-         * <p>This protocol is under active development, often seeking funding and feedback.
-         * GeoSever community modules are used to explore draft standards.
+         * <p>This protocol is under active development, often seeking funding and feedback. GeoSever community modules
+         * are used to explore draft standards.
          *
          * <p>This functionality is opt-in and should not be enabled by default.
          */
@@ -54,16 +54,16 @@ public class APIConformance implements Serializable {
         /**
          * Mature standard, stable and ready for use.
          *
-         * <p>A finalized standard, no longer subject to breaking changes, is required for a
-         * GeoServer extension to be published. This functionality is stable and enabled by default.
+         * <p>A finalized standard, no longer subject to breaking changes, is required for a GeoServer extension to be
+         * published. This functionality is stable and enabled by default.
          */
         STANDARD(true, true),
 
         /**
          * Standards are dynamic and are retired when they are no longer in use.
          *
-         * <p>Retired standards are not enabled by default, but may still be enabled if you made use
-         * of them in a previous version of GeoServer.
+         * <p>Retired standards are not enabled by default, but may still be enabled if you made use of them in a
+         * previous version of GeoServer.
          */
         RETIRED_STANDARD(true, false);
 
@@ -89,8 +89,8 @@ public class APIConformance implements Serializable {
         /**
          * Standard is stable and no longer subject to change.
          *
-         * @return true if the standard is stable and no longer subject, false if the standard is
-         *     experimental and not yet finalized.
+         * @return true if the standard is stable and no longer subject, false if the standard is experimental and not
+         *     yet finalized.
          */
         public boolean isStable() {
             return stable;
@@ -102,6 +102,7 @@ public class APIConformance implements Serializable {
         EXTENSION
     }
 
+    @SuppressWarnings("PMD.UnusedPrivateField")
     private final APIConformance parent;
 
     /** Conformance class identifier. */
@@ -110,6 +111,7 @@ public class APIConformance implements Serializable {
     /** Indicates standard approval level. */
     private final Level level;
 
+    @SuppressWarnings("PMD.UnusedPrivateField")
     private final Type type;
 
     /** Bean property name. */
@@ -164,8 +166,7 @@ public class APIConformance implements Serializable {
      * @param parent parent conformance class (if this is an extension)
      * @param property bean property name
      */
-    public APIConformance(
-            String id, Level level, Type type, APIConformance parent, String property) {
+    public APIConformance(String id, Level level, Type type, APIConformance parent, String property) {
         this.id = id;
         this.level = level;
         this.type = type;
@@ -193,8 +194,8 @@ public class APIConformance implements Serializable {
     /**
      * Recommended storage key.
      *
-     * <p>To avoid confusion the recommended storage key is derived from the conformance class
-     * identifier. This may be overriden by the constructor.
+     * <p>To avoid confusion the recommended storage key is derived from the conformance class identifier. This may be
+     * overriden by the constructor.
      *
      * @return recommended storage key.
      */

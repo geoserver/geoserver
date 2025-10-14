@@ -44,8 +44,7 @@ public class ImportDataController extends ImportBaseController {
                 "/data",
                 "/tasks/{taskId}/data",
             })
-    public ImportData getData(
-            @PathVariable Long importId, @PathVariable(required = false) Integer taskId)
+    public ImportData getData(@PathVariable Long importId, @PathVariable(required = false) Integer taskId)
             throws Exception {
 
         ImportData data = null;
@@ -80,8 +79,7 @@ public class ImportDataController extends ImportBaseController {
     }
 
     // We need to force spring to ignore the .shp here (we don't want a .shp encoded response!
-    @DeleteMapping(
-            value = {"/data/files/{fileName:.+}", "/tasks/{taskId}/data/files/{fileName:\\.+}"})
+    @DeleteMapping(value = {"/data/files/{fileName:.+}", "/tasks/{taskId}/data/files/{fileName:\\.+}"})
     public ResponseEntity deleteDirectory(
             @PathVariable Long importId,
             @PathVariable(required = false) Integer taskId,
@@ -94,8 +92,7 @@ public class ImportDataController extends ImportBaseController {
         if (dir.getFiles().remove(file)) {
             return new ResponseEntity<>("", new HttpHeaders(), HttpStatus.NO_CONTENT);
         } else {
-            throw new RestException(
-                    "Unable to remove file: " + file.getName(), HttpStatus.BAD_REQUEST);
+            throw new RestException("Unable to remove file: " + file.getName(), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -125,7 +122,8 @@ public class ImportDataController extends ImportBaseController {
         try {
             if (file != null) {
                 return Iterators.find(
-                        dir.getFiles().iterator(), input -> input.getFile().getName().equals(file));
+                        dir.getFiles().iterator(),
+                        input -> input.getFile().getName().equals(file));
             }
         } catch (NoSuchElementException e) {
 

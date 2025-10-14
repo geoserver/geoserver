@@ -5,6 +5,7 @@
  */
 package org.geoserver.importer.transform;
 
+import java.io.Serial;
 import java.util.List;
 import java.util.logging.Logger;
 import org.geoserver.importer.ImportTask;
@@ -19,6 +20,7 @@ import org.geotools.util.logging.Logging;
  * @author Justin Deoliveira, OpenGeo
  */
 public class VectorTransformChain extends TransformChain<VectorTransform> {
+    @Serial
     private static final long serialVersionUID = 7406010540766743012L;
 
     static Logger LOGGER = Logging.getLogger(VectorTransformChain.class);
@@ -31,8 +33,8 @@ public class VectorTransformChain extends TransformChain<VectorTransform> {
         super(transforms);
     }
 
-    public SimpleFeatureType inline(
-            ImportTask task, DataStore dataStore, SimpleFeatureType featureType) throws Exception {
+    public SimpleFeatureType inline(ImportTask task, DataStore dataStore, SimpleFeatureType featureType)
+            throws Exception {
 
         for (InlineVectorTransform tx : filter(transforms, InlineVectorTransform.class)) {
             try {
@@ -46,8 +48,7 @@ public class VectorTransformChain extends TransformChain<VectorTransform> {
         return featureType;
     }
 
-    public SimpleFeature inline(
-            ImportTask task, DataStore dataStore, SimpleFeature oldFeature, SimpleFeature feature)
+    public SimpleFeature inline(ImportTask task, DataStore dataStore, SimpleFeature oldFeature, SimpleFeature feature)
             throws Exception {
 
         for (InlineVectorTransform tx : filter(transforms, InlineVectorTransform.class)) {

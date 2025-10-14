@@ -59,9 +59,6 @@ public class H3IndexTest {
             childId = h3.h3ToChildren(childId, r).get(0);
             r++;
         }
-        assertEquals(
-                Long.toBinaryString(childId) + "\n" + Long.toBinaryString(lowestId),
-                childId,
-                lowestId);
+        assertEquals(Long.toBinaryString(childId) + "\n" + Long.toBinaryString(lowestId), childId, lowestId);
     }
 }

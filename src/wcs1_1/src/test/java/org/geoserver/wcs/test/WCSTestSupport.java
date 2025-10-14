@@ -43,8 +43,7 @@ public abstract class WCSTestSupport extends CoverageTestSupport {
         }
 
         try {
-            final SchemaFactory factory =
-                    SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            final SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             WCS11_SCHEMA = factory.newSchema(wcsTestFile);
         } catch (Exception e) {
             throw new RuntimeException("Could not parse the WCS 1.1.1 schemas", e);
@@ -84,8 +83,7 @@ public abstract class WCSTestSupport extends CoverageTestSupport {
     }
 
     /** Parses a multipart message from the response */
-    protected Multipart getMultipart(MockHttpServletResponse response)
-            throws MessagingException, IOException {
+    protected Multipart getMultipart(MockHttpServletResponse response) throws MessagingException, IOException {
         MimeMessage body = new MimeMessage(null, getBinaryInputStream(response));
         Multipart multipart = (Multipart) body.getContent();
         return multipart;

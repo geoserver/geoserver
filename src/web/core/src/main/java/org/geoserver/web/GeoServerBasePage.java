@@ -13,6 +13,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.AttributeModifier;
@@ -101,7 +102,6 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         commonBaseInit();
     }
 
-    @SuppressWarnings("serial")
     protected GeoServerBasePage() {
         commonBaseInit();
     }
@@ -109,8 +109,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     protected void commonBaseInit() {
         // lookup for a pluggable favicon
         PackageResourceReference faviconReference = null;
-        List<HeaderContribution> cssContribs =
-                getGeoServerApplication().getBeansOfType(HeaderContribution.class);
+        List<HeaderContribution> cssContribs = getGeoServerApplication().getBeansOfType(HeaderContribution.class);
         for (HeaderContribution csscontrib : cssContribs) {
             try {
                 if (csscontrib.appliesTo(this)) {
@@ -132,16 +131,13 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         add(new ExternalLink("faviconLink", faviconUrl, null));
 
         // page title
-        add(
-                new Label(
-                        "pageTitle",
-                        new LoadableDetachableModel<String>() {
+        add(new Label("pageTitle", new LoadableDetachableModel<String>() {
 
-                            @Override
-                            protected String load() {
-                                return getPageTitle();
-                            }
-                        }));
+            @Override
+            protected String load() {
+                return getPageTitle();
+            }
+        }));
 
         // login / logout stuff
         GeoServerSecurityManager securityManager = getGeoServerApplication().getSecurityManager();
@@ -161,81 +157,116 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         final Authentication user = GeoServerSession.get().getAuthentication();
         final boolean anonymous = user == null || user instanceof AnonymousAuthenticationToken;
 
-        // login forms
+        // login forms that are actual forms
         List<LoginFormInfo> loginforms =
-                filterByAuth(getGeoServerApplication().getBeansOfType(LoginFormInfo.class));
+                filterByAuth(getGeoServerApplication().getBeansOfType(LoginFormInfo.class)).stream()
+                        .filter(lf -> !lf.isJustUseExternalLink())
+                        .collect(Collectors.toList());
 
-        add(
-                new ListView<>("loginforms", loginforms) {
+        // login forms that are just external links
+        List<LoginFormInfo> loginExternalLinks =
+                filterByAuth(getGeoServerApplication().getBeansOfType(LoginFormInfo.class)).stream()
+                        .filter(lf -> lf.isJustUseExternalLink())
+                        .collect(Collectors.toList());
+
+        // setup form-based login form
+        add(new ListView<>("loginforms", loginforms) {
+            @Override
+            public void populateItem(ListItem<LoginFormInfo> item) {
+                LoginFormInfo info = item.getModelObject();
+
+                WebMarkupContainer loginForm = new WebMarkupContainer("loginform") {
                     @Override
-                    public void populateItem(ListItem<LoginFormInfo> item) {
-                        LoginFormInfo info = item.getModelObject();
-
-                        WebMarkupContainer loginForm =
-                                new WebMarkupContainer("loginform") {
-                                    @Override
-                                    protected void onComponentTag(
-                                            org.apache.wicket.markup.ComponentTag tag) {
-                                        String loginPath = getResourcePath(info.getLoginPath());
-                                        tag.put("action", loginPath);
-                                    }
-                                };
-
-                        Image image;
-                        if (info.getIcon() != null) {
-                            image =
-                                    new Image(
-                                            "link.icon",
-                                            new PackageResourceReference(
-                                                    info.getComponentClass(), info.getIcon()));
-                        } else {
-                            image =
-                                    new Image(
-                                            "link.icon",
-                                            new PackageResourceReference(
-                                                    GeoServerBasePage.class,
-                                                    "img/icons/silk/door-in.png"));
-                        }
-
-                        loginForm.add(image);
-                        if (info.getTitleKey() != null && !info.getTitleKey().isEmpty()) {
-                            loginForm.add(
-                                    new Label(
-                                            "link.label",
-                                            new StringResourceModel(
-                                                    info.getTitleKey(), null, null)));
-                            image.add(
-                                    AttributeModifier.replace(
-                                            "alt",
-                                            new ParamResourceModel(info.getTitleKey(), null)));
-                        } else {
-                            loginForm.add(new Label("link.label", ""));
-                        }
-
-                        LoginFormHTMLInclude include;
-                        if (info.getInclude() != null) {
-                            include =
-                                    new LoginFormHTMLInclude(
-                                            "login.include",
-                                            new PackageResourceReference(
-                                                    info.getComponentClass(), info.getInclude()));
-                        } else {
-                            include = new LoginFormHTMLInclude("login.include", null);
-                        }
-                        loginForm.add(include);
-
-                        item.add(loginForm);
-
-                        boolean filterInChain = false;
-                        for (String filterClassName : securityFilterClassNames) {
-                            if (filterClassName.equals(info.getFilterClass().getName())) {
-                                filterInChain = true;
-                                break;
-                            }
-                        }
-                        loginForm.setVisible(anonymous && filterInChain);
+                    protected void onComponentTag(org.apache.wicket.markup.ComponentTag tag) {
+                        String loginPath = getResourcePath(info.getLoginPath());
+                        tag.put("action", loginPath);
+                        tag.put("method", info.getMethod());
                     }
-                });
+                };
+
+                Image image;
+                if (info.getIcon() != null) {
+                    image = new Image(
+                            "link.icon", new PackageResourceReference(info.getComponentClass(), info.getIcon()));
+                } else {
+                    image = new Image(
+                            "link.icon",
+                            new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/door-in.png"));
+                }
+
+                loginForm.add(image);
+                if (info.getTitleKey() != null && !info.getTitleKey().isEmpty()) {
+                    loginForm.add(new Label("link.label", new StringResourceModel(info.getTitleKey(), null, null)));
+                    image.add(AttributeModifier.replace("alt", new ParamResourceModel(info.getTitleKey(), null)));
+                } else {
+                    loginForm.add(new Label("link.label", ""));
+                }
+
+                LoginFormHTMLInclude include;
+                if (info.getInclude() != null) {
+                    include = new LoginFormHTMLInclude(
+                            "login.include", new PackageResourceReference(info.getComponentClass(), info.getInclude()));
+                } else {
+                    include = new LoginFormHTMLInclude("login.include", null);
+                }
+                loginForm.add(include);
+
+                item.add(loginForm);
+
+                boolean filterInChain = false;
+                for (String filterClassName : securityFilterClassNames) {
+                    if (filterClassName.equals(info.getFilterClass().getName())) {
+                        filterInChain = true;
+                        break;
+                    }
+                }
+                loginForm.setVisible(anonymous && filterInChain && info.isEnabled());
+            }
+        });
+
+        // setup external-link-based login form
+        add(new ListView<>("loginExternalLinks", loginExternalLinks) {
+            @Override
+            public void populateItem(ListItem<LoginFormInfo> item) {
+                LoginFormInfo info = item.getModelObject();
+
+                WebMarkupContainer loginForm = new WebMarkupContainer("loginform") {
+                    @Override
+                    protected void onComponentTag(org.apache.wicket.markup.ComponentTag tag) {
+                        tag.put("href", getResourcePath(info.getLoginPath()));
+                    }
+                };
+
+                Image image;
+                if (info.getIcon() != null) {
+                    image = new Image(
+                            "link.icon", new PackageResourceReference(info.getComponentClass(), info.getIcon()));
+                } else {
+                    image = new Image(
+                            "link.icon",
+                            new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/door-in.png"));
+                }
+
+                loginForm.add(image);
+                if (info.getTitleKey() != null && !info.getTitleKey().isEmpty()) {
+                    loginForm.add(new Label("link.label", new StringResourceModel(info.getTitleKey(), null, null)));
+                    image.add(AttributeModifier.replace("alt", new ParamResourceModel(info.getTitleKey(), null)));
+                } else {
+                    loginForm.add(new Label("link.label", ""));
+                }
+
+                item.add(loginForm);
+
+                boolean filterInChain = false;
+                for (String filterClassName : securityFilterClassNames) {
+                    if (filterClassName.equals(info.getFilterClass().getName())) {
+                        filterInChain = true;
+                        break;
+                    }
+                }
+                loginForm.setVisible(anonymous && filterInChain && info.isEnabled());
+            }
+        });
 
         // logout form
         WebMarkupContainer loggedInAsForm = new WebMarkupContainer("loggedinasform");
@@ -243,21 +274,17 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         loggedInAsForm.setVisible(!anonymous);
         add(loggedInAsForm);
 
-        WebMarkupContainer logoutForm =
-                new WebMarkupContainer("logoutform") {
-                    @Override
-                    protected void onComponentTag(org.apache.wicket.markup.ComponentTag tag) {
-                        String logoutPath = getResourcePath("j_spring_security_logout");
-                        tag.put("action", logoutPath);
-                    }
-                };
+        WebMarkupContainer logoutForm = new WebMarkupContainer("logoutform") {
+            @Override
+            protected void onComponentTag(org.apache.wicket.markup.ComponentTag tag) {
+                String logoutPath = getResourcePath("j_spring_security_logout");
+                tag.put("href", logoutPath);
+            }
+        };
         add(logoutForm);
 
-        Image image =
-                new Image(
-                        "link.icon",
-                        new PackageResourceReference(
-                                GeoServerBasePage.class, "img/icons/silk/door-out.png"));
+        Image image = new Image(
+                "link.icon", new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/door-out.png"));
 
         logoutForm.add(image);
         logoutForm.add(new Label("link.label", new StringResourceModel("logout", null, null)));
@@ -271,8 +298,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         DeveloperToolbar devToolbar = new DeveloperToolbar("devButtons");
         add(devToolbar);
         devToolbar.setVisible(
-                RuntimeConfigurationType.DEVELOPMENT.equals(
-                        getApplication().getConfigurationType()));
+                RuntimeConfigurationType.DEVELOPMENT.equals(getApplication().getConfigurationType()));
 
         @SuppressWarnings("unchecked")
         List<MenuPageInfo<GeoServerBasePage>> infos =
@@ -286,34 +312,26 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         List<Category> categories = new ArrayList<>(links.keySet());
         Collections.sort(categories);
 
-        add(
-                new ListView<>("category", categories) {
-                    @Override
-                    public void populateItem(ListItem<Category> item) {
-                        Category category = item.getModelObject();
-                        createCategoryComponent(item, category, links);
-                    }
-                });
+        add(new ListView<>("category", categories) {
+            @Override
+            public void populateItem(ListItem<Category> item) {
+                Category category = item.getModelObject();
+                createCategoryComponent(item, category, links);
+            }
+        });
 
-        add(
-                new ListView<>("standalone", standalone) {
-                    @Override
-                    public void populateItem(ListItem<MenuPageInfo<GeoServerBasePage>> item) {
-                        MenuPageInfo<GeoServerBasePage> info = item.getModelObject();
-                        BookmarkablePageLink<GeoServerBasePage> link =
-                                new BookmarkablePageLink<>("link", info.getComponentClass());
-                        link.add(
-                                AttributeModifier.replace(
-                                        "title",
-                                        new StringResourceModel(
-                                                info.getDescriptionKey(), null, null)));
-                        link.add(
-                                new Label(
-                                        "link.label",
-                                        new StringResourceModel(info.getTitleKey(), null, null)));
-                        item.add(link);
-                    }
-                });
+        add(new ListView<>("standalone", standalone) {
+            @Override
+            public void populateItem(ListItem<MenuPageInfo<GeoServerBasePage>> item) {
+                MenuPageInfo<GeoServerBasePage> info = item.getModelObject();
+                BookmarkablePageLink<GeoServerBasePage> link =
+                        new BookmarkablePageLink<>("link", info.getComponentClass());
+                link.add(AttributeModifier.replace(
+                        "title", new StringResourceModel(info.getDescriptionKey(), null, null)));
+                link.add(new Label("link.label", new StringResourceModel(info.getTitleKey(), null, null)));
+                item.add(link);
+            }
+        });
 
         add(topFeedbackPanel = new FeedbackPanel("topFeedback"));
         topFeedbackPanel.setOutputMarkupId(true);
@@ -321,35 +339,26 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         bottomFeedbackPanel.setOutputMarkupId(true);
 
         // ajax feedback image
-        add(
-                new Image(
-                        "ajaxFeedbackImage",
-                        new PackageResourceReference(
-                                GeoServerBasePage.class, "img/ajax-loader.gif")));
+        add(new Image(
+                "ajaxFeedbackImage", new PackageResourceReference(GeoServerBasePage.class, "img/ajax-loader.gif")));
 
         add(new WebMarkupContainer(HEADER_PANEL));
 
         // allow the subclasses to initialize before getTitle/getDescription are called
-        add(
-                new Label(
-                        "gbpTitle",
-                        new LoadableDetachableModel<String>() {
+        add(new Label("gbpTitle", new LoadableDetachableModel<String>() {
 
-                            @Override
-                            protected String load() {
-                                return getTitle();
-                            }
-                        }));
-        Label gbpDescription =
-                new Label(
-                        "gbpDescription",
-                        new LoadableDetachableModel<String>() {
+            @Override
+            protected String load() {
+                return getTitle();
+            }
+        }));
+        Label gbpDescription = new Label("gbpDescription", new LoadableDetachableModel<String>() {
 
-                            @Override
-                            protected String load() {
-                                return getDescription();
-                            }
-                        });
+            @Override
+            protected String load() {
+                return getDescription();
+            }
+        });
         gbpDescription.setEscapeModelStrings(false);
 
         add(gbpDescription);
@@ -372,34 +381,31 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     private Component localeSwitcher() {
         // defaults to English to have a more compact dropdown
         DropDownChoice<Locale> select =
-                new DropDownChoice<>(
-                        "localeSwitcher", new Model<>(getSessionLocale()), getLocalesModel());
-        select.add(
-                new AjaxFormComponentUpdatingBehavior("change") {
+                new DropDownChoice<>("localeSwitcher", new Model<>(getSessionLocale()), getLocalesModel());
+        select.add(new AjaxFormComponentUpdatingBehavior("change") {
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        Locale locale = select.getModelObject();
-                        // null is used for reset to browser settings
-                        if (locale == null) {
-                            // clear the cookie
-                            Cookie languageCookie =
-                                    new Cookie(GeoServerApplication.LANGUAGE_COOKIE_NAME, null);
-                            ((WebResponse) getResponse()).clearCookie(languageCookie);
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                Locale locale = select.getModelObject();
+                // null is used for reset to browser settings
+                if (locale == null) {
+                    // clear the cookie
+                    Cookie languageCookie = new Cookie(GeoServerApplication.LANGUAGE_COOKIE_NAME, null);
+                    ((WebResponse) getResponse()).clearCookie(languageCookie);
 
-                            // get the language from request
-                            locale = target.getPage().getRequest().getLocale();
-                            if (locale == null) locale = Locale.ENGLISH;
-                        } else {
-                            // explicit choice, save to cookie
-                            getGeoServerApplication().refreshLocaleCookie(getResponse(), locale);
-                        }
+                    // get the language from request
+                    locale = target.getPage().getRequest().getLocale();
+                    if (locale == null) locale = Locale.ENGLISH;
+                } else {
+                    // explicit choice, save to cookie
+                    getGeoServerApplication().refreshLocaleCookie(getResponse(), locale);
+                }
 
-                        // by now locale has been set to a non-null value, stick in the session too
-                        getSession().setLocale(locale);
-                        target.add(getPage());
-                    }
-                });
+                // by now locale has been set to a non-null value, stick in the session too
+                getSession().setLocale(locale);
+                target.add(getPage());
+            }
+        });
         return select;
     }
 
@@ -431,61 +437,44 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     }
 
     private void createCategoryComponent(
-            ListItem<Category> item,
-            Category category,
-            Map<Category, List<MenuPageInfo<GeoServerBasePage>>> links) {
-        item.add(
-                new Label(
-                        "category.header",
-                        new StringResourceModel(category.getNameKey(), null, null)));
-        item.add(
-                new ListView<>("category.links", links.get(category)) {
-                    @Override
-                    public void populateItem(ListItem<MenuPageInfo<GeoServerBasePage>> item) {
-                        createMenuComponent(item);
-                    }
-                });
+            ListItem<Category> item, Category category, Map<Category, List<MenuPageInfo<GeoServerBasePage>>> links) {
+        item.add(new Label("category.header", new StringResourceModel(category.getNameKey(), null, null)));
+        item.add(new ListView<>("category.links", links.get(category)) {
+            @Override
+            public void populateItem(ListItem<MenuPageInfo<GeoServerBasePage>> item) {
+                createMenuComponent(item);
+            }
+        });
     }
 
     private void createMenuComponent(ListItem<MenuPageInfo<GeoServerBasePage>> item) {
         MenuPageInfo<GeoServerBasePage> info = item.getModelObject();
-        BookmarkablePageLink<Page> link =
-                new BookmarkablePageLink<>("link", info.getComponentClass()) {
+        BookmarkablePageLink<Page> link = new BookmarkablePageLink<>("link", info.getComponentClass()) {
 
-                    @Override
-                    public PageParameters getPageParameters() {
-                        PageParameters pageParams = super.getPageParameters();
-                        pageParams.add(GeoServerTablePanel.FILTER_PARAM, false, Type.PATH);
-                        return pageParams;
-                    }
-                };
+            @Override
+            public PageParameters getPageParameters() {
+                PageParameters pageParams = super.getPageParameters();
+                pageParams.add(GeoServerTablePanel.FILTER_PARAM, false, Type.PATH);
+                return pageParams;
+            }
+        };
 
-        link.add(
-                AttributeModifier.replace(
-                        "title", new StringResourceModel(info.getDescriptionKey(), null, null)));
+        link.add(AttributeModifier.replace("title", new StringResourceModel(info.getDescriptionKey(), null, null)));
         link.add(new Label("link.label", new StringResourceModel(info.getTitleKey(), null, null)));
         Image image;
         if (info.getIcon() != null) {
-            image =
-                    new Image(
-                            "link.icon",
-                            new PackageResourceReference(info.getComponentClass(), info.getIcon()));
+            image = new Image("link.icon", new PackageResourceReference(info.getComponentClass(), info.getIcon()));
         } else {
-            image =
-                    new Image(
-                            "link.icon",
-                            new PackageResourceReference(
-                                    GeoServerBasePage.class, "img/icons/silk/wrench.png"));
+            image = new Image(
+                    "link.icon", new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/wrench.png"));
         }
-        image.add(
-                AttributeModifier.replace("alt", new ParamResourceModel(info.getTitleKey(), null)));
+        image.add(AttributeModifier.replace("alt", new ParamResourceModel(info.getTitleKey(), null)));
         link.add(image);
         item.add(link);
     }
 
     private String getResourcePath(String path) {
-        HttpServletRequest hr =
-                ((GeoServerApplication) getApplication()).servletRequest(getRequest());
+        HttpServletRequest hr = ((GeoServerApplication) getApplication()).servletRequest(getRequest());
         String baseURL = ResponseUtils.baseURL(hr);
         return ResponseUtils.buildURL(baseURL, path, null, URLMangler.URLType.RESOURCE);
     }
@@ -495,48 +484,29 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 
         // includes jquery, required by the placeholder plugin (wicket only include jquery if he
         // need it)
-        response.render(
-                new PriorityHeaderItem(
-                        JavaScriptHeaderItem.forReference(JQueryResourceReference.INSTANCE_3)));
-        response.render(
-                CssReferenceHeaderItem.forReference(
-                        new PackageResourceReference(
-                                GeoServerBasePage.class, "css/blueprint/screen.css"),
-                        "screen, projection"));
-        response.render(
-                CssReferenceHeaderItem.forReference(
-                        new PackageResourceReference(
-                                GeoServerBasePage.class, "css/blueprint/print.css"),
-                        "print"));
-        response.render(
-                CssReferenceHeaderItem.forReference(
-                        new PackageResourceReference(
-                                GeoServerBasePage.class, "css/bootstrap-utilities.min.css"),
-                        "all"));
-        response.render(
-                CssReferenceHeaderItem.forReference(
-                        new PackageResourceReference(GeoServerBasePage.class, "css/geoserver.css"),
-                        "screen, projection"));
-        response.render(
-                JavaScriptHeaderItem.forReference(
-                        new PackageResourceReference(
-                                GeoServerBasePage.class, "js/jquery.placeholder.js")));
-        response.render(
-                JavaScriptHeaderItem.forReference(
-                        new PackageResourceReference(
-                                GeoServerBasePage.class, "js/jquery.fullscreen.js")));
+        response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(JQueryResourceReference.INSTANCE_3)));
+        response.render(CssReferenceHeaderItem.forReference(
+                new PackageResourceReference(GeoServerBasePage.class, "css/blueprint/screen.css"),
+                "screen, projection"));
+        response.render(CssReferenceHeaderItem.forReference(
+                new PackageResourceReference(GeoServerBasePage.class, "css/blueprint/print.css"), "print"));
+        response.render(CssReferenceHeaderItem.forReference(
+                new PackageResourceReference(GeoServerBasePage.class, "css/bootstrap-utilities.min.css"), "all"));
+        response.render(CssReferenceHeaderItem.forReference(
+                new PackageResourceReference(GeoServerBasePage.class, "css/geoserver.css"), "screen, projection"));
+        response.render(JavaScriptHeaderItem.forReference(
+                new PackageResourceReference(GeoServerBasePage.class, "js/jquery.placeholder.js")));
+        response.render(JavaScriptHeaderItem.forReference(
+                new PackageResourceReference(GeoServerBasePage.class, "js/jquery.fullscreen.js")));
 
-        response.render(
-                JavaScriptHeaderItem.forReference(
-                        new PackageResourceReference(
-                                GeoServerBasePage.class, "js/jquery.hide.ajaxFeedback.js")));
+        response.render(JavaScriptHeaderItem.forReference(
+                new PackageResourceReference(GeoServerBasePage.class, "js/jquery.hide.ajaxFeedback.js")));
 
         // due to Content-security-policy, JS must be rendered by Wicket.  This inits the textboxes
         // for placeholders.
         response.render(OnDomReadyHeaderItem.forScript("$('input, textarea').placeholder();"));
 
-        List<HeaderContribution> cssContribs =
-                getGeoServerApplication().getBeansOfType(HeaderContribution.class);
+        List<HeaderContribution> cssContribs = getGeoServerApplication().getBeansOfType(HeaderContribution.class);
         for (HeaderContribution csscontrib : cssContribs) {
             try {
                 if (csscontrib.appliesTo(this)) {
@@ -581,10 +551,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         return new ParamResourceModel("description", this).getString();
     }
 
-    /**
-     * Gets the page title from the PageName.title resource, falling back on "GeoServer" if not
-     * found
-     */
+    /** Gets the page title from the PageName.title resource, falling back on "GeoServer" if not found */
     String getPageTitle() {
         try {
             return "GeoServer: " + getTitle();
@@ -595,16 +562,15 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     }
 
     /**
-     * The base page is built with an empty panel in the page-header section that can be filled by
-     * subclasses calling this method
+     * The base page is built with an empty panel in the page-header section that can be filled by subclasses calling
+     * this method
      *
-     * @param component The component to be placed at the bottom of the page-header section. The
-     *     component must have "page-header" id
+     * @param component The component to be placed at the bottom of the page-header section. The component must have
+     *     "page-header" id
      */
     protected void setHeaderPanel(Component component) {
         if (!HEADER_PANEL.equals(component.getId()))
-            throw new IllegalArgumentException(
-                    "The header panel component must have 'headerPanel' id");
+            throw new IllegalArgumentException("The header panel component must have 'headerPanel' id");
         remove(HEADER_PANEL);
         add(component);
     }
@@ -663,9 +629,8 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     }
 
     /**
-     * Returns the id for the component used as a veil for the whole page while Wicket is processing
-     * an ajax request, so it is impossible to trigger the same ajax action multiple times (think of
-     * saving/deleting a resource, etc)
+     * Returns the id for the component used as a veil for the whole page while Wicket is processing an ajax request, so
+     * it is impossible to trigger the same ajax action multiple times (think of saving/deleting a resource, etc)
      *
      * @see IAjaxIndicatorAware#getAjaxIndicatorMarkupId()
      */
@@ -695,30 +660,27 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     }
 
     /**
-     * Returns from the page by navigating to one of {@link #returnPage} or {@link
-     * #returnPageClass}, processed in that order.
+     * Returns from the page by navigating to one of {@link #returnPage} or {@link #returnPageClass}, processed in that
+     * order.
      *
-     * <p>This method should be called by pages that must return after doing some task on a form
-     * submit such as a save or a cancel. If no return page has been set via {@link
-     * #setReturnPage(Page)} or {@link #setReturnPageClass(Class)} then {@link GeoServerHomePage} is
-     * used.
+     * <p>This method should be called by pages that must return after doing some task on a form submit such as a save
+     * or a cancel. If no return page has been set via {@link #setReturnPage(Page)} or {@link #setReturnPage(Class)}
+     * then {@link GeoServerHomePage} is used.
      */
     protected void doReturn() {
         doReturn(null);
     }
 
     /**
-     * Returns from the page by navigating to one of {@link #returnPage} or {@link
-     * #returnPageClass}, processed in that order.
+     * Returns from the page by navigating to one of {@link #returnPage} or {@link #returnPageClass}, processed in that
+     * order.
      *
      * <p>This method accepts a parameter to use as a default in cases where {@link #returnPage} and
-     * {@link #returnPageClass} are not set and a default other than {@link GeoServerHomePage}
-     * should be used.
+     * {@link #returnPageClass} are not set and a default other than {@link GeoServerHomePage} should be used.
      *
-     * <p>This method should be called by pages that must return after doing some task on a form
-     * submit such as a save or a cancel. If no return page has been set via {@link
-     * #setReturnPage(Page)} or {@link #setReturnPageClass(Class)} then {@link GeoServerHomePage} is
-     * used.
+     * <p>This method should be called by pages that must return after doing some task on a form submit such as a save
+     * or a cancel. If no return page has been set via {@link #setReturnPage(Page)} or {@link #setResponsePage(Class)}
+     * then {@link GeoServerHomePage} is used.
      */
     protected void doReturn(Class<? extends Page> defaultPageClass) {
         if (returnPage != null) {

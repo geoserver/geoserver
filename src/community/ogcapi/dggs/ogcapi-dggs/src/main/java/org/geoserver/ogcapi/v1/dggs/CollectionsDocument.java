@@ -29,7 +29,7 @@ public class CollectionsDocument extends AbstractDocument {
         this.geoServer = geoServer;
 
         // build the self links
-        String path = "ogc/dggs/collections/";
+        String path = "ogc/dggs/v1/collections/";
         addSelfLinks(path);
     }
 

@@ -49,7 +49,6 @@ import org.geotools.dggs.DGGSInstance;
 import org.geotools.dggs.GroupedMatrixAggregate;
 import org.geotools.dggs.MatrixAggregate;
 import org.geotools.dggs.Zone;
-import org.geotools.dggs.gstore.DGGSStore;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -91,7 +90,8 @@ public class DGGSDAPAExtension {
     @HTMLResponseBody(templateName = "dapa.ftl", fileName = "dapa.html")
     public CollectionDAPA dapa(@PathVariable(name = "collectionId") String collectionId) throws IOException {
         FeatureTypeInfo info = getFeatureType(collectionId);
-        return new CollectionDAPA(collectionId, info);
+        String zoneColumnName = getZoneColumnName(collectionId);
+        return new CollectionDAPA(collectionId, info, zoneColumnName);
     }
 
     public FeatureTypeInfo getFeatureType(@PathVariable(name = "collectionId") String collectionId) throws IOException {
@@ -99,7 +99,7 @@ public class DGGSDAPAExtension {
         DimensionInfo time = ft.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
         if (time == null)
             throw new APIException(
-                    APIException.NO_APPLICABLE_CODE, "This colleection does not support DAPA", HttpStatus.NOT_FOUND);
+                    APIException.NO_APPLICABLE_CODE, "This collection does not support DAPA", HttpStatus.NOT_FOUND);
         return ft;
     }
 
@@ -108,8 +108,9 @@ public class DGGSDAPAExtension {
     @HTMLResponseBody(templateName = "dapaVariables.ftl", fileName = "dapa.html")
     public DAPAVariables variableNames(@PathVariable(name = "collectionId") String collectionId) throws IOException {
         FeatureTypeInfo info = getFeatureType(collectionId);
+        String zoneColumnName = getZoneColumnName(collectionId);
         // TODO: eventually make it work for complex features
-        DAPAVariables result = new DAPAVariables(collectionId, info);
+        DAPAVariables result = new DAPAVariables(collectionId, info, zoneColumnName);
         return result;
     }
 
@@ -147,10 +148,10 @@ public class DGGSDAPAExtension {
             @RequestParam(name = "resolution", required = false, defaultValue = "0") int resolution)
             throws IOException, FactoryException, ParseException {
         FeatureTypeInfo ft = getFeatureType(collectionId);
-
         // parse inputs
+        AttributeDescriptor zoneId = getZoneColumnDescriptor(collectionId);
         DGGSGeometryFilterParser geometryParser =
-                new DGGSGeometryFilterParser(FF, service.getDGGSInstance(collectionId));
+                new DGGSGeometryFilterParser(FF, service.getDGGSInstance(collectionId), zoneId);
         geometryParser.setBBOX(bbox);
         geometryParser.setGeometry(wkt);
         geometryParser.setZoneIds(zones, resolution);
@@ -219,10 +220,10 @@ public class DGGSDAPAExtension {
             @RequestParam(name = "resolution", required = false, defaultValue = "0") int resolution)
             throws IOException, FactoryException, ParseException {
         FeatureTypeInfo ft = getFeatureType(collectionId);
-
         // parse inputs
+        AttributeDescriptor zoneId = getZoneColumnDescriptor(collectionId);
         DGGSGeometryFilterParser geometryParser =
-                new DGGSGeometryFilterParser(FF, service.getDGGSInstance(collectionId));
+                new DGGSGeometryFilterParser(FF, service.getDGGSInstance(collectionId), zoneId);
         geometryParser.setBBOX(bbox);
         geometryParser.setGeometry(wkt);
         geometryParser.setZoneIds(zones, resolution);
@@ -246,12 +247,12 @@ public class DGGSDAPAExtension {
                 Arrays.stream(variables).map(v -> FF.property(v)).collect(Collectors.toList());
         // run a full aggregate and build the feature
         GroupedMatrixAggregate aggregate = new GroupedMatrixAggregate(
-                expressions, Arrays.asList(functions), Arrays.asList(FF.property(DGGSStore.ZONE_ID)));
+                expressions, Arrays.asList(functions), Arrays.asList(FF.property(getZoneColumnName(collectionId))));
         fs.getFeatures(q).accepts(aggregate, null);
 
         // build the target feature type and feature
-        SimpleFeatureType targetType =
-                getTimeTargetType((SimpleFeatureType) ft.getFeatureType(), variables, functions, "area");
+        SimpleFeatureType targetType = getTimeTargetType(
+                (SimpleFeatureType) ft.getFeatureType(), variables, functions, "area", getZoneColumnName(collectionId));
         SimpleFeatureBuilder fb = new SimpleFeatureBuilder(targetType);
         GroupedMatrixAggregate.IterableResult result = (GroupedMatrixAggregate.IterableResult) aggregate.getResult();
         return new GroupMatrixFeatureCollection(targetType, result, gr -> {
@@ -286,8 +287,9 @@ public class DGGSDAPAExtension {
             @RequestParam(name = "resolution", required = false, defaultValue = "0") int resolution)
             throws IOException, FactoryException, ParseException {
         // parse inputs
+        AttributeDescriptor zoneId = getZoneColumnDescriptor(collectionId);
         DGGSGeometryFilterParser geometryParser =
-                new DGGSGeometryFilterParser(FF, service.getDGGSInstance(collectionId));
+                new DGGSGeometryFilterParser(FF, service.getDGGSInstance(collectionId), zoneId);
         geometryParser.setBBOX(bbox);
         geometryParser.setGeometry(wkt);
         geometryParser.setZoneIds(zones, resolution);
@@ -366,7 +368,7 @@ public class DGGSDAPAExtension {
             throws Exception {
         @SuppressWarnings("PMD.CloseResource") // managed by the store
         DGGSInstance dggs = service.getDGGSInstance(collectionId);
-        zoneId = getPositionZoneId(zoneId, wkt, resolution, dggs);
+        zoneId = getPositionZoneId(zoneId, wkt, resolution, dggs, collectionId);
 
         return service.zone(collectionId, zoneId, datetime, variableNames, format);
     }
@@ -391,11 +393,11 @@ public class DGGSDAPAExtension {
         FeatureTypeInfo ft = getFeatureType(collectionId);
         @SuppressWarnings("PMD.CloseResource") // managed by the store
         DGGSInstance dggs = service.getDGGSInstance(collectionId);
-        zoneId = getPositionZoneId(zoneId, wkt, resolution, dggs);
+        zoneId = getPositionZoneId(zoneId, wkt, resolution, dggs, collectionId);
 
         // parse inputs
         List<Filter> filters = new ArrayList<>();
-        filters.add(FF.equals(FF.property(DGGSStore.ZONE_ID), FF.literal(zoneId)));
+        filters.add(FF.equals(FF.property(getZoneColumnName(collectionId)), FF.literal(zoneId)));
         if (dateTimeSpec != null) {
             filters.add(service.buildDateTimeFilter(ft, new DateTimeConverter().convert(dateTimeSpec)));
         }
@@ -410,12 +412,16 @@ public class DGGSDAPAExtension {
                 Arrays.stream(variables).map(v -> FF.property(v)).collect(Collectors.toList());
         // run a full aggregate and build the feature
         GroupedMatrixAggregate aggregate = new GroupedMatrixAggregate(
-                expressions, Arrays.asList(functions), Arrays.asList(FF.property(DGGSStore.ZONE_ID)));
+                expressions, Arrays.asList(functions), Arrays.asList(FF.property(getZoneColumnName(collectionId))));
         fs.getFeatures(q).accepts(aggregate, null);
 
         // build the target feature type and feature
-        SimpleFeatureType targetType =
-                getTimeTargetType((SimpleFeatureType) ft.getFeatureType(), variables, functions, "position");
+        SimpleFeatureType targetType = getTimeTargetType(
+                (SimpleFeatureType) ft.getFeatureType(),
+                variables,
+                functions,
+                "position",
+                getZoneColumnName(collectionId));
         SimpleFeatureBuilder fb = new SimpleFeatureBuilder(targetType);
         GroupedMatrixAggregate.IterableResult result = (GroupedMatrixAggregate.IterableResult) aggregate.getResult();
         Point center = dggs.getZone(zoneId).getCenter();
@@ -427,11 +433,20 @@ public class DGGSDAPAExtension {
         });
     }
 
-    public String getPositionZoneId(String zoneId, String wkt, Integer resolution, DGGSInstance dggs)
-            throws ParseException {
+    private AttributeDescriptor getZoneColumnDescriptor(String collectionId) throws IOException {
+        return service.getZoneColumnDescriptor(collectionId);
+    }
+
+    private String getZoneColumnName(String collectionId) throws IOException {
+        return service.getZoneColumnName(collectionId);
+    }
+
+    public String getPositionZoneId(
+            String zoneId, String wkt, Integer resolution, DGGSInstance dggs, String collectionId) throws IOException {
         if (zoneId == null) {
             if (wkt != null) {
-                DGGSGeometryFilterParser parser = new DGGSGeometryFilterParser(FF, dggs, Point.class);
+                DGGSGeometryFilterParser parser =
+                        new DGGSGeometryFilterParser(FF, dggs, Point.class, getZoneColumnDescriptor(collectionId));
                 parser.setGeometry(wkt);
                 Geometry geom = parser.getGeometry();
                 if (!(geom instanceof Point))
@@ -450,11 +465,15 @@ public class DGGSDAPAExtension {
     }
 
     private SimpleFeatureType getTimeTargetType(
-            SimpleFeatureType featureType, String[] variables, Aggregate[] functions, String aggregatorSuffix) {
+            SimpleFeatureType featureType,
+            String[] variables,
+            Aggregate[] functions,
+            String aggregatorSuffix,
+            String zoneColumn) {
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
         builder.setName(featureType.getTypeName() + "_" + aggregatorSuffix + "_time_aggregate");
         builder.add(GEOMETRY, Geometry.class, 4326);
-        builder.add(DGGSStore.ZONE_ID, String.class);
+        builder.add(zoneColumn, String.class);
         for (String variable : variables) {
             for (Aggregate function : functions) {
                 Class<?> binding = featureType.getDescriptor(variable).getType().getBinding();

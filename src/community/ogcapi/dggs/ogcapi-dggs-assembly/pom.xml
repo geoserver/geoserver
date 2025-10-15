@@ -19,12 +19,6 @@
   <dependencies>
     <dependency>
       <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-dggs-core</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.geoserver.community</groupId>
       <artifactId>gs-ogcapi-dggs</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -36,17 +30,30 @@
     </dependency>
 
     <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-dggs-core</artifactId>
+      <version>${gt.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-dggs-clickhouse</artifactId>
+      <artifactId>gs-dggs-rhealpix</artifactId>
       <version>${project.version}</version>
     </dependency>
-
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-dggs-h3</artifactId>
+      <version>${gt.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-clickhouse</artifactId>
+      <version>${gt.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-web-ogcapi</artifactId>
       <version>${project.version}</version>
     </dependency>
-
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>

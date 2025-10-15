@@ -1,44 +1,21 @@
 <assembly>
-    <id>gwc-gcs-blobstore-plugin</id>
-    <formats>
-        <format>zip</format>
-    </formats>
-    <includeBaseDirectory>false</includeBaseDirectory>
-    <fileSets>
-    <fileSet>
-      <directory>target</directory>
-      <outputDirectory></outputDirectory>
-      <includes>
-        <include>${artifactId}-${project.version}.jar</include>
-      </includes>
-    </fileSet>
-        <fileSet>
-            <directory>target/dependency</directory>
-            <outputDirectory></outputDirectory>
-            <includes>
-                <include>gcs-blob*.jar</include>
-                <include>google-cloud-storage*.jar</include>
-                <include>google-cloud-core*.jar</include>
-                <include>gax*.jar</include>
-                <include>google-auth-*.jar</include>
-                <include>google-http-client*.jar</include>
-                <include>google-api-client*.jar</include>
-                <include>opencensus*.jar</include>
-                <include>proto-google-*.jar</include>
-                <include>protobuf-java*.jar</include>
-                <include>grpc-*.jar</include>
-                <include>gson*.jar</include>
-                <include>guava*.jar</include>
-                <include>threetenbp*.jar</include>
-                <include>conscrypt*.jar</include>
-                <include>perfmark*.jar</include>
-                <include>annotations*.jar</include>
-                <include>checker-qual*.jar</include>
-                <include>error_prone_annotations*.jar</include>
-                <include>failureaccess*.jar</include>
-                <include>j2objc*.jar</include>
-                <include>jsr305*.jar</include>
-            </includes>
-        </fileSet>
-    </fileSets>
+  <id>gwc-gcs-blobstore-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <dependencySets>
+    <dependencySet>
+      <!-- The destination directory for these JARs inside the final ZIP file -->
+      <outputDirectory>/</outputDirectory>
+      <!-- Include this project's own built JAR file in the set -->
+      <useProjectArtifact>true</useProjectArtifact>
+      <!-- Filter to include only dependencies needed at runtime (this also includes the 'compile' scope) -->
+      <scope>runtime</scope>
+      <!-- Include transitive dependencies (the entire dependency tree) -->
+      <useTransitiveDependencies>true</useTransitiveDependencies>
+      <!-- Ensure the full dependency tree is included without re-applying filters -->
+      <useTransitiveFiltering>false</useTransitiveFiltering>
+    </dependencySet>
+  </dependencySets>
 </assembly>

@@ -17,21 +17,82 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-gwc</artifactId>
-      <version>${project.version}</version>
+      <groupId>org.geowebcache</groupId>
+      <artifactId>gwc-gcs-blob</artifactId>
+      <version>${gwc.version}</version>
+      <exclusions>
+        <!-- added as provided bellow -->
+        <exclusion>
+          <artifactId>guava</artifactId>
+          <groupId>com.google.guava</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>failureaccess</artifactId>
+          <groupId>com.google.guava</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>listenablefuture</artifactId>
+          <groupId>com.google.guava</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>error_prone_annotations</artifactId>
+          <groupId>com.google.errorprone</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>j2objc-annotations</artifactId>
+          <groupId>com.google.j2objc</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>jsr305</artifactId>
+          <groupId>com.google.code.findbugs</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>commons-codec</artifactId>
+          <groupId>commons-codec</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
+    <!--
+      Explicitly add provided scope dependencies. The assembly.xml descriptor works
+      by adding only the compile and runtime scoped dependencies to the zip file,
+      instead of having to know explicitly which jars to add.
+    -->
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-gwc</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-gwc</artifactId>
       <version>${project.version}</version>
+      <scope>provided</scope>
     </dependency>
-
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-main</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.geowebcache</groupId>
-      <artifactId>gcs-blob</artifactId>
-      <version>${gwc.version}</version>
+      <artifactId>gwc-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <!-- test dependencies -->
@@ -54,7 +115,6 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-wms</artifactId>
-      <version>${gs.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>

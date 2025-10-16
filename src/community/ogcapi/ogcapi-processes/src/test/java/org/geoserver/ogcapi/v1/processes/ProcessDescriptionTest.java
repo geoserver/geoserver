@@ -207,4 +207,51 @@ public class ProcessDescriptionTest extends OGCApiTestSupport {
             assertEquals("Expected formats do not match", expectedFormats, actualFormats);
         }
     }
+
+    @Test
+    public void testEchoProcess() throws Exception {
+        DocumentContext doc = getAsJSONPath("ogc/processes/v1/processes/gs:Echo", 200);
+        assertEquals("gs:Echo", doc.read("id"));
+        assertEquals("Echo", doc.read("title"));
+        assertEquals("Echoes back the input parameters provided to the process.", doc.read("description"));
+        assertEquals(List.of("sync-execute", "async-execute"), doc.read("jobControlOptions"));
+        // Check inputs
+        assertEquals(5, doc.read("inputs.size()", Integer.class).intValue());
+        // string input
+        DocumentContext stringInput = readContext(doc, "inputs.stringInput");
+        assertEquals("stringInput", stringInput.read("title"));
+        assertEquals("string", stringInput.read("schema.type"));
+        assertEquals(0, stringInput.read("minOccurs", Integer.class).intValue());
+        assertEquals(1, stringInput.read("maxOccurs", Integer.class).intValue());
+        // double input
+        DocumentContext doubleInput = readContext(doc, "inputs.doubleInput");
+        assertEquals("doubleInput", doubleInput.read("title"));
+        assertEquals("number", doubleInput.read("schema.type"));
+        assertEquals("double", doubleInput.read("schema.format"));
+        assertEquals(0, doubleInput.read("minOccurs", Integer.class).intValue());
+        assertEquals(1, doubleInput.read("maxOccurs", Integer.class).intValue());
+        // bbox input
+        DocumentContext boundingBoxInput = readContext(doc, "inputs.boundingBoxInput");
+        assertEquals("boundingBoxInput", boundingBoxInput.read("title"));
+        assertEquals(AbstractProcessIO.FORMAT_OGC_BBOX, boundingBoxInput.read("schema.allOf[0].format"));
+        assertEquals(0, boundingBoxInput.read("minOccurs", Integer.class).intValue());
+        assertEquals(1, boundingBoxInput.read("maxOccurs", Integer.class).intValue());
+        // image input
+        DocumentContext imageInput = readContext(doc, "inputs.imageInput");
+        assertEquals("imageInput", imageInput.read("title"));
+        DocumentContext imageSchemas = readContext(imageInput, "schema.oneOf");
+        for (int i = 0; i < 2; i++) {
+            DocumentContext schema = readContext(imageSchemas, String.format("[%d]", i));
+            assertEquals("string", schema.read("type"));
+            assertEquals("binary", schema.read("format"));
+            String format = schema.read("contentMediaType");
+            assertTrue(format.equals("image/png") || format.equals("image/jpeg"));
+        }
+        // pause input
+        DocumentContext pauseInput = readContext(doc, "inputs.pause");
+        assertEquals("pause", pauseInput.read("title"));
+        assertEquals("integer", pauseInput.read("schema.type"));
+        assertEquals(0, pauseInput.read("minOccurs", Integer.class).intValue());
+        assertEquals(1, pauseInput.read("maxOccurs", Integer.class).intValue());
+    }
 }

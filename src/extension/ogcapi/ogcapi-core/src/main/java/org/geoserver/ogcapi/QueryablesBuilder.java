@@ -147,13 +147,15 @@ public class QueryablesBuilder {
             schema.setFormat("uuid");
         } else if (URL.class.isAssignableFrom(binding)) {
             schema.setTitle("uri");
-        } else if (binding.isAssignableFrom(String.class)) {
-            schema.setFormat("string");
         } else if (binding.isAssignableFrom(Boolean.class)) {
             schema.setFormat("boolean");
+        } else if (binding.isAssignableFrom(Double.class)) {
+            schema.setType("number");
+            schema.setFormat("double");
         } else if (binding.isAssignableFrom(Number.class)) {
             schema.setFormat("number");
         }
+        // note, for String type we do not set a format, as it is freeform text, not a specific format
         return schema;
     }
 

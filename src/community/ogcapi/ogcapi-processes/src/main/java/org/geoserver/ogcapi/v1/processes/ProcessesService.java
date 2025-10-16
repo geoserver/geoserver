@@ -16,7 +16,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import io.swagger.v3.oas.models.OpenAPI;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +65,12 @@ import org.geoserver.wps.executor.WPSExecutionManager;
 import org.geoserver.wps.ppio.WFSPPIO;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.api.data.Parameter;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.gml2.SrsSyntax;
+import org.geotools.gml2.bindings.GML2EncodingUtils;
+import org.geotools.referencing.CRS;
 import org.geotools.util.Converters;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
@@ -77,6 +81,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @APIService(service = "Processes", version = "1.0.0", landingPage = "ogc/processes/v1", serviceClass = WPSInfo.class)
@@ -98,6 +103,8 @@ public class ProcessesService {
     // this one comes from the current DRAFT
     // https://docs.ogc.org/DRAFTS/18-062r3.html#_requirements_class_kvp_encoded_execute
     public static final String CONF_KVP_EXECUTE = "http://www.opengis.net/spec/ogcapi-processes-1/1.0/conf/kvp-execute";
+    public static final String EXCEPTION_TYPE_RESULT_NOT_READY =
+            "http://www.opengis.net/def/exceptions/ogcapi-processes-1/1.0/result-not-ready";
 
     private final GeoServer geoServer;
     private final DefaultWebProcessingService wps;
@@ -162,8 +169,10 @@ public class ProcessesService {
     @GetMapping(path = "processes", name = "getProcessList")
     @ResponseBody
     @HTMLResponseBody(templateName = "processes.ftl", fileName = "processes.html")
-    public ProcessListDocument processes() {
-        return new ProcessListDocument();
+    public ProcessListDocument processes(
+            @RequestParam(name = "limit", required = false) Integer limit,
+            @RequestParam(name = "offset", required = false) Integer offset) {
+        return new ProcessListDocument(offset, limit);
     }
 
     @GetMapping(path = "processes/{processId}", name = "getProcessDescription")
@@ -232,16 +241,27 @@ public class ProcessesService {
 
         // follow up with the required response type
         ResponseFormType responseForm = request.getResponseForm();
+        // did we get a request with raw response, but potentially multiple outputs?
+        boolean rawResponse = hasRawResponse(responseForm);
+
         if (!dumpFinalResponse
                 && responseForm.getResponseDocument() != null
                 && responseForm.getResponseDocument().isStatus()) {
             writeStatusResponse(httpResponse, request, response);
-        } else if (responseForm.getRawDataOutput() != null
-                || responseForm.getResponseDocument().isLineage()) {
+        } else if (rawResponse) {
             writeRawResponse(httpResponse, response);
         } else {
             writeDocumentResponse(process, httpResponse, response);
         }
+    }
+
+    private boolean hasRawResponse(ResponseFormType responseForm) {
+        if (responseForm.getRawDataOutput() != null) return true;
+        // internal convention, OGC API Processes does not use lineage, we are reusing that
+        // flag to indicate raw responses with multiple outputs. Eventually we'll have to
+        // either extend the EMF model or have process-engine use beans with their own
+        // serialization support (with some indication of what/how to deserialize?)
+        return responseForm.getResponseDocument().isLineage();
     }
 
     private static void writeStatusResponse(
@@ -257,21 +277,29 @@ public class ProcessesService {
     }
 
     private void writeRawResponse(HttpServletResponse httpResponse, ExecuteResponseType response) throws IOException {
-        OutputDataType result =
-                (OutputDataType) response.getProcessOutputs().getOutput().get(0);
-        LiteralDataType literal = result.getData().getLiteralData();
-        BoundingBoxType bbox = result.getData().getBoundingBoxData();
-        if (literal != null) {
-            httpResponse.setContentType(TEXT_PLAIN_VALUE);
-            httpResponse.getWriter().write(literal.getValue());
-        } else if (bbox != null) {
-            httpResponse.setContentType(APPLICATION_JSON_VALUE);
-            try (JsonGenerator generator = new JsonFactory().createGenerator(httpResponse.getOutputStream())) {
-                writeBoundingBox(generator, bbox);
+        EList outputs = response.getProcessOutputs().getOutput();
+        HttpResponseWriter responseWriter = HttpResponseWriter.getResponseWriter(httpResponse, outputs.size());
+
+        for (Object outputObj : outputs) {
+            OutputDataType output = (OutputDataType) outputObj;
+            LiteralDataType literal = output.getData().getLiteralData();
+            BoundingBoxType bbox = output.getData().getBoundingBoxData();
+            ComplexDataType complexData = output.getData().getComplexData();
+            String identifier = output.getIdentifier().getValue();
+            if (literal != null && literal.getValue() != null) {
+                responseWriter.beginPart(TEXT_PLAIN_VALUE, identifier);
+                responseWriter.getServletOutputStream().print(literal.getValue());
+            } else if (bbox != null) {
+                responseWriter.beginPart(APPLICATION_JSON_VALUE, identifier);
+                try (JsonGenerator generator = new JsonFactory().createGenerator(httpResponse.getOutputStream())) {
+                    writeBoundingBox(generator, bbox);
+                }
+            } else if (complexData != null && complexData.getData().get(0) != null) {
+                writeComplex(responseWriter, output);
             }
-        } else {
-            writeComplex(httpResponse, result.getData().getComplexData());
+            // if none of the above match, the output was null and can be skipped
         }
+        responseWriter.endResponse();
     }
 
     /**
@@ -289,24 +317,25 @@ public class ProcessesService {
 
             for (OutputDataType output : outputs) {
                 String outputId = output.getIdentifier().getValue();
-                generator.writeFieldName(outputId);
                 Parameter<?> parameter = process.getResultInfo().get(outputId);
                 DataType data = output.getData();
                 if (data != null) {
-                    if (data.getLiteralData() != null) {
+                    if (data.getLiteralData() != null && data.getLiteralData().getValue() != null) {
+                        generator.writeFieldName(outputId);
                         Object converted =
                                 Converters.convert(data.getLiteralData().getValue(), parameter.getType());
                         generator.writeObject(converted);
                     } else if (data.getBoundingBoxData() != null) {
-                        BoundingBoxType bbox = data.getBoundingBoxData();
-                        writeBoundingBox(generator, bbox);
+                        generator.writeFieldName(outputId);
+                        writeBoundingBox(generator, data.getBoundingBoxData());
                     } else if (data.getComplexData() != null) {
+                        generator.writeFieldName(outputId);
                         writeComplex(generator, data.getComplexData());
-                    } else {
-                        throw new UnsupportedEncodingException("Unsupported output type: " + data);
                     }
+                    // if reaching here, the data was null, won't encode the output
                 } else if (output.getReference() != null) {
                     OutputReferenceType reference = output.getReference();
+                    generator.writeFieldName(outputId);
                     generator.writeStartObject();
                     if (reference.getMimeType() != null)
                         generator.writeStringField("mediaType", reference.getMimeType());
@@ -423,36 +452,44 @@ public class ProcessesService {
         }
         generator.writeEndArray();
         if (bbox.getCrs() != null) {
-            generator.writeStringField("crs", bbox.getCrs());
+            try {
+                CoordinateReferenceSystem crs = CRS.decode(bbox.getCrs());
+                String uri = GML2EncodingUtils.toURI(crs, SrsSyntax.OGC_HTTP_URI, false);
+                generator.writeStringField("crs", uri);
+            } catch (FactoryException e) {
+                // should not happen, has been encoded previously
+                throw new RuntimeException("Failed to decode the bbox CRS: " + bbox.getCrs(), e);
+            }
         }
         generator.writeEndObject();
     }
 
-    private void writeComplex(HttpServletResponse httpResponse, ComplexDataType complexData) {
+    private void writeComplex(HttpResponseWriter writer, OutputDataType output) {
+        ComplexDataType complexData = output.getData().getComplexData();
         Object rawResult = complexData.getData().get(0);
+        String identifier = output.getIdentifier().getValue();
         try {
             if (rawResult instanceof RawDataEncoderDelegate delegate) {
-                httpResponse.setContentType(delegate.getRawData().getMimeType());
-                delegate.encode(httpResponse.getOutputStream());
+                writer.beginPart(delegate.getRawData().getMimeType(), identifier);
+                delegate.encode(writer.getServletOutputStream());
             } else if (rawResult instanceof XMLEncoderDelegate delegate) {
                 TransformerHandler xmls =
                         ((SAXTransformerFactory) SAXTransformerFactory.newInstance()).newTransformerHandler();
-                xmls.setResult(new StreamResult(httpResponse.getOutputStream()));
-                httpResponse.setContentType(delegate.getPPIO().getMimeType());
+                xmls.setResult(new StreamResult(writer.getServletOutputStream()));
+                writer.beginPart(delegate.getPPIO().getMimeType(), identifier);
                 delegate.encode(xmls);
             } else if (rawResult instanceof CDataEncoderDelegate cdataDelegate) {
-                httpResponse.setContentType(cdataDelegate.getPPIO().getMimeType());
-                cdataDelegate.encode(httpResponse.getOutputStream());
+                writer.beginPart(cdataDelegate.getPPIO().getMimeType(), identifier);
+                cdataDelegate.encode(writer.getServletOutputStream());
             } else if (rawResult instanceof BinaryEncoderDelegate binaryDelegate) {
-                httpResponse.setContentType(binaryDelegate.getPPIO().getMimeType());
-                binaryDelegate.encode(httpResponse.getOutputStream());
+                writer.beginPart(binaryDelegate.getPPIO().getMimeType(), identifier);
+                binaryDelegate.encode(writer.getServletOutputStream());
             } else if (rawResult instanceof String result) {
                 // this is an already encoded string (async execution stored), just write it out
-                httpResponse.setContentType(complexData.getMimeType());
-                httpResponse.getWriter().print(result);
+                writer.beginPart(complexData.getMimeType(), identifier);
+                writer.getServletOutputStream().print(result);
             } else {
-                throw new IllegalArgumentException(
-                        "Cannot encode an object of class " + rawResult.getClass() + " in raw form");
+                throw new IllegalArgumentException("Cannot encode an object " + rawResult + " in raw form");
             }
         } catch (Exception e) {
             throw new APIException(
@@ -512,12 +549,11 @@ public class ProcessesService {
         return mapExecutionStatus(status, StatusCode.DISMISSED);
     }
 
-    private static JobStatus mapExecutionStatus(ExecutionStatus status, StatusCode dismissed) {
-        JobStatus response = new JobStatus();
-        response.setProcessID(status.getSimpleProcessName());
+    private static JobStatus mapExecutionStatus(ExecutionStatus status, StatusCode statusCode) {
+        JobStatus response = new JobStatus(status.getSimpleProcessName(), status.getExecutionId(), statusCode);
         response.setCreated(status.getCreationTime());
         response.setFinished(status.getCompletionTime());
-        response.setStatus(dismissed);
+        response.setStatus(statusCode);
         response.setProgress(Math.round(status.getProgress()));
         return response;
     }
@@ -547,6 +583,13 @@ public class ProcessesService {
             throw new APIException(
                     "NotFound",
                     "The job with id " + jobId + " does not exist, has expired or is being dismissed",
+                    HttpStatus.NOT_FOUND);
+        }
+        if (status.getPhase() != ProcessState.SUCCEEDED) {
+            throw new APIException(
+                    EXCEPTION_TYPE_RESULT_NOT_READY,
+                    "The job with id " + jobId + " is not in a state that allows retrieving results, it is: "
+                            + status.getPhase(),
                     HttpStatus.NOT_FOUND);
         }
 

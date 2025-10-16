@@ -24,7 +24,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '17'        # only build the oldest Java version, but below run against the matrix of LTS versions
       - name: Set up Maven
         uses: stCarolas/setup-maven@v5
         with:
@@ -52,25 +52,15 @@ jobs:
     runs-on: ubuntu-latest
     name: CITE
     strategy:
-      fail-fast: false  # Prevents other matrix jobs from being canceled if one fails
+      fail-fast: false  # Prevents other matrix jobs from being cancelled if one fails
       matrix:
         suite: [ogcapi-features10, ogcapi-tiles10, wms11, wms13, wmts10, wfs10, wfs11, wfs20, wcs11, geotiff11, gpkg12]
+        java-version: [17, 21, 25]
     steps:
       - name: Checkout repository (shallow clone)
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Set up Maven
-        uses: stCarolas/setup-maven@v5
-        with:
-          maven-version: 3.9.8
 
       - name: Download geoserver.war artifact
         uses: actions/download-artifact@v4
@@ -91,7 +81,7 @@ jobs:
 
       - name: Build ogccite/geoserver:${{ matrix.suite }} docker image
         working-directory: build/cite
-        run: make build-geoserver-image suite=${{ matrix.suite }}
+        run: make build-geoserver-image suite=${{ matrix.suite }} java-version=${{ matrix.java-version }}
 
       - name: Build the ETS docker image
         working-directory: build/cite
@@ -102,7 +92,7 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y xmlstarlet
 
-      - name: Run the ${{ matrix.suite }} CITE test suite
+      - name: Run the ${{ matrix.suite }} CITE test suite (against Java ${{ matrix.java-version }})
         working-directory: build/cite
         run: |
           chmod o+w logs
@@ -152,5 +142,5 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cite-${{ matrix.suite }}-logs
+          name: cite-${{ matrix.suite }}-java-${{ matrix.java-version }}-logs
           path: build/cite/logs/

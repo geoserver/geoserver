@@ -66,7 +66,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: ${{ matrix.java-version }}
+          java-version: '17'
 
       - name: Set up Maven
         uses: stCarolas/setup-maven@v5
@@ -92,7 +92,7 @@ jobs:
 
       - name: Build ogccite/geoserver:${{ matrix.suite }} docker image
         working-directory: build/cite
-        run: make build-geoserver-image suite=${{ matrix.suite }}
+        run: make build-geoserver-image suite=${{ matrix.suite }} java-version=${{ matrix.java-version }}
 
       - name: Build the ETS docker image
         working-directory: build/cite

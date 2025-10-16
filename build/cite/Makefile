@@ -51,8 +51,12 @@ ifndef suite
 	@echo "Error: suite is not specified. Please specify the suite to build the GeoServer Docker image for."
 	@exit 1
 endif
-	@echo Building the GeoServer Docker Image for the $(suite) test suite
-	@docker compose -f compose.yml -f ./$(suite)/compose.override.yml \
+ifndef java-version
+	@echo "Error: java-version is not specified. Please specify the Java version to build the GeoServer Docker image for."
+	@exit 1
+endif
+	@echo Building the GeoServer Docker Image for the $(suite) test suite with Java $(java-version)
+	@JAVA_VERSION=$(java-version) docker compose -f compose.yml -f ./$(suite)/compose.override.yml \
 	  build --no-cache --build-arg SOURCE_FILE=${war_url} geoserver
 
 # If there's a $suite/build-ets.sh file calls it, otherwise exists silently

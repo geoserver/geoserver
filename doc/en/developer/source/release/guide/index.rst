@@ -263,9 +263,11 @@ When creating the first release candidate of a series, there are some extra step
       * Name: ``GEOSERVER_MAIN_DOCKER_NAME``
       * Value: ``2.29-SNAPSHOT``
 
-9. Announce on the developer group that the new stable branch has been created.
+9. Update the MAIN variable in Docker `release.sh <https://github.com/geoserver/docker/blob/master/build/release.sh#L6>`_ to the new main branch 2.29.
 
-10. Switch to the new branch and update the documentation links, replacing ``docs.geoserver.org/latest`` with ``docs.geoserver.org/2.29.x`` (for example):
+10. Announce on the developer group that the new stable branch has been created.
+
+11. Switch to the new branch and update the documentation links, replacing ``docs.geoserver.org/latest`` with ``docs.geoserver.org/2.29.x`` (for example):
    
     * ``README.md``
     * ``doc/en/developer/source/conf.py``

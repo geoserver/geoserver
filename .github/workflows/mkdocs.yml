@@ -162,10 +162,20 @@ jobs:
             mkdocs_translate scan || (echo "Scan failed, exiting..." && exit 2)
             
             echo "   Step 3: Converting RST to Markdown..."
-            mkdocs_translate migrate || (echo "Migration failed, exiting..." && exit 3)
+            mkdocs_translate --log=DEBUG migrate || (
+              echo "Migration failed, showing debug info..."
+              echo "=== Content around line 20 of target/convert/index.tmp.md ==="
+              if [ -f "target/convert/index.tmp.md" ]; then
+                sed -n '15,25p' target/convert/index.tmp.md | nl -v15
+              else
+                echo "File target/convert/index.tmp.md not found"
+              fi
+              echo "=== End debug info ==="
+              exit 3
+            )
             
             echo "   Step 4: Generating navigation..."
-            mkdocs_translate nav > nav_generated.yml || (echo "Nav generation failed, exiting..." && exit 4)
+            mkdocs_translate --log=ERROR nav > nav_generated.yml || (echo "Nav generation failed, exiting..." && exit 4)
             
             # Ensure docs directory exists with fallback content
             if [ ! -d "docs" ]; then

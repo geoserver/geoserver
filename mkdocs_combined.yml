@@ -1,0 +1,38 @@
+site_name: GeoServer Documentation (All Sites)
+site_description: Combined GeoServer documentation
+site_author: GeoServer Team
+site_url: https://docs.geoserver.org/
+docs_dir: docs_combined
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: blue
+      accent: blue
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - search.share
+  hljs: false
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - English User Guide: user/index.md
+  - English Developer Guide: developer/index.md
+  - English Documentation Guide: docguide/index.md
+  - Chinese User Guide: zhCN-user/index.md
+
+extra_css:
+  - css/extra.css

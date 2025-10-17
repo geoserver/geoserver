@@ -90,12 +90,12 @@ jobs:
         mkdocs_translate --version || echo "Version check not available"
         mkdocs_translate --help || (echo "mkdocs_translate validation failed" && exit 1)
         echo "mkdocs_translate is working correctly"
-    - name: Build Sphinx documentation first (English)
-      run: |
-        source venv/bin/activate
-        cd doc/en
-        pip install -r requirements.txt
-        mvn -B -ntp compile
+    # - name: Build Sphinx documentation first (English) - COMMENTED OUT
+    #   run: |
+    #     source venv/bin/activate
+    #     cd doc/en
+    #     pip install -r requirements.txt
+    #     mvn -B -ntp compile
     
 
     

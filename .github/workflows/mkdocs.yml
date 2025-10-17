@@ -99,7 +99,7 @@ jobs:
     
 
     
-    - name: Convert RST to Markdown using directory-based approach
+    - name: Convert RST to Markdown
       run: |
         source venv/bin/activate
         
@@ -156,16 +156,16 @@ jobs:
             fi
             
             echo "   Step 1: Initializing docs directory..."
-            mkdocs_translate init || echo "Init failed, continuing anyway..."
+            mkdocs_translate init || (echo "Init failed, exiting..." && exit 1)
             
             echo "   Step 2: Scanning RST files..."
-            mkdocs_translate scan || echo "Scan failed, continuing anyway..."
+            mkdocs_translate scan || (echo "Scan failed, exiting..." && exit 2)
             
             echo "   Step 3: Converting RST to Markdown..."
-            mkdocs_translate migrate || echo "Migration failed, continuing anyway..."
+            mkdocs_translate migrate || (echo "Migration failed, exiting..." && exit 3)
             
             echo "   Step 4: Generating navigation..."
-            mkdocs_translate nav > nav_generated.yml || echo "Nav generation failed, continuing anyway..."
+            mkdocs_translate nav > nav_generated.yml || (echo "Nav generation failed, exiting..." && exit 4)
             
             # Ensure docs directory exists with fallback content
             if [ ! -d "docs" ]; then

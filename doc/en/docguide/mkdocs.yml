@@ -1,6 +1,6 @@
 site_name: GeoServer Documentation (docguide - en)
 site_description: GeoServer docguide documentation in en
-site_author: GeoServer Team.
+site_author: GeoServer Team
 site_url: https://docs.geoserver.org/
 
 theme:

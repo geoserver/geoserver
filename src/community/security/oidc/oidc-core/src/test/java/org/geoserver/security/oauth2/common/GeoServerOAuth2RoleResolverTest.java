@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.geoserver.security.GeoServerRoleConverter;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerSecurityManager;

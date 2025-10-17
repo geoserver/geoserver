@@ -17,7 +17,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
 import org.geoserver.opensearch.eo.OseoEvent;

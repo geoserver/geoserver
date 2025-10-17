@@ -13,7 +13,7 @@ import java.net.URL;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 import org.geoserver.config.GeoServerPluginConfigurator;
 import org.geoserver.jdbcconfig.JDBCGeoServerLoader;
 import org.geoserver.platform.GeoServerResourceLoader;

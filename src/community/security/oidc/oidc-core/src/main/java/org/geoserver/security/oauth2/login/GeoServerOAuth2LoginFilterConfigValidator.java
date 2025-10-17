@@ -36,8 +36,8 @@ public class GeoServerOAuth2LoginFilterConfigValidator extends FilterConfigValid
     @Override
     public void validateFilterConfig(SecurityNamedServiceConfig config) throws FilterConfigException {
 
-        if (config instanceof GeoServerOAuth2LoginFilterConfig) {
-            validateOAuth2FilterConfig((GeoServerOAuth2LoginFilterConfig) config);
+        if (config instanceof GeoServerOAuth2LoginFilterConfig filterConfig) {
+            validateOAuth2FilterConfig(filterConfig);
         } else {
             super.validateFilterConfig(config);
         }

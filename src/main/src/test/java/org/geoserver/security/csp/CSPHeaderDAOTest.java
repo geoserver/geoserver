@@ -18,12 +18,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.common.net.HttpHeaders;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;

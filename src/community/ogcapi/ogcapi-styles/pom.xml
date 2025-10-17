@@ -18,9 +18,19 @@
 
   <dependencies>
     <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-ogcapi-core</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+      <version>2.3.3</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>

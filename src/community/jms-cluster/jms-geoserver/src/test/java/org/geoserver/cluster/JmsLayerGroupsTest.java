@@ -13,7 +13,7 @@ import static org.hamcrest.core.Is.is;
 
 import java.util.Arrays;
 import java.util.List;
-import javax.jms.Message;
+import jakarta.jms.Message;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;

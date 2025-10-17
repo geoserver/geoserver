@@ -4,9 +4,9 @@
  */
 package org.geoserver.rest;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import org.springframework.http.MediaType;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.accept.ContentNegotiationStrategy;

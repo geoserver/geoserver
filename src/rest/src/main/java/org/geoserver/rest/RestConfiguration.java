@@ -4,12 +4,12 @@
  */
 package org.geoserver.rest;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleHandler;

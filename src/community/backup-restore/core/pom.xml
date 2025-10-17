@@ -62,8 +62,8 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>commons-fileupload</groupId>
-      <artifactId>commons-fileupload</artifactId>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-fileupload2-jakarta-servlet5</artifactId>
     </dependency>
 
     <!-- Spring Batch unit test -->

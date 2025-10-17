@@ -30,6 +30,11 @@
       <artifactId>gs-monitor-core</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>io.micrometer</groupId>

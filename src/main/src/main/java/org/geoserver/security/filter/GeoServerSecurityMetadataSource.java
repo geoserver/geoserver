@@ -6,6 +6,7 @@
 
 package org.geoserver.security.filter;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,7 +17,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geotools.util.logging.Logging;

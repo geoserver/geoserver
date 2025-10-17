@@ -5,9 +5,9 @@
  */
 package org.geoserver.ows;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.URL;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Controller which publishes files through a web interface from the classpath

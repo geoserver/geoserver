@@ -59,7 +59,7 @@ public abstract class GeoServerOAuthRemoteTokenServices extends RemoteTokenServi
             @Override
             // Ignore 400
             public void handleError(ClientHttpResponse response) throws IOException {
-                if (response.getRawStatusCode() != 400) {
+                if (response.getStatusCode().value() != 400) {
                     super.handleError(response);
                 }
             }

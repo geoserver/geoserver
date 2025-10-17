@@ -126,7 +126,7 @@ public class HzCluster implements GeoServerPluginConfigurator, DisposableBean, I
     @Override
     public void afterPropertiesSet() throws Exception {
 
-        Assert.notNull(this.rl);
+        Assert.notNull(this.rl, "must not be null");
 
         watcher = loadConfig(this.rl);
         if (watcher.get().isEnabled()) {

@@ -5,6 +5,7 @@
  */
 package org.geoserver.wcs2_0.exception;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -12,7 +13,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
-import javax.servlet.http.HttpServletResponse;
 import net.opengis.ows20.ExceptionReportType;
 import net.opengis.ows20.ExceptionType;
 import net.opengis.ows20.Ows20Factory;

@@ -6,8 +6,8 @@
 
 package org.geoserver.wps;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import net.opengis.wps10.DescribeProcessType;
 import net.opengis.wps10.ExecuteResponseType;
 import net.opengis.wps10.ExecuteType;

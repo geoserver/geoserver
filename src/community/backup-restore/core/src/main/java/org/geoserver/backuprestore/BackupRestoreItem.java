@@ -705,10 +705,10 @@ public abstract class BackupRestoreItem<T> {
             target.setDescription(source.getDescription());
             target.setType(source.getType() != null ? source.getType() : "Shapefile");
 
-            if (source instanceof DataStoreInfoImpl) {
+            if (source instanceof DataStoreInfoImpl impl) {
                 ((DataStoreInfoImpl) target).setDefault(((StoreInfoImpl) source).isDefault());
                 ((DataStoreInfoImpl) target)
-                        .setConnectionParameters(((DataStoreInfoImpl) source).getConnectionParameters());
+                        .setConnectionParameters(impl.getConnectionParameters());
                 ((DataStoreInfoImpl) target).setMetadata(((StoreInfoImpl) source).getMetadata());
             }
 

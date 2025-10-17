@@ -1140,13 +1140,13 @@ public class ResourcePool {
     private FeatureType buildFeatureType(FeatureTypeInfo info, boolean handleProjectionPolicy, FeatureType ft)
             throws IOException {
         // TODO: support reprojection for non-simple FeatureType
-        if (ft instanceof SimpleFeatureType) {
+        if (ft instanceof SimpleFeatureType type) {
             // configured attribute customization, execute before projection handling and callbacks
             if (info.getAttributes() != null && !info.getAttributes().isEmpty())
                 ft = transformer.retypeFeatureType(info, ft);
             // create the feature type so it lines up with the "declared" schema
             SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
-            tb.init((SimpleFeatureType) ft);
+            tb.init(type);
             // Handle any aliases defined in info
             tb.setName(info.getName());
             tb.setNamespaceURI(info.getNamespace().getURI());

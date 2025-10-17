@@ -10,10 +10,10 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.GeoServerInfoImpl;

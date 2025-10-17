@@ -4,8 +4,6 @@
  */
 package org.geoserver.rest.security;
 
-import static java.lang.String.format;
-
 import com.google.common.base.Strings;
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -171,16 +169,15 @@ public class AuthenticationFilterController extends RestBaseController {
 
     protected SecurityFilterConfig saveAuthFilter(SecurityFilterConfig newFilter) {
         if (Strings.isNullOrEmpty(newFilter.getName())) {
-            LOGGER.warning(
-                    format("Cannot create the filter %s because client has not provided a name", newFilter.getName()));
+            LOGGER.warning("Cannot create the filter %s because client has not provided a name"
+                    .formatted(newFilter.getName()));
             throw new MissingNameException();
         }
 
         try {
             if (securityManager.loadFilterConfig(newFilter.getName(), false) != null) {
-                LOGGER.warning(format(
-                        "Cannot create the filter %s because a filter with the name already exists",
-                        newFilter.getName()));
+                LOGGER.warning("Cannot create the filter %s because a filter with the name already exists"
+                        .formatted(newFilter.getName()));
                 throw new DuplicateNameException(newFilter.getName());
             }
         } catch (IOException ex) {
@@ -206,17 +203,16 @@ public class AuthenticationFilterController extends RestBaseController {
 
     protected void updateAuthFilter(String filterName, SecurityFilterConfig authfilterRequest) {
         if (!filterName.equals(authfilterRequest.getName())) {
-            LOGGER.warning(format(
-                    "Cannot modify the config %s because the name %s in the body does not match",
-                    filterName, authfilterRequest.getName()));
+            LOGGER.warning("Cannot modify the config %s because the name %s in the body does not match"
+                    .formatted(filterName, authfilterRequest.getName()));
             throw new NameMismatchException(filterName, authfilterRequest.getName());
         }
 
         try {
             SecurityFilterConfig filter = securityManager.loadFilterConfig(filterName, false);
             if (filter == null) {
-                LOGGER.warning(format("Cannot update %s because it does not exist", filterName));
-                throw new IllegalArgumentException(format("Cannot update %s because it does not exist", filterName));
+                LOGGER.warning("Cannot update %s because it does not exist".formatted(filterName));
+                throw new IllegalArgumentException("Cannot update %s because it does not exist".formatted(filterName));
             }
 
             filterConfigValidator.validateFilterConfig(authfilterRequest);
@@ -231,14 +227,14 @@ public class AuthenticationFilterController extends RestBaseController {
 
     protected void removeAuthFilter(String filterName) {
         if (DELETE_BLACK_LIST.contains(filterName)) {
-            LOGGER.warning(format("Cannot delete %s because it is a required authentication filter", filterName));
+            LOGGER.warning("Cannot delete %s because it is a required authentication filter".formatted(filterName));
             throw new DeleteBlackListException(filterName);
         }
 
         try {
             SecurityFilterConfig filter = securityManager.loadFilterConfig(filterName, false);
             if (filter == null) {
-                LOGGER.warning(format("Cannot delete %s because it does not exist", filterName));
+                LOGGER.warning("Cannot delete %s because it does not exist".formatted(filterName));
                 throw new IllegalArgumentException("Cannot find filter " + filterName);
             }
             securityManager.removeFilter(filter);
@@ -374,21 +370,20 @@ public class AuthenticationFilterController extends RestBaseController {
 
     public static class DeleteBlackListException extends RuntimeException {
         public DeleteBlackListException(String name) {
-            super(format("Cannot delete %s because it is a required authentication filter", name));
+            super("Cannot delete %s because it is a required authentication filter".formatted(name));
         }
     }
 
     public static class NameMismatchException extends RuntimeException {
         public NameMismatchException(String pathName, String configName) {
-            super(format(
-                    "Cannot modify the config %s because the name %s in the body does not match",
-                    pathName, configName));
+            super("Cannot modify the config %s because the name %s in the body does not match"
+                    .formatted(pathName, configName));
         }
     }
 
     public static class DuplicateNameException extends RuntimeException {
         public DuplicateNameException(String configName) {
-            super(format("Cannot create the config %s because the name is already in use", configName));
+            super("Cannot create the config %s because the name is already in use".formatted(configName));
         }
     }
 
@@ -400,9 +395,8 @@ public class AuthenticationFilterController extends RestBaseController {
 
     public static class IdNotSet extends RuntimeException {
         public IdNotSet(String requestBodyId, String id) {
-            super(format(
-                    "Cannot modify the config with %s because the id %s in the body does not match",
-                    requestBodyId, id));
+            super("Cannot modify the config with %s because the id %s in the body does not match"
+                    .formatted(requestBodyId, id));
         }
     }
 

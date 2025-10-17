@@ -6,10 +6,10 @@
 package org.geoserver.monitor;
 
 import java.io.IOException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.WriteListener;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponseWrapper;
 
 public class MonitorServletResponse extends HttpServletResponseWrapper {
 
@@ -46,7 +46,7 @@ public class MonitorServletResponse extends HttpServletResponseWrapper {
     @SuppressWarnings("deprecation")
     public void setStatus(int sc, String sm) {
         this.status = sc;
-        super.setStatus(sc, sm);
+        super.setStatus(sc);
     }
 
     @Override

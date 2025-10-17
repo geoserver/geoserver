@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.DispatcherCallback;
 import org.geoserver.ows.Request;
@@ -312,12 +312,12 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
         if (selectedMediaType != null) {
             selectedMediaType = selectedMediaType.removeQualityValue();
             for (HttpMessageConverter<?> converter : this.messageConverters) {
-                if (converter instanceof ResponseMessageConverter
-                        && ((ResponseMessageConverter) converter).canWrite(value, selectedMediaType)) {
+                if (converter instanceof ResponseMessageConverter messageConverter
+                        && messageConverter.canWrite(value, selectedMediaType)) {
                     return (HttpMessageConverter<T>) converter;
                 }
-                if (converter instanceof GenericHttpMessageConverter
-                        && ((GenericHttpMessageConverter) converter)
+                if (converter instanceof GenericHttpMessageConverter messageConverter
+                        && messageConverter
                                 .canWrite(targetType, valueType, selectedMediaType)) {
                     return (HttpMessageConverter<T>) converter;
                 } else if (converter.canWrite(valueType, selectedMediaType)) {

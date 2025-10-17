@@ -48,6 +48,12 @@
       <artifactId>gs-web-core</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.wicket</groupId>
+      <artifactId>wicket-tester</artifactId>
+      <version>10.7.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-gwc</artifactId>
     </dependency>

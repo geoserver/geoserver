@@ -149,8 +149,11 @@ public class DescribeFeatureType {
                     // not found
                     String msg = "Could not find type: " + name;
                     if (citeConformance) {
-                        msg += ". \nStrict WFS protocol conformance is being applied.\n"
-                                + "Make sure the type name is correctly qualified";
+                        msg +=
+                                """
+                                .\s
+                                Strict WFS protocol conformance is being applied.
+                                Make sure the type name is correctly qualified""";
                     }
                     throw new WFSException(request, msg, ServiceException.INVALID_PARAMETER_VALUE);
                 }

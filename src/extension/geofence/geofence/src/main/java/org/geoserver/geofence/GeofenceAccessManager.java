@@ -4,6 +4,7 @@
  */
 package org.geoserver.geofence;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URL;
@@ -20,7 +21,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.Catalog;

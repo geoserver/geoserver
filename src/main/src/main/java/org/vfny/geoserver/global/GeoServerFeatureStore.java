@@ -86,9 +86,8 @@ public class GeoServerFeatureStore extends GeoServerFeatureSource implements Sim
             Types.validate(attributeDescriptor, value);
         } catch (IllegalAttributeException ex) {
             throw new IllegalArgumentException(
-                    String.format(
-                            "Restriction evaluation failed for attribute '%s' of feature '%s' (%s)",
-                            attributeDescriptor.getName(), feature.getID(), ex.getMessage()),
+                    "Restriction evaluation failed for attribute '%s' of feature '%s' (%s)"
+                            .formatted(attributeDescriptor.getName(), feature.getID(), ex.getMessage()),
                     ex);
         }
     }
@@ -189,9 +188,8 @@ public class GeoServerFeatureStore extends GeoServerFeatureSource implements Sim
             Types.validate(attributeDescriptor, value);
         } catch (IllegalAttributeException ex) {
             throw new IllegalArgumentException(
-                    String.format(
-                            "Restriction evaluation failed for the value of attribute '%s' (%s)",
-                            attributeDescriptor.getName(), ex.getMessage()),
+                    "Restriction evaluation failed for the value of attribute '%s' (%s)"
+                            .formatted(attributeDescriptor.getName(), ex.getMessage()),
                     ex);
         }
     }

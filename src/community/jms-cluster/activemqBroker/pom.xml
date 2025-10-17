@@ -56,8 +56,8 @@
 
       <dependency>
         <groupId>org.bouncycastle</groupId>
-        <artifactId>bcprov-jdk15on</artifactId>
-        <version>1.67</version>
+        <artifactId>bcprov-jdk15to18</artifactId>
+        <version>1.82</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -156,7 +156,6 @@
       <plugin>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>maven-jetty-plugin</artifactId>
-        <version>6.1.8</version>
         <configuration>
           <contextPath>activemq</contextPath>
           <connectors>

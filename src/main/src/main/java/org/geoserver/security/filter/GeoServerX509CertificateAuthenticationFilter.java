@@ -6,9 +6,9 @@
 
 package org.geoserver.security.filter;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.security.cert.X509Certificate;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.springframework.security.web.authentication.preauth.x509.SubjectDnX509PrincipalExtractor;
 import org.springframework.security.web.authentication.preauth.x509.X509PrincipalExtractor;

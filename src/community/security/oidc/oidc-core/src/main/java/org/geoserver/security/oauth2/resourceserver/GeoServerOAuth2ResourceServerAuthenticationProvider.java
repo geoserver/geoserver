@@ -8,7 +8,7 @@ import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 
 import java.util.List;
-import javax.servlet.Filter;
+import jakarta.servlet.Filter;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.logging.LoggingUtils;

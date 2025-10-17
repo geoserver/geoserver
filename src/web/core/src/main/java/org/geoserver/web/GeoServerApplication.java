@@ -7,18 +7,17 @@ package org.geoserver.web;
 
 import static org.apache.wicket.RuntimeConfigurationType.DEPLOYMENT;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.Application;
 import org.apache.wicket.Component;
 import org.apache.wicket.ConverterLocator;
@@ -31,7 +30,6 @@ import org.apache.wicket.core.request.handler.IPageRequestHandler;
 import org.apache.wicket.core.request.handler.PageProvider;
 import org.apache.wicket.csp.CSPDirective;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
-import org.apache.wicket.protocol.http.CsrfPreventionRequestCycleListener;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
@@ -278,24 +276,27 @@ public class GeoServerApplication extends WebApplication
         String geoserverCsrfWhitelist = GeoServerExtensions.getProperty(GEOSERVER_CSRF_WHITELIST);
 
         // Don't add a new lister each time init() is called
-        List<IRequestCycleListener> csrfListenersToRemove = new ArrayList<>();
-        for (IRequestCycleListener listener : getRequestCycleListeners()) {
-            if (listener instanceof CsrfPreventionRequestCycleListener) {
-                csrfListenersToRemove.add(listener);
-            }
-        }
-        for (IRequestCycleListener listener : csrfListenersToRemove) {
-            getRequestCycleListeners().remove(listener);
-        }
-        CsrfPreventionRequestCycleListener csrfListener = new CsrfPreventionRequestCycleListener();
-        if (!geoserverCsrfDisabled) {
-            if (geoserverCsrfWhitelist != null && !"".equals(geoserverCsrfWhitelist.trim())) {
-                for (String origin : geoserverCsrfWhitelist.split(",")) {
-                    csrfListener.addAcceptedOrigin(origin.trim());
-                }
-            }
-            getRequestCycleListeners().add(csrfListener);
-        }
+        //        List<IRequestCycleListener> csrfListenersToRemove = new ArrayList<>();
+        //        for (IRequestCycleListener listener : getRequestCycleListeners()) {
+        //            if (listener instanceof CsrfPreventionRequestCycleListener) {
+        //                csrfListenersToRemove.add(listener);
+        //            }
+        //        }
+        //        for (IRequestCycleListener listener : csrfListenersToRemove) {
+        //            getRequestCycleListeners().remove(listener);
+        //        }
+        //        CsrfPreventionRequestCycleListener csrfListener = new CsrfPreventionRequestCycleListener();
+        //        if (!geoserverCsrfDisabled) {
+        //            if (geoserverCsrfWhitelist != null && !"".equals(geoserverCsrfWhitelist.trim())) {
+        //                for (String origin : geoserverCsrfWhitelist.split(",")) {
+        //                    csrfListener.addAcceptedOrigin(origin.trim());
+        //                }
+        //            }
+        //            getRequestCycleListeners().add(csrfListener);
+        //        }
+        LOGGER.log(
+                Level.SEVERE,
+                "CSRF Protection is disabled in GeoServer, should be migrated to OriginResourceIsolationPolicy");
 
         getRequestCycleListeners().add(new FeedbackPanelAjaxListener());
 

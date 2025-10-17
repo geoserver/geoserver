@@ -20,6 +20,10 @@
 
   <dependencies>
     <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-main</artifactId>
     </dependency>
@@ -40,8 +44,8 @@
       <artifactId>gt-shapefile</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>

@@ -30,6 +30,7 @@ import org.geoserver.security.event.RoleLoadedEvent;
 import org.geoserver.security.event.RoleLoadedListener;
 import org.geoserver.security.impl.AbstractGeoServerSecurityService;
 import org.geoserver.security.impl.GeoServerRole;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /** Keycloak implementation of {@link org.geoserver.security.GeoServerRoleService} */
@@ -65,7 +66,7 @@ public class KeycloakRoleService extends AbstractGeoServerSecurityService implem
 
         if (config instanceof KeycloakRoleServiceConfig keycloakConfig) {
             List<String> idsOfClients = null;
-            if (!StringUtils.isEmpty(keycloakConfig.getIdsOfClientsList())) {
+            if (!ObjectUtils.isEmpty(keycloakConfig.getIdsOfClientsList())) {
                 idsOfClients =
                         Arrays.asList(keycloakConfig.getIdsOfClientsList().split(","));
             }

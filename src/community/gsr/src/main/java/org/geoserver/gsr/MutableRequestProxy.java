@@ -12,8 +12,8 @@ package org.geoserver.gsr;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 
 /**
  * Just a simple servlet request decorator that allows for changing request parameters. Used for manually invoking the

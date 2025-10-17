@@ -418,7 +418,7 @@ public class CatalogFileWriter<T> extends CatalogWriter<T> {
                 }
             }
 
-            Assert.state(outputBufferedWriter != null);
+            Assert.state(outputBufferedWriter != null, "must be true");
             // in case of restarting reset position to last committed point
             if (restarted) {
                 checkFileSize();

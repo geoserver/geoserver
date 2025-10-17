@@ -15,8 +15,8 @@ import static org.hamcrest.Matchers.startsWith;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.SystemTestData;

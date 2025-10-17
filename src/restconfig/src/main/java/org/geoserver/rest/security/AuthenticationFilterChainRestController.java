@@ -9,6 +9,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.xstream.XStream;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -24,8 +26,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.rest.RestBaseController;
@@ -185,7 +185,7 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
     @PutMapping(
             path = {"/order", "/order.{ext}"},
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public ResponseEntity<Void> reorder(javax.servlet.http.HttpServletRequest request) {
+    public ResponseEntity<Void> reorder(jakarta.servlet.http.HttpServletRequest request) {
         checkAuthorised();
         try {
             List<String> wanted = parseOrderFromRequest(request);
@@ -260,7 +260,7 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
             consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<RestWrapper<AuthFilterChainFilters>> create(
-            javax.servlet.http.HttpServletRequest request,
+            jakarta.servlet.http.HttpServletRequest request,
             @RequestParam(name = "position", required = false) Integer position,
             UriComponentsBuilder builder) {
 
@@ -311,7 +311,7 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public RestWrapper<AuthFilterChainFilters> update(
             @PathVariable String chainName,
-            javax.servlet.http.HttpServletRequest request,
+            jakarta.servlet.http.HttpServletRequest request,
             @RequestParam(name = "position", required = false) Integer position) {
 
         chainName = normalizeChainName(chainName);
@@ -529,7 +529,7 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
         try {
             Method m = target.getClass().getMethod(method);
             Object val = m.invoke(target);
-            return (val instanceof String) ? (String) val : null;
+            return (val instanceof String s) ? s : null;
         } catch (Exception ignored) {
             return null; // method not present; fine
         }
@@ -547,7 +547,7 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
 
     // ---------- Body parsing helpers (minimal, robust to wrapped/bare JSON) ----------
 
-    private AuthFilterChainFilters parseFiltersFromRequest(javax.servlet.http.HttpServletRequest request) {
+    private AuthFilterChainFilters parseFiltersFromRequest(jakarta.servlet.http.HttpServletRequest request) {
         String ct = Optional.ofNullable(request.getContentType()).orElse("");
         try (ServletInputStream in = request.getInputStream()) {
             if (ct.contains("json")) {
@@ -602,9 +602,8 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
                 configureAliases(xp);
                 // Accept either <filters> ... or <filterchain><filters>...</filters></filterchain> with one item
                 Object o = xp.load(in, Object.class);
-                if (o instanceof AuthFilterChainFilters) return (AuthFilterChainFilters) o;
-                if (o instanceof AuthFilterChainCollection) {
-                    AuthFilterChainCollection col = (AuthFilterChainCollection) o;
+                if (o instanceof AuthFilterChainFilters filters) return filters;
+                if (o instanceof AuthFilterChainCollection col) {
                     List<AuthFilterChainFilters> list =
                             Optional.ofNullable(col.getChains()).orElse(List.of());
                     if (list.size() == 1) return list.get(0);
@@ -621,7 +620,7 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
         }
     }
 
-    private List<String> parseOrderFromRequest(javax.servlet.http.HttpServletRequest request) {
+    private List<String> parseOrderFromRequest(jakarta.servlet.http.HttpServletRequest request) {
         String ct = Optional.ofNullable(request.getContentType()).orElse("");
         try (ServletInputStream in = request.getInputStream()) {
             if (ct.contains("json")) {
@@ -641,8 +640,8 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
                 XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
                 configureAliases(xp);
                 Object o = xp.load(in, Object.class);
-                if (o instanceof AuthFilterChainOrder) {
-                    List<String> list = ((AuthFilterChainOrder) o).getOrder();
+                if (o instanceof AuthFilterChainOrder order) {
+                    List<String> list = order.getOrder();
                     if (list == null || list.isEmpty()) throw new BadRequest("`order` array required");
                     return list;
                 }
@@ -664,7 +663,7 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
     }
 
     private static byte[] readBody(HttpServletRequest req) throws IOException {
-        try (javax.servlet.ServletInputStream in = req.getInputStream()) {
+        try (jakarta.servlet.ServletInputStream in = req.getInputStream()) {
             return in.readAllBytes();
         }
     }
@@ -848,10 +847,10 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
 
     private void rethrowIfDomain(Exception e) {
         for (Throwable t = e; t != null; t = t.getCause()) {
-            if (t instanceof DuplicateChainName) throw (DuplicateChainName) t;
-            if (t instanceof NothingToDelete) throw (NothingToDelete) t;
-            if (t instanceof BadRequest) throw (BadRequest) t;
-            if (t instanceof CannotMakeChain) throw (CannotMakeChain) t;
+            if (t instanceof DuplicateChainName name) throw name;
+            if (t instanceof NothingToDelete delete) throw delete;
+            if (t instanceof BadRequest request) throw request;
+            if (t instanceof CannotMakeChain chain) throw chain;
             if (t instanceof IllegalArgumentException) throw new BadRequest(t.getMessage());
         }
     }

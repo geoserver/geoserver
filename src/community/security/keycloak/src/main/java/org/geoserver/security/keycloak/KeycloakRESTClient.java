@@ -18,17 +18,17 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.StatusLine;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.apache.hc.core5.http.message.StatusLine;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.geoserver.security.impl.GeoServerRole;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 
 /** Class that provides methods to invoke Keycloak REST api endpoints to retrieve roles and users. */
 class KeycloakRESTClient {
@@ -61,7 +61,7 @@ class KeycloakRESTClient {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             LOGGER.config("Obtaining access token for Keycloak");
             String accessToken = getAccessToken(httpClient);
-            if (!StringUtils.isEmpty(accessToken)) {
+            if (!ObjectUtils.isEmpty(accessToken)) {
                 LOGGER.config("Retrieving roles from Keycloak");
                 List<Object> result = invoke(httpClient, builder.allRoles().build(), accessToken, List.class);
                 if (result == null) result = new ArrayList<>();
@@ -85,7 +85,7 @@ class KeycloakRESTClient {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             LOGGER.config("Obtaining access token for Keycloak");
             String accessToken = getAccessToken(httpClient);
-            if (!StringUtils.isEmpty(accessToken)) {
+            if (!ObjectUtils.isEmpty(accessToken)) {
                 LOGGER.config("Retrieving roles from Keycloak");
                 List<Object> result =
                         invoke(httpClient, builder.userByName(username).build(), accessToken, List.class);
@@ -117,7 +117,7 @@ class KeycloakRESTClient {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             LOGGER.config("Obtaining access token for Keycloak");
             String accessToken = getAccessToken(httpClient);
-            if (!StringUtils.isEmpty(accessToken)) {
+            if (!ObjectUtils.isEmpty(accessToken)) {
                 LOGGER.config("Retrieving roles from Keycloak");
                 Map<?, ?> result = invoke(httpClient, builder.role(roleName).build(), accessToken, Map.class);
                 if (result == null) result = getRoleByNameInClients(httpClient, accessToken, roleName);
@@ -151,7 +151,7 @@ class KeycloakRESTClient {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             LOGGER.config("Obtaining access token for Keycloak");
             String accessToken = getAccessToken(httpClient);
-            if (!StringUtils.isEmpty(accessToken)) {
+            if (!ObjectUtils.isEmpty(accessToken)) {
                 LOGGER.config("Retrieving roles from Keycloak");
                 List<Object> users =
                         invoke(httpClient, builder.role(roleName).users().build(), accessToken, List.class);
@@ -205,7 +205,7 @@ class KeycloakRESTClient {
         httpGet.setHeader("Authorization", "Bearer " + accessToken);
         LOGGER.fine(() -> "Calling Keycloak REST endpoint " + endpoint);
         try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
-            StatusLine statusLine = response.getStatusLine();
+            StatusLine statusLine = new StatusLine(response);
             if (statusLine == null || statusLine.getStatusCode() != 200) {
                 LOGGER.log(Level.FINE, "Issue involing endpoint " + endpoint + ". Response status is " + statusLine);
                 return null;
@@ -235,7 +235,7 @@ class KeycloakRESTClient {
         httpPost.setEntity(entity);
 
         try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
-            StatusLine statusLine = response.getStatusLine();
+            StatusLine statusLine = new StatusLine(response);
             if (statusLine == null || statusLine.getStatusCode() != 200) {
                 LOGGER.info("Issue retrieving access token: " + statusLine);
                 return null;

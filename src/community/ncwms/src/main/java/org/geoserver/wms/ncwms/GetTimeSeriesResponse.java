@@ -94,7 +94,7 @@ public class GetTimeSeriesResponse extends Response {
         Assert.isTrue(value instanceof FeatureCollectionType, "unrecognized result type:");
         Assert.isTrue(operation.getParameters() != null
                 && operation.getParameters().length == 1
-                && operation.getParameters()[0] instanceof GetFeatureInfoRequest);
+                && operation.getParameters()[0] instanceof GetFeatureInfoRequest, "must be true");
 
         GetFeatureInfoRequest request = (GetFeatureInfoRequest) operation.getParameters()[0];
         FeatureCollectionType results = (FeatureCollectionType) value;

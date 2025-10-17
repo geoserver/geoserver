@@ -8,8 +8,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.StringWriter;
-import javax.xml.bind.DataBindingException;
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.DataBindingException;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.transform.stream.StreamResult;
 import org.geoserver.mapml.xml.GeometryContent;
 import org.geoserver.test.GeoServerTestSupport;

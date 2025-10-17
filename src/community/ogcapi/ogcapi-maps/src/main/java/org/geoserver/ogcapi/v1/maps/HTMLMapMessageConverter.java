@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.AbstractServiceHTMLMessageConverter;

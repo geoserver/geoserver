@@ -9,7 +9,7 @@ import com.thoughtworks.xstream.XStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import javax.jms.JMSException;
+import jakarta.jms.JMSException;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.event.CatalogEvent;

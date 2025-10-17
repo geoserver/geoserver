@@ -69,6 +69,11 @@
       <artifactId>gt-referencing</artifactId>
     </dependency>
     <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-app-schema</artifactId>
       <scope>test</scope>

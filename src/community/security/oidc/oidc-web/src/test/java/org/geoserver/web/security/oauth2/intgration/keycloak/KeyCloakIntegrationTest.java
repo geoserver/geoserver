@@ -16,10 +16,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.servlet.ServletRequestEvent;
-import javax.servlet.http.HttpSession;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.hc.core5.net.URLEncodedUtils;
+import jakarta.servlet.ServletRequestEvent;
+import jakarta.servlet.http.HttpSession;
+import org.apache.hc.core5.http.NameValuePair;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityFilterChain;
@@ -357,10 +357,10 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
      * @param request request to execute
      * @return response from GS
      * @throws IOException error occurred
-     * @throws javax.servlet.ServletException error occurred
+     * @throws jakarta.servlet.ServletException error occurred
      */
     private MockHttpServletResponse executeOnSecurityFilters(MockHttpServletRequest request)
-            throws IOException, javax.servlet.ServletException {
+            throws IOException, jakarta.servlet.ServletException {
         // for session local support in Spring
         new RequestContextListener().requestInitialized(new ServletRequestEvent(request.getServletContext(), request));
 

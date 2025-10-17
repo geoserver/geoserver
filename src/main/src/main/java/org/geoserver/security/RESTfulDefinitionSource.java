@@ -5,6 +5,7 @@
  */
 package org.geoserver.security;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -15,7 +16,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.security.impl.RESTAccessRuleDAO;
 import org.geotools.util.logging.Logging;
 import org.springframework.security.access.ConfigAttribute;

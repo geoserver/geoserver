@@ -5,9 +5,9 @@
  */
 package org.geoserver.test;
 
+import jakarta.servlet.ServletContext;
 import java.io.File;
 import java.io.IOException;
-import javax.servlet.ServletContext;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.util.IOUtils;
 import org.springframework.beans.BeansException;

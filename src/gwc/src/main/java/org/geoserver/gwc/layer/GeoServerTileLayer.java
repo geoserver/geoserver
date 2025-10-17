@@ -13,6 +13,8 @@ import static org.geoserver.ows.util.ResponseUtils.params;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.Iterables;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import java.awt.Dimension;
 import java.io.IOException;
 import java.lang.reflect.Proxy;
@@ -37,8 +39,6 @@ import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.KeywordInfo;

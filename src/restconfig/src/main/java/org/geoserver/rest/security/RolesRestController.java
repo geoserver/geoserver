@@ -4,8 +4,8 @@
  */
 package org.geoserver.rest.security;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.catalog.SequentialExecutionController;
 import org.geoserver.rest.security.xml.JaxbRoleList;

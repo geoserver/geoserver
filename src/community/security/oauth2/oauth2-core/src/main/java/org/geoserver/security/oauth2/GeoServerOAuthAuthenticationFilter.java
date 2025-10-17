@@ -14,14 +14,14 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.SecurityUtils;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
@@ -199,7 +199,7 @@ public abstract class GeoServerOAuthAuthenticationFilter extends GeoServerPreAut
             SecurityContextHolder.clearContext();
             HttpSession session = httpRequest.getSession(false);
             if (session != null) {
-                session.invalidate();
+                httpRequest.logout();
             }
             try {
                 httpRequest.logout();
@@ -279,7 +279,7 @@ public abstract class GeoServerOAuthAuthenticationFilter extends GeoServerPreAut
                 }
             } finally {
                 SecurityContextHolder.clearContext();
-                request.getSession(false).invalidate();
+                request.logout();
                 try {
                     request.logout();
                 } catch (ServletException e) {
@@ -297,7 +297,6 @@ public abstract class GeoServerOAuthAuthenticationFilter extends GeoServerPreAut
                     Cookie cookieToDelete = cookie;
                     cookieToDelete.setMaxAge(-1);
                     cookieToDelete.setPath("/");
-                    cookieToDelete.setComment("EXPIRING COOKIE at " + System.currentTimeMillis());
                     response.addCookie(cookieToDelete);
                 }
             }

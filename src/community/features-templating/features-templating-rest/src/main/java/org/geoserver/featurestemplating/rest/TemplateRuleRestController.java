@@ -15,7 +15,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Optional;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;

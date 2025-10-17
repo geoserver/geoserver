@@ -49,6 +49,12 @@
       <groupId>org.springframework.security.oauth</groupId>
       <artifactId>spring-security-oauth2</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.wicket</groupId>
+      <artifactId>wicket-tester</artifactId>
+      <version>10.7.0</version>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>net.sf.json-lib</groupId>
@@ -65,6 +71,10 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
     </dependency>
 
     <dependency>

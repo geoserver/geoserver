@@ -6,6 +6,7 @@ package org.geoserver.web.security.oauth2.login;
 
 import static java.lang.Boolean.TRUE;
 
+import java.io.Serial;
 import java.util.Set;
 import org.apache.wicket.ClassAttributeModifier;
 import org.apache.wicket.Component;
@@ -24,6 +25,7 @@ import org.apache.wicket.markup.html.form.CheckBox;
  * @author awaterme
  */
 public class ToggleDisplayCheckboxBehavior extends Behavior {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private final Component targetComponent;

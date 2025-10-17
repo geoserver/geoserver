@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
-import javax.xml.bind.DatatypeConverter;
+import jakarta.xml.bind.DatatypeConverter;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.MockData;

@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import javax.servlet.Filter;
-import javax.servlet.ServletRequestEvent;
+import jakarta.servlet.Filter;
+import jakarta.servlet.ServletRequestEvent;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.util.KvpUtils;
@@ -402,7 +402,7 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
     }
 
     private MockHttpServletResponse executeOnSecurityFilters(MockHttpServletRequest request)
-            throws IOException, javax.servlet.ServletException {
+            throws IOException, jakarta.servlet.ServletException {
         // for session local support in Spring
         new RequestContextListener().requestInitialized(new ServletRequestEvent(request.getServletContext(), request));
 

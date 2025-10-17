@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.Catalog;
@@ -527,8 +527,7 @@ public class SchemaRestController extends AbstractCatalogController {
         @Override
         public void marshal(
                 Object o, HierarchicalStreamWriter hierarchicalStreamWriter, MarshallingContext marshallingContext) {
-            if (o instanceof SchemaInfoList) {
-                SchemaInfoList list = (SchemaInfoList) o;
+            if (o instanceof SchemaInfoList list) {
                 for (SchemaInfo info : list.getInfos()) {
                     hierarchicalStreamWriter.startNode("schemas");
                     hierarchicalStreamWriter.startNode("name");

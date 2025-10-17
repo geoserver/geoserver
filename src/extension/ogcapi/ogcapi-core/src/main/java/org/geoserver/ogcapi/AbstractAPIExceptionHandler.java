@@ -7,7 +7,7 @@ package org.geoserver.ogcapi;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.OWS20Exception;

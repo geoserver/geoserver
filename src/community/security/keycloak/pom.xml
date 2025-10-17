@@ -39,6 +39,12 @@
       <version>23.0.5</version>
     </dependency>
     <dependency>
+      <groupId>org.apache.wicket</groupId>
+      <artifactId>wicket-tester</artifactId>
+      <version>10.7.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.keycloak</groupId>
       <artifactId>keycloak-authz-client</artifactId>
       <version>23.0.5</version>
@@ -61,13 +67,17 @@
       <artifactId>jackson-databind</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
+      <groupId>org.apache.httpcomponents.client5</groupId>
+      <artifactId>httpclient5</artifactId>
     </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
       <version>2.3.1</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
     </dependency>
 
     <dependency>

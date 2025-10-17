@@ -27,7 +27,7 @@ import static org.springframework.security.oauth2.core.ClientAuthenticationMetho
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.servlet.Filter;
+import jakarta.servlet.Filter;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.oauth2.common.ConfidentialLogger;
 import org.geoserver.security.oauth2.spring.GeoServerAuthorizationRequestCustomizer;

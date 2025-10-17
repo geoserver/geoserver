@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -565,8 +565,8 @@ public class TilesService {
             long tileCol,
             TileLayer tileLayer,
             ConveyorTile tile) {
-        String layerName = tileLayer instanceof GeoServerTileLayer
-                ? ((GeoServerTileLayer) tileLayer).getSimpleName()
+        String layerName = tileLayer instanceof GeoServerTileLayer gstl
+                ? gstl.getSimpleName()
                 : tileLayer.getName();
         return layerName
                 + "_"

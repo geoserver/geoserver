@@ -508,11 +508,11 @@ public class ImportJSONWriter {
 
     public void data(FlushableJSONBuilder json, ImportData data, Object parent, int expand) throws IOException {
         if (data instanceof FileData) {
-            if (data instanceof Directory) {
+            if (data instanceof Directory directory) {
                 if (data instanceof Mosaic mosaic) {
                     mosaic(json, mosaic, parent, expand);
                 } else {
-                    directory(json, (Directory) data, parent, expand);
+                    directory(json, directory, parent, expand);
                 }
             } else {
                 file(json, (FileData) data, parent, expand, false);

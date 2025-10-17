@@ -70,7 +70,7 @@ public class AuthenticationFilterRestControllerMarshallingTest extends GeoServer
         }
 
         names.forEach(name -> {
-            String xpath = String.format("//authfilter[name='%s']/atom:link", name);
+            String xpath = "//authfilter[name='%s']/atom:link".formatted(name);
             try {
                 NodeList link = xp.getMatchingNodes(xpath, dom);
                 assertEquals(1, link.getLength());
@@ -103,11 +103,14 @@ public class AuthenticationFilterRestControllerMarshallingTest extends GeoServer
     }
 
     private static final String testViewXML =
-            "<org.geoserver.security.config.SecurityInterceptorFilterConfig>\n" + "  <name>viewXml</name>\n"
-                    + "    <allowIfAllAbstainDecisions>false</allowIfAllAbstainDecisions>\n"
-                    + "    <securityMetadataSource>restFilterDefinitionMap</securityMetadataSource>\n"
-                    + "    <className>org.geoserver.security.filter.GeoServerSecurityInterceptorFilter</className>\n"
-                    + "</org.geoserver.security.config.SecurityInterceptorFilterConfig>\n";
+            """
+            <org.geoserver.security.config.SecurityInterceptorFilterConfig>
+              <name>viewXml</name>
+                <allowIfAllAbstainDecisions>false</allowIfAllAbstainDecisions>
+                <securityMetadataSource>restFilterDefinitionMap</securityMetadataSource>
+                <className>org.geoserver.security.filter.GeoServerSecurityInterceptorFilter</className>
+            </org.geoserver.security.config.SecurityInterceptorFilterConfig>
+            """;
 
     // This only checks the values in web it does not check all possible fields
     @Test
@@ -130,13 +133,16 @@ public class AuthenticationFilterRestControllerMarshallingTest extends GeoServer
     }
 
     private static final String testViewJSON =
-            "{\n" + "    \"org.geoserver.security.config.SecurityInterceptorFilterConfig\": {\n"
-                    + "        \"name\": \"viewJson\",\n"
-                    + "            \"className\": \"org.geoserver.security.filter.GeoServerSecurityInterceptorFilter\",\n"
-                    + "            \"allowIfAllAbstainDecisions\": false,\n"
-                    + "            \"securityMetadataSource\": \"restFilterDefinitionMap\"\n"
-                    + "    }\n"
-                    + "}";
+            """
+            {
+                "org.geoserver.security.config.SecurityInterceptorFilterConfig": {
+                    "name": "viewJson",
+                        "className": "org.geoserver.security.filter.GeoServerSecurityInterceptorFilter",
+                        "allowIfAllAbstainDecisions": false,
+                        "securityMetadataSource": "restFilterDefinitionMap"
+                }
+            }\
+            """;
 
     @Test
     public void testView_JSON() throws Exception {
@@ -151,12 +157,15 @@ public class AuthenticationFilterRestControllerMarshallingTest extends GeoServer
         assertNotNull("false", jsonObject.getJSONObject("config"));
     }
 
-    private static final String testPostXML = "<org.geoserver.security.config.SecurityInterceptorFilterConfig>\n"
-            + "  <name>postXml</name>\n"
-            + "    <allowIfAllAbstainDecisions>false</allowIfAllAbstainDecisions>\n"
-            + "    <securityMetadataSource>restFilterDefinitionMap</securityMetadataSource>\n"
-            + "    <className>org.geoserver.security.filter.GeoServerSecurityInterceptorFilter</className>\n"
-            + "</org.geoserver.security.config.SecurityInterceptorFilterConfig>\n";
+    private static final String testPostXML =
+            """
+            <org.geoserver.security.config.SecurityInterceptorFilterConfig>
+              <name>postXml</name>
+                <allowIfAllAbstainDecisions>false</allowIfAllAbstainDecisions>
+                <securityMetadataSource>restFilterDefinitionMap</securityMetadataSource>
+                <className>org.geoserver.security.filter.GeoServerSecurityInterceptorFilter</className>
+            </org.geoserver.security.config.SecurityInterceptorFilterConfig>
+            """;
 
     @Test
     public void testPost_XML() throws Exception {
@@ -171,13 +180,16 @@ public class AuthenticationFilterRestControllerMarshallingTest extends GeoServer
     }
 
     private static final String testPostJSON =
-            "{\n" + "    \"org.geoserver.security.config.SecurityInterceptorFilterConfig\": {\n"
-                    + "        \"name\": \"postJson\",\n"
-                    + "            \"className\": \"org.geoserver.security.filter.GeoServerSecurityInterceptorFilter\",\n"
-                    + "            \"allowIfAllAbstainDecisions\": false,\n"
-                    + "            \"securityMetadataSource\": \"restFilterDefinitionMap\"\n"
-                    + "    }\n"
-                    + "}";
+            """
+            {
+                "org.geoserver.security.config.SecurityInterceptorFilterConfig": {
+                    "name": "postJson",
+                        "className": "org.geoserver.security.filter.GeoServerSecurityInterceptorFilter",
+                        "allowIfAllAbstainDecisions": false,
+                        "securityMetadataSource": "restFilterDefinitionMap"
+                }
+            }\
+            """;
 
     @Test
     public void testPost_JSON() throws Exception {
@@ -191,19 +203,23 @@ public class AuthenticationFilterRestControllerMarshallingTest extends GeoServer
         assertXpathExists("/org.geoserver.security.config.SecurityInterceptorFilterConfig/id", viewDocument);
     }
 
-    private static final String testSetupPutXml = "<org.geoserver.security.config.SecurityInterceptorFilterConfig>\n"
-            + "    <name>putXml</name>\n"
-            + "        <className>org.geoserver.security.filter.GeoServerSecurityInterceptorFilter</className>\n"
-            + "        <allowIfAllAbstainDecisions>false</allowIfAllAbstainDecisions>\n"
-            + "        <securityMetadataSource>restFilterDefinitionMap</securityMetadataSource>\n"
-            + "</org.geoserver.security.config.SecurityInterceptorFilterConfig>";
+    private static final String testSetupPutXml =
+            """
+            <org.geoserver.security.config.SecurityInterceptorFilterConfig>
+                <name>putXml</name>
+                    <className>org.geoserver.security.filter.GeoServerSecurityInterceptorFilter</className>
+                    <allowIfAllAbstainDecisions>false</allowIfAllAbstainDecisions>
+                    <securityMetadataSource>restFilterDefinitionMap</securityMetadataSource>
+            </org.geoserver.security.config.SecurityInterceptorFilterConfig>""";
 
-    private static final String testPutXml = "<org.geoserver.security.config.SecurityInterceptorFilterConfig>\n"
-            + "    <name>putXml</name>\n"
-            + "        <className>org.geoserver.security.filter.GeoServerSecurityInterceptorFilter</className>\n"
-            + "        <allowIfAllAbstainDecisions>false</allowIfAllAbstainDecisions>\n"
-            + "        <securityMetadataSource>restFilterDefinitionMap</securityMetadataSource>\n"
-            + "</org.geoserver.security.config.SecurityInterceptorFilterConfig>";
+    private static final String testPutXml =
+            """
+            <org.geoserver.security.config.SecurityInterceptorFilterConfig>
+                <name>putXml</name>
+                    <className>org.geoserver.security.filter.GeoServerSecurityInterceptorFilter</className>
+                    <allowIfAllAbstainDecisions>false</allowIfAllAbstainDecisions>
+                    <securityMetadataSource>restFilterDefinitionMap</securityMetadataSource>
+            </org.geoserver.security.config.SecurityInterceptorFilterConfig>""";
 
     @Test
     public void testPut_XML() throws Exception {
@@ -232,12 +248,14 @@ public class AuthenticationFilterRestControllerMarshallingTest extends GeoServer
         TestCase.assertEquals(403, response.getStatus());
     }
 
-    private static final String testSetupDeleteXml = "<org.geoserver.security.config.SecurityInterceptorFilterConfig>\n"
-            + "    <name>deleteXml</name>\n"
-            + "        <className>org.geoserver.security.filter.GeoServerSecurityInterceptorFilter</className>\n"
-            + "        <allowIfAllAbstainDecisions>false</allowIfAllAbstainDecisions>\n"
-            + "        <securityMetadataSource>restFilterDefinitionMap</securityMetadataSource>\n"
-            + "</org.geoserver.security.config.SecurityInterceptorFilterConfig>";
+    private static final String testSetupDeleteXml =
+            """
+            <org.geoserver.security.config.SecurityInterceptorFilterConfig>
+                <name>deleteXml</name>
+                    <className>org.geoserver.security.filter.GeoServerSecurityInterceptorFilter</className>
+                    <allowIfAllAbstainDecisions>false</allowIfAllAbstainDecisions>
+                    <securityMetadataSource>restFilterDefinitionMap</securityMetadataSource>
+            </org.geoserver.security.config.SecurityInterceptorFilterConfig>""";
 
     @Test
     public void testDelete() throws Exception {

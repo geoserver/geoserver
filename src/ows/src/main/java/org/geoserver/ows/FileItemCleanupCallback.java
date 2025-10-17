@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload2.core.FileItem;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -39,7 +39,13 @@ public class FileItemCleanupCallback extends AbstractDispatcherCallback {
                 LOGGER.log(Level.FINEST, "Unable to close request input", e);
             }
             // delete all of the temp file uploads for this request
-            items.forEach(FileItem::delete);
+            for (FileItem item : items) {
+                try {
+                    item.delete();
+                } catch (Exception e) {
+                    LOGGER.log(Level.WARNING, "Unable to delete uploaded file item: " + item.getName(), e);
+                }
+            }
         }
     }
 }

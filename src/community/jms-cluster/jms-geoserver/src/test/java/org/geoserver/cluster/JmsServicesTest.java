@@ -11,7 +11,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.List;
 import java.util.UUID;
-import javax.jms.Message;
+import jakarta.jms.Message;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.cluster.impl.events.configuration.JMSEventType;
 import org.geoserver.cluster.impl.events.configuration.JMSServiceModifyEvent;

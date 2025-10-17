@@ -8,6 +8,7 @@ package org.geoserver.wms.map;
 import static org.geoserver.catalog.LayerGroupHelper.isSingleOrOpaque;
 import static org.geoserver.platform.ServiceException.INVALID_PARAMETER_VALUE;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,23 +28,23 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.collections4.EnumerationUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.cache.CacheResponseStatus;
-import org.apache.http.client.cache.HttpCacheContext;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.config.RequestConfig.Builder;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.HttpClientConnectionManager;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.cache.CacheConfig;
-import org.apache.http.impl.client.cache.CachingHttpClientBuilder;
+import org.apache.hc.client5.http.ClientProtocolException;
+import org.apache.hc.client5.http.cache.CacheResponseStatus;
+import org.apache.hc.client5.http.cache.HttpCacheContext;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.config.RequestConfig.Builder;
+import org.apache.hc.client5.http.impl.cache.CacheConfig;
+import org.apache.hc.client5.http.impl.cache.CachingHttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.io.HttpClientConnectionManager;
 import org.eclipse.imagen.Interpolation;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -209,8 +210,8 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         // configure the http client used to fetch remote styles
         Builder builder = RequestConfig.copy(RequestConfig.DEFAULT);
         int timeoutMillis = getTimeoutMillis();
-        builder.setConnectTimeout(timeoutMillis);
-        builder.setSocketTimeout(timeoutMillis);
+        builder.setConnectTimeout(timeoutMillis, TimeUnit.MILLISECONDS);
+        builder.setResponseTimeout(timeoutMillis, TimeUnit.MILLISECONDS);
         return builder.build();
     }
 

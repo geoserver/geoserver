@@ -5,8 +5,8 @@
 package org.geoserver.security.oauth2;
 
 import java.util.logging.Level;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;

@@ -4,6 +4,7 @@
  */
 package org.geoserver.featurestemplating.web.schema;
 
+import java.io.Serial;
 import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -42,7 +43,7 @@ public class SchemaInfoPage extends GeoServerSecuredPage {
     private void addFeatureTeplateSection() {
         add(new AjaxLink<Object>("addNew") {
 
-            private static final long serialVersionUID = -4136656891019857299L;
+            @Serial private static final long serialVersionUID = -4136656891019857299L;
 
             @Override
             public void onClick(AjaxRequestTarget target) {
@@ -91,7 +92,7 @@ public class SchemaInfoPage extends GeoServerSecuredPage {
     private void addSchemaDefinitionSection() {
         add(new AjaxLink<Object>("addNewSchema") {
 
-            private static final long serialVersionUID = -4136656891019857299L;
+            @Serial private static final long serialVersionUID = -4136656891019857299L;
 
             @Override
             public void onClick(AjaxRequestTarget target) {
@@ -102,7 +103,7 @@ public class SchemaInfoPage extends GeoServerSecuredPage {
 
     private AjaxLink<Object> newRemoveSchemaLink() {
         return new AjaxLink<Object>("removeSelectedSchema") {
-            private static final long serialVersionUID = 2421854498051377608L;
+            @Serial private static final long serialVersionUID = 2421854498051377608L;
 
             @Override
             public void onClick(AjaxRequestTarget target) {
@@ -133,7 +134,7 @@ public class SchemaInfoPage extends GeoServerSecuredPage {
 
     private AjaxLink<Object> newRemoveLink() {
         return new AjaxLink<Object>("removeSelected") {
-            private static final long serialVersionUID = 2421854498051377608L;
+            @Serial private static final long serialVersionUID = 2421854498051377608L;
 
             @Override
             public void onClick(AjaxRequestTarget target) {

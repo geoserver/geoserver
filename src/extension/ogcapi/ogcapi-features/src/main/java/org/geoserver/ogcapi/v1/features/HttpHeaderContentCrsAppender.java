@@ -7,7 +7,7 @@ package org.geoserver.ogcapi.v1.features;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;

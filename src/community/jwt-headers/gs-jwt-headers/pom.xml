@@ -28,6 +28,10 @@
       <artifactId>nimbus-jose-jwt</artifactId>
       <version>9.37.4</version>
     </dependency>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.geoserver.community.jwt-headers</groupId>
@@ -45,6 +49,12 @@
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-sec-core</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.wicket</groupId>
+      <artifactId>wicket-tester</artifactId>
+      <version>10.7.0</version>
+      <scope>test</scope>
     </dependency>
 
     <dependency>

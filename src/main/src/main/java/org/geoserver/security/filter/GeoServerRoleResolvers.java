@@ -4,12 +4,12 @@
  */
 package org.geoserver.security.filter;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.exception.GeoServerRuntimException;
 import org.geoserver.security.GeoServerRoleConverter;
@@ -311,7 +311,7 @@ public class GeoServerRoleResolvers {
             roles = HTTP_HEADER_RESOLVER.convert(p);
         } else {
             String lMsg = "Couldn't determine roles based on the specified role source %s.";
-            throw new RuntimeException(String.format(lMsg, rs));
+            throw new RuntimeException(lMsg.formatted(rs));
         }
 
         String lMsg = "Got roles {0} from {1} for principal {2}";

@@ -6,9 +6,9 @@
 
 package org.geoserver.security.filter;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Collection;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.security.GeoServerRoleConverter;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;

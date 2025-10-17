@@ -90,9 +90,9 @@ class TransformationFunctionTranslator extends DuplicatingStyleVisitor {
             if (popped instanceof List) {
                 // multiple rules generated, add them all
                 rulesCopy.addAll((List<Rule>) popped);
-            } else if (popped instanceof Rule) {
+            } else if (popped instanceof Rule rule1) {
                 // single rule generated, add it
-                rulesCopy.add((Rule) popped);
+                rulesCopy.add(rule1);
             } else {
                 throw new IllegalStateException("Expected a Rule or List<Rule> to be returned from rule visit, got: "
                         + (popped != null ? popped.getClass().getName() : "null"));

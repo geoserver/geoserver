@@ -100,6 +100,10 @@
       <artifactId>nimbus-jose-jwt</artifactId>
       <version>9.37.4</version>
     </dependency>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.geoserver.community.security</groupId>

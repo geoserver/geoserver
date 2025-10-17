@@ -32,6 +32,17 @@
       <groupId>org.geowebcache</groupId>
       <artifactId>gwc-aws-s3</artifactId>
     </dependency>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.wicket</groupId>
+      <artifactId>wicket-tester</artifactId>
+      <version>10.7.0</version>
+      <scope>test</scope>
+    </dependency>
 
     <!-- test dependencies -->
     <dependency>

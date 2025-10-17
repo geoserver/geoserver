@@ -23,7 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import net.opengis.wfs20.Wfs20Factory;
 import org.apache.commons.io.IOUtils;

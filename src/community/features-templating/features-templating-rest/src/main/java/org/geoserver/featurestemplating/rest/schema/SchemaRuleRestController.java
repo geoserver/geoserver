@@ -15,7 +15,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Optional;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -117,7 +117,7 @@ public class SchemaRuleRestController extends AbstractCatalogController {
         Optional<SchemaRule> rule = layerConfig.getSchemaRules().stream()
                 .filter(r -> r.getRuleId().equals(identifier))
                 .findFirst();
-        if (!rule.isPresent()) {
+        if (rule.isEmpty()) {
             throw new RestException("Rule with id " + identifier + " not found", HttpStatus.NOT_FOUND);
         }
         return wrapObject(rule.get(), SchemaRule.class);
@@ -276,8 +276,7 @@ public class SchemaRuleRestController extends AbstractCatalogController {
         @Override
         public void marshal(
                 Object o, HierarchicalStreamWriter hierarchicalStreamWriter, MarshallingContext marshallingContext) {
-            if (o instanceof SchemaRuleList) {
-                SchemaRuleList list = (SchemaRuleList) o;
+            if (o instanceof SchemaRuleList list) {
                 for (SchemaRule rule : list.getRules()) {
                     hierarchicalStreamWriter.startNode("Rules");
                     hierarchicalStreamWriter.startNode("ruleId");

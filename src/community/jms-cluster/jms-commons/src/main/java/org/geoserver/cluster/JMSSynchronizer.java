@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.jms.JMSException;
+import jakarta.jms.JMSException;
 import org.geotools.util.logging.Logging;
 
 /**

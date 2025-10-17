@@ -21,7 +21,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import net.opengis.ows11.BoundingBoxType;
 import net.opengis.ows11.Ows11Factory;
 import net.opengis.wps10.ComplexDataType;

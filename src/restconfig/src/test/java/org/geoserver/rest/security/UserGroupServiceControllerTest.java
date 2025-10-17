@@ -358,8 +358,8 @@ public class UserGroupServiceControllerTest extends GeoServerTestSupport {
         copy.setId(null); // POST will assign
 
         // XML implementation requires a fileName
-        if (copy instanceof XMLUserGroupServiceConfig) {
-            ((XMLUserGroupServiceConfig) copy).setFileName(name + ".xml");
+        if (copy instanceof XMLUserGroupServiceConfig config) {
+            config.setFileName(name + ".xml");
         }
 
         return copy;

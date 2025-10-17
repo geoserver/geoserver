@@ -5,17 +5,17 @@
  */
 package org.geoserver.wcs2_0.response;
 
+import jakarta.activation.DataHandler;
+import jakarta.mail.BodyPart;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Session;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMultipart;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
-import javax.activation.DataHandler;
-import javax.mail.BodyPart;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 import net.opengis.wcs20.ExtensionItemType;
 import net.opengis.wcs20.ExtensionType;
 import net.opengis.wcs20.GetCoverageType;

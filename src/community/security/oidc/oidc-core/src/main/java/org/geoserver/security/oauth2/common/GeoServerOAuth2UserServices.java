@@ -7,7 +7,7 @@ package org.geoserver.security.oauth2.common;
 import java.util.Collection;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.geoserver.security.filter.GeoServerRoleResolvers;
 import org.geoserver.security.filter.GeoServerRoleResolvers.ResolverContext;
 import org.geoserver.security.filter.GeoServerRoleResolvers.ResolverParam;

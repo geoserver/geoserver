@@ -11,7 +11,7 @@ import java.io.OutputStream;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.geoserver.config.GeoServer;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;

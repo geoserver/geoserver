@@ -14,11 +14,11 @@ import static org.mockito.Mockito.when;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Collections;
-import org.apache.http.HttpEntity;
-import org.apache.http.StatusLine;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.message.StatusLine;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,7 +37,7 @@ public class KeycloakRESTClientTest {
     @Test
     public void testGetAccessTokenWithNullStatusLine() throws IOException {
         CloseableHttpResponse response = mock(CloseableHttpResponse.class);
-        when(response.getStatusLine()).thenReturn(null);
+        when(new StatusLine(response)).thenReturn(null);
 
         CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
         when(httpClient.execute(any(HttpPost.class))).thenReturn(response);
@@ -51,7 +51,7 @@ public class KeycloakRESTClientTest {
         when(statusLine.getStatusCode()).thenReturn(401);
 
         CloseableHttpResponse response = mock(CloseableHttpResponse.class);
-        when(response.getStatusLine()).thenReturn(statusLine);
+        when(new StatusLine(response)).thenReturn(statusLine);
 
         CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
         when(httpClient.execute(any(HttpPost.class))).thenReturn(response);
@@ -65,7 +65,7 @@ public class KeycloakRESTClientTest {
         when(statusLine.getStatusCode()).thenReturn(200);
 
         CloseableHttpResponse response = mock(CloseableHttpResponse.class);
-        when(response.getStatusLine()).thenReturn(statusLine);
+        when(new StatusLine(response)).thenReturn(statusLine);
         when(response.getEntity()).thenReturn(null);
 
         CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
@@ -86,7 +86,7 @@ public class KeycloakRESTClientTest {
                 .thenReturn(new ByteArrayInputStream(("{access_token: " + accessToken + "}").getBytes()));
 
         CloseableHttpResponse response = mock(CloseableHttpResponse.class);
-        when(response.getStatusLine()).thenReturn(statusLine);
+        when(new StatusLine(response)).thenReturn(statusLine);
         when(response.getEntity()).thenReturn(entity);
 
         CloseableHttpClient httpClient = mock(CloseableHttpClient.class);

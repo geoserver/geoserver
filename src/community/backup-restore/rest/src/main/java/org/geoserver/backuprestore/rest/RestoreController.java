@@ -12,7 +12,7 @@ import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.logging.Level;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.backuprestore.RestoreExecutionAdapter;
 import org.geoserver.config.util.XStreamPersister;

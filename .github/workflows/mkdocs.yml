@@ -97,17 +97,7 @@ jobs:
         pip install -r requirements.txt
         mvn -B -ntp compile
     
-    - name: Build Sphinx documentation first (Chinese)
-      run: |
-        source venv/bin/activate
-        cd doc/zhCN
-        # Use English requirements.txt as fallback if Chinese doesn't exist
-        if [ -f requirements.txt ]; then
-          pip install -r requirements.txt
-        else
-          pip install -r ../en/requirements.txt
-        fi
-        mvn -B -ntp compile
+
     
     - name: Convert RST to Markdown using directory-based approach
       run: |
@@ -115,10 +105,7 @@ jobs:
         
         # Array of documentation directories to process
         declare -a DOC_DIRS=(
-          "doc/en/user:user:en"
-          "doc/en/developer:developer:en" 
           "doc/en/docguide:docguide:en"
-          "doc/zhCN/user:user:zhCN"
         )
         
         # Process each directory
@@ -139,36 +126,7 @@ jobs:
             # Create mkdocs.yml if it doesn't exist
             if [ ! -f "mkdocs.yml" ]; then
               echo "   Creating mkdocs.yml configuration..."
-              if [ "$LANG" = "zhCN" ]; then
-                cat > mkdocs.yml << EOF
-        site_name: GeoServer $DOC_TYPE 文档 (中文)
-        site_description: GeoServer $DOC_TYPE 中文文档
-        site_author: GeoServer Project
-        theme:
-          name: material
-          language: zh
-          features:
-            - navigation.tabs
-            - navigation.sections
-            - navigation.expand
-            - navigation.top
-            - search.highlight
-            - search.share
-        nav:
-          - 首页: index.md
-        markdown_extensions:
-          - admonition
-          - pymdownx.details
-          - pymdownx.superfences
-          - tables
-          - toc:
-              permalink: true
-        plugins:
-          - search
-        site_dir: ../../gh-pages-output/$LANG/$DOC_TYPE
-        EOF
-              else
-                cat > mkdocs.yml << EOF
+              cat > mkdocs.yml << EOF
         site_name: GeoServer $DOC_TYPE Documentation (English)
         site_description: GeoServer $DOC_TYPE documentation in English
         site_author: GeoServer Project
@@ -195,7 +153,6 @@ jobs:
           - search
         site_dir: ../../gh-pages-output/$LANG/$DOC_TYPE
         EOF
-              fi
             fi
             
             echo "   Step 1: Initializing docs directory..."
@@ -214,11 +171,7 @@ jobs:
             if [ ! -d "docs" ]; then
               echo "   Creating fallback docs directory..."
               mkdir -p docs
-              if [ "$LANG" = "zhCN" ]; then
-                echo "# GeoServer $DOC_TYPE 文档" > docs/index.md
-              else
-                echo "# GeoServer $DOC_TYPE Documentation" > docs/index.md
-              fi
+              echo "# GeoServer $DOC_TYPE Documentation" > docs/index.md
             fi
             
             # Return to project root
@@ -241,10 +194,7 @@ jobs:
         
         # Array of documentation directories to build
         declare -a MKDOCS_DIRS=(
-          "doc/en/user:user:en"
-          "doc/en/developer:developer:en" 
           "doc/en/docguide:docguide:en"
-          "doc/zhCN/user:user:zhCN"
         )
         
         # Build each MkDocs site
@@ -260,11 +210,7 @@ jobs:
             # Ensure docs directory exists
             if [ ! -d "docs" ]; then
               mkdir -p docs
-              if [ "$LANG" = "zhCN" ]; then
-                echo "# GeoServer $DOC_TYPE 文档" > docs/index.md
-              else
-                echo "# GeoServer $DOC_TYPE Documentation" > docs/index.md
-              fi
+              echo "# GeoServer $DOC_TYPE Documentation" > docs/index.md
               echo "Documentation build in progress." >> docs/index.md
             fi
             
@@ -302,56 +248,22 @@ jobs:
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>GeoServer Documentation</title>
+            <title>GeoServer Documentation Guide</title>
             <style>
                 body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
                 h1 { color: #2c3e50; }
-                h2 { color: #34495e; margin-top: 30px; }
-                .doc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0; }
-                .doc-link { display: block; padding: 15px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px; text-decoration: none; color: #495057; transition: background-color 0.2s; }
+                .doc-link { display: block; padding: 20px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; text-decoration: none; color: #495057; transition: background-color 0.2s; margin: 20px 0; }
                 .doc-link:hover { background: #e9ecef; }
-                .lang-section { margin-bottom: 40px; }
             </style>
         </head>
         <body>
-            <h1>GeoServer Documentation</h1>
-            <p>Welcome to the GeoServer documentation portal. Choose your language and documentation type below.</p>
+            <h1>GeoServer Documentation Guide</h1>
+            <p>Guidelines and instructions for editing and maintaining GeoServer documentation.</p>
             
-            <div class="lang-section">
-                <h2>English Documentation</h2>
-                <div class="doc-grid">
-                    <a href="en/user/" class="doc-link">
-                        <strong>User Guide</strong><br>
-                        <small>Complete guide for GeoServer users</small>
-                    </a>
-                    <a href="en/developer/" class="doc-link">
-                        <strong>Developer Guide</strong><br>
-                        <small>Technical documentation for developers</small>
-                    </a>
-                    <a href="en/docguide/" class="doc-link">
-                        <strong>Documentation Guide</strong><br>
-                        <small>Guidelines for editing GeoServer docs</small>
-                    </a>
-                </div>
-            </div>
-            
-            <div class="lang-section">
-                <h2>中文文档</h2>
-                <div class="doc-grid">
-                    <a href="zhCN/user/" class="doc-link">
-                        <strong>用户指南</strong><br>
-                        <small>GeoServer 用户完整指南</small>
-                    </a>
-                    <a href="zhCN/developer/" class="doc-link">
-                        <strong>开发者指南</strong><br>
-                        <small>开发者技术文档</small>
-                    </a>
-                    <a href="zhCN/docguide/" class="doc-link">
-                        <strong>文档指南</strong><br>
-                        <small>GeoServer 文档编辑指南</small>
-                    </a>
-                </div>
-            </div>
+            <a href="en/docguide/" class="doc-link">
+                <strong>Documentation Guide</strong><br>
+                <small>Guidelines for editing GeoServer docs</small>
+            </a>
         </body>
         </html>
         EOL
@@ -425,12 +337,7 @@ jobs:
             **Preview URL**: ${{ steps.deployment.outputs.page_url }}
             
             **Available Documentation:**
-            - [English User Guide](${{ steps.deployment.outputs.page_url }}en/user/) _compare to https://docs.geoserver.org/latest/en/user/_
-            - [English Developer Guide](${{ steps.deployment.outputs.page_url }}en/developer/) _compare to https://docs.geoserver.org/latest/en/developer/_
             - [English Documentation Guide](${{ steps.deployment.outputs.page_url }}en/docguide/) _compare to https://docs.geoserver.org/latest/en/docguide/_
-            - [Chinese User Guide](${{ steps.deployment.outputs.page_url }}zhCN/user/) _compare to https://docs.geoserver.org/latest/zhCN/user/_
-            - [~~Chinese Developer Guide~~](${{ steps.deployment.outputs.page_url }}zhCN/developer/)
-            - [~~Chinese Documentation Guide~~](${{ steps.deployment.outputs.page_url }}zhCN/docguide/)
             
             _This preview will be updated automatically with each new commit to this **and other** PRs that have the \`mkdocs\` label._`
           });

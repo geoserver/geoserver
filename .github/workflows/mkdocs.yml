@@ -164,11 +164,11 @@ jobs:
             echo "   Step 3: Converting RST to Markdown..."
             mkdocs_translate --log=DEBUG migrate || (
               echo "Migration failed, showing debug info..."
-              echo "=== Content around line 20 of target/convert/index.tmp.md ==="
-              if [ -f "target/convert/index.tmp.md" ]; then
-                sed -n '15,25p' target/convert/index.tmp.md | nl -v15
+              echo "=== Content around line 142 of target/convert/sphinx.tmp.md ==="
+              if [ -f "target/convert/sphinx.tmp.md" ]; then
+                sed -n '130,150p' target/convert/sphinx.tmp.md | nl -v15
               else
-                echo "File target/convert/index.tmp.md not found"
+                echo "File target/convert/sphinx.tmp.md not found"
               fi
               echo "=== End debug info ==="
               exit 3

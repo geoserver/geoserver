@@ -63,7 +63,7 @@ Windows
 Ubuntu
 ------
 
-.. note:: These instructions may work on other Linux distributions as well, but have not been tested.
+**Note:** These instructions may work on other Linux distributions as well, but have not been tested.
 
 #. Open a terminal and type the following command:
    

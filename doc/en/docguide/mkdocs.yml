@@ -24,6 +24,18 @@ plugins:
   - minify:
       minify_html: true
 
+nav:
+  - Home: index.md
+  - Background: background.md
+  - Quick Fix: quickfix.md
+  - Contributing: contributing.md
+  - Workflow: workflow.md
+  - Installing Sphinx: install.md
+  - Installing LaTeX: installlatex.md
+  - Sphinx Syntax: sphinx.md
+  - Style Guidelines: style.md
+  - Writing a Tutorial: tutorial.md
+
 markdown_extensions:
   - admonition
   - toc:
@@ -31,3 +43,5 @@ markdown_extensions:
 
 extra_css:
   - css/extra.css
+
+site_dir: ../../../gh-pages-output/en/docguide

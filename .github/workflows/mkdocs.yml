@@ -276,6 +276,11 @@ jobs:
                 <strong>Documentation Guide</strong><br>
                 <small>Guidelines for editing GeoServer docs</small>
             </a>
+            
+            <a href="en/developer/" class="doc-link">
+                <strong>Developer Guide</strong><br>
+                <small>Developer documentation and programming guide</small>
+            </a>
         </body>
         </html>
         EOL
@@ -350,6 +355,7 @@ jobs:
             
             **Available Documentation:**
             - [English Documentation Guide](${{ steps.deployment.outputs.page_url }}en/docguide/) _compare to https://docs.geoserver.org/latest/en/docguide/_
+            - [English Developer Guide](${{ steps.deployment.outputs.page_url }}en/developer/) _compare to https://docs.geoserver.org/latest/en/developer/_
             
             _This preview will be updated automatically with each new commit to this **and other** PRs that have the \`mkdocs\` label._`
           });

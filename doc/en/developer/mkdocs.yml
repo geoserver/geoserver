@@ -32,4 +32,7 @@ markdown_extensions:
 extra_css:
   - css/extra.css
 
-site_dir: ../../gh-pages-output/en/developer
+    - Tables & MarkDownsets
+    - Tables & Admonitions
+
+site_dir: ../../../gh-pages-output/en/developer

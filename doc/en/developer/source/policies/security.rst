@@ -154,7 +154,7 @@ Working with vulnerability reports
 
    This requires an external review as they check that the details provided are complete.
    
-   .. note:: Example: The report "GHSA-cqpc-x2c6-2gmf" has been assigned CVE-2023-41339 and is shown as "not yet published".
+   **Note:** Example: The report "GHSA-cqpc-x2c6-2gmf" has been assigned CVE-2023-41339 and is shown as "not yet published".
    
       .. figure:: img/cve-not-yet-published.png
          
@@ -164,7 +164,7 @@ Working with vulnerability reports
    
    * Mentioning the CVE is fine, even if it is not yet public, it will still show up in the database as reserved.
    
-   .. note:: Example: The Jira issue GEOS-11121 ticket is created for CVE-2023-41339.
+   **Note:** Example: The Jira issue GEOS-11121 ticket is created for CVE-2023-41339.
    
       .. figure:: img/cve-issue.png
       
@@ -178,7 +178,7 @@ Working with vulnerability reports
    
    * You may change the wording of the recommendation to "recommended" or "essential" or "urgent" as you see fit.
    
-   .. note:: It is our policy not to provide details at this time. Any deeply concerned parties can volunteer on the geoserver-security email list, or arrange a vendor relationship with a service provider.
+   **Note:** It is our policy not to provide details at this time. Any deeply concerned parties can volunteer on the geoserver-security email list, or arrange a vendor relationship with a service provider.
 
 5. Disclosure:
 
@@ -190,7 +190,7 @@ Working with vulnerability reports
 
    * Update prior release announcements, and placeholder Jira issue, with the complete title of the vulnerability.
   
-      .. note:: Example: Security considerations section showing a mix of disclosed and not yet disclosed (no hyperlink) vulnerabilities.
+      **Note:** Example: Security considerations section showing a mix of disclosed and not yet disclosed (no hyperlink) vulnerabilities.
      
          .. figure:: img/cve-disclosure.png
         
@@ -200,7 +200,7 @@ Working with vulnerability reports
    
    * If you feel a statement is necessary, you may write an appropriate blog post.
 
-        .. note:: Examples statements:
+        **Note:** Examples statements:
            
            * `CVE-2024-36401 Remote Code Execution (RCE) vulnerability in evaluating property name expressions <https://geoserver.org/vulnerability/2024/09/12/cve-2024-36401.html>`__.
            * `Jiffle and GeoTools RCE vulnerabilities <https://geoserver.org/vulnerability/2022/04/11/geoserver-2-jiffle-jndi-rce.html>`__.
@@ -214,7 +214,7 @@ When a national agency or similar has already reported a vulnerability publicly,
 
 1. Locate the issue on https://github.com/advisories?query=geoserver
 
-   .. note:: Example: Public reported CVE-2023-35042 is listed here https://github.com/advisories/GHSA-59x6-g4jr-4hxc
+   **Note:** Example: Public reported CVE-2023-35042 is listed here https://github.com/advisories/GHSA-59x6-g4jr-4hxc
    
 2. Create a pull request to revise the issue with useful details such as:
 
@@ -222,11 +222,11 @@ When a national agency or similar has already reported a vulnerability publicly,
    * org.geoserver
    * version
    
-   .. note:: Example: CVE-2023-35042 correction https://github.com/github/advisory-database/pull/2721
+   **Note:** Example: CVE-2023-35042 correction https://github.com/github/advisory-database/pull/2721
 
 3. Optional: Work with original agency to try and revise their record.
 
-   .. note:: Example:
+   **Note:** Example:
       
       A request to mark `CVE-2023-35042 <https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-35042>`__ as duplicate that had been fixed in all supported versions came out as:
 
@@ -236,7 +236,7 @@ When a national agency or similar has already reported a vulnerability publicly,
 
 4. Claim the ticket with a Jira issue, linking to the revised GitHub record, or national record as appropriate.
    
-   .. note:: Example: CVE-2023-35042 reported to our issue tracker as GEOS-11027
+   **Note:** Example: CVE-2023-35042 reported to our issue tracker as GEOS-11027
    
       .. figure:: img/cve-issue-public.png
          

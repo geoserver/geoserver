@@ -7,7 +7,7 @@ In addition to the formal Catalog API GeoServer needs a way to manage all of the
 
 Rather than make direct use of files GeoServer has introduced a Resource API to access this content.  While the primary motivation is to allow sharing resources in a cluster, eventually using a different storage, e..g. database or distributed memory. We took this opportunity to optimize the most common use-cases for file interaction in our codebase.
 
-.. note:: Make use of the Resource API for "file" interaction
+**Note:** Make use of the Resource API for "file" interaction
    
    While the Resource API does offer the ability to unpack a File onto disk for interaction with libraries like Freemarker that only work with files, the majority of interaction can be handled with input and output streams.
 
@@ -45,13 +45,13 @@ All geoserver developers should be wary of the following general principles when
 
 * Avoid as much as possible using the file system directly.
   
-  .. note:: The only acceptable exception is when third party libraries require use of a File. Even in this case use Resources API as much as possible.
+  **Note:** The only acceptable exception is when third party libraries require use of a File. Even in this case use Resources API as much as possible.
 
 * Use Avoid the usage of ``Resource.file()`` and ``Resource.directory()``.
   
   These methods are only necessary for third party libraries that require usage of the file system, when the third party library accepts a file input.
   
-  .. note:: The ``file()`` and ``directory()`` methods are never be used for permanent storage. Since there are alternative implementations of the ResourceStore that do not use the file system as underlying storage device, modifying a file on disk does not necessarily have a lasting effect.
+  **Note:** The ``file()`` and ``directory()`` methods are never be used for permanent storage. Since there are alternative implementations of the ResourceStore that do not use the file system as underlying storage device, modifying a file on disk does not necessarily have a lasting effect.
 
 * For custom configuration files with a fixed location, always use ``ResourceStore``.
   
@@ -234,7 +234,7 @@ The ``Files.asResource(file)`` method creates a ``ResourceAdapter`` wrapper arou
 Files.url
 ^^^^^^^^^
 
-.. warning:: This method is deprecated along with File use, recommend use of ``Resources.fromURL (baseDirectory, url )`` to obtain Resource.
+**Warning:** This method is deprecated along with File use, recommend use of ``Resources.fromURL (baseDirectory, url )`` to obtain Resource.
 
 The other key method is ``Files.url( baseDirectory, url)`` which is used to look up files based on a user provided URL (or path).
 

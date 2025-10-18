@@ -111,7 +111,7 @@ The following outlines the steps to be taken in order to add a new community mod
    Add the file to the root of the new community module, 
    ``myCommunityModule/pom.xml``
 
-   .. note::
+   **Note:**
 
       When adding Spring Framework or Spring Security dependencies, **never specify the version**. 
       GeoServer uses Bill of Materials (BOM) to manage these versions centrally. 
@@ -156,12 +156,12 @@ The following outlines the steps to be taken in order to add a new community mod
              </profile>
            </profiles>
 
-   .. warning::
+   **Warning:**
 
       If the community module depends on any other community modules,
       they too should be included in the profile definition.
 
-   .. warning::
+   **Warning:**
 
       Ensure that the name of the profile matches the name of the
       community module
@@ -308,7 +308,7 @@ Process
          .. literalinclude:: /../../../../src/release/extensions/h2/h2-README.md
             :language: markdown
             
-         .. warning::
+         **Warning:**
 
             Don't skip this step.
 

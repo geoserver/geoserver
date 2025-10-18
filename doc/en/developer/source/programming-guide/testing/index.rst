@@ -455,7 +455,7 @@ Stores and Layers
      - PrimitiveGeoFeature
      - Default
 
-.. note::
+**Note:**
    The ``gs`` workspace contains no layers. It is typically used as the 
    workspace for layers that are added by test cases.
 

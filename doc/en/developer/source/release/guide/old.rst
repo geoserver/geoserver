@@ -3,7 +3,7 @@
 Manual Release (Deprecated)
 ===========================
 
-.. warning::
+**Warning:**
 
    This release guide is deprecated and only kept currently for reference resources. See the :ref:`official release guide <release_guide>` for current practices.
 
@@ -154,7 +154,7 @@ Announce the Release
 Mailing lists
 ^^^^^^^^^^^^^
 
-.. note:: This announcement should be made for all releases, including betas and release candidates.
+**Note:** This announcement should be made for all releases, including betas and release candidates.
 
 Send an email to both the developers list and users list announcing the
 release. The message should be relatively short. The following is an example::
@@ -191,7 +191,7 @@ release. The message should be relatively short. The following is an example::
 SourceForge
 ^^^^^^^^^^^
 
-.. note:: This announcement should be made for all releases, including betas and release candidates.
+**Note:** This announcement should be made for all releases, including betas and release candidates.
 
 #. Log in to `SourceForge <http://sourceforge.net/account/login.php>`__.
 #. Edit the release, and scroll down to the bottom of the page.
@@ -205,9 +205,9 @@ SourceForge
 GeoServer Blog
 ^^^^^^^^^^^^^^
 
-.. note:: This announcement should be made for all releases, including betas and release candidates.
+**Note:** This announcement should be made for all releases, including betas and release candidates.
 
-.. note::
+**Note:**
 
    This step requires an account on http://blog.geoserver.org
 
@@ -226,9 +226,9 @@ GeoServer Blog
 SlashGeo
 ^^^^^^^^
 
-.. note:: This announcement should be made only for official releases. Not betas and release candidates.
+**Note:** This announcement should be made only for official releases. Not betas and release candidates.
 
-.. note::
+**Note:**
 
    This step requires an account on http://slashgeo.org
 
@@ -243,7 +243,7 @@ SlashGeo
 FreeGIS
 ^^^^^^^
 
-.. note:: This announcement should be made only for official releases. Not betas and release candidates.
+**Note:** This announcement should be made only for official releases. Not betas and release candidates.
 
 Send an email to ``bjoern dot broscheit at uni-osnabrueck dot de``.
 Example::
@@ -272,9 +272,9 @@ Example::
 FreshMeat
 ^^^^^^^^^
 
-.. note:: This announcement should be made only for official rel-eases. Not betas and release candidates.
+**Note:** This announcement should be made only for official rel-eases. Not betas and release candidates.
 
-.. note::
+**Note:**
 
    This step requires an account on http://freshmeat.net/
 
@@ -284,7 +284,7 @@ FreshMeat
 #. Choose the **Default** branch
 #. Enter the version and choose the appropriate **Release focus**.
 
-   .. note::
+   **Note:**
 
       The release focus is usually 4,5,6, or 7. Choose which ever is
       appropriate.

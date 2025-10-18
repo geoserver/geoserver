@@ -17,7 +17,7 @@ Maven provides a wide range of commands used to do everything from compiling a
 module to generating test coverage reports. Most maven commands can be run from
 the root the source tree, or from a particular module.
 
-  .. note::
+  **Note:**
 
      When attempting to run a maven command from the root of the source tree 
      remember to change directory from the root the checkout into the ``src``
@@ -169,7 +169,7 @@ embedded Jetty container::
   cd geoserver_2.0.x/src/web/app
   mvn jetty:run
 
-.. note::
+**Note:**
 
    This command must be run from the web/app module, it will fail if run from 
    elsewhere.
@@ -291,7 +291,7 @@ For GeoTools test JARs, use the ``<classifier>tests</classifier>`` approach inst
      <scope>test</scope>
    </dependency>
 
-.. warning::
+**Warning:**
 
    Never specify explicit versions for GeoTools, Spring Framework, or Spring Security dependencies. 
    This can lead to version conflicts and inconsistent behavior across modules.

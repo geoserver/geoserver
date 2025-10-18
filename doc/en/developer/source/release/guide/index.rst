@@ -70,7 +70,7 @@ Release in Jira
 GeoServer release announcement
 ------------------------------
 
-.. note:: Start this activity early to work on while release jobs are running. This will also serve to review resolved Jira issues before release notes are created.
+**Note:** Start this activity early to work on while release jobs are running. This will also serve to review resolved Jira issues before release notes are created.
 
 The `GeoServer website <https://geoserver.org/>`_ is managed as a `GitHub Pages repository <https://github.com/geoserver/geoserver.github.io>`_.
 
@@ -191,13 +191,13 @@ When creating the first release candidate of a series, there are some extra step
      
      ant -f build/rename.xml 
     
-   .. note:: use of sed
+   **Note:** use of sed
       
       To update these files using sed::
    
        find . -name pom.xml -exec sed -i 's/2.28-SNAPSHOT/2.29-SNAPSHOT/g' {} \;
  
-      .. note:: ``sed`` behaves differently on Linux vs. Mac OS X. If running on OS X, the ``-i`` should be followed by ``'' -e`` for each of these ``sed`` commands.
+      **Note:** ``sed`` behaves differently on Linux vs. Mac OS X. If running on OS X, the ``-i`` should be followed by ``'' -e`` for each of these ``sed`` commands.
  
       Update release artifact paths and labels, for example, if changing the main development branch from ``2.28-SNAPSHOT`` to ``2.29-SNAPSHOT``::
  
@@ -205,7 +205,7 @@ When creating the first release candidate of a series, there are some extra step
         sed -i 's/2.28-SNAPSHOT/2.29-SNAPSHOT/g' src/release/installer/win/GeoServerEXE.nsi
         sed -i 's/2.28-SNAPSHOT/2.29-SNAPSHOT/g' src/release/installer/win/wrapper.conf
  
-      .. note:: These can be written as a single ``sed`` command with multiple files.
+      **Note:** These can be written as a single ``sed`` command with multiple files.
  
       Update GeoTools dependency; for example if changing from ``28-SNAPSHOT`` to ``29-SNAPSHOT``::
  
@@ -411,7 +411,7 @@ Announce the Release
 Mailing lists
 ^^^^^^^^^^^^^
 
-.. note:: This announcement should be made for all releases, including release candidates.
+**Note:** This announcement should be made for all releases, including release candidates.
 
 Post an announcement on both the Discourse User and Developer groups announcing the
 release. The message should be relatively short. You can base it on the blog post headings which often indicate new features to highlight.

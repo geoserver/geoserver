@@ -129,7 +129,7 @@ PSC members are expected to be active on both the GeoServer User forum and the G
 
 *It is a requirement that all PSC members maintain good public visibility with respect to activity and management of the project. This cannot happen without a good frequency of communication.*
 
-.. note::
+**Note:**
    
    Our community is subject to both a responsible disclosure policy and a code of conduct; this is the responsibility of all partipants and is not limited to the PSC.*
 

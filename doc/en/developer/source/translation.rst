@@ -22,7 +22,7 @@ To translate the GeoServer UI to another language, copy and rename each of these
 
 Once created, each line in the files represents a string that will need to be translated.  When finished, you will need to commit these files or submit a JIRA issue with attached patch.  See the section on :ref:`source` for more information on how to commit.
 
-.. warning:: property files must always be encoded in ISO-8859 (or something equivalent like us-ascii or latin1). If you need a whole unicode file, the extension of the file must be `utf8.properties`. 
+**Warning:** property files must always be encoded in ISO-8859 (or something equivalent like us-ascii or latin1). If you need a whole unicode file, the extension of the file must be `utf8.properties`. 
 
 Translating in WebLate
 ~~~~~~~~~~~~~~~~~~~~~~~~

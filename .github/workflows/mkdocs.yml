@@ -106,6 +106,7 @@ jobs:
         # Array of documentation directories to process
         declare -a DOC_DIRS=(
           "doc/en/docguide:docguide:en"
+          "doc/en/developer:developer:en"
         )
         
         # Process each directory

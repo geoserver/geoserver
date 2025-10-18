@@ -13,7 +13,7 @@ The binary release of GeoServer should be somehere around 45 - 46 megabytes.
 Demos
 -----
 
-**Note:**
+.. note::
    
    These are no longer available in GeoServer 2.0, we'll probably reinstate them later
 
@@ -67,7 +67,7 @@ KML
 
 #. Close Google Earth 
 
-   **Warning:**
+   .. warning::
 
       If you do not shut down Google Earth it will cache information and throw 
       off the next steps.

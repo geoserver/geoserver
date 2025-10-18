@@ -11,7 +11,7 @@ and test it.
 The example process used is a simple "Hello World" process 
 which accepts a single input parameter and returns a single text output.
 
-**Note:** See also GeoTools :geotools:`process tutorial <tutorial/process.html>`
+.. note:: See also GeoTools :geotools:`process tutorial <tutorial/process.html>`
 
 Prerequisites
 -------------
@@ -215,7 +215,7 @@ starts, which will make it discoverable via the WPS service interface.
           <bean id="helloWPS" class="org.geoserver.hello.wps.HelloWPS"/>
         </beans>
 
-**Note:** A process registered in the GeoServer spring context will be assigned to the "gs" 
+.. note:: A process registered in the GeoServer spring context will be assigned to the "gs" 
           process namespace.
 
 Build and Deploy
@@ -234,7 +234,7 @@ The JAR file name is determined by the name and version given to the project in 
 
 To deploy the process module, copy this JAR file into the ``/WEB-INF/lib`` directory of GeoServer and then restart the instance.
 
-**Note:** 
+.. note:: 
    
    For alternative deployment options (i.e. running from source), see the *Trying it out* 
    section inside :ref:`ows_services_implementing`

@@ -14,6 +14,6 @@ We handle changes to the documentation in the same way as we do changes to the c
 
 Since the repository requires authentication to make changes, authors who plan large changes can be granted access, so they are able to directly contribute to the documentation.  While this does slightly raise the barrier to entry, the ability to control the quality of the documentation was seen as a greater benefit.
 
-**Note:** Prior to the use of Sphinx GeoServer documentation was created using a wiki as part of the GeoServer home page. While this allowed anyone to sign up and contribute documentation we ended up with problems of vandalism and lacked features we now enjoy (Version control, PDF export).
+.. note:: Prior to the use of Sphinx GeoServer documentation was created using a wiki as part of the GeoServer home page. While this allowed anyone to sign up and contribute documentation we ended up with problems of vandalism and lacked features we now enjoy (Version control, PDF export).
 
 Read on to find out more about :ref:`contributing`.

@@ -104,7 +104,7 @@ Troubleshooting
    .. image:: img/intellij_run_start_error.png
       :width: 300
 
-**Note:**
+.. note::
    
    If there's a server running on localhost:8080 please check the :ref:`eclipse_guide` for instructions on changing to a different port.
 

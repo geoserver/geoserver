@@ -176,7 +176,7 @@ Trying it Out
 .. figure:: firefox_helloworld.png
    :align: center
 
-**Note:**
+.. note::
 
    A common pitfall is to bundle an extension without the 
    :file:`applicationContext.xml` file. If you receive the error message 
@@ -213,7 +213,7 @@ project. This requires building GeoServer from sources.
 A GeoServer war including the hello extension should now be present in the 
 :file:`target` directory. 
 
-**Note:**
+.. note::
 
    To verify the plugin was bundled properly unpack :file:`geoserver.war` and 
    inspect the contents of the :file:`WEB-INF/lib` directory and ensure the 
@@ -258,7 +258,7 @@ it directly from sources.
 #. In the ``web-app`` module run the ``Start.java`` main class to start 
    GeoServer.
 
-**Note:**
+.. note::
 
    Ensure that the ``web-app`` module in eclipse depends on the newly imported
    ``hello`` module. This can be done by inspecting the ``web-app`` module 

@@ -61,7 +61,7 @@ The steps for creating the GUI panel are:
 
 #. Creation of a new extension of the *SettingsPluginPanel* class.
 
-	**Note:** Note that this panel must extract the parameters from the Metadata Map of the *settings* object.
+	.. note:: Note that this panel must extract the parameters from the Metadata Map of the *settings* object.
 
 #. Definition of a Spring Bean which will be an instance of the *SettingsPluginPanelInfo* class and will have the class defined above as component class (*priority* property can be avoided). For example::
 

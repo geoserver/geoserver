@@ -30,7 +30,7 @@ for third party dependencies. This is done with the ``downloadSources`` flag::
 
   mvn -DdownloadSources eclipse:eclipse
 
-**Warning:**
+.. warning::
 
    The first time you enable the ``downloadSources`` flag the build will take a  long time as it will attempt to download the sources for every single library GeoServer depends on.
    
@@ -184,7 +184,7 @@ Text editors
 #. Check ``Show line numbers``
 #. Check ``Show whitespace characters`` (optional)
 
-   **Note:**
+   .. note::
 
       Showing whitespace characters can help ensure that unnecessary whitespace 
       is not unintentionally committed.

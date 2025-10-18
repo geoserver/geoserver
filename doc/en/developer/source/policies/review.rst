@@ -37,7 +37,7 @@ Initial Checks
 
 The following checks can be performed quickly and represent common mistakes or oversites. These quick checks can be performed by anyone as an initial inspection.
 
-**Note:** Providing an initial check, while better than no follow up at all, may seem petty and discouraging to the contributor. It is a good idea to state that this is only quick feedback - while either more time or an appropriate expert is found.
+.. note:: Providing an initial check, while better than no follow up at all, may seem petty and discouraging to the contributor. It is a good idea to state that this is only quick feedback - while either more time or an appropriate expert is found.
 
 * *Contribution agreement* on file. Check if the contribution requires a contribution agreement, and if it matches the requisites, verify that a contribution agreement has been provided to OSGeo, if not, demand for one.
 
@@ -67,7 +67,7 @@ Extensive Review
 
 The key point of a review is to make sure that GeoServer remains stable (does not regress in behaviour) and that the codebase remains flexible and maintainable into the future.
 
-**Note:** This review often requires some experience with the code being modified, and will require more time and focus than the initial check described in the previous section.
+.. note:: This review often requires some experience with the code being modified, and will require more time and focus than the initial check described in the previous section.
 
 * *Backwards compatibility*. The change being proposed should not hamper backwards compatibility, every change must be performed ensuring that users can keep on upgrading the GeoServer behind their services and application without functional regressions.
 * *Standards conformance*. The change being proposed must not be at odds with GeoServer OGC standard conformance, in particular, after the change the CITE tests must keep on passing properly, and there should be no visible violation of known standards. This is not to say that we cannot occasionally break compliance, but that doing so must be controlled by a configuration flag that the admin chooses to enable, and that by default, the flag is turned off. Extensions to the standard are also welcomed, but are better discussed on the list and setup in such a way that they look like a natural extension.

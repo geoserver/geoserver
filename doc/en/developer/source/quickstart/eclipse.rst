@@ -59,7 +59,7 @@ Run GeoServer from Eclipse
 #. After running the first time you can return to the ``Run Configurations`` dialog
    to fine tune your launch environment (including setting a GEOSERVER_DATA_DIR).
 
-**Note:**
+.. note::
    
    If you already have a server running on localhost:8080 see the :ref:`eclipse_guide` for instructions on changing to a different port.
 

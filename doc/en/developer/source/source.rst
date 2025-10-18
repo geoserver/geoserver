@@ -78,7 +78,7 @@ dealing this without explicit configuration but to be safe developers should set
 
 The value "input" respects the line ending form as present in the git repository.
 
-**Note:**
+.. note::
 
    It is also a good idea, especially for Windows users, to set the ``core.safecrlf`` 
    option to "true":
@@ -110,7 +110,7 @@ Take extra care when adding files to prevent problems for others. To correct a f
    
    $ git mv --cached HttpHandler.java HTTPHandler.java
 
-**Note:** 
+.. note:: 
    
    File paths can use two different representations of select unicode characters:
 
@@ -178,7 +178,7 @@ In order to commit the following steps must be taken:
 #. Clone the forked repository to create a local repository 
 #. Create a remote reference to the canonical repository using a non-read only URL (``git@github.com:geoserver/geoserver.git``).
 
-**Note:**
+.. note::
 
    The next section describes how the git repositories are distributed for the project and
    how to manage local repository remote references.
@@ -373,7 +373,7 @@ The example shows the practice of first pulling from canonical before pushing to
 this. In fact, if there are commits in canonical that have not been pulled down, by default git will not allow 
 you to push the change until you have pulled those commits.
 
-**Note:** 
+.. note:: 
    
    A **merge commit** may occur when one branch is merged with another. 
    A merge commit occurs when two branches are merged and the merge is not a "fast-forward" merge.
@@ -409,7 +409,7 @@ Rinse, wash, repeat. The nice about thing about using a feature branch is that i
 to work on something else. Just ``git checkout`` whatever other branch you need to work on,
 and then return to the feature branch when ready.
 
-**Note:** 
+.. note:: 
    
    When a branch is checked out, all the files in the working area are modified to reflect
    the current state of the branch.  When using development tools which cache the state of the
@@ -475,7 +475,7 @@ Interactive rebase
 Rebasing allows us to rewrite the commits on a branch, deleting commits we don't want, or merging commits that should
 really be done. You can read more about interactive rebasing `here <http://git-scm.com/book/en/Git-Tools-Rewriting-History#Changing-Multiple-Commit-Messages>`_. 
 
-**Warning:**
+.. warning::
 
    Much care should be taken with rebasing. You should **never** rebase commits that are public (that is, commits that have 
    been copied outside your local repository). Rebasing public commits changes branch history and results in the inability to merge

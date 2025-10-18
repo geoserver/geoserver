@@ -13,7 +13,7 @@ A step by step guide to the GeoServer Compliance Interoperability Test Engine (C
 Check out OGC CITE suite tests
 ------------------------------
 
-**Note:** The CITE suite tests are available at `Open Geospatial Consortium`_.
+.. note:: The CITE suite tests are available at `Open Geospatial Consortium`_.
 .. _Open Geospatial Consortium: https://github.com/opengeospatial
 
 Requirements:
@@ -36,7 +36,7 @@ Requirements:
 
 - Running the tests requires a Linux system with `docker <https://www.docker.com>`_, `docker-compose <https://docs.docker.com/compose/install>`_, and Git installed on it.
 
-**Note:**
+.. note::
 
    The CITE tools are available in the build/cite folder of the `GeoServer Git repository <https://github.com/geoserver/geoserver/tree/master/build/cite>`_:
 
@@ -119,7 +119,7 @@ automate all the commands, and the second one is running the test through WebUI:
 
    - Choose which test to run, this is an example:
 
-     **Warning:**
+     .. warning::
 
          The first Docker build may take a long time.
 
@@ -127,7 +127,7 @@ automate all the commands, and the second one is running the test through WebUI:
 
         suite=wcs10
 
-     **Note:**
+     .. note::
 
         Valid values for the suite parameter are:    
           * wcs10
@@ -188,7 +188,7 @@ automate all the commands, and the second one is running the test through WebUI:
 Run CITE Test Suites on a local PC
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-**Note:**
+.. note::
 
    I assume that you have a standalone GeoServer running.
 
@@ -304,7 +304,7 @@ Requirements:
 
      If the PostgreSQL server is not on the same host as the GeoServer, you have to change the `<entry key="host">localhost</entry>` in the `datastore.xml` file, located inside each workspace directory. ex.
 
-     **Note:**
+     .. note::
 
        <path of GeoServer repository>/build/cite/wfs10/citewfs-1.0/workspaces/cgf/cgf/datastore.xml
 
@@ -378,7 +378,7 @@ Requirements:
 
      If the PostgreSQL server is not on the same host as the GeoServer, you have to change the `<entry key="host">localhost</entry>` in the `datastore.xml` file, located inside each workspace directory. ex.
 
-     **Note:**
+     .. note::
 
        <path of GeoServer repository>/build/cite/wfs11/citewfs-1.1/workspaces/cgf/cgf/datastore.xml
 
@@ -730,7 +730,7 @@ CITE Certification
 
 Shortly before a major (2.xx.0) release, the following process should be followed in order to obtain CITE Certification for the major release.
 
-**Note:** We appreciate OSGeo providing hosting services for this purpose.
+.. note:: We appreciate OSGeo providing hosting services for this purpose.
 
 #. Log into cite.geoserver.org via hop, then
 

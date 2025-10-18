@@ -28,4 +28,6 @@ For really quick fixes:
    * Create a fork and submit a pull request on your behalf; or
    * Immediately make the change for those with commit access
 
-**Warning:** This technique is great for fixing small typos - but has the danger of introducing formatting mistakes preventing the documentation from being generated. To make extensive changes see :doc:`workflow`.
+.. warning:: This technique is great for fixing small typos - but has the danger of introducing formatting mistakes preventing the documentation from being generated.
+   
+   To make extensive changes see :doc:`workflow`.

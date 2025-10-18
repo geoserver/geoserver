@@ -7,9 +7,9 @@ The `NSIS <https://nsis.sourceforge.io/Main_Page>`__ program used here can also 
 
 However you can create your own installer (using a Windows machine).
 
-**Note:** This step requires a Windows machine.
+.. note:: This step requires a Windows machine.
 
-**Note:** A community provided Powershell script that automates the following steps is available `here <https://github.com/geoserver/geoserver/edit/main/src/release/installer/win/win-installer-builder.ps1>`_.
+.. note:: A community provided Powershell script that automates the following steps is available `here <https://github.com/geoserver/geoserver/edit/main/src/release/installer/win/win-installer-builder.ps1>`_.
 
 #. Download and install `NSIS <http://nsis.sourceforge.net/>`_.
 

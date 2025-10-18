@@ -71,7 +71,7 @@ Similarly, to test with oracle::
 
 Additionally for Oracle, you also need to add ojdbc14.jar in the test Classpath. 
 
-**Note:** Please note that you should only run the tests in org.geoserver.test package with the above parameters, since the data reference tests in org.geoserver.test.onlineTest package contain non-joining tests which would fail.   
+.. note:: Please note that you should only run the tests in org.geoserver.test package with the above parameters, since the data reference tests in org.geoserver.test.onlineTest package contain non-joining tests which would fail.   
 
 You do not need to specify these VM Arguments for running data reference tests (in app-schema-test/src/test/java/org/geoserver/test/onlineTest). However, you would still need to specify the Oracle JDBC driver in the Classpath for Oracle specific tests. Data reference tests package also requires 768m memory to run from JUnit. 
 

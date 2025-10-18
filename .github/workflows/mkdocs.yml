@@ -58,7 +58,7 @@ jobs:
       run: |
         python -m venv venv
         source venv/bin/activate
-        # Using petersmythe/translate fork with UTF-8 encoding fixes
+        # Using petersmythe/translate fork with UTF-8 encoding fixes and RST admonition fix
         pip install git+https://github.com/petersmythe/translate.git
         pip install mkdocs mkdocs-material mkdocs-minify-plugin
         echo "VIRTUAL_ENV=$PWD/venv" >> $GITHUB_ENV
@@ -206,6 +206,7 @@ jobs:
         # Array of documentation directories to build
         declare -a MKDOCS_DIRS=(
           "doc/en/docguide:docguide:en"
+          "doc/en/developer:developer:en"
         )
         
         # Build each MkDocs site

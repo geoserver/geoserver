@@ -220,7 +220,7 @@ Property ``spotless.apply.skip`` is used to skip spotless plugin when running ``
 
    mvn clean install -Dqa -Dspotless.apply.skip=true
 
-**Note:**
+.. note::
    
    IDE Plugins are available for `IntelliJ <https://plugins.jetbrains.com/plugin/13180-palantir-java-format>`__ and `Eclipse <https://github.com/palantir/palantir-java-format/tree/develop/eclipse_plugin>`__ IDEs.
    

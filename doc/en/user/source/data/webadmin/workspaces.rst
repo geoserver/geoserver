@@ -129,12 +129,12 @@ Address contact information:
 
 If this information is not provided the contact information from the global :ref:`config_contact` page is used.
 
+.. _data_webadmin_workspaces_service_settings:
+
 Service Settings
 ''''''''''''''''
 
-.. _data_webadmin_workspaces_service_settings:
-
-Other settings provide additional :ref:`config_globalsettings` can be overridden on a workspace-by-workspace basis.
+Other settings provide additional :ref:`config_globalsettings`, which can be overridden on a workspace-by-workspace basis.
 
 * :guilabel:`Include Layer Prefix in Local Workspace Capabilities`: Enable this setting to force the inclusion of the workspace name as a prefix when accessing workspace contents as a virtual web service. The layer ``ne:countries`` is always referenced as ``ne:countries`` with this setting enabled.
   

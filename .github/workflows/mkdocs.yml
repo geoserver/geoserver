@@ -22,6 +22,9 @@ env:
 jobs:
   mkdocs-build-and-deploy:
     runs-on: ubuntu-22.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     permissions:
       contents: read
       pages: write

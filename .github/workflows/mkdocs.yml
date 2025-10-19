@@ -165,20 +165,10 @@ jobs:
             mkdocs_translate scan || (echo "Scan failed, exiting..." && exit 2)
             
             echo "   Step 3: Converting RST to Markdown..."
-            mkdocs_translate --log=DEBUG migrate || (
-              echo "Migration failed, showing debug info..."
-              echo "=== Content around line 142 of target/convert/sphinx.tmp.md ==="
-              if [ -f "target/convert/sphinx.tmp.md" ]; then
-                sed -n '130,150p' target/convert/sphinx.tmp.md | nl -v15
-              else
-                echo "File target/convert/sphinx.tmp.md not found"
-              fi
-              echo "=== End debug info ==="
-              exit 3
-            )
+            mkdocs_translate migrate || (echo "Migration failed, exiting..." && exit 3)
             
             echo "   Step 4: Generating navigation..."
-            mkdocs_translate --log=ERROR nav > nav_generated.yml || (echo "Nav generation failed, exiting..." && exit 4)
+            mkdocs_translate nav > nav_generated.yml || (echo "Nav generation failed, exiting..." && exit 4)
             
             # Ensure docs directory exists with fallback content
             if [ ! -d "docs" ]; then
@@ -273,8 +263,8 @@ jobs:
             </style>
         </head>
         <body>
-            <h1>GeoServer Documentation Guide</h1>
-            <p>Guidelines and instructions for editing and maintaining GeoServer documentation.</p>
+            <h1>MkDocs build</h1>
+            <p>For comparison against the current Sphinx documentation</p>
             
             <h2>English Documentation</h2>
             <a href="en/docguide/" class="doc-link">

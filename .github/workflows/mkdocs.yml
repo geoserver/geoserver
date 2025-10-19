@@ -19,6 +19,10 @@ concurrency:
 env:
   MAVEN_OPTS: -Xmx1024m -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.retryHandler.count=3 -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dspotless.apply.skip=true
 
+permissions:
+  contents: read
+  id-token: write
+    
 jobs:
   mkdocs-build-and-deploy:
     runs-on: ubuntu-22.04

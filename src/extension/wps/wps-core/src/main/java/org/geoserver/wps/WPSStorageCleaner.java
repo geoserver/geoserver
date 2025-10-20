@@ -10,24 +10,24 @@ import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.ConfigurationException;
-import org.geoserver.wcs.response.WCSStorageCleaner;
 import org.geoserver.wps.executor.ProcessStatusTracker;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.util.logging.Logging;
 
 /**
- * Cleans up the temporary storage directory for WPS, as well as the storage process statuses
+ * Cleans up the temporary storage directory for WPS, as well as the stored process statuses.
  *
  * @author Andrea Aime - GeoSolutions
  */
 public class WPSStorageCleaner extends TimerTask {
-    Logger LOGGER = Logging.getLogger(WCSStorageCleaner.class);
 
-    long expirationDelay;
+    private static final Logger LOGGER = Logging.getLogger(WPSStorageCleaner.class);
 
-    WPSResourceManager resourceManager;
+    private volatile long expirationDelay;
 
-    ProcessStatusTracker statusTracker;
+    // collaborators don’t change after construction
+    private final WPSResourceManager resourceManager;
+    private final ProcessStatusTracker statusTracker;
 
     public WPSStorageCleaner(WPSResourceManager resourceManager, ProcessStatusTracker statusTracker)
             throws IOException, ConfigurationException {
@@ -38,28 +38,30 @@ public class WPSStorageCleaner extends TimerTask {
     @Override
     public void run() {
         try {
-            if (resourceManager.getArtifactsStore() == null || expirationDelay == 0) {
+            // snapshot the volatile once
+            final long delay = this.expirationDelay;
+            if (resourceManager.getArtifactsStore() == null || delay == 0L) {
                 return;
             }
 
-            // ok, now scan for existing files there and clean up those that are too old
-            long expirationThreshold = System.currentTimeMillis() - expirationDelay;
+            // compute expiration threshold and clean
+            final long expirationThreshold = System.currentTimeMillis() - delay;
             statusTracker.cleanExpiredStatuses(expirationThreshold);
             resourceManager.cleanExpiredResources(expirationThreshold, statusTracker);
         } catch (Exception e) {
-            LOGGER.log(
-                    Level.WARNING, "Error occurred while trying to clean up " + "old coverages from temp storage", e);
+            LOGGER.log(Level.WARNING, "Error occurred while trying to clean up old WPS resources from temp storage", e);
         }
     }
 
     /**
-     * The file expiration delay in milliseconds. A file will be deleted when it's been around more than expirationDelay
+     * The file expiration delay in milliseconds. A file will be deleted when it's been around more than
+     * {@code expirationDelay}.
      */
     public long getExpirationDelay() {
         return expirationDelay;
     }
 
-    /** Sets the temp file expiration delay */
+    /** Sets the temp file expiration delay (milliseconds). */
     public void setExpirationDelay(long expirationDelay) {
         this.expirationDelay = expirationDelay;
     }

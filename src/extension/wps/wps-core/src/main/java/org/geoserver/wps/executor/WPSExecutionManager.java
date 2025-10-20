@@ -83,10 +83,10 @@ public class WPSExecutionManager implements ApplicationContextAware, Application
     private List<ChainedProcessListener> chainListeners;
 
     /** The HTTP connection timeout for remote resources */
-    private int connectionTimeout;
+    private volatile int connectionTimeout;
 
     /** The flag indicating whether remote inputs are enabled. */
-    private boolean remoteInputDisabled;
+    private volatile boolean remoteInputDisabled;
 
     /**
      * The status tracker, that will be periodically informed about processes still running, even if they are not

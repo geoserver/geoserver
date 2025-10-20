@@ -14,7 +14,6 @@ import java.net.URLConnection;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.net.ssl.SSLContext;
@@ -23,21 +22,24 @@ import net.opengis.wps10.InputReferenceType;
 import net.opengis.wps10.InputType;
 import net.opengis.wps10.MethodType;
 import org.apache.commons.io.FileUtils;
+import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
 import org.apache.hc.client5.http.ssl.HttpsSupport;
+import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpHeaders;
 import org.apache.hc.core5.http.io.entity.InputStreamEntity;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.http.io.support.ClassicRequestBuilder;
-import org.apache.http.ssl.SSLContexts;
+import org.apache.hc.core5.ssl.SSLContexts;
+import org.apache.hc.core5.util.Timeout;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geotools.api.util.ProgressListener;
@@ -81,17 +83,17 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
         listener.started();
         String location = ref.getHref();
         try (CloseableHttpClient client = buildHttpClient(location);
-                CloseableHttpResponse response = mainHttpRequest(client, ref, listener);
+                ClassicHttpResponse response = mainHttpRequest(client, ref, listener);
                 InputStream is = getInputStream(response, location, listener)) {
+
             // actually parse the data
             Object result = complexPPIO.decode(is);
             if (result != null && !complexPPIO.getType().isInstance(result)) {
-                // Some text parsers return a Map when it can not be converted to
-                // the proper type.  Detect those errors here rather than later.
-                throw new IllegalArgumentException("Decoded result is not a "
-                        + complexPPIO.getType().getName()
-                        + ", got a: "
-                        + result.getClass().getName());
+                // Some text parsers return a Map when it cannot be converted to the proper type.
+                // Detect those errors here rather than later.
+                throw new IllegalArgumentException(
+                        "Decoded result is not a " + complexPPIO.getType().getName() + ", got a: "
+                                + result.getClass().getName());
             }
             return result;
         } catch (WPSException e) {
@@ -116,10 +118,15 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
         }
 
         try {
-            // build a new client with the configured timeout
-            RequestConfig config = RequestConfig.custom()
-                    .setConnectTimeout(timeout, TimeUnit.MILLISECONDS)
-                    .setResponseTimeout(timeout, TimeUnit.MILLISECONDS)
+            // Move connect/socket timeouts to ConnectionConfig
+            ConnectionConfig connConfig = ConnectionConfig.custom()
+                    .setConnectTimeout(Timeout.ofMilliseconds(timeout))
+                    .setSocketTimeout(Timeout.ofMilliseconds(timeout))
+                    .build();
+
+            // Keep per-request response timeout on RequestConfig
+            RequestConfig reqConfig = RequestConfig.custom()
+                    .setResponseTimeout(Timeout.ofMilliseconds(timeout))
                     .build();
 
             LOGGER.log(
@@ -138,9 +145,9 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
 
             return HttpClients.custom()
                     .setConnectionManager(cm)
+                    .setDefaultRequestConfig(reqConfig)
                     .disableAutomaticRetries()
                     .disableRedirectHandling()
-                    .setDefaultRequestConfig(config)
                     .setUserAgent("GeoServer WPS RemoteInput")
                     .useSystemProperties()
                     .build();
@@ -157,7 +164,7 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
         return "http".equalsIgnoreCase(protocol) || "https".equalsIgnoreCase(protocol);
     }
 
-    private CloseableHttpResponse mainHttpRequest(
+    private ClassicHttpResponse mainHttpRequest(
             CloseableHttpClient client, InputReferenceType ref, ProgressListener listener) throws IOException {
         if (client == null) {
             // return null if not an HTTP(S) request
@@ -165,8 +172,9 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
         }
         String bodyHref = getBodyReferenceHref(ref);
         try (CloseableHttpClient bodyClient = buildHttpClient(bodyHref);
-                CloseableHttpResponse bodyResponse = bodyHttpRequest(bodyClient, bodyHref);
+                ClassicHttpResponse bodyResponse = bodyHttpRequest(bodyClient, bodyHref);
                 InputStream bodyInput = getInputStream(bodyResponse, bodyHref, listener)) {
+
             ClassicRequestBuilder request;
             // prepare either a GET or a POST request
             if (ref.getMethod() != MethodType.POST_LITERAL) {
@@ -188,7 +196,7 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
                 request.setHeader(header.getKey(), header.getValue());
             }
             // it is safe to close bodyClient, bodyResponse and bodyInput after this finishes
-            return client.execute(request.build());
+            return client.executeOpen(null, request.build(), HttpClientContext.create());
         }
     }
 
@@ -210,12 +218,14 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
         return bodyReferenceHref;
     }
 
-    private static CloseableHttpResponse bodyHttpRequest(CloseableHttpClient client, String href) throws IOException {
+    private static ClassicHttpResponse bodyHttpRequest(CloseableHttpClient client, String href) throws IOException {
         // return null if not an HTTP(S) request; otherwise execute a GET request
-        return isHttpURL(href) ? client.execute(ClassicRequestBuilder.get(href).build()) : null;
+        return isHttpURL(href)
+                ? client.executeOpen(null, ClassicRequestBuilder.get(href).build(), HttpClientContext.create())
+                : null;
     }
 
-    private InputStream getInputStream(CloseableHttpResponse response, String href, ProgressListener listener)
+    private InputStream getInputStream(ClassicHttpResponse response, String href, ProgressListener listener)
             throws IOException {
         if (href == null) {
             // no URL to open a stream from
@@ -237,7 +247,7 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
         return new CancellingInputStream(is, listener);
     }
 
-    private InputStream getResponseStream(CloseableHttpResponse response, String href) throws IOException {
+    private InputStream getResponseStream(ClassicHttpResponse response, String href) throws IOException {
         int code = response.getCode();
         if (code != 200) {
             // do not expose the status code to users

@@ -28,11 +28,10 @@ import java.util.Arrays;
 import java.util.List;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.multipart.FilePart;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
-import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.io.FileUtils;
+import org.apache.hc.client5.http.entity.mime.HttpMultipartMode;
+import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
+import org.apache.hc.core5.http.HttpEntity;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.importer.DataFormat;
@@ -245,17 +244,17 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         File dir = unpack("shape/archsites_epsg_prj.zip");
         unpack("shape/bugsites_esri_prj.tar.gz", dir);
 
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create().setMode(HttpMultipartMode.STRICT);
+
         new File(dir, "extra.file").createNewFile();
         File[] files = dir.listFiles();
-        Part[] parts = new Part[files.length];
-        for (int i = 0; i < files.length; i++) {
-            parts[i] = new FilePart(files[i].getName(), files[i]);
+        for (File file : files) {
+            builder.addBinaryBody(file.getName(), file);
         }
 
-        MultipartRequestEntity multipart = new MultipartRequestEntity(parts, new PostMethod().getParams());
-
+        HttpEntity multipart = builder.build();
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        multipart.writeRequest(bout);
+        multipart.writeTo(bout);
 
         MockHttpServletRequest req = createRequest(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks");
         req.setContentType(multipart.getContentType());
@@ -290,17 +289,15 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
 
         File dir = unpack("shape/archsites_epsg_prj.zip");
 
-        Part[] parts = {
-            new FilePart("archsites.shp", new File(dir, "archsites.shp")),
-            new FilePart("archsites.dbf", new File(dir, "archsites.dbf")),
-            new FilePart("archsites.shx", new File(dir, "archsites.shx")),
-            new FilePart("archsites.prj", new File(dir, "archsites.prj"))
-        };
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create().setMode(HttpMultipartMode.STRICT);
+        builder.addBinaryBody("archsites.shp", new File(dir, "archsites.shp"));
+        builder.addBinaryBody("archsites.dbf", new File(dir, "archsites.dbf"));
+        builder.addBinaryBody("archsites.shx", new File(dir, "archsites.shx"));
+        builder.addBinaryBody("archsites.prj", new File(dir, "archsites.prj"));
 
-        MultipartRequestEntity multipart = new MultipartRequestEntity(parts, new PostMethod().getParams());
-
+        HttpEntity multipart = builder.build();
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        multipart.writeRequest(bout);
+        multipart.writeTo(bout);
 
         MockHttpServletRequest req = createRequest(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks");
         req.setContentType(multipart.getContentType());
@@ -384,16 +381,16 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
 
             String creationRequest =
                     """
-                    {
-                       "import": {
-                          "targetWorkspace": {
-                             "workspace": {
-                                "name": "sf"
-                             }
-                          }
-                       }
-                    }\
-                    """;
+                {
+                   "import": {
+                      "targetWorkspace": {
+                         "workspace": {
+                            "name": "sf"
+                         }
+                      }
+                   }
+                }\
+                """;
             ImportContext context = uploadGeotiffAndVerify(
                     new File(path).getName(),
                     stream,
@@ -590,13 +587,13 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         // now rename the layer
         String renamer =
                 """
-                {
-                  "layer": {
-                			"name": "test123",
-                		  "nativeName": "test123",
-                		}
-                }\
-                """;
+            {
+              "layer": {
+            			"name": "test123",
+            		  "nativeName": "test123",
+            		}
+            }\
+            """;
         JSONObject response = (JSONObject) putAsJSON(
                 RestBaseController.ROOT_PATH + "/imports/" + context.getId() + "/tasks/0/layer",
                 renamer,

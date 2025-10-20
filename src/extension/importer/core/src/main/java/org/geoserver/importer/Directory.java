@@ -23,7 +23,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipOutputStream;
-import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload2.core.FileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.vfs2.AllFileSelector;
 import org.apache.commons.vfs2.FileName;
@@ -420,7 +420,7 @@ public class Directory extends FileData {
         lockDirectory();
 
         File dest = child(item.getName());
-        item.write(dest);
+        item.write(dest.toPath());
 
         try {
             unpack(dest);

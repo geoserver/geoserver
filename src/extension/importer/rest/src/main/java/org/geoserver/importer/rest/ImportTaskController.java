@@ -18,10 +18,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload2.core.DiskFileItem;
+import org.apache.commons.fileupload2.core.DiskFileItemFactory;
+import org.apache.commons.fileupload2.core.FileItem;
+import org.apache.commons.fileupload2.core.FileUploadException;
+import org.apache.commons.fileupload2.jakarta.servlet6.JakartaServletFileUpload;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -335,12 +336,9 @@ public class ImportTaskController extends ImportBaseController {
     }
 
     public ImportData handleMultiPartFormUpload(HttpServletRequest request, ImportContext context) {
-        DiskFileItemFactory factory = new DiskFileItemFactory();
-        // @revisit - this appears to be causing OOME
-        // factory.setSizeThreshold(102400000);
-
-        ServletFileUpload upload = new ServletFileUpload(factory);
-        List<FileItem> items = null;
+        JakartaServletFileUpload<DiskFileItem, DiskFileItemFactory> upload =
+                new JakartaServletFileUpload(DiskFileItemFactory.builder().get());
+        List<DiskFileItem> items = null;
         try {
             items = upload.parseRequest(request);
         } catch (FileUploadException e) {

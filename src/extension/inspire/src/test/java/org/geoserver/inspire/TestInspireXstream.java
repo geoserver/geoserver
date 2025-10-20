@@ -52,7 +52,9 @@ public class TestInspireXstream {
         xp.save(wfsInfo, out);
 
         String result = new String(out.toByteArray(), StandardCharsets.UTF_8);
-        Assert.assertTrue(result.contains("""
+        Assert.assertTrue(
+                result.contains(
+                        """
                 <entry key="inspire.spatialDatasetIdentifier">
                       <list>
                         <size>0</size>

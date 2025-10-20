@@ -4,12 +4,12 @@
  */
 package org.geoserver.mapml;
 
-import java.io.OutputStream;
-import java.io.Reader;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
+import java.io.OutputStream;
+import java.io.Reader;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;

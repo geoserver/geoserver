@@ -8,14 +8,14 @@
 
 package org.geoserver.mapml.xml;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlElements;
 import jakarta.xml.bind.annotation.XmlType;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Java class for bodyContent complex type.

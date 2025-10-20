@@ -5,11 +5,11 @@
  */
 package org.geoserver.monitor;
 
-import java.io.IOException;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.WriteListener;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
+import java.io.IOException;
 
 public class MonitorServletResponse extends HttpServletResponseWrapper {
 

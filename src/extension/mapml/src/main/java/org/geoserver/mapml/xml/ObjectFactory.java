@@ -8,10 +8,10 @@
 
 package org.geoserver.mapml.xml;
 
-import java.util.List;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlElementDecl;
 import jakarta.xml.bind.annotation.XmlRegistry;
+import java.util.List;
 import javax.xml.namespace.QName;
 
 @SuppressWarnings("unchecked")

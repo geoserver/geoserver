@@ -5,6 +5,8 @@
 
 package org.geoserver.ogcapi;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
@@ -12,8 +14,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.DispatcherCallback;
 import org.geoserver.ows.Request;
@@ -317,8 +317,7 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
                     return (HttpMessageConverter<T>) converter;
                 }
                 if (converter instanceof GenericHttpMessageConverter messageConverter
-                        && messageConverter
-                                .canWrite(targetType, valueType, selectedMediaType)) {
+                        && messageConverter.canWrite(targetType, valueType, selectedMediaType)) {
                     return (HttpMessageConverter<T>) converter;
                 } else if (converter.canWrite(valueType, selectedMediaType)) {
                     return (HttpMessageConverter<T>) converter;

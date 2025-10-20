@@ -4,10 +4,10 @@
  */
 package org.geoserver.mapml.xml;
 
-import java.io.StringReader;
-import java.io.StringWriter;
 import jakarta.xml.bind.ValidationEventHandler;
 import jakarta.xml.bind.annotation.DomHandler;
+import java.io.StringReader;
+import java.io.StringWriter;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;

@@ -4,11 +4,11 @@
  */
 package org.geoserver.geofence.server.rest.xml;
 
-import java.util.ArrayList;
-import java.util.List;
 import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.List;
 import org.geoserver.geofence.core.model.Rule;
 
 @XmlRootElement(name = "Rules")

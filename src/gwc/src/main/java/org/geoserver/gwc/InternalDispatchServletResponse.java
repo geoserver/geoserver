@@ -19,16 +19,54 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.logging.Logger;
+import org.geoserver.ows.Dispatcher;
 import org.geotools.util.logging.Logging;
 
-/** A HTTP response used when calling back into the GeoServer dispatcher */
+/**
+ * A minimal HttpServletResponse implementation used to capture output when {@link GWC} dispatches internal requests to
+ * the GeoServer OWS {@link Dispatcher}.
+ *
+ * <p>This class serves as a bridge/adapter that allows GWC to programmatically invoke GeoServer's dispatcher and
+ * capture the response in memory without sending it over an actual HTTP connection. The {@link #getBytes() response
+ * bytes} can then be cached, returned to the client, or further processed.
+ *
+ * <h3>Why This Class Exists</h3>
+ *
+ * When GWC generates cached tiles by invoking GeoServer's rendering pipeline internally, it needs a way to capture the
+ * rendered image output. This class collects the response bytes into a {@link ByteArrayOutputStream} that can be
+ * retrieved later via {@link #getBytes()}.
+ *
+ * <h3>How It's Used</h3>
+ *
+ * Primary usage occurs in:
+ *
+ * <ul>
+ *   <li>{@link GWC#dispatchOwsRequest(Map, Cookie[])} - Captures dispatcher output for internal requests
+ *   <li>The response bytes are wrapped in a {@link org.geoserver.platform.resource.Resource} for further processing or
+ *       caching
+ * </ul>
+ *
+ * <h3>Key Characteristics</h3>
+ *
+ * <ul>
+ *   <li>Captures response output via an internal {@link ByteArrayOutputStream}
+ *   <li>Stores headers, cookies, content type, and response codes
+ *   <li>Most unimplemented methods throw {@link ServletDebugException} to catch misuse
+ *   <li>Response bytes are retrievable via {@link #getBytes()} after dispatcher completes
+ *   <li>Initial buffer size is 20KB (optimized for typical WMS tile responses)
+ * </ul>
+ *
+ * @see InternalDispatchServletRequest
+ * @see GWC#dispatchOwsRequest(Map, Cookie[])
+ */
 @SuppressWarnings("deprecation")
-public class FakeHttpServletResponse implements HttpServletResponse {
+public class InternalDispatchServletResponse implements HttpServletResponse {
 
     private static Logger log = Logging.getLogger(HttpServletResponse.class.toString());
 
-    private static class FakeServletOutputStream extends ServletOutputStream {
+    private static class InternalDispatchServletOutputStream extends ServletOutputStream {
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream(20480);
 
@@ -50,7 +88,7 @@ public class FakeHttpServletResponse implements HttpServletResponse {
         public void setWriteListener(WriteListener writeListener) {}
     }
 
-    private FakeServletOutputStream fos = new FakeServletOutputStream();
+    private InternalDispatchServletOutputStream fos = new InternalDispatchServletOutputStream();
 
     private String contentType;
 
@@ -106,17 +144,7 @@ public class FakeHttpServletResponse implements HttpServletResponse {
     }
 
     @Override
-    public String encodeRedirectUrl(String arg0) {
-        throw new ServletDebugException();
-    }
-
-    @Override
     public String encodeURL(String arg0) {
-        throw new ServletDebugException();
-    }
-
-    @Override
-    public String encodeUrl(String arg0) {
         throw new ServletDebugException();
     }
 
@@ -153,11 +181,6 @@ public class FakeHttpServletResponse implements HttpServletResponse {
 
     @Override
     public void setStatus(int arg0) {
-        throw new ServletDebugException();
-    }
-
-    @Override
-    public void setStatus(int arg0, String arg1) {
         throw new ServletDebugException();
     }
 

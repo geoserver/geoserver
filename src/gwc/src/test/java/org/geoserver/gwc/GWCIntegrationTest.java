@@ -1085,8 +1085,8 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         // check we have the two requests recorded, and the
         ArrayList<HttpServletRequest> requests = HttpRequestRecorderCallback.getRequests();
         assertEquals(2, requests.size());
-        assertThat(requests.get(1), instanceOf(FakeHttpServletRequest.class));
-        FakeHttpServletRequest fake = (FakeHttpServletRequest) requests.get(1);
+        assertThat(requests.get(1), instanceOf(InternalDispatchServletRequest.class));
+        InternalDispatchServletRequest fake = (InternalDispatchServletRequest) requests.get(1);
         assertEquals(THE_HOST, fake.getRemoteHost());
     }
 

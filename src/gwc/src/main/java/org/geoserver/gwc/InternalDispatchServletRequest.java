@@ -8,6 +8,7 @@ package org.geoserver.gwc;
 import jakarta.servlet.AsyncContext;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletConnection;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletInputStream;
@@ -28,10 +29,36 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.geoserver.ows.Dispatcher;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-class FakeHttpServletRequest implements HttpServletRequest {
+/**
+ * A minimal HttpServletRequest implementation used internally by {@link GWC} to dispatch requests to the GeoServer OWS
+ * {@link Dispatcher} without an actual HTTP request.
+ *
+ * <p>This class serves as a bridge/adapter that allows GWC to programmatically invoke GeoServer's dispatcher for
+ * operations like tile seeding, cache warming, and internal WMS requests. It provides only the minimal servlet API
+ * surface needed for internal dispatching.
+ *
+ * <p>When GWC needs to generate or update cached tiles, it must invoke GeoServer's rendering pipeline (WMS service)
+ * internally without an external HTTP request. This class wraps the necessary parameters (KVP map, cookies, workspace)
+ * in a servlet request interface that the dispatcher can consume.
+ *
+ * <h3>Characteristics</h3>
+ *
+ * <ul>
+ *   <li>Implements only methods required for OWS dispatching (parameters, cookies, headers)
+ *   <li>Most unimplemented methods throw {@link ServletDebugException} to catch misuse
+ *   <li>Optionally delegates to the original request from Spring's RequestContextHolder for security-related attributes
+ *       (remote address, headers, ports)
+ *   <li>Hard-codes common values: method="GET", contextPath="/geoserver", servletPath="/wms"
+ * </ul>
+ *
+ * @see InternalDispatchServletResponse
+ * @see GWC#dispatchOwsRequest(Map, Cookie[])
+ */
+class InternalDispatchServletRequest implements HttpServletRequest {
 
     private final String workspace;
 
@@ -42,11 +69,11 @@ class FakeHttpServletRequest implements HttpServletRequest {
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     private final Optional<HttpServletRequest> original;
 
-    public FakeHttpServletRequest(Map<String, String> parameterMap, Cookie[] cookies) {
+    public InternalDispatchServletRequest(Map<String, String> parameterMap, Cookie[] cookies) {
         this(parameterMap, cookies, null);
     }
 
-    public FakeHttpServletRequest(Map<String, String> parameterMap, Cookie[] cookies, String workspace) {
+    public InternalDispatchServletRequest(Map<String, String> parameterMap, Cookie[] cookies, String workspace) {
         this.parameterMap = parameterMap.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> new String[] {e.getValue()}));
         this.cookies = cookies;
@@ -175,13 +202,6 @@ class FakeHttpServletRequest implements HttpServletRequest {
     @Override
     public boolean isRequestedSessionIdFromURL() {
         throw new ServletDebugException();
-    }
-
-    /** @deprecated use #isRequestedSessionIdFromURL() */
-    @Deprecated
-    @Override
-    public boolean isRequestedSessionIdFromUrl() {
-        return isRequestedSessionIdFromURL();
     }
 
     @Override
@@ -348,13 +368,6 @@ class FakeHttpServletRequest implements HttpServletRequest {
         throw new ServletDebugException();
     }
 
-    /** @deprecated */
-    @Override
-    @Deprecated
-    public String getRealPath(String arg0) {
-        throw new ServletDebugException();
-    }
-
     @Override
     @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
     public String getRemoteAddr() {
@@ -411,5 +424,20 @@ class FakeHttpServletRequest implements HttpServletRequest {
         if (!arg0.equals("UTF-8")) {
             throw new ServletDebugException();
         }
+    }
+
+    @Override
+    public String getRequestId() {
+        return original.map(HttpServletRequest::getRequestId).orElse("mock-request-id");
+    }
+
+    @Override
+    public String getProtocolRequestId() {
+        return original.map(HttpServletRequest::getProtocolRequestId).orElse("mock-protocol-request-id");
+    }
+
+    @Override
+    public ServletConnection getServletConnection() {
+        throw new ServletDebugException();
     }
 }

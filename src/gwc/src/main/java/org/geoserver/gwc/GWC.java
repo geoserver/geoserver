@@ -1322,8 +1322,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         // request
         String workspace = params.remove(WORKSPACE_PARAM);
 
-        FakeHttpServletRequest req = new FakeHttpServletRequest(params, cookies, workspace);
-        FakeHttpServletResponse resp = new FakeHttpServletResponse();
+        InternalDispatchServletRequest req = new InternalDispatchServletRequest(params, cookies, workspace);
+        InternalDispatchServletResponse resp = new InternalDispatchServletResponse();
 
         Request request = Dispatcher.REQUEST.get();
         Dispatcher.REQUEST.remove();
@@ -1368,7 +1368,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
         // cascade
         Cookie[] cookies = actualRequest.getCookies();
-        FakeHttpServletRequest request = new FakeHttpServletRequest(parameterMap, cookies);
+        InternalDispatchServletRequest request = new InternalDispatchServletRequest(parameterMap, cookies);
         owsDispatcher.handleRequest(request, tile.servletResp);
     }
 

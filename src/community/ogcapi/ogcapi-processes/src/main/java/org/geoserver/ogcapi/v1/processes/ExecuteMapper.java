@@ -62,6 +62,7 @@ public class ExecuteMapper {
     public static final String RESPONSE_FORMAT_KVP = "response[f]";
     public static final String LINK_HREF = "[href]";
     public static final String LINK_TYPE = "[type]";
+    public static final String INLINE_TYPE = "[mediaType]";
     public static final String BBOX_CRS = "[crs]";
     public static final String INCLUDE = "[include]";
     private static final Wps10Factory WPS_FACTORY = Wps10Factory.eINSTANCE;
@@ -115,7 +116,7 @@ public class ExecuteMapper {
         Map<String, Parameter<?>> resultInfo = process.getResultInfo();
 
         // filter based on output selection, while validating the chosen output names
-        if (executeRequest.getOutputs() != null) {
+        if (executeRequest.getOutputs() != null && !executeRequest.getOutputs().isEmpty()) {
             Set<String> selectedOutputs = executeRequest.getOutputs().keySet();
             if (!resultInfo.keySet().containsAll(selectedOutputs)) {
                 Set<String> extraOutputs = selectedOutputs.stream()
@@ -137,7 +138,7 @@ public class ExecuteMapper {
         // build WPS response form
         ResponseFormType responseForm = WPS_FACTORY.createResponseFormType();
         execute.setResponseForm(responseForm);
-        if (resultInfo.size() > 1 || async) {
+        if (resultInfo.size() != 1 || async) {
             ResponseDocumentType responseDocument = WPS_FACTORY.createResponseDocumentType();
             responseForm.setResponseDocument(responseDocument);
             responseDocument.setStatus(async);
@@ -171,10 +172,11 @@ public class ExecuteMapper {
                     }
                 }
 
-                // WPS can execute async only in document response mode, but populate the
-                // raw one too for the response to be written correctly (as raw)... using the
-                // lineage flag as a marker to indicate that the response is async but should be raw
-                if (resultInfo.size() == 1 && executeRequest.getResponse() != DOCUMENT && async) {
+                // Using the lineage flag as a marker to indicate that the response should be raw
+                // as WPS has limitations: in raw mode can only do one output, in async mode can only do document
+                // This must be removed once we have a process engine that can use beans instead
+                // of EMF models and has a custom serialization support for them
+                if (resultInfo.size() == 1 || (executeRequest.getResponse() != DOCUMENT)) {
                     responseDocument.setLineage(true);
                 }
 
@@ -200,12 +202,12 @@ public class ExecuteMapper {
                     .map(ExecuteOutputFormat::getMediaType)
                     .ifPresent(mt -> setResponseMediaType(output, resultInfo, mt));
 
-            if (executeRequest.getResponse() == ExecuteRequest.ResponseMode.RAW) {
-                responseForm.setRawDataOutput(output);
-            } else {
+            if (executeRequest.getResponse() == DOCUMENT) {
                 ResponseDocumentType responseDocument = WPS_FACTORY.createResponseDocumentType();
                 responseForm.setResponseDocument(responseDocument);
                 responseDocument.getOutput().add(output);
+            } else {
+                responseForm.setRawDataOutput(output);
             }
         }
         // setup the base URL for the reference outputs
@@ -334,12 +336,10 @@ public class ExecuteMapper {
                         "Could not find process parameter for type " + parameter.key + "," + parameter.type);
             }
 
-            // get the eventual input mime type
-            String type = httpRequest.getParameter(inputName + LINK_TYPE);
-
             // check first for a reference
             String href = httpRequest.getParameter(inputName + LINK_HREF);
             if (href != null) {
+                String type = httpRequest.getParameter(inputName + LINK_TYPE);
                 ComplexPPIO ppio = lookupPPIO(inputName, ppios, type);
                 InputReferenceType reference = getRefenceType(WPS_FACTORY, ppio, href);
                 inputType.setReference(reference);
@@ -358,6 +358,8 @@ public class ExecuteMapper {
                 // otherwise skip it
                 continue;
             }
+            // get the eventual input mime type
+            String type = httpRequest.getParameter(inputName + INLINE_TYPE);
             if (type == null) {
                 // is it a JSON array and do we have a multi-valued parameter?
                 if (parameter.getMaxOccurs() > 1) {
@@ -423,23 +425,17 @@ public class ExecuteMapper {
         String responseFormat = httpRequest.getParameter(RESPONSE_FORMAT_KVP);
 
         // filter based on output selection (an output must be explicitly removed using output[include]=false)
-        resultInfo.keySet().removeIf(k -> Optional.ofNullable(httpRequest.getParameter(k + INCLUDE))
-                .map("false"::equalsIgnoreCase)
-                .orElse(false));
+        resultInfo.keySet().removeIf(k -> shouldBeRemoved(httpRequest, k));
 
         // check request headers and set up the async execution
         String prefer = httpRequest.getHeader(HTTP_HEADER_PREFER);
         boolean async = prefer != null && prefer.contains("respond-async");
 
+        // The specification in OGC API processes is at the time of writing, significantly different from 1.0, and
+        // still has not stabilizted. For the time being, we are implementing a hybrid approach, where:
+        // - if multiple outputs are requested, we always go document mode
+        // - if a single output is requested, we go raw mode
         if (resultInfo.size() > 1 || async) {
-            if (responseFormat != null && !(resultInfo.size() == 1 && async)) {
-                throw new APIException(
-                        ServiceException.INVALID_PARAMETER_VALUE,
-                        "Cannot handle response format specification " + RESPONSE_FORMAT_KVP
-                                + " when a process has multiple outputs",
-                        HttpStatus.BAD_REQUEST);
-            }
-
             ResponseDocumentType responseDocument = WPS_FACTORY.createResponseDocumentType();
             responseDocument.setStatus(async);
             responseDocument.setStoreExecuteResponse(async);
@@ -490,6 +486,12 @@ public class ExecuteMapper {
         return execute;
     }
 
+    private static Boolean shouldBeRemoved(HttpServletRequest httpRequest, String k) {
+        return Optional.ofNullable(httpRequest.getParameter(k + INCLUDE))
+                .map("false"::equalsIgnoreCase)
+                .orElse(false);
+    }
+
     /** Cehcks if the input is a JSON array, in that case, parses and returns it. If not, null is returned instead. */
     private static JsonNode parseIfJsonArray(String input) {
         try {
@@ -505,10 +507,11 @@ public class ExecuteMapper {
 
     @SuppressWarnings("unchecked")
     private static ComplexDataType getComplexInlineDataType(
-            Wps10Factory wpsFactory, ComplexPPIO complexPPIO, String value) {
+            Wps10Factory wpsFactory, ComplexPPIO complexPPIO, String base64Value) {
         ComplexDataType complex = wpsFactory.createComplexDataType();
         complex.setMimeType(complexPPIO.getMimeType());
-        complex.getData().add(value);
+        complex.getData().add(base64Value);
+        complex.setEncoding("base64");
         return complex;
     }
 
@@ -523,7 +526,7 @@ public class ExecuteMapper {
             OutputDefinitionType outputType, Map<String, Parameter<?>> resultInfo, String responseFormat) {
         String[] formats = responseFormat.split("\\s*,\\s*");
         Set<String> formatsSet = Set.of(formats);
-        Parameter<?> result = resultInfo.values().iterator().next();
+        Parameter<?> result = resultInfo.get(outputType.getIdentifier().getValue());
         List<ProcessParameterIO> encoders = ProcessParameterIO.findEncoder(result, context);
         // look for complex ones
         for (ProcessParameterIO encoder : encoders) {

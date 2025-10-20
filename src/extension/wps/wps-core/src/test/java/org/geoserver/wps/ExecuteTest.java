@@ -1752,6 +1752,46 @@ public class ExecuteTest extends WPSTestSupport {
     }
 
     @Test
+    public void testChooseOutputRaw() throws Exception {
+        String template = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
+                + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
+                + "<ows:Identifier>gs:MultiRaw</ows:Identifier>"
+                + "<wps:DataInputs>"
+                + "<wps:Input>"
+                + "<ows:Identifier>id</ows:Identifier>"
+                + "<wps:Data>"
+                + "<wps:LiteralData>1234</wps:LiteralData>"
+                + "</wps:Data>"
+                + "</wps:Input>"
+                + "<wps:Input>"
+                + "<ows:Identifier>binaryMimeType</ows:Identifier>"
+                + "<wps:Data>"
+                + "<wps:LiteralData>application/zip</wps:LiteralData>"
+                + "</wps:Data>"
+                + "</wps:Input>"
+                + "</wps:DataInputs>"
+                + "<wps:ResponseForm>"
+                + "  <wps:RawDataOutput>"
+                + "      <ows:Identifier>OUTPUT_NAME</ows:Identifier>"
+                + "  </wps:RawDataOutput>"
+                + "</wps:ResponseForm>"
+                + "</wps:Execute>";
+
+        // execute for text
+        String requestText = template.replace("OUTPUT_NAME", "text");
+        MockHttpServletResponse responseTxt = postAsServletResponse("wps", requestText);
+        assertEquals(200, responseTxt.getStatus());
+        assertEquals("text/plain", responseTxt.getContentType());
+        assertEquals("This is the raw text", responseTxt.getContentAsString());
+
+        // execute for binary
+        String requestBinary = template.replace("OUTPUT_NAME", "binary");
+        MockHttpServletResponse response = postAsServletResponse("wps", requestBinary);
+        assertEquals(200, response.getStatus());
+        assertEquals("application/zip", response.getContentType());
+    }
+
+    @Test
     public void testChooseOutputSynchronous() throws Exception {
         String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
                 + "xmlns:ows='http://www.opengis.net/ows/1.1'>"

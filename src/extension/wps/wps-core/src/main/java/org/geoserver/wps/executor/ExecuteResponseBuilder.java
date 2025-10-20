@@ -35,7 +35,6 @@ import net.opengis.wps10.ProcessOutputsType1;
 import net.opengis.wps10.ProcessStartedType;
 import net.opengis.wps10.ResponseDocumentType;
 import net.opengis.wps10.Wps10Factory;
-import org.eclipse.emf.common.util.EList;
 import org.geoserver.ows.Ows11Util;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
@@ -205,19 +204,25 @@ public class ExecuteResponseBuilder {
 
             Map<String, Parameter<?>> resultInfo = pf.getResultInfo(processName, null);
 
-            if (Optional.ofNullable(request.getResponseForm())
+            boolean outputSelectionInDocumentForm = Optional.ofNullable(request.getResponseForm())
                     .map(rf -> rf.getResponseDocument())
                     .map(rd -> rd.getOutput())
                     .filter(output -> !output.isEmpty())
-                    .isPresent()) {
+                    .isPresent();
+            boolean outputSelectionInRawDataForm = Optional.ofNullable(request.getResponseForm())
+                    .map(rf -> rf.getRawDataOutput())
+                    .isPresent();
+            if (outputSelectionInDocumentForm || outputSelectionInRawDataForm) {
                 // we have a selection of outputs, possibly with indication of mime type
                 // and reference encoding
-                EList outputs = request.getResponseForm().getResponseDocument().getOutput();
+                List outputs = outputSelectionInDocumentForm
+                        ? request.getResponseForm().getResponseDocument().getOutput()
+                        : List.of(request.getResponseForm().getRawDataOutput());
                 for (Object object : outputs) {
                     if (listener.isCanceled()) {
                         break;
                     }
-                    DocumentOutputDefinitionType odt = (DocumentOutputDefinitionType) object;
+                    OutputDefinitionType odt = (OutputDefinitionType) object;
                     String key = odt.getIdentifier().getValue();
                     Parameter<?> outputParam = resultInfo.get(key);
                     if (outputParam == null) {
@@ -226,7 +231,9 @@ public class ExecuteResponseBuilder {
                     }
 
                     String mimeType = odt.getMimeType();
-                    OutputDataType output = encodeOutput(key, outputParam, mimeType, odt.isAsReference(), listener);
+                    boolean asReference = odt instanceof DocumentOutputDefinitionType
+                            && ((DocumentOutputDefinitionType) odt).isAsReference();
+                    OutputDataType output = encodeOutput(key, outputParam, mimeType, asReference, listener);
                     processOutputs.getOutput().add(output);
                 }
             } else {

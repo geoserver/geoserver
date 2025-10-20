@@ -1,0 +1,22 @@
+{
+  "inputs": {
+    "imageInput": {
+      "value": "$IMAGE_VALUE",
+      "encoding": "base64",
+      "mediaType": "image/png"
+    },
+    "stringInput": "hello"
+  },
+  "outputs": {
+    "stringOutput": {
+      "transmissionMode": "value"
+    },
+    "imageOutput": {
+      "format": {
+        "mediaType": "image/png"
+      },
+      "transmissionMode": "$IMAGE_TRANSMISSION_MODE"
+    }
+  },
+  "response": "$RESPONSE_TYPE"
+}

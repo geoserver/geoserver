@@ -5,7 +5,8 @@
 package org.geoserver.ogcapi.v1.processes;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.concurrent.CompletableFuture.anyOf;
+import static org.apache.commons.codec.binary.Base64.encodeBase64;
+import static org.geoserver.ogcapi.v1.processes.ProcessesService.EXCEPTION_TYPE_RESULT_NOT_READY;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.startsWith;
@@ -19,19 +20,28 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import com.jayway.jsonpath.DocumentContext;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import javax.mail.BodyPart;
+import javax.mail.Multipart;
+import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.geotools.data.geojson.GeoJSONReader;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.util.Base64;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.locationtech.jts.geom.MultiPolygon;
@@ -162,7 +172,7 @@ public class ExecutionPostTest extends AbstractExecutionTest {
         JSONObject bounds = json.getJSONObject("bounds");
         assertArrayEquals(
                 new Object[] {0d, 0d, 5d, 5d}, bounds.getJSONArray("bbox").toArray());
-        assertEquals("EPSG:4326", bounds.getString("crs"));
+        assertEquals("http://www.opengis.net/def/crs/EPSG/0/4326", bounds.getString("crs"));
     }
 
     @Test
@@ -254,7 +264,7 @@ public class ExecutionPostTest extends AbstractExecutionTest {
         JSONObject result = json.getJSONObject("result");
         // GML cannot be directly encoded in the output, so mediatype and escaped string
         assertEquals("application/zip", result.getString("mediaType"));
-        byte[] bytes = Base64.decode(result.getString("value"));
+        byte[] bytes = Base64.decodeBase64(result.getString("value"));
 
         Set<String> actualNames = getZipFileNames(bytes);
         assertThat(actualNames, Matchers.hasItems("features.shp", "features.shx", "features.dbf"));
@@ -294,9 +304,7 @@ public class ExecutionPostTest extends AbstractExecutionTest {
         assertTrue(json.has("binary"));
         JSONObject binary = json.getJSONObject("binary");
         assertEquals("application/zip", binary.getString("mediaType"));
-        assertEquals(
-                new String(org.apache.commons.codec.binary.Base64.encodeBase64(new byte[100])),
-                binary.getString("value"));
+        assertEquals(new String(encodeBase64(new byte[100])), binary.getString("value"));
     }
 
     /** A process with multiple raw outputs, but only one got selected */
@@ -315,6 +323,44 @@ public class ExecutionPostTest extends AbstractExecutionTest {
 
         // the "binary" output was not chosen
         assertFalse(json.has("binary"));
+    }
+
+    /**
+     * A process with multiple raw outputs, requested with raw response, should return a multipart related response
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testMultipleOutputsRaw() throws Exception {
+        String body = getBody("ExecuteMultipleOutputsRaw.json");
+        MockHttpServletResponse response =
+                postAsServletResponse("ogc/processes/v1/processes/gs:MultiRaw/execution", body, "application/json");
+        assertThat(response.getContentType(), Matchers.startsWith("multipart/related; boundary="));
+        FileUtils.writeByteArrayToFile(new File("/tmp/test.bin"), response.getContentAsByteArray());
+        Multipart multipart = getMultipart(response);
+        int count = multipart.getCount();
+        for (int i = 0; i < count; i++) {
+            BodyPart bodyPart = multipart.getBodyPart(i);
+            String[] header = bodyPart.getHeader("Content-ID");
+            assertNotNull(header);
+            assertEquals(1, header.length);
+            String contentId = header[0];
+            if ("<text>".equals(contentId)) {
+                assertEquals("text/plain", bodyPart.getContentType());
+                String text = (String) bodyPart.getContent();
+                assertEquals("This is the raw text", text);
+            } else if ("<binary>".equals(contentId)) {
+                assertEquals("application/zip", bodyPart.getContentType());
+                byte[] bytes = IOUtils.toByteArray(bodyPart.getInputStream());
+                assertArrayEquals(new byte[100], bytes);
+            } else if ("<literal>".equals(contentId)) {
+                assertEquals("text/plain", bodyPart.getContentType());
+                String text = (String) bodyPart.getContent();
+                assertEquals("text", text);
+            } else {
+                fail("Unexpected content id: " + contentId);
+            }
+        }
     }
 
     @Test
@@ -340,20 +386,173 @@ public class ExecutionPostTest extends AbstractExecutionTest {
         String status;
         do {
             statusObject = (JSONObject) getAsJSON(jobStatusRef);
+            assertEquals(jobId, statusObject.getString("jobID"));
             assertEquals("gs:BufferFeatureCollection", statusObject.getString("processID"));
             int progress = statusObject.getInt("progress");
             assertThat(progress, allOf(lessThanOrEqualTo(100), greaterThanOrEqualTo(0)));
             status = statusObject.getString("status");
             assertThat(status, anyOf(equalTo("accepted"), equalTo("running"), equalTo("successful")));
+            String created = (String) statusObject.get("created");
+            String finished = (String) statusObject.get("finished");
+            // started not tested because it's not recorded in the WPS API
+            if (finished != null) {
+                assertTrue(created.compareTo(finished) <= 0);
+            }
             Thread.sleep(20);
         } while (!"successful".equals(status));
 
-        JSONObject firstLink = statusObject.getJSONArray("links").getJSONObject(0);
-        assertEquals("application/json", firstLink.getString("type"));
-        String resultsHref = firstLink.getString("href");
-        assertEquals(JOBS_BASE + jobId + "/results", resultsHref);
+        checkStatusLinks(statusObject, jobId);
 
-        MockHttpServletResponse processOutput = getAsServletResponse(jobStatusRef + "/results");
+        MockHttpServletResponse processOutput = getAsServletResponse("ogc/processes/v1/jobs/" + jobId + "/results");
         checkBufferCollectionJSON(processOutput);
+    }
+
+    @Test
+    public void testEcho() throws Exception {
+        String body = getBody("ExecuteEcho.json");
+        JSONObject json =
+                (JSONObject) postAsJSON("ogc/processes/v1/processes/gs:Echo/execution", body, "application/json");
+        print(json);
+        assertEquals("hithere", json.getString("stringOutput"));
+        assertEquals(15, json.getDouble("doubleOutput"), 0);
+        JSONObject bboxOutput = json.getJSONObject("boundingBoxOutput");
+        assertEquals(List.of(0d, 0d, 1d, 1d), bboxOutput.getJSONArray("bbox"));
+        assertEquals("http://www.opengis.net/def/crs/EPSG/0/3857", bboxOutput.getString("crs"));
+    }
+
+    @Test
+    public void testEchoImageMultipartValue() throws Exception {
+        byte[] pngBytes = readSamplePng();
+        String pngBase64 = new String(Base64.encodeBase64(pngBytes));
+        String body = getBody("ExecuteEchoImage.json");
+        body = body.replace("$IMAGE_VALUE", pngBase64);
+        body = body.replace("$IMAGE_TRANSMISSION_MODE", "value");
+        body = body.replace("$RESPONSE_TYPE", "raw");
+        MockHttpServletResponse response =
+                postAsServletResponse("ogc/processes/v1/processes/gs:Echo/execution", body, "application/json");
+        assertEquals(200, response.getStatus());
+        assertThat(response.getContentType(), Matchers.startsWith("multipart/related; boundary="));
+        Multipart multipart = getMultipart(response);
+        int count = multipart.getCount();
+        assertEquals(2, count);
+        for (int i = 0; i < count; i++) {
+            BodyPart bodyPart = multipart.getBodyPart(i);
+            String[] header = bodyPart.getHeader("Content-ID");
+            assertNotNull(header);
+            assertEquals(1, header.length);
+            String contentId = header[0];
+            if ("<stringOutput>".equals(contentId)) {
+                assertEquals("text/plain", bodyPart.getContentType());
+                String text = (String) bodyPart.getContent();
+                assertEquals("hello", text);
+            } else if ("<imageOutput>".equals(contentId)) {
+                assertEquals("image/png", bodyPart.getContentType());
+                byte[] imageBytes = IOUtils.toByteArray(bodyPart.getInputStream());
+                assertImagesIdentical(pngBytes, imageBytes);
+            } else {
+                fail("Unexpected content id: " + contentId);
+            }
+        }
+    }
+
+    @Test
+    public void testEchoImageDocumentValue() throws Exception {
+        byte[] pngBytes = readSamplePng();
+        String pngBase64 = new String(Base64.encodeBase64(pngBytes));
+        String body = getBody("ExecuteEchoImage.json");
+        body = body.replace("$IMAGE_VALUE", pngBase64);
+        body = body.replace("$IMAGE_TRANSMISSION_MODE", "value");
+        body = body.replace("$RESPONSE_TYPE", "document");
+        MockHttpServletResponse response =
+                postAsServletResponse("ogc/processes/v1/processes/gs:Echo/execution", body, "application/json");
+        assertEquals(200, response.getStatus());
+        assertEquals("application/json", response.getContentType());
+        DocumentContext json = getAsJSONPath(response);
+
+        assertEquals("hello", json.read("$.stringOutput"));
+        assertEquals("image/png", json.read("$.imageOutput.mediaType"));
+        String imageBase64 = json.read("$.imageOutput.value");
+        byte[] imageBytes = Base64.decodeBase64(imageBase64);
+        assertImagesIdentical(pngBytes, imageBytes);
+    }
+
+    @Test
+    public void testEchoImageDocumentReference() throws Exception {
+        byte[] pngBytes = readSamplePng();
+        String pngBase64 = new String(Base64.encodeBase64(pngBytes));
+        String body = getBody("ExecuteEchoImage.json");
+        body = body.replace("$IMAGE_VALUE", pngBase64);
+        body = body.replace("$IMAGE_TRANSMISSION_MODE", "reference");
+        body = body.replace("$RESPONSE_TYPE", "document");
+        MockHttpServletResponse response =
+                postAsServletResponse("ogc/processes/v1/processes/gs:Echo/execution", body, "application/json");
+        assertEquals(200, response.getStatus());
+        assertEquals("application/json", response.getContentType());
+        DocumentContext json = getAsJSONPath(response);
+
+        assertEquals("hello", json.read("$.stringOutput"));
+        assertEquals("image/png", json.read("$.imageOutput.mediaType"));
+        String imageReference = json.read("$.imageOutput.href");
+        String geoserverBase = "http://localhost:8080/geoserver";
+        assertThat(imageReference, startsWith(geoserverBase));
+
+        MockHttpServletResponse referenceResponse =
+                getAsServletResponse(imageReference.substring(geoserverBase.length() + 1));
+        assertEquals(200, referenceResponse.getStatus());
+        assertEquals("image/png", referenceResponse.getContentType());
+        byte[] imageBytes = getBinary(referenceResponse);
+        assertImagesIdentical(pngBytes, imageBytes);
+    }
+
+    @Test
+    public void testWaitAndDismiss() throws Exception {
+        // build a POST request with async execution, with a very long pause in Echo (5 minutes)
+        String body = getBody("ExecuteEchoLongPause.json");
+        MockHttpServletRequest request = createRequest("ogc/processes/v1/processes/gs:Echo/execution");
+        request.setMethod("POST");
+        request.setContentType("application/json");
+        request.setContent(body.getBytes(UTF_8));
+        request.addHeader("Prefer", "respond-async");
+        MockHttpServletResponse response = dispatch(request);
+
+        assertEquals(201, response.getStatus());
+        String location = response.getHeader(HttpHeaders.LOCATION);
+        assertThat(location, startsWith(JOBS_BASE));
+        String jobId = location.substring(location.lastIndexOf('/') + 1);
+        assertNotNull(jobId);
+
+        // wait until running
+        String jobStatusRef = "ogc/processes/v1/jobs/" + jobId;
+        JSONObject statusObject;
+        String status;
+        do {
+            statusObject = (JSONObject) getAsJSON(jobStatusRef);
+            assertEquals(jobId, statusObject.getString("jobID"));
+            assertEquals("gs:Echo", statusObject.getString("processID"));
+            int progress = statusObject.getInt("progress");
+            assertThat(progress, allOf(lessThanOrEqualTo(100), greaterThanOrEqualTo(0)));
+            status = statusObject.getString("status");
+            assertThat(status, anyOf(equalTo("accepted"), equalTo("running")));
+            String created = (String) statusObject.get("created");
+            String started = (String) statusObject.get("started");
+            String finished = (String) statusObject.get("started");
+            if (started != null) {
+                assertTrue(created.compareTo(started) <= 0);
+            }
+            if (finished != null) {
+                assertTrue(started.compareTo(finished) <= 0);
+            }
+            Thread.sleep(20);
+        } while (!"running".equals(status));
+
+        // check the results are not available yet and the error message is the correct one
+        DocumentContext exception = getAsJSONPath(jobStatusRef + "/results", 404);
+        assertEquals(EXCEPTION_TYPE_RESULT_NOT_READY, exception.read("$.type"));
+
+        // dismiss the job
+        response = deleteAsServletResponse(jobStatusRef);
+        assertEquals(200, response.getStatus());
+        JSON statusDismissed = json(response);
+        assertEquals("dismissed", ((JSONObject) statusDismissed).getString("status"));
     }
 }

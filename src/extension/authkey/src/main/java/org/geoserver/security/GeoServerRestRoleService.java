@@ -92,7 +92,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService i
 
     GeoServerRestRoleServiceConfig restRoleServiceConfig;
 
-    private boolean convertToUpperCase = true;
+    private volatile boolean convertToUpperCase = true;
 
     private String adminGroup;
 

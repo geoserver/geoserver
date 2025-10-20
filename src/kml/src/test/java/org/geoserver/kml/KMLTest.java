@@ -7,149 +7,29 @@ package org.geoserver.kml;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.emptyString;
-import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-import javax.xml.namespace.QName;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.custommonkey.xmlunit.XMLUnit;
-import org.custommonkey.xmlunit.XpathEngine;
-import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogBuilder;
-import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.data.test.MockData;
-import org.geoserver.data.test.SystemTestData;
-import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.test.RemoteOWSTestSupport;
-import org.geoserver.wms.WMSTestSupport;
-import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.CRS;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class KMLTest extends WMSTestSupport {
-
-    public static QName BOULDER = new QName(MockData.SF_URI, "boulder", MockData.SF_PREFIX);
-    private static final QName STORM_OBS = new QName(MockData.CITE_URI, "storm_obs", MockData.CITE_PREFIX);
-    private static TimeZone oldTimeZone;
-
-    XpathEngine xpath;
-
-    @Before
-    public void setUpXpath() {
-        xpath = XMLUnit.newXpathEngine();
-    }
-
-    @Override
-    protected void setUpTestData(SystemTestData testData) throws Exception {
-        super.setUpTestData(testData);
-        testData.setUpDefaultRasterLayers();
-    }
-
-    @BeforeClass
-    public static void setTimeZone() {
-        // System.setProperty("user.timezone", "UTC");
-        oldTimeZone = TimeZone.getDefault();
-        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-    }
-
-    @AfterClass
-    public static void clearTimeZone() {
-        // System.clearProperty("user.timezone");
-        TimeZone.setDefault(oldTimeZone);
-    }
-
-    @Override
-    protected void onSetUp(SystemTestData testData) throws Exception {
-        super.onSetUp(testData);
-        Catalog catalog = getCatalog();
-        testData.addStyle("notthere", "notthere.sld", getClass(), catalog);
-        testData.addStyle("scaleRange", "scaleRange.sld", getClass(), catalog);
-        testData.addStyle("outputMode", "outputMode.sld", getClass(), catalog);
-        testData.addVectorLayer(STORM_OBS, Collections.emptyMap(), "storm_obs.properties", getClass(), catalog);
-
-        Map<SystemTestData.LayerProperty, Object> properties = new HashMap<>();
-        properties.put(
-                LayerProperty.LATLON_ENVELOPE,
-                new ReferencedEnvelope(-105.336, -105.112, 39.9, 40.116, CRS.decode("EPSG:4326")));
-        properties.put(
-                LayerProperty.ENVELOPE,
-                new ReferencedEnvelope(3045967, 3108482, 1206627, 1285209, CRS.decode("EPSG:2876")));
-        properties.put(LayerProperty.SRS, 2876);
-        testData.addVectorLayer(BOULDER, properties, "boulder.properties", getClass(), catalog);
-
-        String points = MockData.POINTS.getLocalPart();
-        String lines = MockData.LINES.getLocalPart();
-        String polygons = MockData.POLYGONS.getLocalPart();
-
-        setNativeBox(catalog, points);
-        setNativeBox(catalog, lines);
-        setNativeBox(catalog, polygons);
-
-        LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
-        lg.setName("layerGroup");
-        lg.getLayers().add(catalog.getLayerByName(points));
-        lg.getStyles().add(catalog.getStyleByName("point"));
-        lg.getLayers().add(catalog.getLayerByName(lines));
-        lg.getStyles().add(catalog.getStyleByName("line"));
-        lg.getLayers().add(catalog.getLayerByName(polygons));
-        lg.getStyles().add(catalog.getStyleByName("polygon"));
-        CatalogBuilder builder = new CatalogBuilder(catalog);
-        builder.calculateLayerGroupBounds(lg);
-        catalog.add(lg);
-
-        // set up some layer titles
-        FeatureTypeInfo fti = catalog.getFeatureTypeByName(getLayerId(MockData.BRIDGES));
-        fti.setTitle("Bridges Title");
-        fti.setAbstract("Bridges Abstract");
-        catalog.save(fti);
-        fti = catalog.getFeatureTypeByName(getLayerId(MockData.BASIC_POLYGONS));
-        fti.setTitle("Polygons Title");
-        fti.setAbstract("");
-        catalog.save(fti);
-        CoverageInfo ci = catalog.getCoverageByName(getLayerId(MockData.TASMANIA_DEM));
-        ci.setTitle("Tasmania DEM");
-        ci.setAbstract(null);
-        catalog.save(ci);
-    }
-
-    public void setNativeBox(Catalog catalog, String name) throws Exception {
-        FeatureTypeInfo fti = catalog.getFeatureTypeByName(name);
-        fti.setNativeBoundingBox(fti.getFeatureSource(null, null).getBounds());
-        fti.setLatLonBoundingBox(new ReferencedEnvelope(fti.getNativeBoundingBox(), DefaultGeographicCRS.WGS84));
-        catalog.save(fti);
-    }
+/** KML output tests. Shared test data/setup is provided by KMLBaseTest. */
+public class KMLTest extends KMLBaseTest {
 
     @Test
     public void testLayerGroupWithPoints() throws Exception {
-
         Catalog cat = getCatalog();
         LayerGroupInfo lgi = cat.getLayerGroupByName("layerGroup");
 
@@ -161,7 +41,6 @@ public class KMLTest extends WMSTestSupport {
                 + lgi.getName()
                 + "&styles="
                 + "&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326");
-        //         print(doc, System.out);
 
         assertEquals(layers.size(), doc.getElementsByTagName("Folder").getLength());
         assertXpathEvaluatesTo(
@@ -201,7 +80,6 @@ public class KMLTest extends WMSTestSupport {
                 + getLayerId(BOULDER)
                 + "&styles="
                 + "&height=1024&width=1024&bbox=3045967,1206627,3108482,1285209&srs=EPSG:2876");
-        // print(doc);
 
         assertEquals(1, doc.getElementsByTagName("Placemark").getLength());
 
@@ -303,13 +181,13 @@ public class KMLTest extends WMSTestSupport {
         assertXpathEvaluatesTo("RoadSegments.1107532045088", "//kml:Placemark/kml:name", doc);
         String expectedDescription =
                 """
-                <h4>RoadSegments</h4>%n
-                <ul class="textattributes">
-                 \s
-                  <li><strong><span class="atr-name">FID</span>:</strong> <span class="atr-value">102</span></li>
-                  <li><strong><span class="atr-name">NAME</span>:</strong> <span class="atr-value">Route 5</span></li>
-                </ul>
-                """
+            <h4>RoadSegments</h4>%n
+            <ul class="textattributes">
+             \s
+              <li><strong><span class="atr-name">FID</span>:</strong> <span class="atr-value">102</span></li>
+              <li><strong><span class="atr-name">NAME</span>:</strong> <span class="atr-value">Route 5</span></li>
+            </ul>
+            """
                         .formatted();
         String actualDescription = xpath.evaluate("//kml:Placemark/kml:description", doc);
         assertEqualsIgnoreNewLineStyle(expectedDescription, actualDescription);
@@ -389,9 +267,7 @@ public class KMLTest extends WMSTestSupport {
         File resourceDir = Resources.directory(getDataDirectory().get(ftInfo));
         File templateFile = new File(resourceDir, "time.ftl");
         try {
-            // create the time template
-
-            FileUtils.writeStringToFile(templateFile, "${dates.value}", "UTF-8");
+            org.apache.commons.io.FileUtils.writeStringToFile(templateFile, "${dates.value}", "UTF-8");
 
             Document doc = getAsDOM("wms?request=getmap&service=wms&version=1.1.1"
                     + "&format="
@@ -400,7 +276,6 @@ public class KMLTest extends WMSTestSupport {
                     + getLayerId(MockData.OTHER)
                     + "&styles=&height=1024&width=1024&bbox= -96.0000,0.0000,-90.0000,84.0000&srs=EPSG:4326");
 
-            // print(doc);
             assertXpathEvaluatesTo("1", "count(//kml:Placemark)", doc);
             assertXpathEvaluatesTo("2002-12-02T00:00:00Z", "//kml:Placemark/kml:TimeStamp/kml:when", doc);
         } finally {
@@ -457,26 +332,6 @@ public class KMLTest extends WMSTestSupport {
         }
     }
 
-    /**
-     * Checks that a point's coordinate in the kml doc matches the expected value
-     *
-     * @param doc The KML doc
-     * @param path The xpath leading to the coordinate
-     * @param expected The expected ordinate values
-     */
-    public static void assertPointCoordinate(Document doc, String path, double... expected) throws XpathException {
-        XpathEngine xpath = XMLUnit.newXpathEngine();
-        String coordinates = xpath.evaluate(path, doc);
-        assertThat(coordinates, not(emptyString()));
-        double[] ordinates = Arrays.stream(coordinates.split("\\s*,\\s*"))
-                .mapToDouble(Double::parseDouble)
-                .toArray();
-        assertEquals(expected.length, ordinates.length);
-        for (int i = 0; i < expected.length; i++) {
-            assertEquals(expected[i], ordinates[i], 1e-6);
-        }
-    }
-
     @Test
     public void testVectorWithRemoteLayer() throws Exception {
         if (!RemoteOWSTestSupport.isRemoteWFSStatesAvailable(LOGGER)) return;
@@ -507,21 +362,6 @@ public class KMLTest extends WMSTestSupport {
                 + "&styles=notthere"
                 + "&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326");
         assertEquals(1, doc.getElementsByTagName("Placemark").getLength());
-    }
-
-    @Test
-    public void testContentDisposition() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse("wms?request=getmap&service=wms&version=1.1.1"
-                + "&format="
-                + KMZMapOutputFormat.MIME_TYPE
-                + "&layers="
-                + MockData.BASIC_POLYGONS.getPrefix()
-                + ":"
-                + MockData.BASIC_POLYGONS.getLocalPart()
-                + "&styles="
-                + MockData.BASIC_POLYGONS.getLocalPart()
-                + "&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326");
-        assertEquals("attachment; filename=cite-BasicPolygons.kmz", resp.getHeader("Content-Disposition"));
     }
 
     @Test
@@ -738,54 +578,6 @@ public class KMLTest extends WMSTestSupport {
     }
 
     @Test
-    public void testKMZMixed() throws Exception {
-        // force vector layers to be vector dumps (kmscore 100)
-        MockHttpServletResponse response = getAsServletResponse("wms?request=getmap&service=wms&version=1.1.1"
-                + "&format="
-                + KMZMapOutputFormat.MIME_TYPE
-                + "&layers="
-                + getLayerId(MockData.BASIC_POLYGONS)
-                + ","
-                + getLayerId(MockData.WORLD)
-                + "&styles="
-                + MockData.BASIC_POLYGONS.getLocalPart()
-                + ","
-                + "&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326&format_options=kmscore:100");
-
-        // check the contents of the zip file
-        assertEquals(KMZMapOutputFormat.MIME_TYPE, response.getContentType());
-        ByteArrayInputStream bis = getBinaryInputStream(response);
-        ZipInputStream zis = new ZipInputStream(bis);
-
-        // first entry, the kml document itself
-        ZipEntry entry = zis.getNextEntry();
-        assertEquals("wms.kml", entry.getName());
-        // we need to clone the input stream, as dom(is) closes the stream
-        byte[] data = IOUtils.toByteArray(zis);
-        Document dom = dom(new ByteArrayInputStream(data));
-        // print(dom);
-        // we have the placemarks in the first folder (vector), and no ground overlays
-        assertXpathEvaluatesTo("3", "count(//kml:Folder[1]/kml:Placemark)", dom);
-        assertXpathEvaluatesTo("0", "count(//kml:Folder[1]/kml:GroundOverlay)", dom);
-        // we have only the ground overlay in the second folder
-        assertXpathEvaluatesTo("0", "count(//kml:Folder[2]/kml:Placemark)", dom);
-        assertXpathEvaluatesTo("1", "count(//kml:Folder[2]/kml:GroundOverlay)", dom);
-        assertXpathEvaluatesTo("images/layers_1.png", "//kml:Folder[2]/kml:GroundOverlay/kml:Icon/kml:href", dom);
-        zis.closeEntry();
-
-        // the images folder
-        entry = zis.getNextEntry();
-        assertEquals("images/", entry.getName());
-        zis.closeEntry();
-
-        // the ground overlay for the raster layer
-        entry = zis.getNextEntry();
-        assertEquals("images/layers_1.png", entry.getName());
-        zis.closeEntry();
-        assertNull(zis.getNextEntry());
-    }
-
-    @Test
     public void testProjectedGroundOverlayWithPlacemarks() throws Exception {
         // Tests GEOS-7369, the combination of kmscore = 0, kmplacemark = true, and mode = refresh
         // with data in a
@@ -839,13 +631,13 @@ public class KMLTest extends WMSTestSupport {
         assertXpathEvaluatesTo("RoadSegments.1107532045088", "//kml:Placemark/kml:name", doc);
         String expectedDescription =
                 """
-                <h4>RoadSegments</h4>%n
-                <ul class="textattributes">
-                 \s
-                  <li><strong><span class="atr-name">FID</span>:</strong> <span class="atr-value">102</span></li>
-                  <li><strong><span class="atr-name">NAME</span>:</strong> <span class="atr-value">Route 5</span></li>
-                </ul>
-                """
+            <h4>RoadSegments</h4>%n
+            <ul class="textattributes">
+             \s
+              <li><strong><span class="atr-name">FID</span>:</strong> <span class="atr-value">102</span></li>
+              <li><strong><span class="atr-name">NAME</span>:</strong> <span class="atr-value">Route 5</span></li>
+            </ul>
+            """
                         .formatted();
         String actualDescription = xpath.evaluate("//kml:Placemark/kml:description", doc);
         assertEqualsIgnoreNewLineStyle(expectedDescription, actualDescription);

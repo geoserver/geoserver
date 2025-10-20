@@ -15,8 +15,8 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import org.jasig.cas.client.proxy.ProxyGrantingTicketStorage;
-import org.jasig.cas.client.util.CommonUtils;
+import org.apereo.cas.client.proxy.ProxyGrantingTicketStorage;
+import org.apereo.cas.client.util.WebUtils;
 import org.springframework.beans.factory.BeanNameAware;
 
 /**
@@ -49,7 +49,7 @@ public class ProxyGrantingTicketCallbackFilter implements Filter, BeanNameAware 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        CommonUtils.readAndRespondToProxyReceptorRequest(
+        WebUtils.readAndRespondToProxyReceptorRequest(
                 (HttpServletRequest) request, (HttpServletResponse) response, pgtStorageFilter);
     }
 

@@ -9,7 +9,7 @@ package org.geoserver.security.cas;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpSessionEvent;
 import jakarta.servlet.http.HttpSessionListener;
-import org.jasig.cas.client.session.SessionMappingStorage;
+import org.apereo.cas.client.session.SessionMappingStorage;
 
 /**
  * Removes HTTP sessions recorded by CAS for a single sign out configuration

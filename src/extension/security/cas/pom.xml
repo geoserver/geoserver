@@ -39,10 +39,10 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.jasig.cas.client</groupId>
+      <groupId>org.apereo.cas.client</groupId>
       <artifactId>cas-client-core</artifactId>
-      <version>3.4.1</version>
-      <type>jar</type>
+      <version>4.0.3</version>
     </dependency>
+
   </dependencies>
 </project>

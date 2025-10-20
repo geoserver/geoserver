@@ -8,7 +8,7 @@ package org.geoserver.security.cas;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import org.jasig.cas.client.validation.Assertion;
+import org.apereo.cas.client.validation.Assertion;
 import org.springframework.security.cas.ServiceProperties;
 
 /**

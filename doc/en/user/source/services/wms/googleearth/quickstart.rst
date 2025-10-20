@@ -38,6 +38,17 @@ For example, the topp:states layer URL is::
 
    http://GEOSERVER_URL/wms/kml?layers=topp:states
    
+.. _google_earth_kmz:
+
+Requesting KMZ output
+---------------------
+
+GeoServer can also return KMZ, the compressed form of KML, for convenient distribution and offline use. Issue a standard WMS request and set the format to ``application/vnd.google-earth.kmz``::
+
+   http://GEOSERVER_URL/wms?service=WMS&version=1.1.1&request=GetMap&layers=topp:states&styles=&srs=EPSG:4326&bbox=-130,24,-66,50&width=512&height=256&format=application/vnd.google-earth.kmz
+
+The downloaded ``.kmz`` file is a zip archive containing the KML document (normally ``wms.kml``) together with any referenced resources. GeoServer automatically copies icon PNG files used in the map into an ``images/`` folder inside the archive so that placemarks render correctly even when the KMZ is opened offline.
+  
   
 Adding a Network Link
 ---------------------
@@ -56,4 +67,3 @@ Name your layer in the **Name** field. (This will show up in **My Places** on th
       Adding a network link
 
 Check out the sections on :ref:`google-earth-tutorials` and the :ref:`google-earth-kml-styling` for more information. 
-

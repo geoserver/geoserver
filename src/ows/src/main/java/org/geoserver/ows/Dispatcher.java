@@ -47,6 +47,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import org.apache.commons.fileupload2.core.DiskFileItem;
 import org.apache.commons.fileupload2.core.DiskFileItemFactory;
 import org.apache.commons.fileupload2.core.FileItem;
 import org.apache.commons.fileupload2.jakarta.servlet6.JakartaServletFileUpload;
@@ -88,7 +89,7 @@ import org.xml.sax.SAXException;
  *   <li>The version of the service ( optional )
  * </ol>
  *
- * <p>Additional, an OWS request can contain an arbitray number of additional parameters.
+ * <p>Additionally, an OWS request can contain an arbitrary number of additional parameters.
  *
  * <p>An OWS request can be specified in two forms. The first form is known as "KVP" in which all the parameters come in
  * the form of a set of key-value pairs. Commonly this type of request is made in an http "GET" request, the parameters
@@ -114,7 +115,7 @@ import org.xml.sax.SAXException;
  * }</pre>
  *
  * <p>When a request is received, the <b>service</b> the <b>version</b> parameters are used to locate a service
- * desciptor, an instance of {@link Service} . With the service descriptor, the <b>request</b> parameter is used to
+ * descriptor, an instance of {@link Service} . With the service descriptor, the <b>request</b> parameter is used to
  * locate the operation of the service to call.
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
@@ -130,7 +131,7 @@ public class Dispatcher extends AbstractController {
     /** Logging instance */
     static Logger logger = Logging.getLogger("org.geoserver.ows");
 
-    /** flag to control wether the dispatcher is cite compliant */
+    /** flag to control whether the dispatcher is cite compliant */
     boolean citeCompliant = false;
 
     /** thread local variable for the request */
@@ -171,10 +172,10 @@ public class Dispatcher extends AbstractController {
     }
 
     /**
-     * Sets the flag to control wether the dispatcher is cite compliante.
+     * Sets the flag to control whether the dispatcher is cite compliant.
      *
      * <p>If set to {@code true}, the dispatcher with throw exceptions when it encounters something that is not 100%
-     * compliant with CITE standards. An example would be a request which specifies the servce in the context path:
+     * compliant with CITE standards. An example would be a request which specifies the service in the context path:
      * '.../geoserver/wfs?request=...' and not with the kvp '&amp;service=wfs'.
      *
      * @param citeCompliant {@code true} to set compliance, {@code false} to unset it.
@@ -196,7 +197,7 @@ public class Dispatcher extends AbstractController {
         String lookahead = GeoServerExtensions.getProperty("XML_LOOKAHEAD", context);
         if (lookahead != null) {
             try {
-                int lookaheadValue = Integer.valueOf(lookahead);
+                int lookaheadValue = Integer.parseInt(lookahead);
                 if (lookaheadValue <= 0)
                     logger.log(
                             Level.SEVERE, "Invalid XML_LOOKAHEAD value, " + "will use " + XML_LOOKAHEAD + " instead");
@@ -329,13 +330,15 @@ public class Dispatcher extends AbstractController {
                 request.setInput(soapReader(httpRequest, request));
             } else if (reqContentType != null && JakartaServletFileUpload.isMultipartContent(httpRequest)) {
                 // multipart form upload
-                JakartaServletFileUpload up = new JakartaServletFileUpload(
-                        DiskFileItemFactory.builder().get());
+                final DiskFileItemFactory factory =
+                        DiskFileItemFactory.builder().get();
+                final JakartaServletFileUpload<DiskFileItem, DiskFileItemFactory> up =
+                        new JakartaServletFileUpload<>(factory);
 
                 // treat regular form fields as additional kvp parameters
                 Map<String, FileItem> kvpFileItems = new CaseInsensitiveMap<>(new LinkedHashMap<>());
                 try {
-                    List<FileItem> items = up.parseRequest(httpRequest);
+                    final List<DiskFileItem> items = up.parseRequest(httpRequest);
                     FileItemCleanupCallback.setFileItems(items);
                     FileItem body = null;
                     for (FileItem item : items) {

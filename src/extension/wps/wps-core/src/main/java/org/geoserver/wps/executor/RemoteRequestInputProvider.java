@@ -140,6 +140,7 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
                     new DefaultClientTlsStrategy(sslContext, HttpsSupport.getDefaultHostnameVerifier());
 
             PoolingHttpClientConnectionManager cm = PoolingHttpClientConnectionManagerBuilder.create()
+                    .setDefaultConnectionConfig(connConfig)
                     .setTlsSocketStrategy(tlsStrategy)
                     .build();
 

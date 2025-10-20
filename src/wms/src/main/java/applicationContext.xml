@@ -425,7 +425,7 @@
 		</property>
 		<property name="mappings">
 			<props>
-			    <prop key="/kml/icon/**/*">kmlIconService</prop>
+			    <prop key="/kml/icon/**">kmlIconService</prop>
 				<prop key="/wms">dispatcher</prop>
 				<prop key="/wms/*">dispatcher</prop>
 			</props>

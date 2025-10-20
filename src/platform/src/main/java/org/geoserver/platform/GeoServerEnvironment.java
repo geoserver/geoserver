@@ -15,7 +15,6 @@ import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.PlaceholderConfigurerSupport;
-import org.springframework.core.Constants;
 import org.springframework.util.PropertyPlaceholderHelper;
 import org.springframework.util.PropertyPlaceholderHelper.PlaceholderResolver;
 
@@ -42,7 +41,9 @@ public class GeoServerEnvironment {
     /** logger */
     protected static final Logger LOGGER = Logging.getLogger("org.geoserver.platform");
 
-    private static final Constants constants = new Constants(PlaceholderConfigurerSupport.class);
+    private static final String DEFAULT_PREFIX = PlaceholderConfigurerSupport.DEFAULT_PLACEHOLDER_PREFIX;
+    private static final String DEFAULT_SUFFIX = PlaceholderConfigurerSupport.DEFAULT_PLACEHOLDER_SUFFIX;
+    private static final String DEFAULT_SEPARATOR = PlaceholderConfigurerSupport.DEFAULT_VALUE_SEPARATOR;
 
     /**
      * Variable set via System Environment in order to instruct GeoServer to make use or not of the config placeholders
@@ -51,7 +52,7 @@ public class GeoServerEnvironment {
      * <p>Default to FALSE
      */
     private static volatile boolean allowEnvParametrization =
-            Boolean.valueOf(System.getProperty("ALLOW_ENV_PARAMETRIZATION", "false"));
+            Boolean.parseBoolean(System.getProperty("ALLOW_ENV_PARAMETRIZATION", "false"));
 
     /**
      * Returns the variable set via System Environment in order to instruct GeoServer to make use or not of the config
@@ -66,7 +67,7 @@ public class GeoServerEnvironment {
      * placeholders translation. Use this synchronized method only for testing purposes.
      */
     public static synchronized void reloadAllowEnvParametrization() {
-        allowEnvParametrization = Boolean.valueOf(System.getProperty("ALLOW_ENV_PARAMETRIZATION", "false"));
+        allowEnvParametrization = Boolean.parseBoolean(System.getProperty("ALLOW_ENV_PARAMETRIZATION", "false"));
     }
 
     private static final String PROPERTYFILENAME = "geoserver-environment.properties";
@@ -76,13 +77,10 @@ public class GeoServerEnvironment {
 
     private static final String nullValue = "null";
 
-    private final PropertyPlaceholderHelper helper = new PropertyPlaceholderHelper(
-            constants.asString("DEFAULT_PLACEHOLDER_PREFIX"),
-            constants.asString("DEFAULT_PLACEHOLDER_SUFFIX"),
-            constants.asString("DEFAULT_VALUE_SEPARATOR"),
-            true);
+    private final PropertyPlaceholderHelper helper =
+            new PropertyPlaceholderHelper(DEFAULT_PREFIX, DEFAULT_SUFFIX, DEFAULT_SEPARATOR, null, true);
 
-    private final PlaceholderResolver resolver = name -> resolvePlaceholder(name);
+    private final PlaceholderResolver resolver = this::resolvePlaceholder;
 
     private FileWatcher<Properties> configFile;
 

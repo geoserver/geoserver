@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -48,7 +49,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
     PropertyFileWatcher watcher;
 
     /** Stores the time of the last rule list loading */
-    protected long lastModified;
+    protected AtomicLong lastModified = new AtomicLong();
 
     /** The security dir */
     Resource securityDir;
@@ -97,7 +98,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
      * @return true if the set did not contain the rule already, false otherwise
      */
     public synchronized boolean addRule(R rule) {
-        lastModified = System.currentTimeMillis();
+        lastModified.set(System.currentTimeMillis());
         return rules.add(rule);
     }
 
@@ -109,12 +110,12 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
     /** Cleans up the contents of the rule set */
     public void clear() {
         rules.clear();
-        lastModified = System.currentTimeMillis();
+        lastModified.set(System.currentTimeMillis());
     }
 
     /** Removes the rule from rule set */
     public synchronized boolean removeRule(R rule) {
-        lastModified = System.currentTimeMillis();
+        lastModified.set(System.currentTimeMillis());
         return rules.remove(rule);
     }
 
@@ -123,7 +124,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
      * file)
      */
     public long getLastModified() {
-        return lastModified;
+        return lastModified.get();
     }
 
     public boolean isModified() {
@@ -139,9 +140,9 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
         Resource propFile = securityDir.get(propertyFileName);
         try (OutputStream os = propFile.out()) {
             p.store(os, null);
-            lastModified = System.currentTimeMillis();
+            lastModified.set(System.currentTimeMillis());
             // avoid unnecessary reloads, the file just got fully written
-            if (watcher != null) watcher.setKnownLastModified(lastModified);
+            if (watcher != null) watcher.setKnownLastModified(lastModified.get());
         } catch (Exception e) {
             if (e instanceof IOException exception) throw exception;
             else throw new IOException("Could not write rules to " + propertyFileName, e);
@@ -177,12 +178,12 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
                         }
                     }
                 }
-                lastModified = System.currentTimeMillis();
+                lastModified.set(System.currentTimeMillis());
             } else if (isModified()) {
                 synchronized (this) {
                     loadRules(watcher.getProperties());
                 }
-                lastModified = System.currentTimeMillis();
+                lastModified.set(System.currentTimeMillis());
             }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Failed to reload data access rules from layers.properties, keeping old rules", e);

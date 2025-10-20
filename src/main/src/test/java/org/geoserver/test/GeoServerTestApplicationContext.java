@@ -31,6 +31,7 @@ import org.w3c.dom.Element;
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
+@SuppressWarnings({"deprecation", "removal"})
 public class GeoServerTestApplicationContext extends ClassPathXmlApplicationContext implements WebApplicationContext {
     ServletContext servletContext;
 

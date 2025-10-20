@@ -29,7 +29,7 @@ public abstract class StoreInfoImpl implements StoreInfo {
 
     protected String type;
 
-    protected boolean enabled;
+    protected volatile boolean enabled;
 
     protected WorkspaceInfo workspace;
 
@@ -41,7 +41,7 @@ public abstract class StoreInfoImpl implements StoreInfo {
 
     protected Throwable error;
 
-    protected boolean _default;
+    protected volatile boolean _default;
 
     protected Date dateCreated;
 
@@ -49,7 +49,7 @@ public abstract class StoreInfoImpl implements StoreInfo {
 
     protected String modifiedBy;
 
-    protected boolean disableOnConnFailure;
+    protected volatile boolean disableOnConnFailure;
 
     protected StoreInfoImpl() {}
 

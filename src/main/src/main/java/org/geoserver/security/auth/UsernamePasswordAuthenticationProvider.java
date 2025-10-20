@@ -30,6 +30,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
  *
  * @author Justin Deoliveira, OpenGeo
  */
+@SuppressWarnings("deprecation")
 public class UsernamePasswordAuthenticationProvider extends GeoServerAuthenticationProvider {
 
     /** auth provider to delegate to */

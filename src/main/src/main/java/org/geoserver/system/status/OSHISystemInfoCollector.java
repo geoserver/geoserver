@@ -45,7 +45,7 @@ public class OSHISystemInfoCollector extends Thread {
 
     private final FileSystem fs;
 
-    private double cpuUsage = 0;
+    private volatile double cpuUsage = 0;
 
     private long[][] oldTicks;
     private long[] oldLoadTicks;

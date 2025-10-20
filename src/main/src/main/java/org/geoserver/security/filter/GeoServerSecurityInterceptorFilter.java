@@ -32,6 +32,7 @@ import org.springframework.security.web.access.intercept.AuthorizationFilter;
  * @author mcr
  * @author awaterme
  */
+@SuppressWarnings({"deprecation", "removal"})
 public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter {
 
     private static final AuthorizationDecision ACCESS_GRANTED = new AuthorizationDecision(true);

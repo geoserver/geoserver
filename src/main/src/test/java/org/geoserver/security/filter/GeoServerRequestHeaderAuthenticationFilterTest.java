@@ -33,6 +33,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
+@SuppressWarnings({"deprecation", "removal"})
 public class GeoServerRequestHeaderAuthenticationFilterTest {
 
     @Test

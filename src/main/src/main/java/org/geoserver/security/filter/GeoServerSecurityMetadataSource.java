@@ -33,6 +33,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  *
  * @author mcr
  */
+@SuppressWarnings({"deprecation", "removal"})
 public class GeoServerSecurityMetadataSource implements SecurityMetadataSource {
 
     /**

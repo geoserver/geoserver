@@ -391,10 +391,11 @@ public class MapMLGenerator {
                 constants.asString("DEFAULT_PLACEHOLDER_PREFIX"),
                 constants.asString("DEFAULT_PLACEHOLDER_SUFFIX"),
                 constants.asString("DEFAULT_VALUE_SEPARATOR"),
+                null,
                 true);
         private final String nullValue = "null";
         private final SimpleFeature feature;
-        private final PropertyPlaceholderHelper.PlaceholderResolver resolver = (name) -> resolveAttributeNames(name);
+        private final PropertyPlaceholderHelper.PlaceholderResolver resolver = this::resolveAttributeNames;
 
         /**
          * Wrap the feature to caption via this constructor

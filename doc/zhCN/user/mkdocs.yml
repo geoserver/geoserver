@@ -1,0 +1,35 @@
+site_name: GeoServer User Guide (Chinese)
+site_description: GeoServer user documentation in Chinese
+site_author: GeoServer Team
+site_url: https://docs.geoserver.org/
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: blue
+      accent: blue
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - search.share
+  # Disable syntax highlighting to avoid Pygments issues
+  hljs: false
+
+plugins:
+  - search
+  - minify:
+      minify_html: true
+
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+
+extra_css:
+  - css/extra.css
+
+site_dir: ../../../gh-pages-output/zhCN/user

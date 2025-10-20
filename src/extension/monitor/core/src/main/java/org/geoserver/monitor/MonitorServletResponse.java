@@ -43,13 +43,6 @@ public class MonitorServletResponse extends HttpServletResponseWrapper {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public void setStatus(int sc, String sm) {
-        this.status = sc;
-        super.setStatus(sc);
-    }
-
-    @Override
     public int getStatus() {
         return status;
     }

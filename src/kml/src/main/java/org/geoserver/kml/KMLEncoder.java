@@ -11,6 +11,8 @@ import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXTransformerFactory;
@@ -78,6 +80,13 @@ public class KMLEncoder {
 
         private static final SAXTransformerFactory FACTORY = (SAXTransformerFactory) TransformerFactory.newInstance();
 
+        private static final String ROOT_NAMESPACE = "http://www.opengis.net/kml/2.2";
+
+        private static final Map<String, String> EXTRA_NAMESPACES = Map.of(
+                "ns2", "http://www.google.com/kml/ext/2.2",
+                "ns3", "http://www.w3.org/2005/Atom",
+                "ns4", "urn:oasis:names:tc:ciq:xsdschema:xAL:2.0");
+
         // //kml:IconStyle/kml:Icon/kml:refreshInterval
         // //kml:IconStyle/kml:Icon/kml:viewRefreshTime
         // //kml:IconStyle/kml:Icon/kml:viewBoundScale
@@ -92,9 +101,14 @@ public class KMLEncoder {
 
         private boolean inIgnoredElement = false;
 
+        private boolean rootProcessed = false;
+
         private KMLDocumentHandler(OutputStream output) throws TransformerException {
             transformerHandler = FACTORY.newTransformerHandler();
             transformerHandler.getTransformer().setOutputProperty("indent", "yes");
+            transformerHandler.getTransformer().setOutputProperty(OutputKeys.METHOD, "xml");
+            transformerHandler.getTransformer().setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+            transformerHandler.getTransformer().setOutputProperty(OutputKeys.STANDALONE, "no");
             transformerHandler.setResult(new StreamResult(output));
         }
 
@@ -114,13 +128,25 @@ public class KMLEncoder {
         }
 
         @Override
-        public void startPrefixMapping(String prefix, String uri) throws SAXException {
-            transformerHandler.startPrefixMapping(prefix, uri);
+        public void startPrefixMapping(String prefix, String uri) {
+            if (!rootProcessed) {
+                try {
+                    transformerHandler.startPrefixMapping("", ROOT_NAMESPACE);
+                } catch (SAXException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
 
         @Override
-        public void endPrefixMapping(String prefix) throws SAXException {
-            transformerHandler.endPrefixMapping(prefix);
+        public void endPrefixMapping(String prefix) {
+            if (!rootProcessed) {
+                try {
+                    transformerHandler.endPrefixMapping("");
+                } catch (SAXException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
 
         @Override
@@ -133,20 +159,36 @@ public class KMLEncoder {
                 inIgnoredElement = true;
                 return;
             }
-            transformerHandler.startElement(uri, localName, qName, atts);
+
+            if (!rootProcessed) {
+                // Emit all extra namespace declarations for root
+                for (Map.Entry<String, String> ns : EXTRA_NAMESPACES.entrySet()) {
+                    transformerHandler.startPrefixMapping(ns.getKey(), ns.getValue());
+                }
+                transformerHandler.startElement(ROOT_NAMESPACE, localName, localName, atts);
+                rootProcessed = true;
+            } else {
+                transformerHandler.startElement("", localName, localName, atts);
+            }
         }
 
         @Override
         public void endElement(String uri, String localName, String qName) throws SAXException {
-            if ("IconStyle".equals(localName)) {
-                inIconStyle = false;
-            } else if (inIconStyle && "Icon".equals(localName)) {
-                inIcon = false;
-            } else if (inIcon && IGNORED_ELEMENTS.contains(localName)) {
+            if (inIcon && IGNORED_ELEMENTS.contains(localName)) {
                 inIgnoredElement = false;
                 return;
+            } else if (inIconStyle && "Icon".equals(localName)) inIcon = false;
+            else if ("IconStyle".equals(localName)) inIconStyle = false;
+
+            if (rootProcessed && localName.equals("kml")) {
+                transformerHandler.endElement(ROOT_NAMESPACE, localName, localName);
+                // End all extra namespace mappings
+                for (String prefix : EXTRA_NAMESPACES.keySet()) {
+                    transformerHandler.endPrefixMapping(prefix);
+                }
+            } else {
+                transformerHandler.endElement("", localName, localName);
             }
-            transformerHandler.endElement(uri, localName, qName);
         }
 
         @Override

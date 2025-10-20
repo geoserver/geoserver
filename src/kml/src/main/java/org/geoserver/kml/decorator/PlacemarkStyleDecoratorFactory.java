@@ -187,7 +187,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
             String imageURL = "http://icons.opengeo.org/markers/icon-" + (poly ? "poly.1" : "line.1") + ".png";
             Icon icon = is.createAndSetIcon();
             icon.setHref(imageURL);
-            icon.setViewBoundScale(1);
+            icon.setViewBoundScale(1.);
         }
 
         /** Encodes a KML IconStyle from a point style and symbolizer. */

@@ -110,8 +110,8 @@ public class SimpleNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
             Link url = nl.createAndSetUrl();
             url.setHref(href);
             url.setViewRefreshMode(ViewRefreshMode.ON_STOP);
-            url.setViewRefreshTime(1);
-            url.setViewBoundScale(1);
+            url.setViewRefreshTime(1.);
+            url.setViewBoundScale(1.);
 
             // Attempt to parse a value from kmlrefresh format_options parameter.
             // It can be either a set interval in seconds or "expires".
@@ -122,7 +122,7 @@ public class SimpleNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
                 if (refreshValue.equalsIgnoreCase("expires")) {
                     url.setRefreshMode(RefreshMode.ON_EXPIRE);
                 } else {
-                    int interval = Integer.parseInt(refreshValue);
+                    double interval = Double.parseDouble(refreshValue);
                     url.setRefreshInterval(interval);
                     url.setRefreshMode(RefreshMode.ON_INTERVAL);
                 }

@@ -161,14 +161,20 @@ public class KMLEncoder {
             }
 
             if (!rootProcessed) {
-                // Emit all extra namespace declarations for root
+                // Root element: use namespace and declare extras
                 for (Map.Entry<String, String> ns : EXTRA_NAMESPACES.entrySet()) {
                     transformerHandler.startPrefixMapping(ns.getKey(), ns.getValue());
                 }
                 transformerHandler.startElement(ROOT_NAMESPACE, localName, localName, atts);
                 rootProcessed = true;
             } else {
-                transformerHandler.startElement("", localName, localName, atts);
+                // Keep prefix only for non-default namespaces
+                String prefix = getPrefixForUri(uri);
+                if (prefix != null && !prefix.isEmpty()) {
+                    transformerHandler.startElement(uri, localName, prefix + ":" + localName, atts);
+                } else {
+                    transformerHandler.startElement("", localName, localName, atts);
+                }
             }
         }
 
@@ -182,12 +188,16 @@ public class KMLEncoder {
 
             if (rootProcessed && localName.equals("kml")) {
                 transformerHandler.endElement(ROOT_NAMESPACE, localName, localName);
-                // End all extra namespace mappings
                 for (String prefix : EXTRA_NAMESPACES.keySet()) {
                     transformerHandler.endPrefixMapping(prefix);
                 }
             } else {
-                transformerHandler.endElement("", localName, localName);
+                String prefix = getPrefixForUri(uri);
+                if (prefix != null && !prefix.isEmpty()) {
+                    transformerHandler.endElement(uri, localName, prefix + ":" + localName);
+                } else {
+                    transformerHandler.endElement("", localName, localName);
+                }
             }
         }
 
@@ -211,6 +221,16 @@ public class KMLEncoder {
         @Override
         public void skippedEntity(String name) throws SAXException {
             transformerHandler.skippedEntity(name);
+        }
+
+        private String getPrefixForUri(String uri) {
+            if (uri == null || uri.isEmpty() || uri.equals(ROOT_NAMESPACE)) {
+                return null;
+            }
+            for (Map.Entry<String, String> e : EXTRA_NAMESPACES.entrySet()) {
+                if (e.getValue().equals(uri)) return e.getKey();
+            }
+            return null;
         }
     }
 }

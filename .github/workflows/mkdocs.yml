@@ -112,7 +112,6 @@ jobs:
           "doc/en/docguide:docguide:en"
           "doc/en/developer:developer:en"
           "doc/en/user:user:en"
-          "doc/zhCN/user:user:zhCN"
         )
         
         # Process each directory
@@ -204,7 +203,6 @@ jobs:
           "doc/en/docguide:docguide:en"
           "doc/en/developer:developer:en"
           "doc/en/user:user:en"
-          "doc/zhCN/user:user:zhCN"
         )
         
         # Build each MkDocs site
@@ -275,12 +273,7 @@ jobs:
                 <strong>User Guide</strong><br>
                 <small>Complete user documentation and tutorials</small>
             </a>
-            
-            <h2>Chinese Documentation</h2>
-            <a href="zhCN/user/" class="doc-link">
-                <strong>User Guide (Chinese)</strong><br>
-                <small>用户文档和教程</small>
-            </a>
+
         </body>
         </html>
         EOL
@@ -357,7 +350,6 @@ jobs:
             - [English Documentation Guide](${{ steps.deployment.outputs.page_url }}en/docguide/) _compare to https://docs.geoserver.org/latest/en/docguide/_
             - [English Developer Guide](${{ steps.deployment.outputs.page_url }}en/developer/) _compare to https://docs.geoserver.org/latest/en/developer/_
             - [English User Guide](${{ steps.deployment.outputs.page_url }}en/user/) _compare to https://docs.geoserver.org/latest/en/user/_
-            - [Chinese User Guide](${{ steps.deployment.outputs.page_url }}zhCN/user/) _compare to https://docs.geoserver.org/latest/zhCN/user/_
             
             _This preview will be updated automatically with each new commit to this **and other** PRs that have the \`mkdocs\` label._`
           });

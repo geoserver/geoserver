@@ -95,7 +95,6 @@ declare -a DOC_DIRS=(
 #  "doc/en/docguide:docguide:en"
 #  "doc/en/developer:developer:en"
   "doc/en/user:user:en"
-#  "doc/zhCN/user:user:zhCN"
 )
 
 # Process each directory
@@ -185,7 +184,6 @@ declare -a MKDOCS_DIRS=(
 #  "doc/en/docguide:docguide:en"
 #  "doc/en/developer:developer:en"
   "doc/en/user:user:en"
-#  "doc/zhCN/user:user:zhCN"
 )
 
 # Build each MkDocs site
@@ -264,12 +262,7 @@ cat > gh-pages-output/index.html <<EOL
         <strong>User Guide</strong><br>
         <small>Complete user documentation and tutorials</small>
     </a>
-    
-    <h2>Chinese Documentation</h2>
-    <a href="zhCN/user/" class="doc-link">
-        <strong>User Guide (Chinese)</strong><br>
-        <small>用户文档和教程</small>
-    </a>
+
 </body>
 </html>
 EOL

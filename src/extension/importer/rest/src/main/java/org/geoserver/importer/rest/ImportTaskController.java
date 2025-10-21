@@ -69,7 +69,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 
 @RestController
 @RequestMapping(
@@ -200,7 +199,7 @@ public class ImportTaskController extends ImportBaseController {
         @Bean
         PutIgnoringExtensionContentNegotiationStrategy importTaskPutContentNegotiationStrategy() {
             return new PutIgnoringExtensionContentNegotiationStrategy(
-                    new PatternsRequestCondition(RestBaseController.ROOT_PATH + "/imports/{id}/tasks/{taskId:.+}"),
+                    List.of("/imports/{id}/tasks/{taskId:.+}"),
                     Arrays.asList(MediaType.APPLICATION_JSON, MediaType.TEXT_HTML));
         }
     }

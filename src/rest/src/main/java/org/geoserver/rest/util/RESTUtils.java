@@ -42,6 +42,8 @@ import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.server.PathContainer;
+import org.springframework.web.util.ServletRequestPathUtils;
 
 /**
  * Utility class for Restlets.
@@ -462,5 +464,18 @@ public class RESTUtils {
         }
         directory = Resources.fromPath(root.toString());
         return directory;
+    }
+
+    /**
+     * Returns the path within the application for the given request.
+     *
+     * @param request The HTTP servlet request
+     * @return The path within the application (guaranteed not null, will be computed if not cached)
+     */
+    public static PathContainer pathWithinApplication(HttpServletRequest request) {
+        if (!ServletRequestPathUtils.hasParsedRequestPath(request)) {
+            ServletRequestPathUtils.parseAndCache(request);
+        }
+        return ServletRequestPathUtils.getParsedRequestPath(request).pathWithinApplication();
     }
 }

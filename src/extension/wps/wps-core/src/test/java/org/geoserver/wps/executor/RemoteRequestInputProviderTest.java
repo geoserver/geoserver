@@ -7,7 +7,6 @@ package org.geoserver.wps.executor;
 import static com.github.tomakehurst.wiremock.client.WireMock.any;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.forbidden;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
@@ -27,6 +26,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
+import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
@@ -46,6 +46,7 @@ import net.opengis.wps10.MethodType;
 import net.opengis.wps10.Wps10Factory;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.Ows11Util;
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wps.ProcessDismissedException;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.ppio.ComplexPPIO;
@@ -55,7 +56,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class RemoteRequestInputProviderTest {
+public class RemoteRequestInputProviderTest extends GeoServerSystemTestSupport {
 
     @ClassRule
     public static WireMockClassRule classRule =
@@ -830,7 +831,7 @@ public class RemoteRequestInputProviderTest {
         service.stubFor(any(urlEqualTo("/test")).willReturn(response));
         if (bodyUrl != null && bodyUrl.getProtocol().startsWith("http")) {
             // stub for the body reference HTTP(S) URL
-            service.stubFor(get(urlEqualTo("/foo")).willReturn(bodyResponse));
+            service.stubFor(WireMock.get(urlEqualTo("/foo")).willReturn(bodyResponse));
         }
     }
 

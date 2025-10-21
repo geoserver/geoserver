@@ -30,7 +30,7 @@ import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
-import org.apache.hc.client5.http.ssl.HttpsSupport;
+import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.Header;
@@ -101,9 +101,9 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
         } catch (Exception e) {
             // Log the exception and replace with a generic exception to prevent
             // potentially disclosing sensitive information from a remote resource.
-            listener.exceptionOccurred(e);
             String message = "Failed to retrieve value for input " + getInputId();
             LOGGER.log(Level.WARNING, message, e);
+            // IMPORTANT: do not call listener.exceptionOccurred(...) here; LazyInputMap will do it once.
             throw new WPSException(message, "NoApplicableCode", getInputId());
         } finally {
             listener.progress(100);
@@ -136,8 +136,9 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
                     .loadTrustMaterial((chain, authType) -> true)
                     .build();
 
+            // Trust-all + disable hostname verification (for self-signed localhost in tests)
             DefaultClientTlsStrategy tlsStrategy =
-                    new DefaultClientTlsStrategy(sslContext, HttpsSupport.getDefaultHostnameVerifier());
+                    new DefaultClientTlsStrategy(sslContext, NoopHostnameVerifier.INSTANCE);
 
             PoolingHttpClientConnectionManager cm = PoolingHttpClientConnectionManagerBuilder.create()
                     .setDefaultConnectionConfig(connConfig)

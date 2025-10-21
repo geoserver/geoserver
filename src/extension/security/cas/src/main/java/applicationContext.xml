@@ -12,8 +12,8 @@
           http://www.springframework.org/schema/security
           http://www.springframework.org/schema/security/spring-security-3.0.4.xsd">
 
-  <!--  needed for CAS proxy granting tickets -->   
-  <bean id="pgtStorage" class="org.jasig.cas.client.proxy.ProxyGrantingTicketStorageImpl"/>   
+  <!--  needed for CAS proxy granting tickets -->
+  <bean id="pgtStorage" class="org.apereo.cas.client.proxy.ProxyGrantingTicketStorageImpl"/>   
   <bean id="pgtCallback" class="org.geoserver.security.cas.ProxyGrantingTicketCallbackFilter">
     <constructor-arg ref="pgtStorage"/>
   </bean>
@@ -30,6 +30,6 @@
   </bean>
 
     <!--  CAS single sign out handler -->
-  <bean id="casSingleSignOutHandler" class="org.jasig.cas.client.session.SingleSignOutHandler" />
+  <bean id="casSingleSignOutHandler" class="org.apereo.cas.client.session.SingleSignOutHandler" />
 
 </beans>

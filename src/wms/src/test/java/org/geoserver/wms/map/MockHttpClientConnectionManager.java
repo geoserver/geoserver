@@ -112,7 +112,6 @@ public class MockHttpClientConnectionManager implements HttpClientConnectionMana
     // ---- Minimal mock endpoint that executes requests by returning a fabricated response ----
 
     private final class MockEndpoint extends ConnectionEndpoint {
-        private volatile Timeout soTimeout = Timeout.DISABLED;
 
         @Override
         public boolean isConnected() {
@@ -121,7 +120,7 @@ public class MockHttpClientConnectionManager implements HttpClientConnectionMana
 
         @Override
         public void setSocketTimeout(Timeout timeout) {
-            this.soTimeout = timeout != null ? timeout : Timeout.DISABLED;
+            // no-op
         }
 
         @Override

@@ -42,9 +42,13 @@ import org.apache.hc.client5.http.config.RequestConfig.Builder;
 import org.apache.hc.client5.http.impl.cache.CacheConfig;
 import org.apache.hc.client5.http.impl.cache.CachingHttpClientBuilder;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.io.HttpClientConnectionManager;
+import org.apache.hc.client5.http.routing.RoutingSupport;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.HttpException;
+import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.protocol.HttpContext;
 import org.eclipse.imagen.Interpolation;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -120,7 +124,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
     private FilterFactory filterFactory = CommonFactoryFinder.getFilterFactory(null);
 
     /** Flag to control wether styles shall be parsed. */
-    private boolean parseStyles = true;
+    private volatile boolean parseStyles = true;
 
     /** The WMS configuration facade, that we use to pick up base layer definitions */
     private WMS wms;
@@ -146,7 +150,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
      * This flags allows the kvp reader to go beyond the SLD library mode specification and match the first style that
      * can be applied to a given layer. This is for backwards compatibility
      */
-    private boolean laxStyleMatchAllowed = true;
+    private volatile boolean laxStyleMatchAllowed = true;
 
     private @Nullable HttpClientConnectionManager httpClientConnectionManager;
 
@@ -210,7 +214,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         // configure the http client used to fetch remote styles
         Builder builder = RequestConfig.copy(RequestConfig.DEFAULT);
         int timeoutMillis = getTimeoutMillis();
-        builder.setConnectTimeout(timeoutMillis, TimeUnit.MILLISECONDS);
+        builder.setConnectionRequestTimeout(timeoutMillis, TimeUnit.MILLISECONDS);
         builder.setResponseTimeout(timeoutMillis, TimeUnit.MILLISECONDS);
         return builder.build();
     }
@@ -753,7 +757,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             throw new ServiceException("Invalid SLD URL: " + getMap.getSld(), e, INVALID_PARAMETER_VALUE, "sld");
         }
 
-        try (InputStream input = getStream(getMap)) {
+        try (InputStream input = getStyleUrlContentsStream(getMap)) {
             if (input != null) {
                 try (InputStreamReader reader = new InputStreamReader(input)) {
                     if (getMap.getValidateSchema().booleanValue()) {
@@ -839,7 +843,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         }
     }
 
-    private InputStream getStream(GetMapRequest getMap) throws IOException {
+    private InputStream getStyleUrlContentsStream(GetMapRequest getMap) throws IOException {
         URL styleUrl = getMap.getStyleUrl().toURL();
 
         if (styleUrl.getProtocol().toLowerCase().indexOf("http") == 0) {
@@ -849,9 +853,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                 return Requests.getInputStream(styleUrl);
             } catch (Exception ex) {
                 LOGGER.log(Level.WARNING, "Exception while getting SLD.", ex);
-                // KMS: Replace with a generic exception so it can't be used to port scan the
-                // local
-                // network.
+                // KMS: Replace with a generic exception so it can't be used to port scan the local network.
                 throw new ServiceException("Error while getting SLD.");
             }
         }
@@ -859,38 +861,35 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
 
     private InputStream getHttpInputStream(URL styleUrl, String authorizationHeader) throws IOException {
         InputStream input = null;
+        // REVISIT: I think creating the cache context here for each invocation defeats it's purpose?
         HttpCacheContext cacheContext = HttpCacheContext.create();
 
         HttpGet httpget = new HttpGet(styleUrl.toExternalForm());
         if (StringUtils.isNotBlank(authorizationHeader) && isAllowedURL(styleUrl)) {
             httpget.addHeader("Authorization", authorizationHeader);
         }
-        try (CloseableHttpResponse response = executeRequest(cacheContext, httpget)) {
+        try (ClassicHttpResponse response = executeRequest(cacheContext, httpget)) {
             if (cacheContext != null) {
                 CacheResponseStatus responseStatus = cacheContext.getCacheResponseStatus();
                 if (responseStatus != null) {
                     switch (responseStatus) {
                         case CACHE_HIT:
-                            if (LOGGER.isLoggable(Level.FINE)) {
-                                LOGGER.fine(
-                                        "A response was generated from the cache with " + "no requests sent upstream");
-                            }
+                            LOGGER.fine("A response was generated from the cache with no requests sent upstream");
                             break;
                         case CACHE_MODULE_RESPONSE:
-                            if (LOGGER.isLoggable(Level.FINE)) {
-                                LOGGER.fine("The response was generated directly by the " + "caching module");
-                            }
+                            LOGGER.fine("The response was generated directly by the caching module");
                             break;
                         case CACHE_MISS:
-                            if (LOGGER.isLoggable(Level.FINE)) {
-                                LOGGER.fine("The response came from an upstream server");
-                            }
+                            LOGGER.fine("The response came from an upstream server");
                             break;
                         case VALIDATED:
-                            if (LOGGER.isLoggable(Level.FINE)) {
-                                LOGGER.fine("The response was generated from the cache "
-                                        + "after validating the entry with the origin server");
-                            }
+                            LOGGER.fine(
+                                    "The response was generated from the cache after validating the entry with the origin server");
+                            break;
+                        case FAILURE:
+                            LOGGER.warning("The response came from an upstream server after a cache failure");
+                            break;
+                        default:
                             break;
                     }
                 }
@@ -903,8 +902,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             return input;
         } catch (Exception ex) {
             LOGGER.log(Level.WARNING, "Exception while getting SLD.", ex);
-            // KMS: Replace with a generic exception so it can't be used to port scan the
-            // local network.
+            // KMS: Replace with a generic exception so it can't be used to port scan the local network.
             throw new ServiceException("Error while getting SLD.");
         }
     }
@@ -915,7 +913,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
     }
 
     /** Executes the HTTP request with the max request time settings. */
-    protected CloseableHttpResponse executeRequest(HttpCacheContext cacheContext, HttpGet httpget)
+    protected ClassicHttpResponse executeRequest(HttpContext httpContext, HttpGet httpget)
             throws IOException, ClientProtocolException {
         // get the max request time from WMS settings
         int hardTimeout = wms.getServiceInfo().getRemoteStyleMaxRequestTime();
@@ -928,7 +926,19 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             }
         };
         new Timer(true).schedule(task, hardTimeout);
-        return getHttpClient().execute(httpget, cacheContext);
+        // since httpclient5, we need to call executeOpen() which requires the host parameter
+        HttpHost host = determineHost(httpget);
+        return getHttpClient().executeOpen(host, httpget, httpContext);
+    }
+
+    private HttpHost determineHost(HttpGet httpget) throws IOException {
+        HttpHost host;
+        try {
+            host = RoutingSupport.determineHost(httpget);
+        } catch (HttpException e) {
+            throw new IOException(e);
+        }
+        return host;
     }
 
     private List<Interpolation> parseInterpolations(List<Object> requestedLayers, List<String> interpolationList) {

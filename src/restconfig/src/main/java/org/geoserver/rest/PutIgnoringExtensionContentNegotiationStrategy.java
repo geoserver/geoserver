@@ -12,7 +12,6 @@ import org.springframework.http.server.PathContainer;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.util.pattern.PathPattern;
 import org.springframework.web.util.pattern.PathPatternParser;
 
@@ -36,7 +35,7 @@ public class PutIgnoringExtensionContentNegotiationStrategy implements ContentNe
      * Construct a new strategy. This should be instantiated as a bean for it to get picked up by the
      * {@link RestConfiguration}
      *
-     * @param pathMatcher The {@link PatternsRequestCondition} used to determine if the request path matches
+     * @param patternStrings The path patterns used to determine if the request path matches
      * @param mediaTypes The list of {@link MediaType}s to return when the path matches
      */
     public PutIgnoringExtensionContentNegotiationStrategy(List<String> patternStrings, List<MediaType> mediaTypes) {

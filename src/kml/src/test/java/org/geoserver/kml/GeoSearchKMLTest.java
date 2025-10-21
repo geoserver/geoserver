@@ -56,7 +56,7 @@ public class GeoSearchKMLTest extends RegionatingTestSupport {
                 + "&featureid=BasicPolygons.1107531493643&format_options=selfLinks:true";
 
         Document document = getAsDOM(path);
-        // print(document);
+        // print(document, System.out);
         assertXpathEvaluatesTo("1", "count(//kml:Folder/kml:Placemark)", document);
         assertXpathEvaluatesTo(
                 "http://localhost:8080/geoserver/rest/cite/BasicPolygons/1107531493643.kml",

@@ -161,11 +161,7 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
                     .loadTrustMaterial((chain, authType) -> true)
                     .build();
 
-            DefaultClientTlsStrategy tlsStrategy = new DefaultClientTlsStrategy(
-                    sslContext,
-                    disableHostnameVerification
-                            ? NoopHostnameVerifier.INSTANCE
-                            : HttpsSupport.getDefaultHostnameVerifier());
+            DefaultClientTlsStrategy tlsStrategy = new DefaultClientTlsStrategy(sslContext, this.hostnameVerifier);
 
             PoolingHttpClientConnectionManager cm = PoolingHttpClientConnectionManagerBuilder.create()
                     .setDefaultConnectionConfig(connConfig)

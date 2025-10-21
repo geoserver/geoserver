@@ -92,9 +92,9 @@ echo "=== Converting RST to Markdown ==="
 
 # Array of documentation directories to process (same as workflow)
 declare -a DOC_DIRS=(
-  "doc/en/docguide:docguide:en"
+#  "doc/en/docguide:docguide:en"
 #  "doc/en/developer:developer:en"
-#  "doc/en/user:user:en"
+  "doc/en/user:user:en"
 #  "doc/zhCN/user:user:zhCN"
 )
 
@@ -182,9 +182,9 @@ mkdir -p gh-pages-output
 
 # Array of documentation directories to build (same as workflow)
 declare -a MKDOCS_DIRS=(
-  "doc/en/docguide:docguide:en"
+#  "doc/en/docguide:docguide:en"
 #  "doc/en/developer:developer:en"
-#  "doc/en/user:user:en"
+  "doc/en/user:user:en"
 #  "doc/zhCN/user:user:zhCN"
 )
 
@@ -205,23 +205,13 @@ for DIR_INFO in "${MKDOCS_DIRS[@]}"; do
       echo "Documentation build in progress." >> docs/index.md
     fi
     
-    # Build the site with error handling (site_dir already set in mkdocs.yml)
-    if mkdocs build --clean; then
-      echo "✓ Successfully built $LANG/$DOC_TYPE"
-    else
-      echo "⚠ MkDocs build failed for $LANG/$DOC_TYPE, creating fallback"
-      mkdir -p "../../gh-pages-output/$LANG/$DOC_TYPE"
-      cat > "../../gh-pages-output/$LANG/$DOC_TYPE/index.html" <<EOF
-<!DOCTYPE html>
-<html>
-<head><title>GeoServer $DOC_TYPE Documentation</title></head>
-<body>
-  <h1>GeoServer $DOC_TYPE Documentation ($LANG)</h1>
-  <p><em>Build failed - fallback content</em></p>
-</body>
-</html>
-EOF
+    # Build the site - fail on error (site_dir already set in mkdocs.yml)
+    if ! mkdocs build --clean; then
+      echo "❌ ERROR: MkDocs build FAILED for $LANG/$DOC_TYPE"
+      echo "Build cannot continue with errors. Please fix the issues above."
+      exit 1
     fi
+    echo "✓ Successfully built $LANG/$DOC_TYPE"
     
     # Return to project root
     cd - > /dev/null

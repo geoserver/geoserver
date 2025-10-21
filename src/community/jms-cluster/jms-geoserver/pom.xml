@@ -60,7 +60,7 @@
     <dependency>
       <groupId>org.restlet</groupId>
       <artifactId>org.restlet</artifactId>
-      <classifier>noobjrep</classifier>
+      <!-- classifier>noobjrep</classifier -->
       <!-- remove after upgrading Restlet -->
     </dependency>
     <dependency>

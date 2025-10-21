@@ -739,7 +739,7 @@
         <artifactId>org.restlet</artifactId>
         <version>2.6.0</version>
         <!-- Classifier selects a hacked JAR where we've removed a class we don't need and which has a security vulnerability.  This should be removed when we update to A current version of Restlet (2.2 or later)-->
-        <classifier>noobjrep</classifier>
+        <!-- classifier>noobjrep</classifier -->
       </dependency>
       <dependency>
         <groupId>org.restlet</groupId>

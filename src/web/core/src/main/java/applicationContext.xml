@@ -48,6 +48,7 @@
     class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping"
     lazy-init="true">
     <property name="alwaysUseFullPath" value="true" />
+    <property name="patternParser"><null/></property> <!-- Spring 5.x backwards compatibility -->
     <property name="mappings">
       <props>
         <prop key="/web">#{webDispatcherMappingSystem}</prop>

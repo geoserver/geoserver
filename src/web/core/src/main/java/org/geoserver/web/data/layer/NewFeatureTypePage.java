@@ -51,7 +51,7 @@ public class NewFeatureTypePage extends GeoServerSecuredPage {
 
     public static final String WORKSPACE = "wsName";
 
-    String name;
+    String name = "";
 
     Form<?> form;
 

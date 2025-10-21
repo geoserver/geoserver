@@ -58,10 +58,10 @@ public class WebServiceAuthenticationKeyMapper extends AbstractAuthenticationKey
     Pattern searchUserRegex = null;
 
     // connection timeout to the mapper web service (in seconds)
-    int connectTimeout = 5;
+    private volatile int connectTimeout = 5;
 
     // read timeout to the mapper web service (in seconds)
-    int readTimeout = 10;
+    private volatile int readTimeout = 10;
 
     // optional external httpClient for web service connection (used mainly for tests)
     private HTTPClient httpClient = null;
@@ -204,9 +204,11 @@ public class WebServiceAuthenticationKeyMapper extends AbstractAuthenticationKey
     private String callWebService(String key) {
         String url = webServiceUrl.replace("{key}", key);
         HTTPClient client = getHttpClient();
-
-        client.setConnectTimeout(connectTimeout);
-        client.setReadTimeout(readTimeout);
+        // snapshot to avoid reading different values mid-call
+        final int connectTo = this.connectTimeout;
+        final int readTo = this.readTimeout;
+        client.setConnectTimeout(connectTo);
+        client.setReadTimeout(readTo);
         try {
             LOGGER.log(Level.FINE, "Issuing request to authkey webservice: " + url);
             HTTPResponse response = client.get(new URL(url));
@@ -244,14 +246,14 @@ public class WebServiceAuthenticationKeyMapper extends AbstractAuthenticationKey
             }
             if (mapperParams.containsKey("connectTimeout")) {
                 try {
-                    connectTimeout = Integer.parseInt(mapperParams.get("connectTimeout"));
+                    setConnectTimeout(Integer.parseInt(mapperParams.get("connectTimeout")));
                 } catch (NumberFormatException e) {
                     LOGGER.log(Level.SEVERE, "WebServiceAuthenticationKeyMapper connectTimeout wrong format", e);
                 }
             }
             if (mapperParams.containsKey("readTimeout")) {
                 try {
-                    readTimeout = Integer.parseInt(mapperParams.get("readTimeout"));
+                    setReadTimeout(Integer.parseInt(mapperParams.get("readTimeout")));
                 } catch (NumberFormatException e) {
                     LOGGER.log(Level.SEVERE, "WebServiceAuthenticationKeyMapper readTimeout wrong format", e);
                 }

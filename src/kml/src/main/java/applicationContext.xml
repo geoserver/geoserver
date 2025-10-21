@@ -50,7 +50,7 @@
     <property name="alwaysUseFullPath" value="true" />
     <property name="mappings">
       <props>
-        <prop key="/kml/icon/*/*">kmlIconService</prop>
+        <prop key="/kml/icon/**/*">kmlIconService</prop>
         <prop key="/kml">dispatcher</prop>
         <prop key="/kml/*">dispatcher</prop>
       </props>

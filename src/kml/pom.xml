@@ -27,7 +27,7 @@
     <dependency>
       <groupId>uk.m0nom</groupId>
       <artifactId>javaapiforkml</artifactId>
-      <version>3.0.11</version>
+      <version>${javaapiforkml.version}</version>
       <exclusions>
         <exclusion>
           <artifactId>jaxb-impl</artifactId>
@@ -42,7 +42,6 @@
     <dependency>
       <groupId>jakarta.xml.bind</groupId>
       <artifactId>jakarta.xml.bind-api</artifactId>
-      <version>4.0.4</version>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jaxb</groupId>

@@ -53,7 +53,8 @@ public class SchemaRulesTablePanel extends Panel {
         table.setOutputMarkupId(true);
         add(
                 remove = new AjaxLink<Object>("removeSelected") {
-                    @Serial private static final long serialVersionUID = 2421854498051377608L;
+                    @Serial
+                    private static final long serialVersionUID = 2421854498051377608L;
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {

@@ -208,7 +208,8 @@ public class SchemaConfigurationPage extends GeoServerSecuredPage {
 
                 AjaxSubmitLink link = new AjaxSubmitLink(linkId) {
 
-                    @Serial private static final long serialVersionUID = 4599409150448651749L;
+                    @Serial
+                    private static final long serialVersionUID = 4599409150448651749L;
 
                     @Override
                     public void onSubmit(AjaxRequestTarget target) {

@@ -707,8 +707,7 @@ public abstract class BackupRestoreItem<T> {
 
             if (source instanceof DataStoreInfoImpl impl) {
                 ((DataStoreInfoImpl) target).setDefault(((StoreInfoImpl) source).isDefault());
-                ((DataStoreInfoImpl) target)
-                        .setConnectionParameters(impl.getConnectionParameters());
+                ((DataStoreInfoImpl) target).setConnectionParameters(impl.getConnectionParameters());
                 ((DataStoreInfoImpl) target).setMetadata(((StoreInfoImpl) source).getMetadata());
             }
 

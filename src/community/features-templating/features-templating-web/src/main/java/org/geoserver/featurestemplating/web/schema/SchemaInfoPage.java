@@ -43,7 +43,8 @@ public class SchemaInfoPage extends GeoServerSecuredPage {
     private void addFeatureTeplateSection() {
         add(new AjaxLink<Object>("addNew") {
 
-            @Serial private static final long serialVersionUID = -4136656891019857299L;
+            @Serial
+            private static final long serialVersionUID = -4136656891019857299L;
 
             @Override
             public void onClick(AjaxRequestTarget target) {
@@ -92,7 +93,8 @@ public class SchemaInfoPage extends GeoServerSecuredPage {
     private void addSchemaDefinitionSection() {
         add(new AjaxLink<Object>("addNewSchema") {
 
-            @Serial private static final long serialVersionUID = -4136656891019857299L;
+            @Serial
+            private static final long serialVersionUID = -4136656891019857299L;
 
             @Override
             public void onClick(AjaxRequestTarget target) {
@@ -103,7 +105,8 @@ public class SchemaInfoPage extends GeoServerSecuredPage {
 
     private AjaxLink<Object> newRemoveSchemaLink() {
         return new AjaxLink<Object>("removeSelectedSchema") {
-            @Serial private static final long serialVersionUID = 2421854498051377608L;
+            @Serial
+            private static final long serialVersionUID = 2421854498051377608L;
 
             @Override
             public void onClick(AjaxRequestTarget target) {
@@ -134,7 +137,8 @@ public class SchemaInfoPage extends GeoServerSecuredPage {
 
     private AjaxLink<Object> newRemoveLink() {
         return new AjaxLink<Object>("removeSelected") {
-            @Serial private static final long serialVersionUID = 2421854498051377608L;
+            @Serial
+            private static final long serialVersionUID = 2421854498051377608L;
 
             @Override
             public void onClick(AjaxRequestTarget target) {

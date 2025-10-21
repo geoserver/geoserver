@@ -102,7 +102,8 @@ public class OAuth2LoginAuthProviderPanel
                     "oidcDiscoveryUri", new PropertyModel<>(configModel.getObject(), "oidcDiscoveryUri"));
             add(url);
             add(new AjaxButton("discover") {
-                @Serial private static final long serialVersionUID = 1L;
+                @Serial
+                private static final long serialVersionUID = 1L;
 
                 @Override
                 protected void onError(AjaxRequestTarget target) {
@@ -188,7 +189,8 @@ public class OAuth2LoginAuthProviderPanel
             // this will attach a change listener to the checkbox
             // the state of the checkbox will then display:block/display:none the panel
             // this is used while the user is working with the page
-            script += """
+            script +=
+                    """
                     $('#msGraphAppRoleAssignments').on('change',function() {\s
                         var checkbox = $('#msGraphAppRoleAssignments')[0];
                         var div = $('#msGraphObjectIdDiv');
@@ -201,7 +203,7 @@ public class OAuth2LoginAuthProviderPanel
                        }
                     }\s
                     );
-                    
+
                     """;
 
             script += "$('#msGraphAppRoleAssignments').trigger(\"change\"); // ensure in correct state";

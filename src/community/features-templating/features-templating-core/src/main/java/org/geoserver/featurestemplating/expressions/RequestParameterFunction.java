@@ -6,8 +6,8 @@ package org.geoserver.featurestemplating.expressions;
 
 import static org.geotools.filter.capability.FunctionNameImpl.parameter;
 
-import java.util.Map;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Map;
 import org.geoserver.ows.Request;
 import org.geotools.api.filter.capability.FunctionName;
 import org.geotools.filter.capability.FunctionNameImpl;

@@ -41,7 +41,8 @@ public class MSGraphRolesResolverTest {
     }
 
     // typical MSGraph response
-    String json1 = """
+    String json1 =
+            """
             {
               "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#directoryObjects",
               "value": [

@@ -7,8 +7,8 @@ package org.geoserver.security.oauth2.resourceserver;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 
-import java.util.List;
 import jakarta.servlet.Filter;
+import java.util.List;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.logging.LoggingUtils;

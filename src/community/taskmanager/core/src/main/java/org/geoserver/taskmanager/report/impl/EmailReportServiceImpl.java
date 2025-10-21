@@ -4,15 +4,15 @@
  */
 package org.geoserver.taskmanager.report.impl;
 
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.Session;
 import jakarta.mail.Transport;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.taskmanager.report.Report;
 import org.geoserver.taskmanager.report.ReportService;
 import org.geotools.util.logging.Logging;

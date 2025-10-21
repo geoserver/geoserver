@@ -91,7 +91,8 @@ public class SchemaInfoDataPanel extends Panel {
         wsDropDown = new DropDownChoice<>("workspace", new PropertyModel<>(model, "workspace"), getWorkspaces());
         wsDropDown.setNullValid(true);
         wsDropDown.add(new OnChangeAjaxBehavior() {
-            @Serial private static final long serialVersionUID = 732177308220189475L;
+            @Serial
+            private static final long serialVersionUID = 732177308220189475L;
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
@@ -141,7 +142,8 @@ public class SchemaInfoDataPanel extends Panel {
     AjaxSubmitLink uploadLink() {
         return new ConfirmOverwriteSubmitLink("upload", page.getForm()) {
 
-            @Serial private static final long serialVersionUID = 658341311654601761L;
+            @Serial
+            private static final long serialVersionUID = 658341311654601761L;
 
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
@@ -206,7 +208,8 @@ public class SchemaInfoDataPanel extends Panel {
             super.updateAjaxAttributes(attributes);
             attributes.getAjaxCallListeners().add(new AjaxCallListener() {
                 /** serialVersionUID */
-                @Serial private static final long serialVersionUID = 8637613472102572505L;
+                @Serial
+                private static final long serialVersionUID = 8637613472102572505L;
 
                 @Override
                 public CharSequence getPrecondition(Component component) {

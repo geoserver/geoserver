@@ -4,13 +4,13 @@
  */
 package org.geoserver.security.oauth2.login;
 
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import jakarta.servlet.Filter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.security.filter.GeoServerAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerCompositeFilter;
 import org.geotools.util.logging.Logging;

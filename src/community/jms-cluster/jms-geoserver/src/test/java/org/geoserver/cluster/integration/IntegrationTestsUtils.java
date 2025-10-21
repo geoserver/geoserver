@@ -199,8 +199,7 @@ public final class IntegrationTestsUtils {
                     Object otherPropertyValue = OwsUtils.get(infoB, propertyName);
                     if (otherPropertyValue instanceof Info info) {
                         // recursively update this info
-                        propertyValue =
-                                updateInfoImpl(info1, info, getInfoInterface(propertyValue.getClass()));
+                        propertyValue = updateInfoImpl(info1, info, getInfoInterface(propertyValue.getClass()));
                     }
                 }
                 // if the property value is not a info clone it if possible

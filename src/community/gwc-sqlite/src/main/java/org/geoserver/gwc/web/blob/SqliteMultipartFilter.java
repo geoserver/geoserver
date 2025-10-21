@@ -4,11 +4,11 @@
  */
 package org.geoserver.gwc.web.blob;
 
-import java.io.IOException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import org.geoserver.filters.GeoServerFilter;
 import org.springframework.web.multipart.support.MultipartFilter;
 

@@ -24,10 +24,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.oauth2.core.ClientAuthenticationMethod.CLIENT_SECRET_POST;
 
+import jakarta.servlet.Filter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import jakarta.servlet.Filter;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.oauth2.common.ConfidentialLogger;
 import org.geoserver.security.oauth2.spring.GeoServerAuthorizationRequestCustomizer;

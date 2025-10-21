@@ -4,8 +4,8 @@
  */
 package org.geoserver.security.oauth2.common;
 
-import java.util.function.Supplier;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.function.Supplier;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 

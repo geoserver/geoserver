@@ -8,15 +8,15 @@ package org.geoserver.security.jwtheaders;
 import static org.geoserver.security.jwtheaders.filter.GeoServerJwtHeadersFilterConfig.JWTHeaderRoleSource.JSON;
 import static org.geoserver.security.jwtheaders.filter.GeoServerJwtHeadersFilterConfig.JWTHeaderRoleSource.JWT;
 
+import jakarta.servlet.Filter;
+import jakarta.servlet.ServletRequestEvent;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.stream.Collectors;
-import jakarta.servlet.Filter;
-import jakarta.servlet.ServletRequestEvent;
-import jakarta.servlet.http.HttpSession;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.*;

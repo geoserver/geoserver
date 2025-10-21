@@ -9,10 +9,10 @@ package org.geoserver.gsr.api.map;
  * application directory.
  */
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.gsr.MutableRequestProxy;
 import org.geoserver.ogcapi.APIService;

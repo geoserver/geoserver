@@ -4,14 +4,14 @@
  */
 package org.geoserver.cluster;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Function;
 import jakarta.jms.JMSException;
 import jakarta.jms.Message;
 import jakarta.jms.ObjectMessage;
 import jakarta.jms.Session;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Function;
 import org.geoserver.cluster.events.ToggleType;
 import org.springframework.jms.listener.SessionAwareMessageListener;
 

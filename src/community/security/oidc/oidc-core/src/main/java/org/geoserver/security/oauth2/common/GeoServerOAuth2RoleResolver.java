@@ -14,6 +14,7 @@ import static org.geoserver.security.jwtheaders.roles.JwtHeadersRolesExtractor.a
 import static org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId.REG_ID_MICROSOFT;
 
 import com.nimbusds.jose.JWSObject;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -26,7 +27,6 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import jakarta.servlet.http.HttpServletRequest;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.RoleSource;
 import org.geoserver.security.filter.GeoServerRoleResolvers.ResolverContext;
@@ -207,7 +207,8 @@ public class GeoServerOAuth2RoleResolver implements RoleResolver {
 
         if (lOidcReq == null) {
             String lMsg = "Role extraction failed. ID token unavailable for clientRegistration %s.";
-            LOGGER.log(SEVERE, lMsg.formatted(lUsrRequest.getClientRegistration().getRegistrationId()));
+            LOGGER.log(
+                    SEVERE, lMsg.formatted(lUsrRequest.getClientRegistration().getRegistrationId()));
             return new ArrayList<>();
         }
         String lClaimName = config.getTokenRolesClaim();

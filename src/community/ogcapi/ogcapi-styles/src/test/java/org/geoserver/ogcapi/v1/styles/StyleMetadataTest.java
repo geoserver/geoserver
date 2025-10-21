@@ -15,12 +15,12 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertNull;
 
 import com.jayway.jsonpath.DocumentContext;
+import jakarta.xml.bind.DatatypeConverter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
-import jakarta.xml.bind.DatatypeConverter;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.MockData;

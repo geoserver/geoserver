@@ -172,12 +172,11 @@ public class AbstractProcessIO {
     @JsonIgnore
     public List<String> getEncodings() {
         if (schema instanceof ComposedSchema composedSchema && composedSchema.getOneOf() != null) {
-            return composedSchema
-                    .getOneOf().stream()
-                            .filter(s -> s instanceof MimeTypeSchema)
-                            .map(s -> ((MimeTypeSchema) s).getContentMediaType())
-                            .filter(f -> f != null && !f.isEmpty())
-                            .collect(Collectors.toList());
+            return composedSchema.getOneOf().stream()
+                    .filter(s -> s instanceof MimeTypeSchema)
+                    .map(s -> ((MimeTypeSchema) s).getContentMediaType())
+                    .filter(f -> f != null && !f.isEmpty())
+                    .collect(Collectors.toList());
         } else {
             return Collections.emptyList();
         }

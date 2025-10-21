@@ -6,6 +6,8 @@ package org.geoserver.web.security.oauth2.intgration.keycloak;
 
 import static org.junit.Assert.*;
 
+import jakarta.servlet.ServletRequestEvent;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -16,10 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.hc.core5.net.URLEncodedUtils;
-import jakarta.servlet.ServletRequestEvent;
-import jakarta.servlet.http.HttpSession;
 import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.net.URLEncodedUtils;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityFilterChain;

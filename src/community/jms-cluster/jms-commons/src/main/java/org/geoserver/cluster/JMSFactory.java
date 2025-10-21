@@ -5,10 +5,10 @@
  */
 package org.geoserver.cluster;
 
-import java.util.Properties;
 import jakarta.jms.ConnectionFactory;
 import jakarta.jms.Destination;
 import jakarta.jms.Topic;
+import java.util.Properties;
 import org.geoserver.cluster.configuration.BrokerConfiguration;
 import org.geoserver.cluster.configuration.ConnectionConfiguration;
 import org.geoserver.cluster.configuration.JMSConfiguration;

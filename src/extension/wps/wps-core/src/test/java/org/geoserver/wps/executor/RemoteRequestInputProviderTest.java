@@ -52,6 +52,7 @@ import org.geoserver.wps.WPSException;
 import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geotools.api.util.ProgressListener;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -70,6 +71,11 @@ public class RemoteRequestInputProviderTest extends GeoServerSystemTestSupport {
     @Before
     public void setListener() {
         listener = mock(ProgressListener.class);
+    }
+
+    @BeforeClass
+    public static void relaxHostnameForTests() {
+        System.setProperty("geoserver.wps.remoteInput.insecureHostname", "true");
     }
 
     @Test
@@ -803,7 +809,7 @@ public class RemoteRequestInputProviderTest extends GeoServerSystemTestSupport {
 
     private Object getValue(InputType input, ComplexPPIO ppio, int timeout, long maxSize) throws Exception {
         Map<String, InputProvider> map = new HashMap<>();
-        map.put("testInput", new RemoteRequestInputProvider(input, ppio, timeout, maxSize));
+        map.put("testInput", new RemoteRequestInputProvider(input, ppio, timeout, maxSize, true));
         LazyInputMap inputs = new LazyInputMap(map);
         inputs.setListener(listener);
         return inputs.get("testInput");

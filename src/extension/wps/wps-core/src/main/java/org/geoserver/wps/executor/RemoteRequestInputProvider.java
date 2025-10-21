@@ -16,6 +16,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import net.opengis.wps10.HeaderType;
 import net.opengis.wps10.InputReferenceType;
@@ -30,6 +31,7 @@ import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
+import org.apache.hc.client5.http.ssl.HttpsSupport;
 import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.ContentType;
@@ -64,11 +66,34 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
 
     private long maxSize;
 
+    private final HostnameVerifier hostnameVerifier;
+
+    // Existing ctor now delegates and keeps STRICT hostname verification by default
     public RemoteRequestInputProvider(InputType input, ComplexPPIO ppio, int timeout, long maxSize) {
+        this(input, ppio, timeout, maxSize, HttpsSupport.getDefaultHostnameVerifier());
+    }
+
+    // Convenience toggle: pass true to disable hostname verification (NoopHostnameVerifier)
+    public RemoteRequestInputProvider(
+            InputType input, ComplexPPIO ppio, int timeout, long maxSize, boolean disableHostnameVerification) {
+        this(
+                input,
+                ppio,
+                timeout,
+                maxSize,
+                disableHostnameVerification
+                        ? NoopHostnameVerifier.INSTANCE
+                        : HttpsSupport.getDefaultHostnameVerifier());
+    }
+
+    // Full-control ctor: inject any TlsHostnameVerifier you want
+    public RemoteRequestInputProvider(
+            InputType input, ComplexPPIO ppio, int timeout, long maxSize, HostnameVerifier hostnameVerifier) {
         super(input, ppio);
         this.timeout = timeout;
         this.complexPPIO = ppio;
         this.maxSize = maxSize;
+        this.hostnameVerifier = hostnameVerifier;
 
         // check we are allowed to access a remote resource
         String location = input.getReference().getHref();
@@ -101,9 +126,9 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
         } catch (Exception e) {
             // Log the exception and replace with a generic exception to prevent
             // potentially disclosing sensitive information from a remote resource.
+            listener.exceptionOccurred(e);
             String message = "Failed to retrieve value for input " + getInputId();
             LOGGER.log(Level.WARNING, message, e);
-            // IMPORTANT: do not call listener.exceptionOccurred(...) here; LazyInputMap will do it once.
             throw new WPSException(message, "NoApplicableCode", getInputId());
         } finally {
             listener.progress(100);
@@ -136,9 +161,11 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
                     .loadTrustMaterial((chain, authType) -> true)
                     .build();
 
-            // Trust-all + disable hostname verification (for self-signed localhost in tests)
-            DefaultClientTlsStrategy tlsStrategy =
-                    new DefaultClientTlsStrategy(sslContext, NoopHostnameVerifier.INSTANCE);
+            DefaultClientTlsStrategy tlsStrategy = new DefaultClientTlsStrategy(
+                    sslContext,
+                    disableHostnameVerification
+                            ? NoopHostnameVerifier.INSTANCE
+                            : HttpsSupport.getDefaultHostnameVerifier());
 
             PoolingHttpClientConnectionManager cm = PoolingHttpClientConnectionManagerBuilder.create()
                     .setDefaultConnectionConfig(connConfig)

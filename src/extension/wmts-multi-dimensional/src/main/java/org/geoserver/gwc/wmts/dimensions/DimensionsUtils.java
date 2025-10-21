@@ -64,7 +64,6 @@ import org.geotools.util.Range;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.service.OWSException;
-import org.springframework.util.comparator.ComparableComparator;
 
 /** Some utils methods useful to interact with dimensions. */
 public final class DimensionsUtils {
@@ -384,7 +383,7 @@ public final class DimensionsUtils {
         return getValuesWithDuplicates(attributeName, null, featureCollection);
     }
 
-    @SuppressWarnings({"unchecked", "PMD.UseDiamondOperator"})
+    @SuppressWarnings({"unchecked"})
     static List<Comparable> getValuesWithDuplicates(
             String attributeName, String endAttributeName, FeatureCollection featureCollection) {
         // full data values are returned including duplicate values
@@ -402,7 +401,7 @@ public final class DimensionsUtils {
                     values.add((Comparable) attr);
                 }
             }
-            Collections.sort(values, new ComparableComparator());
+            values.sort(Comparator.naturalOrder());
             return values;
         }
     }

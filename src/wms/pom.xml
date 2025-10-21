@@ -71,10 +71,6 @@
       <artifactId>imageio-ext-png</artifactId>
     </dependency>
     <dependency>
-      <groupId>jakarta.servlet</groupId>
-      <artifactId>jakarta.servlet-api</artifactId>
-    </dependency>
-    <dependency>
       <groupId>ar.com.hjg</groupId>
       <artifactId>pngj</artifactId>
     </dependency>

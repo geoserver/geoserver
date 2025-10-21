@@ -129,10 +129,6 @@
       <artifactId>wicket-dnd</artifactId>
     </dependency>
     <dependency>
-      <groupId>jakarta.servlet</groupId>
-      <artifactId>jakarta.servlet-api</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-geopkg</artifactId>
     </dependency>

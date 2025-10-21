@@ -124,7 +124,7 @@
   <bean id="gwcServiceProxyDescriptor" class="org.geoserver.platform.Service">
     <description>
       GeoServer Dispatcher framework service descriptor that englobes all gwc provided (and proxied) service requests
-      as a reques to the
+      as a request to the
       "fake" "gwc" service
     </description>
     <constructor-arg index="0" value="gwc" />

@@ -76,7 +76,7 @@
      -->
      
     <!-- configuration module -->
-        <!-- note: we use depends to ensure that all datastore plugins are 
+        <!-- note: we use depends on ensure that all datastore plugins are
              loaded from the spring container before processing hte catalog -->
      
     <bean id="rawCatalog" class="org.geoserver.catalog.impl.CatalogImpl" depends-on="configurationLock">
@@ -285,7 +285,7 @@
     <constructor-arg ref="rawCatalog"/> 
   </bean>
    
-  <!-- Alllows to lock the config subsyste to that we serialize accesses to it -->
+  <!-- Allows to lock the config subsystem to that we serialize accesses to it -->
   <bean id="configurationLock" class="org.geoserver.GeoServerConfigurationLock"/>
   
   <!-- Automatically injects a env map into the env function -->
@@ -315,8 +315,8 @@
   <bean id="cascadedStoredQueryCallback" class="org.geoserver.catalog.CascadedStoredQueryCallback"/>
   
   <!-- Entity resolver provider, to stop xml attacks via system entity resolution -->
-  <!-- The depends-on is important to avoid circularities, when a depends-on is setup a bean does not
-       start creation until the bean it depends onto is created. This ensures GeoServer post-processing
+  <!-- The depends-on is important to avoid circularises, when a depends-on is set up a bean does not
+       start creation until the bean it depends on onto is created. This ensures GeoServer post-processing
        inside GeoServerLoader ends up causing the initialization of entityResolverProvider instead of the 
        opposite, via the ResourcePoolInitializer, and breaks the circularity that would otherwise happen -->
   <bean id="entityResolverProvider" class="org.geoserver.util.EntityResolverProvider" depends-on="geoServer">

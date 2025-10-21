@@ -755,7 +755,7 @@ public class Dispatcher extends AbstractController {
             throw new ServiceException(msg, "OperationNotSupported", req.getRequest());
         }
 
-        // step 4: setup the paramters
+        // step 4: setup the parameters
         Object[] parameters = new Object[operation.getParameterTypes().length];
 
         for (int i = 0; i < parameters.length; i++) {
@@ -834,7 +834,7 @@ public class Dispatcher extends AbstractController {
                 // objects to try and find one
                 // TODO: should make this configurable
                 if (requestBean != null) {
-                    // if we dont have a version thus far, check the request object
+                    // if we don't have a version thus far, check the request object
                     if (req.getService() == null) {
                         req.setService(lookupRequestBeanProperty(requestBean, "service", false));
                     }
@@ -854,7 +854,7 @@ public class Dispatcher extends AbstractController {
 
         // if we are in cite compliant mode, do some additional checks to make
         // sure the "mandatory" parameters are specified, even though we
-        // succesfully dispatched the request.
+        // successfully dispatched the request.
         if (citeCompliant) {
             // the version is mandatory for all requests but GetCapabilities
             if (!"GetCapabilities".equalsIgnoreCase(req.getRequest())) {
@@ -999,7 +999,7 @@ public class Dispatcher extends AbstractController {
                         && (!outputFormats.isEmpty())
                         && !outputFormats.contains(req.getOutputFormat())) {
 
-                    // must do a case insensitive check
+                    // must do a case-insensitive check
                     for (Object format : outputFormats) {
                         String outputFormat = (String) format;
                         if (req.getOutputFormat().equalsIgnoreCase(outputFormat)) {
@@ -1272,7 +1272,7 @@ public class Dispatcher extends AbstractController {
 
             // multiple services found, sort by version
             if (vmatches.size() > 1) {
-                // use highest version
+                // use the highest version
                 Comparator<Service> comparator = (s1, s2) -> s1.getVersion().compareTo(s2.getVersion());
 
                 Collections.sort(vmatches, comparator);
@@ -1380,7 +1380,7 @@ public class Dispatcher extends AbstractController {
         if (matches.isEmpty()) {
             // do a more lax serach, search only on the element name if the
             // namespace was unspecified
-            if (namespace == null || namespace.equals("")) {
+            if (namespace == null || namespace.isEmpty()) {
                 String msg = "No namespace specified in request, searching for " + " xml reader by element name only";
                 logger.info(msg);
 
@@ -1461,7 +1461,7 @@ public class Dispatcher extends AbstractController {
 
             // multiple readers found, sort by version and by service match
             if (vmatches.size() > 1) {
-                // use highest version
+                // use the highest version
                 Comparator<XmlRequestReader> comparator = (r1, r2) -> {
                     Version v1 = r1.getVersion();
                     Version v2 = r2.getVersion();
@@ -1663,7 +1663,7 @@ public class Dispatcher extends AbstractController {
      *   <li>{@link Request#setPostRequestElementName PostRequestElementName}: The xml root element name (e.g.
      *       {@code GetMap}, {@code GetFeature}, {@code StyledLayerDescriptor}, etc.)
      *   <li>{@link Request#setRequest}: The xml root element name, assuming it matches the request name, might be
-     *       overriten later while parting the request's query string key-value pairs
+     *       overridden later while parting the request's query string key-value pairs
      *   <li>{@link Request#setService service}: matching the xml root element's {@code service} attribute, or
      *       {@code null}
      *   <li>{@link Request#setVersion version}: matching the xml root element's {@code version} attribute, or

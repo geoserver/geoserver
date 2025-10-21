@@ -5,14 +5,8 @@
 package org.geoserver.geofence.web;
 
 import com.google.common.cache.LoadingCache;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serial;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -120,8 +114,7 @@ public class GeofencePage extends GeoServerSecuredPage {
                             invoker.afterPropertiesSet();
                             return (RuleReaderService) invoker.getObject();*/
 
-                            CustomHttpInvokerClient invoker = new CustomHttpInvokerClient(servicesUrl);
-                            return (RuleReaderService) invoker.invokeRuleReaderService();
+                            return (RuleReaderService) null;
                         }
                     }
                 }.setDefaultFormProcessing(false));
@@ -288,52 +281,5 @@ public class GeofencePage extends GeoServerSecuredPage {
     /** Creates a new wicket model from the configuration object. */
     private IModel<CacheConfiguration> getCacheConfigModel() {
         return new Model<>(cacheParams);
-    }
-
-    private class CustomHttpInvokerClient {
-        private String serviceUrl;
-
-        public CustomHttpInvokerClient(String serviceUrl) {
-            this.serviceUrl = serviceUrl;
-        }
-
-        public RuleReaderService invokeRuleReaderService() throws IOException {
-            return (RuleReaderService) invokeRemoteMethod("getObject");
-        }
-
-        private Object invokeRemoteMethod(String methodName, Object... arguments) throws IOException {
-            URL url = new URL(serviceUrl);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setDoOutput(true);
-
-            BufferedReader br = null;
-            if (connection.getResponseCode() == 200) {
-                br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                String strCurrentLine;
-                while ((strCurrentLine = br.readLine()) != null) {
-                    System.out.println(strCurrentLine);
-                }
-            } else {
-                br = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
-                String strCurrentLine;
-                while ((strCurrentLine = br.readLine()) != null) {
-                    System.out.println(strCurrentLine);
-                }
-            }
-
-            try (ObjectOutputStream oos = new ObjectOutputStream(connection.getOutputStream())) {
-                oos.writeObject(methodName);
-                oos.writeObject(arguments);
-            }
-
-            try (ObjectInputStream ois = new ObjectInputStream(connection.getInputStream())) {
-                return ois.readObject();
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException("Error deserializing response.", e);
-            } finally {
-                connection.disconnect();
-            }
-        }
     }
 }

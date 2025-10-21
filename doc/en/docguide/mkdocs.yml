@@ -21,8 +21,9 @@ theme:
 
 plugins:
   - search
-  - minify:
-      minify_html: true
+  # Minify plugin disabled - causes htmlmin.parser.OpenTagNotFoundError with HTML code examples
+  # - minify:
+  #     minify_html: true
 
 nav:
   - Home: index.md

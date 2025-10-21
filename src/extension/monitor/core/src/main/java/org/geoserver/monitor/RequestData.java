@@ -20,6 +20,7 @@ import org.geotools.api.geometry.BoundingBox;
  * @author Andrea Aime, OpenGeo
  * @author Justin Deoliveira, OpenGeo
  */
+@SuppressWarnings("AT_NONATOMIC_64BIT_PRIMITIVE") // used by one thread at a time
 public class RequestData implements Serializable {
 
     @Serial

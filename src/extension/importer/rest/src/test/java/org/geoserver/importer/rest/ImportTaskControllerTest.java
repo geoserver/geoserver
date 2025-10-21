@@ -26,6 +26,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
@@ -252,13 +253,16 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
             builder.addBinaryBody(file.getName(), file);
         }
 
-        HttpEntity multipart = builder.build();
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        multipart.writeTo(bout);
+        ByteArrayOutputStream bout;
+        MockHttpServletRequest req;
+        try (HttpEntity multipart = builder.build()) {
+            bout = new ByteArrayOutputStream();
+            multipart.writeTo(bout);
 
-        MockHttpServletRequest req = createRequest(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks");
-        req.setContentType(multipart.getContentType());
-        req.addHeader("Content-Type", multipart.getContentType());
+            req = createRequest(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks");
+            req.setContentType(multipart.getContentType());
+            req.addHeader("Content-Type", multipart.getContentType());
+        }
         req.setMethod("POST");
         req.setContent(bout.toByteArray());
         resp = dispatch(req);
@@ -295,16 +299,19 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         builder.addBinaryBody("archsites.shx", new File(dir, "archsites.shx"));
         builder.addBinaryBody("archsites.prj", new File(dir, "archsites.prj"));
 
-        HttpEntity multipart = builder.build();
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        multipart.writeTo(bout);
+        ByteArrayOutputStream bout;
+        MockHttpServletRequest req;
+        try (HttpEntity multipart = builder.build()) {
+            bout = new ByteArrayOutputStream();
+            multipart.writeTo(bout);
 
-        MockHttpServletRequest req = createRequest(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks");
-        req.setContentType(multipart.getContentType());
-        req.addHeader("Content-Type", multipart.getContentType());
+            req = createRequest(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks");
+            req.setContentType(multipart.getContentType());
+            req.addHeader("Content-Type", multipart.getContentType());
+        }
         req.setMethod("POST");
         req.setContent(bout.toByteArray());
-        resp = dispatch(req);
+        dispatch(req);
 
         context = importer.getContext(context.getId());
         assertNull(context.getData());
@@ -335,8 +342,8 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         assertEquals(201, resp.getStatus());
         assertNotNull(resp.getHeader("Location"));
 
-        String[] split = resp.getHeader("Location").split("/");
-        Integer id = Integer.parseInt(split[split.length - 1]);
+        String[] split = Objects.requireNonNull(resp.getHeader("Location")).split("/");
+        int id = Integer.parseInt(split[split.length - 1]);
         ImportContext context = importer.getContext(id);
 
         MockHttpServletRequest req =

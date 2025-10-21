@@ -23,6 +23,7 @@
 
   <bean id="apiClasspathPublisherMapping"
         class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="patternParser"><null/></property><!-- Spring 5.x backwards compatibility -->
     <property name="alwaysUseFullPath" value="true"/>
     <property name="mappings">
       <props>

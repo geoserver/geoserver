@@ -197,6 +197,7 @@
   
   <bean id="filePublisherMapping"
     class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+     <property name="patternParser"><null/></property><!-- Spring 5.x backwards compatibility -->
      <property name="alwaysUseFullPath" value="true"/>
      <property name="mappings">
        <props>
@@ -208,6 +209,7 @@
   
   <bean id="stylePublisherMapping"
     class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+     <property name="patternParser"><null/></property><!-- Spring 5.x backwards compatibility -->
      <property name="alwaysUseFullPath" value="true"/>
      <property name="mappings">
        <props>
@@ -218,6 +220,7 @@
   
   <bean id="classpathPublisherMapping"
     class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+     <property name="patternParser"><null/></property><!-- Spring 5.x backwards compatibility -->
      <property name="alwaysUseFullPath" value="true"/>
      <property name="mappings">
        <props>

@@ -41,19 +41,16 @@ public class MBTilesProcessTest extends WPSTestSupport {
         assertNotNull(file);
         assertTrue(file.exists());
 
-        MBTilesFile mbtiles = new MBTilesFile(file);
-        MBTilesMetadata metadata = mbtiles.loadMetaData();
-        assertEquals(11, mbtiles.maxZoom());
-        assertEquals(10, mbtiles.minZoom());
-        assertEquals("World", metadata.getName());
+        try (MBTilesFile mbtiles = new MBTilesFile(file)) {
+            MBTilesMetadata metadata = mbtiles.loadMetaData();
+            assertEquals(11, mbtiles.maxZoom());
+            assertEquals(10, mbtiles.minZoom());
+            assertEquals("World", metadata.getName());
 
-        assertEquals(-0.17578125, metadata.getBounds().getMinimum(0), 0.0001);
-        assertEquals(-0.087890625, metadata.getBounds().getMinimum(1), 0.0001);
-        assertEquals(0.17578125, metadata.getBounds().getMaximum(0), 0.0001);
-        assertEquals(0.087890625, metadata.getBounds().getMaximum(1), 0.0001);
-
-        try {
-            mbtiles.close();
+            assertEquals(-0.17578125, metadata.getBounds().getMinimum(0), 0.0001);
+            assertEquals(-0.087890625, metadata.getBounds().getMinimum(1), 0.0001);
+            assertEquals(0.17578125, metadata.getBounds().getMaximum(0), 0.0001);
+            assertEquals(0.087890625, metadata.getBounds().getMaximum(1), 0.0001);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }

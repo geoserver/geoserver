@@ -28,11 +28,11 @@ import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -2525,15 +2525,15 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         // (e.g. 'Sun, 06 Nov 1994 08:49:37 GMT'). See
         // http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1
 
-        final String lastModified = DateUtils.formatDate(new Date(tileTimeStamp));
+        final String lastModified = DateUtils.formatStandardDate(Instant.ofEpochMilli(tileTimeStamp));
         map.put("Last-Modified", lastModified);
 
-        final Date ifModifiedSince;
+        final Instant ifModifiedSince;
         if (ifModSinceHeader != null && !ifModSinceHeader.isEmpty()) {
-            ifModifiedSince = DateUtils.parseDate(ifModSinceHeader);
+            ifModifiedSince = DateUtils.parseStandardDate(ifModSinceHeader);
             if (ifModifiedSince != null) {
                 // the HTTP header has second precision
-                long ifModSinceSeconds = 1000 * (ifModifiedSince.getTime() / 1000);
+                long ifModSinceSeconds = 1000 * (ifModifiedSince.toEpochMilli() / 1000);
                 long tileTimeStampSeconds = 1000 * (tileTimeStamp / 1000);
                 if (ifModSinceSeconds >= tileTimeStampSeconds) {
                     throw new HttpErrorCodeException(HttpServletResponse.SC_NOT_MODIFIED);

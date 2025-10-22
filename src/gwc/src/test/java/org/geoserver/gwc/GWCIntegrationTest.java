@@ -37,9 +37,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -84,6 +84,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.util.DimensionWarning;
+import org.geoserver.wfs.xml.WFSURIHandler;
 import org.geoserver.wms.WMSDimensionsTestSupport;
 import org.geotools.feature.NameImpl;
 import org.geowebcache.GeoWebCacheException;
@@ -109,6 +110,7 @@ import org.geowebcache.service.wmts.WMTSService;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -149,6 +151,16 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     static QName BASIC_POLYGONS_NO_CRS = new QName(MockData.CITE_URI, "BasicPolygonsNoCrs", MockData.CITE_PREFIX);
 
     static QName V_TIME_ELEVATION = new QName(MockData.SF_URI, "TimeElevation", MockData.SF_PREFIX);
+
+    /**
+     * Set a system property to disable {@link WFSURIHandler} saving 40+ seconds of initialization time (e.g. for
+     * {@link #testAutomaticTruncationFeatureChange()}), apparently due to having several network interfaces
+     */
+    @BeforeClass
+    public static void disableWfsUriHandler() {
+        String propName = WFSURIHandler.class.getName() + ".disabled";
+        System.setProperty(propName, "true");
+    }
 
     @Override
     protected void setUpSpring(List<String> springContextLocations) {
@@ -504,7 +516,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         String lastModifiedHeader = response.getHeader("Last-Modified");
         assertNotNull(lastModifiedHeader);
-        Date lastModified = DateUtils.parseDate(lastModifiedHeader);
+        Instant lastModified = DateUtils.parseStandardDate(lastModifiedHeader);
 
         MockHttpServletRequest httpReq = createGetRequest(url);
         httpReq.addHeader("If-Modified-Since", lastModifiedHeader);
@@ -514,16 +526,16 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertEquals(HttpServletResponse.SC_NOT_MODIFIED, response.getStatus());
 
         // set the If-Modified-Since header to some point in the past of the last modified value
-        Date past = new Date(lastModified.getTime() - 5000);
-        String ifModifiedSince = DateUtils.formatDate(past);
+        Instant past = lastModified.minusMillis(5000);
+        String ifModifiedSince = DateUtils.formatStandardDate(past);
 
         httpReq = createGetRequest(url);
         httpReq.addHeader("If-Modified-Since", ifModifiedSince);
         response = dispatch(httpReq, "UTF-8");
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
 
-        Date future = new Date(lastModified.getTime() + 5000);
-        ifModifiedSince = DateUtils.formatDate(future);
+        Instant future = lastModified.plusMillis(5000);
+        ifModifiedSince = DateUtils.formatStandardDate(future);
 
         httpReq = createGetRequest(url);
         httpReq.addHeader("If-Modified-Since", ifModifiedSince);
@@ -1487,14 +1499,14 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testGetCapabilitiesWithLocalWorkspace() throws Exception {
-        final Document doc = assertGetCapabilitiesWithLocalWorkspace();
+        final Document doc = assertWmtsGetCapabilitiesWithCiteLocalWorkspace();
         // print(doc);
         assertThat(
                 WMTS_XPATH_10.evaluate("//wmts:ServiceMetadataURL[2]/@xlink:href", doc),
                 equalTo("http://localhost:8080/geoserver/cite/gwc/service/wmts/rest/WMTSCapabilities.xml"));
     }
 
-    public Document assertGetCapabilitiesWithLocalWorkspace() throws Exception {
+    public Document assertWmtsGetCapabilitiesWithCiteLocalWorkspace() throws Exception {
         // getting capabilities document for CITE workspace
         Document document = getAsDOM(MockData.CITE_PREFIX + "/gwc/service/wmts?request=GetCapabilities");
         // checking get capabilities result for CITE workspace
@@ -1519,7 +1531,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         try {
             setProxyBase(gs, "http://fooBar/geoserver");
 
-            final Document doc = assertGetCapabilitiesWithLocalWorkspace();
+            final Document doc = assertWmtsGetCapabilitiesWithCiteLocalWorkspace();
             // print(doc);
             assertThat(
                     WMTS_XPATH_10.evaluate("//wmts:ServiceMetadataURL[2]/@xlink:href", doc),
@@ -1639,23 +1651,22 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     @Test
     public void testWMTSEnabling() throws Exception {
         // store original value to restore it
-        boolean initialValue = getGeoServer().getService(WMTSInfo.class).isEnabled();
+        GeoServer geoServer = getGeoServer();
+        boolean initialValue = geoServer.getService(WMTSInfo.class).isEnabled();
         try {
-            LocalWorkspace.set(null);
-            WMTSInfo wmtsInfo = getGeoServer().getService(WMTSInfo.class);
+            WMTSInfo wmtsInfo = geoServer.getService(WMTSInfo.class);
             wmtsInfo.setEnabled(false);
-            getGeoServer().save(wmtsInfo);
+            geoServer.save(wmtsInfo);
             MockHttpServletResponse response =
                     getAsServletResponse("gwc/service/wmts?service=wmts&version=1.0.0&request=GetCapabilities");
             assertEquals(400, response.getStatus());
             wmtsInfo.setEnabled(true);
-            getGeoServer().save(wmtsInfo);
+            geoServer.save(wmtsInfo);
             response = getAsServletResponse("gwc/service/wmts?service=wmts&version=1.0.0&request=GetCapabilities");
             assertEquals(200, response.getStatus());
         } finally {
             // restoring initial configuration value
-            getGeoServer().getService(WMTSInfo.class).setEnabled(initialValue);
-            LocalWorkspace.set(null);
+            geoServer.getService(WMTSInfo.class).setEnabled(initialValue);
         }
     }
 

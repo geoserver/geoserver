@@ -217,7 +217,7 @@ public class WebServiceAuthenticationProvider extends GeoServerAuthenticationPro
         verboseLog("External authentication call URL:"
                 + authenticationURL
                 + " with headers:"
-                + Stream.of(httpGet.getAllHeaders()).collect(Collectors.toMap(Header::getName, Header::getValue)));
+                + Stream.of(httpGet.getHeaders()).collect(Collectors.toMap(Header::getName, Header::getValue)));
         return httpGet;
     }
 

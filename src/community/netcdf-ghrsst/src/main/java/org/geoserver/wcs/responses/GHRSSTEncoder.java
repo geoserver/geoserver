@@ -4,6 +4,7 @@
  */
 package org.geoserver.wcs.responses;
 
+import com.google.common.collect.ImmutableSet;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
@@ -13,13 +14,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -31,6 +30,7 @@ import org.eclipse.imagen.iterator.RandomIterFactory;
 import org.eclipse.imagen.media.range.NoDataContainer;
 import org.geoserver.wcs2_0.response.GranuleStack;
 import org.geoserver.web.netcdf.DataPacking;
+import org.geotools.api.coverage.SampleDimension;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.cs.CoordinateSystemAxis;
 import org.geotools.api.referencing.operation.MathTransform2D;
@@ -122,15 +122,8 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
     }
 
     /** In case of data packing best to remove these as well */
-    private static final Set<String> DATA_PACKING_ATTRIBUTES_BLACKLIST = new HashSet<>() {
-        {
-            add("valid_min");
-            add("valid_max");
-            add("valid_range");
-            add("scale_factor");
-            add("add_offset");
-        }
-    };
+    private static final ImmutableSet<String> DATA_PACKING_ATTRIBUTES_REMOVELIST =
+            ImmutableSet.of("valid_min", "valid_max", "valid_range", "scale_factor", "add_offset");
 
     private static final String NETCDF_LIBRARY_VERSION;
 
@@ -154,16 +147,11 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
     }
 
     /** Holds the configuration for a variable coming from a specific band */
-    class BandVariable {
+    static class BandVariable {
         /** The user supplied variableName */
         private String variableName;
 
-        /** The user supplied unit of measure */
-        private String variableUoM;
-
         private double noDataValue;
-
-        private DataPacking.DataStats stats = null;
 
         private DataPacking.DataPacker dataPacker;
 
@@ -204,7 +192,7 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
     @Override
     protected void initializeVariables() {
         // group the dimensions to be added to the variable
-        List<Dimension> netCDFDimensions = new LinkedList<Dimension>();
+        List<Dimension> netCDFDimensions = new LinkedList<>();
         for (NetCDFDimensionsManager.NetCDFDimensionMapping dimension : dimensionsManager.getDimensions()) {
             netCDFDimensions.add(dimension.getNetCDFDimension());
         }
@@ -278,7 +266,7 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
             if (!(dataPacking == DataPacking.NONE)) {
                 if (bandStatistics == null) {
                     bandStatistics = new ArrayList<>();
-                    for (int j = 0; j < sampleDimensions.length; j++) {
+                    for (SampleDimension ignored : sampleDimensions) {
                         bandStatistics.add(new DataPacking.DataStats());
                     }
                     for (GridCoverage2D coverage : granuleStack.getGranules()) {
@@ -287,7 +275,6 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
                 }
                 stats = bandStatistics.get(i);
             }
-            bandVariable.stats = stats;
 
             // Adding Units
             if (varb.getAttributeContainer().findAttribute(NetCDFUtilities.UNITS) == null) {
@@ -297,7 +284,6 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
                 }
                 if (unit != null) {
                     varb.addAttribute(new Attribute(NetCDFUtilities.UNITS, unit));
-                    bandVariable.variableUoM = unit;
                 }
             }
 
@@ -407,7 +393,7 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
 
         // in case of data packing also valid_min and valid_max should go
         if (dataPacking != DataPacking.NONE) {
-            return DATA_PACKING_ATTRIBUTES_BLACKLIST.contains(shortName);
+            return DATA_PACKING_ATTRIBUTES_REMOVELIST.contains(shortName);
         }
 
         return false;
@@ -482,7 +468,7 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
             int maxTileY = maxY / tileHeight - (maxY < 0 ? (-maxY % tileHeight > 0 ? 1 : 0) : 0);
 
             // Update the NetCDF array indexing to set values for a specific 2D slice
-            final int originIndexing[] = new int[numDimensions];
+            final int[] originIndexing = new int[numDimensions];
             updateIndexing(originIndexing, gridCoverage);
 
             // ----------------
@@ -598,6 +584,7 @@ public class GHRSSTEncoder extends AbstractNetCDFEncoder {
         Date endDate = null;
         for (NetCDFDimensionsManager.NetCDFDimensionMapping dimension : dimensionsManager.getDimensions()) {
             if ("time".equalsIgnoreCase(dimension.getName())) {
+                @SuppressWarnings("unchecked")
                 TreeSet<Object> values =
                         (TreeSet<Object>) dimension.getDimensionValues().getValues();
                 Object first = values.first();

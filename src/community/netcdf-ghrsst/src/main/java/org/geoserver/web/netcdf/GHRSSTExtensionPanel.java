@@ -75,7 +75,6 @@ public class GHRSSTExtensionPanel extends NetCDFExtensionPanel {
             "ATSR2");
 
     private final CheckBox enabled;
-    private final NetCDFPanel parent;
     private final AutoCompleteTextField<String> processingLevel;
     private final AutoCompleteTextField<String> sstType;
     private final AutoCompleteTextField<String> productString;
@@ -83,7 +82,6 @@ public class GHRSSTExtensionPanel extends NetCDFExtensionPanel {
 
     public GHRSSTExtensionPanel(String id, IModel<?> model, NetCDFPanel parent) {
         super(id, model);
-        this.parent = parent;
 
         PropertyModel<MetadataMap> metadataModel = new PropertyModel<>(model, "metadata");
         enabled = new CheckBox(
@@ -138,7 +136,7 @@ public class GHRSSTExtensionPanel extends NetCDFExtensionPanel {
         AutoCompleteSettings settings = new AutoCompleteSettings();
         settings.setShowCompleteListOnFocusGain(true);
         settings.setShowListOnEmptyInput(true);
-        return new AutoCompleteTextField<String>(id, model, settings) {
+        return new AutoCompleteTextField<>(id, model, settings) {
             @Override
             protected Iterator<String> getChoices(String input) {
                 if (input == null || input.trim().length() == 0) {

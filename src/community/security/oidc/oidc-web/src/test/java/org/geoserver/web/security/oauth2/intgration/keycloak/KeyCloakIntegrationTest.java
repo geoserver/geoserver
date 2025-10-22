@@ -12,14 +12,13 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.hc.core5.http.NameValuePair;
-import org.apache.hc.core5.net.URLEncodedUtils;
+import org.apache.hc.core5.net.URIBuilder;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityFilterChain;
@@ -35,6 +34,7 @@ import org.junit.Test;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.web.context.HttpRequestResponseHolder;
@@ -78,7 +78,7 @@ import org.testcontainers.shaded.org.apache.commons.lang3.tuple.Pair;
  */
 public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
 
-    // these are whats expected in the GS->OIDC IDP redirect URL
+    // these are what's expected in the GS->OIDC IDP redirect URL
     String oidcLogin_responseType = "code";
     String oidcLogin_client_id = "gs-client";
     String oidcLogin_scope = "openid profile email phone address";
@@ -120,11 +120,11 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
         assertEquals(2, auth.getAuthorities().size());
         assertEquals(2, auth.getPrincipal().getAuthorities().size());
         assertTrue(auth.getAuthorities().stream()
-                .map(x -> x.getAuthority())
+                .map(GrantedAuthority::getAuthority)
                 .toList()
                 .contains("ROLE_AUTHENTICATED"));
         assertTrue(auth.getAuthorities().stream()
-                .map(x -> x.getAuthority())
+                .map(GrantedAuthority::getAuthority)
                 .toList()
                 .contains("ROLE_ADMINISTRATOR"));
 
@@ -164,7 +164,7 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
         assertEquals(1, auth.getAuthorities().size());
         assertEquals(1, auth.getPrincipal().getAuthorities().size());
         assertTrue(auth.getAuthorities().stream()
-                .map(x -> x.getAuthority())
+                .map(GrantedAuthority::getAuthority)
                 .toList()
                 .contains("ROLE_AUTHENTICATED"));
 
@@ -220,7 +220,7 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
 
         assertTrue(redirectURL.startsWith(authServerUrl));
 
-        List<NameValuePair> params = URLEncodedUtils.parse(new URI(redirectURL), Charset.forName("UTF-8"));
+        List<NameValuePair> params = new URIBuilder(new URI(redirectURL), StandardCharsets.UTF_8).getQueryParams();
 
         assertEquals(
                 oidcLogin_responseType,
@@ -303,9 +303,8 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
         assertNotNull(securityContext);
         assertNotNull(securityContext.getAuthentication());
         assertTrue(securityContext.getAuthentication() instanceof OAuth2AuthenticationToken);
-        var authentication = (OAuth2AuthenticationToken) securityContext.getAuthentication();
 
-        return authentication;
+        return (OAuth2AuthenticationToken) securityContext.getAuthentication();
     }
 
     /**
@@ -327,8 +326,7 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
         }
         String postUrl = matcher.group(1).replaceAll("&amp;", "&");
         String postBody = "username=" + username + "&password=" + password + "&credentialId=";
-        var response = WebRequests.webRequestPOSTForm(postUrl, postBody, startKeyCloakResponse.cookieManager);
-        return response;
+        return WebRequests.webRequestPOSTForm(postUrl, postBody, startKeyCloakResponse.cookieManager);
     }
 
     /**

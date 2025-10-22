@@ -49,7 +49,6 @@ officially part of the GeoServer releases. They are however built along with the
    jdbcstore/index
    jms-cluster/index
    jwt-headers/index
-   keycloak/index
    libdeflate/index
    mbtiles/index
    monitor-kafka/index

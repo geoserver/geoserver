@@ -54,7 +54,7 @@ public class GwcServiceProxy {
     /**
      * This method is here to assist the {@link DisabledServiceCheck} callback, that uses reflection to find such a
      * method and check if the returned service info is {@link ServiceInfo#isEnabled() enabled} (and hence avoid the
-     * WARNING message it spits out if this method is not found); not though, that in the interest of keeping a single
+     * WARNING message it spits out if this method is not found); note though, that in the interest of keeping a single
      * {@link GwcServiceProxy} to proxy all gwc provided services (wmts, tms, etc), the service info returned here will
      * always be enabled, we already have a GWC {@link GWCServiceEnablementInterceptor service interceptor} aspect that
      * decorates specific gwc services to check for enablement.

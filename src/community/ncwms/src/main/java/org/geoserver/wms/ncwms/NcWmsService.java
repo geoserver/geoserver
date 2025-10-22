@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -268,12 +267,18 @@ public class NcWmsService implements DisposableBean {
             }
 
             // sort by time and accumulate values
-            List<SimpleFeature> featureList = features.entrySet().stream()
-                    .sorted(Comparator.comparing(e -> e.getKey()))
-                    .map(e -> e.getValue())
-                    .collect(Collectors.toList());
-
-            result.getFeature().add(new ListFeatureCollection(resultType, featureList));
+            FeatureCollection<SimpleFeatureType, SimpleFeature> fc = new ListFeatureCollection(
+                    resultType,
+                    features.entrySet().stream()
+                            .sorted(Map.Entry.comparingByKey()) // Date keys
+                            .map(Map.Entry::getValue)
+                            .collect(Collectors.toList()));
+            // result.getFeature() is (at runtime) a List of FeatureCollection,
+            // but older WFS model types expose it as a raw List.
+            // Do a narrow, localized cast when adding.
+            @SuppressWarnings("unchecked")
+            List<FeatureCollection<SimpleFeatureType, SimpleFeature>> out = (List) result.getFeature();
+            out.add(fc);
         } catch (ServiceException e) {
             throw e;
         } catch (Exception e) {
@@ -294,7 +299,9 @@ public class NcWmsService implements DisposableBean {
             FeatureInfoRequestParameters requestParams)
             throws Exception {
         // identify
-        List<FeatureCollection> identifiedCollections = identifier.identify(requestParams, 1);
+        @SuppressWarnings("unchecked")
+        List<FeatureCollection<SimpleFeatureType, SimpleFeature>> identifiedCollections =
+                (List) identifier.identify(requestParams, 1);
 
         // collect the data
         if (identifiedCollections != null) {

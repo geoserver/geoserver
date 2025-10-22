@@ -67,6 +67,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestResponseBody
 import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.util.UrlPathHelper;
 import org.springframework.web.util.WebUtils;
+import org.springframework.web.util.pattern.PathPatternParser;
 import org.xml.sax.SAXException;
 
 /**
@@ -638,6 +639,20 @@ public class APIDispatcher extends AbstractController {
             } else {
                 return true;
             }
+        }
+
+        /**
+         * Override to disable pattern parser usage. We do this to match the behavior of Spring 5.x. With pattern parser
+         * enabled, Spring will strip path elements and will match only against a portion of the path, e.g., <code>
+         * /wms/**
+         * </code> will not really match <code>wms/reflect</code> because it's trying to match <code>reflect</code>
+         * only, rather than <code>wms/reflect</code>.
+         *
+         * @return <code>null</code> to disable pattern parser usage
+         */
+        @Override
+        public PathPatternParser getPatternParser() {
+            return null;
         }
     }
 }

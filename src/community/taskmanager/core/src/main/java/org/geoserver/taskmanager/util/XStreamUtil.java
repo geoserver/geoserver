@@ -20,10 +20,10 @@ import org.geoserver.taskmanager.data.impl.BatchImpl;
 import org.geoserver.taskmanager.data.impl.ConfigurationImpl;
 import org.geoserver.taskmanager.data.impl.ParameterImpl;
 import org.geoserver.taskmanager.data.impl.TaskImpl;
-import org.hibernate.collection.internal.PersistentMap;
-import org.hibernate.collection.internal.PersistentSortedMap;
-import org.hibernate.collection.internal.PersistentSortedSet;
 import org.hibernate.collection.spi.PersistentCollection;
+import org.hibernate.collection.spi.PersistentMap;
+import org.hibernate.collection.spi.PersistentSortedMap;
+import org.hibernate.collection.spi.PersistentSortedSet;
 
 public class XStreamUtil {
 

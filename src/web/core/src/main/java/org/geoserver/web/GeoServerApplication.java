@@ -301,10 +301,6 @@ public class GeoServerApplication extends WebApplication
             getRequestCycleListeners().add(isolationListener);
         }
 
-        LOGGER.log(
-                Level.SEVERE,
-                "CSRF Protection is disabled in GeoServer, should be migrated to OriginResourceIsolationPolicy");
-
         getRequestCycleListeners().add(new FeedbackPanelAjaxListener());
 
         WebUIMode webUIMode = getGeoServer().getGlobal().getWebUIMode();

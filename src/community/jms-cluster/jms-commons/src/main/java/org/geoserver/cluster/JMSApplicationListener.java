@@ -5,9 +5,9 @@
  */
 package org.geoserver.cluster;
 
+import jakarta.annotation.PostConstruct;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
 import org.geoserver.cluster.configuration.JMSConfiguration;
 import org.geoserver.cluster.configuration.ToggleConfiguration;
 import org.geoserver.cluster.events.ToggleEvent;

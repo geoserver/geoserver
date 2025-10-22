@@ -14,10 +14,6 @@
   <packaging>jar</packaging>
   <name>GeoServer JMS clustering Commons module</name>
 
-  <properties>
-    <amq.version>5.15.11</amq.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -41,8 +37,8 @@
     </dependency>
 
     <dependency>
-      <groupId>javax.jms</groupId>
-      <artifactId>jms-api</artifactId>
+      <groupId>jakarta.jms</groupId>
+      <artifactId>jakarta.jms-api</artifactId>
     </dependency>
 
     <dependency>

@@ -38,6 +38,6 @@ here is the full list of opens used by the build process::
 Running on Java 21
 ------------------
 
-GeoServer 2.28.x and above supports Java 21 with no additional configuration on **Tomcat 9** or newer and **Jetty 9.4.12** or newer.
+GeoServer 2.28.x and above supports Java 21 with no additional configuration on **Tomcat 9** and **Jetty 9.4.12** or newer.
 
 Running GeoServer under Java 21 on other Application Servers may require some additional configuration. Most modern Application Servers now support Java 21.

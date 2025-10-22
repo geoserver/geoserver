@@ -26,13 +26,6 @@
   <profiles>
 
     <profile>
-      <id>keycloak</id>
-      <modules>
-        <module>keycloak</module>
-      </modules>
-    </profile>
-
-    <profile>
       <id>oidc</id>
       <modules>
         <module>oidc</module>
@@ -42,7 +35,6 @@
     <profile>
       <id>communityRelease</id>
       <modules>
-        <module>keycloak</module>
         <module>oidc</module>
       </modules>
     </profile>

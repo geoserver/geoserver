@@ -57,7 +57,6 @@ officially part of the GeoServer releases. They are however built along with the
    ncwms/index
    netcdf-ghrsst/index
    notification/index
-   oauth2/index
    ogc-api/index
    ogr-store/index
    oidc/index

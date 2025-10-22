@@ -8,19 +8,16 @@ package org.geoserver.web;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+import org.eclipse.jetty.ee10.webapp.WebAppContext;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.thread.ExecutorThreadPool;
-import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-// import org.apache.commons.io.IOUtils;
 
 /**
  * Jetty starter, will run GeoBatch inside the Jetty web container.<br>
@@ -124,7 +121,7 @@ public class Start {
         }
 
         try {
-            return Integer.valueOf(portVariable).intValue();
+            return Integer.parseInt(portVariable);
         } catch (NumberFormatException e) {
             return -1;
         }
@@ -162,9 +159,7 @@ public class Start {
     }
 
     private static void setSystemProperties(final Properties prop) {
-        Iterator<?> it = prop.keySet().iterator();
-        while (it.hasNext()) {
-            Object key = it.next();
+        for (Object key : prop.keySet()) {
             System.setProperty(key.toString(), prop.get(key).toString());
         }
     }

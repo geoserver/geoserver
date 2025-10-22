@@ -18,8 +18,7 @@ public class StationsMappingsSetup {
     public static final String MAPPING_FILE_NAME = "mappings.xml";
     public static final String INCLUDED_FILE_NAME = "includedTypes.xml";
 
-    public void setupMapping(
-            String solrUrl, String solrCoreName, PostgresqlProperties pgProps, File testDir) {
+    public void setupMapping(String solrUrl, String solrCoreName, PostgresqlProperties pgProps, File testDir) {
         // replace mappings.xml placeholders
         String mappingsContent = loadFileAsString("test-data/" + MAPPING_FILE_NAME);
         mappingsContent = StringUtils.replace(mappingsContent, "${solr_url}", solrUrl);
@@ -47,12 +46,10 @@ public class StationsMappingsSetup {
     protected String replacePgPlaceholders(String mappingsContent, PostgresqlProperties pgProps) {
         mappingsContent = StringUtils.replace(mappingsContent, "${pg_host}", pgProps.getHost());
         mappingsContent = StringUtils.replace(mappingsContent, "${pg_port}", pgProps.getPort());
-        mappingsContent =
-                StringUtils.replace(mappingsContent, "${pg_database}", pgProps.getDatabase());
+        mappingsContent = StringUtils.replace(mappingsContent, "${pg_database}", pgProps.getDatabase());
         mappingsContent = StringUtils.replace(mappingsContent, "${pg_schema}", pgProps.getSchema());
         mappingsContent = StringUtils.replace(mappingsContent, "${pg_user}", pgProps.getUser());
-        mappingsContent =
-                StringUtils.replace(mappingsContent, "${pg_password}", pgProps.getPassword());
+        mappingsContent = StringUtils.replace(mappingsContent, "${pg_password}", pgProps.getPassword());
         return mappingsContent;
     }
 
@@ -72,10 +69,7 @@ public class StationsMappingsSetup {
     public String loadFileAsString(String uri) {
         String content = null;
         try {
-            content =
-                    IOUtils.toString(
-                            getClass().getClassLoader().getResourceAsStream(uri),
-                            StandardCharsets.UTF_8);
+            content = IOUtils.toString(getClass().getClassLoader().getResourceAsStream(uri), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new RuntimeException("Error loading mapping file.", e);
         }

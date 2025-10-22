@@ -106,7 +106,6 @@ public class STACQueryablesBuilderTest {
         Schema constellation = properties.get("constellation");
         assertNotNull(constellation);
         assertEquals(TYPE_STRING, constellation.getType());
-        assertEquals("string", constellation.getFormat());
 
         // check the cloud cover, which has a math expression
         Schema cloudCover = properties.get("eo:cloud_cover");

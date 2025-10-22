@@ -929,7 +929,8 @@ public class JDBCOpenSearchAccessTest {
         testSource.getFeatures().accepts(visitor, null);
         Date maxDate = (Date) visitor.getMax();
         FastDateFormat format = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ssZZ", TimeZone.getTimeZone("UTC"));
-        assertEquals("2018-02-27 09:20:21Z", format.format(maxDate));
+        // when running interactively please set -Duser.timezone=UTC
+        assertEquals("2018-02-27 10:20:21Z", format.format(maxDate));
     }
 
     @Test

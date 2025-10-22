@@ -145,8 +145,8 @@ public class BackupRestorePage<T extends AbstractExecutionAdapter> extends GeoSe
         boolean selectable = bkp.getStatus() != BatchStatus.COMPLETED;
 
         add(new Icon("icon", COMPRESS_ICON));
-        add(new Label("title", new DataTitleModel(bkp))
-                .add(new AttributeModifier("title", new DataTitleModel(bkp, false))));
+        add(new Label("title", new DataTitleModel<>(bkp))
+                .add(new AttributeModifier("title", new DataTitleModel<>(bkp, false))));
 
         @SuppressWarnings("rawtypes")
         Form<?> form = new Form("form");
@@ -182,7 +182,7 @@ public class BackupRestorePage<T extends AbstractExecutionAdapter> extends GeoSe
         expand.add(RangeValidator.minimum(0));
         form.add(expand);
 
-        TextArea<String> details = new TextArea<String>("details", new BKErrorDetailsModel(bkp));
+        TextArea<String> details = new TextArea<String>("details", new BKErrorDetailsModel<>(bkp));
         details.setOutputMarkupId(true);
         details.setMarkupId("details");
         add(details);

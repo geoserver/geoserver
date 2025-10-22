@@ -6,7 +6,7 @@ package org.geoserver.backuprestore;
 
 import com.thoughtworks.xstream.XStream;
 import java.io.IOException;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -435,7 +435,7 @@ public class Backup extends JobExecutionListenerSupport
                     backupExecution.setLiFilter(liFilter);
 
                     backupExecution.getOptions().add("OVERWRITE=" + overwrite);
-                    for (Entry jobParam : jobParameters.toProperties().entrySet()) {
+                    for (Entry jobParam : jobParameters.getParameters().entrySet()) {
                         if (!PARAM_OUTPUT_FILE_PATH.equals(jobParam.getKey())
                                 && !PARAM_INPUT_FILE_PATH.equals(jobParam.getKey())
                                 && !PARAM_TIME.equals(jobParam.getKey())) {
@@ -537,7 +537,7 @@ public class Backup extends JobExecutionListenerSupport
                     restoreExecution.setSiFilter(siFilter);
                     restoreExecution.setLiFilter(liFilter);
 
-                    for (Entry jobParam : jobParameters.toProperties().entrySet()) {
+                    for (Entry jobParam : jobParameters.getParameters().entrySet()) {
                         if (!PARAM_OUTPUT_FILE_PATH.equals(jobParam.getKey())
                                 && !PARAM_INPUT_FILE_PATH.equals(jobParam.getKey())
                                 && !PARAM_TIME.equals(jobParam.getKey())) {
@@ -600,7 +600,7 @@ public class Backup extends JobExecutionListenerSupport
 
                 if (!status.isGreaterThan(BatchStatus.STARTED)) {
                     jobExecution.setStatus(BatchStatus.STOPPING);
-                    jobExecution.setEndTime(new Date());
+                    jobExecution.setEndTime(LocalDateTime.now());
                     jobRepository.update(jobExecution);
                 }
             }
@@ -641,7 +641,7 @@ public class Backup extends JobExecutionListenerSupport
         } finally {
             if (jobExecution != null) {
                 jobExecution.setStatus(BatchStatus.ABANDONED);
-                jobExecution.setEndTime(new Date());
+                jobExecution.setEndTime(LocalDateTime.now());
                 jobRepository.update(jobExecution);
             }
 

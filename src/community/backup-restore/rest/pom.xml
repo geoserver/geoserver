@@ -14,8 +14,6 @@
   <packaging>jar</packaging>
   <name>GeoServer Config Backup And Restore REST Module</name>
 
-  <properties></properties>
-
   <dependencies>
 
     <!-- GeoServer Resources -->

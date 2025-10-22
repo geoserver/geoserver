@@ -39,6 +39,7 @@ public class WorkspaceModel<T extends WorkspaceInfo> extends LoadableDetachableM
     }
     ;
 
+    @SuppressWarnings("unchecked")
     @Override
     protected T load() {
         if (name == null) {

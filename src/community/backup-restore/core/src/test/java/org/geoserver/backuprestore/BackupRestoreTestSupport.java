@@ -159,6 +159,7 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
         setUpInternal(testData);
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     protected void setUpInternal(SystemTestData data) throws Exception {
         root = File.createTempFile("template", "tmp", new File("target"));
         root.delete();
@@ -361,6 +362,7 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
         catalog.add(lay2);
     }
 
+    @SuppressWarnings("unchecked")
     void addFeature(FeatureStore store, String wkt, Object... atts) throws Exception {
         SimpleFeatureBuilder b = new SimpleFeatureBuilder((SimpleFeatureType) store.getSchema());
         b.add(new WKTReader().read(wkt));
@@ -437,7 +439,11 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
             LOGGER.log(Level.WARNING, "Please, ensure the temp folder have been correctly cleaned out!", e);
         }
 
-        catalog.dispose();
+        try {
+            catalog.dispose();
+        } catch (NullPointerException e) {
+            //
+        }
     }
 
     /** @throws InterruptedException */

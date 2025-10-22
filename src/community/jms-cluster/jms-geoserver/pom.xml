@@ -13,11 +13,6 @@
   <packaging>jar</packaging>
   <name>GeoServer JMS clustering module</name>
 
-  <properties>
-    <amq.version>5.16.8</amq.version>
-
-  </properties>
-
   <dependencies>
 
     <dependency>

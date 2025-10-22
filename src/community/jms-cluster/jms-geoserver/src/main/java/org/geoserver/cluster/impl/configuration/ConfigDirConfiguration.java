@@ -5,8 +5,8 @@
  */
 package org.geoserver.cluster.impl.configuration;
 
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
-import javax.annotation.PostConstruct;
 import org.geoserver.cluster.configuration.JMSConfiguration;
 import org.geoserver.cluster.configuration.JMSConfigurationExt;
 import org.geoserver.platform.GeoServerResourceLoader;

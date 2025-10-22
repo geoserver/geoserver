@@ -7,7 +7,7 @@ package org.geoserver.proxybase.ext.config;
 import java.io.Serializable;
 
 /** A rule for the {@link org.geoserver.proxybase.ext.ProxyBaseExtUrlMangler}. */
-public class ProxyBaseExtensionRule implements Serializable {
+public class ProxyBaseExtensionRule implements Serializable, Comparable<ProxyBaseExtensionRule> {
     private String id;
     private String matcher;
     private String transformer;
@@ -82,6 +82,7 @@ public class ProxyBaseExtensionRule implements Serializable {
      * @param proxyBaseExtensionRule the rule to compare with
      * @return the result of the comparison
      */
+    @Override
     public int compareTo(ProxyBaseExtensionRule proxyBaseExtensionRule) {
         if (this.getPosition() == null || proxyBaseExtensionRule.getPosition() == null) {
             return 0;

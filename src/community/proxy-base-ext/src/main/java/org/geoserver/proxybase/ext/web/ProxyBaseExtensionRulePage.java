@@ -56,7 +56,7 @@ public class ProxyBaseExtensionRulePage extends GeoServerSecuredPage {
     }
 
     /** A tab that wraps a panel. */
-    public abstract class WrappedTab extends AbstractTab {
+    public abstract static class WrappedTab extends AbstractTab {
 
         private final IModel<ProxyBaseExtensionRule> model;
 
@@ -82,7 +82,7 @@ public class ProxyBaseExtensionRulePage extends GeoServerSecuredPage {
     }
 
     /** A simple rule panel. */
-    public class SimpleRulePanel extends Panel {
+    public static class SimpleRulePanel extends Panel {
         /**
          * Constructor.
          *

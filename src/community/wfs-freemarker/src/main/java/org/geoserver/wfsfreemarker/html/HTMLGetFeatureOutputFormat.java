@@ -47,7 +47,6 @@ public class HTMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat implem
     }
 
     @Override
-    @SuppressWarnings("PMD.CloseResource") // the output stream is managed outside, only wrappers here
     protected void write(FeatureCollectionResponse featureCollection, OutputStream output, Operation operation)
             throws IOException {
         List<FeatureCollection> resultsList = featureCollection.getFeature();

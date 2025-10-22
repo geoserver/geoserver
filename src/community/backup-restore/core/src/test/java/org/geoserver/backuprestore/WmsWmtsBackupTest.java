@@ -16,13 +16,12 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import org.geoserver.platform.resource.Files;
 import org.geotools.util.factory.Hints;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.batch.core.BatchStatus;
 
 public class WmsWmtsBackupTest extends BackupRestoreTestSupport {
 
-    @Before
+    @Override
     public void beforeTest() throws InterruptedException {
         ensureCleanedQueues();
 

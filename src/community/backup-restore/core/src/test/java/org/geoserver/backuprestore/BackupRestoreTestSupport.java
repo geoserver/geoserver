@@ -14,7 +14,6 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -25,7 +24,18 @@ import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.backuprestore.utils.BackupUtils;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.StoreInfo;
+import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
@@ -62,15 +72,12 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
         return dd;
     }
 
-    public static final Set<String> DEFAULT_STYLEs = new HashSet<String>() {
-        {
-            add(StyleInfo.DEFAULT_POINT);
-            add(StyleInfo.DEFAULT_LINE);
-            add(StyleInfo.DEFAULT_GENERIC);
-            add(StyleInfo.DEFAULT_POLYGON);
-            add(StyleInfo.DEFAULT_RASTER);
-        }
-    };
+    public static final Set<String> DEFAULT_STYLEs = Set.of(
+            StyleInfo.DEFAULT_POINT,
+            StyleInfo.DEFAULT_LINE,
+            StyleInfo.DEFAULT_GENERIC,
+            StyleInfo.DEFAULT_POLYGON,
+            StyleInfo.DEFAULT_RASTER);
 
     @Before
     public void beforeTest() throws InterruptedException {
@@ -167,7 +174,7 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
 
         setupHTTPStores();
 
-        // setup an H2 datastore for the purpose of doing joins
+        // set up an H2 datastore for the purpose of doing joins
         // run all the tests against a store that can do native paging (h2) and one that
         // can't (property)
         DataStoreInfo ds = catalog.getFactory().createDataStore();
@@ -405,10 +412,8 @@ public class BackupRestoreTestSupport extends GeoServerSystemTestSupport {
                 in.close();
             }
 
-            if (out != null) {
-                out.flush();
-                out.close();
-            }
+            out.flush();
+            out.close();
         }
 
         return org.geoserver.platform.resource.Files.asResource(file);

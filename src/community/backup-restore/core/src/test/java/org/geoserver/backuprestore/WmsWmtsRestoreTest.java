@@ -10,13 +10,12 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import org.geoserver.catalog.*;
 import org.geotools.util.factory.Hints;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.batch.core.BatchStatus;
 
 public class WmsWmtsRestoreTest extends BackupRestoreTestSupport {
 
-    @Before
+    @Override
     public void beforeTest() throws InterruptedException {
         ensureCleanedQueues();
 

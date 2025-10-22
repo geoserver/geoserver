@@ -47,6 +47,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  *
  * @author "Alessio Fabiani" <alessio.fabiani@geo-solutions.it>, GeoSolutions
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 @RestController
 @ControllerAdvice
 @RequestMapping(

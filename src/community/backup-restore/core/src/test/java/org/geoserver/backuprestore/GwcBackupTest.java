@@ -19,13 +19,12 @@ import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geotools.util.factory.Hints;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.batch.core.BatchStatus;
 
 public class GwcBackupTest extends BackupRestoreTestSupport {
 
-    @Before
+    @Override
     public void beforeTest() throws InterruptedException {
         ensureCleanedQueues();
 

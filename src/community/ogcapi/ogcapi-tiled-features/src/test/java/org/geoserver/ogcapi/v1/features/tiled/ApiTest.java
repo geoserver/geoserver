@@ -58,8 +58,8 @@ public class ApiTest extends TiledFeaturesTestSupport {
 
         // ... the tiles themselves
         PathItem tiles =
-                paths.get("/collections/{collectionId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}");
+                paths.get("/collections/{vectorCollectionId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}");
         assertNotNull(tiles);
-        assertThat(tiles.getGet().getOperationId(), equalTo("getTileOfCollectionId"));
+        assertThat(tiles.getGet().getOperationId(), equalTo("tiles.collection.vector.getTile"));
     }
 }

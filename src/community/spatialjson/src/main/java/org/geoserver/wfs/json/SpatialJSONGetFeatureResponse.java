@@ -580,6 +580,7 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
 
                         case '^':
                             buf.append("\\^");
+                            break;
 
                         case ']':
                             if (buf.length() == l1) {
@@ -718,7 +719,7 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
     }
 
     /** Helper class for building a Shared String Table */
-    private class SharedStringTable {
+    private static class SharedStringTable {
 
         /**
          * The string table. This map's keys are the strings stored in the string table. Each mapping's value is the
@@ -887,7 +888,7 @@ public class SpatialJSONGetFeatureResponse extends GeoJSONGetFeatureResponse {
      *
      * @see #Context
      */
-    private class GeoJSONBuilderWithContext extends GeoJSONBuilder implements Context {
+    private static class GeoJSONBuilderWithContext extends GeoJSONBuilder implements Context {
 
         private List<String> propertyNames;
 

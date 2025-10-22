@@ -117,9 +117,7 @@ public class ComplexFeatureCollection implements FeatureCollection<FeatureType, 
 
     @Override
     public boolean contains(Object o) {
-        FeatureIterator<Feature> e = null;
-        try {
-            e = this.features();
+        try (FeatureIterator<Feature> e = this.features()) {
             if (o == null) {
                 while (e.hasNext()) {
                     if (e.next() == null) {
@@ -134,10 +132,6 @@ public class ComplexFeatureCollection implements FeatureCollection<FeatureType, 
                 }
             }
             return false;
-        } finally {
-            if (e != null) {
-                e.close();
-            }
         }
     }
 
@@ -175,17 +169,11 @@ public class ComplexFeatureCollection implements FeatureCollection<FeatureType, 
     @Override
     public Object[] toArray() {
         ArrayList<Feature> array = new ArrayList<>();
-        FeatureIterator<Feature> e = null;
-        try {
-            e = features();
+        try (FeatureIterator<Feature> e = features()) {
             while (e.hasNext()) {
                 array.add(e.next());
             }
-            return array.toArray(new Feature[array.size()]);
-        } finally {
-            if (e != null) {
-                e.close();
-            }
+            return array.toArray(new Feature[0]);
         }
     }
 
@@ -196,20 +184,14 @@ public class ComplexFeatureCollection implements FeatureCollection<FeatureType, 
         if (array.length < size) {
             array = (O[]) java.lang.reflect.Array.newInstance(array.getClass().getComponentType(), size);
         }
-        FeatureIterator<Feature> it = features();
-        try {
-            Object[] result = array;
+        try (FeatureIterator<Feature> it = features()) {
             for (int i = 0; it.hasNext() && i < size; i++) {
-                result[i] = it.next();
+                ((Object[]) array)[i] = it.next();
             }
             if (array.length > size) {
                 array[size] = null;
             }
             return array;
-        } finally {
-            if (it != null) {
-                it.close();
-            }
         }
     }
 }

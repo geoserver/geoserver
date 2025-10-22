@@ -41,13 +41,12 @@ public class PgSchemaSetup {
     }
 
     private Connection getConnection() throws SQLException {
-        String connUrl =
-                "jdbc:postgresql://"
-                        + properties.getHost()
-                        + ":"
-                        + properties.getPort()
-                        + "/"
-                        + properties.getDatabase();
+        String connUrl = "jdbc:postgresql://"
+                + properties.getHost()
+                + ":"
+                + properties.getPort()
+                + "/"
+                + properties.getDatabase();
         return DriverManager.getConnection(connUrl, properties.getUser(), properties.getPassword());
     }
 
@@ -66,12 +65,9 @@ public class PgSchemaSetup {
     protected String getSqlBatch() {
         String sql = null;
         try {
-            sql =
-                    IOUtils.toString(
-                            getClass()
-                                    .getClassLoader()
-                                    .getResourceAsStream("test-data/stations.sql"),
-                            StandardCharsets.UTF_8.name());
+            sql = IOUtils.toString(
+                    getClass().getClassLoader().getResourceAsStream("test-data/stations.sql"),
+                    StandardCharsets.UTF_8.name());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

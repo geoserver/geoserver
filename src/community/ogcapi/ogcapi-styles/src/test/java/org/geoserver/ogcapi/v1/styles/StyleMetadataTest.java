@@ -15,7 +15,7 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertNull;
 
 import com.jayway.jsonpath.DocumentContext;
-import jakarta.xml.bind.DatatypeConverter;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -318,7 +318,7 @@ public class StyleMetadataTest extends StylesTestSupport {
     }
 
     public Date parseDate(String date) {
-        return DatatypeConverter.parseDate(date).getTime();
+        return Date.from(Instant.parse(date));
     }
 
     @Test

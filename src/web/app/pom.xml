@@ -1601,11 +1601,6 @@
         </dependency>
         <dependency>
           <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-ogcapi-changeset</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
           <artifactId>gs-ogcapi-tiled-features</artifactId>
           <version>${project.version}</version>
         </dependency>

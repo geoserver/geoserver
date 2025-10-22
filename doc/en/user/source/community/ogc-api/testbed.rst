@@ -3,13 +3,12 @@ OGC Testbed Experiments
 
 The following modules are part of the OGC Testbed experiments.
 
-Images and Changesets
----------------------
+Images
 
-A couple of extra API, images and changesets, based on engineering reports of `Testbed 15 <https://docs.ogc.org/per/19-018.html>`__, 
-allowing to update a image mosaic and get a list of tiles affected by the change.
+An extra API, images, based on engineering reports of `Testbed 15 <https://docs.ogc.org/per/19-018.html>`__,
+allowing to update a image mosaic.
 
-To install these modules:
+To install this module:
 
 #. Download the OGC API nightly GeoServer community module from :download_community:`ogcapi-images`.
    

@@ -62,17 +62,19 @@ public class GeoServerOAuth2AccessTokenResponseClientTest {
     @Test
     public void testSmoke() {
         // given
-        var authorizationRequest = OAuth2AuthorizationRequest.authorizationCode()
+        OAuth2AuthorizationRequest authorizationRequest = OAuth2AuthorizationRequest.authorizationCode()
                 .authorizationUri("myAuthorizationUri")
                 .redirectUri("myRedirectUri")
                 .clientId("myClientId")
                 .build();
-        var authorizationResponse = OAuth2AuthorizationResponse.success("code")
+        OAuth2AuthorizationResponse authorizationResponse = OAuth2AuthorizationResponse.success("code")
                 .redirectUri("myRedirectUri")
                 .build();
-        var lExchange = new OAuth2AuthorizationExchange(authorizationRequest, authorizationResponse);
-        var lRequest = new OAuth2AuthorizationCodeGrantRequest(mockClientRegistration, lExchange);
-        var lDelegatesResponse = OAuth2AccessTokenResponse.withToken("myToken")
+        OAuth2AuthorizationExchange lExchange =
+                new OAuth2AuthorizationExchange(authorizationRequest, authorizationResponse);
+        OAuth2AuthorizationCodeGrantRequest lRequest =
+                new OAuth2AuthorizationCodeGrantRequest(mockClientRegistration, lExchange);
+        OAuth2AccessTokenResponse lDelegatesResponse = OAuth2AccessTokenResponse.withToken("myToken")
                 .tokenType(TokenType.BEARER)
                 .build();
 

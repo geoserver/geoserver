@@ -184,9 +184,9 @@ public class GeoServerOAuth2RoleResolverTest {
     public void testGetRolesFromIdToken() {
         // given
         context = newResolverContext(OpenIdRoleSource.IdToken);
-        var lToken = new OidcIdToken(
+        OidcIdToken lToken = new OidcIdToken(
                 "tokenValue", now(), now().plusMillis(1), Collections.singletonMap(ROLES_CLAIM_NAME, "ROLE1"));
-        var lRequest = new OidcUserRequest(mockClientReg, accessToken, lToken);
+        OidcUserRequest lRequest = new OidcUserRequest(mockClientReg, accessToken, lToken);
         OAuth2ResolverParam lParam = new OAuth2ResolverParam(PRINCIPAL_NAME, mockRequest, context, lRequest);
 
         // when

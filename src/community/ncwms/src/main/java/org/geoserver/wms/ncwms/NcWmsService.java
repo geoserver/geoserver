@@ -7,7 +7,6 @@ package org.geoserver.wms.ncwms;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -200,7 +199,7 @@ public class NcWmsService implements DisposableBean {
 
         // Process the request only if we have a time range
         List<Object> times = request.getGetMapRequest().getTime();
-        if (times == null || times.size() == 0) {
+        if (times == null || times.isEmpty()) {
             throw new ServiceException("The TIME parameter was missing");
         }
 
@@ -221,10 +220,10 @@ public class NcWmsService implements DisposableBean {
 
         // we'll just pick the first band anyways, no need to read them all
         if (request.getPropertyNames() == null
-                || request.getPropertyNames().size() == 0
+                || request.getPropertyNames().isEmpty()
                 || request.getPropertyNames().get(0).isEmpty()) {
             String firstBand = coverage.getDimensions().get(0).getName();
-            request.setPropertyNames(Arrays.asList(Arrays.asList(firstBand)));
+            request.setPropertyNames(List.of(Collections.singletonList(firstBand)));
         }
 
         // control how much time we spend doing queries to gather times and values
@@ -375,7 +374,7 @@ public class NcWmsService implements DisposableBean {
     private List<DateRange> handleSimpleInterval(CoverageInfo coverage, List<Object> times) throws IOException {
         DateFinder finder = DateFinder.QUERY;
         List<DateRange> results = finder.findDates(wms, coverage, times);
-        if (results.size() == 0) results = DateFinder.NEAREST.findDates(wms, coverage, times);
+        if (results.isEmpty()) results = DateFinder.NEAREST.findDates(wms, coverage, times);
         return results;
     }
 

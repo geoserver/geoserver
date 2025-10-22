@@ -16,10 +16,8 @@
     <dependency>
       <groupId>jakarta.annotation</groupId>
       <artifactId>jakarta.annotation-api</artifactId>
-      <version>2.0.0</version>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
@@ -65,6 +63,9 @@
               <generateApiTests>false</generateApiTests>
               <generateApiDocumentation>false</generateApiDocumentation>
               <generateModelDocumentation>false</generateModelDocumentation>
+              <configOptions>
+                <useJakartaEe>true</useJakartaEe>
+              </configOptions>
             </configuration>
           </execution>
           <execution>
@@ -82,6 +83,9 @@
               <generateApiTests>false</generateApiTests>
               <generateApiDocumentation>false</generateApiDocumentation>
               <generateModelDocumentation>false</generateModelDocumentation>
+              <configOptions>
+                <useJakartaEe>true</useJakartaEe>
+              </configOptions>
             </configuration>
           </execution>
         </executions>

@@ -41,7 +41,7 @@ Our official documentation is contained as part of our `official code repository
 GeoServer User
 --------------
 
-The GeoServer User Forum is hosted on Discourse. See the `usage instructions <https://geoserver.org/comm/#discourse>`__ for how to sign in (or how to set up a mailing list experience).
+The `GeoServer User Forum <https://discourse.osgeo.org/c/geoserver/user/51>`__ is hosted on Discourse. See the `usage instructions <https://geoserver.org/comm/#discourse>`__ for how to sign in (or how to set up a mailing list experience).
   
 The GeoServer User forum is for those who have questions relating to the use of GeoServer. If you see a question asked on that you know the answer to, please respond!
 
@@ -54,9 +54,9 @@ This is an open communication channels are publicly available and are a great re
 GeoServer Developer
 -------------------
 
-The `GeoServer Developers <http://lists.sourceforge.net/lists/listinfo/geoserver-devel>`_ mailing list is hosted  SourceForge.
+The `GeoServer Developers <https://discourse.osgeo.org/c/geoserver/developer/63>`_ mailing list is hosted  on Discourse.
 
-The GeoServer Developers list is for for those working directly on the project, with code-specific and roadmap-based discussions.
+The GeoServer Developers forum is for for those working directly on the project, with code-specific and roadmap-based discussions.
 
 .. seealso::
    

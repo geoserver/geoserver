@@ -8,7 +8,6 @@ package org.geoserver.wps.ppio;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.logging.Logger;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
@@ -17,12 +16,10 @@ import org.geotools.data.store.ReprojectingFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.util.logging.Logging;
 import org.hsqldb.lib.StringInputStream;
 
 /** Inputs and outputs feature collections in GPX format using gt-gpx */
 public class GPXPPIO extends CDataPPIO {
-    private static final Logger LOGGER = Logging.getLogger(GPXPPIO.class);
 
     private GeoServer geoServer;
 

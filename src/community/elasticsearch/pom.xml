@@ -56,12 +56,12 @@
       <version>0.3.6</version>
       <scope>test</scope>
     </dependency>
-      <dependency>
-          <groupId>org.apache.wicket</groupId>
-          <artifactId>wicket-tester</artifactId>
-          <version>${wicket.version}</version>
-          <scope>test</scope>
-      </dependency>
+    <dependency>
+      <groupId>org.apache.wicket</groupId>
+      <artifactId>wicket-tester</artifactId>
+      <version>${wicket.version}</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>

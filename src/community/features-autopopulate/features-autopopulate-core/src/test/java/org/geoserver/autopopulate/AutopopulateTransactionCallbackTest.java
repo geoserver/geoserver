@@ -76,7 +76,7 @@ public class AutopopulateTransactionCallbackTest extends GeoServerSystemTestSupp
     public void setUp() throws Exception {
         listener = new AutopopulateTransactionCallback(getCatalog());
         File f = new File(
-                this.getTestData().getDataDirectoryRoot() + "\\workspaces\\cite\\cite\\NamedPlaces\\",
+                this.getTestData().getDataDirectoryRoot() + "/workspaces/cite/cite/NamedPlaces/",
                 "transactionCustomizer.properties");
         f.deleteOnExit();
         try (FileOutputStream fout = new FileOutputStream(f)) {

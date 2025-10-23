@@ -13,8 +13,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
-import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
@@ -69,16 +67,9 @@ import org.geotools.util.factory.GeoTools;
  */
 public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatcherCallback {
 
-    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(
-            DynamicGetLegendGraphicDispatcherCallback.class.getPackage().getName());
-
-    private Catalog catalog;
-
     TimeKvpParser parser = new TimeKvpParser("time");
 
-    public DynamicGetLegendGraphicDispatcherCallback(Catalog catalog) {
-        this.catalog = catalog;
-    }
+    public DynamicGetLegendGraphicDispatcherCallback() {}
 
     @Override
     public Operation operationDispatched(Request request, Operation operation) {
@@ -94,8 +85,7 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
                         ProcessFunction transformation = getDynamicColorMapTransformation(legend);
                         if (transformation != null) {
                             LayerInfo layer = legend.getLayerInfo();
-                            if (layer != null && layer.getResource() instanceof CoverageInfo) {
-                                CoverageInfo coverageInfo = (CoverageInfo) layer.getResource();
+                            if (layer != null && layer.getResource() instanceof CoverageInfo coverageInfo) {
                                 List<CoverageDimensionInfo> dimensions = coverageInfo.getDimensions();
                                 String unit = "";
                                 if (dimensions != null && !dimensions.isEmpty()) {
@@ -157,7 +147,7 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
                     coverageInfo.getGridCoverageReader(new NullProgressListener(), GeoTools.getDefaultHints());
 
             GeneralParameterValue[] parameters = parseReadParameters(coverageInfo, reader);
-            coverage = (GridCoverage2D) reader.read(parameters);
+            coverage = reader.read(parameters);
 
             ColorMap cm = null;
             double opacity = 1.0;
@@ -193,7 +183,6 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
      * retrieve the proper statistics.
      *
      * @param coverageInfo the coverage to be accessed
-     * @param map the request parameters
      * @param reader the reader to be used to access the coverage
      * @return parameters setup on top of requested values.
      */
@@ -204,8 +193,8 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
         final ParameterValueGroup readParametersDescriptor = reader.getFormat().getReadParameters();
         GeneralParameterValue[] readParameters =
                 CoverageUtils.getParameters(readParametersDescriptor, coverageInfo.getParameters(), false);
-        final List<GeneralParameterDescriptor> parameterDescriptors = new ArrayList<GeneralParameterDescriptor>(
-                readParametersDescriptor.getDescriptor().descriptors());
+        final List<GeneralParameterDescriptor> parameterDescriptors =
+                new ArrayList<>(readParametersDescriptor.getDescriptor().descriptors());
 
         // add the descriptors for custom dimensions
         Set<ParameterDescriptor<List>> dynamicParameters = reader.getDynamicParameters();
@@ -244,8 +233,8 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
             final List<GeneralParameterDescriptor> parameterDescriptors,
             final Map<String, Object> map)
             throws IOException {
-        List<String> customDomains = new ArrayList(dimensions.getCustomDomains());
-        if (customDomains != null && customDomains.size() > 0) {
+        List<String> customDomains = new ArrayList<>(dimensions.getCustomDomains());
+        if (!customDomains.isEmpty()) {
             Set<String> params = map.keySet();
             for (String paramName : params) {
                 if (paramName.regionMatches(true, 0, "dim_", 0, 4)) {
@@ -257,7 +246,7 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
                         final DimensionInfo customInfo =
                                 metadata.get(ResourceInfo.CUSTOM_DIMENSION_PREFIX + name, DimensionInfo.class);
                         if (dimensions.hasDomain(name) && customInfo != null && customInfo.isEnabled()) {
-                            final ArrayList<String> val = new ArrayList<String>(1);
+                            final ArrayList<String> val = new ArrayList<>(1);
                             String value = (String) map.get(paramName);
                             if (value.indexOf(",") > 0) {
                                 String[] elements = value.split(",");
@@ -364,8 +353,7 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
         final double scaleY = XAffineTransform.getScaleY0((AffineTransform) transform);
         final double minX = envelope.getMinimum(0);
         final double minY = envelope.getMinimum(1);
-        final ReferencedEnvelope newEnvelope = new ReferencedEnvelope(
+        return new ReferencedEnvelope(
                 minX, minX + scaleX * 2, minY, minY + scaleY * 2, envelope.getCoordinateReferenceSystem());
-        return newEnvelope;
     }
 }

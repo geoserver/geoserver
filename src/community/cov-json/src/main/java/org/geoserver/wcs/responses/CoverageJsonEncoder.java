@@ -30,5 +30,4 @@ public class CoverageJsonEncoder {
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         mapper.writeValue(stream, covJson);
     }
-    ;
 }

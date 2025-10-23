@@ -6,8 +6,6 @@ package org.geoserver.wcs2_0;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 
 import com.jayway.jsonpath.DocumentContext;
@@ -75,10 +73,10 @@ public class CoverageJsonTest extends WCSTestSupport {
         assertEquals("Grid", json.read("domain.domainType"));
         assertEquals(1, json.read("domain.axes.t.values.length()", Integer.class), DELTA);
         assertEquals(1, json.read("domain.axes.z.values.length()", Integer.class), DELTA);
-        assertThat(json.read("domain.axes.x.start"), not(empty()));
-        assertThat(json.read("domain.axes.y.start"), not(empty()));
-        assertThat(json.read("domain.axes.x.stop"), not(empty()));
-        assertThat(json.read("domain.axes.y.stop"), not(empty()));
+        assertEquals(0.81144, json.read("domain.axes.x.start", Double.class), DELTA);
+        assertEquals(41.04160, json.read("domain.axes.y.start", Double.class), DELTA);
+        assertEquals(3.68255, json.read("domain.axes.x.stop", Double.class), DELTA);
+        assertEquals(42.95968, json.read("domain.axes.y.stop", Double.class), DELTA);
     }
 
     protected DocumentContext getAsJSONPath(MockHttpServletResponse response) throws UnsupportedEncodingException {

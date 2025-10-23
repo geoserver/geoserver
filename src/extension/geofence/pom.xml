@@ -65,4 +65,48 @@
 
   </profiles>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.openrewrite.maven</groupId>
+                <artifactId>rewrite-maven-plugin</artifactId>
+                <version>6.21.1</version>
+                <configuration>
+                    <activeRecipes>
+                        <!-- Jakarta -->
+                        <recipe>org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta</recipe>
+
+                        <!-- Spring Framework 6.x -->
+                        <recipe>org.openrewrite.java.spring.framework.UpgradeSpringFramework_6_0</recipe>
+                        <recipe>org.openrewrite.java.spring.framework.UpgradeSpringFramework_6_1</recipe>
+                        <recipe>org.openrewrite.java.spring.framework.UpgradeSpringFramework_6_2</recipe>
+
+                        <!-- Spring Security 6 -->
+                        <recipe>org.openrewrite.java.spring.security6.UpgradeSpringSecurity_6_0</recipe>
+
+                        <!-- Hibernate to 6.x (pick highest you target before 7) -->
+                        <recipe>org.openrewrite.hibernate.MigrateToHibernate65</recipe>
+                    </activeRecipes>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.openrewrite.recipe</groupId>
+                        <artifactId>rewrite-migrate-java</artifactId>
+                        <version>3.19.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.openrewrite.recipe</groupId>
+                        <artifactId>rewrite-spring</artifactId>
+                        <version>6.16.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.openrewrite.recipe</groupId>
+                        <artifactId>rewrite-hibernate</artifactId>
+                        <version>2.13.0</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+        </plugins>
+    </build>
 </project>

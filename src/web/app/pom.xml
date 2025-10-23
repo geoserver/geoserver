@@ -1295,16 +1295,6 @@
       </dependencies>
     </profile>
     <profile>
-      <id>keycloak</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-sec-keycloak</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>oidc</id>
       <dependencies>
         <dependency>

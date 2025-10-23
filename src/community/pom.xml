@@ -363,12 +363,6 @@
       </modules>
     </profile>
     <profile>
-      <id>keycloak</id>
-      <modules>
-        <module>security</module>
-      </modules>
-    </profile>
-    <profile>
       <id>oidc</id>
       <modules>
         <module>security</module>

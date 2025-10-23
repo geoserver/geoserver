@@ -9,7 +9,6 @@ import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.wms.map.GIFMapResponse;
 import org.geoserver.wms.style.PaletteParser;
 import org.geotools.filter.function.EnvFunction;
 import org.geotools.util.Converters;
@@ -33,13 +32,7 @@ public class GetMapNcWmsCallback extends AbstractDispatcherCallback {
 
     private static String OPACITY = "OPACITY";
 
-    private static String ANIMATION = "ANIMATION";
-
-    private GIFMapResponse gifResponse;
-
-    public GetMapNcWmsCallback(GIFMapResponse gifResponse) {
-        this.gifResponse = gifResponse;
-    }
+    public GetMapNcWmsCallback() {}
 
     /*
      * The choice of serviceDispatcher is not random, it allows the EnvironmentInjectionCallback to setup the env vars in the local map (which happens
@@ -66,7 +59,9 @@ public class GetMapNcWmsCallback extends AbstractDispatcherCallback {
                         ServiceException.INVALID_PARAMETER_VALUE,
                         "OPACITY");
             }
-            EnvFunction.setLocalValue(PaletteParser.OPACITY, value / 100f);
+            if (value != null) {
+                EnvFunction.setLocalValue(PaletteParser.OPACITY, value / 100f);
+            }
         }
         mapParameter(kvp, rawKvp, NUMCOLORBANDS, PaletteParser.NUMCOLORS, Integer.class);
         mapParameter(kvp, rawKvp, BELOWMINCOLOR, PaletteParser.COLOR_BEFORE, String.class);

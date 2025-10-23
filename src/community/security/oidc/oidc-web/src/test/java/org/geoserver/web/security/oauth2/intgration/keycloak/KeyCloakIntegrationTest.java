@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.net.URIBuilder;
 import org.geoserver.data.test.SystemTestData;
@@ -42,8 +44,6 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.context.request.RequestContextListener;
-import org.testcontainers.shaded.org.apache.commons.lang3.tuple.ImmutablePair;
-import org.testcontainers.shaded.org.apache.commons.lang3.tuple.Pair;
 
 /**
  * Basic login is as follows:

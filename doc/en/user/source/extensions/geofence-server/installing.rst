@@ -14,20 +14,31 @@ Select the plugin you need
 
 GeoFence Server extension is provided as two mutually exclusive packages, to be used according to your setup:
 
-- :download_extension:`geofence-server-postgres`: (strongly recommended choice) contains all the libraries to run geofence-server, using as backend an externally configured PostgreSQL DB.
-- :download_extension:`geofence-server-h2`: contains all the libraries to run geofence-server, using as backend an embedded H2 DB.
+- GeoFence Server PostgreSQL: (strongly recommended choice) contains all the libraries to run geofence-server, using as backend an externally configured PostgreSQL DB.
 
-    .. warning:: this plugin will install a version of the `H2 <http://www.h2database.com>`__  library that **is not compatible** 
-                 with other plugins using H2 (e.g. grib/netcdf).  
+  
+- GeoFence Server H2: (Quick demo choice) contains all the libraries to run geofence-server, using as backend an embedded H2 DB.
+
+  
+  .. warning:: this plugin will install a version of the `H2 <http://www.h2database.com>`__  library that **is not compatible** with other plugins using H2 (e.g. grib/netcdf).  
  
-                 This package is purely for demo purposes, allowing you to run the GeoFence plugin without the need to configure an external DB backend.  
-
+     This package is purely for demo purposes, allowing you to run the GeoFence plugin without the need to configure an external DB backend.  
 
 Install the plugin
 ------------------
 
- #. Visit the :website:`website download <download>` page, locate your release, and download either one of the packages listed above.
-   
+ #. Visit the :website:`website download <download>` page, locate your release, and of the packages discussed above.
+    
+    GeoFence Server PostgreSQL:
+    
+    * |release| :download_extension:`geofence-server-postgres`
+    * |version| :nightly_extension:`geofence-server-postgres`
+    
+    GeoFence Server H2:
+    
+    * |release| :download_extension:`geofence-server-h2`
+    * |version| :nightly_extension:`geofence-server-h2`
+    
     The download link will be in the :guilabel:`Extensions` section under :guilabel:`Other`.
    
     Make sure to match the plugin version (e.g. |release| above) to the version of the GeoServer instance.

@@ -8,7 +8,11 @@ The GeoServer Excel plugin adds the ability to output WFS responses in either Ex
 Installation
 ------------
 
-#. From the :website:`website download <download>` page, locate your release, and download: :download_extension:`excel`
+#. From the :website:`website download <download>` page, locate your release, and download:
+
+   * |release| :download_extension:`excel`
+   * |version| :nightly_extension:`excel`
+   
 #. Unzip the archive into the :file:`WEB-INF/lib` directory of the GeoServer installation.
 #. Restart GeoServer.
 

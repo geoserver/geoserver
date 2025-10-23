@@ -85,13 +85,9 @@ To create a new data directory:
   
   Navigate to the :website:`GeoServer Download page <download>`, select a version of GeoServer, and download the provided data directory zip.
   
-  .. only:: snapshot
-  
-     For GeoServer |version| Nightly: :download_release:`data`
+  * For GeoServer |release| Nightly: :download_release:`data`
 
-  .. only:: not snapshot
-
-      For GeoServer |release|: :download_release:`data`
+  * For GeoServer |version|: :nightly_release:`data`
 
 * You may also use a new empty folder as the data directory location.
   

@@ -16,19 +16,34 @@ The WPS Download NetCDF module depends on 3 extensions:
 
 If you haven't installed already, visit the :website:`website download <download>` page, locate your release, and download: 
 
-#. :download_extension:`wps` containing the WPS extension.
-#. :download_extension:`wps-download` containing the WPS Download extension.
-#. :download_extension:`netcdf-out` containing the NetCDF Output extension.
+#. Download the WPS extension:
 
-Then: 
+   * |release| :download_extension:`wps`
+   * |version| :nightly_extension:`wps`
+
+
+#. Download the WPS Download extension:
+
+   * |release| :download_extension:`wps-download`
+   * |version| :nightly_extension:`wps-download`
+
+#. Download the NetCDF Output extension:
+
+   * |release| :download_extension:`netcdf-out`
+   * |version| :nightly_extension:`netcdf-out`
  
- #. Download the WPS Download NetCDF community module from the `nightly GeoServer community module builds <https://build.geoserver.org/geoserver/main/community-latest/>`_.
+#. Download the WPS Download NetCDF community module:
 
-    .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance!
+  from the `nightly GeoServer community module builds <https://build.geoserver.org/geoserver/main/community-latest/>`_.
 
- #. Extract all the contents of the archives into the ``WEB-INF/lib`` directory of the GeoServer installation.
+   * |release| :download_community:`wps-download-netcdf`
+   * |version| :nightly_community:`ps-download-netcdf`
 
- #. Restart GeoServer
+   .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance!
+
+#. Extract all the contents of the archives into the ``WEB-INF/lib`` directory of the GeoServer installation.
+
+#. Restart GeoServer
 
 
 Module description

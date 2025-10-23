@@ -3,10 +3,13 @@
 Installing the IAU authority
 ----------------------------
 
-The IAU authority is an official extension.  Download the extension here - :download_extension:`iau`
+The IAU authority is an official extension:
 
 #. Download the extension for your version of GeoServer. 
 
+   * |release| :download_extension:`iau`
+   * |version| :nightly_extension:`iau`
+   
    .. warning:: Make sure to match the version of the extension to the version of GeoServer.
 
 #. Extract the archive and copy the contents into the GeoServer :file:`WEB-INF/lib` directory.

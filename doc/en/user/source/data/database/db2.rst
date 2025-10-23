@@ -20,8 +20,11 @@ Installing the Db2 extension
 GeoServer files
 ```````````````
 
-#. From the :website:`download` page locate the release of GeoServer you are running and download the Db2 extension: :download_extension:`db2`
+#. From the :website:`download` page locate the release of GeoServer you are running and download the Db2 extension: 
 
+   * |release| :download_community:`db2`
+   * |version| :nightly_community:`db2`
+   
    .. warning:: Ensure to match plugin (example |release| above) version to the version of the GeoServer instance.
 
 #. Extract the contents of the archive into the :file:`WEB-INF/lib` directory of the GeoServer installation.

@@ -3,8 +3,11 @@
 Installing the Vector Tiles Extension
 -------------------------------------
 
-#. From the :website:`website download <download>` page, locate your release, and download:  :download_extension:`vectortiles`
-
+#. From the :website:`website download <download>` page, locate your release, and download:
+ 
+   * |release| :download_extension:`vectortiles`
+   * |version| :nightly_extension:`vectortiles`
+   
    .. warning:: Make sure to match the version of the extension to the version of GeoServer.
 
 #. Extract the archive and copy the contents into the GeoServer library :file:`WEB-INF/lib` directory located in:

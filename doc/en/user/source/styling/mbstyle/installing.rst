@@ -7,7 +7,10 @@ The MBStyle extension is listed on the GeoServer download page.
 
 To install MBStyle extension:
 
-#. Download the :download_extension:`mbstyle`
+#. Download:
+
+   * |release| :download_extension:`mbstyle`
+   * |version| :nightly_extension:`mbstyle`
    
    Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example |release| above).
    

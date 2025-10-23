@@ -3,7 +3,10 @@
 Installing the INSPIRE extension
 ================================
 
-#. Visit the :website:`website download <download>` page, locate your release, and download:  :download_extension:`inspire`
+#. Visit the :website:`website download <download>` page, locate your release, and download:  
+
+   * |release| :download_extension:`libjpeg-inspire`
+   * |version| :nightly_extension:`libjpeg-inspire`
    
    Verify that the version number in the filename (for example |release| above) corresponds to the version of GeoServer you are running.
 

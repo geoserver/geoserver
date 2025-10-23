@@ -4,7 +4,10 @@ OGC API Features Installation
 Installing OGC API Features extension
 '''''''''''''''''''''''''''''''''''''
 
-#. Download the OGC API Features zip from the latest release (or nightly build) from :download_extension:`ogcapi-features`.
+#. Download the OGC API Features zip:
+
+   * |release| :download_extension:`ogcapi-features`
+   * |version| :nightly_extension:`ogcapi-features`
    
    .. warning:: Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-|release|-ogcapi-features-plugin.zip above).
 

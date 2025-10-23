@@ -7,7 +7,10 @@ The GWC S3 extension is listed among the other extension downloads on the GeoSer
 
 The installation process is similar to other GeoServer extensions:
 
-#. Visit the :website:`website download <download>` page, locate your release, and download:  :download_extension:`gwc-s3`
+#. Visit the :website:`website download <download>` page, locate your release, and download:
+
+   * |release| :download_extension:`gwc-s3`
+   * |version| :nightly_extension:`gwc-s3`
    
    Verify that the version number in the filename (for example |release| above) corresponds to the version of GeoServer you are running.
 

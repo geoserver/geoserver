@@ -23,8 +23,8 @@ To download and install the required extensions by hand:
 
 #. * From the :website:`download page <download>` download:
 
-   * :download_extension:`css`
-   * :download_extension:`ysld`
+   * |release| :download_extension:`css`
+   * |release| :download_extension:`ysld`
    
    It is important to download the version that matches the GeoServer you are running.
 

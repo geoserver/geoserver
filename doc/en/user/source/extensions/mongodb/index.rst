@@ -9,7 +9,10 @@ This module provides support for MongoDB data store. This extension is build on 
 Installation
 ------------
 
-#. Visit the :website:`website download <download>` page, locate your release, and download:  :download_extension:`mongodb`
+#. Visit the :website:`website download <download>` page, locate your release, and download:
+
+   * |release| :download_extension:`mongodb`
+   * |version| :nightly_extension:`mongodb`
 
    The download link will be in the :guilabel:`Extensions` section under :guilabel:`Vector Formats`.
    

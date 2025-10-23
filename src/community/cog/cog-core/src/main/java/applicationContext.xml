@@ -3,9 +3,7 @@
 
 <beans>
 
-    <bean id="coverageReaderInputObjectCogConverter" class="org.geoserver.cog.CoverageReaderCogInputObjectConverter">
-        <constructor-arg ref="catalog"/>
-    </bean>
+    <bean id="coverageReaderInputObjectCogConverter" class="org.geoserver.cog.CoverageReaderCogInputObjectConverter" />
 
     <bean id="COGGeoTIFFExclusionFilter" class="org.geoserver.platform.NameExclusionFilter">
         <property name="beanId" value="geotiffStorePanel" />

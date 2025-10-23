@@ -16,6 +16,7 @@ import org.geoserver.web.data.store.panel.TextParamPanel;
 import org.geoserver.web.util.MapModel;
 
 /** Store specific CogSettings panel, containing therefore eventual authentication info */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class CogSettingsStorePanel<T extends CogSettingsStore> extends CogSettingsPanel {
 
     FormComponent user;
@@ -26,29 +27,22 @@ public class CogSettingsStorePanel<T extends CogSettingsStore> extends CogSettin
         super(id, settingsModel);
 
         final IModel model = storeEditForm.getModel();
-        final IModel paramsModel = new PropertyModel(model, "connectionParameters");
+        final IModel paramsModel = new PropertyModel<>(model, "connectionParameters");
 
-        user = addTextPanel(paramsModel, "user", "user", "CogSettings.userName", false);
-        password = addPasswordPanel(paramsModel, "password", "CogSettings.password", false);
+        user = addTextPanel(paramsModel);
+        password = addPasswordPanel(paramsModel);
 
         user.setOutputMarkupId(true);
         password.setOutputMarkupId(true);
     }
 
-    private FormComponent addTextPanel(
-            final IModel paramsModel,
-            final String paramName,
-            final String paramTitle,
-            final String resourceKey,
-            final boolean required) {
+    private FormComponent addTextPanel(final IModel paramsModel) {
 
-        final TextParamPanel textParamPanel = new TextParamPanel(
-                paramName, new MapModel(paramsModel, paramTitle), new ResourceModel(resourceKey, paramName), required);
+        final TextParamPanel textParamPanel = new TextParamPanel<>(
+                "user", new MapModel<>(paramsModel, "user"), new ResourceModel("CogSettings.userName", "user"), false);
         textParamPanel.getFormComponent().setType(String.class);
 
-        String defaultTitle = paramTitle;
-
-        ResourceModel titleModel = new ResourceModel(resourceKey, defaultTitle);
+        ResourceModel titleModel = new ResourceModel("CogSettings.userName", "user");
         String title = String.valueOf(titleModel.getObject());
 
         textParamPanel.add(AttributeModifier.replace("title", title));
@@ -57,13 +51,15 @@ public class CogSettingsStorePanel<T extends CogSettingsStore> extends CogSettin
         return textParamPanel.getFormComponent();
     }
 
-    private FormComponent addPasswordPanel(
-            final IModel paramsModel, final String paramName, final String resourceKey, final boolean required) {
+    private FormComponent addPasswordPanel(final IModel paramsModel) {
         final PasswordParamPanel pwdPanel = new PasswordParamPanel(
-                paramName, new MapModel(paramsModel, paramName), new ResourceModel(resourceKey, paramName), required);
-        String defaultTitle = paramName;
+                "password",
+                new MapModel(paramsModel, "password"),
+                new ResourceModel("CogSettings.password", "password"),
+                false);
+        String defaultTitle = "password";
 
-        ResourceModel titleModel = new ResourceModel(resourceKey, defaultTitle);
+        ResourceModel titleModel = new ResourceModel("CogSettings.password", defaultTitle);
         String title = String.valueOf(titleModel.getObject());
 
         pwdPanel.add(AttributeModifier.replace("title", title));

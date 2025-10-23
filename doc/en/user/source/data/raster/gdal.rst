@@ -24,7 +24,10 @@ Installing GDAL extension
 
 From GeoServer version 2.2.x, GDAL must be installed as an extension. To install it:
 
-#. Visit the :website:`website download <download>` page, locate your release, and download: :download_extension:`gdal`
+#. Visit the :website:`website download <download>` page, locate your release, and download: 
+
+   * |release| :download_extension:`gdal`
+   * |version| :nightly_extension:`gdal`
    
    .. warning:: Ensure to match plugin (example |release| above) version to the version of the GeoServer instance.
    

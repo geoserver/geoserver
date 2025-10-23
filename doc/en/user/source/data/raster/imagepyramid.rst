@@ -12,7 +12,10 @@ An image pyramid is several layers of an image rendered at various image sizes, 
 Installing the ImagePyramid extension
 -------------------------------------
 
-#. Visit the :website:`website download <download>` page, locate your release, and download: :download_extension:`pyramid`
+#. Visit the :website:`website download <download>` page, locate your release, and download: 
+   
+   * |release| :download_extension:`pyramid`
+   * |version| :nightly_extension:`pyramid`
    
    .. warning:: Ensure to match plugin (example |release| above) version to the version of the GeoServer instance.
    

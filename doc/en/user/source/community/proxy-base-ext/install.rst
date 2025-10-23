@@ -7,7 +7,10 @@ The Proxy Base extension is listed among the other extension downloads on the Ge
 
 The installation process is similar to other GeoServer extensions:
 
-#. Visit the :website:`website download <download>` page, locate your release, and download:  :download_extension:`proxy-base-ext`
+#. Visit the :website:`website download <download>` page, locate your release, and download:  
+
+   * |release| :download_community:`proxy-base-ext`
+   * |version| :nightly_community:`proxy-base-ext`
    
    Verify that the version number in the filename (for example |release| above) corresponds to the version of GeoServer you are running.
 

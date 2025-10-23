@@ -14,7 +14,10 @@ Oracle
 Installing the Oracle extension
 -------------------------------
 
-#. Visit the :website:`website download <download>` page, locate your release, and download: :download_extension:`oracle`
+#. Visit the :website:`website download <download>` page, locate your release, and download: 
+
+   * |release| :download_extension:`oracle`
+   * |version| :nightly_extension:`oracle`
    
    .. warning:: Ensure to match plugin (example |release| above) version to the version of the GeoServer instance.
 

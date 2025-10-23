@@ -19,7 +19,10 @@ Filter functions are widely supported in GeoServer, so cross-layer filtering can
 Installing the querylayer module
 ----------------------------------
 
-* Visit the :website:`website download <download>` page, locate your release, and download:  :download_extension:`querylayer`
+* Visit the :website:`website download <download>` page, locate your release, and download:  
+
+   * |release| :download_extension:`querylayer`
+   * |version| :nightly_extension:`querylayer`
 
    .. warning:: The version of the extension **must** match the version of the GeoServer instance
 

@@ -14,7 +14,11 @@ Reference:
 Installation
 ------------
 
-* Visit the :website:`website download <download>` page, locate your release, and download:  :download_extension:`printing`
+* Visit the :website:`website download <download>` page, locate your release, and download: 
+
+   * |release| :download_extension:`printing`
+   * |version| :nightly_extension:`printing`
+
 * Extract the contents of the ZIP archive into the :file:`/WEB-INF/lib/` in the
   GeoServer webapp.  For example, if you have installed the GeoServer binary to
   :file:`/opt/geoserver/`, the printing extension JAR files should be

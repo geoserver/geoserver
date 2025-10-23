@@ -3,7 +3,12 @@
 Installing the GeoServer GeoFence WPS Integration
 =================================================
 
-#. Visit the :website:`website download <download>` page, locate your release, and download: :download_extension:`geofence-wps`
+#. Visit the :website:`website download <download>` page, locate your release, and download:
+
+   * |release| :download_extension:`geofence-wps`
+   * |version| :nightly_extension:`geofence-wps`
+
+   :download_extension:`geofence-wps` 
    
    The download link will be in the :guilabel:`Extensions` section under :guilabel:`Other`.
    

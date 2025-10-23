@@ -11,7 +11,10 @@ The WPS module is not a part of GeoServer core, but instead must be installed as
 
    .. warning::  Be sure to match the version of the extension with that of GeoServer, otherwise errors will occur.
 
-#. Download the WPS extension: :download_extension:`wps`
+#. Download the WPS extension:
+
+   * |release| :download_extension:`wps`
+   * |version| :nightly_extension:`wps`
    
    The download link for :guilabel:`WPS` will be in the :guilabel:`Extensions` section under :guilabel:`Other`.
 

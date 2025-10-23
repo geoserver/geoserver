@@ -14,6 +14,7 @@ import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.AbstractServiceHTMLMessageConverter;
 import org.geoserver.ogcapi.FreemarkerTemplateSupport;
 import org.geoserver.opensearch.eo.OSEOInfo;
+import org.geotools.util.SuppressFBWarnings;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 
@@ -27,6 +28,7 @@ public abstract class AbstractItemsHTMLMessageConverter<T extends AbstractItemsR
     }
 
     @Override
+    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
     protected void writeInternal(T value, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
         Template header = getHeaderTemplate();

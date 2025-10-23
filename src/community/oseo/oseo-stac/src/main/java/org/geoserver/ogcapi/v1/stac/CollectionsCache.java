@@ -28,7 +28,7 @@ public class CollectionsCache implements GeoServerLifecycleHandler, OseoEventLis
 
     private final OpenSearchAccessProvider accessProvider;
     private final LoadingCache<Object, Feature> collections = CacheBuilder.newBuilder()
-            .build(new CacheLoader<Object, Feature>() {
+            .build(new CacheLoader<>() {
                 @Override
                 public Feature load(Object o) throws Exception {
                     FeatureSource<FeatureType, Feature> ps =

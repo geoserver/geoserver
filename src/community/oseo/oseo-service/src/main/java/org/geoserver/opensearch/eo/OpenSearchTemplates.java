@@ -19,22 +19,18 @@ import org.geoserver.featurestemplating.validation.AbstractTemplateValidator;
 import org.geoserver.opensearch.eo.response.AtomSearchResponse;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.resource.Resource;
-import org.geotools.api.data.FeatureSource;
-import org.geotools.api.feature.Feature;
 import org.geotools.api.feature.type.FeatureType;
-import org.geotools.api.feature.type.PropertyDescriptor;
-import org.geotools.api.filter.FilterFactory;
-import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.util.SuppressFBWarnings;
 import org.geotools.util.logging.Logging;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /** Provides access to the product templates used for the OpenSearch GeoJSON outputs */
+@SuppressFBWarnings("AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION")
 public class OpenSearchTemplates extends AbstractTemplates {
 
     static final Logger LOGGER = Logging.getLogger(OpenSearchTemplates.class);
-    static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     private Template defaultCollectionsTemplate;
     private Template defaultProductsTemplate;
@@ -78,6 +74,7 @@ public class OpenSearchTemplates extends AbstractTemplates {
         }
     }
 
+    @Override
     public void reloadTemplates() {
         try {
             copyHTMLTemplates();
@@ -97,21 +94,6 @@ public class OpenSearchTemplates extends AbstractTemplates {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Failed to load OpenSearch for EO JSON templates", e);
         }
-    }
-
-    static NamespaceSupport getNamespaces(FeatureSource<FeatureType, Feature> fs) {
-        // collect properties from all namespaces
-        FeatureType schema = fs.getSchema();
-        NamespaceSupport namespaces = new NamespaceSupport();
-        for (PropertyDescriptor pd : schema.getDescriptors()) {
-            String uri = pd.getName().getNamespaceURI();
-            String prefix = (String) pd.getUserData().get(OpenSearchAccess.PREFIX);
-            if (prefix == null) throw new RuntimeException("No prefix available for " + uri);
-            namespaces.declarePrefix(prefix, uri);
-        }
-        // done last, to avoid overrides
-        namespaces.declarePrefix("", schema.getName().getNamespaceURI());
-        return namespaces;
     }
 
     private void reloadProductTemplate(GeoServerDataDirectory dd, NamespaceSupport namespaces) throws IOException {

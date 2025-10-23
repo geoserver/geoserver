@@ -617,7 +617,7 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
         }
 
         for (SimpleFeature link : links) {
-            SimpleFeature linkFeature = SimpleFeatureBuilder.retype((SimpleFeature) link, linkFeatureType);
+            SimpleFeature linkFeature = SimpleFeatureBuilder.retype(link, linkFeatureType);
             builder.append(OGC_LINKS_PROPERTY_NAME, linkFeature);
         }
 
@@ -998,6 +998,7 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
 
     public List<String> getMainTypeDatabaseIdentifiers(Filter filter) throws IOException {
         SimpleFeatureSource fs = getDelegateSource();
+        @SuppressWarnings("PMD.CloseResource")
         Transaction t = getTransaction();
         if (t != Transaction.AUTO_COMMIT && t != null) {
             if (fs instanceof WorkspaceFeatureSource source) {

@@ -177,7 +177,6 @@ public class STACQueryablesBuilderTest {
         // grab the queryables
         Queryables queryables = builder.getQueryables();
         Map<String, Schema> properties = queryables.getProperties();
-        System.out.println(properties);
 
         // check the keywords queryable, top level, not in "properties"
         Schema keywords = properties.get("keywords");
@@ -261,9 +260,6 @@ public class STACQueryablesBuilderTest {
 
         // confirm that properties not included in the queryables array are excluded
         Schema platform = properties.get("platform");
-        assertNull(platform);
-
-        Schema constellation = properties.get("constellation");
         assertNull(platform);
     }
 }

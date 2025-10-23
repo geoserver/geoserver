@@ -110,7 +110,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
     }
 
     @Override
-    public Object read(Object requestObject, Map kvp, Map rawKvp) throws Exception {
+    public Object read(Object requestObject, Map<String, Object> kvp, Map<String, Object> rawKvp) throws Exception {
         SearchRequest request = (SearchRequest) super.read(requestObject, kvp, rawKvp);
 
         // collect the valid search parameters

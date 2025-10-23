@@ -41,7 +41,7 @@ public class DescriptionTransformer extends LambdaTransformerBase {
         return new OSEODescriptionTranslator(handler, oseo);
     }
 
-    private class OSEODescriptionTranslator extends LambdaTranslatorSupport {
+    private static class OSEODescriptionTranslator extends LambdaTranslatorSupport {
 
         private static final String CEOS_SUPPORTED_VERSION = "CEOS-OS-BP-V1.2/L1";
         private final OSEOInfo oseo;

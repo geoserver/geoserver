@@ -76,9 +76,6 @@ public class OSEORestTestSupport extends OSEOTestSupport {
 
     protected DocumentContext getAsJSONPath(String path, int expectedHttpCode) throws Exception {
         MockHttpServletResponse response = getAsServletResponse(path);
-        if (!isQuietTests()) {
-            System.out.println(response.getContentAsString());
-        }
 
         assertEquals(expectedHttpCode, response.getStatus());
         // allow application/json, application/geo+json, application/schema+json, ...

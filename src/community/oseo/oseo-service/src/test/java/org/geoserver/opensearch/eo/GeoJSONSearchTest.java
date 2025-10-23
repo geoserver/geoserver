@@ -131,11 +131,11 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
 
         JSONObject ogcLink =
                 (JSONObject) sp.getJSONObject("links").getJSONArray("ogc").get(0);
-        assertEquals(ogcLink.get("intTest").toString(), "2");
-        assertEquals(ogcLink.get("floatTest").toString(), "2.1");
-        assertEquals(ogcLink.get("booleanTest").toString(), "false");
-        assertEquals(ogcLink.get("dateTest").toString(), "2015-07-01T07:20:21.000Z");
-        assertEquals(ogcLink.get("varcharTest").toString(), "text2");
+        assertEquals("2", ogcLink.get("intTest").toString());
+        assertEquals("2.1", ogcLink.get("floatTest").toString());
+        assertEquals("false", ogcLink.get("booleanTest").toString());
+        assertEquals("2015-07-01T07:20:21.000Z", ogcLink.get("dateTest").toString());
+        assertEquals("text2", ogcLink.get("varcharTest").toString());
     }
 
     @Test
@@ -244,6 +244,7 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
 
         // check features
         JSONArray features = json.getJSONArray("features");
+        assertNotNull(features);
     }
 
     private void assertLink(JSONObject links, String name, String href, String type, String title) {

@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -187,9 +188,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
 
     private JSONArray jsonArray(Object... values) {
         JSONArray array = new JSONArray();
-        for (int i = 0; i < values.length; i++) {
-            array.add(values[i]);
-        }
+        Collections.addAll(array, values);
         return array;
     }
 
@@ -645,11 +644,12 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         // parse the geojson, check the geometries have been parsed correctly
         SimpleFeatureCollection fc = GeoJSONReader.parseFeatureCollection(json.jsonString());
         assertEquals(2, fc.size());
-        final SimpleFeatureIterator it = fc.features();
-        SimpleFeature sf = it.next();
-        assertTrue(new Envelope(10, 12, 40, 42).contains(ReferencedEnvelope.reference(sf.getBounds())));
-        sf = it.next();
-        assertTrue(new Envelope(10, 12, 40, 42).contains(ReferencedEnvelope.reference(sf.getBounds())));
+        try (SimpleFeatureIterator it = fc.features()) {
+            SimpleFeature sf = it.next();
+            assertTrue(new Envelope(10, 12, 40, 42).contains(ReferencedEnvelope.reference(sf.getBounds())));
+            sf = it.next();
+            assertTrue(new Envelope(10, 12, 40, 42).contains(ReferencedEnvelope.reference(sf.getBounds())));
+        }
 
         // check no other granule has been harmed
         json = getAsJSONPath(
@@ -824,10 +824,11 @@ public class ProductsControllerTest extends OSEORestTestSupport {
 
                 ZipEntry entry = new ZipEntry(name);
                 zos.putNextEntry(entry);
-                InputStream stream = getClass().getResourceAsStream(resource);
-                assertNotNull("Could not find " + resource, stream);
-                int copied = IOUtils.copy(stream, zos);
-                assertThat(copied, Matchers.greaterThan(0));
+                try (InputStream stream = getClass().getResourceAsStream(resource)) {
+                    assertNotNull("Could not find " + resource, stream);
+                    int copied = IOUtils.copy(stream, zos);
+                    assertThat(copied, Matchers.greaterThan(0));
+                }
                 zos.closeEntry();
                 zos.flush();
             }

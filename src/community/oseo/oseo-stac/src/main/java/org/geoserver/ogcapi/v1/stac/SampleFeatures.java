@@ -123,7 +123,7 @@ public class SampleFeatures implements GeoServerLifecycleHandler {
 
     private final OpenSearchAccessProvider accessProvider;
     private final LoadingCache<Object, Feature> sampleFeatures = CacheBuilder.newBuilder()
-            .build(new CacheLoader<Object, Feature>() {
+            .build(new CacheLoader<>() {
                 @Override
                 public Feature load(Object o) throws Exception {
                     FeatureSource<FeatureType, Feature> ps =

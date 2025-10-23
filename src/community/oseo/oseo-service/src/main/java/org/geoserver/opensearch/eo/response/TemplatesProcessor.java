@@ -116,7 +116,7 @@ public class TemplatesProcessor {
         StringWriter sw = new StringWriter();
         Template header = getTemplate("", "generic" + "-header");
         header.process(model, sw);
-        FeatureCollection results = searchResults.getResults();
+        FeatureCollection<FeatureType, Feature> results = searchResults.getResults();
 
         try (FeatureIterator<Feature> featureIterator = results.features()) {
             while (featureIterator.hasNext()) {
@@ -236,7 +236,7 @@ public class TemplatesProcessor {
 
             // dc:date, can be a range
             String spec;
-            if (start != null && end != null && start.equals(end)) {
+            if (start != null && start.equals(end)) {
                 spec = DateTimeFormatter.ISO_INSTANT.format(start.toInstant());
             } else {
                 spec = start != null ? DateTimeFormatter.ISO_INSTANT.format(start.toInstant()) : "";

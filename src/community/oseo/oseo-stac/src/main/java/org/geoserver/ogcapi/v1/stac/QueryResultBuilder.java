@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.geoserver.config.GeoServer;
-import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.visitors.PropertySelectionVisitor;
 import org.geoserver.ogcapi.APIBBoxParser;
@@ -450,9 +449,7 @@ class QueryResultBuilder {
         // do we map for a specific collection, or have to deal with multiple ones?
         FeatureType itemsSchema =
                 accessProvider.getOpenSearchAccess().getProductSource().getSchema();
-        TemplateBuilder builder;
         STACSortablesMapper mapper = null;
-        STACQueryablesBuilder stacQueryablesBuilder = null;
         String collectionId = null;
         if (collectionIds != null && !collectionIds.isEmpty()) {
             // right now assuming multiple collections means using search, where the

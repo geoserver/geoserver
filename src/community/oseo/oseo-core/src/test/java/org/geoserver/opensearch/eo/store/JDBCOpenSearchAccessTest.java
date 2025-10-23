@@ -35,6 +35,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -155,6 +156,7 @@ public class JDBCOpenSearchAccessTest {
         osAccess = setupAndReturnStore();
     }
 
+    @SuppressWarnings("unchecked")
     public static OpenSearchAccess setupAndReturnStore() throws IOException, SQLException {
         Assume.assumeNotNull(getFixture());
 
@@ -246,8 +248,7 @@ public class JDBCOpenSearchAccessTest {
 
     public static void populateTestDatabase(JDBCDataStore h2, boolean addGranuleTable)
             throws SQLException, IOException {
-        try (Connection conn = h2.getConnection(Transaction.AUTO_COMMIT);
-                Statement st = conn.createStatement()) {
+        try (Connection conn = h2.getConnection(Transaction.AUTO_COMMIT)) {
             // setup for fast import
 
             createTables(conn);
@@ -267,14 +268,14 @@ public class JDBCOpenSearchAccessTest {
     }
 
     private static List<String> loadScriptCommands(String scriptLocation) throws IOException {
-        // grab all non comment, non empty lines
+        // grab all non comment, non-empty lines
         try (InputStream is = JDBCOpenSearchAccess.class.getResourceAsStream(scriptLocation)) {
-            List<String> lines = IOUtils.readLines(is).stream()
-                    .map(l -> l.trim())
+            List<String> lines = IOUtils.readLines(is, StandardCharsets.UTF_8).stream()
+                    .map(String::trim)
                     .filter(l -> !l.startsWith("--") && !l.isEmpty())
-                    .collect(Collectors.toList());
+                    .toList();
             // regroup them into statements
-            List<String> statements = new ArrayList<String>();
+            List<String> statements = new ArrayList<>();
             String buffer = null;
             for (String line : lines) {
                 if (buffer == null) {
@@ -831,6 +832,7 @@ public class JDBCOpenSearchAccessTest {
     }
 
     @Test
+    @SuppressWarnings("PMD.CheckResultSet")
     public void testIndexCreationRemoval() throws Exception {
         Indexable simple = new Indexable("eo:cloud_cover", CQL.toExpression("opt:cloudCover"), FieldType.Other);
         Indexable geom = new Indexable("geometry", CQL.toExpression("footprint"), FieldType.Geometry);
@@ -950,6 +952,7 @@ public class JDBCOpenSearchAccessTest {
             assertThat(collectionIdentifiers, hasItems("SENTINEL2", "LANDSAT8"));
 
             // check it has been cached too
+            @SuppressWarnings("unchecked")
             Set<String> cachedCollections = (Set<String>)
                     attrs.getAttribute(WorkspaceFeatureSource.WS_COLLECTION_CACHE_KEY, RequestAttributes.SCOPE_REQUEST);
             assertThat(cachedCollections, hasItems("SENTINEL2", "LANDSAT8"));

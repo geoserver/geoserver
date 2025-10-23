@@ -96,6 +96,7 @@ public class JDBCOpenSearchAccessIntegrationTest extends GeoServerSystemTestSupp
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testLayers() throws Exception {
         // check expected property is there
         OpenSearchAccess osAccess = getOpenSearchAccess();

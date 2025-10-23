@@ -14,6 +14,7 @@ import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geotools.jdbc.JDBCDataStore;
 import org.junit.Assume;
 
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class GeoServerOpenSearchTestSupport {
 
     /** Sets up a PostGIS based OpenSearchAccess and configures OpenSearch for EO to use it */

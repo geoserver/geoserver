@@ -68,7 +68,7 @@ public class ProductClass implements Serializable, Cloneable {
      * Searches a product by prefix (search is case insensitive)
      *
      * @param oseo reference to the service configuration
-     * @param name the product class prefix
+     * @param prefix the product class prefix
      */
     public static ProductClass getProductClassFromPrefix(OSEOInfo oseo, String prefix) {
         for (ProductClass pc : getProductClasses(oseo)) {
@@ -83,7 +83,7 @@ public class ProductClass implements Serializable, Cloneable {
      * Checks if the given prefix matches a product class
      *
      * @param oseo reference to the service configuration
-     * @param name the product class name
+     * @param prefix the product class name
      */
     public static boolean isProductClass(OSEOInfo oseo, String prefix) {
         for (ProductClass pc : getProductClasses(oseo)) {

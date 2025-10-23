@@ -96,8 +96,8 @@ public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
         form.add(attribution);
 
         TextArea<List<String>> globalQueryables =
-                new TextArea<List<String>>(
-                        "globalQueryables", LiveCollectionModel.list(new PropertyModel(info, "globalQueryables"))) {
+                new TextArea<>(
+                        "globalQueryables", LiveCollectionModel.list(new PropertyModel<>(info, "globalQueryables"))) {
                     @Override
                     public <C> IConverter<C> getConverter(Class<C> type) {
                         if (type.isAssignableFrom(ArrayList.class)) return (IConverter<C>) new QueryablesConverter();
@@ -113,7 +113,7 @@ public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
         }
         DropDownChoice<DataStoreInfo> openSearchAccessReference = new DropDownChoice<>(
                 "openSearchAccessId",
-                new PropertyModel<DataStoreInfo>(this, "backend"),
+                new PropertyModel<>(this, "backend"),
                 new OpenSearchAccessListModel(),
                 new StoreListChoiceRenderer());
         form.add(openSearchAccessReference);
@@ -121,9 +121,8 @@ public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
         aggregatesCacheTTL.add(RangeValidator.minimum(0));
         aggregatesCacheTTL.setRequired(true);
         form.add(aggregatesCacheTTL);
-        List<String> units =
-                Arrays.asList(new String[] {TimeUnit.HOURS.name(), TimeUnit.MINUTES.name(), TimeUnit.SECONDS.name()});
-        DropDownChoice<String> aggregatesCacheTTLUnit = new DropDownChoice<String>("aggregatesCacheTTLUnit", units);
+        List<String> units = Arrays.asList(TimeUnit.HOURS.name(), TimeUnit.MINUTES.name(), TimeUnit.SECONDS.name());
+        DropDownChoice<String> aggregatesCacheTTLUnit = new DropDownChoice<>("aggregatesCacheTTLUnit", units);
         aggregatesCacheTTLUnit.setRequired(true);
         form.add(aggregatesCacheTTLUnit);
         final TextField<Integer> recordsPerPage = new TextField<>("recordsPerPage", Integer.class);
@@ -165,29 +164,26 @@ public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
             }
         });
 
-        productClasses =
-                new GeoServerTablePanel<ProductClass>("productClasses", new ProductClassesProvider(info), true) {
+        productClasses = new GeoServerTablePanel<>("productClasses", new ProductClassesProvider(info), true) {
 
-                    @Override
-                    protected Component getComponentForProperty(
-                            String id,
-                            IModel<ProductClass> itemModel,
-                            GeoServerDataProvider.Property<ProductClass> property) {
-                        if (ProductClassesProvider.REMOVE.equals(property)) {
-                            return removeLink(id, itemModel);
-                        } else {
-                            Fragment f;
-                            if ("namespace".equals(property.getName())) {
-                                f = new Fragment(id, "longtext", OSEOAdminPage.this);
-                            } else {
-                                f = new Fragment(id, "text", OSEOAdminPage.this);
-                            }
-                            TextField<?> text = new TextField("text", property.getModel(itemModel));
-                            f.add(text);
-                            return f;
-                        }
+            @Override
+            protected Component getComponentForProperty(
+                    String id, IModel<ProductClass> itemModel, GeoServerDataProvider.Property<ProductClass> property) {
+                if (ProductClassesProvider.REMOVE.equals(property)) {
+                    return removeLink(id, itemModel);
+                } else {
+                    Fragment f;
+                    if ("namespace".equals(property.getName())) {
+                        f = new Fragment(id, "longtext", OSEOAdminPage.this);
+                    } else {
+                        f = new Fragment(id, "text", OSEOAdminPage.this);
                     }
-                };
+                    TextField<?> text = new TextField<>("text", property.getModel(itemModel));
+                    f.add(text);
+                    return f;
+                }
+            }
+        };
         productClasses.setFilterVisible(false);
         productClasses.setSortable(false);
         productClasses.setPageable(false);
@@ -217,7 +213,7 @@ public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
     }
 
     private Component removeLink(String id, IModel<ProductClass> itemModel) {
-        Fragment f = new Fragment(id, "imageLink", OSEOAdminPage.this);
+        Fragment f = new Fragment(id, "imageLink", this);
         final ProductClass entry = itemModel.getObject();
         GeoServerAjaxFormLink link = new GeoServerAjaxFormLink("link") {
 

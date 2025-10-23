@@ -42,14 +42,13 @@ public class AtomSearchResponse extends Response {
 
         TemplatesProcessor processor =
                 new TemplatesProcessor(freemarkerTemplates, gs.getGlobal(), gs.getService(OSEOInfo.class));
-        String result = null;
+        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(output);
         try {
-            result = processor.processTemplate(results);
+            String result = processor.processTemplate(results);
+            outputStreamWriter.write(result);
         } catch (TemplateException e) {
             LOGGER.warning("Error processing template: " + e.getMessage());
         }
-        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(output);
-        outputStreamWriter.write(result);
         outputStreamWriter.flush();
     }
 

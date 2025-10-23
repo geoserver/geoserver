@@ -172,7 +172,7 @@ public class CollectionsTest extends STACTestSupport {
         testSentinel2JSON(s2);
     }
 
-    public void testSentinel2JSON(DocumentContext s2) {
+    private void testSentinel2JSON(DocumentContext s2) {
         assertEquals("The Sentinel-2 mission", s2.read("title"));
         assertThat(
                 s2.read("description"),

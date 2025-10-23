@@ -18,6 +18,7 @@ import org.geoserver.opensearch.eo.response.RSSExceptionTransformer;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.ServiceExceptionHandler;
 import org.geoserver.platform.OWS20Exception;
+import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 
 /**
@@ -30,7 +31,7 @@ public class OSEOExceptionHandler extends ServiceExceptionHandler {
 
     private GeoServer geoServer;
 
-    public OSEOExceptionHandler(List services, GeoServer geoServer) {
+    public OSEOExceptionHandler(List<Service> services, GeoServer geoServer) {
         super(services);
         this.geoServer = geoServer;
     }

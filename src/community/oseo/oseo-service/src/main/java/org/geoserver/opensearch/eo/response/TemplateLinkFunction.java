@@ -4,7 +4,7 @@
  */
 package org.geoserver.opensearch.eo.response;
 
-import static org.geoserver.ows.URLMangler.URLType.*;
+import static org.geoserver.ows.URLMangler.URLType.SERVICE;
 import static org.geotools.filter.capability.FunctionNameImpl.parameter;
 
 import java.util.Collections;

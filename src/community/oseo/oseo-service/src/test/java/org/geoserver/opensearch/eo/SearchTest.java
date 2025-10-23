@@ -1020,7 +1020,6 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo(uid)));
 
         // checking HTML bits, should have a customized title
-        String oseo = "http://localhost:8080/geoserver/oseo/";
         assertThat(
                 dom,
                 hasXPath("/at:feed/at:entry[1]/at:summary", containsString("<h1>This is a LANDSAT product!</h1>")));

@@ -79,6 +79,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/oseo/collections/{collection}/products")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class ProductsController extends AbstractOpenSearchController {
 
     private static final String EOP_IDENTIFIER = "eop:identifier";
@@ -364,8 +365,8 @@ public class ProductsController extends AbstractOpenSearchController {
             names.add(propertyName);
             values.add(p.getValue());
         }
-        Name[] attributeNames = (Name[]) names.toArray(new Name[names.size()]);
-        Object[] attributeValues = (Object[]) values.toArray();
+        Name[] attributeNames = names.toArray(new Name[names.size()]);
+        Object[] attributeValues = values.toArray();
         Filter filter = getProductFilter(collection, product);
 
         fs.modifyFeatures(attributeNames, attributeValues, filter);

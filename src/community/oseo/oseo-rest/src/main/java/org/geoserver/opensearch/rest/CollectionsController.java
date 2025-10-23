@@ -75,6 +75,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/oseo/collections")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class CollectionsController extends AbstractOpenSearchController {
     public static final Consumer<Query> IDENTITY = q -> {};
     protected List<OseoEventListener> eventListeners = new ArrayList<>();
@@ -502,7 +503,6 @@ public class CollectionsController extends AbstractOpenSearchController {
         Filter filter = FF.equal(FF.property(COLLECTION_ID), FF.literal(collection), true);
         runTransactionOnCollectionStore(fs -> {
             List<CollectionLayer> collectionLayers = getCollectionLayers(collection);
-            CollectionLayer previousDefaultLayer = getCollectionLayer(collectionLayers, null);
             CollectionLayer removedLayer = getCollectionLayer(collectionLayers, layer);
             if (removedLayer != null) {
                 collectionLayers.remove(removedLayer);

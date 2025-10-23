@@ -66,14 +66,14 @@ public class OSEOFilter implements GeoServerFilter {
         }
 
         @Override
-        public Enumeration getParameterNames() {
+        public Enumeration<String> getParameterNames() {
             return Collections.enumeration(getParameterMap().keySet());
         }
 
         @Override
         public Map<String, String[]> getParameterMap() {
             Map<String, String[]> original = super.getParameterMap();
-            Map filtered = new HashMap<String, String[]>(original);
+            Map<String, String[]> filtered = new HashMap<>(original);
             filtered.put("service", new String[] {"OSEO"});
             filtered.put("version", new String[] {"1.0.0"});
             filtered.put("request", new String[] {request});

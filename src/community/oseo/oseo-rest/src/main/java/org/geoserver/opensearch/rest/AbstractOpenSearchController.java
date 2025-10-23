@@ -7,7 +7,6 @@ package org.geoserver.opensearch.rest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -26,9 +25,6 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.featurestemplating.builders.JSONFieldSupport;
@@ -78,9 +74,6 @@ import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpStatus;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 /**
  * Base class for OpenSearch related REST controllers
@@ -223,7 +216,7 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
 
         Map<String, Object> unknownFields = new HashMap<>();
 
-        if (linkProperties != null && linkProperties.size() > 0) {
+        if (linkProperties != null && !linkProperties.isEmpty()) {
             SimpleFeatureImpl simpleFeature = (SimpleFeatureImpl) ((ArrayList) linkProperties).get(0);
 
             // iterate over feature to get unknown properties from OgcLink
@@ -310,6 +303,7 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
 
             @Override
             public SimpleFeatureIterator features() {
+                @SuppressWarnings("PMD.CloseResource")
                 FeatureIterator<Feature> features = fc.features();
                 return new SimpleFeatureIterator() {
 
@@ -331,18 +325,6 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
                 };
             }
         };
-    }
-
-    /** Checks XML well formedness (TODO: check against actual schemas) */
-    protected void checkWellFormedXML(String xml) {
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder;
-        try {
-            dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(new InputSource(new StringReader(xml)));
-        } catch (ParserConfigurationException | SAXException | IOException e) {
-            throw new RestException("XML document is not well formed: " + e.getMessage(), HttpStatus.BAD_REQUEST, e);
-        }
     }
 
     /**

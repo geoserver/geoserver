@@ -66,8 +66,9 @@ import net.sf.json.JSON;
 import net.sf.json.JSONException;
 import net.sf.json.JSONSerializer;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.http.HeaderElement;
-import org.apache.http.message.BasicHeaderValueParser;
+import org.apache.hc.core5.http.HeaderElement;
+import org.apache.hc.core5.http.message.BasicHeaderValueParser;
+import org.apache.hc.core5.http.message.ParserCursor;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.custommonkey.xmlunit.exceptions.XpathException;
@@ -1597,7 +1598,9 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         if (mimeType == null) {
             return null;
         }
-        HeaderElement headerElement = BasicHeaderValueParser.parseHeaderElement(mimeType, null);
+        BasicHeaderValueParser parser = new BasicHeaderValueParser();
+        ParserCursor cursor = new ParserCursor(0, mimeType.length());
+        HeaderElement headerElement = parser.parseHeaderElement(mimeType, cursor);
         return headerElement.getName();
     }
 

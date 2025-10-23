@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.hc.core5.net.URLEncodedUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.Button;
@@ -179,7 +179,7 @@ public class CSPConfigurationPage extends GeoServerSecuredPage {
         String context = GeoServerApplication.get().servletRequest().getContextPath();
         String pathInfo = path.startsWith(context) ? path.substring(context.length()) : path;
         Map<String, List<String>> listMap = new LinkedHashMap<>();
-        URLEncodedUtils.parse(url.getQuery(), StandardCharsets.UTF_8, '&')
+        URLEncodedUtils.parse(url.getQuery(), StandardCharsets.UTF_8)
                 .forEach(p -> listMap.computeIfAbsent(p.getName(), x -> new ArrayList<>())
                         .add(p.getValue()));
         Map<String, String[]> parameterMap = new LinkedHashMap<>();

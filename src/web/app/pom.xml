@@ -1037,7 +1037,7 @@
         </dependency>
       </dependencies>
     </profile>
-    <profile>
+    <!-- profile>
       <id>geofence</id>
       <dependencies>
         <dependency>
@@ -1055,8 +1055,8 @@
           <artifactId>gs-geofence-server</artifactId>
           <version>${project.version}</version>
         </dependency>
-        <!-- Older versions of h2 fail in drop/create tables   -->
-        <!-- This version may break netcdf/grib modules        -->
+        <!-- Older versions of h2 fail in drop/create tables   -- >
+        <!-- This version may break netcdf/grib modules        -- >
         <dependency>
           <groupId>com.h2database</groupId>
           <artifactId>h2</artifactId>
@@ -1107,7 +1107,7 @@
           <version>${project.version}</version>
         </dependency>
       </dependencies>
-    </profile>
+    </profile -->
     <profile>
       <id>sldService</id>
       <dependencies>

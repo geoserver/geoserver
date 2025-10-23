@@ -357,7 +357,7 @@
       <artifactId>gs-sldservice</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
+    <!-- dependency>
       <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-geofence</artifactId>
       <version>${project.version}</version>
@@ -371,7 +371,7 @@
       <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-geofence-wps</artifactId>
       <version>${project.version}</version>
-    </dependency>
+    </dependency -->
     <dependency>
       <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-authkey</artifactId>

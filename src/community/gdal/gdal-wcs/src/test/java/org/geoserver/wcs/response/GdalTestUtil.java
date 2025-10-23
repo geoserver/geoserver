@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
@@ -29,7 +30,7 @@ public class GdalTestUtil {
 
     static final String TEST_RESOURCE = "/org/geoserver/data/test/tazdem.tiff";
 
-    static final double[][] TEST_XYZ_DATA = new double[][] {
+    static final double[][] TEST_XYZ_DATA = {
         {145.004166666664673, -41.004166666654271, 75},
         {145.012499999997999, -41.004166666654271, 64},
         {145.020833333331325, -41.004166666654271, 66},
@@ -39,10 +40,12 @@ public class GdalTestUtil {
 
     static final int TEST_GRID_COLS = 120;
     static final double TEST_GRID_NODATA = -9999;
-    static final String[] TEST_GRID_HEADER_LABEL =
-            new String[] {"ncols", "nrows", "xllcorner", "yllcorner", "cellsize", "NODATA_value"};
-    static final double[] TEST_GRID_HEADER_DATA =
-            new double[] {TEST_GRID_COLS, 240, 144.999999999998, -42.999999999987, 0.008333333333, TEST_GRID_NODATA};
+    static final String[] TEST_GRID_HEADER_LABEL = {
+        "ncols", "nrows", "xllcorner", "yllcorner", "cellsize", "NODATA_value"
+    };
+    static final double[] TEST_GRID_HEADER_DATA = {
+        TEST_GRID_COLS, 240, 144.999999999998, -42.999999999987, 0.008333333333, TEST_GRID_NODATA
+    };
 
     static final double EQUALS_TOLERANCE = 1E-12;
 
@@ -54,11 +57,13 @@ public class GdalTestUtil {
 
         // check this just once
         if (IS_GDAL_AVAILABLE == null) {
+            Properties p;
             try {
-                InputStream conf = GdalTestUtil.class.getResourceAsStream("/gdal_translate.properties");
-                Properties p = new Properties();
-                if (conf != null) {
-                    p.load(conf);
+                try (InputStream conf = GdalTestUtil.class.getResourceAsStream("/gdal_translate.properties")) {
+                    p = new Properties();
+                    if (conf != null) {
+                        p.load(conf);
+                    }
                 }
 
                 GDAL_TRANSLATE = p.getProperty("gdal_translate");
@@ -132,7 +137,7 @@ public class GdalTestUtil {
     }
 
     private static void checkGridProjection(InputStream is) throws Exception {
-        String wkt = IOUtils.readLines(is).get(0);
+        String wkt = IOUtils.readLines(is, Charset.defaultCharset()).get(0);
         CoordinateReferenceSystem crs = CRS.parseWKT(wkt);
         assertNotNull(crs);
         assertEquals("GCS_WGS_1984", crs.getName().getCode());

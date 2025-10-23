@@ -114,7 +114,7 @@ public class GeofencePage extends GeoServerSecuredPage {
                             invoker.afterPropertiesSet();
                             return (RuleReaderService) invoker.getObject();*/
 
-                            return (RuleReaderService) null;
+                            return null;
                         }
                     }
                 }.setDefaultFormProcessing(false));

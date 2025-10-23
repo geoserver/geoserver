@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 
 import com.google.common.base.Ticker;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.geofence.cache.CacheConfiguration;
@@ -46,7 +47,8 @@ public class CacheReaderTest extends GeofenceBaseTest {
     @Before
     public void onInitCachedReader() {
         configurer = (GeoFencePropertyPlaceholderConfigurer) applicationContext.getBean("geofence-configurer");
-        configurer.setLocation(new UrlResource(this.getClass().getResource("/test-cache-config.properties")));
+        configurer.setLocation(
+                new UrlResource(Objects.requireNonNull(this.getClass().getResource("/test-cache-config.properties"))));
 
         realReader = applicationContext.getBean("remoteReaderService", RuleReaderService.class);
 

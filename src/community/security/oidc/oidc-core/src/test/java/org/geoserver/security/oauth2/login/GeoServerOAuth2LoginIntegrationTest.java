@@ -274,7 +274,7 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
         // then: "skip login dialog"/AEP is enabled -> spring's initiate login endpoint
         assertEquals(302, webResponse.getStatus());
         String location = webResponse.getHeader("Location");
-        String authStartPath = "web/oauth2/authorization/oidc";
+        String authStartPath = "web/oauth2/authorizationoidc";
         assertEquals(baseRedirectUri + authStartPath, location);
 
         // when: request to spring's initiate login endpoint is issued on same session

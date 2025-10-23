@@ -174,7 +174,7 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
         if (isOidcEnabled()) {
             lRegIds.add(REG_ID_OIDC);
         }
-        if (lRegIds.isEmpty() || 1 < lRegIds.size()) {
+        if (lRegIds.size() != 1) {
             return null;
         }
         String lBase = baseRedirectUriNormalized();

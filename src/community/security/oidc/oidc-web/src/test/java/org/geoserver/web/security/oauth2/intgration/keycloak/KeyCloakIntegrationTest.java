@@ -202,10 +202,7 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
         String oidcLogin_state = state_nonce.getLeft();
         String oidcLogin_nonce = state_nonce.getRight();
 
-        OAuth2AuthenticationToken auth =
-                keycloakLogin(session, oidcLogin_state, oidcLogin_nonce, keycloakUserName, keycloakPassword);
-
-        return auth;
+        return keycloakLogin(session, oidcLogin_state, oidcLogin_nonce, keycloakUserName, keycloakPassword);
     }
 
     /**

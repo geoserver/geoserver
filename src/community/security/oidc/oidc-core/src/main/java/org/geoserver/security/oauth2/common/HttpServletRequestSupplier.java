@@ -22,7 +22,6 @@ public class HttpServletRequestSupplier implements Supplier<HttpServletRequest> 
         if (lAttrs == null) {
             throw new IllegalStateException("Failed to obtain ServletRequestAttributes.");
         }
-        HttpServletRequest lRequest = lAttrs.getRequest();
-        return lRequest;
+        return lAttrs.getRequest();
     }
 }

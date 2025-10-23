@@ -57,6 +57,8 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.client.web.AuthenticatedPrincipalOAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
@@ -78,11 +80,11 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  */
 public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServerOAuth2ClientRegistrationId {
 
-    public static final String DEFAULT_AUTHORIZATION_REQUEST_BASE_URI = "web/oauth2/authorization/";
+    public static final String DEFAULT_AUTHORIZATION_REQUEST_BASE_URI = "web/oauth2/authorization";
 
     /** Filter types required for GeoServer */
     private static final List<Class<?>> REQ_FILTER_TYPES = asList(
-            org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter.class,
+            OAuth2AuthorizationRequestRedirectFilter.class,
             OAuth2LoginAuthenticationFilter.class,
             RequestCacheAwareFilter.class);
 
@@ -98,7 +100,7 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
     private OAuth2UserService<OidcUserRequest, OidcUser> oidcUserService;
 
     private OAuth2AuthorizedClientService authorizedClientService;
-    private org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository authorizedClientRepository;
+    private OAuth2AuthorizedClientRepository authorizedClientRepository;
     private DefaultOAuth2AuthorizationRequestResolver authorizationRequestResolver;
     private OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient;
     private LogoutSuccessHandler logoutSuccessHandler;
@@ -240,14 +242,14 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
         return new InMemoryOAuth2AuthorizedClientService(getClientRegistrationRepository());
     }
 
-    private org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository
-            createAuthorizedClientRepository(OAuth2AuthorizedClientService authorizedClientService) {
+    private OAuth2AuthorizedClientRepository createAuthorizedClientRepository(
+            OAuth2AuthorizedClientService authorizedClientService) {
         return new AuthenticatedPrincipalOAuth2AuthorizedClientRepository(authorizedClientService);
     }
 
     private ClientRegistration createGoogleClientRegistration() {
         /*
-         * Wellknown-endpoint:
+         * Well known-endpoint:
          * - https://accounts.google.com/.well-known/openid-configuration
          * Documentation:
          * - https://developers.google.com/identity/openid-connect/openid-connect
@@ -272,7 +274,7 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
         /*
          * GitHub does not support OIDC, but OAuth2.
          *
-         * Wellknown-endpoint:
+         * Well known-endpoint:
          * - n/a
          * Documentation:
          * - https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps
@@ -296,7 +298,7 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
 
     private ClientRegistration createMicrosoftClientRegistration() {
         /*
-         * Wellknown-endpoint:
+         * Well known-endpoint:
          * - https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration
          */
 
@@ -457,8 +459,7 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
     }
 
     /** @return the authorizedClientRepository */
-    public org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository
-            getAuthorizedClientRepository() {
+    public OAuth2AuthorizedClientRepository getAuthorizedClientRepository() {
         if (authorizedClientRepository == null) {
             authorizedClientRepository = createAuthorizedClientRepository(getAuthorizedClientService());
         }
@@ -466,9 +467,7 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
     }
 
     /** @param pAuthorizedClientRepository the authorizedClientRepository to set */
-    public void setAuthorizedClientRepository(
-            org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository
-                    pAuthorizedClientRepository) {
+    public void setAuthorizedClientRepository(OAuth2AuthorizedClientRepository pAuthorizedClientRepository) {
         authorizedClientRepository = pAuthorizedClientRepository;
     }
 

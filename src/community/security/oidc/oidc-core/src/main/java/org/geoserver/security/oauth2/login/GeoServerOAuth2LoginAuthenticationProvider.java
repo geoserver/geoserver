@@ -88,9 +88,8 @@ public class GeoServerOAuth2LoginAuthenticationProvider extends AbstractFilterPr
         if (lBuilderCustomizer != null) {
             lBuilderCustomizer.accept(lBuilder);
         }
-        GeoServerOAuth2LoginAuthenticationFilter lFilter = lBuilder.build();
 
-        return lFilter;
+        return lBuilder.build();
     }
 
     private <T> T getOptionalBean(Class<T> pClass) {

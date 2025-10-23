@@ -70,7 +70,7 @@ public class GeoServerOAuth2LoginAuthenticationFilter extends GeoServerComposite
             return;
         }
         if (!(pAuthentication instanceof OAuth2AuthenticationToken)) {
-            return; // dont do anything - user isn't signed on as oidc
+            return; // don't do anything - user isn't signed on as oidc
         }
         try {
             logoutSuccessHandler.onLogoutSuccess(pRequest, pResponse, pAuthentication);

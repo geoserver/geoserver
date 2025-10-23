@@ -12,7 +12,7 @@
   <name>GeoServer ACL Authorization</name>
   <description>GeoServer Acess Control Lists based authorization</description>
   <properties>
-    <acl.version>2.3-SNAPSHOT</acl.version>
+    <acl.version>2.4-SNAPSHOT</acl.version>
   </properties>
   <dependencyManagement>
     <dependencies>

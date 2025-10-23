@@ -66,11 +66,11 @@ To make :ref:`upgrading <installation_upgrade>` easier, **Web Archive** users sh
    * - Platform
      - Example location
    * - Linux 
-     - |data_directory_linux|
+     - :file:`/var/opt/geoserver/data`
    * - Windows
-     - |data_directory_win|
+     - :file:`C:\\ProgramData\\GeoServer`
    * - MacOS 
-     - |data_directory_mac|
+     - :file:`~/Library/Application Support/GeoServer/data_dir`
 
 Creating a new data directory
 -----------------------------

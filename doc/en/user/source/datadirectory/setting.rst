@@ -17,7 +17,7 @@ Windows
 
 On Windows platforms the location of the GeoServer data directory is controlled by the ``GEOSERVER_DATA_DIR`` environment variable, system property, or web context parameter.
 
-* |data_directory_win| (example location)
+* :file:`C:\\\\ProgramData\\\\GeoServer` (example location)
 
 To set the environment variable:
 
@@ -38,7 +38,7 @@ Linux
 
 On Linux platforms the location of the GeoServer data directory is controlled by the ``GEOSERVER_DATA_DIR`` environment variable, system property, or web context parameter.
 
-* |data_directory_linux| (example location)
+* :file:`/var/opt/geoserver/data` (example location)
 
 To set the environment variable:
 
@@ -56,7 +56,7 @@ Mac OS X
 
 For the binary install of GeoServer on Mac OS X, the data directory is set in the same way as for Linux. 
 
-* |data_directory_mac| (example location)
+* file:`~/Library/Application Support/GeoServer/data_dir` (example location)
 
 For the Mac OS X install, set the ``GEOSERVER_DATA_DIR`` environment variable to the desired directory location.
 

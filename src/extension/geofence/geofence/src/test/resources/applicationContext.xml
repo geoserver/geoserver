@@ -26,5 +26,9 @@
           </props>
         </property> 
     </bean>
-    
+
+    <bean id="remoteReaderService"
+          class="org.mockito.Mockito" factory-method="mock">
+        <constructor-arg value="org.geoserver.geofence.services.RuleReaderService"/>
+    </bean>
 </beans>

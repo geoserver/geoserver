@@ -23,12 +23,14 @@ public class JdbcTableMetadata extends EntityMetadata implements JdbcConnectable
     private final Connection connection;
     private final String catalog;
     private final String schema;
+    private JdbcHelper jdbcHelper;
 
-    public JdbcTableMetadata(Connection connection, String catalog, String schema, String name) {
+    public JdbcTableMetadata(Connection connection, String catalog, String schema, String name, JdbcHelper jdbcHelper) {
         super(name);
         this.connection = connection;
         this.catalog = catalog;
         this.schema = schema;
+        this.jdbcHelper = Objects.requireNonNull(jdbcHelper, "jdbcHelper must not be null");
     }
 
     @Override
@@ -86,7 +88,7 @@ public class JdbcTableMetadata extends EntityMetadata implements JdbcConnectable
         try {
             // Lazy load in case not loaded before
             if (attributes.isEmpty()) {
-                attributes.addAll(JdbcHelper.getInstance().getColumnsByTable(connection.getMetaData(), this));
+                attributes.addAll(jdbcHelper.getColumnsByTable(connection.getMetaData(), this));
             }
             return attributes;
         } catch (Exception e) {
@@ -111,11 +113,19 @@ public class JdbcTableMetadata extends EntityMetadata implements JdbcConnectable
     public List<RelationMetadata> getRelations() {
         try {
             if (relations.isEmpty()) {
-                relations.addAll(JdbcHelper.getInstance().getRelationsByTable(connection.getMetaData(), this));
+                relations.addAll(jdbcHelper.getRelationsByTable(connection.getMetaData(), this));
             }
             return relations;
         } catch (Exception e) {
             throw new UncheckedExecutionException("Cannot get relations from DatabaseMetadata", e);
         }
+    }
+
+    void setJdbcHelper(JdbcHelper jdbcHelper) {
+        this.jdbcHelper = Objects.requireNonNull(jdbcHelper, "jdbcHelper must not be null");
+    }
+
+    JdbcHelper getJdbcHelper() {
+        return jdbcHelper;
     }
 }

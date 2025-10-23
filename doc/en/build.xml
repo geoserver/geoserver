@@ -138,20 +138,20 @@
 
   <target name="sphinx" if="sphinx.available">
     <local name="argLine"/>
-    <property name="argLine" value="-D release=${project.version} -q -W --keep-going -b ${build} -d &quot;${build.directory}/${id}/doctrees&quot; . &quot;${build.directory}/${id}/${build}&quot;"/>
+    <property name="argLine" value="-W --keep-going -b ${build} -d &quot;${build.directory}/${id}/doctrees&quot; . &quot;${build.directory}/${id}/${build}&quot;"/>
     <echo message="Running sphinx-build ${argLine}"/> 
     <exec executable="sphinx-build" failonerror="true" dir="${basedir}/${id}/source">
-      <env key="project.version" value="${project.version}"/>
+      <!--env key="project.version" value="${project.version}"/-->
       <arg line="${argLine}"/>
     </exec>
   </target>
   
   <target name="autobuild" if="autobuild.available">
     <local name="argLine"/>
-    <property name="argLine" value="-D release=${project.version} -q -W -b html -d &quot;${build.directory}/${id}/doctrees&quot; . &quot;${build.directory}/${id}/html&quot;"/>
+    <property name="argLine" value="-W -b html -d &quot;${build.directory}/${id}/doctrees&quot; . &quot;${build.directory}/${id}/html&quot;"/>
     <echo message="Running sphinx-autobuild ${argLine}"/> 
     <exec executable="sphinx-autobuild" failonerror="true" dir="${basedir}/${id}/source">
-      <env key="project.version" value="${project.version}"/>
+      <!--env key="project.version" value="${project.version}"/-->
       <arg line="${argLine} --open-browser"/>
     </exec>
   </target>

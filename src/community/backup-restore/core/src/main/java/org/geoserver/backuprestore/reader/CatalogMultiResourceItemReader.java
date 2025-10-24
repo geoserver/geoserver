@@ -1,73 +1,39 @@
-/* (c) 2016 Open Source Geospatial Foundation - all rights reserved
- * This code is licensed under the GPL 2.0 license, available at the root
- * application directory.
- */
-
-/*
- * Copyright 2006-2007 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.geoserver.backuprestore.reader;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import org.geoserver.backuprestore.Backup;
 import org.geotools.util.logging.Logging;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.item.ExecutionContext;
-import org.springframework.batch.item.ItemStream;
 import org.springframework.batch.item.ItemStreamException;
 import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.ResourceAware;
 import org.springframework.batch.item.UnexpectedInputException;
-import org.springframework.batch.item.file.MultiResourceItemReader;
-import org.springframework.batch.item.file.ResourceAwareItemReaderItemStream;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
 /**
- * Reads items from multiple resources sequentially - resource list is given by {@link #setResources(Resource[])}, the
- * actual reading is delegated to {@link #setDelegate(ResourceAwareItemReaderItemStream)}.
- *
- * <p>Input resources are ordered using {@link #setComparator(Comparator)} to make sure resource ordering is preserved
- * between job runs in restart scenario.
- *
- * <p>Code based on original {@link MultiResourceItemReader} by Robert Kasanicky and Lucas Ward.
- *
- * @author Robert Kasanicky
- * @author Lucas Ward
- * @author Alessio Fabiani, GeoSolutions
+ * Multi-resource reader that: - expands numbered shard files (e.g. store.dat, store.dat.1, store.dat.2, ...) - sorts
+ * shards numerically (base file first, then 1,2,3,...,10)
  */
 public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
 
     private static final Logger logger = Logging.getLogger(CatalogMultiResourceItemReader.class);
-
     private static final String RESOURCE_KEY = "resourceIndex";
 
     private CatalogReader<? extends T> delegate;
-
     private Resource[] resources;
-
     private boolean saveState = true;
-
     private int currentResource = -1;
-
-    // signals there are no resources to read -> just return null on first read
     private boolean noInput;
-
     private boolean strict = false;
 
     public CatalogMultiResourceItemReader(Class<T> clazz, Backup backupFacade) {
@@ -79,61 +45,48 @@ public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
         delegate.retrieveInterstepData(stepExecution);
     }
 
-    /**
-     * In strict mode the reader will throw an exception on
-     * {@link #open(org.springframework.batch.item.ExecutionContext)} if there are no resources to read.
-     *
-     * @param strict false by default
-     */
     public void setStrict(boolean strict) {
         this.strict = strict;
     }
 
+    /** Numeric-aware comparator so 1,2,...,10 are in logical order; base file (no suffix) comes first. */
     private Comparator<Resource> comparator = new Comparator<Resource>() {
-
-        /** Compares resource filenames. */
         @Override
         public int compare(Resource r1, Resource r2) {
-            return r1.getFilename().compareTo(r2.getFilename());
+            String f1 = r1.getFilename(), f2 = r2.getFilename();
+            // try numeric suffix (.1, .2, ...)
+            int n1 = suffixIndex(f1), n2 = suffixIndex(f2);
+            if (n1 != n2) return Integer.compare(n1, n2);
+            return f1.compareTo(f2);
+        }
+
+        private int suffixIndex(String name) {
+            try {
+                int dot = name.lastIndexOf('.');
+                return (dot >= 0) ? Integer.parseInt(name.substring(dot + 1)) : 0;
+            } catch (Exception e) {
+                return 0;
+            }
         }
     };
 
-    /** Reads the next item, jumping to next resource if necessary. */
     @Override
     public T read() throws Exception, UnexpectedInputException, ParseException {
+        if (noInput) return null;
 
-        if (noInput) {
-            return null;
-        }
-
-        // If there is no resource, then this is the first item, set the current
-        // resource to 0 and open the first delegate.
         if (currentResource == -1) {
             currentResource = 0;
             delegate.setResource(resources[currentResource]);
             delegate.open(new ExecutionContext());
         }
-
         return readNextItem();
     }
 
-    /**
-     * Use the delegate to read the next item, jump to next resource if current one is exhausted. Items are appended to
-     * the buffer.
-     *
-     * @return next item from input
-     */
     private T readNextItem() throws Exception {
-
         T item = readFromDelegate();
-
         while (item == null) {
-
             currentResource++;
-
-            if (currentResource >= resources.length) {
-                return null;
-            }
+            if (currentResource >= resources.length) return null;
 
             delegate.close();
             delegate.setResource(resources[currentResource]);
@@ -141,7 +94,6 @@ public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
 
             item = readFromDelegate();
         }
-
         return item;
     }
 
@@ -153,22 +105,15 @@ public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
         return item;
     }
 
-    /** Close the {@link #setDelegate(ResourceAwareItemReaderItemStream)} reader and reset instance variable values. */
     @Override
     public void close() throws ItemStreamException {
         super.close();
-
         if (!this.noInput) {
             delegate.close();
         }
-
         noInput = false;
     }
 
-    /**
-     * Figure out which resource to start with in case of restart, open the delegate and restore delegate's position in
-     * the resource.
-     */
     @Override
     public void open(ExecutionContext executionContext) throws ItemStreamException {
         super.open(executionContext);
@@ -190,11 +135,7 @@ public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
 
         if (executionContext.containsKey(getExecutionContextKey(RESOURCE_KEY))) {
             currentResource = executionContext.getInt(getExecutionContextKey(RESOURCE_KEY));
-
-            // context could have been saved before reading anything
-            if (currentResource == -1) {
-                currentResource = 0;
-            }
+            if (currentResource == -1) currentResource = 0;
 
             delegate.setResource(resources[currentResource]);
             delegate.open(executionContext);
@@ -203,7 +144,6 @@ public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
         }
     }
 
-    /** Store the current resource index and position in the resource. */
     @Override
     public void update(ExecutionContext executionContext) throws ItemStreamException {
         super.update(executionContext);
@@ -213,38 +153,57 @@ public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
         }
     }
 
-    /** @param delegate reads items from single {@link Resource}. */
+    /** Reader for a single Resource. */
     public void setDelegate(CatalogReader<T> delegate) {
         this.delegate = delegate;
     }
 
-    /**
-     * Set the boolean indicating whether or not state should be saved in the provided {@link ExecutionContext} during
-     * the {@link ItemStream} call to update.
-     */
     @Override
     public void setSaveState(boolean saveState) {
         this.saveState = saveState;
     }
 
-    /**
-     * @param comparator used to order the injected resources, by default compares {@link Resource#getFilename()}
-     *     values.
-     */
+    /** Override the default comparator if needed. */
     public void setComparator(Comparator<Resource> comparator) {
         this.comparator = comparator;
     }
 
-    /** @param resources input resources */
+    /**
+     * Set input resources. This method also expands numbered shards that live next to each base file (e.g.,
+     * "namespace.dat" -> also picks "namespace.dat.1", ".2", ...).
+     */
     public void setResources(Resource[] resources) {
         Assert.notNull(resources, "The resources must not be null");
-        this.resources = Arrays.asList(resources).toArray(new Resource[resources.length]);
+        List<Resource> expanded = new ArrayList<>();
+
+        for (Resource r : resources) {
+            expanded.add(r); // always include the base
+
+            // Try to discover numbered siblings when possible (file-system based resources)
+            try {
+                File base = r.getFile();
+                if (base != null && base.isFile()) {
+                    File dir = base.getParentFile();
+                    String baseName = base.getName();
+                    // pattern: baseName + '.' + digits
+                    Pattern p = Pattern.compile(Pattern.quote(baseName) + "\\.(\\d+)");
+                    File[] shards = dir.listFiles(f -> p.matcher(f.getName()).matches());
+                    if (shards != null) {
+                        for (File s : shards) {
+                            expanded.add(new FileSystemResource(s));
+                        }
+                    }
+                }
+            } catch (IOException | UnsupportedOperationException ignored) {
+                // Non-file resources (e.g. classpath, VFS) -> we can't expand; keep the base only.
+            }
+        }
+
+        this.resources = expanded.toArray(new Resource[0]);
     }
 
     public Resource getCurrentResource() {
-        if (currentResource >= resources.length || currentResource < 0) {
-            return null;
-        }
+        if (currentResource >= resources.length || currentResource < 0) return null;
         return resources[currentResource];
     }
 

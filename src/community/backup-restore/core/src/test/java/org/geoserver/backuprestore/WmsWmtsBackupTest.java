@@ -47,22 +47,18 @@ public class WmsWmtsBackupTest extends BackupRestoreTestSupport {
             // unzip the completed backup
             Scanner scanner;
             boolean hasWmsStore;
+            boolean hasWmtsStore;
             try (ZipFile backup = new ZipFile(backupFile)) {
                 ZipEntry entry = backup.getEntry("store.dat.1");
 
                 scanner = new Scanner(backup.getInputStream(entry), StandardCharsets.UTF_8);
                 hasWmsStore = false;
-                while (scanner.hasNextLine() && !hasWmsStore) {
+                hasWmtsStore = false;
+                while (scanner.hasNextLine()) {
                     String line = scanner.nextLine();
-                    hasWmsStore = line.contains("some-wms-store");
+                    if (!hasWmsStore) hasWmsStore = line.contains("some-wms-store");
+                    if (!hasWmtsStore) hasWmtsStore = line.contains("some-wmts-store");
                 }
-
-                scanner = new Scanner(backup.getInputStream(entry), StandardCharsets.UTF_8);
-            }
-            boolean hasWmtsStore = false;
-            while (scanner.hasNextLine() && !hasWmtsStore) {
-                String line = scanner.nextLine();
-                hasWmtsStore = line.contains("some-wmts-store");
             }
             assertTrue("Expected the store output to contain WMS store", hasWmsStore);
             assertTrue("Expected the store output to contain WMTS store", hasWmtsStore);

@@ -327,6 +327,8 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                 NamespaceInfo newDefaultNamespace =
                         (NamespaceInfo) doRead(sourceWorkspacesFolder, "defaultnamespace.xml");
                 WorkspaceInfo newDefaultWorkspace = (WorkspaceInfo) doRead(sourceWorkspacesFolder, "default.xml");
+                getCatalog().add(newDefaultNamespace);
+                getCatalog().add(newDefaultWorkspace);
                 getCatalog().setDefaultNamespace(newDefaultNamespace);
                 getCatalog().setDefaultWorkspace(newDefaultWorkspace);
             }
@@ -339,7 +341,7 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
             } else {
                 LOGGER.log(Level.WARNING, "Error occurred while trying to Restore the Default Workspace!", e);
                 if (getCurrentJobExecution() != null) {
-                    getCurrentJobExecution().addWarningExceptions(Arrays.asList(e));
+                    getCurrentJobExecution().addWarningExceptions(List.of(e));
                 }
             }
         }

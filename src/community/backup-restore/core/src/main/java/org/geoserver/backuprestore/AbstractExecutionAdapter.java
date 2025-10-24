@@ -6,247 +6,203 @@ package org.geoserver.backuprestore;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.api.filter.Filter;
 import org.springframework.batch.core.BatchStatus;
-import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobInstance;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.explore.JobExplorer;
 
 /**
- * Base Class for {@link JobExecution} wrappers. Those will be used to share objects, I/O parameters and GeoServer B/R
- * specific variables and the batch contexts.
+ * Common wrapper for Spring Batch {@link JobExecution}s used by backup/restore.
  *
- * <p>{@link ConcurrentHashMap}s are populated from the {@link Backup} facade in order to allow external classes to
- * follow jobs executions and retrieve configuration, parameters and statuses.
- *
- * @author Alessio Fabiani, GeoSolutions
+ * <p>Keeps a reference to {@link JobExplorer} so status/steps are always read fresh, and exposes convenience fields for
+ * UI/tests. Provides a simple progress report compatible with the legacy {@code getProgress()} calls (e.g., "4/10
+ * (40%)").
  */
 public abstract class AbstractExecutionAdapter {
 
-    private Integer totalNumberOfSteps;
+    private volatile JobExecution delegate;
+    private JobExplorer jobExplorer;
 
-    private JobExecution delegate;
+    private final int totalNumberOfSteps;
 
-    private List<String> options = Collections.synchronizedList(new ArrayList<String>());
-
-    private List<Throwable> warningsList = Collections.synchronizedList(new ArrayList<Throwable>());
+    private final List<String> options = new CopyOnWriteArrayList<>();
+    private final List<Throwable> failureExceptions = new CopyOnWriteArrayList<>();
+    private final List<Throwable> warningExceptions = new CopyOnWriteArrayList<>();
 
     private Resource archiveFile;
-
     private Filter wsFilter;
-
     private Filter siFilter;
-
     private Filter liFilter;
 
-    /** Default Constructor */
-    public AbstractExecutionAdapter(JobExecution jobExecution, Integer totalNumberOfSteps) {
+    protected AbstractExecutionAdapter(JobExecution jobExecution, Integer totalNumberOfSteps) {
         this.delegate = jobExecution;
-        this.totalNumberOfSteps = totalNumberOfSteps;
+        this.totalNumberOfSteps = totalNumberOfSteps != null ? totalNumberOfSteps.intValue() : 0;
     }
 
-    /** @return the delegate */
+    /* ----------------------------- Infra / Refresh ----------------------------- */
+
+    /** Inject the JobExplorer so we can fetch fresh state on every read. */
+    public void setJobExplorer(JobExplorer jobExplorer) {
+        this.jobExplorer = jobExplorer;
+    }
+
+    /** Latest JobExecution (refreshed via JobExplorer when available). */
     public JobExecution getDelegate() {
-        return delegate;
-    }
-
-    /** @param delegate the delegate to set */
-    public void setDelegate(JobExecution delegate) {
-        this.delegate = delegate;
-    }
-
-    /** The Unique Job Execution ID */
-    public Long getId() {
-        if (delegate != null) {
-            return delegate.getId();
+        JobExecution je = this.delegate;
+        if (jobExplorer != null && je != null) {
+            JobExecution refreshed = jobExplorer.getJobExecution(je.getId());
+            if (refreshed != null) {
+                this.delegate = je = refreshed;
+            }
         }
-        return null;
+        return je;
     }
 
-    /**
-     * Convenience getter for for the id of the enclosing job. Useful for DAO implementations.
-     *
-     * @return the id of the enclosing job
-     */
-    public Long getJobId() {
-        return delegate.getJobId();
+    public long getId() {
+        return getDelegate().getId();
     }
 
-    /**
-     * The Spring Batch {@link JobParameters}
-     *
-     * @return JobParameters of the enclosing job
-     */
-    public JobParameters getJobParameters() {
-        return delegate.getJobParameters();
-    }
+    /* ----------------------------- Status / Lifecycle ----------------------------- */
 
-    /** The Spring Batch Job TimeStamp */
-    public Date getTime() {
-        return new Date(delegate.getJobParameters().getLong(Backup.PARAM_TIME));
-    }
-
-    /**
-     * The Spring Batch {@link BatchStatus}
-     *
-     * <p>ABANDONED COMPLETED FAILED STARTED STARTING STOPPED STOPPING UNKNOWN
-     *
-     * @return BatchStatus of the enclosing job
-     */
     public BatchStatus getStatus() {
-        return delegate.getStatus();
+        JobExecution je = getDelegate();
+        return je != null ? je.getStatus() : BatchStatus.UNKNOWN;
     }
 
-    /**
-     * The Spring Batch {@link ExitStatus}
-     *
-     * @return the exitCode of the enclosing job
-     */
-    public ExitStatus getExitStatus() {
-        return delegate.getExitStatus();
-    }
-
-    /** Set {@link ExitStatus} of the current Spring Batch Execution */
-    public void setExitStatus(ExitStatus exitStatus) {
-        delegate.setExitStatus(exitStatus);
-    }
-
-    /** Returns all {@link StepExecution}s of the current Spring Batch Execution */
-    public Collection<StepExecution> getStepExecutions() {
-        return delegate.getStepExecutions();
-    }
-
-    /**
-     * The Spring Batch {@link JobInstance}
-     *
-     * @return the Job that is executing.
-     */
-    public JobInstance getJobInstance() {
-        return delegate.getJobInstance();
-    }
-
-    /**
-     * Test if this {@link JobExecution} indicates that it is running. It should be noted that this does not necessarily
-     * mean that it has been persisted as such yet.
-     *
-     * @return true if the end time is null
-     */
+    /** Conservative running check that does not rely on stale references. */
     public boolean isRunning() {
-        return delegate.isRunning();
+        BatchStatus s = getStatus();
+        return s == BatchStatus.STARTING || s == BatchStatus.STARTED || s == BatchStatus.STOPPING;
+    }
+
+    public JobParameters getJobParameters() {
+        JobExecution je = getDelegate();
+        return je != null ? je.getJobParameters() : null;
+    }
+
+    /* ----------------------------- Progress ----------------------------- */
+
+    /** Number of steps that have completed successfully. */
+    public int getCompletedSteps() {
+        JobExecution je = getDelegate();
+        if (je == null) return 0;
+
+        // Prefer step executions from the (refreshed) delegate
+        Collection<StepExecution> steps = je.getStepExecutions();
+        int completed = 0;
+        for (StepExecution se : steps) {
+            if (se.getStatus() == BatchStatus.COMPLETED) {
+                completed++;
+            }
+        }
+        return completed;
+    }
+
+    /** Total number of steps (as provided by the job definition at startup). */
+    public int getTotalNumberOfSteps() {
+        // fall back to current known steps if not provided
+        if (totalNumberOfSteps > 0) return totalNumberOfSteps;
+        JobExecution je = getDelegate();
+        return je == null ? 0 : new ArrayList<>(je.getStepExecutions()).size();
     }
 
     /**
-     * Test if this {@link JobExecution} indicates that it has been signalled to stop.
-     *
-     * @return true if the status is {@link BatchStatus#STOPPING}
+     * Legacy-friendly textual progress, e.g. "4/10 (40%)". Safe to call at any time; uses {@link JobExplorer} to avoid
+     * stale state.
      */
-    public boolean isStopping() {
-        return delegate.isStopping();
+    public String getProgress() {
+        Integer total = this.totalNumberOfSteps;
+        if (total == null || total <= 0) return "n/a";
+        org.springframework.batch.core.JobExecution je = getDelegate();
+        if (je == null) return "n/a";
+        long done = je.getStepExecutions().stream()
+                .filter(se -> se.getStatus() == org.springframework.batch.core.BatchStatus.COMPLETED)
+                .count();
+        return done + "/" + total;
     }
 
-    /**
-     * Return all failure causing exceptions for this JobExecution, including step executions.
-     *
-     * @return List&lt;Throwable&gt; containing all exceptions causing failure for this JobExecution.
-     */
+    /* ----------------------------- Exceptions ----------------------------- */
+
+    /** Failures recorded by Spring Batch plus adapter-added failures. */
     public List<Throwable> getAllFailureExceptions() {
-        return delegate.getAllFailureExceptions();
-    }
-
-    /**
-     * Return all failure marked as warnings by this JobExecution, including step executions.
-     *
-     * @return List&lt;Throwable&gt; containing all warning exceptions.
-     */
-    public List<Throwable> getAllWarningExceptions() {
-        return warningsList;
-    }
-
-    /** Adds exceptions to the current executions marking it as FAILED. */
-    public void addFailureExceptions(List<Throwable> exceptions) {
-        for (Throwable t : exceptions) {
-            this.delegate.addFailureException(t);
+        List<Throwable> all = new ArrayList<>();
+        JobExecution je = getDelegate();
+        if (je != null && je.getAllFailureExceptions() != null) {
+            all.addAll(je.getAllFailureExceptions());
         }
-
-        this.delegate.setExitStatus(ExitStatus.FAILED);
+        all.addAll(this.failureExceptions);
+        return all;
     }
 
-    /** Adds exceptions to the current executions as Warnings. */
-    public void addWarningExceptions(List<Throwable> exceptions) {
-        for (Throwable t : exceptions) {
-            this.warningsList.add(t);
-        }
+    // In AbstractExecutionAdapter
+    public void addFailureExceptions(java.util.List<? extends Throwable> ex) {
+        if (ex != null) ex.forEach(this::addFailureException);
     }
 
-    /**
-     * Returns the total number of Job steps
-     *
-     * @return the totalNumberOfSteps
-     */
-    public Integer getTotalNumberOfSteps() {
-        return totalNumberOfSteps;
+    public void addWarningExceptions(java.util.List<? extends Throwable> ex) {
+        if (ex != null) ex.forEach(this::addWarningException);
     }
 
-    /** Returns the current number of executed steps. */
-    public Integer getExecutedSteps() {
-        return delegate.getStepExecutions().size();
+    public void addFailureException(Throwable t) {
+        if (t != null) this.failureExceptions.add(t);
     }
 
-    /** @return the options */
+    public void addFailureExceptions(Collection<? extends Throwable> ts) {
+        if (ts != null) this.failureExceptions.addAll(ts);
+    }
+
+    /** Non-fatal issues that we want to surface to tests/UI. */
+    public List<Throwable> getWarningExceptions() {
+        return this.warningExceptions;
+    }
+
+    public void addWarningException(Throwable t) {
+        if (t != null) this.warningExceptions.add(t);
+    }
+
+    public void addWarningExceptions(Collection<? extends Throwable> ts) {
+        if (ts != null) this.warningExceptions.addAll(ts);
+    }
+
+    /* ----------------------------- Options / I/O ----------------------------- */
+
     public List<String> getOptions() {
         return options;
     }
 
-    /** @return */
-    public String getProgress() {
-        final StringBuffer progress = new StringBuffer();
-        progress.append(getExecutedSteps()).append("/").append(getTotalNumberOfSteps());
-        return progress.toString();
-    }
-
-    /** @return the archiveFile */
     public Resource getArchiveFile() {
         return archiveFile;
     }
 
-    /** @param archiveFile the archiveFile to set */
     public void setArchiveFile(Resource archiveFile) {
         this.archiveFile = archiveFile;
     }
 
-    /** @return the wsFilter */
     public Filter getWsFilter() {
         return wsFilter;
     }
 
-    /** @param wsFilter the wsFilter to set */
     public void setWsFilter(Filter wsFilter) {
         this.wsFilter = wsFilter;
     }
 
-    /** @return the siFilter */
     public Filter getSiFilter() {
         return siFilter;
     }
 
-    /** @param siFilter the siFilter to set */
     public void setSiFilter(Filter siFilter) {
         this.siFilter = siFilter;
     }
 
-    /** @return the liFilter */
     public Filter getLiFilter() {
         return liFilter;
     }
 
-    /** @param liFilter the liFilter to set */
     public void setLiFilter(Filter liFilter) {
         this.liFilter = liFilter;
     }

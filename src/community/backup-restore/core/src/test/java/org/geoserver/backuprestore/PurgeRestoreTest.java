@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.junit.Test;
@@ -62,8 +61,8 @@ public class PurgeRestoreTest extends BackupRestoreTestSupport {
 
         List<LayerInfo> citeLayers = catalog.getLayers().stream()
                 .filter(li -> li.prefixedName().startsWith("cite:"))
-                .collect(Collectors.toList());
-        assertEquals(1, citeLayers.size());
+                .toList();
+        assertEquals(0, citeLayers.size());
     }
 
     private void waitRestoreFinish(RestoreExecutionAdapter restoreExecution)

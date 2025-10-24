@@ -7,10 +7,10 @@ package org.geoserver.backuprestore;
 import com.thoughtworks.xstream.XStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -38,6 +38,7 @@ import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.job.AbstractJob;
 import org.springframework.batch.core.launch.JobExecutionNotRunningException;
 import org.springframework.batch.core.launch.JobLauncher;
@@ -61,174 +62,120 @@ import org.springframework.security.core.context.SecurityContextHolder;
 /**
  * Primary controller/facade of the backup and restore subsystem.
  *
- * @author Alessio Fabiani, GeoSolutions
+ * <p>Responsibilities:
+ *
+ * <ul>
+ *   <li>Starts Backup/Restore Spring Batch jobs with parameters
+ *   <li>Tracks running executions with {@link JobExplorer}
+ *   <li>Coordinates begin/end request callbacks (catalog locking)
+ *   <li>Provides helper utilities for XStream (XML/JSON) serialization
+ * </ul>
+ *
+ * <p><b>Spring Batch 5.x note:</b> Jobs launched asynchronously must be polled via {@link JobExplorer} for fresh state.
  */
 @SuppressWarnings("rawtypes")
-public class Backup implements DisposableBean, ApplicationContextAware, ApplicationListener, JobExecutionListener {
+public class Backup
+        implements DisposableBean,
+                ApplicationContextAware,
+                ApplicationListener<ApplicationEvent>,
+                JobExecutionListener {
 
+    /* ====== Job parameter keys ====== */
     public static final String PARAM_PASSWORD_TOKENS = "BK_PASSWORD_TOKENS";
-
     public static final String PARAM_SKIP_SETTINGS = "BK_SKIP_SETTINGS";
-
     public static final String PARAM_SKIP_SECURITY_SETTINGS = "BK_SKIP_SECURITY";
-
     public static final String PARAM_PURGE_RESOURCES = "BK_PURGE_RESOURCES";
-
     public static final String PARAM_SKIP_GWC = "BK_SKIP_GWC";
-
-    static Logger LOGGER = Logging.getLogger(Backup.class);
-
-    /* Job Parameters Keys **/
     public static final String PARAM_TIME = "time";
-
     public static final String PARAM_JOB_NAME = "job.execution.name";
-
     public static final String PARAM_OUTPUT_FILE_PATH = "output.file.path";
-
     public static final String PARAM_INPUT_FILE_PATH = "input.file.path";
-
     public static final String PARAM_EXCLUDE_FILE_PATH = "exclude.file.path";
-
     public static final String PARAM_CLEANUP_TEMP = "BK_CLEANUP_TEMP";
-
     public static final String PARAM_DRY_RUN_MODE = "BK_DRY_RUN";
-
     public static final String PARAM_BEST_EFFORT_MODE = "BK_BEST_EFFORT";
-
-    /* Jobs Context Keys **/
-    public static final String BACKUP_JOB_NAME = "backupJob";
-
-    public static final String RESTORE_JOB_NAME = "restoreJob";
-
     public static final String PARAM_PARAMETERIZE_PASSWDS = "BK_PARAM_PASSWORDS";
 
+    /* ====== Job & context keys ====== */
+    public static final String BACKUP_JOB_NAME = "backupJob";
+    public static final String RESTORE_JOB_NAME = "restoreJob";
     public static final String RESTORE_CATALOG_KEY = "restore.catalog";
+
+    private static final Logger LOGGER = Logging.getLogger(Backup.class);
 
     private Authentication auth;
 
-    /** catalog */
-    Catalog catalog;
+    private final Catalog catalog;
+    private final GeoServer geoServer;
+    private GeoServerResourceLoader resourceLoader;
+    private GeoServerDataDirectory geoServerDataDirectory;
+    private final XStreamPersisterFactory xpf;
 
-    GeoServer geoServer;
+    private JobOperator jobOperator;
+    private JobLauncher jobLauncher;
+    private JobRepository jobRepository;
+    private JobExplorer jobExplorer;
 
-    GeoServerResourceLoader resourceLoader;
+    private Job backupJob;
+    private Job restoreJob;
 
-    GeoServerDataDirectory geoServerDataDirectory;
+    private final ConcurrentHashMap<Long, BackupExecutionAdapter> backupExecutions = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Long, RestoreExecutionAdapter> restoreExecutions = new ConcurrentHashMap<>();
 
-    XStreamPersisterFactory xpf;
+    private Integer totalNumberOfBackupSteps;
+    private Integer totalNumberOfRestoreSteps;
 
-    JobOperator jobOperator;
-
-    JobLauncher jobLauncher;
-
-    JobRepository jobRepository;
-
-    Job backupJob;
-
-    Job restoreJob;
-
-    ConcurrentHashMap<Long, BackupExecutionAdapter> backupExecutions =
-            new ConcurrentHashMap<Long, BackupExecutionAdapter>();
-
-    ConcurrentHashMap<Long, RestoreExecutionAdapter> restoreExecutions =
-            new ConcurrentHashMap<Long, RestoreExecutionAdapter>();
-
-    Integer totalNumberOfBackupSteps;
-
-    Integer totalNumberOfRestoreSteps;
-
-    /** A static application context */
+    /** Static Spring context kept for compatibility with legacy lookups. */
     private static ApplicationContext context;
 
-    public Backup(Catalog catalog, GeoServerResourceLoader rl) {
-        this.catalog = catalog;
+    public Backup(final Catalog catalog, final GeoServerResourceLoader rl) {
+        this.catalog = Objects.requireNonNull(catalog, "catalog must not be null");
         this.geoServer = GeoServerExtensions.bean(GeoServer.class);
-
-        this.resourceLoader = rl;
+        this.resourceLoader = Objects.requireNonNull(rl, "resourceLoader must not be null");
         this.geoServerDataDirectory = new GeoServerDataDirectory(rl);
-
         this.xpf = GeoServerExtensions.bean(XStreamPersisterFactory.class);
     }
 
-    /** @return the context */
     public static ApplicationContext getContext() {
         return context;
     }
 
-    /** @return the jobOperator */
     public JobOperator getJobOperator() {
         return jobOperator;
     }
 
-    /** @return the jobLauncher */
     public JobLauncher getJobLauncher() {
         return jobLauncher;
     }
 
-    /** @return the Backup job */
+    public JobRepository getJobRepository() {
+        return jobRepository;
+    }
+
+    public JobExplorer getJobExplorer() {
+        return jobExplorer;
+    }
+
     public Job getBackupJob() {
         return backupJob;
     }
 
-    /** @return the Restore job */
     public Job getRestoreJob() {
         return restoreJob;
     }
 
-    /** @return the backupExecutions */
     public ConcurrentHashMap<Long, BackupExecutionAdapter> getBackupExecutions() {
         return backupExecutions;
     }
 
-    /** @return the restoreExecutions */
     public ConcurrentHashMap<Long, RestoreExecutionAdapter> getRestoreExecutions() {
         return restoreExecutions;
     }
 
-    @Override
-    public void onApplicationEvent(ApplicationEvent event) {
-        // load the context store here to avoid circular dependency on creation
-        if (event instanceof ContextLoadedEvent) {
-            this.jobOperator = (JobOperator) context.getBean("jobOperator");
-            this.jobLauncher = (JobLauncher) context.getBean("jobLauncherAsync");
-            this.jobRepository = (JobRepository) context.getBean("jobRepository");
-            this.backupJob = (Job) context.getBean(BACKUP_JOB_NAME);
-            this.restoreJob = (Job) context.getBean(RESTORE_JOB_NAME);
-        }
-    }
-
-    /** @return */
-    public Set<Long> getBackupRunningExecutions() {
-        synchronized (jobOperator) {
-            Set<Long> runningExecutions;
-            try {
-                runningExecutions = jobOperator.getRunningExecutions(BACKUP_JOB_NAME);
-            } catch (NoSuchJobException e) {
-                runningExecutions = new HashSet<>();
-            }
-            return runningExecutions;
-        }
-    }
-
-    /** @return */
-    public Set<Long> getRestoreRunningExecutions() {
-        synchronized (jobOperator) {
-            Set<Long> runningExecutions;
-            try {
-                runningExecutions = jobOperator.getRunningExecutions(RESTORE_JOB_NAME);
-            } catch (NoSuchJobException e) {
-                runningExecutions = new HashSet<>();
-            }
-            return runningExecutions;
-        }
-    }
-
-    /** @return the auth */
     public Authentication getAuth() {
         return auth;
     }
 
-    /** @param auth the auth to set */
     public void setAuth(Authentication auth) {
         this.auth = auth;
     }
@@ -241,71 +188,103 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
         return geoServer;
     }
 
-    /** @return the resourceLoader */
     public GeoServerResourceLoader getResourceLoader() {
         return resourceLoader;
     }
 
-    /** @param resourceLoader the resourceLoader to set */
     public void setResourceLoader(GeoServerResourceLoader resourceLoader) {
-        this.resourceLoader = resourceLoader;
+        this.resourceLoader = Objects.requireNonNull(resourceLoader);
     }
 
-    /** @return the geoServerDataDirectory */
     public GeoServerDataDirectory getGeoServerDataDirectory() {
         return geoServerDataDirectory;
     }
 
-    /** @param geoServerDataDirectory the geoServerDataDirectory to set */
     public void setGeoServerDataDirectory(GeoServerDataDirectory geoServerDataDirectory) {
-        this.geoServerDataDirectory = geoServerDataDirectory;
+        this.geoServerDataDirectory = Objects.requireNonNull(geoServerDataDirectory);
     }
 
-    /** @return the totalNumberOfBackupSteps */
     public Integer getTotalNumberOfBackupSteps() {
         return totalNumberOfBackupSteps;
     }
 
-    /** @param totalNumberOfBackupSteps the totalNumberOfBackupSteps to set */
-    public void setTotalNumberOfBackupSteps(Integer totalNumberOfBackupSteps) {
-        this.totalNumberOfBackupSteps = totalNumberOfBackupSteps;
+    public void setTotalNumberOfBackupSteps(Integer v) {
+        this.totalNumberOfBackupSteps = v;
     }
 
-    /** @return the totalNumberOfRestoreSteps */
     public Integer getTotalNumberOfRestoreSteps() {
         return totalNumberOfRestoreSteps;
     }
 
-    /** @param totalNumberOfRestoreSteps the totalNumberOfRestoreSteps to set */
-    public void setTotalNumberOfRestoreSteps(Integer totalNumberOfRestoreSteps) {
-        this.totalNumberOfRestoreSteps = totalNumberOfRestoreSteps;
+    public void setTotalNumberOfRestoreSteps(Integer v) {
+        this.totalNumberOfRestoreSteps = v;
+    }
+
+    /* =========================================================
+    Spring lifecycle hooks
+    ========================================================= */
+
+    @Override
+    public void destroy() {
+        // nothing to do
     }
 
     @Override
-    public void destroy() throws Exception {
-        // Nothing to do.
-    }
-
-    @Override
-    public void setApplicationContext(ApplicationContext context) throws BeansException {
-        Backup.context = context;
+    public void setApplicationContext(ApplicationContext ctx) throws BeansException {
+        Backup.context = ctx;
 
         try {
-            AbstractJob backupJob = (AbstractJob) context.getBean(BACKUP_JOB_NAME);
-            if (backupJob != null) {
-                this.setTotalNumberOfBackupSteps(backupJob.getStepNames().size());
-            }
-
-            AbstractJob restoreJob = (AbstractJob) context.getBean(BACKUP_JOB_NAME);
-            if (restoreJob != null) {
-                this.setTotalNumberOfRestoreSteps(restoreJob.getStepNames().size());
-            }
+            AbstractJob bj = (AbstractJob) ctx.getBean(BACKUP_JOB_NAME);
+            if (bj != null) setTotalNumberOfBackupSteps(bj.getStepNames().size());
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Could not fully configure the Backup Facade!", e);
+            LOGGER.log(Level.WARNING, "Could not determine backup steps", e);
+        }
+
+        try {
+            // FIX: use RESTORE_JOB_NAME (was BACKUP_JOB_NAME twice before)
+            AbstractJob rj = (AbstractJob) ctx.getBean(RESTORE_JOB_NAME);
+            if (rj != null) setTotalNumberOfRestoreSteps(rj.getStepNames().size());
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Could not determine restore steps", e);
         }
     }
 
-    /** Authenticate a user */
+    @Override
+    public void onApplicationEvent(ApplicationEvent event) {
+        if (event instanceof ContextLoadedEvent) {
+            this.jobOperator = getBean("jobOperator", JobOperator.class);
+            this.jobLauncher = getBean("jobLauncherAsync", JobLauncher.class);
+            this.jobRepository = getBean("jobRepository", JobRepository.class);
+            this.jobExplorer = getBean("jobExplorer", JobExplorer.class);
+            this.backupJob = getBean(BACKUP_JOB_NAME, Job.class);
+            this.restoreJob = getBean(RESTORE_JOB_NAME, Job.class);
+
+            // Ensure we get lifecycle callbacks even if not wired in XML
+            if (backupJob instanceof AbstractJob bj) bj.registerJobExecutionListener(this);
+            if (restoreJob instanceof AbstractJob rj) rj.registerJobExecutionListener(this);
+
+            LOGGER.info(() -> "Backup facade initialized: "
+                    + "jobLauncher=" + (jobLauncher != null)
+                    + ", jobRepository=" + (jobRepository != null)
+                    + ", jobExplorer=" + (jobExplorer != null)
+                    + ", jobs=[" + BACKUP_JOB_NAME + "," + RESTORE_JOB_NAME + "]");
+        }
+    }
+
+    private static <T> T getBean(String name, Class<T> type) {
+        try {
+            return type.cast(context.getBean(name));
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Failed to resolve bean '" + name + "' of type " + type.getName(), e);
+            return null;
+        }
+    }
+
+    /* =========================================================
+    Security helpers
+    ========================================================= */
+
+    /** Ensure there is an authenticated user, re-using an injected {@link Authentication} if needed. */
     public Authentication authenticate() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null && getAuth() != null) {
@@ -316,9 +295,43 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
         return authentication;
     }
 
-    protected String getItemName(XStreamPersister xp, Class clazz) {
-        return xp.getClassAliasingMapper().serializedClass(clazz);
+    private GeoServerSecurityManager getSecurityManager() {
+        return context.getBean(GeoServerSecurityManager.class);
     }
+
+    private void assertAdminOrThrow() {
+        final Authentication a = SecurityContextHolder.getContext().getAuthentication();
+        final boolean isAdmin = getSecurityManager().checkAuthenticationForAdminRole(a);
+        if (!isAdmin) {
+            throw new IllegalStateException("Not enough privileges to run a Backup/Restore process!");
+        }
+    }
+
+    /* =========================================================
+    Execution tracking
+    ========================================================= */
+
+    /** @return running backup execution IDs (empty if the job is unknown) */
+    public Set<Long> getBackupRunningExecutions() {
+        try {
+            return jobOperator.getRunningExecutions(BACKUP_JOB_NAME);
+        } catch (NoSuchJobException e) {
+            return Set.of();
+        }
+    }
+
+    /** @return running restore execution IDs (empty if the job is unknown) */
+    public Set<Long> getRestoreRunningExecutions() {
+        try {
+            return jobOperator.getRunningExecutions(RESTORE_JOB_NAME);
+        } catch (NoSuchJobException e) {
+            return Set.of();
+        }
+    }
+
+    /* =========================================================
+    Public API - BACKUP
+    ========================================================= */
 
     public BackupExecutionAdapter runBackupAsync(
             final Resource archiveFile,
@@ -331,7 +344,6 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
 
         JobParametersBuilder builder = new JobParametersBuilder();
         params.forEach(builder::addString);
-
         return runBackupAsync(archiveFile, overwrite, wsFilter, siFilter, liFilter, builder);
     }
 
@@ -349,7 +361,6 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
         return runBackupAsync(archiveFile, overwrite, wsFilter, siFilter, liFilter, builder);
     }
 
-    /** */
     private BackupExecutionAdapter runBackupAsync(
             final Resource archiveFile,
             final boolean overwrite,
@@ -359,103 +370,57 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
             final JobParametersBuilder paramsBuilder)
             throws IOException {
 
-        // Check whether the user is authenticated or not and, in the second case, if it is an
-        // Administrator or not
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        boolean isAdmin = getSecurityManager().checkAuthenticationForAdminRole(auth);
+        assertAdminOrThrow();
+        prepareArchiveTarget(archiveFile, overwrite);
 
-        if (!isAdmin) {
-            throw new IllegalStateException("Not enough privileges to run a Restore process!");
-        }
-
-        // Check if archiveFile exists
-        if (archiveFile.file().exists()) {
-            if (!overwrite && FileUtils.sizeOf(archiveFile.file()) > 0) {
-                // Unless the user explicitly wants to overwrite the archiveFile, throw an exception
-                // whenever it already exists
-                throw new IOException(
-                        "The target archive file already exists. Use 'overwrite=TRUE' if you want to overwrite it.");
-            } else {
-                FileUtils.forceDelete(archiveFile.file());
-            }
-        } else {
-            // Make sure the parent path exists
-            if (!archiveFile.file().getParentFile().exists()) {
-                try {
-                    archiveFile.file().getParentFile().mkdirs();
-                } finally {
-                    if (!archiveFile.file().getParentFile().exists()) {
-                        throw new IOException("The path to target archive file is unreachable.");
-                    }
-                }
-            }
-        }
-
-        // Initialize ZIP
-        FileUtils.touch(archiveFile.file());
-
-        // Write flat files into a temporary folder
+        // Prepare staging directory
         Resource tmpDir = BackupUtils.geoServerTmpDir(getGeoServerDataDirectory());
 
-        if (wsFilter != null) {
-            paramsBuilder.addString("wsFilter", ECQL.toCQL(wsFilter));
-        }
-        if (siFilter != null) {
-            paramsBuilder.addString("siFilter", ECQL.toCQL(siFilter));
-        }
-        if (liFilter != null) {
-            paramsBuilder.addString("liFilter", ECQL.toCQL(liFilter));
-        }
+        if (wsFilter != null) paramsBuilder.addString("wsFilter", ECQL.toCQL(wsFilter));
+        if (siFilter != null) paramsBuilder.addString("siFilter", ECQL.toCQL(siFilter));
+        if (liFilter != null) paramsBuilder.addString("liFilter", ECQL.toCQL(liFilter));
 
         paramsBuilder
                 .addString(PARAM_JOB_NAME, BACKUP_JOB_NAME)
                 .addString(PARAM_OUTPUT_FILE_PATH, BackupUtils.getArchiveURLProtocol(tmpDir) + tmpDir.path())
                 .addLong(PARAM_TIME, System.currentTimeMillis());
 
-        //        parseParams(params, paramsBuilder);
+        final JobParameters jobParameters = paramsBuilder.toJobParameters();
+        ensureNoOtherJobsRunning(BACKUP_JOB_NAME);
 
-        JobParameters jobParameters = paramsBuilder.toJobParameters();
-
-        // Send Execution Signal
-        BackupExecutionAdapter backupExecution;
         try {
-            if (getRestoreRunningExecutions().isEmpty()
-                    && getBackupRunningExecutions().isEmpty()) {
-                synchronized (jobOperator) {
-                    // Start a new Job
-                    JobExecution jobExecution = jobLauncher.run(backupJob, jobParameters);
-                    backupExecution = new BackupExecutionAdapter(jobExecution, totalNumberOfBackupSteps);
-                    backupExecutions.put(backupExecution.getId(), backupExecution);
+            LOGGER.info(() -> "Starting backup job with params: " + jobParameters.getParameters());
+            JobExecution jobExecution = jobLauncher.run(backupJob, jobParameters);
 
-                    backupExecution.setArchiveFile(archiveFile);
-                    backupExecution.setOverwrite(overwrite);
-                    backupExecution.setWsFilter(wsFilter);
-                    backupExecution.setSiFilter(siFilter);
-                    backupExecution.setLiFilter(liFilter);
+            var backupExecution = new BackupExecutionAdapter(jobExecution, totalNumberOfBackupSteps);
+            backupExecutions.put(backupExecution.getId(), backupExecution);
 
-                    backupExecution.getOptions().add("OVERWRITE=" + overwrite);
-                    for (Entry jobParam : jobParameters.getParameters().entrySet()) {
-                        if (!PARAM_OUTPUT_FILE_PATH.equals(jobParam.getKey())
-                                && !PARAM_INPUT_FILE_PATH.equals(jobParam.getKey())
-                                && !PARAM_TIME.equals(jobParam.getKey())) {
-                            backupExecution.getOptions().add(jobParam.getKey() + "=" + jobParam.getValue());
-                        }
-                    }
+            backupExecution.setJobExplorer(jobExplorer);
+            backupExecution.setArchiveFile(archiveFile);
+            backupExecution.setOverwrite(overwrite);
+            backupExecution.setWsFilter(wsFilter);
+            backupExecution.setSiFilter(siFilter);
+            backupExecution.setLiFilter(liFilter);
 
-                    return backupExecution;
+            for (Entry<String, ?> jobParam : jobParameters.getParameters().entrySet()) {
+                String k = jobParam.getKey();
+                if (!PARAM_OUTPUT_FILE_PATH.equals(k) && !PARAM_INPUT_FILE_PATH.equals(k) && !PARAM_TIME.equals(k)) {
+                    backupExecution.getOptions().add(k + "=" + jobParam.getValue());
                 }
-            } else {
-                throw new IOException(
-                        "Could not start a new Backup Job Execution since there are currently Running jobs.");
             }
+
+            return backupExecution;
         } catch (JobExecutionAlreadyRunningException
                 | JobRestartException
                 | JobInstanceAlreadyCompleteException
                 | JobParametersInvalidException e) {
-            throw new IOException("Could not start a new Backup Job Execution: ", e);
-        } finally {
+            throw new IOException("Could not start a new Backup Job Execution", e);
         }
     }
+
+    /* =========================================================
+    Public API - RESTORE
+    ========================================================= */
 
     public RestoreExecutionAdapter runRestoreAsync(
             final Resource archiveFile,
@@ -465,12 +430,11 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
             final Map<String, String> params)
             throws IOException {
 
-        JobParametersBuilder paramsBuilder = new JobParametersBuilder();
-        params.forEach(paramsBuilder::addString);
-        return runRestoreAsync(archiveFile, wsFilter, siFilter, liFilter, paramsBuilder);
+        JobParametersBuilder builder = new JobParametersBuilder();
+        params.forEach(builder::addString);
+        return runRestoreAsync(archiveFile, wsFilter, siFilter, liFilter, builder);
     }
 
-    /** */
     public RestoreExecutionAdapter runRestoreAsync(
             final Resource archiveFile,
             final Filter wsFilter,
@@ -478,238 +442,241 @@ public class Backup implements DisposableBean, ApplicationContextAware, Applicat
             final Filter liFilter,
             final Hints params)
             throws IOException {
-        // Fill Job Parameters
-        JobParametersBuilder paramsBuilder = new JobParametersBuilder();
-        parseParams(params, paramsBuilder);
 
-        return runRestoreAsync(archiveFile, wsFilter, siFilter, liFilter, paramsBuilder);
+        JobParametersBuilder builder = new JobParametersBuilder();
+        parseParams(params, builder);
+        return runRestoreAsync(archiveFile, wsFilter, siFilter, liFilter, builder);
     }
 
     private RestoreExecutionAdapter runRestoreAsync(
-            Resource archiveFile,
+            final Resource archiveFile,
             final Filter wsFilter,
             final Filter siFilter,
             final Filter liFilter,
-            JobParametersBuilder paramsBuilder)
+            final JobParametersBuilder paramsBuilder)
             throws IOException {
 
-        // Check whether the user is authenticated or not and, in the second case, if it is an
-        // Administrator or not
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        boolean isAdmin = getSecurityManager().checkAuthenticationForAdminRole(auth);
+        assertAdminOrThrow();
 
-        if (!isAdmin) {
-            throw new IllegalStateException("Not enough privileges to run a Restore process!");
-        }
-
+        // Extract archive into a temp dir for the job to consume
         Resource tmpDir = BackupUtils.geoServerTmpDir(getGeoServerDataDirectory());
         BackupUtils.extractTo(archiveFile, tmpDir);
-        RestoreExecutionAdapter restoreExecution;
 
-        if (wsFilter != null) {
-            paramsBuilder.addString("wsFilter", ECQL.toCQL(wsFilter));
-        }
-        if (siFilter != null) {
-            paramsBuilder.addString("siFilter", ECQL.toCQL(siFilter));
-        }
-        if (liFilter != null) {
-            paramsBuilder.addString("liFilter", ECQL.toCQL(liFilter));
-        }
+        if (wsFilter != null) paramsBuilder.addString("wsFilter", ECQL.toCQL(wsFilter));
+        if (siFilter != null) paramsBuilder.addString("siFilter", ECQL.toCQL(siFilter));
+        if (liFilter != null) paramsBuilder.addString("liFilter", ECQL.toCQL(liFilter));
 
         paramsBuilder
                 .addString(PARAM_JOB_NAME, RESTORE_JOB_NAME)
                 .addString(PARAM_INPUT_FILE_PATH, BackupUtils.getArchiveURLProtocol(tmpDir) + tmpDir.path())
                 .addLong(PARAM_TIME, System.currentTimeMillis());
 
-        JobParameters jobParameters = paramsBuilder.toJobParameters();
+        final JobParameters jobParameters = paramsBuilder.toJobParameters();
+        ensureNoOtherJobsRunning(RESTORE_JOB_NAME);
 
         try {
-            if (getRestoreRunningExecutions().isEmpty()
-                    && getBackupRunningExecutions().isEmpty()) {
-                synchronized (jobOperator) {
-                    // Start a new Job
-                    JobExecution jobExecution = jobLauncher.run(restoreJob, jobParameters);
-                    restoreExecution = new RestoreExecutionAdapter(jobExecution, totalNumberOfRestoreSteps);
-                    restoreExecutions.put(restoreExecution.getId(), restoreExecution);
-                    restoreExecution.setArchiveFile(archiveFile);
-                    restoreExecution.setWsFilter(wsFilter);
-                    restoreExecution.setSiFilter(siFilter);
-                    restoreExecution.setLiFilter(liFilter);
+            LOGGER.info(() -> "Starting restore job with params: " + jobParameters.getParameters());
+            JobExecution jobExecution = jobLauncher.run(restoreJob, jobParameters);
 
-                    for (Entry jobParam : jobParameters.getParameters().entrySet()) {
-                        if (!PARAM_OUTPUT_FILE_PATH.equals(jobParam.getKey())
-                                && !PARAM_INPUT_FILE_PATH.equals(jobParam.getKey())
-                                && !PARAM_TIME.equals(jobParam.getKey())) {
-                            restoreExecution.getOptions().add(jobParam.getKey() + "=" + jobParam.getValue());
-                        }
-                    }
+            var restoreExecution = new RestoreExecutionAdapter(jobExecution, totalNumberOfRestoreSteps);
+            restoreExecutions.put(restoreExecution.getId(), restoreExecution);
 
-                    return restoreExecution;
+            restoreExecution.setJobExplorer(jobExplorer);
+            restoreExecution.setArchiveFile(archiveFile);
+            restoreExecution.setWsFilter(wsFilter);
+            restoreExecution.setSiFilter(siFilter);
+            restoreExecution.setLiFilter(liFilter);
+
+            for (Entry<String, ?> jobParam : jobParameters.getParameters().entrySet()) {
+                String k = jobParam.getKey();
+                if (!PARAM_OUTPUT_FILE_PATH.equals(k) && !PARAM_INPUT_FILE_PATH.equals(k) && !PARAM_TIME.equals(k)) {
+                    restoreExecution.getOptions().add(k + "=" + jobParam.getValue());
                 }
-            } else {
-                throw new IOException(
-                        "Could not start a new Restore Job Execution since there are currently Running jobs.");
             }
+
+            return restoreExecution;
         } catch (JobExecutionAlreadyRunningException
                 | JobRestartException
                 | JobInstanceAlreadyCompleteException
                 | JobParametersInvalidException e) {
-            throw new IOException("Could not start a new Restore Job Execution: ", e);
+            throw new IOException("Could not start a new Restore Job Execution", e);
         }
     }
 
-    @Override
-    public void afterJob(JobExecution jobExecution) {
-        // Release locks on GeoServer Configuration:
-        try {
-            List<BackupRestoreCallback> callbacks = GeoServerExtensions.extensions(BackupRestoreCallback.class);
-            for (BackupRestoreCallback callback : callbacks) {
-                callback.onEndRequest();
-            }
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Could not unlock GeoServer Catalog Configuration!", e);
-        }
-    }
+    /* =========================================================
+    Job control (stop / restart / abandon)
+    ========================================================= */
 
-    @Override
-    public void beforeJob(JobExecution jobExecution) {
-        // Acquire GeoServer Configuration Lock in READ mode
-        List<BackupRestoreCallback> callbacks = GeoServerExtensions.extensions(BackupRestoreCallback.class);
-        for (BackupRestoreCallback callback : callbacks) {
-            callback.onBeginRequest(jobExecution.getJobParameters().getString(PARAM_JOB_NAME));
-        }
-    }
-
-    /** Stop a running Backup/Restore Execution */
+    /** Stop a running Backup/Restore execution by id. */
     public void stopExecution(Long executionId) throws NoSuchJobExecutionException, JobExecutionNotRunningException {
-        LOGGER.info("Stopping execution id [" + executionId + "]");
-
-        JobExecution jobExecution = null;
+        LOGGER.info(() -> "Stopping execution id=[" + executionId + "]");
         try {
-            if (this.backupExecutions.get(executionId) != null) {
-                jobExecution = this.backupExecutions.get(executionId).getDelegate();
-            } else if (this.restoreExecutions.get(executionId) != null) {
-                jobExecution = this.restoreExecutions.get(executionId).getDelegate();
-            }
-
             jobOperator.stop(executionId);
         } finally {
-            if (jobExecution != null) {
-                final BatchStatus status = jobExecution.getStatus();
-
-                if (!status.isGreaterThan(BatchStatus.STARTED)) {
-                    jobExecution.setStatus(BatchStatus.STOPPING);
-                    jobExecution.setEndTime(LocalDateTime.now());
-                    jobRepository.update(jobExecution);
-                }
+            JobExecution je = jobExplorer.getJobExecution(executionId);
+            if (je != null) {
+                je.setStatus(BatchStatus.STOPPING);
+                je.setEndTime(LocalDateTime.now());
+                jobRepository.update(je);
             }
-
-            // Release locks on GeoServer Configuration:
-            try {
-                List<BackupRestoreCallback> callbacks = GeoServerExtensions.extensions(BackupRestoreCallback.class);
-                for (BackupRestoreCallback callback : callbacks) {
-                    callback.onEndRequest();
-                }
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Could not unlock GeoServer Catalog Configuration!", e);
-            }
+            endRequestCallbacksQuietly();
         }
     }
 
-    /** Restarts a running Backup/Restore Execution */
+    /** Restarts a previously executed job instance (if restartable). */
     public Long restartExecution(Long executionId)
             throws JobInstanceAlreadyCompleteException, NoSuchJobExecutionException, NoSuchJobException,
                     JobRestartException, JobParametersInvalidException {
         return jobOperator.restart(executionId);
     }
 
-    /** Abort a running Backup/Restore Execution */
+    /** Mark a job execution as abandoned. */
     public void abandonExecution(Long executionId)
             throws NoSuchJobExecutionException, JobExecutionAlreadyRunningException {
-        LOGGER.info("Aborting execution id [" + executionId + "]");
-
-        JobExecution jobExecution = null;
+        LOGGER.info(() -> "Abandoning execution id=[" + executionId + "]");
         try {
-            if (this.backupExecutions.get(executionId) != null) {
-                jobExecution = this.backupExecutions.get(executionId).getDelegate();
-            } else if (this.restoreExecutions.get(executionId) != null) {
-                jobExecution = this.restoreExecutions.get(executionId).getDelegate();
-            }
-
             jobOperator.abandon(executionId);
         } finally {
-            if (jobExecution != null) {
-                jobExecution.setStatus(BatchStatus.ABANDONED);
-                jobExecution.setEndTime(LocalDateTime.now());
-                jobRepository.update(jobExecution);
+            JobExecution je = jobExplorer.getJobExecution(executionId);
+            if (je != null) {
+                je.setStatus(BatchStatus.ABANDONED);
+                je.setEndTime(LocalDateTime.now());
+                jobRepository.update(je);
             }
+            endRequestCallbacksQuietly();
+        }
+    }
 
-            // Release locks on GeoServer Configuration:
+    /* =========================================================
+    JobExecutionListener (begin/end request hooks)
+    ========================================================= */
+
+    @Override
+    public void beforeJob(JobExecution jobExecution) {
+        // Acquire GeoServer Configuration Lock in READ mode
+        List<BackupRestoreCallback> callbacks = GeoServerExtensions.extensions(BackupRestoreCallback.class);
+        for (BackupRestoreCallback callback : callbacks) {
             try {
-                List<BackupRestoreCallback> callbacks = GeoServerExtensions.extensions(BackupRestoreCallback.class);
-                for (BackupRestoreCallback callback : callbacks) {
-                    callback.onEndRequest();
-                }
+                callback.onBeginRequest(jobExecution.getJobParameters().getString(PARAM_JOB_NAME));
             } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Could not unlock GeoServer Catalog Configuration!", e);
+                LOGGER.log(Level.WARNING, "onBeginRequest callback failed", e);
             }
         }
     }
 
-    /** */
-    private void parseParams(final Hints params, JobParametersBuilder paramsBuilder) {
-        if (params != null) {
-            for (Entry<Object, Object> param : params.entrySet()) {
-                if (param.getKey() instanceof Hints.OptionKey) {
-                    final Set<String> key = ((Hints.OptionKey) param.getKey()).getOptions();
-                    for (String k : key) {
-                        switch (k) {
-                            case PARAM_EXCLUDE_FILE_PATH:
-                            case PARAM_PASSWORD_TOKENS:
-                                paramsBuilder.addString(k, (String) param.getValue());
-                                break;
-                            case PARAM_PARAMETERIZE_PASSWDS:
-                            case PARAM_SKIP_SETTINGS:
-                            case PARAM_SKIP_SECURITY_SETTINGS:
-                            case PARAM_CLEANUP_TEMP:
-                            case PARAM_DRY_RUN_MODE:
-                            case PARAM_BEST_EFFORT_MODE:
-                            case PARAM_SKIP_GWC:
-                                if (paramsBuilder.toJobParameters().getString(k) == null) {
-                                    paramsBuilder.addString(k, "true");
-                                }
-                        }
+    @Override
+    public void afterJob(JobExecution jobExecution) {
+        endRequestCallbacksQuietly();
+    }
+
+    private void endRequestCallbacksQuietly() {
+        try {
+            List<BackupRestoreCallback> callbacks = GeoServerExtensions.extensions(BackupRestoreCallback.class);
+            for (BackupRestoreCallback callback : callbacks) {
+                try {
+                    callback.onEndRequest();
+                } catch (Exception e) {
+                    LOGGER.log(Level.WARNING, "onEndRequest callback failed", e);
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Could not unlock GeoServer Catalog Configuration", e);
+        }
+    }
+
+    /* =========================================================
+    Parameters / XStream utils
+    ========================================================= */
+
+    /** Translate {@link Hints} to JobParameters. For boolean-like flags we set "true" if present. */
+    private void parseParams(final Hints params, JobParametersBuilder b) {
+        if (params == null) return;
+
+        for (Entry<Object, Object> param : params.entrySet()) {
+            if (param.getKey() instanceof Hints.OptionKey ok) {
+                for (String k : ok.getOptions()) {
+                    switch (k) {
+                        case PARAM_EXCLUDE_FILE_PATH:
+                        case PARAM_PASSWORD_TOKENS:
+                            b.addString(k, String.valueOf(param.getValue()));
+                            break;
+                        case PARAM_PARAMETERIZE_PASSWDS:
+                        case PARAM_SKIP_SETTINGS:
+                        case PARAM_SKIP_SECURITY_SETTINGS:
+                        case PARAM_CLEANUP_TEMP:
+                        case PARAM_DRY_RUN_MODE:
+                        case PARAM_BEST_EFFORT_MODE:
+                        case PARAM_SKIP_GWC:
+                            if (b.toJobParameters().getString(k) == null) {
+                                b.addString(k, "true");
+                            }
+                            break;
+                        default:
+                            // ignore unknown keys
+                            break;
                     }
                 }
             }
         }
     }
 
+    /** Create an XML persister configured for the current catalog. */
     public XStreamPersister createXStreamPersisterXML() {
-        return initXStreamPersister(new XStreamPersisterFactory().createXMLPersister());
+        return initXStreamPersister(xpf.createXMLPersister());
     }
 
+    /** Create a JSON persister configured for the current catalog. */
     public XStreamPersister createXStreamPersisterJSON() {
-        return initXStreamPersister(new XStreamPersisterFactory().createJSONPersister());
+        return initXStreamPersister(xpf.createJSONPersister());
     }
 
     public XStreamPersister initXStreamPersister(XStreamPersister xp) {
         xp.setCatalog(catalog);
-
         XStream xs = xp.getXStream();
 
-        // ImportContext
+        // Security: allow only required types
         xs.alias("backup", BackupExecutionAdapter.class);
-
-        // security
         xs.allowTypes(new Class[] {BackupExecutionAdapter.class});
         xs.allowTypeHierarchy(Resource.class);
 
         return xp;
     }
 
-    /** @return */
-    private GeoServerSecurityManager getSecurityManager() {
-        return context.getBean(GeoServerSecurityManager.class);
+    /* =========================================================
+    Helpers
+    ========================================================= */
+
+    private void prepareArchiveTarget(Resource archiveFile, boolean overwrite) throws IOException {
+        Objects.requireNonNull(archiveFile, "archiveFile must not be null");
+
+        if (archiveFile.file().exists()) {
+            if (!overwrite && FileUtils.sizeOf(archiveFile.file()) > 0) {
+                throw new IOException("The target archive file already exists. "
+                        + "Use 'overwrite=TRUE' if you want to overwrite it.");
+            }
+            FileUtils.forceDelete(archiveFile.file());
+        } else {
+            if (!archiveFile.file().getParentFile().exists()
+                    && !archiveFile.file().getParentFile().mkdirs()) {
+                throw new IOException("The path to target archive file is unreachable.");
+            }
+        }
+
+        // Touch the file to verify the path is writable
+        FileUtils.touch(archiveFile.file());
+    }
+
+    private void ensureNoOtherJobsRunning(String thisJobName) throws IOException {
+        boolean otherBackup = !getBackupRunningExecutions().isEmpty() && !BACKUP_JOB_NAME.equals(thisJobName);
+        boolean otherRestore = !getRestoreRunningExecutions().isEmpty() && !RESTORE_JOB_NAME.equals(thisJobName);
+        if (otherBackup || otherRestore) {
+            throw new IOException(
+                    "Could not start a new " + thisJobName + " execution since there are currently running jobs.");
+        }
+    }
+
+    /** Convenience for tests/tools: get the item name used by XStream for a class. */
+    protected String getItemName(XStreamPersister xp, Class<?> clazz) {
+        return xp.getClassAliasingMapper().serializedClass(clazz);
     }
 }

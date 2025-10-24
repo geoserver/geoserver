@@ -1,7 +1,10 @@
+/* (c) 2016 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.backuprestore.tasklet;
 
 import java.io.IOException;
-import java.util.Arrays;
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.backuprestore.BackupExecutionAdapter;
 import org.geoserver.backuprestore.utils.BackupUtils;
@@ -47,12 +50,12 @@ public class FinalizeBackupTasklet extends AbstractCatalogBackupRestoreTasklet {
 
                 BackupUtils.compressTo(sourceFolder, backupExecution.getArchiveFile());
             } catch (IOException e) {
-                LOGGER.severe("Backup failed while creating final ");
+                LOGGER.severe("Backup failed while creating final archive");
                 if (!bestEffort) {
-                    backupExecution.addFailureExceptions(Arrays.asList(e));
+                    backupExecution.addFailureException(e);
                     throw new RuntimeException(e);
                 } else {
-                    backupExecution.addWarningExceptions(Arrays.asList(e));
+                    backupExecution.addWarningException(e);
                 }
             }
         }

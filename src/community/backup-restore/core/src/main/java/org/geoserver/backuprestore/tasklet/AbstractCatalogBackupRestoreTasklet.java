@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +20,17 @@ import java.util.logging.Logger;
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.backuprestore.BackupRestoreItem;
 import org.geoserver.backuprestore.utils.BackupUtils;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.StoreInfo;
+import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.platform.GeoServerExtensions;
@@ -68,28 +77,18 @@ import org.springframework.util.Assert;
  *
  * <p>{@link #setInterruptOnCancel(boolean)} specifies whether the tasklet should attempt to interrupt the thread that
  * executes the system command if it is still running when tasklet exits (abnormally).
- *
- * @author Robert Kasanicky
- * @author Will Schipp
- * @author Alessio Fabiani, GeoSolutions
  */
 @SuppressWarnings("rawtypes")
-public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupRestoreItem
+public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupRestoreItem<T>
         implements StoppableTasklet, InitializingBean {
 
     protected static Logger LOGGER = Logging.getLogger(AbstractCatalogBackupRestoreTasklet.class);
 
-    /*
-     *
-     */
-    protected static Map<String, Filter<Resource>> resources = new HashMap<String, Filter<Resource>>();
+    /** Filters for extra resources in the data directory to include in backup. */
+    protected static Map<String, Filter<Resource>> resources = new HashMap<>();
 
-    /*
-     *
-     */
     static {
         resources.put("/", new Filter<Resource>() {
-
             @Override
             public boolean accept(Resource res) {
                 if (res.getType() == Type.DIRECTORY
@@ -122,35 +121,22 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
         resources.put("demo", AnyFilter.INSTANCE);
         resources.put("images", AnyFilter.INSTANCE);
         resources.put("logs", new Filter<Resource>() {
-
             @Override
             public boolean accept(Resource res) {
-                if (!res.name().endsWith(".xml")) {
-                    return true;
-                }
-                return false;
+                return !res.name().endsWith(".xml");
             }
         });
         resources.put("gwc-layers", AnyFilter.INSTANCE);
         resources.put("layergroups", AnyFilter.INSTANCE);
         resources.put("palettes", AnyFilter.INSTANCE);
         resources.put("plugIns", AnyFilter.INSTANCE);
-
-        // NOTE: it would be better to use ad-hoc Visitors in order to scan the
-        // Style Resources and download only the ones needed.
-        // This maybe an improvement for a future release/refactoring.
         resources.put("styles", new Filter<Resource>() {
-
             @Override
             public boolean accept(Resource res) {
-                if (res.name().toLowerCase().endsWith("sld")
-                        || // exclude everything ends with SLD ext (SLD, YSLD, ...)
-                        res.name().toLowerCase().endsWith(".xml")
-                        || res.name().toLowerCase().endsWith(".css")) // exclude CSS also
-                {
-                    return false;
-                }
-                return true;
+                // exclude SLD/YSLD/XML/CSS style definitions; everything else is included
+                return !(res.name().toLowerCase().endsWith("sld")
+                        || res.name().toLowerCase().endsWith(".xml")
+                        || res.name().toLowerCase().endsWith(".css"));
             }
         });
         resources.put("user_projections", AnyFilter.INSTANCE);
@@ -160,15 +146,10 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
     }
 
     private long timeout = 0;
-
     private long checkInterval = 1000;
-
     private StepExecution execution = null;
-
     private TaskExecutor taskExecutor = new SimpleAsyncTaskExecutor();
-
     private boolean interruptOnCancel = false;
-
     private volatile boolean stopped = false;
 
     public static final String BR_INDEX_XML = "br_index.xml";
@@ -180,12 +161,15 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
     @SuppressWarnings("unchecked")
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+        // prepare inter-step data / job parameters
         super.retrieveInterstepData(chunkContext.getStepContext().getStepExecution());
-        JobExecution jobExecution =
-                chunkContext.getStepContext().getStepExecution().getJobExecution();
 
-        FutureTask<RepeatStatus> theTask = new FutureTask<RepeatStatus>(new Callable<RepeatStatus>() {
+        // keep a handle for terminate-only checks
+        this.execution = chunkContext.getStepContext().getStepExecution();
 
+        JobExecution jobExecution = this.execution.getJobExecution();
+
+        FutureTask<RepeatStatus> theTask = new FutureTask<>(new Callable<RepeatStatus>() {
             @Override
             public RepeatStatus call() throws Exception {
                 return doExecute(contribution, chunkContext, jobExecution);
@@ -193,15 +177,13 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
         });
 
         long t0 = System.currentTimeMillis();
-
         taskExecutor.execute(theTask);
 
         while (true) {
-            Thread.sleep(checkInterval); // moved to the end of the logic
+            Thread.sleep(checkInterval);
 
             JobExecution currentExecution =
                     chunkContext.getStepContext().getStepExecution().getJobExecution();
-
             if (currentExecution.isStopping()) {
                 stopped = true;
             }
@@ -210,19 +192,15 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
                 return theTask.get();
             } else if (System.currentTimeMillis() - t0 > timeout) {
                 theTask.cancel(interruptOnCancel);
-
                 JobInterruptedException exception =
                         new JobInterruptedException("Job " + currentExecution + " did not finish within the timeout.");
                 logValidationExceptions((T) null, exception);
-
                 return RepeatStatus.FINISHED;
             } else if (execution != null && execution.isTerminateOnly()) {
                 theTask.cancel(interruptOnCancel);
-
                 JobInterruptedException exception =
                         new JobInterruptedException("Job " + currentExecution + " interrupted while executing.");
                 logValidationExceptions((T) null, exception);
-
                 return RepeatStatus.FINISHED;
             } else if (stopped) {
                 theTask.cancel(interruptOnCancel);
@@ -267,13 +245,6 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
         }
     }
 
-    /**
-     * @param resourceStore
-     * @param excludeFilePaths
-     * @param resources
-     * @param filter
-     * @param targetDir
-     */
     private void copyResources(
             ResourceStore resourceStore,
             String[] excludeFilePaths,
@@ -287,24 +258,23 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
                     if (res.getType() != Type.DIRECTORY) {
                         Resources.copy(res.file(), targetDir);
                     } else {
-                        List<Resource> sub_resources = Resources.list(res, filter, false);
-                        if (sub_resources.isEmpty()) {
+                        List<Resource> subResources = Resources.list(res, filter, false);
+                        if (subResources.isEmpty()) {
                             Resources.copy(res, BackupUtils.dir(targetDir, res.path()));
                         } else {
-                            copyResources(resourceStore, excludeFilePaths, sub_resources, filter, targetDir);
+                            copyResources(resourceStore, excludeFilePaths, subResources, filter, targetDir);
                         }
                     }
                 } else {
                     LOGGER.log(Level.INFO, "Excluded Resource " + res.path());
                     if (getCurrentJobExecution() != null) {
-                        getCurrentJobExecution()
-                                .addWarningExceptions(List.of(new Exception("Excluded Resource " + res.path())));
+                        getCurrentJobExecution().addWarningException(new Exception("Excluded Resource " + res.path()));
                     }
                 }
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "Error occurred while trying to move a Resource!", e);
                 if (getCurrentJobExecution() != null) {
-                    getCurrentJobExecution().addWarningExceptions(List.of(e));
+                    getCurrentJobExecution().addWarningException(e);
                 }
             }
         }
@@ -314,7 +284,7 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
             ResourceStore resourceStore, Resource resource, String[] excludeFilePaths) throws IOException {
         final String basePath =
                 Paths.convert(resourceStore.get(Paths.BASE).dir().getCanonicalPath());
-        List<Resource> resourcesToExclude = new ArrayList<Resource>();
+        List<Resource> resourcesToExclude = new ArrayList<>();
         if (excludeFilePaths != null) {
             for (String exclusionPath : excludeFilePaths) {
                 if (resourceStore.get(exclusionPath) != null) {
@@ -332,21 +302,17 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
         return resourcesToExclude;
     }
 
-    //
     @SuppressWarnings({"unchecked", "static-access"})
     public void doWrite(Object item, Resource directory, String fileName) throws Exception {
         try {
             if (item instanceof ServiceInfo service) {
                 XStreamServiceLoader loader = findServiceLoader(service);
-
                 try {
                     loader.save(service, backupFacade.getGeoServer(), BackupUtils.dir(directory, fileName));
                 } catch (Throwable t) {
                     throw new RuntimeException(t);
-                    // LOGGER.log(Level.SEVERE, "Error occurred while saving configuration", t);
                 }
             } else {
-                // unwrap dynamic proxies
                 OutputStream out = Resources.fromPath(fileName, directory).out();
                 try {
                     if (getXp() == null) {
@@ -364,7 +330,6 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
         }
     }
 
-    //
     @SuppressWarnings({"unchecked"})
     public Object doRead(Resource directory, String fileName) throws Exception {
         Object item = null;
@@ -377,7 +342,6 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
                 try {
                     if (l.getFilename().equals(fileName)) {
                         item = l.load(backupFacade.getGeoServer(), Resources.fromPath(fileName, directory));
-
                         if (item instanceof ServiceInfo) {
                             return item;
                         }
@@ -402,17 +366,16 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
                 // Collect warnings
                 item = null;
                 if (getCurrentJobExecution() != null) {
-                    getCurrentJobExecution().addWarningExceptions(Arrays.asList(e));
+                    getCurrentJobExecution().addWarningException(e);
                 }
             }
         } catch (Exception e) {
             logValidationExceptions((T) null, e);
         }
-
         return item;
     }
 
-    /** This method dumps the current Backup index: - List of Workspaces - List of Stores - List of Layers */
+    /** Dump the backup index: Workspaces → Stores → Layers (+ filters used) */
     @SuppressWarnings("unchecked")
     protected void dumpBackupIndex(Resource sourceFolder) throws IOException {
         Element root = new Element("Index");
@@ -424,17 +387,18 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
                 workspace.addContent(new Element("Name").addContent(ws.getName()));
                 root.addContent(workspace);
 
+                // Datastores (vector)
                 for (DataStoreInfo ds : getCatalog().getStoresByWorkspace(ws.getName(), DataStoreInfo.class)) {
-                    if (!filteredResource(ds, ws, true, StoreInfo.class)) {
+                    if (!filteredResource((T) ds, ws, true, StoreInfo.class)) {
                         Element store = new Element("Store");
                         store.setAttribute("type", "DataStoreInfo");
                         store.addContent(new Element("Name").addContent(ds.getName()));
                         workspace.addContent(store);
 
                         for (FeatureTypeInfo ft : getCatalog().getFeatureTypesByDataStore(ds)) {
-                            if (!filteredResource(ft, ws, true, FeatureTypeInfo.class)) {
+                            if (!filteredResource((T) ft, ws, true, FeatureTypeInfo.class)) {
                                 for (LayerInfo ly : getCatalog().getLayers(ft)) {
-                                    if (!filteredResource(ly, ws, true, LayerInfo.class)) {
+                                    if (!filteredResource((T) ly, ws, true, LayerInfo.class)) {
                                         Element layer = new Element("Layer");
                                         layer.setAttribute("type", "VECTOR");
                                         layer.addContent(new Element("Name").addContent(ly.getName()));
@@ -445,22 +409,25 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
                         }
                     }
                 }
-                // save the indexes for WMS stores
+
+                // WMS stores
                 indexWMSStores(ws, workspace);
-                // save the indexes for WMTS stores
+
+                // WMTS stores
                 indexWMTSStores(ws, workspace);
 
+                // Coverage stores (raster)
                 for (CoverageStoreInfo cs : getCatalog().getStoresByWorkspace(ws.getName(), CoverageStoreInfo.class)) {
-                    if (!filteredResource(cs, ws, true, CoverageStoreInfo.class)) {
+                    if (!filteredResource((T) cs, ws, true, CoverageStoreInfo.class)) {
                         Element store = new Element("Store");
                         store.setAttribute("type", "CoverageStoreInfo");
                         store.addContent(new Element("Name").addContent(cs.getName()));
                         workspace.addContent(store);
 
                         for (CoverageInfo ci : getCatalog().getCoveragesByCoverageStore(cs)) {
-                            if (!filteredResource(ci, ws, true, CoverageInfo.class)) {
+                            if (!filteredResource((T) ci, ws, true, CoverageInfo.class)) {
                                 for (LayerInfo ly : getCatalog().getLayers(ci)) {
-                                    if (!filteredResource(ly, ws, true, LayerInfo.class)) {
+                                    if (!filteredResource((T) ly, ws, true, LayerInfo.class)) {
                                         Element layer = new Element("Layer");
                                         layer.setAttribute("type", "RASTER");
                                         layer.addContent(new Element("Name").addContent(ly.getName()));
@@ -482,26 +449,22 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
                 wsFilter.addContent(new Element("ECQL").addContent(ECQL.toCQL(getFilters()[0])));
                 filter.addContent(wsFilter);
             }
-
             if (getFilters().length > 1 && getFilters()[1] != null) {
                 Element siFilter = new Element("Filter");
                 siFilter.setAttribute("type", "StoreInfo");
                 siFilter.addContent(new Element("ECQL").addContent(ECQL.toCQL(getFilters()[1])));
                 filter.addContent(siFilter);
             }
-
             if (getFilters().length > 2 && getFilters()[2] != null) {
                 Element liFilter = new Element("Filter");
                 liFilter.setAttribute("type", "LayerInfo");
                 liFilter.addContent(new Element("ECQL").addContent(ECQL.toCQL(getFilters()[2])));
                 filter.addContent(liFilter);
             }
-
             root.addContent(filter);
         }
 
         doc.setRootElement(root);
-
         XMLOutputter outter = new XMLOutputter();
         outter.setFormat(Format.getPrettyFormat());
         outter.output(doc, new FileWriter(sourceFolder.get(BR_INDEX_XML).file()));
@@ -510,25 +473,19 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
     @SuppressWarnings("unchecked")
     private void indexWMTSStores(WorkspaceInfo ws, Element workspace) {
         for (WMTSStoreInfo wmts : getCatalog().getStoresByWorkspace(ws.getName(), WMTSStoreInfo.class)) {
-            if (!filteredResource(wmts, ws, true, WMTSStoreInfo.class)) {
-                Element store = new Element("Store");
-                store.setAttribute("type", "WMSStoreInfo");
-                store.addContent(new Element("Name").addContent(wmts.getName()));
-                workspace.addContent(store);
+            if (filteredResource((T) wmts, ws, true, WMTSStoreInfo.class)) continue;
 
-                List<WMTSLayerInfo> resourcesByStore = getCatalog().getResourcesByStore(wmts, WMTSLayerInfo.class);
-                for (WMTSLayerInfo wl : resourcesByStore) {
-                    if (!filteredResource(wl, ws, true, WMTSLayerInfo.class)) {
-                        List<WMTSLayerInfo> wmtsLayerInfoList =
-                                getCatalog().getResourcesByStore(wmts, WMTSLayerInfo.class);
-                        for (WMTSLayerInfo ly : wmtsLayerInfoList) {
-                            Element layer = new Element("Layer");
-                            layer.setAttribute("type", "WMTS");
-                            layer.addContent(new Element("Name").addContent(ly.getName()));
-                            store.addContent(layer);
-                        }
-                    }
-                }
+            Element store = new Element("Store");
+            store.setAttribute("type", "WMTSStoreInfo"); // FIXED
+            store.addContent(new Element("Name").addContent(wmts.getName()));
+            workspace.addContent(store);
+
+            for (WMTSLayerInfo ly : getCatalog().getResourcesByStore(wmts, WMTSLayerInfo.class)) {
+                if (filteredResource((T) ly, ws, true, WMTSLayerInfo.class)) continue;
+                Element layer = new Element("Layer");
+                layer.setAttribute("type", "WMTS");
+                layer.addContent(new Element("Name").addContent(ly.getName()));
+                store.addContent(layer);
             }
         }
     }
@@ -536,23 +493,20 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
     @SuppressWarnings("unchecked")
     private void indexWMSStores(WorkspaceInfo ws, Element workspace) {
         getCatalog().getStoresByWorkspace(ws.getName(), WMSStoreInfo.class).stream()
-                .filter(wms -> !filteredResource(wms, ws, true, WMSStoreInfo.class))
+                .filter(wms -> !filteredResource((T) wms, ws, true, WMSStoreInfo.class))
                 .forEach(wms -> {
                     Element store = new Element("Store");
                     store.setAttribute("type", "WMSStoreInfo");
                     store.addContent(new Element("Name").addContent(wms.getName()));
                     workspace.addContent(store);
+
                     List<WMSLayerInfo> wmsLayerInfoList = getCatalog().getResourcesByStore(wms, WMSLayerInfo.class);
                     for (WMSLayerInfo wl : wmsLayerInfoList) {
-                        if (!filteredResource(wl, ws, true, WMSLayerInfo.class)) {
-                            List<WMSLayerInfo> wmsLayerInfos =
-                                    getCatalog().getResourcesByStore(wms, WMSLayerInfo.class);
-                            for (WMSLayerInfo ly : wmsLayerInfos) {
-                                Element layer = new Element("Layer");
-                                layer.setAttribute("type", "WMS");
-                                layer.addContent(new Element("Name").addContent(ly.getName()));
-                                store.addContent(layer);
-                            }
+                        if (!filteredResource((T) wl, ws, true, WMSLayerInfo.class)) {
+                            Element layer = new Element("Layer");
+                            layer.setAttribute("type", "WMS");
+                            layer.addContent(new Element("Name").addContent(wl.getName()));
+                            store.addContent(layer);
                         }
                     }
                 });
@@ -561,7 +515,6 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
     @SuppressWarnings({"unchecked"})
     protected XStreamServiceLoader findServiceLoader(ServiceInfo service) {
         XStreamServiceLoader loader = null;
-
         final List<XStreamServiceLoader> loaders = GeoServerExtensions.extensions(XStreamServiceLoader.class);
         for (XStreamServiceLoader<ServiceInfo> l : loaders) {
             if (l.getServiceClass().isInstance(service)) {
@@ -569,7 +522,6 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
                 break;
             }
         }
-
         if (loader == null) {
             throw new IllegalArgumentException("No loader for " + service.getName());
         }
@@ -584,48 +536,26 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
         Assert.notNull(taskExecutor, "taskExecutor is required");
     }
 
-    /**
-     * Timeout in milliseconds.
-     *
-     * @param timeout upper limit for how long the execution of the external program is allowed to last.
-     */
+    /** Timeout in milliseconds. */
     public void setTimeout(long timeout) {
         this.timeout = timeout;
     }
 
-    /**
-     * The time interval how often the tasklet will check for termination status.
-     *
-     * @param checkInterval time interval in milliseconds (1 second by default).
-     */
+    /** Polling interval for termination checks (ms). */
     public void setTerminationCheckInterval(long checkInterval) {
         this.checkInterval = checkInterval;
     }
 
-    /**
-     * Sets the task executor that will be used to execute the system command NB! Avoid using a synchronous task
-     * executor
-     */
+    /** Set async executor (do not use synchronous here). */
     public void setTaskExecutor(TaskExecutor taskExecutor) {
         this.taskExecutor = taskExecutor;
     }
 
-    /**
-     * If <code>true</code> tasklet will attempt to interrupt the thread executing the system command if
-     * {@link #setTimeout(long)} has been exceeded or user interrupts the job. <code>
-     * false</code> by default
-     */
+    /** Interrupt the worker thread when canceling, if true. */
     public void setInterruptOnCancel(boolean interruptOnCancel) {
         this.interruptOnCancel = interruptOnCancel;
     }
 
-    /**
-     * Will interrupt the thread executing the system command only if {@link #setInterruptOnCancel(boolean)} has been
-     * set to true. Otherwise, the underlying command will be allowed to finish before the tasklet ends.
-     *
-     * @since 3.0
-     * @see StoppableTasklet#stop()
-     */
     @Override
     public void stop() {
         stopped = true;

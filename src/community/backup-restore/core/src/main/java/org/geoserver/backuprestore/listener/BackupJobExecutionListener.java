@@ -4,7 +4,6 @@
  */
 package org.geoserver.backuprestore.listener;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -21,20 +20,17 @@ import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.launch.NoSuchJobExecutionException;
 
 /**
- * Implements a Spring Batch {@link JobExecutionListener}.
+ * Spring Batch listener for the {@code backupJob}.
  *
- * <p>It's used to perform operations accordingly to the {@link Backup} batch {@link JobExecution} status.
- *
- * @author Alessio Fabiani, GeoSolutions
+ * <p>Resolves the matching {@link BackupExecutionAdapter} and performs post-processing (logging and temporary resource
+ * cleanup) when the job ends.
  */
 public class BackupJobExecutionListener implements JobExecutionListener {
 
-    /** logger */
     private static final Logger LOGGER = Logging.getLogger(BackupJobExecutionListener.class);
 
-    private Backup backupFacade;
-
-    private BackupExecutionAdapter backupExecution;
+    private final Backup backupFacade;
+    private BackupExecutionAdapter backupExecution; // resolved in beforeJob
 
     public BackupJobExecutionListener(Backup backupFacade) {
         this.backupFacade = backupFacade;
@@ -42,100 +38,127 @@ public class BackupJobExecutionListener implements JobExecutionListener {
 
     @Override
     public void beforeJob(JobExecution jobExecution) {
-        if (backupFacade.getBackupExecutions().get(jobExecution.getId()) != null) {
-            this.backupExecution = backupFacade.getBackupExecutions().get(jobExecution.getId());
-        } else {
-            Long id = null;
-            BackupExecutionAdapter bkp = null;
-
-            for (Entry<Long, BackupExecutionAdapter> entry :
+        // 1) Try direct lookup by execution id
+        BackupExecutionAdapter adapter = backupFacade.getBackupExecutions().get(jobExecution.getId());
+        if (adapter == null) {
+            // 2) Fallback: match on PARAM_TIME (added before launch)
+            Long matchedKey = null;
+            for (Entry<Long, BackupExecutionAdapter> e :
                     backupFacade.getBackupExecutions().entrySet()) {
-                id = entry.getKey();
-                bkp = entry.getValue();
-
-                if (bkp.getJobParameters()
-                        .getLong(Backup.PARAM_TIME)
-                        .equals(jobExecution.getJobParameters().getLong(Backup.PARAM_TIME))) {
+                BackupExecutionAdapter candidate = e.getValue();
+                Long a = candidate.getJobParameters().getLong(Backup.PARAM_TIME);
+                Long b = jobExecution.getJobParameters().getLong(Backup.PARAM_TIME);
+                if (a != null && a.equals(b)) {
+                    matchedKey = e.getKey();
+                    adapter = candidate;
                     break;
-                } else {
-                    id = null;
-                    bkp = null;
                 }
             }
+            if (adapter != null) {
+                // Replace placeholder adapter with the real one tied to this JobExecution
+                Resource archiveFile = adapter.getArchiveFile();
+                boolean overwrite = adapter.isOverwrite();
+                var options = List.copyOf(adapter.getOptions());
 
-            if (bkp != null) {
-                Resource archiveFile = bkp.getArchiveFile();
-                boolean overwrite = bkp.isOverwrite();
-                List<String> options = bkp.getOptions();
+                backupFacade.getBackupExecutions().remove(matchedKey);
 
-                this.backupFacade.getBackupExecutions().remove(id);
-
-                this.backupExecution =
+                BackupExecutionAdapter resolved =
                         new BackupExecutionAdapter(jobExecution, backupFacade.getTotalNumberOfBackupSteps());
-                this.backupExecution.setArchiveFile(archiveFile);
-                this.backupExecution.setOverwrite(overwrite);
-                this.backupExecution.setWsFilter(bkp.getWsFilter());
-                this.backupExecution.setSiFilter(bkp.getSiFilter());
-                this.backupExecution.setLiFilter(bkp.getLiFilter());
-                this.backupExecution.getOptions().addAll(options);
+                resolved.setArchiveFile(archiveFile);
+                resolved.setOverwrite(overwrite);
+                resolved.setWsFilter(adapter.getWsFilter());
+                resolved.setSiFilter(adapter.getSiFilter());
+                resolved.setLiFilter(adapter.getLiFilter());
+                resolved.getOptions().addAll(options);
 
-                this.backupFacade.getBackupExecutions().put(jobExecution.getId(), this.backupExecution);
+                backupFacade.getBackupExecutions().put(jobExecution.getId(), resolved);
+                adapter = resolved;
             }
         }
+        this.backupExecution = adapter;
     }
 
-    @SuppressWarnings("unused")
     @Override
     public void afterJob(JobExecution jobExecution) {
-        boolean dryRun =
-                Boolean.parseBoolean(jobExecution.getJobParameters().getString(Backup.PARAM_DRY_RUN_MODE, "false"));
-        boolean bestEffort =
-                Boolean.parseBoolean(jobExecution.getJobParameters().getString(Backup.PARAM_BEST_EFFORT_MODE, "false"));
+        // If we somehow couldn’t resolve the adapter, just log and exit safely.
+        if (backupExecution == null) {
+            LOGGER.warning("BackupJobExecutionListener.afterJob: no adapter found for executionId="
+                    + jobExecution.getId() + ", status=" + jobExecution.getStatus());
+            return;
+        }
+
+        final JobParameters jp = backupExecution.getJobParameters();
+        final boolean dryRun = Boolean.parseBoolean(jp.getString(Backup.PARAM_DRY_RUN_MODE, "false"));
+        final boolean bestEffort = Boolean.parseBoolean(jp.getString(Backup.PARAM_BEST_EFFORT_MODE, "false"));
 
         try {
-            final Long executionId = jobExecution.getId();
-
-            LOGGER.fine("Running Executions IDs : " + executionId);
+            final long executionId = jobExecution.getId();
 
             if (jobExecution.getStatus() != BatchStatus.STOPPED) {
-                LOGGER.fine("Executions Step Summaries : "
-                        + backupFacade.getJobOperator().getStepExecutionSummaries(executionId));
-                LOGGER.fine("Executions Parameters : "
-                        + backupFacade.getJobOperator().getParameters(executionId));
-                LOGGER.fine(
-                        "Executions Summary : " + backupFacade.getJobOperator().getSummary(executionId));
-
-                if (jobExecution.getStatus() == BatchStatus.COMPLETED) {
-                    JobParameters jobParameters = backupExecution.getJobParameters();
-                    Resource sourceFolder = Resources.fromURL(jobParameters.getString(Backup.PARAM_OUTPUT_FILE_PATH));
-
-                    // Cleanup Temporary Resources
-                    String cleanUpTempFolders = jobParameters.getString(Backup.PARAM_CLEANUP_TEMP);
-                    if (cleanUpTempFolders != null
-                            && Boolean.parseBoolean(cleanUpTempFolders)
-                            && sourceFolder != null) {
-                        if (Resources.exists(sourceFolder)) {
+                // Operator calls for diagnostics (in SB 5.2 these don’t declare checked exceptions)
+                var op = backupFacade.getJobOperator();
+                if (op != null) {
+                    try {
+                        LOGGER.fine(() -> {
                             try {
-                                if (!sourceFolder.delete()) {
-                                    LOGGER.warning(
-                                            "It was not possible to cleanup Temporary Resources. Please double check that Resources inside the Temp GeoServer Data Directory have been removed.");
-                                }
-                            } catch (Exception e) {
-                                LOGGER.log(
-                                        Level.WARNING,
-                                        "It was not possible to cleanup Temporary Resources. Please double check that Resources inside the Temp GeoServer Data Directory have been removed.",
-                                        e);
+                                return "Step summaries: " + op.getStepExecutionSummaries(executionId);
+                            } catch (NoSuchJobExecutionException e) {
+                                throw new RuntimeException(e);
                             }
+                        });
+                        LOGGER.fine(() -> {
+                            try {
+                                return "Parameters: " + op.getParameters(executionId);
+                            } catch (NoSuchJobExecutionException e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
+                        LOGGER.fine(() -> {
+                            try {
+                                return "Summary: " + op.getSummary(executionId);
+                            } catch (NoSuchJobExecutionException e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
+                    } catch (Exception e) {
+                        // These can throw at runtime if the execution is no longer visible
+                        if (!bestEffort) {
+                            backupExecution.addFailureExceptions(List.of(e));
+                            throw e;
+                        } else {
+                            backupExecution.addWarningExceptions(List.of(e));
+                        }
+                    }
+                }
+
+                // On successful completion, optionally cleanup the temp staging directory
+                if (jobExecution.getStatus() == BatchStatus.COMPLETED) {
+                    String outUrl = jp.getString(Backup.PARAM_OUTPUT_FILE_PATH);
+                    Resource sourceFolder = Resources.fromURL(outUrl);
+
+                    boolean cleanup = Boolean.parseBoolean(jp.getString(Backup.PARAM_CLEANUP_TEMP, "false"));
+                    if (cleanup && sourceFolder != null && Resources.exists(sourceFolder)) {
+                        try {
+                            if (!sourceFolder.delete()) {
+                                LOGGER.warning("Could not delete temp resources under '" + sourceFolder.path()
+                                        + "'. Please verify they were removed.");
+                            }
+                        } catch (Exception e) {
+                            LOGGER.log(
+                                    Level.WARNING,
+                                    "Failed to cleanup temporary resources under '" + sourceFolder.path() + "'.",
+                                    e);
                         }
                     }
                 }
             }
-        } catch (NoSuchJobExecutionException e) {
+        } catch (Exception e) { // SB 5.2: no checked NoSuchJobExecutionException to catch specifically
             if (!bestEffort) {
-                this.backupExecution.addFailureExceptions(Arrays.asList(e));
+                backupExecution.addFailureExceptions(List.of(e));
+                // Re-throw to surface failure if not in best-effort mode
                 throw new RuntimeException(e);
             } else {
-                this.backupExecution.addWarningExceptions(Arrays.asList(e));
+                backupExecution.addWarningExceptions(List.of(e));
             }
         }
     }

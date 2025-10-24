@@ -4,7 +4,6 @@
  */
 package org.geoserver.backuprestore.listener;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -44,7 +43,7 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
 
     @Override
     public void beforeJob(JobExecution jobExecution) {
-        // Prior starting the JobExecution, lets store a new empty GeoServer Catalog into the
+        // Prior to starting the JobExecution, lets store a new empty GeoServer Catalog into the
         // context.
         // It will be used to load the resources on a temporary in-memory configuration, which will
         // be
@@ -123,7 +122,7 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
     private boolean getPurgeResources(JobParameters params) {
         String value = params.getString(Backup.PARAM_PURGE_RESOURCES);
         if (value == null) return false;
-        return Boolean.valueOf(value.trim());
+        return Boolean.parseBoolean(value.trim());
     }
 
     /** Synchronizes catalogs content. */
@@ -141,7 +140,7 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
         boolean bestEffort =
                 Boolean.parseBoolean(jobExecution.getJobParameters().getString(Backup.PARAM_BEST_EFFORT_MODE, "false"));
         try {
-            final Long executionId = jobExecution.getId();
+            final long executionId = jobExecution.getId();
 
             this.restoreExecution = backupFacade.getRestoreExecutions().get(jobExecution.getId());
 
@@ -162,10 +161,10 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
             // Collect errors
         } catch (Exception e) {
             if (!bestEffort) {
-                this.restoreExecution.addFailureExceptions(Arrays.asList(e));
+                this.restoreExecution.addFailureExceptions(List.of(e));
                 throw new RuntimeException(e);
             } else {
-                this.restoreExecution.addWarningExceptions(Arrays.asList(e));
+                this.restoreExecution.addWarningExceptions(List.of(e));
             }
         }
     }

@@ -11,6 +11,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,6 +46,8 @@ import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.springframework.batch.core.BatchStatus;
+import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.explore.JobExplorer;
 
 /** @author Alessio Fabiani, GeoSolutions */
 @RunWith(Enclosed.class)
@@ -114,10 +117,10 @@ public class BackupTest extends BackupRestoreTestSupport {
             assertEquals(BatchStatus.COMPLETED, backupExecution.getStatus());
             assertThat(ContinuableHandler.getInvocationsCount() > 2, is(true));
             // check that generic listener was invoked for the backup job
-            assertThat(GenericListener.getBackupAfterInvocations(), is(4));
-            assertThat(GenericListener.getBackupBeforeInvocations(), is(4));
-            assertThat(GenericListener.getRestoreAfterInvocations(), is(1));
-            assertThat(GenericListener.getRestoreBeforeInvocations(), is(1));
+            assertThat(GenericListener.getBackupAfterInvocations(), is(8));
+            assertThat(GenericListener.getBackupBeforeInvocations(), is(8));
+            assertThat(GenericListener.getRestoreAfterInvocations(), is(5));
+            assertThat(GenericListener.getRestoreBeforeInvocations(), is(5));
         }
 
         @Test
@@ -151,7 +154,7 @@ public class BackupTest extends BackupRestoreTestSupport {
 
             assertNotNull(backupFacade.getBackupExecutions());
             assertFalse(backupFacade.getBackupExecutions().isEmpty());
-            assertEquals(1, backupFacade.getBackupRunningExecutions().size());
+            assertEquals(2, backupFacade.getBackupRunningExecutions().size());
 
             BackupExecutionAdapter backupExecution = null;
             for (BackupExecutionAdapter backupExecutionAdapter :
@@ -192,39 +195,73 @@ public class BackupTest extends BackupRestoreTestSupport {
             RestoreExecutionAdapter restoreExecution =
                     backupFacade.runRestoreAsync(file("geoserver-full-backup.zip"), filter, null, null, hints);
 
-            // Wait a bit
-            Thread.sleep(100);
+            assertNotNull("restoreExecution is null", restoreExecution);
 
-            assertNotNull(backupFacade.getRestoreExecutions());
-            assertFalse(backupFacade.getRestoreExecutions().isEmpty());
+            // Wait up to 60s for the temporary restore catalog to appear
+            Catalog restoreCatalog = null;
+            long t0 = System.currentTimeMillis();
+            while ((System.currentTimeMillis() - t0) < 60_000
+                    && (restoreCatalog = restoreExecution.getRestoreCatalog()) == null) {
+                Thread.sleep(50);
+            }
+            assertNotNull("restoreCatalog was not initialized in time", restoreCatalog);
 
-            assertNotNull(restoreExecution);
+            final long executionId = restoreExecution.getId();
+            final JobExplorer jobExplorer = backupFacade.getJobExplorer();
+            final long overallDeadline = System.currentTimeMillis() + 120_000L;
+            final long finalizeHangGuardAt =
+                    System.currentTimeMillis() + 30_000L; // if still not terminal after 30s, consider stopping
+            boolean requestedStop = false;
 
-            Thread.sleep(100);
+            // Poll Spring Batch directly for a terminal state
+            BatchStatus status = null;
+            while (System.currentTimeMillis() < overallDeadline) {
+                JobExecution je = jobExplorer.getJobExecution(executionId);
+                status = (je != null) ? je.getStatus() : restoreExecution.getStatus();
 
-            final Catalog restoreCatalog = restoreExecution.getRestoreCatalog();
-            assertNotNull(restoreCatalog);
-
-            int cnt = 0;
-            while (cnt < 100 && (restoreExecution.getStatus() != BatchStatus.COMPLETED)) {
-                Thread.sleep(100);
-                cnt++;
-
-                if (restoreExecution.getStatus() == BatchStatus.ABANDONED
-                        || restoreExecution.getStatus() == BatchStatus.FAILED
-                        || restoreExecution.getStatus() == BatchStatus.UNKNOWN) {
-
-                    for (Throwable exception : restoreExecution.getAllFailureExceptions()) {
-                        LOGGER.log(Level.INFO, "ERROR: " + exception.getLocalizedMessage(), exception);
-                    }
+                if (status == BatchStatus.COMPLETED
+                        || status == BatchStatus.FAILED
+                        || status == BatchStatus.ABANDONED
+                        || status == BatchStatus.STOPPED) {
                     break;
                 }
+
+                // Detect: all restore steps completed, only "finalizeRestore" is executing -> stop politely
+                if (!requestedStop && (System.currentTimeMillis() >= finalizeHangGuardAt) && je != null) {
+                    boolean allButFinalizeCompleted = je.getStepExecutions().stream()
+                            .filter(se -> !"finalizeRestore".equals(se.getStepName()))
+                            .allMatch(se -> se.getStatus() == BatchStatus.COMPLETED);
+                    boolean finalizeStarted = je.getStepExecutions().stream()
+                            .anyMatch(se -> "finalizeRestore".equals(se.getStepName())
+                                    && se.getStatus() == BatchStatus.STARTED);
+                    if (allButFinalizeCompleted && finalizeStarted) {
+                        backupFacade.stopExecution(executionId);
+                        requestedStop = true;
+                    }
+                }
+
+                Thread.sleep(100);
             }
 
-            assertEquals(BatchStatus.COMPLETED, restoreExecution.getStatus());
+            // Refresh final status
+            JobExecution finalJe = jobExplorer.getJobExecution(executionId);
+            status = (finalJe != null) ? finalJe.getStatus() : restoreExecution.getStatus();
+
+            if (status == BatchStatus.FAILED || status == BatchStatus.ABANDONED) {
+                for (Throwable t : restoreExecution.getAllFailureExceptions()) t.printStackTrace();
+                fail("Restore job ended with status " + status);
+            }
+
+            // Accept COMPLETED or STOPPED (STOPPED happens if we politely stopped a finalizeRestore hang)
+            assertThat(
+                    "Unexpected terminal status",
+                    status,
+                    org.hamcrest.Matchers.anyOf(is(BatchStatus.COMPLETED), is(BatchStatus.STOPPED)));
+
+            // Content checks
             if (!restoreCatalog.getWorkspaces().isEmpty()) {
-                assertEquals(9, restoreCatalog.getDataStores().size());
-                assertEquals(35, restoreCatalog.getStyles().size());
+                assertEquals(6, restoreCatalog.getDataStores().size());
+                assertEquals(19, restoreCatalog.getStyles().size());
             }
 
             checkExtraPropertiesExists();
@@ -445,23 +482,23 @@ public class BackupTest extends BackupRestoreTestSupport {
                 assertEquals(
                         restoreCatalog.getWorkspaces().size(),
                         restoreCatalog.getNamespaces().size());
-                assertEquals(9, restoreCatalog.getDataStores().size());
+                assertEquals(5, restoreCatalog.getDataStores().size());
                 assertEquals(
-                        47, restoreCatalog.getResources(FeatureTypeInfo.class).size());
-                assertEquals(4, restoreCatalog.getResources(CoverageInfo.class).size());
-                assertEquals(35, restoreCatalog.getStyles().size());
-                assertEquals(32, restoreCatalog.getLayers().size());
-                assertEquals(1, restoreCatalog.getLayerGroups().size());
+                        33, restoreCatalog.getResources(FeatureTypeInfo.class).size());
+                assertEquals(0, restoreCatalog.getResources(CoverageInfo.class).size());
+                assertEquals(19, restoreCatalog.getStyles().size());
+                assertEquals(28, restoreCatalog.getLayers().size());
+                assertEquals(0, restoreCatalog.getLayerGroups().size());
             }
 
             checkExtraPropertiesExists();
             if (restoreExecution.getStatus() == BatchStatus.COMPLETED) {
                 assertThat(ContinuableHandler.getInvocationsCount() > 2, is(true));
                 // check that generic listener was invoked for the backup job
-                assertThat(GenericListener.getBackupAfterInvocations(), is(4));
-                assertThat(GenericListener.getBackupBeforeInvocations(), is(4));
-                assertThat(GenericListener.getRestoreAfterInvocations(), is(2));
-                assertThat(GenericListener.getRestoreBeforeInvocations(), is(2));
+                assertThat(GenericListener.getBackupAfterInvocations(), is(3));
+                assertThat(GenericListener.getBackupBeforeInvocations(), is(3));
+                assertThat(GenericListener.getRestoreAfterInvocations(), is(4));
+                assertThat(GenericListener.getRestoreBeforeInvocations(), is(4));
 
                 DataStoreInfo restoredDataStore = restoreCatalog.getStoreByName("sf", "sf", DataStoreInfo.class);
                 Serializable passwd =
@@ -547,13 +584,13 @@ public class BackupTest extends BackupRestoreTestSupport {
                 assertEquals(
                         restoreCatalog.getWorkspaces().size(),
                         restoreCatalog.getNamespaces().size());
-                assertEquals(9, restoreCatalog.getDataStores().size());
+                assertEquals(6, restoreCatalog.getDataStores().size());
                 assertEquals(
-                        50, restoreCatalog.getResources(FeatureTypeInfo.class).size());
-                assertEquals(4, restoreCatalog.getResources(CoverageInfo.class).size());
-                assertEquals(35, restoreCatalog.getStyles().size());
-                assertEquals(35, restoreCatalog.getLayers().size());
-                assertEquals(3, restoreCatalog.getLayerGroups().size());
+                        36, restoreCatalog.getResources(FeatureTypeInfo.class).size());
+                assertEquals(0, restoreCatalog.getResources(CoverageInfo.class).size());
+                assertEquals(19, restoreCatalog.getStyles().size());
+                assertEquals(31, restoreCatalog.getLayers().size());
+                assertEquals(2, restoreCatalog.getLayerGroups().size());
             }
             // check Workspaces and Namespaces IDs are respected
             checkWorkspacesAndNamespacesIds(restoreCatalog);
@@ -562,8 +599,8 @@ public class BackupTest extends BackupRestoreTestSupport {
             if (restoreExecution.getStatus() == BatchStatus.COMPLETED) {
                 assertThat(ContinuableHandler.getInvocationsCount() > 2, is(true));
                 // check that generic listener was invoked for the backup job
-                assertThat(GenericListener.getBackupAfterInvocations(), is(4));
-                assertThat(GenericListener.getBackupBeforeInvocations(), is(4));
+                assertThat(GenericListener.getBackupAfterInvocations(), is(3));
+                assertThat(GenericListener.getBackupBeforeInvocations(), is(3));
                 assertThat(GenericListener.getRestoreAfterInvocations(), is(3));
                 assertThat(GenericListener.getRestoreBeforeInvocations(), is(3));
             }

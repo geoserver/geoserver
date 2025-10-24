@@ -13,51 +13,16 @@ import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogException;
-import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.CoverageStoreInfo;
-import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.NamespaceInfo;
-import org.geoserver.catalog.PublishedInfo;
-import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.StoreInfo;
-import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.ValidationResult;
-import org.geoserver.catalog.WMSStoreInfo;
-import org.geoserver.catalog.WMTSStoreInfo;
-import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.impl.CoverageInfoImpl;
-import org.geoserver.catalog.impl.CoverageStoreInfoImpl;
-import org.geoserver.catalog.impl.DataStoreInfoImpl;
-import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
-import org.geoserver.catalog.impl.LayerGroupInfoImpl;
-import org.geoserver.catalog.impl.LayerInfoImpl;
-import org.geoserver.catalog.impl.ProxyUtils;
-import org.geoserver.catalog.impl.StoreInfoImpl;
-import org.geoserver.catalog.impl.WMSStoreInfoImpl;
-import org.geoserver.catalog.impl.WMTSStoreInfoImpl;
+import org.geoserver.catalog.*;
+import org.geoserver.catalog.impl.*;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityManager;
-import org.geoserver.security.decorators.SecuredCoverageInfo;
-import org.geoserver.security.decorators.SecuredCoverageStoreInfo;
-import org.geoserver.security.decorators.SecuredDataStoreInfo;
-import org.geoserver.security.decorators.SecuredFeatureTypeInfo;
-import org.geoserver.security.decorators.SecuredWMSLayerInfo;
-import org.geoserver.security.decorators.SecuredWMTSLayerInfo;
+import org.geoserver.security.decorators.*;
 import org.geotools.api.filter.Filter;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
@@ -69,256 +34,240 @@ import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.util.Assert;
 
-/** @author Alessio Fabiani, GeoSolutions S.A.S. */
+/** Base item helper for backup/restore tasklets. */
 public abstract class BackupRestoreItem<T> {
 
-    /** logger */
     private static final Logger LOGGER = Logging.getLogger(BackupRestoreItem.class);
 
-    protected Backup backupFacade;
+    protected final Backup backupFacade;
 
     private Catalog catalog;
 
     protected XStreamPersister xstream;
-
     private XStream xp;
 
     private boolean isNew = true;
-
     private AbstractExecutionAdapter currentJobExecution;
 
     private boolean dryRun = true;
-
     private boolean bestEffort;
 
-    private XStreamPersisterFactory xStreamPersisterFactory;
+    private final XStreamPersisterFactory xStreamPersisterFactory;
 
-    private Filter filters[];
+    private Filter[] filters;
 
     public static final String ENCRYPTED_FIELDS_KEY = "backupRestoreParameterizedFields";
 
     public BackupRestoreItem(Backup backupFacade) {
         this.backupFacade = backupFacade;
         this.xStreamPersisterFactory = GeoServerExtensions.bean(XStreamPersisterFactory.class);
-        ;
     }
 
-    /** @return the xStreamPersisterFactory */
     public XStreamPersisterFactory getxStreamPersisterFactory() {
         return xStreamPersisterFactory;
     }
 
-    /** @return the xp */
     public XStream getXp() {
         return xp;
     }
 
-    /** @param xp the xp to set */
     public void setXp(XStream xp) {
         this.xp = xp;
     }
 
-    /** @return the catalog */
     public Catalog getCatalog() {
         authenticate();
         return catalog;
     }
 
-    /** */
     public void authenticate() {
         backupFacade.authenticate();
     }
 
-    /** @return the isNew */
     public boolean isNew() {
         return isNew;
     }
 
-    /** @return the currentJobExecution */
     public AbstractExecutionAdapter getCurrentJobExecution() {
         return currentJobExecution;
     }
 
-    /** @return the dryRun */
     public boolean isDryRun() {
         return dryRun;
     }
 
-    /** @return the bestEffort */
     public boolean isBestEffort() {
         return bestEffort;
     }
 
-    /** @return the filter */
     public Filter[] getFilters() {
         return filters;
     }
 
-    /** @param filter the filter to set */
     public void setFilters(Filter[] filters) {
         this.filters = filters;
     }
 
-    /** @return a boolean indicating that at least one filter has been defined */
+    /** @return true if at least one of the three filters is configured. */
     public boolean filterIsValid() {
-        return (this.filters != null
+        return this.filters != null
                 && this.filters.length == 3
-                && (this.filters[0] != null || this.filters[1] != null || this.filters[2] != null));
+                && (this.filters[0] != null || this.filters[1] != null || this.filters[2] != null);
     }
 
     @BeforeStep
     public void retrieveInterstepData(StepExecution stepExecution) {
-        // Accordingly to the running execution type (Backup or Restore) we
-        // need to validate resources against the official GeoServer Catalog (Backup)
-        // or the temporary one (Restore).
-        //
-        // For restore operations the order matters.
+        // Establish which catalog we operate against and set up XStream
         JobExecution jobExecution = stepExecution.getJobExecution();
-
         this.xstream = xStreamPersisterFactory.createXMLPersister();
 
         if (backupFacade.getRestoreExecutions() != null
                 && !backupFacade.getRestoreExecutions().isEmpty()
                 && backupFacade.getRestoreExecutions().containsKey(jobExecution.getId())) {
+
             this.currentJobExecution = backupFacade.getRestoreExecutions().get(jobExecution.getId());
             this.catalog = ((RestoreExecutionAdapter) currentJobExecution).getRestoreCatalog();
-            this.isNew = true;
+            this.isNew = true; // restore uses a temp catalog
         } else {
             this.currentJobExecution = backupFacade.getBackupExecutions().get(jobExecution.getId());
             this.catalog = backupFacade.getCatalog();
-            this.xstream.setExcludeIds();
+            this.xstream.setExcludeIds(); // backup: exclude ids
             this.isNew = false;
         }
 
         Assert.notNull(this.catalog, "catalog must be set");
 
-        // Set Catalog
         this.xstream.setCatalog(this.catalog);
         this.xstream.setReferenceByName(true);
         this.xp = this.xstream.getXStream();
-
         Assert.notNull(this.xp, "xStream persister should not be NULL");
 
-        JobParameters jobParameters = this.currentJobExecution.getJobParameters();
+        // SB 5.x: no getString(key, default); use helpers
+        JobParameters jobParameters = this.currentJobExecution.getDelegate().getJobParameters();
 
-        boolean parameterizePasswords =
-                Boolean.parseBoolean(jobParameters.getString(Backup.PARAM_PARAMETERIZE_PASSWDS, "false"));
+        boolean parameterizePasswords = getBoolean(jobParameters, Backup.PARAM_PARAMETERIZE_PASSWDS);
 
         if (parameterizePasswords) {
-            // here we set some customized XML handling code. For backups, we add a converter that
-            // tokenizes
-            // outgoing passwords. for restores, a handler for those tokenized backups.
+            // For backups, parameterize outgoing passwords;
+            // for restores, de-tokenize incoming values.
             if (!isNew) {
                 this.xp.registerLocalConverter(
                         StoreInfoImpl.class, "connectionParameters", this.createParameterizingMapConverter(xstream));
                 this.xp.registerConverter(this.createStoreConverter(xstream));
             } else {
-                String concatenatedPasswordTokens = jobParameters.getString(Backup.PARAM_PASSWORD_TOKENS);
+                String concatenatedPasswordTokens = getString(jobParameters, Backup.PARAM_PASSWORD_TOKENS);
                 Map<String, String> passwordTokens = parseConcatenatedPasswordTokens(concatenatedPasswordTokens);
                 this.xp.registerConverter(new TokenizedFieldConverter(passwordTokens));
                 xstream.registerBriefMapComplexType("tokenizedPassword", BackupRestoreItem.class);
             }
         }
 
-        this.dryRun = Boolean.parseBoolean(jobParameters.getString(Backup.PARAM_DRY_RUN_MODE, "false"));
-        this.bestEffort = Boolean.parseBoolean(jobParameters.getString(Backup.PARAM_BEST_EFFORT_MODE, "false"));
+        this.dryRun = getBoolean(jobParameters, Backup.PARAM_DRY_RUN_MODE);
+        this.bestEffort = getBoolean(jobParameters, Backup.PARAM_BEST_EFFORT_MODE);
 
         // Initialize Filters
         this.filters = new Filter[3];
-        String cql = jobParameters.getString("wsFilter", null);
+        String cql = getString(jobParameters, "wsFilter");
         if (cql != null) {
             try {
                 this.filters[0] = ECQL.toFilter(cql);
             } catch (CQLException e) {
                 throw new IllegalArgumentException("Workspace Filter is not valid!", e);
             }
-        } else {
-            this.filters[0] = null;
         }
 
-        cql = jobParameters.getString("siFilter", null);
+        cql = getString(jobParameters, "siFilter");
         if (cql != null) {
             try {
                 this.filters[1] = ECQL.toFilter(cql);
             } catch (CQLException e) {
                 throw new IllegalArgumentException("Store Filter is not valid!", e);
             }
-        } else {
-            this.filters[1] = null;
         }
 
-        cql = jobParameters.getString("liFilter", null);
+        cql = getString(jobParameters, "liFilter");
         if (cql != null) {
             try {
                 this.filters[2] = ECQL.toFilter(cql);
             } catch (CQLException e) {
                 throw new IllegalArgumentException("Layer Filter is not valid!", e);
             }
-        } else {
-            this.filters[2] = null;
         }
 
         initialize(stepExecution);
     }
 
+    private static boolean getBoolean(JobParameters p, String key) {
+        return Boolean.parseBoolean(getString(p, key, "false"));
+    }
+
+    private static String getString(JobParameters p, String key) {
+        return getString(p, key, null);
+    }
+
+    private static String getString(JobParameters p, String key, String def) {
+        if (p == null) return def;
+        String v = p.getString(key);
+        return v != null ? v : def;
+        // (use getLong/getDate similarly when needed)
+    }
+
     private Map<String, String> parseConcatenatedPasswordTokens(String concatenatedPasswordTokens) {
         Map<String, String> tokenMap = new HashMap<>();
         if (concatenatedPasswordTokens != null) {
-            Arrays.stream(concatenatedPasswordTokens.split(",")).forEach(tokenPair -> {
-                String[] tokenPairSplit = tokenPair.split("=");
-                if (tokenPairSplit.length == 2) {
-                    tokenMap.put(tokenPairSplit[0], tokenPairSplit[1]);
-                }
-            });
+            Arrays.stream(concatenatedPasswordTokens.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .forEach(tokenPair -> {
+                        String[] tokenPairSplit = tokenPair.split("=", 2);
+                        if (tokenPairSplit.length == 2) {
+                            tokenMap.put(tokenPairSplit[0], tokenPairSplit[1]);
+                        }
+                    });
         }
         return tokenMap;
     }
 
-    /** */
+    /** Step-specific initialization hook for subclasses. */
     protected abstract void initialize(StepExecution stepExecution);
 
-    /** */
+    /** Log validation errors and rethrow/collect depending on best-effort mode. */
     public boolean logValidationExceptions(ValidationResult result, Exception e) throws Exception {
         CatalogException validationException = new CatalogException(e);
         if (!isBestEffort()) {
-            if (result != null) {
-                result.throwIfInvalid();
-            } else {
-                throw e;
-            }
+            if (result != null) result.throwIfInvalid();
+            else throw e;
+            // if we reach here, it means result was valid—no error to record
+            return true;
         }
-
-        if (!isBestEffort()) {
-            getCurrentJobExecution().addFailureExceptions(List.of(validationException));
-        }
+        // best-effort: collect as warning
+        getCurrentJobExecution().addWarningExceptions(List.of(validationException));
         return false;
     }
 
-    /** @param resource */
     public boolean logValidationExceptions(T resource, Throwable e) {
-        CatalogException validationException =
-                e != null ? new CatalogException(e) : new CatalogException("Invalid resource: " + resource);
+        CatalogException ve =
+                (e != null) ? new CatalogException(e) : new CatalogException("Invalid resource: " + resource);
         if (!isBestEffort()) {
-            getCurrentJobExecution().addFailureExceptions(List.of(validationException));
-            throw validationException;
+            getCurrentJobExecution().addFailureExceptions(List.of(ve));
+            throw ve;
         } else {
-            getCurrentJobExecution().addWarningExceptions(List.of(validationException));
-        }
-        return false;
-    }
-
-    /** */
-    protected boolean filteredResource(T resource, WorkspaceInfo ws, boolean strict, Class<?> clazz) {
-        // Filtering Resources
-        if (!filterIsValid()) {
+            getCurrentJobExecution().addWarningExceptions(List.of(ve));
             return false;
         }
+    }
+
+    /** Apply workspace/store/resource filters. */
+    protected boolean filteredResource(T resource, WorkspaceInfo ws, boolean strict, Class<?> clazz) {
+        if (!filterIsValid()) return false;
+
         if (resource == null || clazz == WorkspaceInfo.class) {
             if ((strict && ws == null) || (ws != null && getFilters()[0] != null && !getFilters()[0].evaluate(ws))) {
                 LOGGER.info("Skipped filtered workspace: " + ws);
                 return true;
             }
         }
+
         boolean skip = false;
         if (resource != null) {
             if (clazz == StoreInfo.class) {
@@ -327,20 +276,13 @@ public abstract class BackupRestoreItem<T> {
                 skip = getFilters()[2] != null && !getFilters()[2].evaluate(resource);
             } else if (clazz == ResourceInfo.class) {
                 skip = ((ResourceInfo) resource).getStore() == null
-                        ||
-                        // (getFilters()[1] != null &&
-                        // !getFilters()[1].evaluate(((ResourceInfo)
-                        // resource).getStore())) ||
-                        (getFilters()[2] != null && !getFilters()[2].evaluate(resource));
+                        || (getFilters()[2] != null && !getFilters()[2].evaluate(resource));
             }
         }
-        if (skip) {
-            LOGGER.info("Skipped filtered resource: " + resource);
-        }
+        if (skip) LOGGER.info("Skipped filtered resource: " + resource);
         return skip;
     }
 
-    /** */
     protected boolean filteredResource(WorkspaceInfo ws, boolean strict) {
         return filteredResource(null, ws, strict, WorkspaceInfo.class);
     }
@@ -352,26 +294,21 @@ public abstract class BackupRestoreItem<T> {
                 ParameterizedFieldsHolder fieldsToParametrize =
                         (ParameterizedFieldsHolder) context.get(ENCRYPTED_FIELDS_KEY);
 
-                Map map = (Map) source;
-                for (Object o : map.entrySet()) {
-                    Map.Entry entry = (Map.Entry) o;
-
-                    if (entry.getValue() == null) {
-                        continue;
-                    }
+                Map<?, ?> map = (Map<?, ?>) source;
+                for (Map.Entry<?, ?> entry : map.entrySet()) {
+                    if (entry.getValue() == null) continue;
 
                     writer.startNode("entry");
-                    writer.addAttribute("key", entry.getKey().toString());
+                    writer.addAttribute("key", String.valueOf(entry.getKey()));
                     Object value = entry.getValue();
                     String complexTypeId = getComplexTypeId(value.getClass());
+
                     if (complexTypeId == null) {
                         String str = Converters.convert(value, String.class);
-                        if (str == null) {
-                            str = value.toString();
-                        }
+                        if (str == null) str = value.toString();
+
                         if (fieldsToParametrize != null
                                 && fieldsToParametrize.getFields().contains(entry.getKey())) {
-
                             writer.startNode("tokenizedPassword");
                             str = "${"
                                     + fieldsToParametrize
@@ -381,7 +318,7 @@ public abstract class BackupRestoreItem<T> {
                                     + ":"
                                     + fieldsToParametrize.getStoreInfo().getName()
                                     + "."
-                                    + entry.getKey().toString()
+                                    + entry.getKey()
                                     + ".encryptedValue}";
                             writer.setValue(str);
                             writer.endNode();
@@ -393,7 +330,6 @@ public abstract class BackupRestoreItem<T> {
                         context.convertAnother(value);
                         writer.endNode();
                     }
-
                     writer.endNode();
                 }
             }
@@ -407,19 +343,14 @@ public abstract class BackupRestoreItem<T> {
                 GeoServerSecurityManager secMgr =
                         xstream.isEncryptPasswordFields() ? xstream.getSecurityManager() : null;
                 if (secMgr != null && secMgr.isInitialized()) {
-                    // set the hint for the map converter as to which fields to encode in the
-                    // connection
-                    // parameter of this store
                     Set<String> encryptedFields =
                             secMgr.getConfigPasswordEncryptionHelper().getEncryptedFields((StoreInfo) source);
-
                     if (!encryptedFields.isEmpty()) {
                         context.put(
                                 ENCRYPTED_FIELDS_KEY,
                                 new ParameterizedFieldsHolder((StoreInfo) source, encryptedFields));
                     }
                 }
-
                 super.doMarshal(source, writer, context);
             }
         };
@@ -433,8 +364,7 @@ public abstract class BackupRestoreItem<T> {
             @Override
             public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
                 String tokenizedValue = reader.getValue();
-                String replacedValue = this.replaceTokenizedValue(tokenizedValue);
-                return replacedValue;
+                return replaceTokenizedValue(tokenizedValue);
             }
 
             private String replaceTokenizedValue(String tokenizedValue) {
@@ -443,16 +373,11 @@ public abstract class BackupRestoreItem<T> {
 
             @Override
             public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
-                if (BackupRestoreItem.class.equals(type)) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return BackupRestoreItem.class.equals(type);
             }
         };
     }
 
-    /** */
     private Object unwrap(Object item) {
         if (item instanceof Proxy) {
             item = ProxyUtils.unwrap(item, Proxy.getInvocationHandler(item).getClass());
@@ -460,7 +385,6 @@ public abstract class BackupRestoreItem<T> {
         return item;
     }
 
-    /** */
     private ResourceInfo unwrapSecured(ResourceInfo info) {
         if (info instanceof SecuredFeatureTypeInfo typeInfo) return typeInfo.unwrap(ResourceInfo.class);
         if (info instanceof SecuredCoverageInfo coverageInfo) return coverageInfo.unwrap(ResourceInfo.class);
@@ -469,19 +393,16 @@ public abstract class BackupRestoreItem<T> {
         return info;
     }
 
-    /** */
     private StoreInfo unwrapSecured(StoreInfo info) {
-        if (info instanceof SecuredDataStoreInfo storeInfo) return storeInfo.unwrap(StoreInfo.class);
-        if (info instanceof SecuredWMSLayerInfo layerInfo) return layerInfo.unwrap(StoreInfo.class);
-        if (info instanceof SecuredWMTSLayerInfo layerInfo) return layerInfo.unwrap(StoreInfo.class);
-        if (info instanceof SecuredCoverageStoreInfo storeInfo) return storeInfo.unwrap(StoreInfo.class);
+        if (info instanceof SecuredDataStoreInfo s) return s.unwrap(StoreInfo.class);
+        if (info instanceof SecuredCoverageStoreInfo s) return s.unwrap(StoreInfo.class);
+        if (info instanceof SecuredWMSStoreInfo s) return s.unwrap(StoreInfo.class);
+        if (info instanceof SecuredWMTSStoreInfo s) return s.unwrap(StoreInfo.class);
         return info;
     }
 
-    /** @param srcCatalog */
+    /** Sync all objects from srcCatalog into this catalog. */
     protected void syncTo(Catalog srcCatalog) {
-        // do a manual import
-
         // WorkSpaces && NameSpaces
         for (NamespaceInfo ns : srcCatalog.getFacade().getNamespaces()) {
             NamespaceInfo targetNamespace = catalog.getNamespaceByPrefix(ns.getPrefix());
@@ -610,7 +531,7 @@ public abstract class BackupRestoreItem<T> {
             }
         }
 
-        // Layers && LayerGroups
+        // Layers
         for (LayerInfo l : srcCatalog.getFacade().getLayers()) {
             LayerInfo targetLayerInfo = catalog.getLayerByName(l.getName());
             if (targetLayerInfo == null) {
@@ -638,6 +559,7 @@ public abstract class BackupRestoreItem<T> {
             }
         }
 
+        // LayerGroups
         try {
             for (LayerGroupInfo lg : srcCatalog.getFacade().getLayerGroups()) {
                 LayerGroupInfo targetLayerGroup = catalog.getLayerGroupByName(lg.getName());
@@ -652,17 +574,16 @@ public abstract class BackupRestoreItem<T> {
             }
         } catch (Exception e) {
             if (getCurrentJobExecution() != null) {
-                getCurrentJobExecution().addWarningExceptions(Arrays.asList(e));
+                getCurrentJobExecution().addWarningExceptions(List.of(e));
             }
         }
 
-        // Set the original default WorkSpace and NameSpace
+        // Defaults
         if (srcCatalog.getFacade().getDefaultWorkspace() != null) {
             WorkspaceInfo targetDefaultWorkspace = catalog.getWorkspaceByName(
                     srcCatalog.getFacade().getDefaultWorkspace().getName());
             catalog.setDefaultWorkspace(targetDefaultWorkspace);
         }
-
         if (srcCatalog.getFacade().getDefaultNamespace() != null) {
             NamespaceInfo targetDefaultNameSpace = catalog.getNamespaceByPrefix(
                     srcCatalog.getFacade().getDefaultNamespace().getPrefix());
@@ -709,11 +630,9 @@ public abstract class BackupRestoreItem<T> {
                 ((DataStoreInfoImpl) target).setConnectionParameters(impl.getConnectionParameters());
                 ((DataStoreInfoImpl) target).setMetadata(((StoreInfoImpl) source).getMetadata());
             }
-
             if (source instanceof CoverageStoreInfoImpl impl) {
                 ((CoverageStoreInfoImpl) target).setURL(impl.getURL());
             }
-
             if (source instanceof WMSStoreInfoImpl impl) {
                 ((WMSStoreInfoImpl) target).setCapabilitiesURL(impl.getCapabilitiesURL());
                 ((WMSStoreInfoImpl) target).setUsername(impl.getUsername());
@@ -723,7 +642,6 @@ public abstract class BackupRestoreItem<T> {
                 ((WMSStoreInfoImpl) target).setReadTimeout(impl.getReadTimeout());
                 ((WMSStoreInfoImpl) target).setUseConnectionPooling(impl.isUseConnectionPooling());
             }
-
             if (source instanceof WMTSStoreInfoImpl impl) {
                 ((WMTSStoreInfoImpl) target).setCapabilitiesURL(impl.getCapabilitiesURL());
                 ((WMTSStoreInfoImpl) target).setUsername(impl.getUsername());
@@ -735,12 +653,9 @@ public abstract class BackupRestoreItem<T> {
             }
         }
 
-        if (type == DataStoreInfo.class && target.isEnabled()) {
+        if (type == DataStoreInfo.class && target != null && target.isEnabled()) {
             try {
-                // test connection to data store
-                ((DataStoreInfo) target).getDataStore(null);
-
-                // connection ok
+                ((DataStoreInfo) target).getDataStore(null); // validate connection
                 LOGGER.config("Processed data store '"
                         + target.getName()
                         + "', "
@@ -748,7 +663,6 @@ public abstract class BackupRestoreItem<T> {
             } catch (Exception e) {
                 LOGGER.warning("Error connecting to '" + target.getName() + "'");
                 LOGGER.log(Level.INFO, "", e);
-
                 target.setError(e);
                 target.setEnabled(false);
             }
@@ -790,7 +704,6 @@ public abstract class BackupRestoreItem<T> {
             ((FeatureTypeInfoImpl) target).setKeywords(impl.getKeywords());
             ((FeatureTypeInfoImpl) target).setResponseSRS(impl.getResponseSRS());
         }
-
         return target;
     }
 
@@ -827,7 +740,6 @@ public abstract class BackupRestoreItem<T> {
             ((CoverageInfoImpl) target).setResponseSRS(impl.getResponseSRS());
             ((CoverageInfoImpl) target).setSupportedFormats(impl.getSupportedFormats());
         }
-
         return target;
     }
 
@@ -839,7 +751,6 @@ public abstract class BackupRestoreItem<T> {
         target.setFormatVersion(source.getFormatVersion());
         target.setLegend(source.getLegend());
         target.setName(source.getName());
-
         return target;
     }
 
@@ -866,7 +777,6 @@ public abstract class BackupRestoreItem<T> {
             ((LayerInfoImpl) target).setMetadata(impl.getMetadata());
             ((LayerInfoImpl) target).setStyles(impl.getStyles());
         }
-
         return target;
     }
 
@@ -885,8 +795,8 @@ public abstract class BackupRestoreItem<T> {
         target.setName(source.getName());
         target.setTitle(source.getTitle());
 
-        List<PublishedInfo> publishables = new ArrayList<PublishedInfo>();
-        List<StyleInfo> styles = new ArrayList<StyleInfo>();
+        List<PublishedInfo> publishables = new ArrayList<>();
+        List<StyleInfo> styles = new ArrayList<>();
         for (int i = 0; i < source.getLayers().size(); i++) {
             PublishedInfo p = source.getLayers().get(i);
             boolean added = false;
@@ -903,12 +813,10 @@ public abstract class BackupRestoreItem<T> {
                     added = true;
                 }
             }
-
             if (added) {
                 StyleInfo s = source.getStyles().get(i);
                 if (s != null) {
-                    StyleInfo ts = catalog.getStyleByName(s.getName());
-                    styles.add(ts);
+                    styles.add(catalog.getStyleByName(s.getName()));
                 } else {
                     styles.add(null);
                 }
@@ -930,16 +838,14 @@ public abstract class BackupRestoreItem<T> {
                 }
             }
         }
-
         return target;
     }
 
     private static class TokenizedFieldConverter implements Converter {
-
         Map<String, String> properties = new HashMap<>();
 
         public TokenizedFieldConverter(Map<String, String> passwordTokens) {
-            this.properties = passwordTokens;
+            if (passwordTokens != null) this.properties.putAll(passwordTokens);
         }
 
         @Override
@@ -948,22 +854,12 @@ public abstract class BackupRestoreItem<T> {
         @Override
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
             String tokenizedValue = reader.getValue();
-            String replacedValue = this.replaceTokenizedValue(tokenizedValue);
-            // encrypt the value now?
-            return replacedValue;
-        }
-
-        private String replaceTokenizedValue(String tokenizedValue) {
             return properties.getOrDefault(tokenizedValue, tokenizedValue);
         }
 
         @Override
         public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
-            if (BackupRestoreItem.class.equals(type)) {
-                return true;
-            } else {
-                return false;
-            }
+            return BackupRestoreItem.class.equals(type);
         }
     }
 

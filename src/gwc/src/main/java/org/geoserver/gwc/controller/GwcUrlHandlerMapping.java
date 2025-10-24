@@ -15,7 +15,6 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.condition.PathPatternsRequestCondition;
-import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.util.UrlPathHelper;
@@ -60,7 +59,7 @@ public class GwcUrlHandlerMapping extends RequestMappingHandlerMapping implement
             // not a GWC REST URL or not in the context of a virtual service
             return null;
         }
-        if(request.getServletPath().equalsIgnoreCase("gwc") && gwcRestBaseIndex == 0){
+        if (request.getServletPath().equalsIgnoreCase("gwc") && gwcRestBaseIndex == 0) {
             return null;
         }
         int startIndex = lookupPath.charAt(0) == '/' ? 1 : 0;
@@ -95,9 +94,7 @@ public class GwcUrlHandlerMapping extends RequestMappingHandlerMapping implement
             super(request);
 
             // Adjust PATH_ATTRIBUTE used by spring to remove workspace
-            request.setAttribute(
-                    UrlPathHelper.PATH_ATTRIBUTE, path
-                    );
+            request.setAttribute(UrlPathHelper.PATH_ATTRIBUTE, path);
 
             // remove the virtual service workspace from the URL
             requestUri = request.getRequestURI().replace(workspaceName + "/", "");

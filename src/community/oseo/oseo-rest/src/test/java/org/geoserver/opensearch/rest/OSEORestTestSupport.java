@@ -32,7 +32,7 @@ import org.junit.Before;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-public class OSEORestTestSupport extends OSEOTestSupport {
+public abstract class OSEORestTestSupport extends OSEOTestSupport {
 
     protected static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 

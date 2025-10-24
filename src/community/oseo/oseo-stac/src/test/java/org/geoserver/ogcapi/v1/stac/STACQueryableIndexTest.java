@@ -44,7 +44,7 @@ public class STACQueryableIndexTest extends STACTestSupport {
 
     @BeforeClass
     public static void setupClass() throws IOException, SQLException {
-        data = JDBCOpenSearchAccessTest.setupAndReturnStore();
+        data = JDBCOpenSearchAccessTest.setupAndReturnStore(postgis);
     }
 
     @AfterClass

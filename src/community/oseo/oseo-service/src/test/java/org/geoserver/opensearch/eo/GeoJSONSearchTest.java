@@ -16,14 +16,19 @@ import net.sf.json.JSONObject;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.opensearch.eo.response.GeoJSONSearchResponse;
+import org.geoserver.opensearch.eo.store.OSEOPostGISResource;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.resource.Resource;
 import org.hamcrest.CoreMatchers;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 public class GeoJSONSearchTest extends OSEOTestSupport {
 
     private static final String ENCODED_GEOJSON = ResponseUtils.urlEncode(GeoJSONSearchResponse.MIME);
+
+    @ClassRule
+    public static final OSEOPostGISResource postgis = new OSEOPostGISResource(false);
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -32,6 +37,11 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
 
         copyTemplate("products-LANDSAT8.json");
         copyTemplate("collections-LANDSAT8.json");
+    }
+
+    @Override
+    protected OSEOPostGISResource getOSEOPostGIS() {
+        return postgis;
     }
 
     @Test

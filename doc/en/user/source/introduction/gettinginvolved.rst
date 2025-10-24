@@ -20,7 +20,7 @@ To learn more about contributing to the GeoServer codebase, we recommend reading
 
 .. note:: 
    
-   For :developer:`commit access <policies/committing.html>`__ new developers can request to work on a community module immediately, or make contributions over time to earn a nomination for full committ access.
+   For :developer:`commit access <policies/committing.html>` new developers can request to work on a community module immediately, or make contributions over time to earn a nomination for full committ access.
    
 
 Documentation
@@ -69,7 +69,7 @@ The geoserver-security mailing list is for volunteers evaulating incoming securi
 
 .. seealso::
    
-   The :developer:`Security Procedure <policies/security.html>`__ page in the Developers Guide provides additional information on how security vulnerables 
+   The :developer:`Security Procedure <policies/security.html>` page in the Developers Guide provides additional information on how security vulnerables 
 
 Reporting a Bug
 ---------------

@@ -66,7 +66,7 @@ else:
 
 # The relacement |release| most recent release version, including alpha/beta/rc tags.
 # This should be updated after each release
-release = '2.28.0'
+release = '3.0.0'
 if not snapshot:
   release = version
 
@@ -150,15 +150,16 @@ pygments_style = 'sphinx'
 # -----------------------------------
 
 extlinks = { 
-    'wiki': ('https://github.com/geoserver/geoserver/wiki/%s', None),
-    'website': ('http://geoserver.org/%s', None),
-    'user': ('http://docs.geoserver.org/'+branch+'/en/user/%s', None),
-    'developer': ('http://docs.geoserver.org/latest/en/developer/%s', None),
-    'docguide': ('http://docs.geoserver.org/latest/en/docguide/%s', None),
+    'wiki': ('https://github.com/geoserver/geoserver/wiki/%s', '%s'),
+    'github': ('https://github.com/geoserver/geoserver/%s', 'github.com/geoserver/geoserver/%s'),
+    'website': ('http://geoserver.org/%s', 'geoserver.org/%s'),
+    'user': ('http://docs.geoserver.org/'+branch+'/en/user/%s', '%s'),
+    'developer': ('http://docs.geoserver.org/latest/en/developer/%s', '%s'),
+    'docguide': ('http://docs.geoserver.org/latest/en/docguide/%s', '%s'),
     'geos': ('https://osgeo-org.atlassian.net/browse/GEOS-%s','GEOS-%s'),
     'geot': ('https://osgeo-org.atlassian.net/browse/GEOT-%s','GEOT-%s'),
-    'api': ('http://docs.geoserver.org/latest/en/api/#1.0.0/%s', None),
-    'geotools': ('https://docs.geotools.org/latest/userguide/%s', None),
+    'api': ('http://docs.geoserver.org/latest/en/api/#1.0.0/%s', 'REST API %s'),
+    'geotools': ('https://docs.geotools.org/latest/userguide/%s', 'GeoTools %s'),
     'download_release': (download_release,'geoserver-'+release+'-%s.zip'),
     'download_extension': (download_extension,'geoserver-'+release+'-%s-plugin.zip'),
     'download_community': (download_community,'geoserver-'+release+'-%s-plugin.zip'),

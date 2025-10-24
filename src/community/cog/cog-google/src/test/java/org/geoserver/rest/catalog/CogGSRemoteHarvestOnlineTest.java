@@ -11,12 +11,14 @@ import org.junit.Test;
 /** Similar to the {@link CogRemoteHarvestOnlineTest} but testing Google Storage */
 public class CogGSRemoteHarvestOnlineTest extends CogRemoteHarvestOnlineTest {
 
+    // Landsat image courtesy of the U.S. Geological Survey
     private static final String GS_COG_URI = "gs://gcp-public-data-landsat/LC08/01/044/034"
             + "/LC08_L1GT_044034_20130330_20170310_01_T2"
             + "/LC08_L1GT_044034_20130330_20170310_01_T2_B11.TIF";
 
     @Override
     protected String getCogURL() {
+        // Landsat image courtesy of the U.S. Geological Survey
         return "https://storage.googleapis"
                 + ".com/gcp-public-data-landsat/LC08/01/044/034"
                 + "/LC08_L1GT_044034_20130330_20170310_01_T2"

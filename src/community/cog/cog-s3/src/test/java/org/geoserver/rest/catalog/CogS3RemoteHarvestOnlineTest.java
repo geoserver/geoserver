@@ -8,6 +8,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assume.assumeTrue;
 
 import org.geoserver.rest.RestBaseController;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -15,8 +16,19 @@ public class CogS3RemoteHarvestOnlineTest extends CogRemoteHarvestOnlineTest {
 
     @Override
     protected String getCogURL() {
+        // Landsat image courtesy of the U.S. Geological Survey
         return "https://deafrica-landsat.s3.af-south-1.amazonaws.com/collection02/level-2/standard/tm/2010/200/040/LT05_L2SP_200040_20100123_20200825_02_T1/LT05_L2SP_200040_20100123_20200825_02_T1_QA_RADSAT.TIF";
     }
+
+    private final static String S3_COG_URI = "s3://deafrica-landsat/collection02/level-2/standard/tm/2010/200/040/"
+            + "LT05_L2SP_200040_20100208_20200824_02_T1/"
+            + "LT05_L2SP_200040_20100208_20200824_02_T1_QA_RADSAT.TIF";
+
+    @BeforeClass
+    public static void setRegion() {
+        System.setProperty("iio.s3.aws.region", "af-south-1");
+    }
+
 
     @Test
     public void testHarvestRemoteURLInImageMosaic() throws Exception {
@@ -38,9 +50,7 @@ public class CogS3RemoteHarvestOnlineTest extends CogRemoteHarvestOnlineTest {
         checkGranuleExists("empty", "empty", getCogURL());
 
         // Harvesting another granule
-        harvestGranule(
-                "empty",
-                "https://deafrica-landsat.s3.af-south-1.amazonaws.com/collection02/level-2/standard/tm/2010/200/040/LT05_L2SP_200040_20100208_20200824_02_T1/LT05_L2SP_200040_20100208_20200824_02_T1_QA_RADSAT.TIF");
+        harvestGranule("empty", S3_COG_URI);
 
         // Check we have 2 granules
         Document dom = getAsDOM(RestBaseController.ROOT_PATH

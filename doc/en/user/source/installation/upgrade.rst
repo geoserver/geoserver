@@ -45,7 +45,7 @@ How often should I upgrade GeoServer
 
 GeoServer operates with a time boxed release cycle, maintaining “stable” and “maintenance” releases, over the course of a year.
 
-* Plan to upgrade GeoServer **twice a year** as new stable releases are made.
+* Plan to upgrade GeoServer **at lesat twice a year** as new stable releases are made.
 
   Once the release you are using has entered "maintenance" it is a good idea to upgrade (before the release is no longer supported).
   
@@ -91,54 +91,83 @@ The most common difficulty when updating GeoServer is forgetting to include an e
 Upgrading more than one version
 """""""""""""""""""""""""""""""
 
-If it has been a while since you have upgraded GeoServer be cautious when upgrading from an unsupported release of GeoServer all the way to the latest release. Consider **updating to each major release in turn**, applying the guidance in the section below at each stage.
-  
-As an example when **planning an extended upgrade from GeoServer 2.26.0 to GeoServer 3.0.0**:
+If it has been a while since you have upgraded GeoServer be cautious when upgrading from an unsupported release of GeoServer all the way to the latest release. Consider **first trying a quick update** in one go, but be prepared to perform a sequential **update to each major release in turn**, applying the guidance in the section below at each stage.
 
-1. Check the :website:`Download <download>` page and download the releases needed to make the transition:
-
-   * GeoServer 2.26.4
-   * GeoServer 2.27.3
-   * GeoServer 2.28.0
-   * GeoServer 3.0.0
+.. note:: Trying a quick update GeoServer 2.26.0 to GeoServer 2.28.0
    
-   You may also make a note of the versions of Java to download:
+   1. Back up the current data directory
    
-   * OpenJDK 17
-   
-2. Perform each update in sequence, checking the guidance on this page for any work to perform.
-   
-   * Updating from GeoServer 2.26.0 to GeoServer 2.26.4
-     
-     The application property `ENTITY_RESOLUTION_UNRESTRICTED` is noted, if you are affected by a change in XML Parsing.
-     This should only affect Application Schema that made use of the :guilabel:`Unrestricted XML External Entity Resolution` setting.
-     
-     *Review the logs during startup, and test to ensure the application is working as expected.*
-     
-   * Updating from GeoSerer 2.26.4 to GeoServer 2.27.3.
-   
-     The application property `GEOSERVER_DATA_DIR_LOADER_ENABLED` is noted as an option if any deadlock occurs
-     during startup due to an improvement in startup performance.
-     
-     A wide a range of *Content Security Policy* restrictions have been introduced, and very clean instructions
-     noted to double check `proxy_base_url` is correct (as GeoServer user interface will now detect and block a
-     misconfigured system). The application proeprty `org.geoserver.web.csp.strict=false` available to temporarily 
-     disable this safety measure if you are locked out.
-  
-     *Review the logs during startup, and test to ensure the application is working as expected.*
-     
-   * Updating from GeoServer 2.27.3 to GeoServer 2.28.0.
-     
-     Installation of Java 11 is required. Out of an abundance of caution
-     testing raster layers is advisable due to wholsale change of the image processing engine.
-
-     *Review the logs during startup, and test to ensure the application is working as expected.*
-     
-   * Upgrading from GeoServer 2.28.0 to GeoServer 3.0.0.
-     
-     Installation of Tomcat 11 is required, for those using WebArchive distribution.
+   2. Check the :website:`Download <download>` page and download the target release:
       
-     *Review the logs during startup, and test to ensure the application is working as expected.*
+      * GeoServer 2.28.0
+      
+      You may also make a note of the versions of Java to download:
+      
+      * OpenJDK 17
+   
+   2. Perform the upgrade in one go, checking the guidance on this page for any work to perform.
+      
+      The application property `ENTITY_RESOLUTION_UNRESTRICTED` is noted, if you are affected by a change in XML Parsing.
+      This should only affect Application Schema that made use of the :guilabel:`Unrestricted XML External Entity Resolution` setting.
+      
+      The application property `GEOSERVER_DATA_DIR_LOADER_ENABLED` is noted as an option if any deadlock occurs
+      during startup due to an improvement in startup performance.
+      
+      A wide a range of *Content Security Policy* restrictions have been introduced, and very clear instructions
+      noted to double check `proxy_base_url` is correct (as GeoServer user interface will now detect and block a
+      misconfigured system). The application proeprty `org.geoserver.web.csp.strict=false` available to temporarily 
+      disable this safety measure if you are locked out.
+      
+      Installation of Java 11 is required.
+      
+      Out of an abundance of caution testing raster layers is advisable due to wholsale change of
+      the image processing engine.
+
+   3. Review the logs during startup, and test to ensure the application is working as expected.
+      
+      If you encounter problems consider planning a sequential update as in the next example.
+     
+.. note:: Planning a sequential update from GeoServer 2.26.0 to GeoServer 2.28.0
+
+   1. Check the :website:`Download <download>` page and download the releases needed to make the transition:
+   
+      * GeoServer 2.26.4
+      * GeoServer 2.27.3
+      * GeoServer 2.28.0
+      
+      You may also make a note of the versions of Java to download:
+      
+      * OpenJDK 17
+      
+   2. Perform each update in sequence, checking the guidance on this page for any work to perform.
+      
+      * Updating from GeoServer 2.26.0 to GeoServer 2.26.4
+        
+        The application property `ENTITY_RESOLUTION_UNRESTRICTED` is noted, if you are affected by a change in XML Parsing.
+        This should only affect Application Schema that made use of the :guilabel:`Unrestricted XML External Entity Resolution` setting.
+        
+        *Review the logs during startup, and test to ensure the application is working as expected.*
+        
+      * Updating from GeoSerer 2.26.4 to GeoServer 2.27.3.
+      
+        The application property `GEOSERVER_DATA_DIR_LOADER_ENABLED` is noted as an option if any deadlock occurs
+        during startup due to an improvement in startup performance.
+        
+        A wide a range of *Content Security Policy* restrictions have been introduced, and very clear instructions
+        noted to double check `proxy_base_url` is correct (as GeoServer user interface will now detect and block a
+        misconfigured system). The application proeprty `org.geoserver.web.csp.strict=false` available to temporarily 
+        disable this safety measure if you are locked out.
+     
+        *Review the logs during startup, and test to ensure the application is working as expected.*
+        
+      * Updating from GeoServer 2.27.3 to GeoServer 2.28.0.
+        
+        Installation of Java 11 is required.
+        
+        Out of an abundance of caution testing raster layers is advisable due to wholsale change of
+        the image processing engine.
+   
+        *Review the logs during startup, and test to ensure the application is working as expected.*
 
 Upgrading GeoServer 3 Guidance
 ------------------------------

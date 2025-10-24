@@ -62,7 +62,6 @@ public class GwcUrlHandlerMapping extends RequestMappingHandlerMapping implement
         if (request.getServletPath().equalsIgnoreCase("gwc") && gwcRestBaseIndex == 0) {
             return null;
         }
-        int startIndex = lookupPath.charAt(0) == '/' ? 1 : 0;
         String workspaceName = request.getServletPath().substring(1);
         WorkspaceInfo workspace = catalog.getWorkspaceByName(workspaceName);
         if (workspace == null) {

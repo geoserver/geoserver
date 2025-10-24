@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "https://jetty.org/configure_10_0.dtd">
+
+<Configure id="Server" class="org.eclipse.jetty.server.Server">
+  <Call class="org.eclipse.jetty.ee.webapp.WebAppClassLoading" name="addProtectedClasses">
+    <Arg><Ref refid="Server"/></Arg>
+    <Arg>
+      <Call class="org.eclipse.jetty.util.StringUtil" name="csvSplit">
+        <Arg><Property name="jetty.server.addProtectedClasses"/></Arg>
+      </Call>
+    </Arg>
+  </Call>
+
+  <Call class="org.eclipse.jetty.ee.webapp.WebAppClassLoading" name="addHiddenClasses">
+    <Arg><Ref refid="Server"/></Arg>
+    <Arg>
+      <Call class="org.eclipse.jetty.util.StringUtil" name="csvSplit">
+        <Arg><Property name="jetty.server.addHiddenClasses"/></Arg>
+      </Call>
+    </Arg>
+  </Call>
+
+</Configure>

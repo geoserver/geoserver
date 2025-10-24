@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "https://jetty.org/configure_10_0.dtd">
+
+<!-- =============================================================== -->
+<!-- Create Deployment Scanner                                       -->
+<!--                                                                 -->
+<!-- The Default Deployment Provider is responsible for monitoring   -->
+<!-- provided directories for web applications and hot deploying     -->
+<!-- through the Deployer         .                                  -->
+<!-- =============================================================== -->
+
+<Configure id="Server" class="org.eclipse.jetty.server.Server">
+  <Call name="addBean">
+    <Arg>
+      <New id="deploymentScanner" class="org.eclipse.jetty.deploy.DeploymentScanner">
+        <Arg name="server"><Ref refid="Server"/></Arg>
+        <Arg name="deployer"><Ref refid="Deployer"/></Arg>
+        <Set name="webappsDirectories">
+          <Call name="csvSplitAndResolvePaths" class="org.eclipse.jetty.xml.XmlConfiguration">
+            <Arg>
+              <Property name="jetty.base" />
+            </Arg>
+            <Arg>
+              <Property name="jetty.deploy.webappsDir" default="webapps" />
+            </Arg>
+          </Call>
+        </Set>
+        <Set name="environmentsDirectory">
+          <Call name="resolvedPath" class="org.eclipse.jetty.xml.XmlConfiguration">
+            <Arg>
+              <Property name="jetty.base" />
+            </Arg>
+            <Arg>
+              <Property name="jetty.deploy.environmentsDir" default="environments" />
+            </Arg>
+          </Call>
+        </Set>
+        <Set name="deferInitialScan" property="jetty.deploy.deferInitialScan" />
+        <Set name="scanInterval" property="jetty.deploy.scanInterval" />
+      </New>
+    </Arg>
+  </Call>
+</Configure>

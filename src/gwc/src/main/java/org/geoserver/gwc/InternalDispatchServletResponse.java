@@ -164,6 +164,11 @@ public class InternalDispatchServletResponse implements HttpServletResponse {
     }
 
     @Override
+    public void sendRedirect(String s, int i, boolean b) throws IOException {
+        throw new ServletDebugException();
+    }
+
+    @Override
     public void setDateHeader(String arg0, long arg1) {
         throw new ServletDebugException();
     }

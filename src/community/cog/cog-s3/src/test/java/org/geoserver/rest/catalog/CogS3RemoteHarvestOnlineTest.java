@@ -20,7 +20,7 @@ public class CogS3RemoteHarvestOnlineTest extends CogRemoteHarvestOnlineTest {
         return "https://deafrica-landsat.s3.af-south-1.amazonaws.com/collection02/level-2/standard/tm/2010/200/040/LT05_L2SP_200040_20100123_20200825_02_T1/LT05_L2SP_200040_20100123_20200825_02_T1_QA_RADSAT.TIF";
     }
 
-    private final static String S3_COG_URI = "s3://deafrica-landsat/collection02/level-2/standard/tm/2010/200/040/"
+    private static final String S3_COG_URI = "s3://deafrica-landsat/collection02/level-2/standard/tm/2010/200/040/"
             + "LT05_L2SP_200040_20100208_20200824_02_T1/"
             + "LT05_L2SP_200040_20100208_20200824_02_T1_QA_RADSAT.TIF";
 
@@ -28,7 +28,6 @@ public class CogS3RemoteHarvestOnlineTest extends CogRemoteHarvestOnlineTest {
     public static void setRegion() {
         System.setProperty("iio.s3.aws.region", "af-south-1");
     }
-
 
     @Test
     public void testHarvestRemoteURLInImageMosaic() throws Exception {

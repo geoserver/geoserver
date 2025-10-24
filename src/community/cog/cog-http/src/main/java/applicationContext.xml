@@ -7,10 +7,10 @@
     "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-    <bean id="cogS3Extension" class="org.geoserver.platform.ModuleStatusImpl">
-        <constructor-arg index="0" value="gs-cog-s3"/>
-        <constructor-arg index="1" value="COG S3 Extension"/>
-        <property name="message" value="COG module supporting S3 cloud storage" />
+    <bean id="cogHttpExtension" class="org.geoserver.platform.ModuleStatusImpl">
+        <constructor-arg index="0" value="gs-cog-http"/>
+        <constructor-arg index="1" value="COG HTTP Extension"/>
+        <property name="message" value="COG module supporting simple HTTP range read requests" />
     </bean>
 
 </beans>

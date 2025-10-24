@@ -45,6 +45,7 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.ImageProcessingInfo.PngEncoderType;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
+import org.geoserver.opensearch.eo.store.OSEOPostGISResource;
 import org.geotools.api.data.Query;
 import org.geotools.api.feature.Feature;
 import org.geotools.api.feature.Property;
@@ -67,6 +68,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -74,6 +76,13 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 public class CollectionLayerTest extends OSEORestTestSupport {
+    @ClassRule
+    public static final OSEOPostGISResource postgis = new OSEOPostGISResource(false);
+
+    @Override
+    protected OSEOPostGISResource getOSEOPostGIS() {
+        return postgis;
+    }
 
     private String resourceBase;
 

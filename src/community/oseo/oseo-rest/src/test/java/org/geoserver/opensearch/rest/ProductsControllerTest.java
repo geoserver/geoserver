@@ -37,6 +37,7 @@ import net.minidev.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.opensearch.eo.store.OSEOPostGISResource;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.opensearch.rest.ProductsController.ProductPart;
 import org.geoserver.rest.util.MediaTypeExtensions;
@@ -50,6 +51,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.test.ImageAssert;
 import org.hamcrest.Matchers;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.locationtech.jts.geom.Envelope;
 import org.springframework.http.HttpMethod;
@@ -63,9 +65,12 @@ public class ProductsControllerTest extends OSEORestTestSupport {
             "S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04";
     public static final String PRODUCT_ATM_CREATE_UPDATE_ID = "SAS1_20180101T000000.01";
 
+    @ClassRule
+    public static final OSEOPostGISResource postgis = new OSEOPostGISResource(true);
+
     @Override
-    protected boolean populateGranulesTable() {
-        return true;
+    protected OSEOPostGISResource getOSEOPostGIS() {
+        return postgis;
     }
 
     @Before

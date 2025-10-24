@@ -36,6 +36,7 @@ import org.geoserver.opensearch.eo.OSEOTestSupport;
 import org.geoserver.opensearch.eo.OpenSearchParameters;
 import org.geoserver.opensearch.eo.ProductClass;
 import org.geoserver.opensearch.eo.SearchRequest;
+import org.geoserver.opensearch.eo.store.OSEOPostGISResource;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.OWS20Exception;
@@ -62,12 +63,21 @@ import org.geotools.filter.IsEqualsToImpl;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.Converters;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTReader;
 
 public class SearchRequestKvpReaderTest extends OSEOTestSupport {
+
+    @ClassRule
+    public static final OSEOPostGISResource postgis = new OSEOPostGISResource(false);
+
+    @Override
+    protected OSEOPostGISResource getOSEOPostGIS() {
+        return postgis;
+    }
 
     private SearchRequestKvpReader reader;
 

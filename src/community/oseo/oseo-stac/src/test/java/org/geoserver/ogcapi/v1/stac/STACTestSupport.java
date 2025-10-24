@@ -4,7 +4,6 @@
  */
 package org.geoserver.ogcapi.v1.stac;
 
-import static org.geoserver.opensearch.eo.store.GeoServerOpenSearchTestSupport.setupBasicOpenSearch;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -25,8 +24,8 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.OGCApiTestSupport;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
-import org.geoserver.opensearch.eo.store.GeoServerOpenSearchTestSupport;
 import org.geoserver.opensearch.eo.store.JDBCOpenSearchAccessTest;
+import org.geoserver.opensearch.eo.store.OSEOPostGISResource;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
@@ -44,6 +43,7 @@ public class STACTestSupport extends OGCApiTestSupport {
 
     static TimeZone currentTimeZone;
     static Locale currentLocale;
+    protected static OSEOPostGISResource postgis;
 
     @BeforeClass
     public static void setupGMT() {
@@ -74,7 +74,7 @@ public class STACTestSupport extends OGCApiTestSupport {
         service.getGlobalQueryables().addAll(Arrays.asList("id", "geometry", "collection", "eo:cloud_cover"));
         gs.save(service);
 
-        setupBasicOpenSearch(testData, getCatalog(), gs, false);
+        postgis.setupBasicOpenSearch(getCatalog(), gs);
 
         // add the custom product class
         service.getProductClasses().add(JDBCOpenSearchAccessTest.GS_PRODUCT);
@@ -82,8 +82,14 @@ public class STACTestSupport extends OGCApiTestSupport {
     }
 
     @BeforeClass
-    public static void checkOnLine() {
-        GeoServerOpenSearchTestSupport.checkOnLine();
+    public static void checkOnLine() throws Throwable {
+        postgis = new OSEOPostGISResource(false);
+        postgis.before();
+    }
+
+    @AfterClass
+    public static void cleanDB() throws IOException {
+        postgis.after();
     }
 
     @Before

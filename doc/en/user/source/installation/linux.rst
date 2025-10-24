@@ -12,8 +12,10 @@ Jerry has the advantages of working very similarly across all operating systems 
 Installation
 ------------
 
-#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 17** or **Java 21** environment, available from `Adoptium <https://adoptium.net>`__, or provided by your OS distribution.
-
+#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 17** or **Java 21** environment.
+   
+   .. include:: jdk-linux-guidance.txt
+   
    .. note:: For more information about Java and GeoServer compatibility, please see the section on :ref:`production_java`.
 
 #. Navigate to the :website:`GeoServer Download page <download>`.

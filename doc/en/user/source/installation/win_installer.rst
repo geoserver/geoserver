@@ -5,7 +5,9 @@ Windows installer
 
 The Windows installer provides an easy way to set up GeoServer on your system, as it requires no configuration files to be edited or command line settings.
 
-#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 17** or **Java 21** environment, as provided by `Adoptium <https://adoptium.net>`__ Windows installers.
+#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 17** or **Java 21** environment.
+
+   .. include:: jdk-windows-guidance.txt
 
    .. note:: For more information about Java and GeoServer, please see the section on :ref:`production_java`.
 

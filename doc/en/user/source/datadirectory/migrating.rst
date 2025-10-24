@@ -11,7 +11,7 @@ It is possible to keep the same data directory while migrating to different vers
   
   It is also generally possible to revert a minor update and maintain data directory compatibility.
 
-* There should rarely be any issues involved with upgrading between minor versions (for example, from 2.27.x to 2.28.x):
+* There should rarely be any issues involved with upgrading between minor versions (for example, from 2.27.x to 2.28.x).
 
   Always check to :ref:`installation_upgrade` page for notes on upgrading between different versions. This provides specific guidance for any manual steps required.
 

@@ -412,8 +412,9 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     }
 
     /**
-     * Subclass hook called after the system (ie spring context) has been fully initialized.
-     * Called by {@link #onSetUp(SystemTestData)}
+     * Subclass hook called after the system (ie spring context) has been fully initialized. Called by
+     * {@link #onSetUp(SystemTestData)}
+     *
      * <p>Subclasses should override for post setup that is needed. The default implementation does nothing.
      */
     protected void onSetUp(SystemTestData testData) throws Exception {}

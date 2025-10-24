@@ -52,7 +52,7 @@
     </delete>
   </target>
   
-  <target name="user" depends="init" if="sphinx.available"
+  <target name="user" depends="init,-setup,-user"
     description="Generate user html documentation for GeoServer">
     <mkdir dir="${build.directory}"/>
     <antcall target="sphinx">
@@ -60,9 +60,30 @@
       <param name="build" value="html" />
     </antcall>
   </target>
-  
-  <target name="user-site" depends="init" if="autobuild.available"
+  <target name="-setup" unless="sphinx.available">
+    <echo>
+      sphinx-build not available, see README.md for details. To setup use:
+      
+      source venv/bin/activate &amp;&amp; pip install -r requirements.txt
+      sphinx-build --version
+      sphinx-autobuild --version
+      
+      See README.md for details.
+    </echo>
+  </target>  
+  <target name="-user" if="sphinx.available">
+    <mkdir dir="${build.directory}"/>
+    <antcall target="sphinx">
+      <param name="id" value="user" />
+      <param name="build" value="html" />
+    </antcall>
+  </target>
+
+  <target name="user-site" depends="init,-setup,-user-site"
     description="Interactive generation of user html documentation for GeoServer">
+  </target>
+  
+  <target name="-user-site" depends="init" if="autobuild.available">
     
     <mkdir dir="${build.directory}"/>
     <antcall target="autobuild">

@@ -92,8 +92,7 @@ community = '3.0-SNAPSHOT'
 
 download_release =   'https://sourceforge.net/projects/geoserver/files/GeoServer/'+release+'/geoserver-'+release+'-%s.zip'
 download_extension = 'https://sourceforge.net/projects/geoserver/files/GeoServer/'+release+'/extensions/geoserver-'+release+'-%s-plugin.zip'
-download_community = 'https://build.geoserver.org/geoserver/files/files/GeoServer/'+release+'/community/geoserver-'+release+'-%s-plugin.zip'
-download_community = 'https://build.geoserver.org/geoserver/'+branch+'/community-latest/geoserver-'+community+'-%s-plugin.zip'
+download_pending = 'https://build.geoserver.org/geoserver/files/files/GeoServer/'+release+'/community/geoserver-'+release+'-%s-plugin.zip'
 
 nightly_release =   'https://build.geoserver.org/geoserver/'+branch+'/geoserver-'+community+'-%s.zip'
 nightly_extension = 'https://build.geoserver.org/geoserver/'+branch+'/extensions/geoserver-'+community+'-%s-plugin.zip'
@@ -101,7 +100,7 @@ nightly_community = 'https://build.geoserver.org/geoserver/'+branch+'/community-
 
 print("  download_release:", download_release )
 print("download_extension:", download_extension )
-print("download_community:", download_community )
+print("download_pending:", download_pending )
 print("  nightly_release:", nightly_release )
 print("nightly_extension:", nightly_extension )
 print("nightly_community:", nightly_community )
@@ -163,7 +162,7 @@ extlinks = {
     'geotools': ('https://docs.geotools.org/latest/userguide/%s', 'GeoTools %s'),
     'download_release': (download_release,'geoserver-'+release+'-%s.zip'),
     'download_extension': (download_extension,'geoserver-'+release+'-%s-plugin.zip'),
-    'download_community': (download_community,'geoserver-'+release+'-%s-plugin.zip'),
+    'download_pending': (download_pending,'geoserver-'+release+'-%s-plugin.zip'),
     'nightly_release': (nightly_release,'geoserver-'+community+'-%s.zip'),
     'nightly_extension': (nightly_extension,'geoserver-'+community+'-%s-plugin.zip'),
     'nightly_community': (nightly_community,'geoserver-'+community+'-%s-plugin.zip')

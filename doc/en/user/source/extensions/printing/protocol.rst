@@ -1,7 +1,10 @@
 .. _print_protocol:
 
-Protocol
-********
+Printing Protocol
+*****************
+
+Commands
+========
 
 Four commands are available and are documented in the next sections.
 
@@ -182,7 +185,8 @@ HTTP command::
 Returns the PDF. Can be called only during a limited time since the server side temporary file is deleted afterwards.
 
 Multiple maps on a single page
-******************************
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 To print more than one map on a single page you need to:
  * specify several map blocks in a page of the yaml file, each with a distinct name property value
  * use a particular syntax in the spec to bind different rendering properties to each map block
@@ -243,7 +247,7 @@ Also, in text blocks you can use the ${scale.<mapname>} placeholder to print the
 whose name is <mapname>.
 
 Layers Params
-*************
+=============
 
 Vector
 ------

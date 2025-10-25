@@ -66,7 +66,7 @@ else:
 
 # The relacement |release| most recent release version, including alpha/beta/rc tags.
 # This should be updated after each release
-release = '3.0.0'
+release = '2.28.0'
 if not snapshot:
   release = version
 
@@ -93,6 +93,7 @@ community = '3.0-SNAPSHOT'
 download_release =   'https://sourceforge.net/projects/geoserver/files/GeoServer/'+release+'/geoserver-'+release+'-%s.zip'
 download_extension = 'https://sourceforge.net/projects/geoserver/files/GeoServer/'+release+'/extensions/geoserver-'+release+'-%s-plugin.zip'
 download_community = 'https://build.geoserver.org/geoserver/files/files/GeoServer/'+release+'/community/geoserver-'+release+'-%s-plugin.zip'
+download_community = 'https://build.geoserver.org/geoserver/'+branch+'/community-latest/geoserver-'+community+'-%s-plugin.zip'
 
 nightly_release =   'https://build.geoserver.org/geoserver/'+branch+'/geoserver-'+community+'-%s.zip'
 nightly_extension = 'https://build.geoserver.org/geoserver/'+branch+'/extensions/geoserver-'+community+'-%s-plugin.zip'

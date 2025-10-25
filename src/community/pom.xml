@@ -172,6 +172,7 @@
     <profile>
       <id>pending</id>
       <modules>
+        <module>oseo</module>
       </modules>
     </profile>
     <profile>

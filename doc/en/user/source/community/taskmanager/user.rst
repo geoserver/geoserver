@@ -1,5 +1,5 @@
-TaskManager User Guide
-======================
+TaskManager Guide
+=================
 
 .. contents:: Table of Contents
     :depth: 2
@@ -9,17 +9,31 @@ Installation
 
 To install the GeoServer Task Manager extension:
 
-1. Download the extension from the :website:`GeoServer Download
-   Page <download>` release page: :download_community:`taskmanager-core`. For `S3 support <#s3-file-service>`__, also
-   install the plugin :download_community:`taskmanager-s3`
-   
-2. Extract this file and place the JARs in :file:`WEB-INF/lib`.
+#. Login, and navigate to :menuselection:`About & Status > About GeoServer` and check **Build Information**
+   to determine the exact version of GeoServer you are running.
 
-3. Perform any configuration required by your servlet container, and
-   then restart. On startup, Task Manager will create a configuration
-   directory :file:`taskmanager` in the GeoServer Data Directory. You will
-   be able to see the Task Manager configuration pages from the
-   GeoServer WebGUI menu.
+#. Visit the :website:`website download <download>` page, change the **Development** tab,
+   and locate the nightly release that corresponds to the GeoServer you are running.
+   
+   Follow the **Community Modules** link and download `taskmanager-core` zip archive.
+   
+   * |version| example: :nightly_community:`taskmanager-core`
+   
+   For `S3 support <#s3-file-service>`__, also install the `taskmanager-s3` zip archive:
+   
+   * |version| example: :nightly_community:`taskmanager-s3`
+   
+   The website lists active nightly builds to provide feedback to developers,
+   you may also `browse <https://build.geoserver.org/geoserver/>`__ for earlier branches.
+
+#. Extract archive contents into the :file:`WEB-INF/lib` directory in GeoServer.
+
+#. Perform any configuration required by your servlet container, and
+   then restart.
+   
+   On startup, Task Manager will create a configuration directory :file:`taskmanager`
+   in the GeoServer Data Directory. You will be able to see the Task Manager configuration
+   pages from the GeoServer WebGUI menu.
 
 Server Configuration
 --------------------

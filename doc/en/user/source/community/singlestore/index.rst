@@ -16,9 +16,18 @@ intersects, contains, and within distance.
 Installing the SingleStore extension
 ------------------------------------
 
-#. Download the singlestore community module from :download_community:`singlestore`
+#. Login, and navigate to :menuselection:`About & Status > About GeoServer` and check **Build Information**
+   to determine the exact version of GeoServer you are running.
+
+#. Visit the :website:`website download <download>` page, change the **Development** tab,
+   and locate the nightly release that corresponds to the GeoServer you are running.
    
-   .. warning:: As a community module, it can only be found in community nightly builds, and not in the official GeoServer releases. Make sure to match the version of the extension to the version of the GeoServer instance!
+   Follow the **Community Modules** link and download `singlestore` zip archive.
+   
+   * |version| example: :nightly_community:`singlestore`
+   
+   The website lists active nightly builds to provide feedback to developers,
+   you may also `browse <https://build.geoserver.org/geoserver/>`__ for earlier branches.
 
 #. Extract the contents of the archive into the :file:`WEB-INF/lib` directory of the GeoServer installation.
 

@@ -418,6 +418,12 @@ GeoServer Property Reference
      - x
      - x
      - x
+   * - GEOSERVER_PRINT_CONFIG_DIR
+       
+       :ref:`printing_install`
+     - x
+     - 
+     - x
    * - RELINQUISH_LOG4J_CONTROL
        
        :doc:`/configuration/logging`

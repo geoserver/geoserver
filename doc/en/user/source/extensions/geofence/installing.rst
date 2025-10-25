@@ -5,7 +5,10 @@ Installing the GeoServer GeoFence extension
 
 For version 2.15 and later, use the standard procedure to install an extension.
 
-#. Visit the :website:`website download <download>` page, locate your release, and download: :download_extension:`geofence`
+#. Visit the :website:`website download <download>` page, locate your release, and download: 
+
+   * |release| :download_extension:`geofence`
+   * |version| :nightly_extension:`geofence`
    
    The download link will be in the :guilabel:`Extensions` section under :guilabel:`Other`.
    

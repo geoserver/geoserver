@@ -1,5 +1,5 @@
-FAQ
-***
+Printing FAQ
+************
 
 .. note::  Warranty disclaimer and license
 

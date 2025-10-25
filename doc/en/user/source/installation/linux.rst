@@ -3,32 +3,38 @@
 Linux binary
 ============
 
-.. note:: For installing on Linux with an existing application server such as Tomcat, please see the :ref:`installation_war` section.
+The platform-independent binary is a GeoServer web application bundled with `Jetty <https://eclipse.org/jetty/>`__,
+a scalable and memory-efficient web server and Servlet container.
+Jerry has the advantages of working very similarly across all operating systems and is straightfoward to set up.
 
-The platform-independent binary is a GeoServer web application bundled inside `Jetty <http://eclipse.org/jetty/>`__, a lightweight and portable application server. It has the advantages of working very similarly across all operating systems and is very simple to set up.
+.. note:: For installing on Linux with an existing application server such as Tomcat, please see the :ref:`installation_war` section.
 
 Installation
 ------------
 
-#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 17** or **Java 21** environment, available from `OpenJDK <https://openjdk.java.net>`__, `Adoptium <https://adoptium.net>`__, or provided by your OS distribution.
-
+#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 17** or **Java 21** environment.
+   
+   .. include:: jdk-linux-guidance.txt
+   
    .. note:: For more information about Java and GeoServer compatibility, please see the section on :ref:`production_java`.
 
 #. Navigate to the :website:`GeoServer Download page <download>`.
 
-#. Select the version of GeoServer that you wish to download. If you're not sure, select :website:`Stable <release/stable>` release.
+#. Select the version of GeoServer that you wish to download.
 
-   .. only:: snapshot
-      
-      These instructions are for GeoServer |version|-SNAPSHOT which is provided as a :website:`Nightly <release/main>` release.
-      Testing a Nightly release is a great way to try out new features, and test community modules. Nightly releases
-      change on an ongoing basis and are not suitable for a production environment.
-      
-   .. only:: not snapshot
+   * If you're not sure, select :website:`Stable <release/stable>` release.
+   
+     Examples provided for GeoServer |release|.
 
-      These instructions are for GeoServer |release|.
+   * Testing a Nightly release is a great way to try out new features, and test community modules. Nightly releases
+     change on an ongoing basis and are not suitable for a production environment.
+     
+     Examples are provided for GeoServer |version|, which is provided as a :website:`Nightly <release/main>` release.
 
-#. Select :guilabel:`Platform Independent Binary` on the download page: :download_release:`bin`
+#. Select :guilabel:`Platform Independent Binary` on the download page:
+   
+   * :download_release:`bin`
+   * :nightly_release:`bin`
 
 #. Download the :file:`zip` archive and unpack to the directory where you would like the program to be located.
 

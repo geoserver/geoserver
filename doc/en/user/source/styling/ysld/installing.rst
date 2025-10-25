@@ -10,7 +10,10 @@ The YSLD extension is listed on the GeoServer download page.
 
 To install:
 
-#. Download the :download_extension:`ysld`
+#. Download:
+   
+   * |release| :download_extension:`ysld`
+   * |version| :nightly_extension:`ysld`
    
    Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example |release| above).
 

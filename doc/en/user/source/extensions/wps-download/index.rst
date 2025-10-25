@@ -16,7 +16,10 @@ The WPS Download extension is listed among the other extension downloads on the 
 
 The installation process is similar to other GeoServer extensions:
 
-#. From the :website:`website download <download>` page, locate your release, and download: :download_extension:`wps-download`
+#. From the :website:`website download <download>` page and download:
+
+   * |release| :download_extension:`wps-download`
+   * |version| :nightly_extension:`wps-download`
    
    Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example |release| above).
 

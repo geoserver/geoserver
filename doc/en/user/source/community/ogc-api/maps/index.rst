@@ -36,13 +36,27 @@ OGC API - Maps Implementation status
 Installing the GeoServer OGC API - Maps module
 ------------------------------------------------
 
-#. Download the OGC API nightly GeoServer community module from :download_community:`ogcapi-maps`.
+#. Login, and navigate to :menuselection:`About & Status > About GeoServer` and check **Build Information**
+   to determine the exact version of GeoServer you are running.
+
+#. Visit the :website:`website download <download>` page, change the **Development** tab,
+   and locate the nightly release that corresponds to the GeoServer you are running.
    
-   .. warning:: Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-|release|-ogcapi-maps-plugin.zip above).
+   Follow the **Community Modules** link and download ``ogcapi-maps`` zip archive.
+   
+   * |version| example: :nightly_community:`ogcapi-maps`
+   
+   The website lists active nightly builds to provide feedback to developers,
+   you may also `browse <https://build.geoserver.org/geoserver/>`__ for earlier branches.
 
-#. Extract the contents of the archive into the ``WEB-INF/lib`` directory of the GeoServer installation.
+   .. warning:: Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-|version|-ogcapi-maps-plugin.zip).
 
-#. On restart the services are listed at http://localhost:8080/geoserver
+
+#. Extract the contents of the archive into the :file:`WEB-INF/lib` directory in GeoServer.
+
+#. Restart GeoServer.
+
+   On restart the services are listed at http://localhost:8080/geoserver
 
 Configuration of OGC API - Maps module
 --------------------------------------

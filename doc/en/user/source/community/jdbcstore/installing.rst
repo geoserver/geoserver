@@ -5,13 +5,27 @@ Installing JDBCStore
 
 To install the JDBCStore module:
 
-#. Download the module: :download_community:`jdbcstore`
+#. Login, and navigate to :menuselection:`About & Status > About GeoServer` and check **Build Information**
+   to determine the exact version of GeoServer you are running.
+
+#. Visit the :website:`website download <download>` page, change the **Development** tab,
+   and locate the nightly release that corresponds to the GeoServer you are running.
    
-   The JDBCStore plug-in automatically includes the :ref:`community_jdbcconfig` plugin as well which will generally be run at the same time.
+   Follow the **Community Modules** link and download `jdbcstore` zip archive.
+   
+   * |version| example: :nightly_community:`jdbcstore`
+   
+   The website lists active nightly builds to provide feedback to developers,
+   you may also `browse <https://build.geoserver.org/geoserver/>`__ for earlier branches.
 
-#. Extract this file and place the JARs in ``WEB-INF/lib``. 
+#. Extract the contents of the archive into the :file:`WEB-INF/lib` directory in GeoServer.
 
-#. Perform any configuration required by your servlet container, and then restart. On startup, JDBCStore will create a configuration directory ``jdbcstore`` and JDBCConfig will create a configuration directory ``jdbcconfig`` in the :ref:`datadir` .
+   The JDBCStore plug-in includes the :ref:`community_jdbcconfig` plugin as well which will generally be run at the same time.
+
+#. Perform any configuration required by your servlet container, and then restart.
+   
+   On startup, JDBCStore will create a configuration directory :file:`jdbcstore`
+   and JDBCConfig will create a configuration directory :file:`jdbcconfig` in the :ref:`datadir` .
 
 #. Verify that the configuration directories were created to be sure installation worked then turn off GeoServer.
 

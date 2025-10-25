@@ -12,6 +12,8 @@
 # serve to show the default value.
 
 import sys, os, string
+import xml.etree.ElementTree as ET
+import re
 import datetime
 
 # If your extensions are in another directory, add it here. If the directory
@@ -34,7 +36,7 @@ extensions = ['sphinx.ext.todo', 'sphinx.ext.extlinks']
 #templates_path = ['../../theme/_templates']
 
 # The suffix of source filenames.
-source_suffix = '.rst'
+source_suffix = {'.rst': 'restructuredtext'}
 
 # The master toctree document.
 master_doc = 'index'
@@ -46,41 +48,62 @@ copyright = u'{}, Open Source Geospatial Foundation'.format(now.year)
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
-#
-# The replacement |version| provides short X.Y version.
-version = '3.0'
 
-# The relacement |release| provides the full version, including alpha/beta/rc tags.
+# The full version, including alpha/beta/rc tags.
+# This is looked up from the pom.xml
+pompath = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))), "src","pom.xml")
+print("Reading version from ",pompath)
+pomtree = ET.parse(pompath)
+
+version = pomtree.getroot().find("{http://maven.apache.org/POM/4.0.0}version").text
+snapshot = version.find('SNAPSHOT') != -1
+if snapshot:
+    print("Building snapshot docs version", version)
+else:
+    print("Building release docs version", version)
+    
+
+
+# The relacement |release| most recent release version, including alpha/beta/rc tags.
+# This should be updated after each release
+release = '2.28.0'
+if not snapshot:
+  release = version
+
+print("Examples use release", release)
 
 # sphinx-build -D release=${project.version} overrides release configuration
 # but only after conf.py has been used...
 
 # check environmental variable to see if ant build.xml passed in project.version
-project_version = os.getenv("project.version")
-if project_version == None: 
-  release = '3.0-SNAPSHOT'
-else:
-  release = project_version
+# project_version = os.getenv("project.version")
+# if project_version == None: 
+#  release = '3.0-SNAPSHOT'
+# else:
+#  release = project_version
 
 # Used in build and documentation links
 # branch = version+'.x'
 branch = 'main'
+series = '3.x'
 
 # Users don't need to see the "SNAPSHOT" notation when it's there
-if release.find('SNAPSHOT') != -1:
-   tags.add('snapshot')
-   download = version+'.x'
-   release = '3.0.x'
-   latest = '-latest'
-   download_release = 'https://build.geoserver.org/geoserver/'+branch+'/geoserver-'+version+'.x-latest-%s.zip'
-   download_extension = 'https://build.geoserver.org/geoserver/'+branch+'/ext-latest/geoserver-'+version+'-SNAPSHOT-%s-plugin.zip'
-   download_community = 'https://build.geoserver.org/geoserver/'+branch+'/community-latest/geoserver-'+version+'-SNAPSHOT-%s-plugin.zip'
-else:
-   download = release
-   latest = ''
-   download_release = 'http://sourceforge.net/projects/geoserver/files/GeoServer/'+release+'/geoserver-'+release+'-%s.zip'
-   download_extension = 'https://sourceforge.net/projects/geoserver/files/GeoServer/'+release+'/extensions/geoserver-'+release+'-%s-plugin.zip'
-   download_community = 'https://build.geoserver.org/geoserver/'+branch+'/community-latest/geoserver-'+version+'.x-SNAPSHOT-%s-plugin.zip'
+community = '3.0-SNAPSHOT'
+
+download_release =   'https://sourceforge.net/projects/geoserver/files/GeoServer/'+release+'/geoserver-'+release+'-%s.zip'
+download_extension = 'https://sourceforge.net/projects/geoserver/files/GeoServer/'+release+'/extensions/geoserver-'+release+'-%s-plugin.zip'
+download_pending = 'https://build.geoserver.org/geoserver/files/files/GeoServer/'+release+'/community/geoserver-'+release+'-%s-plugin.zip'
+
+nightly_release =   'https://build.geoserver.org/geoserver/'+branch+'/geoserver-'+community+'-%s.zip'
+nightly_extension = 'https://build.geoserver.org/geoserver/'+branch+'/extensions/geoserver-'+community+'-%s-plugin.zip'
+nightly_community = 'https://build.geoserver.org/geoserver/'+branch+'/community-latest/geoserver-'+community+'-%s-plugin.zip'
+
+print("  download_release:", download_release )
+print("download_extension:", download_extension )
+print("download_pending:", download_pending )
+print("  nightly_release:", nightly_release )
+print("nightly_extension:", nightly_extension )
+print("nightly_community:", nightly_community )
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
@@ -127,29 +150,33 @@ pygments_style = 'sphinx'
 # -----------------------------------
 
 extlinks = { 
-    'wiki': ('https://github.com/geoserver/geoserver/wiki/%s', None),
-    'website': ('http://geoserver.org/%s', None),
-    'user': ('http://docs.geoserver.org/'+branch+'/en/user/%s', None),
-    'developer': ('http://docs.geoserver.org/latest/en/developer/%s', None),
-    'docguide': ('http://docs.geoserver.org/latest/en/docguide/%s', None),
+    'wiki': ('https://github.com/geoserver/geoserver/wiki/%s', '%s'),
+    'github': ('https://github.com/geoserver/geoserver/%s', 'github.com/geoserver/geoserver/%s'),
+    'website': ('http://geoserver.org/%s', 'geoserver.org/%s'),
+    'user': ('http://docs.geoserver.org/'+branch+'/en/user/%s', '%s'),
+    'developer': ('http://docs.geoserver.org/latest/en/developer/%s', '%s'),
+    'docguide': ('http://docs.geoserver.org/latest/en/docguide/%s', '%s'),
     'geos': ('https://osgeo-org.atlassian.net/browse/GEOS-%s','GEOS-%s'),
     'geot': ('https://osgeo-org.atlassian.net/browse/GEOT-%s','GEOT-%s'),
-    'api': ('http://docs.geoserver.org/latest/en/api/#1.0.0/%s', None),
-    'geotools': ('https://docs.geotools.org/latest/userguide/%s', None),
-    'download_release': (download_release,'geoserver-'+download+latest+'-%s.zip'),
-    'download_extension': (download_extension,'geoserver-'+download+'-%s-plugin.zip'),
-    'download_community': (download_community,'geoserver-'+download+'-%s-plugin.zip')
+    'api': ('http://docs.geoserver.org/latest/en/api/#1.0.0/%s', 'REST API %s'),
+    'geotools': ('https://docs.geotools.org/latest/userguide/%s', 'GeoTools %s'),
+    'download_release': (download_release,'geoserver-'+release+'-%s.zip'),
+    'download_extension': (download_extension,'geoserver-'+release+'-%s-plugin.zip'),
+    'download_pending': (download_pending,'geoserver-'+release+'-%s-plugin.zip'),
+    'nightly_release': (nightly_release,'geoserver-'+community+'-%s.zip'),
+    'nightly_extension': (nightly_extension,'geoserver-'+community+'-%s-plugin.zip'),
+    'nightly_community': (nightly_community,'geoserver-'+community+'-%s-plugin.zip')
 }
 
 # Common substitutions
 
 rst_epilog = "\n" \
- ".. |install_directory_win| replace:: :file:`C:\\\\Program Files\\\\GeoServer "+release+"`\n" \
- ".. |install_directory_linux| replace:: :file:`/var/lib/tomcat9/webapps/geoserver`\n" \
- ".. |install_directory_mac| replace:: :file:`~/Applications`\n" \
- ".. |data_directory_win| replace:: :file:`C:\\\\ProgramData\\\\GeoServer`\n" \
- ".. |data_directory_linux| replace:: :file:`/var/opt/geoserver/data`\n" \
- ".. |data_directory_mac| replace:: :file:`~/Library/Application Support/GeoServer/data_dir`"
+ ".. |branch| replace:: "+branch+"\n" \
+ ".. |series| replace:: "+series
+
+print(rst_epilog)
+print(version)
+print(release)
 
 # Options for HTML output
 # -----------------------

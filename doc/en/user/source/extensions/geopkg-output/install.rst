@@ -3,11 +3,14 @@
 Installing the GeoPackage Output Extension
 ------------------------------------------
 
-The GeoPackage Output extension is an official extension.  Download the extension here - :download_extension:`geopkg-output`
+The GeoPackage Output extension is an official extension.  Download the extension here:
 
 #. Download the extension for your version of GeoServer. 
 
-   .. warning:: Make sure to match the version of the extension to the version of GeoServer.
+   * |release| :download_extension:`geopkg-output`
+   * |version| :nightly_extension:`geopkg-output`
+
+  .. warning:: Make sure to match the version of the extension to the version of GeoServer.
 
 #. Extract the archive and copy the contents into the GeoServer :file:`WEB-INF/lib` directory.
 

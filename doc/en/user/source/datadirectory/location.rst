@@ -66,11 +66,11 @@ To make :ref:`upgrading <installation_upgrade>` easier, **Web Archive** users sh
    * - Platform
      - Example location
    * - Linux 
-     - |data_directory_linux|
+     - :file:`/var/opt/geoserver/data`
    * - Windows
-     - |data_directory_win|
+     - :file:`C:\\ProgramData\\GeoServer`
    * - MacOS 
-     - |data_directory_mac|
+     - :file:`~/Library/Application Support/GeoServer/data_dir`
 
 Creating a new data directory
 -----------------------------
@@ -85,13 +85,9 @@ To create a new data directory:
   
   Navigate to the :website:`GeoServer Download page <download>`, select a version of GeoServer, and download the provided data directory zip.
   
-  .. only:: snapshot
-  
-     For GeoServer |version| Nightly: :download_release:`data`
+  * For GeoServer |release| Nightly: :download_release:`data`
 
-  .. only:: not snapshot
-
-      For GeoServer |release|: :download_release:`data`
+  * For GeoServer |version|: :nightly_release:`data`
 
 * You may also use a new empty folder as the data directory location.
   

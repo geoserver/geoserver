@@ -111,7 +111,6 @@ ant user-site
 
 This uses ``sphinx-autobuild`` to serve docs on next available port, opening a browser to review generated pages. The browser will refresh as pages are edited and saved.
 
-
 Additional targets are available:
 ```
 ant developer
@@ -119,8 +118,13 @@ ant developer-site
 ant docguide
 ant docguide-site
 ```
-Customize output with current ``project.version`` name:
 
-```
-ant user -Dproject.version=2.23.1
-```
+The `config.py` script looks up the current project version, and most recent release, information in `src/pom.xml`.
+
+* When calling ant directly terminal output reports these details during startup:
+  
+  ```
+  
+  ```
+  
+* When called via `mvn` a flag `-Dsphinx.options=--quite` passed to ant, and is used to ask sphinx to reduce output

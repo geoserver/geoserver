@@ -5,50 +5,68 @@ Web archive
 
 GeoServer is packaged as a standalone Web Archive (:file:`geoserver.war`) file for use with existing application servers such as `Apache Tomcat <https://tomcat.apache.org/>`_ and `Jetty <https://jetty.org/>`_.
 
-+-----------------+---------------+--------------------+----------------+
-| JavaEE          | JakartaEE     | Application Server | GeoServer      |
-+=================+===============+====================+================+
-|                 | Servlet API 6 | Tomcat 10          | not compatible |
-+-----------------+---------------+--------------------+----------------+
-| Servlet API 4   |               | Tomcat 9           | GeoServer 2    |
-+-----------------+---------------+--------------------+----------------+
-| Servlet API 3.1 |               | Jetty 9.4          | GeoServer 2    |
-+-----------------+---------------+--------------------+----------------+
++-----------------+-----------------+--------------------+----------------+
+| JavaEE          | JakartaEE       | Application Server | GeoServer      |
++=================+=================+====================+================+
+|                 | Servlet API 6.1 | Tomcat 11.0.x      | GeoServer 3    |
++-----------------+-----------------+--------------------+----------------+
+|                 | Servlet API 6.0 | Tomcat 10.1.x      | GeoServer 3    |
++-----------------+-----------------+--------------------+----------------+
+|                 |                 | Tomcat 10.0.x      | not supported  |
++-----------------+-----------------+--------------------+----------------+
+| Servlet API 4   |                 | Tomcat 9.x         | GeoServer 2    |
++-----------------+-----------------+--------------------+----------------+
+| Servlet API 3.1 |                 | Jetty 9.4          | GeoServer 2    |
++-----------------+-----------------+--------------------+----------------+
 
-GeoServer is tested using Tomcat 9, and this is the recommended application server.
+GeoServer is tested using Tomcat 11.0.x, and this is the recommended application server.
 Other application servers have been known to work, but are not tested regularly by community members. 
 
 .. note:: 
 
-   GeoServer is compatible with Tomcat 9 which provides the required Java Enterprise Edition Servlet API 4 and annotation processing.
-   
-.. warning::
+   GeoServer 3 is compatible with Tomcat 11.0.x which provides Jakarta EE Servlet API 6.1.x and annotation processing.
 
-   GeoServer 2 is not compatible with Tomcat 10 or higher, which provides Jakarta EE Servlet API 6. Supporting the Jakarta EE APIs is the goal of `GeoServer 3 crowdfunding <https://geoserver.org/sponsor/gs3-crowdfunding>`_. 
+.. note:: 
+
+   GeoServer 2 is compatible with Tomcat 9.x which provides the required Java Enterprise Edition Servlet API 4 and annotation processing.
  
 Installation
 ------------
 
-#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 17** or **Java 21** environment, available from `OpenJDK <https://openjdk.java.net>`__, `Adoptium <https://adoptium.net>`__, or provided by your OS distribution.
+#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 17** or **Java 21** environment.
 
+   **Linux**
+   
+   .. include:: jdk-linux-guidance.txt
+   
+   **Windows**
+   
+   .. include:: jdk-windows-guidance.txt
+   
+   **MacOS**
+   
+   .. include:: jdk-macos-guidance.txt
+    
    .. note:: For more information about Java and GeoServer compatibility, please see the section on :ref:`production_java`.
 
 #. Navigate to the :website:`GeoServer Download page <download>`.
 
-#. Select the version of GeoServer that you wish to download.  If you're not sure, select :website:`Stable <release/stable>` release.
+#. Select the version of GeoServer that you wish to download.  
 
-   .. only:: snapshot
-      
-      These instructions are for GeoServer |version|-SNAPSHOT which is provided as a :website:`Nightly <release/main>` release.
-      Testing a Nightly release is a great way to try out new features, and test community modules. Nightly releases
-      change on an ongoing basis and are not suitable for a production environment.
-      
-   .. only:: not snapshot
+   * If you're not sure, select :website:`Stable <release/stable>` release.
+   
+     Examples provided for GeoServer |release|.
 
-      These instructions are for GeoServer |release|.
+   * Testing a Nightly release is a great way to try out new features, and test community modules. Nightly releases
+     change on an ongoing basis and are not suitable for a production environment.
+     
+     Examples are provided for GeoServer |version|, which is provided as a :website:`Nightly <release/main>` release.
 
-#. Select :guilabel:`Web Archive` on the download page: :download_release:`war`
-
+#. Select :guilabel:`Web Archive` on the download page:
+   
+   * :download_release:`war`
+   * :nightly_release:`war`
+   
 #. Download and unpack the archive.
 
 #. Deploy the web archive as you would normally. Often, all that is necessary is to copy the :file:`geoserver.war` file to the application server's :file:`webapps` directory, and the application will be deployed by the application server.

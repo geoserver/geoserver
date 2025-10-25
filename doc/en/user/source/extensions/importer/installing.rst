@@ -3,7 +3,10 @@
 Installing the Importer extension
 =================================
 
-#. Visit the :website:`website download <download>` page, locate your release, and download:  :download_extension:`importer`
+#. Visit the :website:`website download <download>` page, locate your release, and download:
+
+   * |release| :download_extension:`importer`
+   * |version| :nightly_extension:`importer`
    
    Verify that the version number in the filename (for example |release| above) corresponds to the version of GeoServer you are running.
 

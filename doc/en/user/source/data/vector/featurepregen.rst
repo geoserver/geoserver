@@ -8,8 +8,11 @@ Pregeneralized Features
 Installing the Pregeneralized Features extension
 ------------------------------------------------
 
-#. Visit the :website:`website download <download>` page, locate your release, and download: :download_extension:`feature-pregeneralized`
-   
+#. Visit the :website:`website download <download>` page, locate your release, and download: 
+
+   * |release| :download_extension:`feature-pregeneralized`
+   * |version| :nightly_extension:`feature-pregeneralized`
+      
    .. warning:: Ensure to match plugin (example |release| above) version to the version of the GeoServer instance.
 
 #. Extract the contents of the archive into the :file:`WEB-INF/lib` directory of the GeoServer installation.

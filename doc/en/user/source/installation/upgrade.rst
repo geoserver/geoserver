@@ -1,9 +1,12 @@
 .. _installation_upgrade:
 
-Upgrading existing versions
-===========================
+Upgrading GeoServer
+===================
 
 .. warning:: Be aware that some upgrades are not reversible, meaning that the data directory may be changed so that it is no longer compatible with older versions of GeoServer. See :ref:`datadir_migrating` for more details.
+
+Upgrade Process
+---------------
 
 The general GeoServer upgrade process is as follows:
 
@@ -20,15 +23,167 @@ The general GeoServer upgrade process is as follows:
 
 #. Uninstall the old version and install the new version.
    
-   * Download :website:`maintenance <release/maintain>` release to update existing installation
-   * Download :website:`stable <release/stable>` release when ready to upgrade
+   * Download :website:`maintenance <release/maintain>` release to update existing installation.
+   
+     There should generally be no problems or issues updating data directories between patch versions of GeoServer (for example, from 2.28.0 to 2.28.1 or vice versa).
+     
+     It is also generally possible to revert a minor update and maintain data directory compatibility.
+   
+   * Download :website:`stable <release/stable>` release when ready to upgrade.
+   
+     There should rarely be any issues involved with upgrading between minor versions (for example, from 2.27.x to 2.28.x).
+     
+     Upgrading between major versions of GeoServer (for example from 2.28 to 3.0) may not be reversible,
+     since newer versions of GeoServer may make backwards-incompatible changes to the data directory.
    
 #. Be sure to download and install each extension used by your prior installation.
 
 #. Make sure that the new installation continues to point to the same data directory used by the previous version.
 
-Notes on upgrading specific versions
-------------------------------------
+How often should I upgrade GeoServer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+GeoServer operates with a time boxed release cycle, maintaining “stable” and “maintenance” releases, over the course of a year.
+
+* Plan to upgrade GeoServer **at lesat twice a year** as new stable releases are made.
+
+  Once the release you are using has entered "maintenance" it is a good idea to upgrade (before the release is no longer supported).
+  
+  GeoServer provides some overlap between "stable" and "maintenance" releases to provide you a window of opportunity to
+  upgrade between supported versions.
+
+* GeoServer :github:`security policy <security/policy>` indicates each release is supported with bug fixes for a year,
+  with releases made approximately every two months.
+  
+  You may also contact our service providers for extended support beyond this timeframe.
+  
+* Monitor release announcements in case a new release is made that provides "Security Considerations" guidance.
+  
+  It is always advisable to stay update with security patches. The blog post will indicate when the update is urgent,
+  and several releases will be made concurrently (for both stable and maintenance) when urgent action is required.
+
+  .. note:: Do not wait for a release to fall out of support before upgrading. Doing so
+     places you in a position of having to perform an upgrade quickly with a lot of pressure
+     in the event a security vulnerability is announced.
+  
+  .. note:: If you do see several releases being made concurrently, in response to an urgent vulnerability,
+     the developers will not be in a position to tell you what is going on. Their goal is to provide you an
+     opportunity to upgrade prior to public disclosure.
+  
+     Those seeking more information, or with a legal obligation to be informed, are welcome to volunteer on
+     the geoserver-security email list. See :developer:`Security Process <policies/security.html>` for details
+     on how to participate.
+
+Troubleshooting
+~~~~~~~~~~~~~~~
+
+Forgetting to include an Extension
+""""""""""""""""""""""""""""""""""
+
+The most common difficulty when updating GeoServer is forgetting to include an extension.
+  
+* This may result in the application being unable to startup, as it attempts to read
+  a configuration file without the corresponding extension that understands the setting.
+
+* This may result in missing functionality, for example forgetting to install an output format
+  will result in that format not being available for use.
+
+Upgrading more than one version
+"""""""""""""""""""""""""""""""
+
+If it has been a while since you have upgraded GeoServer be cautious when upgrading from an unsupported release of GeoServer all the way to the latest release. Consider **first trying a quick update** in one go, but be prepared to perform a sequential **update to each major release in turn**, applying the guidance in the section below at each stage.
+
+.. note:: Trying a quick update GeoServer 2.26.0 to GeoServer 2.28.0
+   
+   1. Back up the current data directory
+   
+   2. Check the :website:`Download <download>` page and download the target release:
+      
+      * GeoServer 2.28.0
+      
+      You may also make a note of the versions of Java to download:
+      
+      * OpenJDK 17
+   
+   2. Perform the upgrade in one go, checking the guidance on this page for any work to perform.
+      
+      The application property `ENTITY_RESOLUTION_UNRESTRICTED` is noted, if you are affected by a change in XML Parsing.
+      This should only affect Application Schema that made use of the :guilabel:`Unrestricted XML External Entity Resolution` setting.
+      
+      The application property `GEOSERVER_DATA_DIR_LOADER_ENABLED` is noted as an option if any deadlock occurs
+      during startup due to an improvement in startup performance.
+      
+      A wide a range of *Content Security Policy* restrictions have been introduced, and very clear instructions
+      noted to double check `proxy_base_url` is correct (as GeoServer user interface will now detect and block a
+      misconfigured system). The application proeprty `org.geoserver.web.csp.strict=false` available to temporarily 
+      disable this safety measure if you are locked out.
+      
+      Installation of Java 11 is required.
+      
+      Out of an abundance of caution testing raster layers is advisable due to wholsale change of
+      the image processing engine.
+
+   3. Review the logs during startup, and test to ensure the application is working as expected.
+      
+      If you encounter problems consider planning a sequential update as in the next example.
+     
+.. note:: Planning a sequential update from GeoServer 2.26.0 to GeoServer 2.28.0
+
+   1. Check the :website:`Download <download>` page and download the releases needed to make the transition:
+   
+      * GeoServer 2.26.4
+      * GeoServer 2.27.3
+      * GeoServer 2.28.0
+      
+      You may also make a note of the versions of Java to download:
+      
+      * OpenJDK 17
+      
+   2. Perform each update in sequence, checking the guidance on this page for any work to perform.
+      
+      * Updating from GeoServer 2.26.0 to GeoServer 2.26.4
+        
+        The application property `ENTITY_RESOLUTION_UNRESTRICTED` is noted, if you are affected by a change in XML Parsing.
+        This should only affect Application Schema that made use of the :guilabel:`Unrestricted XML External Entity Resolution` setting.
+        
+        *Review the logs during startup, and test to ensure the application is working as expected.*
+        
+      * Updating from GeoSerer 2.26.4 to GeoServer 2.27.3.
+      
+        The application property `GEOSERVER_DATA_DIR_LOADER_ENABLED` is noted as an option if any deadlock occurs
+        during startup due to an improvement in startup performance.
+        
+        A wide a range of *Content Security Policy* restrictions have been introduced, and very clear instructions
+        noted to double check `proxy_base_url` is correct (as GeoServer user interface will now detect and block a
+        misconfigured system). The application proeprty `org.geoserver.web.csp.strict=false` available to temporarily 
+        disable this safety measure if you are locked out.
+     
+        *Review the logs during startup, and test to ensure the application is working as expected.*
+        
+      * Updating from GeoServer 2.27.3 to GeoServer 2.28.0.
+        
+        Installation of Java 11 is required.
+        
+        Out of an abundance of caution testing raster layers is advisable due to wholsale change of
+        the image processing engine.
+   
+        *Review the logs during startup, and test to ensure the application is working as expected.*
+
+Upgrading GeoServer 3 Guidance
+------------------------------
+
+GeoServer 3.0.x is scheduled for release in March, 2026.
+
+Tomcat 10.1 or Tomcat 11.0 Required
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+GeoServer 3.0 makes the transition to Jakarata EE Servlet 6.0.0 and requires Tomcat 10.1 or Tomcat 11.0
+for those using WebArchive distribution.
+
+Upgrading GeoServer 2 Guidance
+------------------------------
+
+GeoServer 2.0.x was first released in October 29, 2009.
 
 Java 17 and ImageN (GeoServer 2.28.0)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -111,7 +266,7 @@ It is anticipated that future work may further restrict the default policy in th
      .. note::
 
         It is recommended that static web files be disabled if they are not necessary in order to
-        mitigate cross-site scripting attacks. For more information, see :ref`tutorials_staticfiles`.
+        mitigate cross-site scripting attacks. For more information, see :ref:`tutorials_staticfiles`.
 
    * GeoServer provides tools for administrators to control content security policy headers, see GeoServer Security section on :ref:`Content Security Policy Reference <security_csp>` for very detailed information.
 

@@ -16,8 +16,11 @@ The control flow method does not normally reject requests, it just queues up tho
 Installation
 ------------
 
-#. Visit the :website:`website download <download>` page, locate your release, and download: :download_extension:`control-flow`
-   
+#. Visit the :website:`website download <download>` page, locate your release, and download:
+
+   * |release| :download_extension:`control-flow`
+   * |version| :nightly_extension:`control-flow`
+      
    .. warning:: Ensure to match plugin (example |release| above) version to the version of the GeoServer instance.
 
  #. Extract the files in this archive to the :file:`WEB-INF/lib` directory of your GeoServer installation.

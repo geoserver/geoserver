@@ -7,7 +7,10 @@ The WMS multidimensional extension is listed among the other extension downloads
 
 The installation process is similar to other GeoServer extensions:
 
-#. Download the :download_extension:`wmts-multi-dimensional`
+#. Download:
+
+   * |release| :download_extension:`wmts-multi-dimensional`
+   * |version| :nightly_extension:`wmts-multi-dimensional`
    
    Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example |release| above).
 

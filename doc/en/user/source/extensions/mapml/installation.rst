@@ -3,7 +3,10 @@
 Installation
 --------------------
 
-#. Visit the :website:`website download <download>` page, locate your release, and download:  :download_extension:`mapml`
+#. Visit the :website:`website download <download>` page, locate your release, and download:
+
+   * |release| :download_extension:`mapml`
+   * |version| :nightly_extension:`mapml`
    
    .. warning:: Make sure to match the version of the extension (for example |release| above) to the version of the GeoServer instance!
 

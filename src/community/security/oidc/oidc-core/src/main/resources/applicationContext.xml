@@ -29,6 +29,7 @@
 			value="gs-sec-oidc-core" />
 		<constructor-arg index="1"
 			value="GeoServer Security OpenID Connect" />
+        <property name="category" value="COMMUNITY"/>
 	</bean>
 
 	<bean id="oauth2LoginAuthenticationProvider"

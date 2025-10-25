@@ -11,6 +11,7 @@
         <constructor-arg index="0" value="gs-cog-azure"/>
         <constructor-arg index="1" value="COG Azure Extension"/>
         <property name="message" value="COG module supporting Azure Storage" />
+        <property name="category" value="COMMUNITY"/>
     </bean>
 
 </beans>

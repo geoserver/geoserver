@@ -61,7 +61,7 @@ jobs:
     - name: Build with Maven
       run: |
         mvn --version
-        mvn -B -ntp -U -T1C -fae -Prelease -f src/pom.xml clean install
+        mvn -B -ntp -U -T1C -fae -Prelease,pending -f src/pom.xml clean install
     - name: Remove SNAPSHOT jars from repository
       if: always()
       run: |

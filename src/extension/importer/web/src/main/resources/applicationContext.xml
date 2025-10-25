@@ -6,6 +6,7 @@
     <constructor-arg index="0" value="gs-importer-web"/>
     <constructor-arg index="1" value="Importer Web UI"/>
     <constructor-arg index="2" value="Importer Page"/>
+    <property name="category" value="EXTENSION"/>
   </bean>
   <!-- 
     wicket ui stuff

@@ -5,6 +5,7 @@
     <constructor-arg index="0" value="gs-gwc"/>
     <constructor-arg index="1" value="GeoWebCache"/>
     <constructor-arg index="2" value="Tile services"/>
+    <property name="category" value="CORE"/>
   </bean>
 
   <bean id="GWCLifeCycleHandler" class="org.geoserver.gwc.config.GWCLifeCycleHandler" depends-on="gwcFacade">

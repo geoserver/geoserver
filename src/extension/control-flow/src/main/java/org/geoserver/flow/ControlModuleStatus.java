@@ -12,4 +12,9 @@ public class ControlModuleStatus extends ModuleStatusImpl {
     public ControlModuleStatus() {
         super("gs-control-flow", "Flow of Control Extension");
     }
+
+    @Override
+    public Category getCategory() {
+        return Category.EXTENSION;
+    }
 }

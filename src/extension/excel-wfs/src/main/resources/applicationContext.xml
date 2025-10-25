@@ -12,6 +12,7 @@
     <property name="component" value="Excel WFS output extension"/>
     <property name="available" value="true"/>
     <property name="enabled" value="true"/>
+    <property name="category" value="EXTENSION"/>
   </bean>
   <bean id="Excel97OutputFormat" class="org.geoserver.wfs.response.Excel97OutputFormat">
     <constructor-arg ref="geoServer"/>

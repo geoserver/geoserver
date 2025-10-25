@@ -66,6 +66,7 @@
 		<property name="component" value="Vector Tiles plugin" />
 		<property name="available" value="true" />
 		<property name="enabled" value="true" />
+        <property name="category" value="EXTENSION"/>
 	</bean>
 
 </beans>

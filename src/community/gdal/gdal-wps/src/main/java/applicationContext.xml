@@ -18,5 +18,6 @@
 		<property name="component" value="GDAL WPS extension" />
 		<property name="available" value="true" />
 		<property name="enabled" value="true" />
+        <property name="category" value="COMMUNITY"/>
 	</bean>
 </beans>

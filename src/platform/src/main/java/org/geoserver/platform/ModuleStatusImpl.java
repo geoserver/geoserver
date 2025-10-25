@@ -58,6 +58,10 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
     /** True if module is available for use */
     private final AtomicBoolean isAvailable = new AtomicBoolean();
 
+    private Category category;
+
+    private String contact;
+
     public ModuleStatusImpl() {}
 
     /**
@@ -74,6 +78,8 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
         this.message = status.getMessage().orElse(null);
         this.isEnabled.set(status.isEnabled());
         this.isAvailable.set(status.isAvailable());
+        this.category = status.getCategory();
+        this.contact = status.getContact();
     }
 
     /**
@@ -221,5 +227,23 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
             }
         }
         return MAVEN_VERSIONS;
+    }
+
+    @Override
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    @Override
+    public String getContact() {
+        return contact;
+    }
+
+    public void setContact(String contact) {
+        this.contact = contact;
     }
 }

@@ -24,5 +24,6 @@
         <property name="component" value="GeoPKG Output for WMS" />
         <property name="available" value="true" />
         <property name="enabled" value="true" />
+        <property name="category" value="EXTENSION"/>
     </bean>
 </beans>

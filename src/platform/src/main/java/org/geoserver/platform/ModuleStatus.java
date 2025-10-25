@@ -16,6 +16,16 @@ import java.util.Optional;
  */
 public interface ModuleStatus {
 
+    /** Generic contact for the PSC (used by core modules). */
+    String PSC_CONTACT = "GeoServer PSC";
+
+    enum Category {
+        CORE,
+        EXTENSION,
+        PENDING,
+        COMMUNITY;
+    }
+
     /**
      * Module identifier based on artifact bundle Example: <code>gs-main</code>, <code>gs-oracle
      * </code>
@@ -47,4 +57,12 @@ public interface ModuleStatus {
 
     /** Optional relative link to GeoServer user manual */
     Optional<String> getDocumentation();
+
+    /** Category of module: core, extension, pending, community */
+    Category getCategory();
+
+    /** Email address(s) separated by comma, to show to GeoServer Admins in Module Status Page for pending modules */
+    default String getContact() {
+        return "";
+    }
 }

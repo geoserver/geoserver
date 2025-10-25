@@ -23,6 +23,7 @@
 		<constructor-arg index="0" value="gs-sec-oidc-web" />
 		<constructor-arg index="1"
 			value="GeoServer Web UI Security OpenID Connect" />
+        <property name="category" value="COMMUNITY"/>
 	</bean>
     
 	<!-- ui auth provider panel info -->

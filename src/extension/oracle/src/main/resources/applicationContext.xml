@@ -14,6 +14,7 @@
     <property name="documentation" value="data/database/oracle.html"/>
     <property name="available" value="true"/>
     <property name="enabled" value="true"/>
+    <property name="category" value="EXTENSION"/>
   </bean>
  
 </beans>

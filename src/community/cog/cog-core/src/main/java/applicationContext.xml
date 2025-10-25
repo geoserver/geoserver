@@ -35,5 +35,6 @@
         <constructor-arg index="1" value="COG Core Extension"/>
         <property name="message" value="Core COG support for Cloud Optimized GeoTIFFs and ImageMosaics.
 Requires an additional storage module (e.g., gs-cog-s3, gs-cog-azure, gs-cog-google)."/>
+        <property name="category" value="COMMUNITY"/>
     </bean>
 </beans>

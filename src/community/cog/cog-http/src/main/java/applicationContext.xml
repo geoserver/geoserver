@@ -11,6 +11,7 @@
         <constructor-arg index="0" value="gs-cog-http"/>
         <constructor-arg index="1" value="COG HTTP Extension"/>
         <property name="message" value="COG module supporting simple HTTP range read requests" />
+        <property name="category" value="COMMUNITY"/>
     </bean>
 
 </beans>

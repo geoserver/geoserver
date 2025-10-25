@@ -10,6 +10,7 @@
 		<property name="component" value="YSLD GeoServer Plugin" />
 		<property name="available" value="true" />
 		<property name="enabled" value="true" />
+        <property name="category" value="EXTENSION"/>
   </bean>
     <!--<bean class="org.geoserver.web.HeaderContribution">-->
         <!--<property name="scope" value="com.boundlessgeo.ysld.YsldHandler"/>-->

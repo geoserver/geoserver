@@ -97,4 +97,9 @@ public class SystemPropertyStatus implements ModuleStatus {
     public Optional<String> getDocumentation() {
         return Optional.empty();
     }
+
+    @Override
+    public Category getCategory() {
+        return Category.CORE;
+    }
 }

@@ -238,6 +238,12 @@ Process
 
 #. Include the module in the ``pending`` profile of the ``community/pom.xml`` file.
 
+#. Update the website layout to list module for download:
+   
+   * ``_layouts/nightly_30.html``
+   * ``_layouts/nightly_main.html``
+   * ``_layouts/nightly_228.html``
+   * ``_layouts/release_228.html``
 Removing a module from the Pending Release Profile
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

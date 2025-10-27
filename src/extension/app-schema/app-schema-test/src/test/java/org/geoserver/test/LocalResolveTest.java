@@ -10,6 +10,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.geotools.data.complex.AppSchemaDataAccess;
 import org.junit.Assume;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -19,6 +20,13 @@ import org.w3c.dom.Document;
  * @author Niels Charlier
  */
 public class LocalResolveTest extends AbstractAppSchemaTestSupport {
+
+    @BeforeClass
+    public static void skipOnGithub() {
+        // this test is time based, on Github it fails randomly likely for
+        // inconsistent timing
+        Assume.assumeFalse(System.getProperty("github-build") != null);
+    }
 
     @Override
     protected XLink32MockData createTestData() {

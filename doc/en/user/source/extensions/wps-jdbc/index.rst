@@ -14,8 +14,17 @@ The WPS JDBC extension is a WPS status storage for asynchronous requests. Main a
 Installing the WPS JDBC extension
 ---------------------------------
 
-#. From the :website:`website download <download>` page, locate your release, and download: :download_extension:`wps-jdbc`
+#. Login, and navigate to :menuselection:`About & Status > About GeoServer` and check **Build Information**
+   to determine the exact version of GeoServer you are running.
+
+#. Visit the :website:`website download <download>` page, change the **Archive** tab,
+   and locate your release.
    
+   From the list of **OGC Services** extensions download **WPS Clustering (JDBC)**.
+
+   * |release| example: :download_extension:`wps-jdbc`
+   * |version| example: :nightly_extension:`wps-jdbc`
+
    Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example |release| above).
 
 #. Extract the contents of the archive into the :file:`WEB-INF/lib` directory in GeoServer.

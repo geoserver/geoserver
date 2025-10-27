@@ -20,7 +20,10 @@ Installing the SQL Server extension
 GeoServer files
 ```````````````
 
-#. Visit the :website:`website download <download>` page, locate your release, and download: :download_extension:`sqlserver`
+#. Visit the :website:`website download <download>` page, locate your release, and download: 
+
+   * |release| :download_extension:`sqlserver`
+   * |version| :nightly_extension:`sqlserver`
    
    .. warning:: Ensure to match plugin (example |release| above) version to the version of the GeoServer instance.
 

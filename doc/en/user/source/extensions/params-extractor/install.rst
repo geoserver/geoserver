@@ -7,9 +7,18 @@ The Parameter Extractor extension is listed among the other extension downloads 
 
 The installation process is similar to other GeoServer extensions:
 
-#. Visit the :website:`website download <download>` page, locate your release, and download:  :download_extension:`params-extractor`
+#. Login, and navigate to :menuselection:`About & Status > About GeoServer` and check **Build Information**
+   to determine the exact version of GeoServer you are running.
+
+#. Visit the :website:`website download <download>` page, change the **Archive** tab,
+   and locate your release.
    
-   Verify that the version number in the filename (for example |release| above) corresponds to the version of GeoServer you are running.
+   From the list of **Miscellaneous** extensions download **Request parameters extractor**.
+
+   * |release| example: :download_extension:`params-extractor`
+   * |version| example: :nightly_extension:`params-extractor`
+
+   Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example |release| above).
 
 #. Extract the contents of the archive into the :file:`WEB-INF/lib` directory in GeoServer.
    Make sure you do not create any sub-directories during the extraction process.

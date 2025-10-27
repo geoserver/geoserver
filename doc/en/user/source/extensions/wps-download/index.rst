@@ -1,7 +1,7 @@
 .. _wpsdownload:
 
-WPS Download plugin
-===================
+WPS Download 
+============
 
 WPS Download plugin provides some useful features for easily downloading:
 * Raster or Vector layer as zip files
@@ -16,8 +16,17 @@ The WPS Download extension is listed among the other extension downloads on the 
 
 The installation process is similar to other GeoServer extensions:
 
-#. From the :website:`website download <download>` page, locate your release, and download: :download_extension:`wps-download`
+#. Login, and navigate to :menuselection:`About & Status > About GeoServer` and check **Build Information**
+   to determine the exact version of GeoServer you are running.
+
+#. Visit the :website:`website download <download>` page, change the **Archive** tab,
+   and locate your release.
    
+   From the list of **OGC Services** extensions download **WPS download**.
+
+   * |release| example: :download_extension:`wps-download`
+   * |version| example: :nightly_extension:`wps-download`
+
    Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example |release| above).
 
 #. Extract the contents of the archive into the :file:`WEB-INF/lib` directory in GeoServer.

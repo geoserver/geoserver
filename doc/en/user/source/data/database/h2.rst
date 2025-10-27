@@ -10,7 +10,10 @@ H2
 Installing the H2 extension
 ----------------------------
 
-#. Visit the :website:`website download <download>` page, locate your release, and download: :download_extension:`h2`
+#. Visit the :website:`website download <download>` page, locate your release, and download:
+
+   * |release| :download_extension:`h2`
+   * |version| :nightly_extension:`h2`
    
    .. warning:: Ensure to match plugin (example |release| above) version to the version of the GeoServer instance.
 

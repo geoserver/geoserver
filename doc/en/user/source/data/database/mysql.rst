@@ -14,7 +14,10 @@ MySQL
 Installing the MySQL extension
 ------------------------------
 
-#. Visit the :website:`website download <download>` page, locate your release, and download: :download_extension:`mysql`
+#. Visit the :website:`website download <download>` page, locate your release, and download:
+
+   * |release| :download_extension:`mysql`
+   * |version| :nightly_extension:`mysql`
    
    .. warning:: Ensure to match plugin (example |release| above) version to the version of the GeoServer instance.
 

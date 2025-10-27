@@ -7,7 +7,10 @@ The CSS extension is listed among the other extension downloads on the GeoServer
 
 The installation process is similar to other GeoServer extensions:
 
-#. Download the :download_extension:`css`
+#. Download:
+
+   * |release| :download_extension:`css`
+   * |version| :nightly_extension:`css`
    
    Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example |release| above).
 

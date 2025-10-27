@@ -3,6 +3,27 @@
 GRIB
 ====
 
+Installing
+----------
+
+#. Login, and navigate to :menuselection:`About & Status > About GeoServer` and check **Build Information**
+   to determine the exact version of GeoServer you are running.
+
+#. Visit the :website:`website download <download>` page, change the **Archive** tab,
+   and locate your release.
+   
+   From the list of **Coverage Formats** extensions download **GRIB**.
+
+   * |release| example: :download_extension:`grib`
+   * |version| example: :nightly_extension:`grib`
+
+   Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example |release| above).
+
+#. Extract the files in the archive to the :file:`WEB-INF/lib` directory of your GeoServer installation.
+
+#. Restart GeoServer
+
+
 Adding a GRIB data store
 --------------------------
 To add a GRIB data store the user must go to :guilabel:`Stores --> Add New Store --> GRIB`.

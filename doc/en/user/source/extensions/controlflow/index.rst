@@ -16,21 +16,27 @@ The control flow method does not normally reject requests, it just queues up tho
 Installation
 ------------
 
-#. Visit the :website:`website download <download>` page, locate your release, and download:
+#. Login, and navigate to :menuselection:`About & Status > About GeoServer` and check **Build Information**
+   to determine the exact version of GeoServer you are running.
 
-   * |release| :download_extension:`control-flow`
-   * |version| :nightly_extension:`control-flow`
-      
-   .. warning:: Ensure to match plugin (example |release| above) version to the version of the GeoServer instance.
+#. Visit the :website:`website download <download>` page, change the **Archive** tab,
+   and locate your release.
+   
+   From the list of **Miscellaneous** extensions download **Control Flow**.
 
- #. Extract the files in this archive to the :file:`WEB-INF/lib` directory of your GeoServer installation.
+   * |release| example: :download_extension:`control-flow`
+   * |version| example: :nightly_extension:`control-flow`
 
- #. Restart GeoServer
+   Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example |release| above).
+
+#. Extract the files in this archive to the :file:`WEB-INF/lib` directory of your GeoServer installation.
+
+#. Restart GeoServer
  
 Rule syntax reference
 ---------------------
 
-The current implementation of the control flow module reads its rules from a ``controlflow.properties`` property file located in the :ref:`datadir`.
+The current implementation of the control flow module reads its rules from a :file:`controlflow.properties` property file located in the :ref:`datadir`.
 
 Total OWS request count
 .......................

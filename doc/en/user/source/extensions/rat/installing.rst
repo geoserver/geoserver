@@ -5,12 +5,19 @@ Installing the RAT module
 
 To install the Raster Attribute Table support:
 
-#. From the :website:`website download <download>` page, locate your release, and download:
+#. Login, and navigate to :menuselection:`About & Status > About GeoServer` and check **Build Information**
+   to determine the exact version of GeoServer you are running.
 
-   * |release| :download_extension:`rat`
-   * |version| :nightly_extension:`rat`
+#. Visit the :website:`website download <download>` page, change the **Archive** tab,
+   and locate your release.
    
-   .. warning:: Make sure to match the version of the extension to the version of GeoServer.
+   From the list of **Coverage Formats** extensions download **Raster Attribute Table**.
+
+   * |release| example: :download_extension:`rat`
+   * |version| example: :nightly_extension:`rat`
+
+   Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example |release| above).
+
 
 #. Extract these files and place the JARs in ``WEB-INF/lib``.
 

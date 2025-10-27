@@ -20,6 +20,27 @@ to perform GetMap, GetFeatureInfo and so on.
 When the ``authkey`` parameter is provided the backlinks will contain the authentication key as well,
 allowing any compliant WMS client to access secured resources. 
 
+Installation
+------------
+
+#. Login, and navigate to :menuselection:`About & Status > About GeoServer` and check **Build Information**
+   to determine the exact version of GeoServer you are running.
+
+#. Visit the :website:`website download <download>` page, change the **Archive** tab,
+   and locate your release.
+   
+   From the list of **Security** extensions download **Key authentication**.
+
+   * |release| example: :download_extension:`authkey`
+   * |version| example: :nightly_extension:`authkey`
+
+   Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example |release| above).
+
+#. Extract the files in the archive to the :file:`WEB-INF/lib` directory of your GeoServer installation.
+
+#. Restart GeoServer
+
+
 Limitations
 -----------
 
@@ -33,7 +54,7 @@ Key providers
 -------------
 
 Key providers are responsible for mapping the authentication keys to a user. The authentication key
-itself is a UUID (Universally Unique IDentifier (UUID)). A key provider needs a user/group service and it is
+itself is a Universally Unique Identifier (UUID). A key provider needs a user/group service and it is
 responsible for synchronizing the authentication keys with the users contained in this service.  
 
 Key provider using user properties

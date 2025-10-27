@@ -16,7 +16,7 @@ Installing the Schemaless Mongo module
 
 #. Extract the contents of the archive into the :file:`WEB-INF/lib` directory in GeoServer.
 
-   .. warning:: Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-|mongodb-schemaless|-loader-plugin.zip above).
+   .. warning:: Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-|version|-mongodb-schemaless-plugin.zip above).
 
 #. Restart GeoServer.
 

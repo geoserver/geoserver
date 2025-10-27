@@ -31,14 +31,14 @@ for production testing.
 #. Visit the :website:`website download <download>` page, change the **Archive** tab,
    and locate your release.
    
-   From the list of **Pending** extensions download **OpenSearch for EO**.
+   From the list of **Pending** community plugins download **OpenSearch (EO)**.
    
    * |release| example: :download_pending:`opensearch-eo-plugin`
   
    * |version| example: :nightly_extension:`opensearch-eo-plugin`
    
-   The website lists active nightly builds to provide feedback to developers,
-   you may also `browse <https://build.geoserver.org/geoserver/>`__ for earlier branches.
+   The website lists community modules for active nightly builds providing feedback to developers,
+   you may also `browse <https://build.geoserver.org/geoserver/>`__ for earlier versions.
    
 #. Download the plugin zip file, and unzip its contents in the GeoServer unpacked WAR lib directory,
    e.g., :file:`geoserver/WEB-INF/lib`

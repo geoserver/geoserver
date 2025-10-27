@@ -5,33 +5,46 @@ Installing the OAUTH2/OIDC module
 
 To install the OIDC module:
 
-#. To obtain the OIDC community module:
+#. Login, and navigate to :menuselection:`About & Status > About GeoServer` and check **Build Information**
+   to determine the exact version of GeoServer you are running.
 
-   * If working with a |release| nightly build, download the module: :download_community:`sec-oidc`
+#. Visit the :website:`website download <download>` page, change the **Development** tab,
+   and locate the nightly release that corresponds to the GeoServer you are running.
    
-     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example |release| above).
-     
-   * Community modules are not yet ready for distribution with GeoServer release.
-      
-     To compile the OIDC module yourself download the src bundle for your GeoServer version and compile:
+   Follow the **Community Modules** link and download ``sec-oidc`` zip archive.
+   
+   * |version| example: :nightly_community:`sec-oidc`
+   
+   The website lists active nightly builds to provide feedback to developers,
+   you may also `browse <https://build.geoserver.org/geoserver/>`__ for earlier branches.
 
-     .. code-block:: bash
-     
-        cd src/community
-        mvn install -PcommunityRelease -DskipTests
-       
-     And package (from the top level geoserver directory):
-     
-     .. code-block:: bash
-     
-        cd ../..
-        mvn -f src/community/pom.xml clean install -B -DskipTests -PcommunityRelease,assembly  -T2 -fae
+#. Extract the contents of the archive into the :file:`WEB-INF/lib` directory in GeoServer.
 
-     
-#. Place the JARs in ``WEB-INF/lib``. 
+   .. warning:: Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-|version|-loader-plugin.zip above).
 
 #. Restart GeoServer.
 
+sec-oidcInstalling the OAUTH2/OIDC module
+
+Community modules are not yet ready for distribution with GeoServer release.
+      
+#. To compile the OIDC module yourself download the src bundle for your GeoServer version and compile:
+
+   .. code-block:: bash
+   
+      cd src/community
+      mvn install -PcommunityRelease -DskipTests
+   
+#. And package (from the top level geoserver directory):
+ 
+   .. code-block:: bash
+   
+      cd ../..
+      mvn -f src/community/pom.xml clean install -B -DskipTests -PcommunityRelease,assembly  -T2 -fae
+ 
+#. Place the JARs in ``WEB-INF/lib``. 
+
+#. Restart GeoServer.
 
 Using with the GeoServer Docker Container
 -----------------------------------------

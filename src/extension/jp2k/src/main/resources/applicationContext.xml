@@ -14,5 +14,6 @@
 		<property name="component" value="JP2K plugin" />
 		<property name="available" value="true" />
 		<property name="enabled" value="true" />
+        <property name="category" value="EXTENSION"/>
 	</bean>
 </beans>

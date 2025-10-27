@@ -10,6 +10,7 @@
     <constructor-arg index="0" value="gs-web-rest"/>
     <constructor-arg index="1" value="GeoServer Web UI REST"/>
     <constructor-arg index="2" value="REST Settings"/>
+    <property name="category" value="CORE"/>
   </bean>
   <bean id="restServiceDescriptor" class="org.geoserver.web.RESTServiceDescriptionProvider">
   </bean>

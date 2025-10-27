@@ -170,6 +170,12 @@
       </modules>
     </profile>
     <profile>
+      <id>pending</id>
+      <modules>
+        <module>oseo</module>
+      </modules>
+    </profile>
+    <profile>
       <id>jdbcconfig</id>
       <modules>
         <module>jdbcconfig</module>

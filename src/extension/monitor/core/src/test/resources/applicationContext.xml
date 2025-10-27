@@ -19,5 +19,6 @@
 		<property name="component" value="Monitor Core plugin" />
 		<property name="available" value="true" />
 		<property name="enabled" value="true" />
+        <property name="category" value="CORE"/>
 	</bean>
 </beans>

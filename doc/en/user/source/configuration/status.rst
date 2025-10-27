@@ -88,7 +88,12 @@ Field Descriptions
 .. list-table::
    :widths: 20 80
    :header-rows: 1
-   
+
+   * - Field
+     - Description
+   * - Category
+     - Module category, one of *Core*, *Extension*, *Pending* or *Community*. A pending module is a community module that
+       is looking for help/resourcing in order to graduate to a supported extension.
    * - Module Name
      - Human readable name of the module, this links to a popup containing the full details and messages of the module
    * - Module ID
@@ -99,15 +104,14 @@ Field Descriptions
        A database extension requiring a third-party database driver to be installed would not be available for use.
    * - Enabled
      - Whether the module is enabled in the current GeoServer configuration
-   * - Component
-     - Functional component provided by the module.
    * - Version
      - The version of the installed module
    * - Message (popup)
      - Status message such as what Java rendering engine is in use, or the library path if the module/driver is unavailable
+   * - Contact
+     - For pending module, a contact email address for further information on how to help the module graduate.
 
 .. figure:: img/module_popup.png
-   :scale: 50%
    
    Module Status popup
 

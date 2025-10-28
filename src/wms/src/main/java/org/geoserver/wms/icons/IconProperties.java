@@ -11,7 +11,9 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.ows.URLMangler.URLType;
@@ -116,6 +118,9 @@ public abstract class IconProperties {
     public static IconProperties externalReference(
             final Double opacity, final Double scale, final Double heading, final String url) {
         return new IconProperties() {
+
+            private final Map<String, String> singleIconProperties = getSingleIconProperties();
+
             @Override
             public Double getOpacity() {
                 return opacity;
@@ -142,7 +147,7 @@ public abstract class IconProperties {
                         File file = URLs.urlToFile(target);
                         File styles;
                         File workspaceStyles = null;
-                        if (file.isAbsolute()) {
+                        if (file != null && file.isAbsolute()) {
                             GeoServerDataDirectory dataDir =
                                     (GeoServerDataDirectory) GeoServerExtensions.bean("dataDirectory");
                             // we grab the canonical path to make sure we can compare them, no
@@ -183,23 +188,29 @@ public abstract class IconProperties {
 
             @Override
             public Style inject(Style base) {
-                return IconPropertyInjector.injectProperties(base, Collections.emptyMap());
+                return IconPropertyInjector.injectProperties(base, singleIconProperties);
             }
 
             @Override
             public Map<String, String> getProperties() {
-                return Collections.emptyMap();
+                return singleIconProperties;
             }
 
             @Override
             public String getIconName(Style style) {
-                throw new RuntimeException("An implementation is missing");
+                return FilenameUtils.getBaseName(url);
             }
 
             private String buildGraphicURL(String baseURL, String styleRelativeUrl, File styleDir, File graphicFile) {
                 String relativePath =
                         styleDir.toURI().relativize(graphicFile.toURI()).toString();
                 return ResponseUtils.buildURL(baseURL, styleRelativeUrl + "/" + relativePath, null, URLType.RESOURCE);
+            }
+
+            private static Map<String, String> getSingleIconProperties() {
+                Map<String, String> map = new HashMap<>();
+                map.put("0.0.0", "");
+                return Collections.unmodifiableMap(map);
             }
         };
     }

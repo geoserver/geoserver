@@ -1484,7 +1484,8 @@ public class GeoServerTileLayerTest {
     @Test
     public void testValidationTimestamp() throws Exception {
         Resource mockResult = mock(Resource.class);
-        ArgumentCaptor<Map> argument = ArgumentCaptor.forClass(Map.class);
+        @SuppressWarnings("unchecked")
+		ArgumentCaptor<Map<String, String>> argument = ArgumentCaptor.forClass(Map.class);
         Mockito.when(mockGWC.dispatchOwsRequest(argument.capture(), any())).thenReturn(mockResult);
         Mockito.when(mockGWC.getConfig()).thenReturn(defaults);
         defaults.setCacheValidationProperty("gwc.timestamp");

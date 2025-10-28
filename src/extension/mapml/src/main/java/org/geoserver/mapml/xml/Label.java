@@ -36,7 +36,7 @@ import jakarta.xml.bind.annotation.XmlValue;
         name = "",
         propOrder = {"content"})
 @XmlRootElement(name = "map-label", namespace = "http://www.w3.org/1999/xhtml")
-public class Label {
+public class Label implements MapMLElement {
 
     @XmlValue
     protected String content;

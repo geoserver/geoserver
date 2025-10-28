@@ -78,6 +78,7 @@ import org.geoserver.mapml.xml.Input;
 import org.geoserver.mapml.xml.InputRelType;
 import org.geoserver.mapml.xml.InputType;
 import org.geoserver.mapml.xml.Link;
+import org.geoserver.mapml.xml.MapMLElement;
 import org.geoserver.mapml.xml.Mapml;
 import org.geoserver.mapml.xml.Meta;
 import org.geoserver.mapml.xml.MimeType;
@@ -170,7 +171,7 @@ public class MapMLDocumentBuilder {
 
     private static final Pattern MAP_LINK_TITLE_REGEX = Pattern.compile("title=\"(.+?)\"");
 
-    private List<Object> extentList;
+    private List<MapMLElement> extentList;
 
     private Input zoomInput;
 

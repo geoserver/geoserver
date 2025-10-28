@@ -5,41 +5,22 @@
 
 package org.geoserver.mapml;
 
-import static org.eclipse.persistence.jaxb.JAXBContextProperties.NAMESPACE_PREFIX_MAPPER;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
-import javax.xml.transform.stream.StreamResult;
+import java.io.ByteArrayOutputStream;
 import org.geoserver.mapml.xml.GeometryContent;
+import org.geoserver.mapml.xml.ObjectFactory;
 import org.hamcrest.Matchers;
-import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 public class MapMLMarshalTest {
 
-    private static Jaxb2Marshaller marshaller;
-
-    @Before
-    public void setupMarshallers() {
-        marshaller = new Jaxb2Marshaller();
-        marshaller.setContextPath("org.geoserver.mapml.xml");
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(jakarta.xml.bind.Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
-        properties.put(NAMESPACE_PREFIX_MAPPER, Map.of("http://www.w3.org/1999/xhtml", ""));
-        marshaller.setMarshallerProperties(properties);
-    }
-
     @Test
-    public void testMixedContent() throws ParseException, IOException {
+    public void testMixedContent() throws Exception {
         Polygon square =
                 (org.locationtech.jts.geom.Polygon) new WKTReader().read("POLYGON((0 0, 0 10, 10 10, 10 0, 0 0))");
         Envelope envelope = new Envelope(5, 15, 5, 15);
@@ -49,10 +30,21 @@ public class MapMLMarshalTest {
         MapMLGenerator generator = new MapMLGenerator();
         GeometryContent geometry = generator.buildGeometry(clipped);
 
-        StringWriter writer = new StringWriter();
-        marshaller.marshal(geometry, new StreamResult(writer));
+        // Marshal using JAXB with MapMLEncoder.Wrapper to handle namespaces correctly
+        jakarta.xml.bind.JAXBContext context = jakarta.xml.bind.JAXBContext.newInstance(GeometryContent.class);
+        jakarta.xml.bind.Marshaller marshaller = context.createMarshaller();
+        marshaller.setProperty(jakarta.xml.bind.Marshaller.JAXB_FRAGMENT, true);
+
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        javax.xml.stream.XMLOutputFactory factory = javax.xml.stream.XMLOutputFactory.newInstance();
+        MapMLEncoder.Wrapper wrapper = new MapMLEncoder.Wrapper(factory.createXMLStreamWriter(output));
+        // Wrap in JAXBElement since GeometryContent doesn't have @XmlRootElement
+        marshaller.marshal(new ObjectFactory().createGeometry(geometry), wrapper);
+        wrapper.flush();
+        String result = output.toString("UTF-8");
+
         assertThat(
-                writer.toString(),
+                result,
                 Matchers.containsString(
                         "<map-coordinates><map-span class=\"bbox\">5 5 10 5</map-span> 10 5 10 10 5 10 <map-span class=\"bbox\">5 10 5 5</map-span></map-coordinates>"));
     }

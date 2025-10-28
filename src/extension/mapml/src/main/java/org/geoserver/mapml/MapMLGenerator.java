@@ -21,6 +21,7 @@ import org.geoserver.mapml.xml.BodyContent;
 import org.geoserver.mapml.xml.Coordinates;
 import org.geoserver.mapml.xml.Feature;
 import org.geoserver.mapml.xml.GeometryContent;
+import org.geoserver.mapml.xml.MapMLElement;
 import org.geoserver.mapml.xml.Mapml;
 import org.geoserver.mapml.xml.ObjectFactory;
 import org.geoserver.mapml.xml.PropertyContent;
@@ -160,7 +161,7 @@ public class MapMLGenerator {
                 geometryContent =
                         templateOptional.get().getBody().getFeatures().get(0).getGeometry();
                 // format the geometry coming from the template using the formatter
-                Object geometry = geometryContent.getGeometryContent().getValue();
+                Object geometry = geometryContent.getGeometryContent();
                 formatGeometry(geometry);
             } else {
                 geometryContent = buildGeometry(g);
@@ -216,7 +217,11 @@ public class MapMLGenerator {
                 formatGeometry(geom);
             }
         } else if (geometry instanceof org.geoserver.mapml.xml.A a) {
-            formatGeometry(a.getGeometryContent().getValue());
+            // Extract value from JAXBElement
+            jakarta.xml.bind.JAXBElement<?> geometryElement = a.getGeometryContent();
+            if (geometryElement != null) {
+                formatGeometry(geometryElement.getValue());
+            }
         }
     }
 
@@ -228,8 +233,25 @@ public class MapMLGenerator {
     private void formatCoordinates(List<Coordinates> coordinates) {
         for (Coordinates coords : coordinates) {
             List<Object> coordList = coords.getCoordinates();
-            for (Object coord : coordList) {
-                if (coord instanceof Span span) {
+            for (int j = 0; j < coordList.size(); j++) {
+                Object coord = coordList.get(j);
+                // Handle JAXBElement wrappers from unmarshalling
+                if (coord instanceof jakarta.xml.bind.JAXBElement<?> jaxbElement) {
+                    Object value = jaxbElement.getValue();
+                    if (value instanceof Span span) {
+                        List<String> spanCoords = span.getCoordinates();
+                        for (int i = 0; i < spanCoords.size(); i++) {
+                            String[] xyArray = formatCoordStrings(spanCoords.get(i));
+                            spanCoords.set(i, String.join(" ", xyArray));
+                        }
+                        // Update the list with unwrapped Span
+                        coordList.set(j, span);
+                    } else {
+                        String xy = value.toString();
+                        String[] xyArray = formatCoordStrings(xy);
+                        coordList.set(j, String.join(" ", xyArray));
+                    }
+                } else if (coord instanceof Span span) {
                     List<String> spanCoords = span.getCoordinates();
                     for (int i = 0; i < spanCoords.size(); i++) {
                         String[] xyArray = formatCoordStrings(spanCoords.get(i));
@@ -238,7 +260,7 @@ public class MapMLGenerator {
                 } else {
                     String xy = coord.toString();
                     String[] xyArray = formatCoordStrings(xy);
-                    coord = String.join(" ", xyArray);
+                    coordList.set(j, String.join(" ", xyArray));
                 }
             }
         }
@@ -445,24 +467,24 @@ public class MapMLGenerator {
         GeometryContent geom = new GeometryContent();
         if (g instanceof Point point1) {
             org.geoserver.mapml.xml.Point point = buildPoint(point1);
-            geom.setGeometryContent(factory.createPoint(point));
+            geom.setGeometryContent(point);
         } else if (g instanceof MultiPoint point) {
             org.geoserver.mapml.xml.MultiPoint multiPoint = buildMultiPoint(point);
-            geom.setGeometryContent(factory.createMultiPoint(multiPoint));
+            geom.setGeometryContent(multiPoint);
         } else if (g instanceof LineString string1) {
             org.geoserver.mapml.xml.LineString lineString = buildLineString(string1);
-            geom.setGeometryContent(factory.createLineString(lineString));
+            geom.setGeometryContent(lineString);
         } else if (g instanceof MultiLineString string) {
             org.geoserver.mapml.xml.MultiLineString multiLineString = buildMultiLineString(string);
-            geom.setGeometryContent(factory.createMultiLineString(multiLineString));
+            geom.setGeometryContent(multiLineString);
         } else if (g instanceof Polygon polygon1) {
             org.geoserver.mapml.xml.Polygon polygon = buildPolygon(polygon1);
-            geom.setGeometryContent(factory.createPolygon(polygon));
+            geom.setGeometryContent(polygon);
         } else if (g instanceof MultiPolygon polygon) {
             org.geoserver.mapml.xml.MultiPolygon multiPolygon = buildMultiPolygon(polygon);
-            geom.setGeometryContent(factory.createMultiPolygon(multiPolygon));
+            geom.setGeometryContent(multiPolygon);
         } else if (g instanceof GeometryCollection collection) {
-            geom.setGeometryContent(factory.createGeometryCollection(buildGeometryCollection(collection)));
+            geom.setGeometryContent(buildGeometryCollection(collection));
         } else if (g != null) {
             throw new IOException("Unknown geometry type: " + g.getGeometryType());
         }
@@ -505,9 +527,9 @@ public class MapMLGenerator {
     private org.geoserver.mapml.xml.GeometryCollection buildGeometryCollection(GeometryCollection gc)
             throws IOException {
         org.geoserver.mapml.xml.GeometryCollection geomColl = new org.geoserver.mapml.xml.GeometryCollection();
-        List<Object> geoms = geomColl.getPointOrLineStringOrPolygon();
+        List<MapMLElement> geoms = geomColl.getPointOrLineStringOrPolygon();
         for (int i = 0; i < gc.getNumGeometries(); i++) {
-            geoms.add(buildSpecificGeom(gc.getGeometryN(i)));
+            geoms.add((MapMLElement) buildSpecificGeom(gc.getGeometryN(i)));
         }
         return geomColl;
     }
@@ -609,6 +631,7 @@ public class MapMLGenerator {
             TaggedPolygon.TaggedCoordinateSequence cs = coordinates.get(i);
             Object value = buildTaggedCoordinateSequence(cs);
             // client oddity: needs spaces before and after the map-span elements to work
+            // JAXBElement wraps Span, so check for String (not wrapped)
             if (value instanceof String) {
                 if (i > 0) {
                     value = " " + value;

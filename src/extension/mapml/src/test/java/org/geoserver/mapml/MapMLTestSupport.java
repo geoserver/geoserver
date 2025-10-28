@@ -53,12 +53,13 @@ public class MapMLTestSupport extends WMSTestSupport {
      */
     protected Mapml mapml(MockHttpServletResponse response) throws JAXBException, UnsupportedEncodingException {
         MapMLEncoder encoder = new MapMLEncoder();
-        StringReader reader = new StringReader(response.getContentAsString());
+        String responseContent = response.getContentAsString();
+        StringReader reader = new StringReader(responseContent);
         Mapml mapml = null;
         try {
             mapml = encoder.decode(reader);
-        } catch (DataBindingException e) {
-            fail("MapML response is not valid XML");
+        } catch (DataBindingException | org.geoserver.platform.ServiceException e) {
+            fail("MapML response is not valid XML: " + e.getMessage());
         }
         return mapml;
     }

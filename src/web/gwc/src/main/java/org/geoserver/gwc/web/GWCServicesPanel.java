@@ -45,7 +45,6 @@ public class GWCServicesPanel extends Panel {
         metaTilingThreadsTextField.setRequired(false);
         metaTilingThreadsTextField.add(RangeValidator.minimum(0));
         add(metaTilingThreadsTextField);
-        add(new TextField<String>(
-                "cacheValidationProperty", new PropertyModel<>(gwcConfigModel, "cacheValidationProperty")));
+        add(new TextField<>("cacheValidationProperty", new PropertyModel<>(gwcConfigModel, "cacheValidationProperty")));
     }
 }

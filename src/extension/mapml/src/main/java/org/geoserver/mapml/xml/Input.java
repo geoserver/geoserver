@@ -44,7 +44,7 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "map-input", namespace = "http://www.w3.org/1999/xhtml")
-public class Input {
+public class Input implements MapMLElement {
 
     @XmlAttribute(name = "name", required = true)
     @XmlSchemaType(name = "anySimpleType")

@@ -6,9 +6,8 @@ package org.geoserver.mapml.xml;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElementRef;
+import jakarta.xml.bind.annotation.XmlAnyElement;
 import jakarta.xml.bind.annotation.XmlMixed;
-import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,11 +20,10 @@ import java.util.List;
 @XmlType(
         name = "",
         propOrder = {"coordinates"})
-@XmlRootElement(name = "map-coordinates", namespace = "http://www.w3.org/1999/xhtml")
 public class Coordinates {
 
     @XmlMixed
-    @XmlElementRef(name = "map-span", type = Span.class, required = false)
+    @XmlAnyElement(lax = true)
     protected List<Object> coordinates;
 
     public Coordinates() {}

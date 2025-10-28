@@ -39,7 +39,7 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "map-link", namespace = "http://www.w3.org/1999/xhtml")
-public class Link {
+public class Link implements MapMLElement {
 
     @XmlAttribute(name = "href")
     @XmlSchemaType(name = "anyURI")

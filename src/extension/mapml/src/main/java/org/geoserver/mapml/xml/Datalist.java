@@ -39,7 +39,7 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "map-datalist", namespace = "http://www.w3.org/1999/xhtml")
-public class Datalist {
+public class Datalist implements MapMLElement {
 
     @XmlElement(name = "map-option", required = true)
     protected List<Option> options;

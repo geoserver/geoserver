@@ -509,56 +509,6 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>3.1.0</version>
-        <executions>
-          <execution>
-            <id>extract-slf4j-version-from-jarname</id>
-            <phase>validate</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <exportAntProperties>true</exportAntProperties>
-              <target name="extract-slf4j-version">
-
-                <!-- Find all slf4j-api-*.jar in target/dependency -->
-                <pathconvert pathsep="," property="slf4j.matches">
-                  <fileset dir="${project.build.directory}/dependency">
-                    <include name="slf4j-api-*.jar"></include>
-                  </fileset>
-                </pathconvert>
-
-                <!-- Fail fast if none found -->
-                <fail message="No slf4j-api-*.jar found under ${project.build.directory}/dependency">
-                  <condition>
-                    <equals arg1="${slf4j.matches}" arg2=""></equals>
-                  </condition>
-                </fail>
-
-                <!-- Fail if multiple (avoid ambiguity) -->
-                <fail message="Multiple slf4j-api jars found: ${slf4j.matches}. Keep only one.">
-                  <condition>
-                    <contains string="${slf4j.matches}" substring=","></contains>
-                  </condition>
-                </fail>
-
-                <!-- Extract the version from the single match -->
-                <pathconvert property="slf4j.version">
-                  <path>
-                    <pathelement location="${slf4j.matches}"></pathelement>
-                  </path>
-                  <mapper from="^.*[/\\]slf4j-api-(.*)\.jar$" to="\1" type="regexp"></mapper>
-                </pathconvert>
-
-                <echo>Using SLF4J version: ${slf4j.version}</echo>
-              </target>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>com.ruleoftech</groupId>
         <artifactId>markdown-page-generator-plugin</artifactId>
         <executions>
@@ -638,7 +588,7 @@
           </execution>
           <execution>
             <id>extract-slf4j-version-from-jarname</id>
-            <phase>test</phase>
+            <phase>validate</phase>
             <goals>
               <goal>run</goal>
             </goals>

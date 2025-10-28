@@ -135,6 +135,7 @@ import org.geowebcache.mime.ApplicationMime;
 import org.geowebcache.mime.FormatModifier;
 import org.geowebcache.mime.MimeType;
 import org.geowebcache.storage.StorageBroker;
+import org.geowebcache.storage.TileObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -1478,5 +1479,59 @@ public class GeoServerTileLayerTest {
             assertNotNull(result.get());
         }
         pool.shutdown();
+    }
+
+    @Test
+    public void testValidationTimestamp() throws Exception {
+        Resource mockResult = mock(Resource.class);
+        ArgumentCaptor<Map> argument = ArgumentCaptor.forClass(Map.class);
+        Mockito.when(mockGWC.dispatchOwsRequest(argument.capture(), any())).thenReturn(mockResult);
+        Mockito.when(mockGWC.getConfig()).thenReturn(defaults);
+        defaults.setCacheValidationProperty("gwc.timestamp");
+        Date created = new Date();
+
+        BufferedImage image = new BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB);
+        RenderedImageMap fakeDispatchedMap = new RenderedImageMap(new WMSMapContent(), image, "image/png");
+
+        RenderedImageMapResponse fakeResponseEncoder = mock(RenderedImageMapResponse.class);
+        MimeType mimeType = MimeType.createFromFormat("image/png");
+        when(mockGWC.getResponseEncoder(eq(mimeType), any())).thenReturn(fakeResponseEncoder);
+
+        StorageBroker storageBroker = mock(StorageBroker.class);
+        when(storageBroker.get(any())).then(invoc -> {
+            ((TileObject) invoc.getArgument(0)).setBlob(mockResult);
+            ((TileObject) invoc.getArgument(0)).setCreated(created.getTime());
+            return true;
+        });
+        layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
+
+        MockHttpServletRequest servletReq = new MockHttpServletRequest();
+        HttpServletResponse servletResp = new MockHttpServletResponse();
+        long[] tileIndex = {0, 0, 0};
+
+        ConveyorTile tile = new ConveyorTile(
+                storageBroker,
+                layerInfoTileLayer.getName(),
+                "EPSG:4326",
+                tileIndex,
+                mimeType,
+                null,
+                servletReq,
+                servletResp);
+
+        GeoServerTileLayer.WEB_MAP.set(fakeDispatchedMap);
+        ConveyorTile returned = layerInfoTileLayer.getTile(tile);
+        assertNotNull(returned);
+        assertNotNull(returned.getBlob());
+        assertEquals(CacheResult.HIT, returned.getCacheResult());
+
+        layerInfo.getResource().getMetadata().put("gwc", (Serializable)
+                Collections.singletonMap("timestamp", new Date()));
+        returned = layerInfoTileLayer.getTile(tile);
+        assertNotNull(returned);
+        assertNotNull(returned.getBlob());
+        assertEquals(CacheResult.MISS, returned.getCacheResult());
+
+        defaults.setCacheValidationProperty(null);
     }
 }

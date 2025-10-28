@@ -77,6 +77,11 @@ Enable Data Security
 
 Enables the :ref:`gwc_data_security` in the embedded GeoWebCache.
 
+Cache Validation Timestamp Property
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 
+Specify a property inside the layer metadata that contains a timestamp for the data. If the timestamp indicates that the data has been updated since it was last cached, the cache is invalidated. 
+
 Metatiling threads count
 ~~~~~~~~~~~~~~~~~~~~~~~~
 

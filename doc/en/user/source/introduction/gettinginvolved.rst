@@ -7,7 +7,7 @@ GeoServer exists because of the efforts of people like you.
 
 There are many ways that you can help out with the GeoServer project. GeoServer fully embraces an open source development model that does not see a split between user and developer, producer and consumer, but instead sees everyone as a valuable contributor.
 
-GeoServer opperates with full transparency with public :developer:`policies and procedures <policies/index.html>`. We look forward to working with you.
+GeoServer operates with full transparency with public :developer:`policies and procedures <policies/index.html>`. We look forward to working with you.
 
 Development
 -----------
@@ -20,13 +20,13 @@ To learn more about contributing to the GeoServer codebase, we recommend reading
 
 .. note:: 
    
-   For :developer:`commit access <policies/committing.html>` new developers can request to work on a community module immediately, or make contributions over time to earn a nomination for full committ access.
+   For :developer:`commit access <policies/committing.html>` new developers can request to work on a community module immediately, or make contributions over time to earn a nomination for full commit access.
    
 
 Documentation
 -------------
 
-Another crucial way to help out is with documentation. Whether it's adding tutorials or just correcting mistakes, every contribution serves to make the project more healthy. And the best part is that you do not need to be a developer in order to contribute.
+Another crucial way to help out is with documentation. Whether it's adding tutorials or just correcting mistakes, every contribution serves to make the project healthier. And the best part is that you do not need to be a developer in order to contribute.
 
 Our official documentation is contained as part of our :github:`official code repository <>`. Anyone can submit pull requests, which will be evaluated by the team.
 
@@ -45,7 +45,7 @@ The `GeoServer User Forum <https://discourse.osgeo.org/c/geoserver/user/51>`__ i
   
 The GeoServer User forum is for those who have questions relating to the use of GeoServer. If you see a question asked on that you know the answer to, please respond!
 
-This is an open communication channels are publicly available and are a great resource for those who are new to GeoServer, who need a question answered, or who are interested in contributing code.
+These open communication channels are publicly available and are a great resource for those who are new to GeoServer, who need a question answered, or who are interested in contributing code.
 
 .. note::
    
@@ -56,7 +56,7 @@ GeoServer Developer
 
 The :`GeoServer Developers <https://discourse.osgeo.org/c/geoserver/developer/63>`_ mailing list is hosted on Discourse.
 
-The GeoServer Developers forum is for for those working directly on the project, with code-specific and roadmap-based discussions.
+The GeoServer Developers forum is for those working directly on the project, with code-specific and roadmap-based discussions.
 
 .. seealso::
    
@@ -65,16 +65,16 @@ The GeoServer Developers forum is for for those working directly on the project,
 GeoServer Security
 ------------------
 
-The geoserver-security mailing list is for volunteers evaulating incoming security vulnerability reports and carefully working to see they are addressed in a responsible fashion.
+The geoserver-security mailing list is for volunteers evaluating incoming security vulnerability reports and carefully working to see they are addressed in a responsible fashion.
 
 .. seealso::
    
-   The :developer:`Security Procedure <policies/security.html>` page in the Developers Guide provides additional information on how security vulnerables 
+   The :developer:`Security Procedure <policies/security.html>` page in the Developers Guide provides additional information on how security vulnerabilities are handled. 
 
 Reporting a Bug
 ---------------
 
-If you enounter a problem when working with GeoServer, then please let us know through forum or mailing list above.
+If you encounter a problem when working with GeoServer, then please let us know through forum or mailing list above.
 
 GeoServer uses the `Jira <https://osgeo-org.atlassian.net/projects/GEOS>`_ Issue Tracker, to manage issue reports. In order to submit an issue, you'll need to `create an account first <https://osgeo-org.atlassian.net/admin/users/sign-up>`_.
 
@@ -88,13 +88,13 @@ If you are not in position to communicate in public, please consider :website:`c
 
 .. warning:: Coordinated Vulnerability Disclosure
 
-   If you encounter a security vulnerability in GeoServer please keep in mind our :github:`Coordinated Vunerability Disclosue <security/policy>` policy:
+   If you encounter a security vulnerability in GeoServer please keep in mind our :github:`Coordinated Vulnerability Disclosure <security/policy>` policy:
 
    * Keep exploit details out of public forums, mailing list and issue tracker.
    
    Send details to `geoserver-security@lists.osgeo.org <mailto:geoserver-security@lists.osgeo.org>`__. This is a moderated list: send directly to the address; your email will be moderated; and eventually shared with volunteers.
      
-     Or directly use GitHub `private vunerablity reporting <https://github.com/geoserver/geoserver/security/advisories/new>`_.
+     Or directly use GitHub `private vulnerablity reporting <https://github.com/geoserver/geoserver/security/advisories/new>`_.
      
    * There is no expected response time. Be prepared to work with Be prepared to work with geoserver-security email list volunteers on a solution.
    * Keep in mind participants are volunteering their time, an extensive fix may require fundraising/resources.
@@ -104,7 +104,7 @@ Translation
 
 We would like GeoServer available in as many languages as possible. The two areas of GeoServer to translate are the text that appears in the :ref:`web_admin` and this documentation.
 
-If you are interested in helping with this task, please read the :developer:`translation <translation.html>` seciton of the developers manual, and let us know via communication channels above.
+If you are interested in helping with this task, please read the :developer:`translation <translation.html>` section of the developers manual, and let us know via communication channels above.
 
 Suggest improvements
 --------------------
@@ -127,14 +127,14 @@ Fund improvements
 
 A number of :website:`commercial organizations <support>` offer support for GeoServer, and any improvements made due to that funding will benefit the entire GeoServer community.
 
-* Core Contributors: Have both expertese in GeoServer development and have made a committment to the projects long term sustainability. These 
+* Core Contributors: Have both expertise in GeoServer development and have made a commitment to the projects long term sustainability.  
 
-* Experienced Providers: Have a clear track record of successfully contirbuting changes back into the project as a long term improvements.
+* Experienced Providers: Have a clear track record of successfully contributing changes back into the project as a long term improvements.
 
 Sponsorship and Donations
 -------------------------
 
-GeoServer accepts sponsorship and donations through the Open Source Geospatial Foundation to take on activities beyond the reach of any single developer or organisation.
+GeoServer accepts sponsorship and donations through the Open Source Geospatial Foundation to take on activities beyond the reach of any single developer or organization.
 
 For more information see `GeoServer Sponsorship <https://geoserver.org/sponsor/>`_.
 

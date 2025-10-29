@@ -24,5 +24,6 @@
     <module>wps-cluster-hazelcast</module>
     <module>wps-kml-ppio</module>
     <module>web-wps</module>
+    <module>wps-assembly</module>
   </modules>
 </project>

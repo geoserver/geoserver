@@ -411,55 +411,43 @@ Process
          
          An example would be data files or a proprietary driver not available for download via maven.
 
-   #. Create a release assembly called :file:`ext-<module>.xml` under the release `src/assembly` directory.
-      
+   #. Create an assembly descriptor at :file:`src/assembly/assembly.xml` in the extension module directory.
+
       Follow the example of :download:`ext-dxf-xml </../../../../src/release/ext-dxf.xml>`:
-      
+
       .. literalinclude:: /../../../../src/release/ext-dxf.xml
          :language: xml
-         
-      * Add additional ``include`` elements in the root folder (outputDirectory empty) for
-        the jar dependencies of the module 
+
+      * The first fileSet includes the module's own JAR from ``target/`` directory
+      * The second fileSet includes dependencies from ``target/dependency/``
+      * Add additional ``include`` elements in the dependency fileSet for the jar dependencies of the module
       * Add additional ``include`` elements in the licenses folder (outputDirectory ``licenses``) for
         licenses required
       * Add an additional fileSet if there are any static file dependencies of the module required by the module
       * Use ``file`` with ``destName`` for any individual files that require renaming
 
-   #. Add a dependency from ``release/pom.xml`` to the extension 
-      module:
-      
+   #. Add the extension module to the appropriate profile in :file:`src/extension/pom.xml`:
+
       .. code-block:: xml
 
-         <dependencies>
-            ...
-            <dependency>
-              <groupId>org.geoserver.extension</groupId>
-              <artifactId>%module%</artifactId>
-              <version>%version%</version>
-            </dependency>
-            ...
-          </dependencies>
+         <profile>
+           <id>%module%</id>
+           <modules>
+             <module>%module%</module>
+           </modules>
+         </profile>
 
-   #. Add an entry for the release descriptor to the root ``pom.xml`` of
-      the source tree (i.e. one step up from the release directory):
-      
+      And include it in the ``release`` profile:
+
       .. code-block:: xml
 
-         <!-- artifact assembly -->
-         <plugin>
-           <artifactId>maven-assembly-plugin</artifactId>
-           <version>2.1</version>
-           <configuration>
-             <descriptors>
-              <descriptor>release/war.xml</descriptor>
-              <descriptor>release/javadoc.xml</descriptor>
-              <descriptor>release/bin.xml</descriptor>
-              <descriptor>release/doc.xml</descriptor>
-              ...
-              <descriptor>release/ext-%module%.xml</descriptor>
-             </descriptors>
-           </configuration>
-         </plugin>
+         <profile>
+           <id>release</id>
+           <modules>
+             ...
+             <module>%module%</module>
+           </modules>
+         </profile>
 
     #. Update the `/doc/en/user/source/community` documentation:
 

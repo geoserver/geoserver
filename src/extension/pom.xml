@@ -33,6 +33,22 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.commonjava.maven.plugins</groupId>
+        <artifactId>directory-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>directories</id>
+            <phase>initialize</phase>
+            <goals>
+              <goal>highest-basedir</goal>
+            </goals>
+            <configuration>
+              <property>geoserverBaseDir</property>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <artifactId>maven-jar-plugin</artifactId>
         <executions>
           <execution>
@@ -514,7 +530,83 @@
         <module>metadata</module>
         <module>rat</module>
         <module>ogcapi</module>
+        <module>iau</module>
+        <module>pyramid</module>
       </modules>
+    </profile>
+    <profile>
+      <id>assembly</id>
+      <build>
+        <plugins>
+          <!-- Check if an assembly file is available in the current module, will skip otherwise -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>check-assembly-file</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <exportAntProperties>true</exportAntProperties>
+                  <target>
+                    <condition property="skipAssembly" value="true">
+                      <not>
+                        <available file="src/assembly/assembly.xml"></available>
+                      </not>
+                    </condition>
+                    <condition property="skipDependencyCopy" value="true">
+                      <or>
+                        <isset property="skipAssembly"></isset>
+                        <isset property="assembly.useDependencySets"></isset>
+                      </or>
+                    </condition>
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- Copy dependencies of the current module -->
+          <plugin>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>install</phase>
+                <goals>
+                  <goal>copy-dependencies</goal>
+                </goals>
+                <configuration>
+                  <skip>${skipDependencyCopy}</skip>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- Run assembly based on collected dependencies-->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <version>3.2.0</version>
+            <executions>
+              <execution>
+                <phase>install</phase>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <descriptors>
+                <descriptor>${project.basedir}/src/assembly/assembly.xml</descriptor>
+              </descriptors>
+              <outputDirectory>${geoserverBaseDir}/target/release</outputDirectory>
+              <skipAssembly>${skipAssembly}</skipAssembly>
+              <finalName>geoserver-${project.version}</finalName>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 </project>

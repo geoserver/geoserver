@@ -183,6 +183,8 @@ In Figure 7, the custom icon is specified as a remote URL. It is also possible t
 
 *Figure 8: Specifying a local file for a graphic point*
 
+.. note:: When the layer is requested as KMZ, GeoServer packages any referenced icon images alongside the KML. The icons are copied into an ``images/`` folder inside the ``.kmz`` archive so they remain available when the file is viewed offline.
+
 .. _kml-styling-lines:
 
 Lines

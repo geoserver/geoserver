@@ -15,6 +15,9 @@
   <name>GeoWebCache Google Cloud Storage blob</name>
   <description>GeoWebCache Google Cloud Storage support plugin</description>
 
+  <properties>
+    <assembly.useDependencySets>true</assembly.useDependencySets>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.geowebcache</groupId>

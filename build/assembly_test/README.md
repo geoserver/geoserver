@@ -34,11 +34,17 @@ The artifacts can be built with:
 
 ```bash
 cd src
-mvn -nsu -fae clean install -DskipTests -Prelease -T1
+# compile and install every module to the local Maven repository
+mvn -nsu -fae clean install -DskipTests -Prelease -T1C
+# package the main deliverables: bin, data, war, javadoc
 mvn -nsu -fae assembly:single -N
+# package each extension through its per-module assembly descriptor
+mvn -nsu -fae install -DskipTests -Prelease,assembly -f extension/pom.xml -T1
 cd community
 mvn -nsu -fae clean install -DskipTests -PcommunityRelease,assembly -T1
 ```
+
+All main and extension ZIPs land in `src/target/release/`; community ZIPs land in `src/community/target/release/`.
 
 Behavior when artifacts are missing:
 

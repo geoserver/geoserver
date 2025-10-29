@@ -41,9 +41,15 @@ jobs:
       run: |
         mvn --version
         mvn -B -ntp -U -T1C -DskipTests -Prelease -f src/pom.xml install
-    - name: Package GeoServer modules and extensions
+    - name: Package GeoServer modules
       run: |
         mvn -B -ntp -nsu -N -f src/pom.xml assembly:single
+    - name: Package GeoServer extensions
+      run: |
+        mvn -B -ntp -nsu -f src/extension/pom.xml install -Prelease,assembly -DskipTests -T1C
+    - name: Clean extension target directories to free disk space
+      run: |
+        mvn -B -ntp clean -f src/extension/pom.xml -Prelease
     - name: Build and package community modules (without tests)
       run: |
         mvn -B -ntp -nsu -U -T1C -DskipTests -PcommunityRelease,assembly -f src/community/pom.xml install

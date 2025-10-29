@@ -25,6 +25,8 @@
     <module>simple-store</module>
     <module>web-csw</module>
     <module>csw-iso</module>
+    <module>csw-assembly</module>
+    <module>csw-iso-assembly</module>
   </modules>
 
   <dependencies>

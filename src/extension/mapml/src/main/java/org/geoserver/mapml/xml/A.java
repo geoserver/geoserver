@@ -11,7 +11,7 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlType(
         name = "A",
         propOrder = {"geometryContent"})
-public class A {
+public class A implements MapMLElement {
     @XmlAttribute(name = "href")
     protected String href;
 

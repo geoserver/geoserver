@@ -165,7 +165,7 @@ public class MapMLStyleVisitorTest extends MapMLTestSupport {
                         .get(0)
                         .getGeometry()
                         .getGeometryContent()
-                        .getDeclaredType()
+                        .getClass()
                         .toString());
 
         mapmlFeatures = new MapMLWMSRequest()
@@ -183,7 +183,7 @@ public class MapMLStyleVisitorTest extends MapMLTestSupport {
                         .get(0)
                         .getGeometry()
                         .getGeometryContent()
-                        .getDeclaredType()
+                        .getClass()
                         .toString());
     }
 
@@ -212,7 +212,7 @@ public class MapMLStyleVisitorTest extends MapMLTestSupport {
                         .get(0)
                         .getGeometry()
                         .getGeometryContent()
-                        .getDeclaredType()
+                        .getClass()
                         .toString());
 
         mapmlFeatures = new MapMLWMSRequest()
@@ -230,7 +230,7 @@ public class MapMLStyleVisitorTest extends MapMLTestSupport {
                         .get(0)
                         .getGeometry()
                         .getGeometryContent()
-                        .getDeclaredType()
+                        .getClass()
                         .toString());
     }
 
@@ -264,7 +264,7 @@ public class MapMLStyleVisitorTest extends MapMLTestSupport {
                 .feature(true)
                 .getAsMapML();
         assertEquals(
-                "The point features are represented as polygons because the style has a polygon symbolizer",
+                "The polygon features are represented as polygons because the style has a polygon symbolizer",
                 "class org.geoserver.mapml.xml.Polygon",
                 mapmlFeatures
                         .getBody()
@@ -272,7 +272,7 @@ public class MapMLStyleVisitorTest extends MapMLTestSupport {
                         .get(0)
                         .getGeometry()
                         .getGeometryContent()
-                        .getDeclaredType()
+                        .getClass()
                         .toString());
     }
 

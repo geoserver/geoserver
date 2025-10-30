@@ -44,7 +44,7 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType
 @XmlRootElement(name = "map-feature", namespace = "http://www.w3.org/1999/xhtml")
-public class Feature {
+public class Feature implements MapMLElement {
 
     //    @XmlElementRefs({
     //        @XmlElementRef(name = "featurecaption", type = String.class, required = false),
@@ -62,7 +62,7 @@ public class Feature {
     protected GeometryContent geometry;
 
     @XmlElement(name = "map-bbox", required = false, namespace = "http://www.w3.org/1999/xhtml")
-    protected JAXBElement bbox;
+    protected JAXBElement<String> bbox;
 
     @XmlElement(name = "map-image", required = false, namespace = "http://www.w3.org/1999/xhtml")
     protected Image image;
@@ -120,11 +120,11 @@ public class Feature {
         }
     }
 
-    public JAXBElement getBbox() {
+    public JAXBElement<String> getBbox() {
         return bbox;
     }
 
-    public void setBbox(JAXBElement bbox) {
+    public void setBbox(JAXBElement<String> bbox) {
         this.bbox = bbox;
     }
 

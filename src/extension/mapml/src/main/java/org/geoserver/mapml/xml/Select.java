@@ -40,7 +40,7 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "map-select", namespace = "http://www.w3.org/1999/xhtml")
-public class Select {
+public class Select implements MapMLElement {
 
     @XmlElement(name = "map-option", required = true, namespace = "http://www.w3.org/1999/xhtml")
     protected List<Option> options;

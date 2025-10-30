@@ -54,7 +54,7 @@ public class BodyContent {
         @XmlElement(name = "map-tile", namespace = "http://www.w3.org/1999/xhtml", type = Tile.class),
         @XmlElement(name = "map-feature", namespace = "http://www.w3.org/1999/xhtml", type = Feature.class)
     })
-    protected List<Object> tilesOrFeatures;
+    protected List<MapMLElement> tilesOrFeatures;
 
     @XmlElement(name = "map-image", namespace = "http://www.w3.org/1999/xhtml")
     protected List<Image> images;
@@ -107,7 +107,7 @@ public class BodyContent {
                 .collect(Collectors.toList());
     }
 
-    public List<Object> getTilesOrFeatures() {
+    public List<MapMLElement> getTilesOrFeatures() {
         if (tilesOrFeatures == null) {
             tilesOrFeatures = new ArrayList<>();
         }

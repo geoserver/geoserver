@@ -48,6 +48,7 @@ import org.geoserver.mapml.xml.BodyContent;
 import org.geoserver.mapml.xml.Feature;
 import org.geoserver.mapml.xml.HeadContent;
 import org.geoserver.mapml.xml.Link;
+import org.geoserver.mapml.xml.MapMLElement;
 import org.geoserver.mapml.xml.Mapml;
 import org.geoserver.mapml.xml.Meta;
 import org.geoserver.mapml.xml.RelType;
@@ -198,7 +199,7 @@ public class MapMLFeatureUtil {
         // build the body
         BodyContent body = new BodyContent();
         mapml.setBody(body);
-        List<Object> featuresOrTiles = body.getTilesOrFeatures();
+        List<MapMLElement> featuresOrTiles = body.getTilesOrFeatures();
 
         for (LayerSimplfierContext layerSimplfierContext : layerSimplfierContexts) {
             Map<String, MapMLStyle> styles = layerSimplfierContext.getStyles();

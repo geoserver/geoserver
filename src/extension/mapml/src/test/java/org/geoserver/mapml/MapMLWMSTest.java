@@ -70,6 +70,7 @@ import org.geoserver.mapml.xml.Feature;
 import org.geoserver.mapml.xml.Input;
 import org.geoserver.mapml.xml.InputType;
 import org.geoserver.mapml.xml.Link;
+import org.geoserver.mapml.xml.MapMLElement;
 import org.geoserver.mapml.xml.Mapml;
 import org.geoserver.mapml.xml.ProjType;
 import org.geoserver.mapml.xml.RelType;
@@ -775,7 +776,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
     }
 
     @SuppressWarnings("unchecked") // filtering by clazz
-    private <T> List<T> getTypeFromInputOrDataListOrLink(List<Object> inputOrDatalistOrLink, Class<T> clazz) {
+    private <T> List<T> getTypeFromInputOrDataListOrLink(List<MapMLElement> inputOrDatalistOrLink, Class<T> clazz) {
         return (List<T>) inputOrDatalistOrLink.stream()
                 .filter(o -> clazz.isInstance(o))
                 .collect(java.util.stream.Collectors.toList());
@@ -2060,8 +2061,8 @@ public class MapMLWMSTest extends MapMLTestSupport {
         String projType = e.getUnits();
         assertEquals(ProjType.OSMTILE.value(), projType);
 
-        List<Object> lo = e.getInputOrDatalistOrLink();
-        for (Object o : lo) {
+        List<MapMLElement> lo = e.getInputOrDatalistOrLink();
+        for (MapMLElement o : lo) {
             if (o instanceof Link link) {
                 assertNull("map-extent/map-link@href unexpected.", link.getHref());
                 assertNotNull("map-extent/map-link@href must not be null/empty", link.getTref());

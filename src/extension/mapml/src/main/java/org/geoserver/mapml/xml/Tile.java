@@ -37,7 +37,7 @@ import java.math.BigInteger;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "map-tile", namespace = "http://www.w3.org/1999/xhtml")
-public class Tile implements Comparable<Tile> {
+public class Tile implements MapMLElement, Comparable<Tile> {
 
     @XmlAttribute(name = "col", required = true)
     protected BigInteger col;

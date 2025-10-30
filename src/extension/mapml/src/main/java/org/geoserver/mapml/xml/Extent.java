@@ -71,7 +71,7 @@ public class Extent {
         @XmlElement(name = "map-select", type = Select.class, namespace = "http://www.w3.org/1999/xhtml"),
         @XmlElement(name = "map-label", type = Label.class, namespace = "http://www.w3.org/1999/xhtml")
     })
-    protected List<Object> inputOrDatalistOrLink;
+    protected List<MapMLElement> inputOrDatalistOrLink;
 
     @XmlAttribute(name = "units")
     @XmlSchemaType(name = "anySimpleType")
@@ -105,7 +105,7 @@ public class Extent {
      * <p>Objects of the following type(s) are allowed in the list {@link Input } {@link Datalist } {@link Link }
      * {@link Select } {@link Label }
      */
-    public List<Object> getInputOrDatalistOrLink() {
+    public List<MapMLElement> getInputOrDatalistOrLink() {
         if (inputOrDatalistOrLink == null) {
             inputOrDatalistOrLink = new ArrayList<>();
         }

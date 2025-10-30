@@ -48,6 +48,9 @@ public class ObjectFactory {
     private static final QName _MultiPointCoordinates_QNAME =
             new QName("http://www.w3.org/1999/xhtml", "map-coordinates");
     private static final QName _A_QNAME = new QName("http://www.w3.org/1999/xhtml", "map-a");
+    private static final QName _Style_QNAME = new QName("http://www.w3.org/1999/xhtml", "map-style");
+    private static final QName _Span_QNAME = new QName("http://www.w3.org/1999/xhtml", "map-span");
+    private static final QName _Featurecaption_QNAME = new QName("http://www.w3.org/1999/xhtml", "map-featurecaption");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package:
@@ -228,6 +231,24 @@ public class ObjectFactory {
         return new JAXBElement<>(_Title_QNAME, String.class, null, value);
     }
 
+    /** Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}} */
+    @XmlElementDecl(namespace = "http://www.w3.org/1999/xhtml", name = "map-style")
+    public JAXBElement<String> createStyle(String value) {
+        return new JAXBElement<>(_Style_QNAME, String.class, null, value);
+    }
+
+    /** Create an instance of {@link JAXBElement }{@code <}{@link Span }{@code >}} */
+    @XmlElementDecl(namespace = "http://www.w3.org/1999/xhtml", name = "map-span")
+    public JAXBElement<Span> createSpan(Span value) {
+        return new JAXBElement<>(_Span_QNAME, Span.class, null, value);
+    }
+
+    /** Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}} */
+    @XmlElementDecl(namespace = "http://www.w3.org/1999/xhtml", name = "map-featurecaption")
+    public JAXBElement<String> createFeaturecaption(String value) {
+        return new JAXBElement<>(_Featurecaption_QNAME, String.class, null, value);
+    }
+
     /** Create an instance of {@link JAXBElement }{@code <}{@link BodyContent }{@code >}} */
     @XmlElementDecl(namespace = "http://www.w3.org/1999/xhtml", name = "map-body")
     public JAXBElement<BodyContent> createBody(BodyContent value) {
@@ -310,14 +331,13 @@ public class ObjectFactory {
 
     /** Create an instance of {@link JAXBElement }{@code <}{@link List }{@code <}{@link String }{@code >}{@code >}} */
     @XmlElementDecl(namespace = "http://www.w3.org/1999/xhtml", name = "map-coordinates", scope = Polygon.class)
-    public JAXBElement<List> createPolygonCoordinates(List value) {
+    public JAXBElement<List<String>> createPolygonCoordinates(List<String> value) {
         return new JAXBElement<>(_MultiPointCoordinates_QNAME, ((Class) List.class), Polygon.class, value);
     }
 
     /** Create an instance of {@link JAXBElement }{@code <}{@link List }{@code <}{@link String }{@code >}{@code >}} */
     @XmlElementDecl(namespace = "http://www.w3.org/1999/xhtml", name = "map-coordinates", scope = MultiLineString.class)
-    public JAXBElement<List> createMultiLineStringCoordinates(List value) {
-        return new JAXBElement<>(
-                _MultiPointCoordinates_QNAME, ((Class) List.class), MultiLineString.class, ((List<Coordinates>) value));
+    public JAXBElement<List<String>> createMultiLineStringCoordinates(List<String> value) {
+        return new JAXBElement<>(_MultiPointCoordinates_QNAME, ((Class) List.class), MultiLineString.class, value);
     }
 }

@@ -11,9 +11,18 @@ package org.geoserver.mapml.xml;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlAnyElement;
+import jakarta.xml.bind.annotation.XmlMixed;
 import jakarta.xml.bind.annotation.XmlSeeAlso;
 import jakarta.xml.bind.annotation.XmlType;
-import org.w3c.dom.Element;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 /**
  * Java class for any_content complex type.
@@ -37,8 +46,9 @@ import org.w3c.dom.Element;
 @XmlSeeAlso({PropertyContent.class})
 public class AnyContent {
 
-    @XmlAnyElement(ArbitraryHandler.class)
-    protected String anyElement;
+    @XmlMixed
+    @XmlAnyElement(lax = true)
+    protected List<Object> anyElement;
 
     /**
      * Gets the value of the anyElement property.
@@ -53,13 +63,42 @@ public class AnyContent {
      *    getAnyElement().add(newItem);
      * </pre>
      *
-     * <p>Objects of the following type(s) are allowed in the list {@link Element }
+     * <p>Objects of the following type(s) are allowed in the list: String and DOM Element
      */
     public String getAnyElement() {
-        return this.anyElement;
+        if (anyElement == null || anyElement.isEmpty()) {
+            return null;
+        }
+        return anyElement.get(0).toString();
     }
 
-    public void setAnyElement(String anyElement) {
-        this.anyElement = anyElement;
+    public void setAnyElement(String content) {
+        if (this.anyElement == null) {
+            this.anyElement = new ArrayList<>();
+        }
+        this.anyElement.clear();
+        if (content != null) {
+            try {
+                // Parse the HTML/XML string into DOM nodes
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                factory.setNamespaceAware(true);
+                DocumentBuilder builder = factory.newDocumentBuilder();
+
+                // Wrap in a root element to parse as valid XML
+                String wrapped = "<wrapper>" + content + "</wrapper>";
+                Document doc = builder.parse(new InputSource(new StringReader(wrapped)));
+
+                // Get the child nodes of the wrapper (the actual content)
+                NodeList nodes = doc.getDocumentElement().getChildNodes();
+                for (int i = 0; i < nodes.getLength(); i++) {
+                    Node node = nodes.item(i);
+                    // Import the node into a new document fragment to avoid wrong document errors
+                    this.anyElement.add(node);
+                }
+            } catch (Exception e) {
+                // If parsing fails, fall back to adding as string (will be escaped)
+                this.anyElement.add(content);
+            }
+        }
     }
 }

@@ -4,17 +4,25 @@
  */
 package org.geoserver.ogcapi.v1.dggs;
 
+import static org.geoserver.catalog.util.CloseableIteratorAdapter.filter;
+import static org.geoserver.catalog.util.CloseableIteratorAdapter.transform;
+
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.ogcapi.AbstractDocument;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.platform.ServiceException;
 import org.geotools.api.filter.Filter;
+import org.geotools.util.logging.Logging;
 
 /**
  * A class representing the DGGS server "collections" in a way that Jackson can easily translate to JSON/YAML (and can
@@ -22,8 +30,10 @@ import org.geotools.api.filter.Filter;
  */
 @JsonPropertyOrder({"links", "collections"})
 public class CollectionsDocument extends AbstractDocument {
+    static final Logger LOGGER = Logging.getLogger(CollectionsDocument.class);
 
     private final GeoServer geoServer;
+    private final boolean skipInvalid;
 
     public CollectionsDocument(GeoServer geoServer) {
         this.geoServer = geoServer;
@@ -31,6 +41,8 @@ public class CollectionsDocument extends AbstractDocument {
         // build the self links
         String path = "ogc/dggs/v1/collections/";
         addSelfLinks(path);
+        skipInvalid =
+                geoServer.getGlobal().getResourceErrorHandling() == ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS;
     }
 
     @Override
@@ -39,47 +51,43 @@ public class CollectionsDocument extends AbstractDocument {
         return links;
     }
 
+    /**
+     * @implNote by returning a {@link CloseableIterator} we ensure it'll be closed by
+     *     {@code org.geoserver.ogcapi.CloseableIteratorSerializer} for JSON output or
+     *     {@code org.geoserver.ogcapi.AutoCloseableTracker} for HTML output
+     */
     @JacksonXmlProperty(localName = "Collection")
-    @SuppressWarnings({"PMD.CloseResource", "PMD.EmptyControlStatement"})
-    public Iterator<CollectionDocument> getCollections() {
-        CloseableIterator<FeatureTypeInfo> featureTypes =
-                geoServer.getCatalog().list(FeatureTypeInfo.class, Filter.INCLUDE);
-        return new Iterator<>() {
+    @SuppressWarnings("PMD.CloseResource")
+    public CloseableIterator<CollectionDocument> getCollections() {
+        Catalog catalog = geoServer.getCatalog();
+        CloseableIterator<FeatureTypeInfo> featureTypes = catalog.list(FeatureTypeInfo.class, Filter.INCLUDE);
 
-            CollectionDocument next;
+        CloseableIterator<CollectionDocument> collections =
+                transform(featureTypes, ft -> getCollectionDocument(ft, featureTypes));
+        return filter(collections, Objects::nonNull);
+    }
 
-            @Override
-            public boolean hasNext() {
-                if (next != null) {
-                    return true;
-                }
-
-                FeatureTypeInfo featureType = null;
-                while (featureTypes.hasNext() && !DGGSService.isDGGSType((featureType = featureTypes.next())))
-                    ; // nothing to do here, the iteration does it all
-
-                if (featureType == null || !DGGSService.isDGGSType(featureType)) {
-                    featureTypes.close();
-                    return false;
-                } else {
-                    try {
-                        CollectionDocument collection = new CollectionDocument(geoServer, featureType);
-
-                        next = collection;
-                        return true;
-                    } catch (Exception e) {
-                        featureTypes.close();
-                        throw new ServiceException("Failed to iterate over the feature types in the catalog", e);
-                    }
-                }
+    /**
+     * @param featureType the FT to create a collection document for
+     * @param featureTypes to be closed early if an exception is caught and {@code skipInvalid == false}
+     * @return the collection document for {@code featureType} if {@code DGGSService.isDGGSType(featureType)},
+     *     {@code null} if not or an exception is caught and {@code skipInvalid == true}
+     */
+    private CollectionDocument getCollectionDocument(
+            FeatureTypeInfo featureType, CloseableIterator<FeatureTypeInfo> featureTypes) {
+        CollectionDocument collection = null;
+        try {
+            if (DGGSService.isDGGSType(featureType)) {
+                collection = new CollectionDocument(geoServer, featureType);
             }
-
-            @Override
-            public CollectionDocument next() {
-                CollectionDocument result = next;
-                this.next = null;
-                return result;
+        } catch (Exception e) {
+            if (skipInvalid) {
+                LOGGER.log(Level.WARNING, "Skipping feature type " + featureType);
+            } else {
+                featureTypes.close();
+                throw new ServiceException("Failed to iterate over the feature types in the catalog", e);
             }
-        };
+        }
+        return collection;
     }
 }

@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.ogcapi.AbstractDocument;
@@ -53,10 +54,9 @@ public class CollectionsDocument extends AbstractDocument {
     }
 
     @JacksonXmlProperty(localName = "Collection")
-    @SuppressWarnings("PMD.CloseResource")
-    public Iterator<CollectionDocument> getCollections() {
+    public CloseableIterator<CollectionDocument> getCollections() {
         CloseableIterator<CoverageInfo> coverages = geoServer.getCatalog().list(CoverageInfo.class, Filter.INCLUDE);
-        return new Iterator<>() {
+        Iterator<CollectionDocument> collectionDocuments = new Iterator<>() {
 
             CollectionDocument next;
 
@@ -94,6 +94,8 @@ public class CollectionsDocument extends AbstractDocument {
                 return result;
             }
         };
+        // Ensure CloseableIterator<CoverageInfo> is closed once consumed
+        return new CloseableIteratorAdapter<>(collectionDocuments, coverages);
     }
 
     private CollectionDocument getCollectionDocument(CoverageInfo coverage, CloseableIterator<CoverageInfo> coverages)

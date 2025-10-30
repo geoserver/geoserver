@@ -9,6 +9,7 @@ import static org.geoserver.template.GeoServerMemberAccessPolicy.FULL_ACCESS;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.core.Environment;
 import freemarker.core.HTMLOutputFormat;
+import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -106,8 +107,16 @@ public class FreemarkerTemplateSupport {
     Configuration getTemplateConfiguration(Class<?> clazz) {
         return configurationCache.computeIfAbsent(clazz, k -> {
             GeoServerMemberAccessPolicy policy = FULL_ACCESS.withAllowList("io.swagger.v3.oas.models.");
+            // First get a safe configuration with FeatureWrapper for Feature-related objects
             Configuration templateConfig =
                     TemplateUtils.getSafeConfiguration(new FeatureWrapper(FC_FACTORY), policy, null);
+
+            // The ObjectWrapper from the configuration is a BeansWrapper (SafeWrapper wrapping FeatureWrapper)
+            // Wrap it with AutoCloseableTrackingWrapper to add AutoCloseable tracking
+            // This uses FreeMarker's outer identity pattern to ensure all wrap() calls go through our tracker
+            BeansWrapper innerWrapper = (BeansWrapper) templateConfig.getObjectWrapper();
+            templateConfig.setObjectWrapper(new AutoCloseableTrackingWrapper(innerWrapper));
+
             templateConfig.setOutputFormat(HTMLOutputFormat.INSTANCE);
             templateConfig.setAPIBuiltinEnabled(true);
             return templateConfig;

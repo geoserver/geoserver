@@ -30,7 +30,7 @@
 	<!-- login button -->
  	<bean id="openIdConnectFormLoginButton" class="org.geoserver.web.LoginFormInfo">
  		<property name="id" value="openIdConnectFormLoginButton" />
- 		<property name="titleKey" value="" />
+ 		<property name="titleKey" value="OpenIdConnectAuthProviderPanel.login.button.title" />
  		<property name="descriptionKey" value="OpenIdConnectAuthProviderPanel.description" />
  		<property name="componentClass" value="org.geoserver.web.security.oauth2.OpenIdConnectAuthProviderPanel" />
  		<property name="name" value="openidconnect" />

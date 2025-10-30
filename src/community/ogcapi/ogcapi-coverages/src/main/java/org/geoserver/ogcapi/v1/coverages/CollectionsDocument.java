@@ -4,14 +4,17 @@
  */
 package org.geoserver.ogcapi.v1.coverages;
 
+import static org.geoserver.catalog.util.CloseableIteratorAdapter.filter;
+import static org.geoserver.catalog.util.CloseableIteratorAdapter.transform;
+
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-import java.io.IOException;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.GeoServer;
@@ -52,56 +55,41 @@ public class CollectionsDocument extends AbstractDocument {
         return links;
     }
 
+    /**
+     * @implNote by returning a {@link CloseableIterator} we ensure it'll be closed by
+     *     {@code org.geoserver.ogcapi.CloseableIteratorSerializer} for JSON output or
+     *     {@code org.geoserver.ogcapi.AutoCloseableTracker} for HTML output
+     */
     @JacksonXmlProperty(localName = "Collection")
     @SuppressWarnings("PMD.CloseResource")
-    public Iterator<CollectionDocument> getCollections() {
-        CloseableIterator<CoverageInfo> coverages = geoServer.getCatalog().list(CoverageInfo.class, Filter.INCLUDE);
-        return new Iterator<>() {
-
-            CollectionDocument next;
-
-            @Override
-            public boolean hasNext() {
-                if (next != null) {
-                    return true;
-                }
-
-                while (coverages.hasNext()) {
-                    CoverageInfo coverage = coverages.next();
-                    try {
-                        List<String> crs =
-                                CoveragesService.getCoverageCRS(coverage, Collections.singletonList("#/crs"));
-                        CollectionDocument collection = getCollectionDocument(coverage, coverages);
-                        next = collection;
-                        return next != null;
-                    } catch (Exception e) {
-                        if (skipInvalid) {
-                            LOGGER.log(Level.WARNING, "Skipping coverage type " + coverage.prefixedName());
-                        } else {
-                            LOGGER.log(Level.WARNING, "Failed to build collection for " + coverage.prefixedName(), e);
-                            coverages.close();
-                            throw new ServiceException("Failed to iterate over the coverage types in the catalog", e);
-                        }
-                    }
-                }
-
-                coverages.close();
-                return false;
-            }
-
-            @Override
-            public CollectionDocument next() {
-                CollectionDocument result = next;
-                this.next = null;
-                return result;
-            }
-        };
+    public CloseableIterator<CollectionDocument> getCollections() {
+        Catalog catalog = geoServer.getCatalog();
+        CloseableIterator<CoverageInfo> coverages = catalog.list(CoverageInfo.class, Filter.INCLUDE);
+        CloseableIterator<CollectionDocument> collections =
+                transform(coverages, cov -> getCollectionDocument(cov, coverages));
+        return filter(collections, Objects::nonNull);
     }
 
-    private CollectionDocument getCollectionDocument(CoverageInfo coverage, CloseableIterator<CoverageInfo> coverages)
-            throws IOException {
-        List<String> crs = CoveragesService.getCoverageCRS(coverage, Collections.singletonList("#/crs"));
-        CollectionDocument collection = new CollectionDocument(geoServer, coverage, crs);
+    /**
+     * @param coverage the CoverageInfo to create a collection document for
+     * @param coverages to be closed early if an exception is caught and {@code skipInvalid == false}
+     * @return the collection document for {@code coverage}, or {@code null} if an exception is caught and
+     *     {@code skipInvalid == true}
+     */
+    private CollectionDocument getCollectionDocument(CoverageInfo coverage, CloseableIterator<CoverageInfo> coverages) {
+        CollectionDocument collection = null;
+        try {
+            List<String> crs = CoveragesService.getCoverageCRS(coverage, Collections.singletonList("#/crs"));
+            collection = new CollectionDocument(geoServer, coverage, crs);
+        } catch (Exception e) {
+            if (skipInvalid) {
+                LOGGER.log(Level.WARNING, "Skipping coverage type " + coverage.prefixedName());
+            } else {
+                LOGGER.log(Level.WARNING, "Failed to build collection for " + coverage.prefixedName(), e);
+                coverages.close();
+                throw new ServiceException("Failed to iterate over the coverage types in the catalog", e);
+            }
+        }
         return collection;
     }
 

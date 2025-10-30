@@ -4,17 +4,20 @@
  */
 package org.geoserver.ogcapi.v1.features;
 
+import static org.geoserver.catalog.util.CloseableIteratorAdapter.filter;
+import static org.geoserver.catalog.util.CloseableIteratorAdapter.transform;
+
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.GeoServer;
@@ -56,52 +59,44 @@ public class CollectionsDocument extends AbstractDocument {
         return links;
     }
 
+    /**
+     * @implNote by returning a {@link CloseableIterator} we ensure it'll be closed by
+     *     {@code org.geoserver.ogcapi.CloseableIteratorSerializer} for JSON output or
+     *     {@code org.geoserver.ogcapi.AutoCloseableTracker} for HTML output
+     */
     @JacksonXmlProperty(localName = "Collection")
-    @SuppressWarnings("PMD.CloseResource") // closed while iterating over it
-    public Iterator<CollectionDocument> getCollections() {
-        CloseableIterator<FeatureTypeInfo> featureTypes =
-                geoServer.getCatalog().list(FeatureTypeInfo.class, Filter.INCLUDE);
-        return new Iterator<>() {
+    @SuppressWarnings("PMD.CloseResource")
+    public CloseableIterator<CollectionDocument> getCollections() {
+        Catalog catalog = geoServer.getCatalog();
+        CloseableIterator<FeatureTypeInfo> featureTypes = catalog.list(FeatureTypeInfo.class, Filter.INCLUDE);
 
-            CollectionDocument next;
-
-            @Override
-            public boolean hasNext() {
-                if (next != null) {
-                    return true;
-                }
-                while (featureTypes.hasNext()) {
-                    FeatureTypeInfo featureType = featureTypes.next();
-                    try {
-                        next = getCollectionDocument(featureType, featureTypes);
-                        return true;
-                    } catch (Exception e) {
-                        if (skipInvalid) {
-                            LOGGER.log(Level.WARNING, "Skipping feature type " + featureType);
-                        } else {
-                            featureTypes.close();
-                            throw new ServiceException("Failed to iterate over the feature types in the catalog", e);
-                        }
-                    }
-                }
-                return next != null;
-            }
-
-            @Override
-            public CollectionDocument next() {
-                CollectionDocument result = next;
-                this.next = null;
-                return result;
-            }
-        };
+        CloseableIterator<CollectionDocument> collections =
+                transform(featureTypes, ft -> getCollectionDocument(ft, featureTypes));
+        return filter(collections, Objects::nonNull);
     }
 
+    /**
+     * @param featureType the FT to create a collection document for
+     * @param featureTypes to be closed early if an exception is caught and {@code skipInvalid == false}
+     * @return the collection document for {@code featureType}, or {@code null} if an exception is caught and
+     *     {@code skipInvalid == true}
+     */
     private CollectionDocument getCollectionDocument(
-            FeatureTypeInfo featureType, CloseableIterator<FeatureTypeInfo> featureTypes) throws IOException {
-        List<String> crs = FeatureService.getFeatureTypeCRS(featureType, Collections.singletonList("#/crs"));
-        CollectionDocument collection = new CollectionDocument(geoServer, featureType, crs, this.crs);
-        for (Consumer<CollectionDocument> collectionDecorator : collectionDecorators) {
-            collectionDecorator.accept(collection);
+            FeatureTypeInfo featureType, CloseableIterator<FeatureTypeInfo> featureTypes) {
+        CollectionDocument collection = null;
+        try {
+            List<String> crs = FeatureService.getFeatureTypeCRS(featureType, Collections.singletonList("#/crs"));
+            collection = new CollectionDocument(geoServer, featureType, crs, this.crs);
+            for (Consumer<CollectionDocument> collectionDecorator : collectionDecorators) {
+                collectionDecorator.accept(collection);
+            }
+        } catch (Exception e) {
+            if (skipInvalid) {
+                LOGGER.log(Level.WARNING, "Skipping feature type " + featureType);
+            } else {
+                featureTypes.close();
+                throw new ServiceException("Failed to iterate over the feature types in the catalog", e);
+            }
         }
         return collection;
     }

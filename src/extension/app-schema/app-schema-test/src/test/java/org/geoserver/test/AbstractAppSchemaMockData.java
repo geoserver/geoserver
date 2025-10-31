@@ -25,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Properties;
 import org.geoserver.data.CatalogWriter;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -58,6 +59,8 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData implement
 
     /** PRefix for spec namespace. */
     public static final String SPEC_PREFIX = "spec";
+
+    protected Properties fixture;
 
     /** Map of namespace prefix to namespace URI for GML 32 schema. */
     protected static final Map<String, String> GML32_NAMESPACES = Map.ofEntries(
@@ -452,18 +455,12 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData implement
     /**
      * Build the connection parameters map for a data store.
      *
-     * @param namespacePrefix namespace prefix of the WFS feature type
-     * @param typeName local name of the WFS feature type
      * @param mappingFileName file name of the app-schema mapping file
      * @param featureTypesBaseDir feature types base directory
      * @param dataStoreName data store name
      */
-    protected static Map<String, Serializable> buildAppSchemaDatastoreParams(
-            final String namespacePrefix,
-            final String typeName,
-            final String mappingFileName,
-            final File featureTypesBaseDir,
-            final String dataStoreName) {
+    protected Map<String, Serializable> buildAppSchemaDatastoreParams(
+            final String mappingFileName, final File featureTypesBaseDir, final String dataStoreName) {
         try {
             return Map.ofEntries(
                     entry("dbtype", "app-schema"),
@@ -499,11 +496,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData implement
                     dataStoreName,
                     namespacePrefix,
                     buildAppSchemaDatastoreParams(
-                            namespacePrefix,
-                            typeName,
-                            getFileNamePart(mappingFileName),
-                            featureTypesBaseDir,
-                            dataStoreName));
+                            getFileNamePart(mappingFileName), featureTypesBaseDir, dataStoreName));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -547,6 +540,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData implement
             setup.setUp();
             setup.tearDown();
         }
+        fixture = setup.getFixture();
     }
 
     /**
@@ -722,7 +716,8 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData implement
                             if (isOracle) {
                                 content.append(AppSchemaTestOracleSetup.DB_PARAMS);
                             } else if (isPostgis) {
-                                content.append(AppSchemaTestPostgisSetup.DB_PARAMS);
+                                String params = providePostgisParams();
+                                content.append(params != null ? params : AppSchemaTestPostgisSetup.DB_PARAMS);
                             } else if (isGeoPkg) {
                                 copy(
                                         getClass().getClassLoader().getResourceAsStream("appschema/stations.gpkg"),
@@ -768,6 +763,10 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData implement
             }
             return content.toString();
         }
+    }
+
+    protected String providePostgisParams() {
+        return null;
     }
 
     private FilenameFilter getAppschema() {

@@ -48,7 +48,12 @@ Databases such as PostGIS and Oracle share some common or similar configuration 
 ``user``                    The user name used to login to the database server
 ``passwd``                  The password used to login to the database server
 ``Expose primary keys``     Columns with primary keys available for mapping         Default is ``false``, set to ``true`` to use primary key columns in mapping
+``delegateStoreName``       Name of external store to use                           workspace_name:store_name
 ========================    ====================================================    ============================================================================
+
+The delegateStoreName deserves additional clarification. It is used to provide the name of the store to app-schema module, instead of providing connection parameters.
+In this case an external (to GeoTools app-schema plugin) application, such as GeoServer, can provide a store name that will be used to retrieve store,
+which further will be used to run queries, thus eliminating need to provide other connection parameters in mapping file (as they are configuration in store itself).
 
 PostGIS
 -------

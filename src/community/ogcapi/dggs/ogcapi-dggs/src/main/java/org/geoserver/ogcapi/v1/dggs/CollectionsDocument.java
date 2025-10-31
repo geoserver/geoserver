@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ogcapi.AbstractDocument;
 import org.geoserver.ogcapi.Link;
@@ -40,11 +41,11 @@ public class CollectionsDocument extends AbstractDocument {
     }
 
     @JacksonXmlProperty(localName = "Collection")
-    @SuppressWarnings({"PMD.CloseResource", "PMD.EmptyControlStatement"})
-    public Iterator<CollectionDocument> getCollections() {
+    @SuppressWarnings("PMD.EmptyControlStatement")
+    public CloseableIterator<CollectionDocument> getCollections() {
         CloseableIterator<FeatureTypeInfo> featureTypes =
                 geoServer.getCatalog().list(FeatureTypeInfo.class, Filter.INCLUDE);
-        return new Iterator<>() {
+        Iterator<CollectionDocument> collectionDocuments = new Iterator<>() {
 
             CollectionDocument next;
 
@@ -81,5 +82,7 @@ public class CollectionsDocument extends AbstractDocument {
                 return result;
             }
         };
+        // Ensure CloseableIterator<FeatureTypeInfo> is closed once consumed
+        return new CloseableIteratorAdapter<>(collectionDocuments, featureTypes);
     }
 }

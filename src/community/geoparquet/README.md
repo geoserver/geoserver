@@ -39,6 +39,25 @@ The GeoParquet DataStore supports the following key parameters:
 
 - **namespace**: Custom namespace URI for features (optional)
 
+## Example REST requests
+A few example requests for uploading and retrieving data.
+
+To upload file to the data store:
+```
+curl --request PUT \
+  --url <base_url>/rest/workspaces/tiger/datastores/test/file.geoparquet \
+  --header 'Authorization: Basic ' \
+  --header 'Content-Type: application/octet-stream' \
+  --data '<file_content>'
+```
+
+To retrieve files for the data store as a zip file with MIME type application/zip:
+```
+curl --request GET \
+--url <base_url>/rest/workspaces/tiger/datastores/test/file.geoparquet \
+--header 'Authorization: Basic ' \
+```
+
 ## Adding a GeoParquet Layer
 
 To add a GeoParquet layer in GeoServer:

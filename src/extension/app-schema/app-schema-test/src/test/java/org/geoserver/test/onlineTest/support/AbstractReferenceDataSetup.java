@@ -179,7 +179,7 @@ public abstract class AbstractReferenceDataSetup extends JDBCTestSetup {
         return srid;
     }
 
-    protected Properties getFixture() {
+    public Properties getFixture() {
         return fixture;
     }
 }

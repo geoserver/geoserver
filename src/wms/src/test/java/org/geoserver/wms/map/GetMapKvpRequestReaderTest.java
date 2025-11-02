@@ -86,7 +86,6 @@ import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSInfoImpl;
 import org.geoserver.wms.kvp.PaletteManager;
 import org.geotools.api.filter.FilterFactory;
-import org.geotools.api.filter.Id;
 import org.geotools.api.filter.PropertyIsEqualTo;
 import org.geotools.api.filter.sort.SortBy;
 import org.geotools.api.filter.sort.SortOrder;
@@ -389,24 +388,6 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         assertNotNull(request.getInterpolations().get(2));
         assertTrue(request.getInterpolations().get(2) instanceof InterpolationBilinear);
         assertNull(request.getInterpolations().get(3));
-    }
-
-    @Test
-    public void testFilter() throws Exception {
-        HashMap kvp = new HashMap<>();
-        kvp.put("layers", getLayerId(BASIC_POLYGONS));
-        kvp.put("filter", "<Filter><FeatureId id=\"foo\"/></Filter>");
-
-        GetMapRequest request = reader.createRequest();
-        request = reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
-
-        assertNotNull(request.getFilter());
-        assertEquals(1, request.getFilter().size());
-
-        Id fid = (Id) request.getFilter().get(0);
-        assertEquals(1, fid.getIDs().size());
-
-        assertEquals("foo", fid.getIDs().iterator().next());
     }
 
     @Test

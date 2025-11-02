@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.json.JSONType;
 import org.geoserver.wfs.WFSTestSupport;
 import org.junit.Test;
 

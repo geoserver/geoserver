@@ -24,6 +24,7 @@ import net.opengis.wps10.ResponseDocumentType;
 import net.opengis.wps10.ResponseFormType;
 import net.opengis.wps10.Wps10Factory;
 import org.geoserver.ows.Ows11Util;
+import org.geoserver.ows.kvp.BBoxKvpParser;
 import org.geoserver.ows.kvp.EMFKvpRequestReader;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.ppio.BoundingBoxPPIO;
@@ -235,8 +236,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader implements Appl
 
     private BoundingBoxType parseBoundingBox(InputType it, Wps10Factory factory, IOParam param) {
         try {
-            ReferencedEnvelope envelope =
-                    (ReferencedEnvelope) new org.geoserver.wfs.kvp.BBoxKvpParser().parse(param.value);
+            ReferencedEnvelope envelope = (ReferencedEnvelope) new BBoxKvpParser().parse(param.value);
             if (envelope != null) {
                 BoundingBoxType bbox = Ows11Factory.eINSTANCE.createBoundingBoxType();
                 if (envelope.getCoordinateReferenceSystem() != null) {

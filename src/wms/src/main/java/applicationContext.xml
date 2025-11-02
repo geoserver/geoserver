@@ -75,23 +75,7 @@
     <bean id="wmsGetFeatureInfoPlainText" class="org.geoserver.wms.featureinfo.TextFeatureInfoOutputFormat">
       <constructor-arg ref="wms" />
     </bean>
-  
-    <bean id="wmsGetFeatureInfoGML2" class="org.geoserver.wms.featureinfo.GML2FeatureInfoOutputFormat">
-      <constructor-arg ref="wms" />
-    </bean>
 
-    <bean id="wmsGetFeatureInfoXML2" class="org.geoserver.wms.featureinfo.XML2FeatureInfoOutputFormat">
-      <constructor-arg ref="wms" />
-    </bean>
-    
-    <bean id="wmsGetFeatureInfoGML3" class="org.geoserver.wms.featureinfo.GML3FeatureInfoOutputFormat">
-      <constructor-arg ref="gml3OutputFormat" />
-    </bean>
-
-    <bean id="wmsGetFeatureInfoXML311" class="org.geoserver.wms.featureinfo.XML311FeatureInfoOutputFormat">
-      <constructor-arg ref="gml3OutputFormat" />
-    </bean>
-    
     <bean id="wmsGetFeatureInfoHTML" class="org.geoserver.wms.featureinfo.HTMLFeatureInfoOutputFormat">
       <constructor-arg ref="wms" />
       <constructor-arg ref="resourceLoader"/>
@@ -104,7 +88,7 @@
 		<constructor-arg value="text/javascript" />
 	</bean>
 	<!-- GetFeatureInfo JSONP filter -->
-	<bean id="geoJSONPFeatureInfoResponseEF" class="org.geoserver.wfs.json.JSONPExtensionFilter">
+	<bean id="geoJSONPFeatureInfoResponseEF" class="org.geoserver.json.JSONPExtensionFilter">
 		<constructor-arg value="geoJSONPFeatureInfoResponse" />
 	</bean>
 	<!-- GetFeatureInfo JSON -->
@@ -243,9 +227,6 @@
  	<bean id="heightKvpParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
 		<constructor-arg value="height"/>
  	</bean>
- 	<bean id="wmsFormatOptionsKvpParser" class="org.geoserver.ows.kvp.FormatOptionsKvpParser">
-        <property name="service" value="WMS"/>
-    </bean>
  	<bean id="wmsEnviromentKvpParser" class="org.geoserver.ows.kvp.FormatOptionsKvpParser">
  		<constructor-arg index="0" value="env"/>
  	</bean>
@@ -380,7 +361,7 @@
 		<constructor-arg value="text/javascript" />
 	</bean>
 	<!-- DescribeLayer JSONP Filter -->
-	<bean id="jsonPDescribeLayerResponseEF" class="org.geoserver.wfs.json.JSONPExtensionFilter">
+	<bean id="jsonPDescribeLayerResponseEF" class="org.geoserver.json.JSONPExtensionFilter">
 		<constructor-arg value="jsonPDescribeLayerResponse" />
 	</bean>
 	<!-- DescribeLayer JSON -->
@@ -865,8 +846,4 @@
         <constructor-arg ref="geoServer"/>
     </bean>
 
-    <bean id="wmsFilterKvpParser" class="org.geoserver.wms.kvp.FilterKvpParser">
-        <constructor-arg ref="entityResolverProvider"/>
-        <property name="service"><value>WMS</value></property>
-    </bean>
 </beans>

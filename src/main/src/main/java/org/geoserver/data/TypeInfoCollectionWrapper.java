@@ -3,7 +3,7 @@
  * application directory.
  */
 
-package org.geoserver.wfs;
+package org.geoserver.data;
 
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.api.feature.Feature;

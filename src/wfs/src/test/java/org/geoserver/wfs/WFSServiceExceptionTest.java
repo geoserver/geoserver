@@ -13,7 +13,7 @@ import java.io.UnsupportedEncodingException;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.wfs.json.JSONType;
+import org.geoserver.json.JSONType;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 

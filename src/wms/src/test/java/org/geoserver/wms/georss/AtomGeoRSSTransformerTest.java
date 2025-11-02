@@ -64,6 +64,7 @@ public class AtomGeoRSSTransformerTest extends WMSTestSupport {
                 + MockData.BASIC_POLYGONS.getPrefix()
                 + ":"
                 + MockData.BASIC_POLYGONS.getLocalPart());
+        print(document);
 
         Element element = document.getDocumentElement();
         assertEquals("feed", element.getNodeName());

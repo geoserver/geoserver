@@ -2294,6 +2294,11 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         }
     }
 
+    @Override
+    protected String getLogConfiguration() {
+        return "DEFAULT_LOGGING";
+    }
+
     @Test
     public void testCiteWMTVer() throws Exception {
         GeoServer gs = getGeoServer();
@@ -2313,7 +2318,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                             + "&request=GetMap"
                             + "&width=550"
                             + "&height=250"
-                            + "&wmtver=1.1.0"
+                            + "&wmtver=1.1.1"
                             + "&srs=EPSG:4326",
                     "image/png");
         } finally {
@@ -2341,7 +2346,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                             + "&request=GetMap"
                             + "&width=550"
                             + "&height=250"
-                            + "&version=1.1.0"
+                            + "&version=1.1.1"
                             + "&srs=EPSG:4326",
                     "image/png");
         } finally {

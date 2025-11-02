@@ -3,7 +3,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.wfs.json;
+package org.geoserver.json;
 
 import java.io.Writer;
 import java.util.Calendar;
@@ -229,7 +229,7 @@ public class GeoJSONBuilder extends JSONBuilder {
      * @param env envelope representing bounding box
      * @return this
      */
-    protected JSONBuilder writeBoundingBox(Envelope env) {
+    public JSONBuilder writeBoundingBox(Envelope env) {
         this.key("bbox");
         this.array();
         if (axisOrder == CRS.AxisOrder.NORTH_EAST) {
@@ -415,5 +415,23 @@ public class GeoJSONBuilder extends JSONBuilder {
      */
     public void setEncodeMeasures(boolean encodeMeasures) {
         this.encodeMeasures = encodeMeasures;
+    }
+
+    /** Writes a JSON link */
+    public void writeLink(GeoJSONBuilder jw, String title, String mimeType, String rel, String href) {
+        if (href != null) {
+            jw.object();
+            if (title != null) {
+                jw.key("title").value(title);
+            }
+            if (mimeType != null) {
+                jw.key("type").value(mimeType);
+            }
+            if (rel != null) {
+                jw.key("rel").value(rel);
+            }
+            jw.key("href").value(href);
+            jw.endObject();
+        }
     }
 }

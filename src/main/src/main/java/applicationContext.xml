@@ -367,8 +367,23 @@
   </bean>
   <bean id="xmlViewParamsFormatParser" class="org.geoserver.ows.kvp.XMLViewParamsFormatParser">
   </bean>
+  <!--
+    Common KVP parsers, services with different syntax can use their own
+    by declaring the service/version parameters to have their own parser prioritized
+  -->
+  <bean id="bboxKvpParser" class="org.geoserver.ows.kvp.BBoxKvpParser"/>
+  <bean id="cqlKvpParser" class="org.geoserver.ows.kvp.CQLFilterKvpParser"/>
+  <bean id="sortByKvpParser" class="org.geoserver.ows.kvp.SortByKvpParser">
+      <constructor-arg ref="filterFactory"/>
+  </bean>
+  <bean id="formatOptionsKvpParser" class="org.geoserver.ows.kvp.FormatOptionsKvpParser"/>
+    <bean id="featureIdKvpParser" class="org.geoserver.ows.FlatKvpParser">
+        <constructor-arg index="0" value="featureId"/>
+        <constructor-arg index="1" value="java.lang.String"/>
+    </bean>
 
-  <bean id="authCacheLifecycleHandler" class="org.geoserver.security.auth.GuavaAuthenticationCacheImpl">
+
+    <bean id="authCacheLifecycleHandler" class="org.geoserver.security.auth.GuavaAuthenticationCacheImpl">
     <constructor-arg value="1000"/>
   </bean>
 

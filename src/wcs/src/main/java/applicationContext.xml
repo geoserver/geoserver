@@ -35,9 +35,7 @@
 	<bean id="wcsLocalWorkspaceURLManger" class="org.geoserver.ows.LocalWorkspaceURLMangler">
       <constructor-arg value="wcs"/>
     </bean>
-    
-    <bean id="cqlKvpParser" class="org.geoserver.ows.kvp.CQLFilterKvpParser"/>
-    
+
     <!-- The coverage response delegates and their factory -->
     <bean id="coverageResponseDelegateFactory" class="org.geoserver.wcs.responses.CoverageResponseDelegateFinder"/>
     <bean id="geotiffCoverageResponseDelegate" class="org.geoserver.wcs.responses.GeoTIFFCoverageResponseDelegate">

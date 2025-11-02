@@ -5,9 +5,7 @@
  */
 package org.geoserver.wms.wms_1_3;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -21,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.imageio.ImageIO;
 import net.sf.json.JSON;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.hc.core5.http.HttpStatus;
 import org.custommonkey.xmlunit.NamespaceContext;
@@ -155,58 +154,37 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
                 + WORLD4326_130
                 + "&STYLES&LAYERS="
                 + WORLD4326_130
-                + "&INFO_FORMAT=text/xml; subtype=gml/3.1.1"
+                + "&INFO_FORMAT=application/json"
                 + "&FEATURE_COUNT=50&X=50&Y=50&CRS=EPSG:4326&WIDTH=101&HEIGHT=101&BBOX=44.3898919295,-103.829117187,44.4069939679,-103.804563429";
-        Document result = getAsDOM(url);
-        // setup XPATH engine namespaces
-        Map<String, String> namespaces = new HashMap<>();
-        namespaces.put("gml", "http://www.opengis.net/gml");
-        namespaces.put("gs", "http://geoserver.org");
-        namespaces.put("ogc", "http://www.opengis.net/ogc");
-        namespaces.put("ows", "http://www.opengis.net/ows");
-        namespaces.put("wfs", "http://www.opengis.net/wfs");
-        namespaces.put("xlink", "http://www.w3.org/1999/xlink");
-        namespaces.put("xs", "http://www.w3.org/2001/XMLSchema");
-        namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
-        xpath.setNamespaceContext(new SimpleNamespaceContext(namespaces));
-        // check the response content, the features should have been reproject from EPSG:3857 to
-        // EPSG:4326
-        String srs = xpath.evaluate(
-                "//wfs:FeatureCollection/gml:featureMembers/"
-                        + "gs:world4326_130[@gml:id='bugsites.55']/gs:the_geom/gml:Point/@srsName",
-                result);
-        assertThat(srs, notNullValue());
-        assertThat(srs.contains("4326"), is(true));
-        String rawCoordinates = xpath.evaluate(
-                "//wfs:FeatureCollection/gml:featureMembers/"
-                        + "gs:world4326_130[@gml:id='bugsites.55']/gs:the_geom/gml:Point/gml:pos/text()",
-                result);
-        assertThat(rawCoordinates, notNullValue());
-        String[] coordinates = rawCoordinates.split(" ");
-        assertThat(coordinates.length, is(2));
-        checkNumberSimilar(coordinates[0], 44.39832008, 0.0001);
-        checkNumberSimilar(coordinates[1], -103.81711048, 0.0001);
+        JSONObject result = (JSONObject) getAsJSON(url);
+        // check the response content, the features should have been reproject from EPSG:3857 to EPSG:4326
+        assertEquals(
+                "urn:ogc:def:crs:EPSG::4326",
+                result.getJSONObject("crs").getJSONObject("properties").getString("name"));
+        JSONObject feature = (JSONObject) result.getJSONArray("features").get(0);
+        JSONObject geometry = feature.getJSONObject("geometry");
+        assertEquals("Point", geometry.getString("type"));
+        JSONArray coordinates = geometry.getJSONArray("coordinates");
+        checkNumberSimilar(coordinates.getString(0), -103.81711048, 0.0001);
+        checkNumberSimilar(coordinates.getString(1), 44.39832008, 0.0001);
+
         // deactivate features reprojection
         WMSInfo wms = getGeoServer().getService(WMSInfo.class);
         wms.setFeaturesReprojectionDisabled(true);
         getGeoServer().save(wms);
         // execute the get feature info request
-        result = getAsDOM(url);
-        srs = xpath.evaluate(
-                "//wfs:FeatureCollection/gml:featureMembers/"
-                        + "gs:world4326_130[@gml:id='bugsites.55']/gs:the_geom/gml:Point/@srsName",
-                result);
-        assertThat(srs, notNullValue());
-        assertThat(srs.contains("3857"), is(true));
-        rawCoordinates = xpath.evaluate(
-                "//wfs:FeatureCollection/gml:featureMembers/"
-                        + "gs:world4326_130[@gml:id='bugsites.55']/gs:the_geom/gml:Point/gml:pos/text()",
-                result);
-        assertThat(rawCoordinates, notNullValue());
-        coordinates = rawCoordinates.split(" ");
-        assertThat(coordinates.length, is(2));
-        checkNumberSimilar(coordinates[0], -11556867.874, 0.0001);
-        checkNumberSimilar(coordinates[1], 5527291.47718493, 0.0001);
+        result = (JSONObject) getAsJSON(url);
+        print(result);
+        // check the response content, the features should be in EPSG:3857 coordinates
+        assertEquals(
+                "urn:ogc:def:crs:EPSG::3857",
+                result.getJSONObject("crs").getJSONObject("properties").getString("name"));
+        feature = (JSONObject) result.getJSONArray("features").get(0);
+        geometry = feature.getJSONObject("geometry");
+        assertEquals("Point", geometry.getString("type"));
+        coordinates = geometry.getJSONArray("coordinates");
+        checkNumberSimilar(coordinates.getString(0), -1.1556868E7, 0.1);
+        checkNumberSimilar(coordinates.getString(1), 5527291.5, 0.1);
     }
 
     @Test

@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.wfs.json;
+package org.geoserver.json;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -23,6 +23,7 @@ import org.geotools.api.feature.IllegalAttributeException;
 import org.geotools.api.feature.Property;
 import org.geotools.api.feature.type.AttributeDescriptor;
 import org.geotools.api.feature.type.ComplexType;
+import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.feature.type.Name;
 import org.geotools.api.feature.type.PropertyDescriptor;
 import org.geotools.api.feature.type.PropertyType;
@@ -201,7 +202,8 @@ public class ComplexGeoJsonWriterTest extends GeoServerSystemTestSupport {
         // of nested features as complex properties
         ComplexGeoJsonWriterOptions options = new ComplexGeoJsonWriterOptions() {
             @Override
-            public boolean canHandle(List<FeatureCollection> features) {
+            public <T extends FeatureType, F extends Feature> boolean canHandle(
+                    List<FeatureCollection<T, F>> features) {
                 return true;
             }
 

@@ -9,10 +9,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 import net.opengis.wfs.FeatureCollectionType;
+import org.geoserver.json.GeoJSONFeatureWriter;
+import org.geoserver.json.JSONType;
 import org.geoserver.platform.GeoServerResourceLoader;
-import org.geoserver.wfs.json.GeoJSONGetFeatureResponse;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.WMS;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
 import org.geotools.feature.FeatureCollection;
 
 /**
@@ -61,8 +64,16 @@ public class GeoJSONFeatureInfoResponse extends GetFeatureInfoOutputFormat {
         }
 
         if (!usedTemplates) {
-            GeoJSONGetFeatureResponse format = new GeoJSONGetFeatureResponse(wms.getGeoServer(), getContentType());
-            format.write(features, out, null);
+            GeoJSONFeatureWriter<FeatureType, Feature> writer = new GeoJSONFeatureWriter<>(wms.getGeoServer()) {
+                @Override
+                protected boolean isFeatureBounding() {
+                    return false; // TODO: what to do here?
+                }
+            };
+            @SuppressWarnings("unchecked")
+            List<FeatureCollection<FeatureType, Feature>> collections = features.getFeature();
+            boolean jsonp = JSONType.isJsonpMimeType(getContentType());
+            writer.write(collections, out, features.getNumberOfFeatures(), jsonp);
         }
     }
 

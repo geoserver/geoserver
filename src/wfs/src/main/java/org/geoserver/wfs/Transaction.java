@@ -75,6 +75,8 @@ public class Transaction {
         transactionElementHandlers.addAll(GeoServerExtensions.extensions(TransactionElementHandler.class));
         transactionListeners.addAll(GeoServerExtensions.extensions(TransactionListener.class));
         transactionCallbacks.addAll(GeoServerExtensions.extensions(TransactionCallback.class));
+        // TODO: Publish an application event to clear the quick tile cache
+
         // plugins are listeners too, but I want to make sure they are notified
         // of
         // changes in the same order as the other plugin callbacks

@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.geoserver.wfs.kvp.BBoxKvpParser;
+import org.geoserver.ows.kvp.BBoxKvpParser;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.WKTReader2;
 import org.geotools.util.logging.Logging;

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
 import org.geoserver.config.GeoServer;
+import org.geoserver.json.JSONType;
 import org.geoserver.ows.OWS10ServiceExceptionHandler;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.util.OwsUtils;
@@ -18,7 +19,6 @@ import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSInfo;
-import org.geoserver.wfs.json.JSONType;
 
 /**
  * Handles a wfs service exception by producing an exception report.

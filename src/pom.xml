@@ -36,6 +36,7 @@
     <module>wcs2_0</module>
     <module>wfs</module>
     <module>wms</module>
+    <module>wms-gml</module>
     <module>kml</module>
     <module>ows</module>
     <module>gwc</module>
@@ -295,6 +296,11 @@
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wms</artifactId>
+        <version>${gs.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver</groupId>
+        <artifactId>gs-wms-gml</artifactId>
         <version>${gs.version}</version>
       </dependency>
       <dependency>
@@ -998,6 +1004,12 @@
     <dependency>
       <groupId>org.awaitility</groupId>
       <artifactId>awaitility</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!-- Used by GeoServerSystemTestSupport -->
+    <dependency>
+      <groupId>org.apache.httpcomponents.client5</groupId>
+      <artifactId>httpclient5</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

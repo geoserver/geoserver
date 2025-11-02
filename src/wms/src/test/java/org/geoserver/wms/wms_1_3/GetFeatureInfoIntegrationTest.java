@@ -6,8 +6,6 @@
 package org.geoserver.wms.wms_1_3;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -30,8 +28,6 @@ import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
-import org.custommonkey.xmlunit.XpathEngine;
-import org.eclipse.xsd.XSDSchema;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionPresentation;
@@ -44,14 +40,9 @@ import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
-import org.geoserver.wms.featureinfo.GML3FeatureInfoOutputFormat;
 import org.geoserver.wms.featureinfo.GetFeatureInfoKvpReader;
-import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
-import org.geoserver.wms.featureinfo.TextFeatureInfoOutputFormat;
-import org.geoserver.wms.featureinfo.XML311FeatureInfoOutputFormat;
 import org.geoserver.wms.wms_1_1_1.CapabilitiesTest;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
-import org.geotools.filter.v1_1.OGC;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
@@ -289,65 +280,6 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
     }
 
     @Test
-    public void testAllowedMimeTypes() throws Exception {
-
-        WMSInfo wms = getWMS().getServiceInfo();
-        GetFeatureInfoOutputFormat format = new TextFeatureInfoOutputFormat(getWMS());
-        wms.getGetFeatureInfoMimeTypes().add(format.getContentType());
-        wms.setGetFeatureInfoMimeTypeCheckingEnabled(true);
-        getGeoServer().save(wms);
-
-        // check mime type allowed
-        String layer = getLayerId(MockData.FORESTS);
-        String request =
-                "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg&info_format=text/plain&request=GetFeatureInfo&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&width=20&height=20&i=10&j=10";
-        String result = getAsString(request);
-        // System.out.println(result);
-        assertNotNull(result);
-        assertTrue(result.indexOf("Green Forest") > 0);
-
-        // check mime type not allowed
-        request = "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg&info_format="
-                + GML3FeatureInfoOutputFormat.FORMAT
-                + "&request=GetFeatureInfo&layers="
-                + layer
-                + "&query_layers="
-                + layer
-                + "&width=20&height=20&i=10&j=10";
-        result = getAsString(request);
-        assertTrue(result.indexOf("ForbiddenFormat") > 0);
-
-        wms.getGetFeatureInfoMimeTypes().clear();
-        wms.setGetFeatureInfoMimeTypeCheckingEnabled(false);
-        getGeoServer().save(wms);
-
-        request = "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg&info_format="
-                + GML3FeatureInfoOutputFormat.FORMAT
-                + "&request=GetFeatureInfo&layers="
-                + layer
-                + "&query_layers="
-                + layer
-                + "&width=20&height=20&i=10&j=10";
-        result = getAsString(request);
-        assertTrue(result.indexOf("Green Forest") > 0);
-
-        // GML 3.1.1 as text/xml; subtype=gml/3.1.1
-        request = "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg&info_format="
-                + XML311FeatureInfoOutputFormat.FORMAT
-                + "&request=GetFeatureInfo&layers="
-                + layer
-                + "&query_layers="
-                + layer
-                + "&width=20&height=20&i=10&j=10";
-        result = getAsString(request);
-        assertTrue(result.indexOf("Green Forest") > 0);
-    }
-
-    @Test
     public void testCustomTemplateManyRules() throws Exception {
         // setup custom template
         File root = getTestData().getDataDirectoryRoot();
@@ -546,84 +478,6 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         assertXpathEvaluatesTo("1", "count(/html/body/table/tr/th[. = 'RED_BAND'])", dom);
         assertXpathEvaluatesTo("1", "count(/html/body/table/tr/th[. = 'GREEN_BAND'])", dom);
         assertXpathEvaluatesTo("1", "count(/html/body/table/tr/th[. = 'BLUE_BAND'])", dom);
-    }
-
-    @Test
-    public void testCoverageGML() throws Exception {
-        // https://osgeo-org.atlassian.net/browse/GEOS-3996
-        String layer = getLayerId(TASMANIA_BM);
-        String request = "wms?version=1.3.0&service=wms&request=GetFeatureInfo"
-                + "&layers="
-                + layer
-                + "&styles=&bbox=-44.5,146.5,-43,148&width=600&height=600"
-                + "&info_format=application/vnd.ogc.gml&query_layers="
-                + layer
-                + "&i=300&j=300&srs=EPSG:4326";
-        Document dom = getAsDOM(request);
-        // print(dom);
-
-        assertXpathEvaluatesTo("26.0", "//wfs:FeatureCollection/gml:featureMember/wcs:BlueMarble/wcs:RED_BAND", dom);
-        assertXpathEvaluatesTo("70.0", "//wfs:FeatureCollection/gml:featureMember/wcs:BlueMarble/wcs:GREEN_BAND", dom);
-        assertXpathEvaluatesTo("126.0", "//wfs:FeatureCollection/gml:featureMember/wcs:BlueMarble/wcs:BLUE_BAND", dom);
-    }
-
-    @Test
-    public void testCoverageGML31() throws Exception {
-        // https://osgeo-org.atlassian.net/browse/GEOS-3996
-        String layer = getLayerId(TASMANIA_BM);
-        String request = "wms?version=1.3.0&service=wms&request=GetFeatureInfo"
-                + "&layers="
-                + layer
-                + "&styles=&bbox=-44.5,146.5,-43,148&width=600&height=600"
-                + "&info_format="
-                + GML3FeatureInfoOutputFormat.FORMAT
-                + "&query_layers="
-                + layer
-                + "&i=300&j=300&srs=EPSG:4326";
-        Document dom = getAsDOM(request);
-        // print(dom);
-
-        assertXpathEvaluatesTo("26.0", "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:RED_BAND", dom);
-        assertXpathEvaluatesTo("70.0", "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:GREEN_BAND", dom);
-        assertXpathEvaluatesTo("126.0", "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:BLUE_BAND", dom);
-    }
-
-    /** Test that a GetFeatureInfo request shifted plus 360 degrees east has the same results. */
-    @Test
-    public void testCoverageGML31Plus360() throws Exception {
-        String layer = getLayerId(TASMANIA_BM);
-        String request = "wms?version=1.3.0&service=wms&request=GetFeatureInfo"
-                + "&layers="
-                + layer
-                + "&styles=&bbox=-44.5,506.5,-43,508&width=600&height=600"
-                + "&info_format="
-                + GML3FeatureInfoOutputFormat.FORMAT
-                + "&query_layers="
-                + layer
-                + "&i=300&j=300&srs=EPSG:4326";
-        Document dom = getAsDOM(request);
-        assertXpathEvaluatesTo("26.0", "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:RED_BAND", dom);
-        assertXpathEvaluatesTo("70.0", "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:GREEN_BAND", dom);
-        assertXpathEvaluatesTo("126.0", "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:BLUE_BAND", dom);
-    }
-
-    /** Test that a GetFeatureInfo request shifted minus 360 degrees east has the same results. */
-    @Test
-    public void testCoverageGML31Minus360() throws Exception {
-        String layer = getLayerId(TASMANIA_BM);
-        String request = "wms?version=1.3.0&service=wms&request=GetFeatureInfo"
-                + "&layers="
-                + layer
-                + "&styles=&bbox=-44.5,-213.5,-43,-212&width=600&height=600"
-                + "&info_format="
-                + GML3FeatureInfoOutputFormat.FORMAT
-                + "&query_layers="
-                + layer
-                + "&i=300&j=300&srs=EPSG:4326";
-        Document dom = getAsDOM(request);
-        assertXpathEvaluatesTo("26.0", "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:RED_BAND", dom);
-        assertXpathEvaluatesTo("70.0", "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:GREEN_BAND", dom);
-        assertXpathEvaluatesTo("126.0", "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:BLUE_BAND", dom);
     }
 
     @Test
@@ -859,145 +713,6 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         assertEquals(red, Double.parseDouble(m.group(1)), 0.0000001);
         assertEquals(green, Double.parseDouble(m.group(2)), 0.0000001);
         assertEquals(blue, Double.parseDouble(m.group(3)), 0.0000001);
-    }
-
-    /** Test GetFeatureInfo for a coverage with longitudes greater than 300 degrees east. */
-    @Test
-    public void testSampleGrib() throws Exception {
-        String layer = getLayerId(SAMPLEGRIB);
-        String request = "wms?service=WMS&version=1.3.0&request=GetFeatureInfo&styles=&layers="
-                + layer
-                + "&query_layers="
-                + layer
-                + "&info_format="
-                + GML3FeatureInfoOutputFormat.FORMAT
-                + "&width=300&height=400&i=150&j=100"
-                + "&crs=EPSG:4326&bbox=2,302,10,308";
-        Document dom = getAsDOM(request);
-        // print(dom);
-        assertXpathEvaluatesTo(
-                "-0.095",
-                "substring(//wfs:FeatureCollection/gml:featureMembers/wcs:sampleGrib/wcs:GRAY_INDEX,1,6)",
-                dom);
-    }
-
-    /**
-     * Test GetFeatureInfo for a coverage with longitudes greater than 300 degrees east, with a request shifted 360
-     * degrees west.
-     */
-    @Test
-    public void testSampleGribWest() throws Exception {
-        String layer = getLayerId(SAMPLEGRIB);
-        String request = "wms?service=WMS&version=1.3.0&request=GetFeatureInfo&styles=&layers="
-                + layer
-                + "&query_layers="
-                + layer
-                + "&info_format="
-                + GML3FeatureInfoOutputFormat.FORMAT
-                + "&width=300&height=400&i=150&j=100"
-                + "&crs=EPSG:4326&bbox=2,-58,10,-52";
-        Document dom = getAsDOM(request);
-        assertXpathEvaluatesTo(
-                "-0.095",
-                "substring(//wfs:FeatureCollection/gml:featureMembers/wcs:sampleGrib/wcs:GRAY_INDEX,1,6)",
-                dom);
-    }
-
-    /**
-     * Test GetFeatureInfo for a coverage with longitudes greater than 300 degrees east, with a request shifted 360
-     * degrees west, using the Web Mercator projection.
-     */
-    @Test
-    public void testSampleGribWebMercator() throws Exception {
-        String layer = getLayerId(SAMPLEGRIB);
-        String request = "wms?service=WMS&version=1.3.0&request=GetFeatureInfo&styles=&layers="
-                + layer
-                + "&query_layers="
-                + layer
-                + "&info_format="
-                + GML3FeatureInfoOutputFormat.FORMAT
-                + "&width=300&height=400&i=150&j=100"
-                + "&crs=EPSG:3857"
-                + "&bbox=-6456530.466009867,222684.20850554455,-5788613.521250226,1118889.9748579597";
-        Document dom = getAsDOM(request);
-        assertXpathEvaluatesTo(
-                "-0.095",
-                "substring(//wfs:FeatureCollection/gml:featureMembers/wcs:sampleGrib/wcs:GRAY_INDEX,1,6)",
-                dom);
-    }
-
-    /**
-     * Test GetFeatureInfo operation with lines styled with a line symbolizer. GenericLines layer geometry type is not
-     * defined so this use case will force the styles rendering machinery to deal with a generic geometry.
-     */
-    @Test
-    public void testGetFeatureInfoOnLineStringsWithGenericGeometry() throws Exception {
-        // perform the get feature info request
-        String layer = getLayerId(GENERIC_LINES);
-        String request = "wms?"
-                + "SERVICE=WMS"
-                + "&VERSION=1.1.1"
-                + "&REQUEST=GetFeatureInfo"
-                + "&FORMAT=image/png"
-                + "&TRANSPARENT=true"
-                + "&STYLES=genericLinesStyle"
-                + "&WIDTH=101"
-                + "&HEIGHT=101"
-                + "&BBOX=0.72235107421875,-1.26617431640625,1.27716064453125,-0.71136474609375"
-                + "&SRS=EPSG:4326"
-                + "&FEATURE_COUNT=50"
-                + "&X=50"
-                + "&Y=50"
-                + "&QUERY_LAYERS="
-                + layer
-                + "&LAYERS="
-                + layer
-                + "&INFO_FORMAT=text/xml"
-                + "&PROPERTYNAME=name";
-        Document result = getAsDOM(request, true);
-        // xpath engine that will be used to check XML content
-        Map<String, String> namespaces = new HashMap<>();
-        namespaces.put("xlink", "http://www.w3.org/1999/xlink");
-        namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
-        namespaces.put("gml", "http://www.opengis.net/gml");
-        namespaces.put("wfs", "http://www.opengis.net/wfs");
-        namespaces.put("gs", "http://geoserver.org");
-        XpathEngine xpath = XMLUnit.newXpathEngine();
-        xpath.setNamespaceContext(new SimpleNamespaceContext(namespaces));
-        // let's check the XML response content
-        assertThat(
-                xpath.evaluate(
-                        "boolean(//wfs:FeatureCollection/gml:featureMember/gs:genericLines[@fid='line.2'][gs:name='line2'])",
-                        result),
-                is("true"));
-        assertThat(
-                xpath.evaluate(
-                        "boolean(//wfs:FeatureCollection/gml:featureMember/gs:genericLines[@fid='line.3'][gs:name='line3'])",
-                        result),
-                is("true"));
-    }
-
-    @Test
-    public void testSchemaLeak() throws Exception {
-        String layer = getLayerId(MockData.FORESTS);
-        String request = "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg&info_format="
-                + GML3FeatureInfoOutputFormat.FORMAT
-                + "&request=GetFeatureInfo&layers="
-                + layer
-                + "&query_layers="
-                + layer
-                + "&width=20&height=20&i=10&j=10";
-        // prime system, make sure everything is wired
-        getAsDOM(request);
-
-        // count how many imports in the OGC filter schema
-        XSDSchema schema = OGC.getInstance().getSchema();
-        int expectedImportCounts = schema.getReferencingDirectives().size();
-
-        // now check how many there are after anothe request, should not go up
-        getAsDOM(request);
-        int actualImportCounts = schema.getReferencingDirectives().size();
-        assertEquals(expectedImportCounts, actualImportCounts);
     }
 
     @Test
@@ -1307,24 +1022,5 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
     public void testMaxDimensionsRaster() throws Exception {
         testMaxDimensions("sf:timeseries", 1, true);
         testMaxDimensions("sf:timeseries", 100, false);
-    }
-
-    @Test
-    public void testIAUVectorFeatureInfo() throws Exception {
-        String layerId = getLayerId(SystemTestData.MARS_POI);
-        String url = "wms?&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.3.0"
-                + "&REQUEST=GetFeatureInfo&CRS=IAU:49900&BBOX=-90,-180,90,180"
-                + "&WIDTH=20&HEIGHT=20&x=10&y=10&buffer=20"
-                + "&LAYERS="
-                + layerId
-                + "&query_layers="
-                + layerId
-                + "&info_format="
-                + GML3FeatureInfoOutputFormat.FORMAT;
-        Document dom = getAsDOM(url);
-        // print(dom);
-        assertXpathEvaluatesTo(
-                "urn:x-ogc:def:crs:IAU:49900", "//iau:MarsPoi[@gml:id = 'mars.1']/iau:geom/gml:Point/@srsName", dom);
-        assertXpathEvaluatesTo("-27.2282 -36.897", "//iau:MarsPoi[@gml:id = 'mars.1']/iau:geom/gml:Point/gml:pos", dom);
     }
 }

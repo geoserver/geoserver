@@ -3,13 +3,12 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.wfs.kvp;
+package org.geoserver.ows.kvp;
 
 import java.util.List;
 import org.geoserver.ows.KvpParser;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.wfs.WFSException;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.NoSuchAuthorityCodeException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
@@ -106,7 +105,7 @@ public class BBoxKvpParser extends KvpParser {
             } else if (crs.getCoordinateSystem().getDimension() == 3) {
                 return new ReferencedEnvelope3D(minx, maxx, miny, maxy, -Double.MAX_VALUE, Double.MAX_VALUE, crs);
             } else {
-                throw new WFSException(
+                throw new ServiceException(
                         "Unexpected BBOX, can only handle 2D or 3D ones", "bbox", "InvalidParameterValue");
             }
         }

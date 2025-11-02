@@ -8,17 +8,15 @@ import com.bedatadriven.jackson.datatype.jts.JtsModule;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import freemarker.template.Template;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.Arrays;
 import java.util.List;
+import org.geoserver.json.GeoJSONFeatureWriter;
 import org.geoserver.platform.GeoServerResourceLoader;
-import org.geoserver.wfs.json.GeoJSONBuilder;
-import org.geoserver.wfs.json.GeoJSONGetFeatureResponse;
 import org.geoserver.wms.WMS;
-import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
 import org.geotools.feature.FeatureCollection;
 import org.locationtech.jts.geom.Geometry;
 
@@ -51,6 +49,7 @@ public class GeoJSONTemplateManager extends FreeMarkerTemplateManager {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected void handleContent(List<FeatureCollection> collections, OutputStreamWriter osw) throws IOException {
         for (int i = 0; i < collections.size(); i++) {
             FeatureCollection fc = collections.get(i);
@@ -74,14 +73,17 @@ public class GeoJSONTemplateManager extends FreeMarkerTemplateManager {
     }
 
     /** Write a FeatureCollection using normal GeoJSON encoding */
-    private void handleJSONWithoutTemplate(FeatureCollection collection, OutputStreamWriter osw) throws IOException {
-        GeoJSONGetFeatureResponse format =
-                new GeoJSONGetFeatureResponse(wms.getGeoServer(), OutputFormat.JSON.getFormat());
-        boolean isComplex = collection.getSchema() instanceof SimpleFeatureType;
-        Writer outWriter = new BufferedWriter(osw);
-        final GeoJSONBuilder jsonWriter = new GeoJSONBuilder(outWriter);
-        format.writeFeatures(Arrays.asList(collection), null, isComplex, jsonWriter);
-        outWriter.flush();
+    private void handleJSONWithoutTemplate(FeatureCollection<FeatureType, Feature> collection, OutputStreamWriter osw)
+            throws IOException {
+        GeoJSONFeatureWriter<FeatureType, Feature> writer = new GeoJSONFeatureWriter<>(wms.getGeoServer()) {
+            @Override
+            protected boolean isFeatureBounding() {
+                // we don't want bounding boxes in this context
+                return false;
+            }
+        };
+        List<FeatureCollection<FeatureType, Feature>> collections = Arrays.asList(collection);
+        writer.writeFeaturesContent(collections, osw);
     }
 
     /** Encode geometry to a valid geoJSON representation. The method is aimed to be used in free marker templates. */

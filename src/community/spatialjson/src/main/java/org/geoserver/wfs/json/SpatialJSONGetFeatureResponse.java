@@ -26,6 +26,8 @@ import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.util.TemporalUtils;
+import org.geoserver.json.GeoJSONBuilder;
+import org.geoserver.json.JSONType;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.util.KvpUtils;

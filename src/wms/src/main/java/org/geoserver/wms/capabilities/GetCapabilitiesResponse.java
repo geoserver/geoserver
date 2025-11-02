@@ -26,7 +26,6 @@ import javax.xml.transform.stream.StreamSource;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.wfs.CapabilitiesTransformer;
 import org.geoserver.wms.ExtendedCapabilitiesProvider;
 import org.geoserver.wms.GetCapabilities;
 import org.geoserver.wms.GetCapabilitiesRequest;
@@ -43,8 +42,8 @@ import org.xml.sax.XMLReader;
  * <p>Note since the XSLT API does not support declaring internal DTDs, and we may need to in order for
  * {@link ExtendedCapabilitiesProvider}s to contribute to the document type definition, if there's any
  * {@code ExtendedCapabilitiesProvider} that contributes to this capabilities document, the plain document as created by
- * {@link CapabilitiesTransformer} is gonna be run through an XSLT transformation that will insert the proper internal
- * DTD declaration.
+ * {@link GetCapabilitiesTransformer} is gonna be run through an XSLT transformation that will insert the proper
+ * internal DTD declaration.
  *
  * <p>Each {@link ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesRoots(GetCapabilitiesRequest)} is added to
  * the list of direct children of the {@code VendorSpecificCapabilities} element, and each

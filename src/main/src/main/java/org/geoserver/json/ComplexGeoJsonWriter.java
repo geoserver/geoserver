@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.wfs.json;
+package org.geoserver.json;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,6 +19,7 @@ import org.geotools.api.feature.ComplexAttribute;
 import org.geotools.api.feature.Feature;
 import org.geotools.api.feature.Property;
 import org.geotools.api.feature.type.AttributeType;
+import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.feature.type.GeometryDescriptor;
 import org.geotools.api.feature.type.Name;
 import org.geotools.api.feature.type.PropertyDescriptor;
@@ -34,7 +35,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.xml.sax.Attributes;
 
 /** GeoJSON writer capable of handling complex features. */
-class ComplexGeoJsonWriter {
+public class ComplexGeoJsonWriter<T extends FeatureType, F extends Feature> {
 
     static final Logger LOGGER = Logging.getLogger(ComplexGeoJsonWriter.class);
 
@@ -62,17 +63,17 @@ class ComplexGeoJsonWriter {
         this(jsonWriter, new DefaultComplexGeoJsonWriterOptions());
     }
 
-    public void write(List<FeatureCollection> collections) {
-        for (FeatureCollection collection : collections) {
+    public void write(List<FeatureCollection<T, F>> collections) {
+        for (FeatureCollection<T, F> collection : collections) {
             // encode the feature collection making sure that the collection is closed
-            try (FeatureIterator iterator = collection.features()) {
+            try (FeatureIterator<F> iterator = collection.features()) {
                 encodeFeatureCollection(iterator);
             }
         }
     }
 
     /** Encode all available features by iterating over the iterator. */
-    private void encodeFeatureCollection(FeatureIterator iterator) {
+    private void encodeFeatureCollection(FeatureIterator<F> iterator) {
         while (iterator.hasNext()) {
             // encode the next feature
             encodeFeature(iterator.next(), true);
@@ -392,9 +393,9 @@ class ComplexGeoJsonWriter {
     }
 
     /** Helper method that just gets an element from a collection at a certain index. */
-    private <T> T getElementAt(Collection<T> collection, int index) {
-        Iterator<T> iterator = collection.iterator();
-        T element = null;
+    private <O> O getElementAt(Collection<O> collection, int index) {
+        Iterator<O> iterator = collection.iterator();
+        O element = null;
         for (int i = 0; i <= index && iterator.hasNext(); i++) {
             element = iterator.next();
         }

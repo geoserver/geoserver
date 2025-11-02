@@ -23,10 +23,8 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.impl.GeoServerLifecycleHandler;
+import org.geoserver.data.DataModifiedEvent;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.wfs.TransactionEvent;
-import org.geoserver.wfs.TransactionListener;
-import org.geoserver.wfs.WFSException;
 import org.geoserver.wms.GetMapRequest;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -35,8 +33,9 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.util.CanonicalSet;
 import org.locationtech.jts.geom.Envelope;
+import org.springframework.context.ApplicationListener;
 
-public class QuickTileCache implements TransactionListener, GeoServerLifecycleHandler {
+public class QuickTileCache implements GeoServerLifecycleHandler, ApplicationListener<DataModifiedEvent> {
     /**
      * Set of parameters that we can ignore, since they do not define a map, are either unrelated, or define the tiling
      * instead
@@ -351,7 +350,7 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
     }
 
     @Override
-    public void dataStoreChange(TransactionEvent event) throws WFSException {
+    public void onApplicationEvent(DataModifiedEvent event) {
         // if anything changes we just wipe out the cache. the mapkey
         // contains a string with part of the map request where the layer
         // name is included, but we would have to parse it and consider

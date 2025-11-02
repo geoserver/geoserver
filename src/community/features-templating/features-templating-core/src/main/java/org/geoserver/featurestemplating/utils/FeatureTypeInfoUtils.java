@@ -6,8 +6,8 @@ package org.geoserver.featurestemplating.utils;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.data.TypeInfoCollectionWrapper;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.wfs.TypeInfoCollectionWrapper;
 import org.geoserver.wms.featureinfo.FeatureCollectionDecorator;
 import org.geotools.api.feature.type.Name;
 import org.geotools.feature.FeatureCollection;

@@ -3,7 +3,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.wfs.kvp;
+package org.geoserver.ows.kvp;
 
 import java.io.Serial;
 import org.geotools.api.geometry.MismatchedDimensionException;
@@ -18,7 +18,7 @@ import org.geotools.referencing.CRS;
  *
  * @author Andrea Aime - GeoSolutions
  */
-class SRSEnvelope extends ReferencedEnvelope {
+public class SRSEnvelope extends ReferencedEnvelope {
     @Serial
     private static final long serialVersionUID = 4510785331988235178L;
 

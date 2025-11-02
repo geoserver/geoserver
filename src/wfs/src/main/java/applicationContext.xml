@@ -84,6 +84,8 @@
     <bean id="wfsNativeElementHandler" class="org.geoserver.wfs.NativeElementHandler">
     </bean>
 
+    <bean id="dataModifiedPublisher" class="org.geoserver.wfs.DataModifiedEventPublisher"/>
+
 	<!-- service descriptors -->
 	<bean id="wfsService-1.0.0" class="org.geoserver.platform.Service">
 		<constructor-arg index="0" value="wfs"/>
@@ -340,16 +342,11 @@
 	</bean>
 
 
-	<bean id="featureIdKvpParser" class="org.geoserver.ows.FlatKvpParser">
-		<constructor-arg index="0" value="featureId"/>
-		<constructor-arg index="1" value="java.lang.String"/>
-	</bean>
 	<bean id="resourceIdKvpParser" class="org.geoserver.ows.FlatKvpParser">
         <constructor-arg index="0" value="resourceId"/>
         <constructor-arg index="1" value="java.lang.String"/>
     </bean>
 	
-	<bean id="bboxKvpParser" class="org.geoserver.wfs.kvp.BBoxKvpParser"/>
 	<bean id="filter1_0_0_KvpParser" class="org.geoserver.wfs.kvp.Filter_1_0_0_KvpParser">
         <constructor-arg ref="geoServer"/>
 		<property name="service"><value>WFS</value></property>
@@ -372,7 +369,6 @@
          <constructor-arg ref="geoServer"/>
     </bean>
 
-    <bean id="cqlKvpParser" class="org.geoserver.ows.kvp.CQLFilterKvpParser"/>
 	<bean id="propertyName10KvpParser" class="org.geoserver.ows.NestedKvpParser">
 		<constructor-arg index="0" value="propertyName"/>
 		<constructor-arg index="1" value="java.lang.String"/>
@@ -395,9 +391,6 @@
     </bean>
 	
 	<bean id="srsNameKvpParser" class="org.geoserver.wfs.kvp.SrsNameKvpParser"/>
-	<bean id="sortByKvpParser" class="org.geoserver.ows.kvp.SortByKvpParser">
-		<constructor-arg ref="filterFactory"/>
-	</bean>
 	<bean id="expiryKvpParser" class="org.geoserver.ows.util.NumericKvpParser">
 		<constructor-arg value="expiry"/>
 		<constructor-arg value="java.math.BigInteger"/>
@@ -410,7 +403,6 @@
     <bean id="strictKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
         <constructor-arg value="strict"/>
     </bean>
-    <bean id="wfsFormatOptionsKvpParser" class="org.geoserver.ows.kvp.FormatOptionsKvpParser"/>
     <bean id="charsetKvpParser" class="org.geoserver.ows.kvp.CharsetKVPParser">
         <constructor-arg value="charset"/>
     </bean>
@@ -648,7 +640,7 @@
 		<constructor-arg ref="geoServer" />
 		<constructor-arg value="text/javascript" />
 	</bean>
-	<bean id="geoJSONPGetFeatureResponseEF" class="org.geoserver.wfs.json.JSONPExtensionFilter">
+	<bean id="geoJSONPGetFeatureResponseEF" class="org.geoserver.json.JSONPExtensionFilter">
 		<constructor-arg value="geoJSONPGetFeatureResponse" />
 	</bean>
 	<!-- GetFeature JSON -->
@@ -666,7 +658,7 @@
 		<constructor-arg ref="geoServer" />
 		<constructor-arg value="text/javascript" />
 	</bean>
-	<bean id="jsonPDescribeFeatureTypeResponseEF" class="org.geoserver.wfs.json.JSONPExtensionFilter">
+	<bean id="jsonPDescribeFeatureTypeResponseEF" class="org.geoserver.json.JSONPExtensionFilter">
 		<constructor-arg value="jsonPDescribeFeatureTypeResponse" />
 	</bean>
 	<!-- DescribeFeatureType JSON -->

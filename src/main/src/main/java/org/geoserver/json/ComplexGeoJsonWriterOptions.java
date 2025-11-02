@@ -2,10 +2,12 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.wfs.json;
+package org.geoserver.json;
 
 import java.util.List;
+import org.geotools.api.feature.Feature;
 import org.geotools.api.feature.type.ComplexType;
+import org.geotools.api.feature.type.FeatureType;
 import org.geotools.feature.FeatureCollection;
 
 /**
@@ -20,7 +22,7 @@ public interface ComplexGeoJsonWriterOptions {
      * @param features the list of FeatureCollection being encoded by the ComplexGeoJsonWriter
      * @return true if this option can handle the features being encoded false otherwise.
      */
-    boolean canHandle(List<FeatureCollection> features);
+    <T extends FeatureType, F extends Feature> boolean canHandle(List<FeatureCollection<T, F>> features);
 
     /**
      * Method to check if the ComplexGeoJsonWriter should encode the a ComplexAttributeType name using the @dataType key

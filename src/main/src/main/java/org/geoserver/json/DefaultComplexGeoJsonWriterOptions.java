@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.wfs.json;
+package org.geoserver.json;
 
 import java.util.List;
 import java.util.Spliterator;
@@ -11,11 +11,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.StreamSupport;
 import org.geotools.api.data.DataStoreFinder;
+import org.geotools.api.feature.Feature;
 import org.geotools.api.feature.type.ComplexType;
+import org.geotools.api.feature.type.FeatureType;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.util.logging.Logging;
 
-/** This class provides the options to encode ComplexFeatures when serving them trough an AppSchema store. */
+/** This class provides the options to encode ComplexFeatures when serving them through an AppSchema store. */
 public class DefaultComplexGeoJsonWriterOptions implements ComplexGeoJsonWriterOptions {
 
     static final Logger LOGGER = Logging.getLogger(DefaultComplexGeoJsonWriterOptions.class);
@@ -42,7 +44,7 @@ public class DefaultComplexGeoJsonWriterOptions implements ComplexGeoJsonWriterO
     }
 
     @Override
-    public boolean canHandle(List<FeatureCollection> features) {
+    public <T extends FeatureType, F extends Feature> boolean canHandle(List<FeatureCollection<T, F>> features) {
         return true;
     }
 

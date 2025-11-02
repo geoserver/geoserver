@@ -47,24 +47,10 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.test.RemoteOWSTestSupport;
-import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
-import org.geoserver.wms.featureinfo.GML2FeatureInfoOutputFormat;
-import org.geoserver.wms.featureinfo.GML3FeatureInfoOutputFormat;
-import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
-import org.geoserver.wms.featureinfo.TextFeatureInfoOutputFormat;
-import org.geoserver.wms.featureinfo.XML2FeatureInfoOutputFormat;
-import org.geoserver.wms.featureinfo.XML311FeatureInfoOutputFormat;
 import org.geoserver.wms.wms_1_3.GetMapIntegrationTest;
-import org.geotools.api.filter.Filter;
-import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
-import org.geotools.api.style.FeatureTypeStyle;
-import org.geotools.api.style.Rule;
-import org.geotools.api.style.Style;
-import org.geotools.api.style.StyleFactory;
-import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope3D;
@@ -115,11 +101,6 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         WMSInfo wmsInfo = getGeoServer().getService(WMSInfo.class);
         wmsInfo.setMaxBuffer(50);
         getGeoServer().save(wmsInfo);
-
-        // force feature bounding in WFS
-        WFSInfo wfsInfo = getGeoServer().getService(WFSInfo.class);
-        wfsInfo.setFeatureBounding(true);
-        getGeoServer().save(wfsInfo);
 
         // add a wms store too, if possible
         if (RemoteOWSTestSupport.isRemoteWMSStatesAvailable(LOGGER)) {
@@ -294,56 +275,6 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         XMLAssert.assertXpathEvaluatesTo("2", "count(/html/body/table/tr)", dom2d);
     }
 
-    /**
-     * Tests GML output does not break when asking for an area that has no data with GML feature bounding enabled
-     *
-     * @param contentType Content-type (MIME-type) to test on.
-     * @throws Exception When an XPath Exception occurs.
-     */
-    private void testGMLNoData(String contentType) throws Exception {
-        String layer = getLayerId(MockData.PONDS);
-        String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
-                + "&info_format="
-                + contentType
-                + "&request=GetFeatureInfo&layers="
-                + layer
-                + "&query_layers="
-                + layer
-                + "&width=20&height=20&x=20&y=20";
-        Document dom = getAsDOM(request);
-        XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection)", dom);
-        XMLAssert.assertXpathEvaluatesTo("0", "count(//gml:featureMember)", dom);
-    }
-
-    /**
-     * Tests GML output does not break when asking for an area that has no data with GML feature bounding enabled. This
-     * method tests GML 2 with Content-Type: <code>application/vnd.ogc.gml
-     * </code>.
-     */
-    @Test
-    public void testGMLNoData() throws Exception {
-        this.testGMLNoData(GML2FeatureInfoOutputFormat.FORMAT);
-    }
-
-    /**
-     * Tests GML output does not break when asking for an area that has no data with GML feature bounding enabled. This
-     * method tests GML 2 with Content-Type: <code>text/xml</code>.
-     */
-    @Test
-    public void testXMLNoData() throws Exception {
-        this.testGMLNoData(XML2FeatureInfoOutputFormat.FORMAT);
-    }
-
-    /**
-     * Tests GML output does not break when asking for an area that has no data with GML feature bounding enabled. This
-     * method tests GML 3.1.1 with Content-Type: <code>
-     * text/xml; subtype=gml/3.1.1</code>.
-     */
-    @Test
-    public void testXML311NoData() throws Exception {
-        this.testGMLNoData(XML311FeatureInfoOutputFormat.FORMAT);
-    }
-
     /** Tests GML outside of expected polygon */
     @Test
     public void testSimple() throws Exception {
@@ -357,58 +288,6 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         String result = getAsString(request);
         // System.out.println(result);
         assertNotNull(result);
-        assertTrue(result.indexOf("Green Forest") > 0);
-    }
-
-    @Test
-    public void testAllowedMimeTypes() throws Exception {
-
-        WMSInfo wms = getWMS().getServiceInfo();
-        GetFeatureInfoOutputFormat format = new TextFeatureInfoOutputFormat(getWMS());
-        wms.getGetFeatureInfoMimeTypes().add(format.getContentType());
-        wms.setGetFeatureInfoMimeTypeCheckingEnabled(true);
-        getGeoServer().save(wms);
-
-        // check mime type allowed
-        String layer = getLayerId(MockData.FORESTS);
-        String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
-                + "&info_format=text/plain&request=GetFeatureInfo&layers="
-                + layer
-                + "&query_layers="
-                + layer
-                + "&width=20&height=20&x=10&y=10";
-        String result = getAsString(request);
-        // System.out.println(result);
-        assertNotNull(result);
-        assertTrue(result.indexOf("Green Forest") > 0);
-
-        // check mime type not allowed
-        request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
-                + "&info_format="
-                + GML3FeatureInfoOutputFormat.FORMAT
-                + "&request=GetFeatureInfo&layers="
-                + layer
-                + "&query_layers="
-                + layer
-                + "&width=20&height=20&x=10&y=10";
-
-        result = getAsString(request);
-        assertTrue(result.indexOf("ForbiddenFormat") > 0);
-
-        wms.getGetFeatureInfoMimeTypes().clear();
-        wms.setGetFeatureInfoMimeTypeCheckingEnabled(false);
-        getGeoServer().save(wms);
-
-        request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
-                + "&info_format="
-                + GML3FeatureInfoOutputFormat.FORMAT
-                + "&request=GetFeatureInfo&layers="
-                + layer
-                + "&query_layers="
-                + layer
-                + "&width=20&height=20&x=10&y=10";
-
-        result = getAsString(request);
         assertTrue(result.indexOf("Green Forest") > 0);
     }
 
@@ -445,6 +324,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
                 + layer
                 + "&width=20&height=20&x=10&y=10";
         Document dom = getAsDOM(request);
+        print(dom);
         assertNotNull(dom);
         // count lines that do contain a forest reference
         XMLAssert.assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[starts-with(.,'Forests.')])", dom);
@@ -633,33 +513,6 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         assertTrue(idxName2 > idxLakes);
     }
 
-    /** Tests that FEATURE_COUNT is respected globally, not just per layer */
-    @Test
-    public void testTwoLayersFeatureCount() throws Exception {
-        // this request hits on two overlapping features, a lake and a forest
-        String layer = getLayerId(MockData.FORESTS) + "," + getLayerId(MockData.LAKES);
-        String request = "wms?REQUEST=GetFeatureInfo&EXCEPTIONS=application%2Fvnd.ogc.se_xml&"
-                + "BBOX=-0.002356%2C-0.004819%2C0.005631%2C0.004781&SERVICE=WMS&VERSION=1.1.0&X=267&Y=325"
-                + "&INFO_FORMAT=application/vnd.ogc.gml"
-                + "&QUERY_LAYERS="
-                + layer
-                + "&Layers="
-                + layer
-                + " &Styles=&WIDTH=426&HEIGHT=512"
-                + "&format=image%2Fpng&srs=EPSG%3A4326";
-        // no feature count, just one should be returned
-        Document dom = getAsDOM(request);
-        XMLAssert.assertXpathEvaluatesTo("1", "count(//gml:featureMember)", dom);
-        XMLAssert.assertXpathEvaluatesTo("1", "count(//cite:Forests)", dom);
-
-        // feature count set to 2, both features should be there
-        dom = getAsDOM(request + "&FEATURE_COUNT=2");
-        // print(dom);
-        XMLAssert.assertXpathEvaluatesTo("2", "count(//gml:featureMember)", dom);
-        XMLAssert.assertXpathEvaluatesTo("1", "count(//cite:Forests)", dom);
-        XMLAssert.assertXpathEvaluatesTo("1", "count(//cite:Lakes)", dom);
-    }
-
     /**
      * Check GetFeatureInfo returns an error if the format is not known, instead of returning the text format as in
      * https://osgeo-org.atlassian.net/browse/GEOS-1924
@@ -714,28 +567,6 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         XMLAssert.assertXpathEvaluatesTo("1", "count(/html/body/table/tr/th[. = 'RED_BAND'])", dom);
         XMLAssert.assertXpathEvaluatesTo("0", "count(/html/body/table/tr/th[. = 'GREEN_BAND'])", dom);
         XMLAssert.assertXpathEvaluatesTo("0", "count(/html/body/table/tr/th[. = 'BLUE_BAND'])", dom);
-    }
-
-    @Test
-    public void testCoverageGML() throws Exception {
-        // https://osgeo-org.atlassian.net/browse/GEOS-3996
-        String layer = getLayerId(TASMANIA_BM);
-        String request = "wms?service=wms&request=GetFeatureInfo&version=1.1.1"
-                + "&layers="
-                + layer
-                + "&styles=&bbox=146.5,-44.5,148,-43&width=600&height=600"
-                + "&info_format=application/vnd.ogc.gml&query_layers="
-                + layer
-                + "&x=300&y=300&srs=EPSG:4326";
-        Document dom = getAsDOM(request);
-        // print(dom);
-
-        XMLAssert.assertXpathEvaluatesTo(
-                "26.0", "//wfs:FeatureCollection/gml:featureMember/wcs:BlueMarble/wcs:RED_BAND", dom);
-        XMLAssert.assertXpathEvaluatesTo(
-                "70.0", "//wfs:FeatureCollection/gml:featureMember/wcs:BlueMarble/wcs:GREEN_BAND", dom);
-        XMLAssert.assertXpathEvaluatesTo(
-                "126.0", "//wfs:FeatureCollection/gml:featureMember/wcs:BlueMarble/wcs:BLUE_BAND", dom);
     }
 
     @Test
@@ -969,43 +800,6 @@ public class GetFeatureInfoTest extends WMSTestSupport {
                 + "&INFO_FORMAT=text%2Fplain&QUERY_LAYERS=cite%3Acustom&FEATURE_COUNT=50&Layers=custom"
                 + "&WIDTH=509&HEIGHT=512&format=image%2Fjpeg&styles=&srs=epsg%3A900913&version=1.1.1&x=135&y=223");
         assertTrue(result.contains("2.0"));
-    }
-
-    @Test
-    public void testGMLWithPostFilter() throws Exception {
-        // we need to create a situation where a post filter is setup, simple way is to change the
-        // style so that its filter is an or with more than 20 children
-        Catalog cat = getCatalog();
-        LayerInfo l = cat.getLayerByName(getLayerId(MockData.NAMED_PLACES));
-
-        StyleInfo style = l.getDefaultStyle();
-        Style s = style.getStyle();
-
-        FeatureTypeStyle fts = s.featureTypeStyles().get(0);
-        FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
-        StyleFactory sf = CommonFactoryFinder.getStyleFactory();
-        for (int i = 0; i < 21; i++) {
-            Filter f = ff.equals(ff.literal(1), ff.literal(1));
-            Rule r = sf.createRule();
-            r.setFilter(f);
-            r.symbolizers().add(sf.createPolygonSymbolizer());
-            fts.rules().add(r);
-        }
-
-        cat.getResourcePool().writeStyle(style, s);
-        cat.save(style);
-
-        String layer = getLayerId(MockData.NAMED_PLACES);
-
-        String request = "wms?service=wms&request=GetFeatureInfo&version=1.1.1"
-                + "&layers="
-                + layer
-                + "&styles=&bbox=0.000004,-0.00285,0.005596,0.00415&width=409&height=512"
-                + "&info_format=application/vnd.ogc.gml&query_layers="
-                + layer
-                + "&x=194&y=229&srs=EPSG:4326";
-        Document dom = getAsDOM(request);
-        assertEquals("wfs:FeatureCollection", dom.getDocumentElement().getNodeName());
     }
 
     /** The rendering engine has a 10-6 tolerance when evaluating rule scale activation, GetFeatureInfo did not */

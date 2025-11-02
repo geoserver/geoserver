@@ -53,6 +53,11 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
+      <artifactId>gs-wms-gml</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
       <artifactId>gs-wms</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>

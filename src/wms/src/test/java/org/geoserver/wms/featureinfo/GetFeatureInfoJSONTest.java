@@ -47,12 +47,12 @@ import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.MockTestData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.json.JSONType;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
-import org.geoserver.wfs.json.JSONType;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.tiffspy.GeoTIFFSpyFormat;
@@ -1108,6 +1108,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
                 + "&info_format="
                 + JSONType.json;
         JSONObject json = (JSONObject) getAsJSON(url);
+        print(json);
         JSONArray features = json.getJSONArray("features");
         assertEquals(2, features.size());
 

@@ -1,6 +1,5 @@
 #!/bin/bash
-# Build script thecho "Installing mkdocs_translate from petersmythe fork..."
-pip install git+https://github.com/petersmythe/translate.git replicates the GitHub Actions workflow steps exactly
+# Build script that replicates the GitHub Actions workflow steps exactly
 
 set -e
 
@@ -24,6 +23,34 @@ python3 -m venv venv
 source venv/bin/activate
 
 echo "✓ Virtual environment created and activated"
+
+# Install Pandoc 3.5 (matching workflow)
+echo ""
+echo "=== Installing Pandoc 3.5 ==="
+PANDOC_VERSION="3.5"
+
+# Check OS and install accordingly
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    echo "Installing Pandoc ${PANDOC_VERSION} on Linux..."
+    wget -q https://github.com/jgm/pandoc/releases/download/${PANDOC_VERSION}/pandoc-${PANDOC_VERSION}-1-amd64.deb
+    sudo dpkg -i pandoc-${PANDOC_VERSION}-1-amd64.deb
+    rm pandoc-${PANDOC_VERSION}-1-amd64.deb
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    echo "Installing Pandoc ${PANDOC_VERSION} on macOS..."
+    wget -q https://github.com/jgm/pandoc/releases/download/${PANDOC_VERSION}/pandoc-${PANDOC_VERSION}-x86_64-macOS.pkg
+    sudo installer -pkg pandoc-${PANDOC_VERSION}-x86_64-macOS.pkg -target /
+    rm pandoc-${PANDOC_VERSION}-x86_64-macOS.pkg
+else
+    echo "⚠ WARNING: Unsupported OS for automatic Pandoc installation"
+    echo "Please install Pandoc 3.5 manually from: https://github.com/jgm/pandoc/releases"
+    echo "Current Pandoc version:"
+    pandoc --version || echo "Pandoc not found"
+fi
+
+echo "=== Pandoc Version ==="
+pandoc --version
+echo ""
+echo "✓ Pandoc installation complete"
 
 # Install Python dependencies (exact versions from workflow)
 echo ""
@@ -67,6 +94,19 @@ mkdocs_translate --version || echo "Version check not available"
 mkdocs_translate --help > /dev/null || (echo "mkdocs_translate validation failed" && exit 1)
 echo "✓ mkdocs_translate is working correctly"
 
+# Show environment information
+echo ""
+echo "=== Environment Information ==="
+echo "Pandoc version:"
+pandoc --version | head -2
+echo ""
+echo "mkdocs_translate version:"
+mkdocs_translate --version
+echo ""
+echo "Python-Markdown version:"
+python -c "import markdown; print(f'Python-Markdown version: {markdown.__version__}')"
+echo ""
+
 # Build Sphinx documentation first (English) - COMMENTED OUT
 # echo ""
 # echo "=== Building Sphinx Documentation ==="
@@ -92,8 +132,8 @@ echo "=== Converting RST to Markdown ==="
 
 # Array of documentation directories to process (same as workflow)
 declare -a DOC_DIRS=(
-#  "doc/en/docguide:docguide:en"
-#  "doc/en/developer:developer:en"
+  "doc/en/docguide:docguide:en"
+  "doc/en/developer:developer:en"
   "doc/en/user:user:en"
 )
 
@@ -156,6 +196,13 @@ EOF
     echo "   Step 4: Generating navigation..."
     mkdocs_translate nav > nav_generated.yml || (echo "Nav generation failed, exiting..." && exit 4)
     
+    # Debug: Show generated markdown for index.md
+    if [ -f "docs/index.md" ]; then
+      echo "   === Generated docs/index.md (first 30 lines) ==="
+      head -30 docs/index.md
+      echo "   === End of index.md preview ==="
+    fi
+    
     # Ensure docs directory exists with fallback content
     if [ ! -d "docs" ]; then
       echo "   Creating fallback docs directory..."
@@ -181,8 +228,8 @@ mkdir -p gh-pages-output
 
 # Array of documentation directories to build (same as workflow)
 declare -a MKDOCS_DIRS=(
-#  "doc/en/docguide:docguide:en"
-#  "doc/en/developer:developer:en"
+  "doc/en/docguide:docguide:en"
+  "doc/en/developer:developer:en"
   "doc/en/user:user:en"
 )
 
@@ -195,6 +242,13 @@ for DIR_INFO in "${MKDOCS_DIRS[@]}"; do
     
     # Change to the documentation directory
     cd "$DOC_DIR"
+    
+    # Debug: Show the mkdocs.yml being used
+    echo "   === Contents of $DOC_DIR/mkdocs.yml ==="
+    echo "   --- markdown_extensions section ---"
+    grep -A 10 "markdown_extensions:" mkdocs.yml || echo "   No markdown_extensions found"
+    echo "   --- end of markdown_extensions ---"
+    echo ""
     
     # Ensure docs directory exists
     if [ ! -d "docs" ]; then
@@ -279,7 +333,9 @@ echo "   python -m http.server 8000"
 echo "   Open: http://localhost:8000"
 echo ""
 echo "📖 Direct access to documentation:"
-echo "   English Documentation Guide: gh-pages-output/en/docguide/index.html"
+echo "   Documentation Guide: gh-pages-output/en/docguide/index.html"
+echo "   Developer Guide: gh-pages-output/en/developer/index.html"
+echo "   User Guide: gh-pages-output/en/user/index.html"
 echo ""
 
 # Deactivate virtual environment

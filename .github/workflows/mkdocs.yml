@@ -52,6 +52,9 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y pandoc
+        echo "=== Pandoc Version ==="
+        pandoc --version
+        echo ""
     
     - name: Setup Python and virtualenv
       uses: actions/setup-python@v5
@@ -106,6 +109,14 @@ jobs:
     - name: Convert RST to Markdown
       run: |
         source venv/bin/activate
+        
+        echo "=== Environment Information ==="
+        echo "Pandoc version:"
+        pandoc --version | head -2
+        echo ""
+        echo "mkdocs_translate version:"
+        mkdocs_translate --version
+        echo ""
         
         # Array of documentation directories to process
         declare -a DOC_DIRS=(

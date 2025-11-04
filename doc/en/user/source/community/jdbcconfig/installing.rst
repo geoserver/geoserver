@@ -5,8 +5,19 @@ Installing JDBCConfig
 
 To install the JDBCConfig module:
 
-#. Visit the :website:`website download <download>` page and download :download_community:`jdbcconfig`.
+#. Login, and navigate to :menuselection:`About & Status > About GeoServer` and check **Build Information**
+   to determine the exact version of GeoServer you are running.
 
+#. Visit the :website:`website download <download>` page, change the **Development** tab,
+   and locate the nightly release that corresponds to the GeoServer you are running.
+   
+   Follow the **Community Modules** link and download `jdbcconfig` zip archive.
+   
+   * |version| example: :nightly_community:`jdbcconfig`
+   
+   The website lists active nightly builds to provide feedback to developers,
+   you may also `browse <https://build.geoserver.org/geoserver/>`__ for earlier branches.
+   
 #. Extract this file and place the JARs in ``WEB-INF/lib``.
 
 #. Perform any configuration required by your servlet container, and then restart. On startup, JDBCConfig will create a configuration directory ``jdbcconfig`` in the :ref:`datadir`.

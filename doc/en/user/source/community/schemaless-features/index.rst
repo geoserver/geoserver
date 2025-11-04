@@ -1,8 +1,9 @@
 .. _community_schemaless_features:
 
-Schemaless Features Plugin
-==========================
-This plugin includes support for serving complex features directly from Schemaless Feature sources.
+Schemaless Features Mongo Plugin
+================================
+
+This plugin includes support for serving complex features directly from a Schemaless Feature source.
 
 .. warning::
 

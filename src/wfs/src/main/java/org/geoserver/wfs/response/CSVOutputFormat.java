@@ -358,11 +358,11 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
             // don't allow scientific notation in the output, as OpenOffice won't
             // recognize that as a number
             value = coordFormatter.format(att);
-        } else if (att instanceof Date) {
+        } else if (att instanceof Date date1) {
             // serialize dates in ISO format
             if (att instanceof java.sql.Date date) value = DateUtil.serializeSqlDate(date);
             else if (att instanceof java.sql.Time time) value = DateUtil.serializeSqlTime(time);
-            else value = DateUtil.serializeDateTime((Date) att);
+            else value = DateUtil.serializeDateTime(date1);
         } else {
             // everything else we just "toString"
             value = att.toString();

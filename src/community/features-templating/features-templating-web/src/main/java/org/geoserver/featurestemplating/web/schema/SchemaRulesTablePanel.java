@@ -10,6 +10,7 @@ import static org.geoserver.featurestemplating.web.schema.SchemaRuleProvider.OUT
 import static org.geoserver.featurestemplating.web.schema.SchemaRuleProvider.PRIORITY;
 import static org.geoserver.featurestemplating.web.schema.SchemaRuleProvider.PROFILE_FILTER;
 
+import java.io.Serial;
 import java.util.HashSet;
 import java.util.Set;
 import org.apache.wicket.Component;
@@ -52,6 +53,7 @@ public class SchemaRulesTablePanel extends Panel {
         table.setOutputMarkupId(true);
         add(
                 remove = new AjaxLink<Object>("removeSelected") {
+                    @Serial
                     private static final long serialVersionUID = 2421854498051377608L;
 
                     @Override

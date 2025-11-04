@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.security.oauth2.login;
 
+import java.io.Serial;
 import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginAuthenticationFilter;
 import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig;
 import org.geoserver.security.web.auth.AuthenticationFilterPanelInfo;
@@ -13,6 +14,7 @@ public class OAuth2LoginAuthProviderPanelInfo
         extends AuthenticationFilterPanelInfo<GeoServerOAuth2LoginFilterConfig, OAuth2LoginAuthProviderPanel> {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = -3891569684560944819L;
 
     public OAuth2LoginAuthProviderPanelInfo() {

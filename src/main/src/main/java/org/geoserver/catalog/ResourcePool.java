@@ -1140,13 +1140,13 @@ public class ResourcePool {
     private FeatureType buildFeatureType(FeatureTypeInfo info, boolean handleProjectionPolicy, FeatureType ft)
             throws IOException {
         // TODO: support reprojection for non-simple FeatureType
-        if (ft instanceof SimpleFeatureType) {
+        if (ft instanceof SimpleFeatureType type) {
             // configured attribute customization, execute before projection handling and callbacks
             if (info.getAttributes() != null && !info.getAttributes().isEmpty())
-                ft = transformer.retypeFeatureType(info, ft);
+                type = (SimpleFeatureType) transformer.retypeFeatureType(info, ft);
             // create the feature type so it lines up with the "declared" schema
             SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
-            tb.init((SimpleFeatureType) ft);
+            tb.init(type);
             // Handle any aliases defined in info
             tb.setName(info.getName());
             tb.setNamespaceURI(info.getNamespace().getURI());
@@ -1155,7 +1155,7 @@ public class ResourcePool {
             tb.setAttributes((AttributeDescriptor[]) null);
             // take this to mean just load all native with projection handling,
             // feature type customization happens later
-            for (PropertyDescriptor pd : ft.getDescriptors()) {
+            for (PropertyDescriptor pd : type.getDescriptors()) {
                 if (!(pd instanceof AttributeDescriptor)) {
                     continue;
                 }
@@ -1166,12 +1166,14 @@ public class ResourcePool {
                 }
                 tb.add(ad);
             }
-            ft = tb.buildFeatureType();
+            type = tb.buildFeatureType();
 
             // extension point for retyping the feature type
             for (RetypeFeatureTypeCallback callback : GeoServerExtensions.extensions(RetypeFeatureTypeCallback.class)) {
-                ft = callback.retypeFeatureType(info, ft);
+                type = (SimpleFeatureType) callback.retypeFeatureType(info, type);
             }
+
+            return type;
         } // end special case for SimpleFeatureType
 
         return ft;

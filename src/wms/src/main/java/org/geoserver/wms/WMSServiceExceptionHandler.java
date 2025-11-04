@@ -8,6 +8,8 @@ package org.geoserver.wms;
 import static org.geoserver.ows.util.ResponseUtils.baseURL;
 import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
 
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
@@ -30,8 +32,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import javax.imageio.ImageIO;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.ServiceExceptionHandler;

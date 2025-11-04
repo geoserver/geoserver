@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.oauth2.login;
 
+import java.io.Serial;
 import org.springframework.context.ApplicationEvent;
 
 /**
@@ -15,6 +16,7 @@ import org.springframework.context.ApplicationEvent;
 public class OAuth2LoginButtonEnablementEvent extends ApplicationEvent {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = 513879448251262654L;
 
     public static final OAuth2LoginButtonEnablementEvent enableButtonEvent(Object pSource, String pId) {

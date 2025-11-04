@@ -213,4 +213,9 @@ public class CssHandler extends StyleHandler implements ModuleStatus {
     public Optional<String> getDocumentation() {
         return Optional.of("https://docs.geoserver.org/latest/en/user/styling/css/index.html");
     }
+
+    @Override
+    public Category getCategory() {
+        return Category.EXTENSION;
+    }
 }

@@ -12,7 +12,7 @@ public interface AggregateStats {
     /**
      * Get the aggregate statistics for a collection
      *
-     * @param delegateProductSource The product source
+     * @param productSource The product source
      * @param collectionIdentifier The collection identifier
      * @param sourceProperty The source property
      * @return The aggregate statistics

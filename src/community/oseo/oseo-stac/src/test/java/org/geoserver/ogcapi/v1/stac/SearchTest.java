@@ -308,7 +308,7 @@ public class SearchTest extends STACTestSupport {
             Matcher<Iterable<? extends String>> collectionsMatcher,
             Matcher<Iterable<? extends String>> itemsMatcher) {
         checkCollectionsSinglePage(doc, matched, collectionsMatcher);
-        assertThat((List<String>) doc.read("features[*].id"), itemsMatcher);
+        assertThat(doc.read("features[*].id"), itemsMatcher);
     }
 
     @Test
@@ -333,7 +333,7 @@ public class SearchTest extends STACTestSupport {
         assertEquals(Integer.valueOf(24), doc.read("numberMatched"));
         assertEquals(Integer.valueOf(24), doc.read("numberReturned"));
         assertThat(doc.read("features[*].collection"), not(hasItem("DISABLED_COLLECTION")));
-        assertThat((List<String>) doc.read("features[*].id"), not(hasItem("PRODUCT.IN.DISABLED.COLLECTION")));
+        assertThat(doc.read("features[*].id"), not(hasItem("PRODUCT.IN.DISABLED.COLLECTION")));
     }
 
     @Test
@@ -806,8 +806,9 @@ public class SearchTest extends STACTestSupport {
                         "S2A_OPER_MSI_L1C_TL_SGS__20170226T171842_A008785_T32TPN_N02.04"));
 
         JSONArray array = doc.read("features[*].properties");
-        for (int i = 0; i < array.size(); i++) {
-            Map<String, Object> props = (Map<String, Object>) array.get(i);
+        for (Object o : array) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> props = (Map<String, Object>) o;
             assertFalse(props.containsKey("sat:absolute_orbit"));
             assertFalse(props.containsKey("instruments"));
             // more then just mandatory props
@@ -816,14 +817,15 @@ public class SearchTest extends STACTestSupport {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testSearchPropertySelectionStaticJsonObj() throws Exception {
         DocumentContext doc = getAsJSONPath(
                 "ogc/stac/v1/search?collections=SENTINEL2&fields=properties,-properties.SENTINEL2.fullStaticObject.staticAttr1,-properties.SENTINEL2.fullStaticObject.staticAttr3.nestedStatic1&filter=datetime > DATE('2017-02-25') and datetime < DATE('2017-03-31')&sortby=id",
                 200);
 
         JSONArray array = doc.read("features[?(@.id != 'GS_TEST_PRODUCT.01')].properties");
-        for (int i = 0; i < array.size(); i++) {
-            Map<String, Object> props = (Map<String, Object>) array.get(i);
+        for (Object o : array) {
+            Map<String, Object> props = (Map<String, Object>) o;
             Map<String, Object> sentinelObject = (Map<String, Object>) props.get("SENTINEL2");
             Map<String, Object> staticValues = (Map<String, Object>) sentinelObject.get("fullStaticObject");
             assertFalse(staticValues.containsKey("staticAttr1"));
@@ -845,6 +847,7 @@ public class SearchTest extends STACTestSupport {
         assertEquals(0, doc.read(featurePath + ".links", List.class).size());
     }
 
+    @Test
     public void testIndexOptimizerVisitorConvertsDouble() throws Exception {
         List<String> collections = Arrays.asList("SAS1");
         Filter filter = getStacService().parseFilter(collections, "s1:ipf_version>2", null);

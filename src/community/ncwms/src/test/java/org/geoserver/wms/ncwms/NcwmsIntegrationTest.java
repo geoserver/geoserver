@@ -165,8 +165,7 @@ public class NcwmsIntegrationTest extends WMSTestSupport {
     private void assertUniqueColorCount(BufferedImage image, int count) {
         int[] rgb = image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth());
         Set<Integer> colors = new HashSet<>();
-        for (int i = 0; i < rgb.length; i++) {
-            int curr = rgb[i];
+        for (int curr : rgb) {
             colors.add(curr);
         }
 
@@ -242,8 +241,10 @@ public class NcwmsIntegrationTest extends WMSTestSupport {
 
         MockHttpServletResponse resp = postAsServletResponse("wms", xml);
         assertEquals("image/png", resp.getContentType());
-        InputStream is = getBinaryInputStream(resp);
-        BufferedImage image = ImageIO.read(is);
+        BufferedImage image;
+        try (InputStream is = getBinaryInputStream(resp)) {
+            image = ImageIO.read(is);
+        }
 
         // heavy rain here
         assertPixel(image, 32, 74, new Color(37, 37, 236));

@@ -10,13 +10,13 @@
 package org.geoserver.gsr;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.gsr.api.ServiceException;
 import org.geoserver.gsr.model.exception.ServiceError;
 import org.geoserver.ogcapi.APIExceptionHandler;

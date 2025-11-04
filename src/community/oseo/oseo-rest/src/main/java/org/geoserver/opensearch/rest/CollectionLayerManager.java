@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -410,9 +409,7 @@ class CollectionLayerManager {
         // go through all the band selection specs
         List<CoverageBand> result = new ArrayList<>();
         int j = 0;
-        for (int i = 0; i < bands.length; i++) {
-            String band = bands[i];
-
+        for (String band : bands) {
             // the band name could be a straight coverage name, or refer to specific band indexes
             Matcher matcher = BAND_SPEC_PATTERN.matcher(band);
             if (!matcher.matches()) {
@@ -549,7 +546,7 @@ class CollectionLayerManager {
         }
     }
 
-    private void setCogConfig(Map indexer, CollectionLayer layerConfiguration, boolean canBeEmpty) {
+    private void setCogConfig(Properties indexer, CollectionLayer layerConfiguration, boolean canBeEmpty) {
         if (layerConfiguration.isCog()) {
             indexer.put("Cog", "true");
             String cogPassword = layerConfiguration.getCogPassword();
@@ -585,7 +582,6 @@ class CollectionLayerManager {
 
     private void createStyle(CollectionLayer layerConfiguration, LayerInfo layerInfo, CoverageStoreInfo mosaicStoreInfo)
             throws IOException {
-        CoverageInfo ci = (CoverageInfo) layerInfo.getResource();
         // get the band making up the layer, if not found, use the native ones
         String[] bandSpecs = layerConfiguration.getBands();
         if (bandSpecs == null) {

@@ -16,7 +16,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
-import java.util.logging.Logger;
 import net.opengis.wfs.FeatureCollectionType;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
@@ -32,7 +31,6 @@ import org.geotools.api.referencing.crs.ProjectedCRS;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.util.logging.Logging;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
@@ -47,9 +45,8 @@ import org.springframework.util.Assert;
 
 /** Formats the output of a GetTimeSeries response as a JPG or PNG chart or as a CSV file. */
 public class GetTimeSeriesResponse extends Response {
-    private static final Logger LOGGER = Logging.getLogger(GetTimeSeriesResponse.class);
 
-    protected static final Set<String> outputFormats = new HashSet<String>();
+    protected static final Set<String> outputFormats = new HashSet<>();
 
     static {
         outputFormats.add("text/csv");
@@ -77,9 +74,8 @@ public class GetTimeSeriesResponse extends Response {
 
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
-        GetFeatureInfoRequest request =
-                (GetFeatureInfoRequest) OwsUtils.parameter(operation.getParameters(), GetFeatureInfoRequest.class);
-        String infoFormat = (String) request.getRawKvp().get("INFO_FORMAT");
+        GetFeatureInfoRequest request = OwsUtils.parameter(operation.getParameters(), GetFeatureInfoRequest.class);
+        String infoFormat = request.getRawKvp().get("INFO_FORMAT");
         if (infoFormat != null && outputFormats.contains(infoFormat.toLowerCase())) {
             return infoFormat;
         }
@@ -92,9 +88,11 @@ public class GetTimeSeriesResponse extends Response {
         Assert.notNull(value, "value is null");
         Assert.notNull(operation, "operation is null");
         Assert.isTrue(value instanceof FeatureCollectionType, "unrecognized result type:");
-        Assert.isTrue(operation.getParameters() != null
-                && operation.getParameters().length == 1
-                && operation.getParameters()[0] instanceof GetFeatureInfoRequest);
+        Assert.isTrue(
+                operation.getParameters() != null
+                        && operation.getParameters().length == 1
+                        && operation.getParameters()[0] instanceof GetFeatureInfoRequest,
+                "must be true");
 
         GetFeatureInfoRequest request = (GetFeatureInfoRequest) operation.getParameters()[0];
         FeatureCollectionType results = (FeatureCollectionType) value;
@@ -116,7 +114,7 @@ public class GetTimeSeriesResponse extends Response {
         final String timeaxisLabel = "Date / time";
 
         final List collections = results.getFeature();
-        if (collections.size() > 0) {
+        if (!collections.isEmpty()) {
             SimpleFeatureCollection fc = (SimpleFeatureCollection) collections.get(0);
             title += " of " + fc.getSchema().getName().getLocalPart();
             valueAxisLabel = fc.getSchema().getDescription().toString();
@@ -148,40 +146,41 @@ public class GetTimeSeriesResponse extends Response {
     private void writeCsv(GetFeatureInfoRequest request, FeatureCollectionType results, OutputStream output) {
         Charset charSet = wms.getCharSet();
         OutputStreamWriter osw = new OutputStreamWriter(output, charSet);
-        PrintWriter writer = new PrintWriter(osw);
+        try (PrintWriter writer = new PrintWriter(osw)) {
 
-        CoordinateReferenceSystem crs = request.getGetMapRequest().getCrs();
-        final Coordinate middle = WMS.pixelToWorld(
-                request.getXPixel(),
-                request.getYPixel(),
-                new ReferencedEnvelope(request.getGetMapRequest().getBbox(), crs),
-                request.getGetMapRequest().getWidth(),
-                request.getGetMapRequest().getHeight());
+            CoordinateReferenceSystem crs = request.getGetMapRequest().getCrs();
+            final Coordinate middle = WMS.pixelToWorld(
+                    request.getXPixel(),
+                    request.getYPixel(),
+                    new ReferencedEnvelope(request.getGetMapRequest().getBbox(), crs),
+                    request.getGetMapRequest().getWidth(),
+                    request.getGetMapRequest().getHeight());
 
-        if (crs instanceof ProjectedCRS) {
-            writer.println("# X: " + middle.y);
-            writer.println("# Y: " + middle.x);
-        } else {
-            writer.println("# Latitude: " + middle.y);
-            writer.println("# Longitude: " + middle.x);
-        }
-        final List collections = results.getFeature();
-        if (collections.size() > 0) {
-            SimpleFeatureCollection fc = (SimpleFeatureCollection) collections.get(0);
-            writer.println("Time (UTC)," + fc.getSchema().getDescription().toString());
+            if (crs instanceof ProjectedCRS) {
+                writer.println("# X: " + middle.y);
+                writer.println("# Y: " + middle.x);
+            } else {
+                writer.println("# Latitude: " + middle.y);
+                writer.println("# Longitude: " + middle.x);
+            }
+            final List collections = results.getFeature();
+            if (!collections.isEmpty()) {
+                SimpleFeatureCollection fc = (SimpleFeatureCollection) collections.get(0);
+                writer.println("Time (UTC)," + fc.getSchema().getDescription().toString());
 
-            DateFormat isoFormatter = new SimpleDateFormat(ISO8601_2000_UTC_PATTERN);
-            isoFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-            try (SimpleFeatureIterator fi = fc.features()) {
-                while (fi.hasNext()) {
-                    SimpleFeature f = fi.next();
-                    Date date = (Date) f.getAttribute("date");
-                    Double value = (Double) f.getAttribute("value");
-                    writer.println(isoFormatter.format(date) + "," + (Double.isNaN(value) ? "" : value));
+                DateFormat isoFormatter = new SimpleDateFormat(ISO8601_2000_UTC_PATTERN);
+                isoFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+                try (SimpleFeatureIterator fi = fc.features()) {
+                    while (fi.hasNext()) {
+                        SimpleFeature f = fi.next();
+                        Date date = (Date) f.getAttribute("date");
+                        Double value = (Double) f.getAttribute("value");
+                        writer.println(isoFormatter.format(date) + "," + (Double.isNaN(value) ? "" : value));
+                    }
                 }
             }
+            writer.flush();
         }
-        writer.flush();
     }
 
     @Override
@@ -193,7 +192,7 @@ public class GetTimeSeriesResponse extends Response {
                 && request.getRawKvp().get("INFO_FORMAT") != null) {
             String filename = null;
             String layers = ((String) request.getRawKvp().get("QUERY_LAYERS")).trim();
-            if (layers.length() > 0) {
+            if (!layers.isEmpty()) {
                 filename = layers.replace(",", "_").replace(":", "-");
 
                 String format = (String) request.getRawKvp().get("INFO_FORMAT");

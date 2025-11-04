@@ -2781,9 +2781,8 @@ public class XStreamPersister {
                     typedOptions.add(convertedOption);
                 } catch (Exception e) {
                     throw new ConversionException(
-                            String.format(
-                                    "option '%s' cannot be converted to attribute binding %s",
-                                    option, binding.getSimpleName()),
+                            "option '%s' cannot be converted to attribute binding %s"
+                                    .formatted(option, binding.getSimpleName()),
                             e);
                 }
             }

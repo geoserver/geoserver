@@ -9,12 +9,13 @@ import static org.geoserver.rest.RestBaseController.ROOT_PATH;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import freemarker.template.ObjectWrapper;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -25,8 +26,6 @@ import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.AtomLink;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.ows.URLMangler;
@@ -56,6 +55,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.server.PathContainer;
 import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -64,7 +64,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
+import org.springframework.web.util.pattern.PathPattern;
+import org.springframework.web.util.pattern.PathPatternParser;
 
 @RestController
 @RequestMapping(path = {ROOT_PATH + "/resource", ROOT_PATH + "/resource/**"})
@@ -95,14 +96,31 @@ public class ResourceController extends RestBaseController {
     /** Workaround to support format parameter when extension is in path */
     @Configuration
     static class ResourceControllerConfiguration {
+        private static final List<PathPattern> RESOURCE_PATTERNS;
+
+        static {
+            PathPatternParser parser = new PathPatternParser();
+            RESOURCE_PATTERNS = List.of(parser.parse("/resource"), parser.parse("/resource/**"));
+        }
+
         @Bean
         ContentNegotiationStrategy resourceContentNegotiationStrategy() {
             return webRequest -> {
                 HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-                if (new PatternsRequestCondition("/resource", "/resource/**").getMatchingCondition(request) != null) {
-                    return Collections.singletonList(ResourceController.getFormat(request));
+                if (request == null) {
+                    return List.of();
                 }
-                return new ArrayList<>();
+
+                // Use the parsed path when available; otherwise build a PathContainer from the URI
+                PathContainer lookupPath = RESTUtils.pathWithinApplication(request);
+
+                for (PathPattern pattern : RESOURCE_PATTERNS) {
+                    if (pattern.matches(lookupPath)) {
+                        return Collections.singletonList(ResourceController.getFormat(request));
+                    }
+                }
+
+                return List.of();
             };
         }
     }

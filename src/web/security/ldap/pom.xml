@@ -56,6 +56,12 @@
       <artifactId>apacheds-all</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.wicket</groupId>
+      <artifactId>wicket-tester</artifactId>
+      <version>10.7.0</version>
+      <scope>test</scope>
+    </dependency>
     <!--
       bcprov-jdk15 must be before spring-ldap-test because the latter depends
       on apacheds-all, which repackages an unsigned bcprov-jdk5 security

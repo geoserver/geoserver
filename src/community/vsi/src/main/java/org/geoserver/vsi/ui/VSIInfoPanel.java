@@ -23,7 +23,7 @@ public class VSIInfoPanel extends StoreEditPanel {
         IModel model = storeEditForm.getModel();
         setDefaultModel(model);
 
-        add(new TextParamPanel(
-                "location", new PropertyModel(model, "url"), new ResourceModel("location", "Location"), true, null));
+        add(new TextParamPanel<>(
+                "location", new PropertyModel<>(model, "url"), new ResourceModel("location", "Location"), true));
     }
 }

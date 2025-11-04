@@ -38,8 +38,7 @@ public class LibdeflateSettingsInitializer implements GeoServerInitializer {
         Iterator<CompressorSpi> cSpis = registryInstance.getSPIs(CompressorSpi.class, true);
         while (cSpis.hasNext()) {
             CompressorSpi spi = cSpis.next();
-            if (spi instanceof LibDeflateCompressorSpi compressorSpi) {
-                LibDeflateCompressorSpi compSpi = compressorSpi;
+            if (spi instanceof LibDeflateCompressorSpi compSpi) {
                 compSpi.setPriority(libdeflateSettings.compressionPriority);
                 compSpi.setMaxLevel(libdeflateSettings.maxLevel);
                 compSpi.setMinLevel(libdeflateSettings.minLevel);

@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.oauth2.resourceserver;
 
+import java.io.Serial;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
 import org.geoserver.security.config.SecurityAuthFilterConfig;
 
@@ -18,6 +19,7 @@ import org.geoserver.security.config.SecurityAuthFilterConfig;
 public class GeoServerOAuth2ResourceServerFilterConfig extends PreAuthenticatedUserNameFilterConfig
         implements SecurityAuthFilterConfig {
 
+    @Serial
     private static final long serialVersionUID = -8581346584859849111L;
 
     /**

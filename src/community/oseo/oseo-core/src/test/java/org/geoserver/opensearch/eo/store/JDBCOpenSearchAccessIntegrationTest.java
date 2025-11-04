@@ -5,7 +5,6 @@
 package org.geoserver.opensearch.eo.store;
 
 import static org.geoserver.data.test.CiteTestData.TASMANIA_DEM;
-import static org.geoserver.opensearch.eo.store.GeoServerOpenSearchTestSupport.setupBasicOpenSearch;
 import static org.geoserver.opensearch.eo.store.JDBCOpenSearchAccessTest.getAttribute;
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.LAYERS;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -42,14 +41,15 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 public class JDBCOpenSearchAccessIntegrationTest extends GeoServerSystemTestSupport {
 
-    public static final String TEST_NAMESPACE = "http://www.test.com/os/eo";
+    private static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
-    private static FilterFactory FF = CommonFactoryFinder.getFilterFactory();
+    @ClassRule
+    public static final OSEOPostGISResource postgis = new OSEOPostGISResource(false);
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -66,7 +66,7 @@ public class JDBCOpenSearchAccessIntegrationTest extends GeoServerSystemTestSupp
         service.setTitle("STAC");
         gs.save(service);
 
-        setupBasicOpenSearch(testData, getCatalog(), gs, false);
+        postgis.setupBasicOpenSearch(getCatalog(), gs);
 
         // Create fake layer matching the collection one
         Catalog catalog = getCatalog();
@@ -85,17 +85,13 @@ public class JDBCOpenSearchAccessIntegrationTest extends GeoServerSystemTestSupp
         catalog.save(li);
     }
 
-    @BeforeClass
-    public static void checkOnLine() {
-        GeoServerOpenSearchTestSupport.checkOnLine();
-    }
-
     public OpenSearchAccess getOpenSearchAccess() throws IOException {
         OpenSearchAccessProvider provider = GeoServerExtensions.bean(OpenSearchAccessProvider.class);
         return provider.getOpenSearchAccess();
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testLayers() throws Exception {
         // check expected property is there
         OpenSearchAccess osAccess = getOpenSearchAccess();

@@ -192,7 +192,7 @@ public class STACQueryablesBuilder {
     }
 
     private Schema<?> getSchema(String title, String ref) {
-        Schema schema = new Schema();
+        Schema<?> schema = new Schema<>();
         schema.set$ref(ref);
         schema.setTitle(title);
         schema.setDescription(title);
@@ -234,7 +234,7 @@ public class STACQueryablesBuilder {
     }
 
     private Schema getGenericSchema() {
-        Schema schema = new Schema();
+        Schema<?> schema = new Schema<>();
         schema.setType(AttributeType.STRING.getType());
         schema.setDescription(AttributeType.STRING.getType());
         return schema;

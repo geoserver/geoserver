@@ -17,6 +17,7 @@
     <property name="component" value="App Schema Core extension"/>
     <property name="available" value="true"/>
     <property name="enabled" value="true"/>
+    <property name="category" value="EXTENSION"/>
   </bean>
   <context:component-scan base-package="org.geoserver.complex"/>
 

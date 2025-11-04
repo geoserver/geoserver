@@ -4,7 +4,7 @@
  */
 package org.geoserver.taskmanager.tasks;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import org.geoserver.taskmanager.external.DbTable;
 import org.geoserver.taskmanager.schedule.BatchContext;
 import org.geoserver.taskmanager.schedule.ParameterInfo;

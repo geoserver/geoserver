@@ -124,9 +124,9 @@ public class ApiConfigurationSupportTest extends OGCApiTestSupport {
     }
 
     private static List<Class<?>> getFilteredConverters(Predicate<HttpMessageConverter<?>> filter) {
-        RequestMappingHandlerAdapter mappingHandlerAdapter =
-                applicationContext.getBean(RequestMappingHandlerAdapter.class);
-        return mappingHandlerAdapter.getMessageConverters().stream()
+        // the APIDipspatcher uses the APIConfiguration to create its own converters
+        APIDispatcher dispatcher = applicationContext.getBean(APIDispatcher.class);
+        return dispatcher.getConverters().stream()
                 .filter(filter)
                 .map(c -> c.getClass())
                 .collect(Collectors.toList());

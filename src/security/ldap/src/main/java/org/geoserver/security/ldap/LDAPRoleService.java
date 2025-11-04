@@ -50,7 +50,7 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
     protected Set<RoleLoadedListener> listeners = Collections.synchronizedSet(new HashSet<>());
 
     private String rolePrefix = LDAPBaseSecurityServiceConfig.ROLE_PREFIX_DEFAULT;
-    private boolean convertToUpperCase = LDAPBaseSecurityServiceConfig.CONVERT_ROLE_UPPERCASE_DEFAULT;
+    private volatile boolean convertToUpperCase = LDAPBaseSecurityServiceConfig.CONVERT_ROLE_UPPERCASE_DEFAULT;
 
     private String adminGroup;
     private String groupAdminGroup;

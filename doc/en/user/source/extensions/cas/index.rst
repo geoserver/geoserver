@@ -11,15 +11,22 @@ Installation
 
 To install the CAS module:
 
-#. Visit the :website:`website download <download>` page, locate your release, and download: :download_extension:`cas`
-   
-   The download link will be in the :guilabel:`Extensions` section under :guilabel:`Security`.
-   
-   .. warning:: Ensure to match plugin (example |release| above) version to the version of the GeoServer instance.
+#. Login, and navigate to :menuselection:`About & Status > About GeoServer` and check **Build Information**
+   to determine the exact version of GeoServer you are running.
 
- #. Extract the files in this archive to the :file:`WEB-INF/lib` directory of your GeoServer installation.
+#. Visit the :website:`website download <download>` page, change the **Archive** tab,
+   and locate your release.
+   
+   From the list of **Security** extensions download **CAS**.
 
- #. Restart GeoServer
+   * |release| example: :download_extension:`cas`
+   * |version| example: :nightly_extension:`cas`
+
+   Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example |release| above).
+
+#. Extract the files in this archive to the :file:`WEB-INF/lib` directory of your GeoServer installation.
+
+#. Restart GeoServer
 
 Configuration
 -------------

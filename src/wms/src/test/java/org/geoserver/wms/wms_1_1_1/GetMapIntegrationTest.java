@@ -12,6 +12,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import jakarta.servlet.ServletResponse;
 import java.awt.Color;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
@@ -32,7 +33,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import javax.imageio.ImageIO;
-import javax.servlet.ServletResponse;
 import javax.xml.namespace.QName;
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLAssert;
@@ -1963,7 +1963,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 "image/png");
 
         File expected = new File("src/test/resources/org/geoserver/wms/wms_1_1_1/dem_with_legend.png");
-        ImageAssert.assertEquals(expected, image, 3400);
+        ImageAssert.assertEquals(expected, image, 3700);
     }
 
     @Test

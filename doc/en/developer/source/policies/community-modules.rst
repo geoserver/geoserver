@@ -41,8 +41,8 @@ The following outlines the steps to be taken in order to add a new community mod
    purpose and function of the extension to be added. The two best ways to
    do this are:
 
-   #.  send an email to the developers list, or
-   #.  participate in a weekly IRC meeting
+   #.  send an email to the developers forum, or
+   #.  participate in a bi-weekly GeoServer meeting
 
    After explaining the intention, the approval of at least one Project 
    Steering Committee member is needed before proceeding. Getting approval is
@@ -166,8 +166,97 @@ The following outlines the steps to be taken in order to add a new community mod
       Ensure that the name of the profile matches the name of the
       community module
 
-Promoting a community module
-----------------------------
+Pending Release Profile
+-----------------------
+
+When a community module is maturing, but not yet ready for promotion to core or extension status,
+it may be assigned to the "pending release" profile.
+Modules in this profile are included in the standard release process.
+Their documentation should clearly describe the remaining work required for promotion,
+typically in terms of funding, real-world testing, or developer time.
+
+Requirements
+^^^^^^^^^^^^
+
+#. **The module is not site-specific and can be configured for use by the general GeoServer community.**
+
+   A community module of interest to multiple users would meet this goal; while a community module that has hard-coded a domain name would not.
+
+#. **The module has a designated and active maintainer**
+
+   Every core and extension module requires a module maintainer. The job of
+   the maintainer is to fix bugs and address issues which arise with the
+   module. If a community module is promoted and the maintainer "drops off",
+   the module will be removed from the pending profile.
+
+#. **The module passes all tests and QA checks**
+
+   The module must pass all tests and QA checks in order to be included
+   in the release process.
+
+#. **The module maintains 30% test coverage**
+
+   A minimum of 30% test coverage must be maintained by the module in order to
+   be included in the pending profile.
+
+#. **The module has no IP violations**
+
+   The module must not contain any code with a license or copyright that
+   violates the GPL.
+
+#. **The module has a page in the user manual**
+
+   Each module needs a page in the user manual documenting its function and
+   usage. Tutorials and walk-throughs are encouraged. The documentation should
+   clearly describe the remaining work required for promotion, to encourage
+   users, developers and funders to help complete the module.
+
+#. **The maintainer has signed the GeoServer Contributor Agreement**
+
+   OSGeo retains all copyright on code released as
+   part of GeoServer. Since core and extension modules are released along with
+   the rest of GeoServer, the maintainer of said modules must agree to assign
+   copyright of code to OSGeo.
+
+Process
+^^^^^^^
+
+#. **Get approval**
+
+   The first step is to get approval to move the module to pending status. This
+   involves clarifying to the rest of the GeoServer community that the requirements
+   are all met, as well as explaining what work is still needed to promote the module
+   to extension status. The two best ways to do this are:
+
+   #.  send an email to the developers forum, or
+   #.  participate in a bi-weekly GeoServer meeting
+
+   The approval of at least one Project Steering Committee member is needed before proceeding.
+
+#. Make sure the module has a ModuleStatus Spring bean declared, and set its status to PENDING,
+   provide contact information and a description of what is needed to promote the module to extension status.
+
+#. Include the module in the ``pending`` profile of the ``community/pom.xml`` file.
+
+#. Update the website layout to list module for download:
+   
+   * ``_layouts/nightly_30.html``
+   * ``_layouts/nightly_main.html``
+   * ``_layouts/nightly_228.html``
+   * ``_layouts/release_228.html``
+
+Removing a module from the Pending Release Profile
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A module in the pending release profile can be removed from it for one of two reasons:
+
+* The module maintainer is no longer active.
+* The module is breaking the build as a result of a core change, and the developer performing
+  the change cannot wait for the module maintainer to fix it. When the build in the module
+  is fixed, it can be re-added to the pending profile.
+
+Promoting a community module to extension
+-----------------------------------------
 
 Once a community modules becomes "stable", it may be promoted to a core or 
 extension module. Which depends on the nature of the community module. If the 
@@ -197,9 +286,15 @@ The following properties must hold true in order to promote a community module:
    the PSC. Those PSC members deeming it "unstable" must provide a reasonable
    justification for the assertion.
 
-#. **The module maintains 40% test coverage**
+#. **The module passes all tests and QA checks**
 
-   A minimum of 40% test coverage must be maintained by the module in order to
+   The module must pass all tests and QA checks in order to be included
+   in the release process.
+
+
+#. **The module maintains 60% test coverage**
+
+   A minimum of 60% test coverage must be maintained by the module in order to
    be promoted. Of course higher coverage is encouraged. The more test 
    coverage a community module the more credibility it gets.
 

@@ -29,6 +29,11 @@
     <module>oseo-assembly</module>
   </modules>
 
+  <!-- For reliable tests -->
+  <properties>
+    <user.timezone>UTC</user.timezone>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.jayway.jsonpath</groupId>

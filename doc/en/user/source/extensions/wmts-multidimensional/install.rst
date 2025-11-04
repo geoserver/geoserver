@@ -7,8 +7,17 @@ The WMS multidimensional extension is listed among the other extension downloads
 
 The installation process is similar to other GeoServer extensions:
 
-#. Download the :download_extension:`wmts-multi-dimensional`
+#. Login, and navigate to :menuselection:`About & Status > About GeoServer` and check **Build Information**
+   to determine the exact version of GeoServer you are running.
+
+#. Visit the :website:`website download <download>` page, change the **Archive** tab,
+   and locate your release.
    
+   From the list of **OGC Services** extensions download **WMTS multi-dimensional**.
+
+   * |release| example: :download_extension:`wmts-multi-dimensional`
+   * |version| example: :nightly_extension:`wmts-multi-dimensional`
+
    Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example |release| above).
 
 #. Extract the contents of the archive into the :file:`WEB-INF/lib` directory in GeoServer.

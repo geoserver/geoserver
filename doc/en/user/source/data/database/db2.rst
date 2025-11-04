@@ -20,11 +20,24 @@ Installing the Db2 extension
 GeoServer files
 ```````````````
 
-#. From the :website:`download` page locate the release of GeoServer you are running and download the Db2 extension: :download_extension:`db2`
+#. Login, and navigate to :menuselection:`About & Status > About GeoServer` and check **Build Information**
+   to determine the exact version of GeoServer you are running.
 
-   .. warning:: Ensure to match plugin (example |release| above) version to the version of the GeoServer instance.
+#. Visit the :website:`website download <download>` page, change the **Development** tab,
+   and locate the nightly release that corresponds to the GeoServer you are running.
+   
+   Follow the **Community Modules** link and download ``db2`` zip archive.
+   
+   * |version| example: :nightly_community:`db2`
+   
+   The website lists active nightly builds to provide feedback to developers,
+   you may also `browse <https://build.geoserver.org/geoserver/>`__ for earlier branches.
 
-#. Extract the contents of the archive into the :file:`WEB-INF/lib` directory of the GeoServer installation.
+#. Extract the contents of the archive into the :file:`WEB-INF/lib` directory in GeoServer.
+
+   .. warning:: Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-|version|-loader-plugin.zip above).
+
+#. Restart GeoServer.
 
 Required external files
 ```````````````````````

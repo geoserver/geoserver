@@ -8,6 +8,8 @@ package org.geoserver.ows;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -35,8 +37,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -47,9 +47,10 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload2.core.DiskFileItem;
+import org.apache.commons.fileupload2.core.DiskFileItemFactory;
+import org.apache.commons.fileupload2.core.FileItem;
+import org.apache.commons.fileupload2.jakarta.servlet6.JakartaServletFileUpload;
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.ows.util.CaseInsensitiveMap;
 import org.geoserver.ows.util.KvpMap;
@@ -88,7 +89,7 @@ import org.xml.sax.SAXException;
  *   <li>The version of the service ( optional )
  * </ol>
  *
- * <p>Additional, an OWS request can contain an arbitray number of additional parameters.
+ * <p>Additionally, an OWS request can contain an arbitrary number of additional parameters.
  *
  * <p>An OWS request can be specified in two forms. The first form is known as "KVP" in which all the parameters come in
  * the form of a set of key-value pairs. Commonly this type of request is made in an http "GET" request, the parameters
@@ -114,7 +115,7 @@ import org.xml.sax.SAXException;
  * }</pre>
  *
  * <p>When a request is received, the <b>service</b> the <b>version</b> parameters are used to locate a service
- * desciptor, an instance of {@link Service} . With the service descriptor, the <b>request</b> parameter is used to
+ * descriptor, an instance of {@link Service} . With the service descriptor, the <b>request</b> parameter is used to
  * locate the operation of the service to call.
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
@@ -130,7 +131,7 @@ public class Dispatcher extends AbstractController {
     /** Logging instance */
     static Logger logger = Logging.getLogger("org.geoserver.ows");
 
-    /** flag to control wether the dispatcher is cite compliant */
+    /** flag to control whether the dispatcher is cite compliant */
     boolean citeCompliant = false;
 
     /** thread local variable for the request */
@@ -171,10 +172,10 @@ public class Dispatcher extends AbstractController {
     }
 
     /**
-     * Sets the flag to control wether the dispatcher is cite compliante.
+     * Sets the flag to control whether the dispatcher is cite compliant.
      *
      * <p>If set to {@code true}, the dispatcher with throw exceptions when it encounters something that is not 100%
-     * compliant with CITE standards. An example would be a request which specifies the servce in the context path:
+     * compliant with CITE standards. An example would be a request which specifies the service in the context path:
      * '.../geoserver/wfs?request=...' and not with the kvp '&amp;service=wfs'.
      *
      * @param citeCompliant {@code true} to set compliance, {@code false} to unset it.
@@ -196,7 +197,7 @@ public class Dispatcher extends AbstractController {
         String lookahead = GeoServerExtensions.getProperty("XML_LOOKAHEAD", context);
         if (lookahead != null) {
             try {
-                int lookaheadValue = Integer.valueOf(lookahead);
+                int lookaheadValue = Integer.parseInt(lookahead);
                 if (lookaheadValue <= 0)
                     logger.log(
                             Level.SEVERE, "Invalid XML_LOOKAHEAD value, " + "will use " + XML_LOOKAHEAD + " instead");
@@ -327,14 +328,17 @@ public class Dispatcher extends AbstractController {
                     && httpRequest.getContentType().startsWith(SOAP_MIME)) {
                 request.setSOAP(true);
                 request.setInput(soapReader(httpRequest, request));
-            } else if (reqContentType != null && ServletFileUpload.isMultipartContent(httpRequest)) {
+            } else if (reqContentType != null && JakartaServletFileUpload.isMultipartContent(httpRequest)) {
                 // multipart form upload
-                ServletFileUpload up = new ServletFileUpload(new DiskFileItemFactory());
+                final DiskFileItemFactory factory =
+                        DiskFileItemFactory.builder().get();
+                final JakartaServletFileUpload<DiskFileItem, DiskFileItemFactory> up =
+                        new JakartaServletFileUpload<>(factory);
 
                 // treat regular form fields as additional kvp parameters
                 Map<String, FileItem> kvpFileItems = new CaseInsensitiveMap<>(new LinkedHashMap<>());
                 try {
-                    List<FileItem> items = up.parseRequest(httpRequest);
+                    final List<DiskFileItem> items = up.parseRequest(httpRequest);
                     FileItemCleanupCallback.setFileItems(items);
                     FileItem body = null;
                     for (FileItem item : items) {
@@ -365,10 +369,12 @@ public class Dispatcher extends AbstractController {
                 }
 
                 Map<String, Object> kvpItems = new LinkedHashMap<>();
-                kvpFileItems.forEach((key, value) -> {
+                for (Map.Entry<String, FileItem> entry : kvpFileItems.entrySet()) {
+                    String key = entry.getKey();
+                    FileItem value = entry.getValue();
                     kvpItems.put(key, value.getString());
                     value.delete(); // the temp file can be deleted at this point
-                });
+                }
 
                 request.setOrAppendKvp(parseKVP(request, kvpItems));
             } else {
@@ -749,7 +755,7 @@ public class Dispatcher extends AbstractController {
             throw new ServiceException(msg, "OperationNotSupported", req.getRequest());
         }
 
-        // step 4: setup the paramters
+        // step 4: setup the parameters
         Object[] parameters = new Object[operation.getParameterTypes().length];
 
         for (int i = 0; i < parameters.length; i++) {
@@ -828,7 +834,7 @@ public class Dispatcher extends AbstractController {
                 // objects to try and find one
                 // TODO: should make this configurable
                 if (requestBean != null) {
-                    // if we dont have a version thus far, check the request object
+                    // if we don't have a version thus far, check the request object
                     if (req.getService() == null) {
                         req.setService(lookupRequestBeanProperty(requestBean, "service", false));
                     }
@@ -848,7 +854,7 @@ public class Dispatcher extends AbstractController {
 
         // if we are in cite compliant mode, do some additional checks to make
         // sure the "mandatory" parameters are specified, even though we
-        // succesfully dispatched the request.
+        // successfully dispatched the request.
         if (citeCompliant) {
             // the version is mandatory for all requests but GetCapabilities
             if (!"GetCapabilities".equalsIgnoreCase(req.getRequest())) {
@@ -993,7 +999,7 @@ public class Dispatcher extends AbstractController {
                         && (!outputFormats.isEmpty())
                         && !outputFormats.contains(req.getOutputFormat())) {
 
-                    // must do a case insensitive check
+                    // must do a case-insensitive check
                     for (Object format : outputFormats) {
                         String outputFormat = (String) format;
                         if (req.getOutputFormat().equalsIgnoreCase(outputFormat)) {
@@ -1266,7 +1272,7 @@ public class Dispatcher extends AbstractController {
 
             // multiple services found, sort by version
             if (vmatches.size() > 1) {
-                // use highest version
+                // use the highest version
                 Comparator<Service> comparator = (s1, s2) -> s1.getVersion().compareTo(s2.getVersion());
 
                 Collections.sort(vmatches, comparator);
@@ -1374,7 +1380,7 @@ public class Dispatcher extends AbstractController {
         if (matches.isEmpty()) {
             // do a more lax serach, search only on the element name if the
             // namespace was unspecified
-            if (namespace == null || namespace.equals("")) {
+            if (namespace == null || namespace.isEmpty()) {
                 String msg = "No namespace specified in request, searching for " + " xml reader by element name only";
                 logger.info(msg);
 
@@ -1455,7 +1461,7 @@ public class Dispatcher extends AbstractController {
 
             // multiple readers found, sort by version and by service match
             if (vmatches.size() > 1) {
-                // use highest version
+                // use the highest version
                 Comparator<XmlRequestReader> comparator = (r1, r2) -> {
                     Version v1 = r1.getVersion();
                     Version v2 = r2.getVersion();
@@ -1657,7 +1663,7 @@ public class Dispatcher extends AbstractController {
      *   <li>{@link Request#setPostRequestElementName PostRequestElementName}: The xml root element name (e.g.
      *       {@code GetMap}, {@code GetFeature}, {@code StyledLayerDescriptor}, etc.)
      *   <li>{@link Request#setRequest}: The xml root element name, assuming it matches the request name, might be
-     *       overriten later while parting the request's query string key-value pairs
+     *       overridden later while parting the request's query string key-value pairs
      *   <li>{@link Request#setService service}: matching the xml root element's {@code service} attribute, or
      *       {@code null}
      *   <li>{@link Request#setVersion version}: matching the xml root element's {@code version} attribute, or

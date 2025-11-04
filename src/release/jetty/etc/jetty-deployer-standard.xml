@@ -1,0 +1,15 @@
+<?xml version="1.0"?><!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "https://jetty.org/configure_10_0.dtd">
+
+<!-- =============================================================== -->
+<!-- Create the standard deployer                                      -->
+<!-- =============================================================== -->
+<Configure id="Server" class="org.eclipse.jetty.server.Server">
+  <Call name="addBean">
+    <Arg>
+      <New id="Deployer" class="org.eclipse.jetty.deploy.StandardDeployer">
+        <Arg name="contexts"><Ref refid="Contexts"/></Arg>
+        <Arg name="atomicRedeploy" type="boolean"><Property name="jetty.deploy.atomicRedeploy" default="true"/></Arg>
+      </New>
+    </Arg>
+  </Call>
+</Configure>

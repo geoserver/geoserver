@@ -5,10 +5,10 @@
  */
 package org.geoserver.security.auth;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerAuthenticationProvider;
@@ -30,6 +30,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
  *
  * @author Justin Deoliveira, OpenGeo
  */
+@SuppressWarnings("deprecation")
 public class UsernamePasswordAuthenticationProvider extends GeoServerAuthenticationProvider {
 
     /** auth provider to delegate to */

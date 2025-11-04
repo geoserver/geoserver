@@ -20,6 +20,10 @@
   <name>GeoServer OpenID Connect Security Module - Web</name>
 
   <dependencies>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.geoserver.web</groupId>
@@ -81,6 +85,11 @@
           <groupId>org.keycloak</groupId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.wicket</groupId>
+      <artifactId>wicket-tester</artifactId>
+      <scope>test</scope>
     </dependency>
 
     <dependency>

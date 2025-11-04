@@ -4,9 +4,9 @@
  */
 package org.geoserver.ogcapi.v1.processes;
 
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * A utility class to handle HTTP responses in a servlet environment, specifically for writing single/multipart

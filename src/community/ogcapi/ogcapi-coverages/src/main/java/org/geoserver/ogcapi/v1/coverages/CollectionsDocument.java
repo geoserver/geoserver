@@ -69,8 +69,6 @@ public class CollectionsDocument extends AbstractDocument {
                 while (coverages.hasNext()) {
                     CoverageInfo coverage = coverages.next();
                     try {
-                        List<String> crs =
-                                CoveragesService.getCoverageCRS(coverage, Collections.singletonList("#/crs"));
                         CollectionDocument collection = getCollectionDocument(coverage, coverages);
                         next = collection;
                         return next != null;

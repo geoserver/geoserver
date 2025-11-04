@@ -38,7 +38,12 @@
             <AppenderRef ref="geoserverlogfile"/>
         </Logger>
 
-        <Logger name="org.springframework" level="warn" additivity="false">
+        <Logger name="org.springframework" level="ERROR" additivity="false">
+            <AppenderRef ref="stdout"/>
+            <AppenderRef ref="geoserverlogfile"/>
+        </Logger>
+
+        <Logger name="org.springframework.context.support" level="ERROR" additivity="false">
             <AppenderRef ref="stdout"/>
             <AppenderRef ref="geoserverlogfile"/>
         </Logger>

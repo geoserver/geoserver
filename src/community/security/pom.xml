@@ -26,45 +26,6 @@
   <profiles>
 
     <profile>
-      <id>oauth2-google</id>
-      <modules>
-        <module>oauth2</module>
-        <module>oauth2-google</module>
-      </modules>
-    </profile>
-
-    <profile>
-      <id>oauth2-github</id>
-      <modules>
-        <module>oauth2</module>
-        <module>oauth2-github</module>
-      </modules>
-    </profile>
-
-    <profile>
-      <id>oauth2-geonode</id>
-      <modules>
-        <module>oauth2</module>
-        <module>oauth2-geonode</module>
-      </modules>
-    </profile>
-
-    <profile>
-      <id>keycloak</id>
-      <modules>
-        <module>keycloak</module>
-      </modules>
-    </profile>
-
-    <profile>
-      <id>oauth2-openid-connect</id>
-      <modules>
-        <module>oauth2</module>
-        <module>oauth2-openid-connect</module>
-      </modules>
-    </profile>
-
-    <profile>
       <id>oidc</id>
       <modules>
         <module>oidc</module>
@@ -72,26 +33,8 @@
     </profile>
 
     <profile>
-      <id>oauth2-all</id>
-      <modules>
-        <module>oauth2</module>
-        <module>oauth2-google</module>
-        <module>oauth2-github</module>
-        <module>oauth2-geonode</module>
-        <module>oauth2-openid-connect</module>
-        <module>keycloak</module>
-      </modules>
-    </profile>
-
-    <profile>
       <id>communityRelease</id>
       <modules>
-        <module>oauth2</module>
-        <module>oauth2-google</module>
-        <module>oauth2-github</module>
-        <module>oauth2-geonode</module>
-        <module>oauth2-openid-connect</module>
-        <module>keycloak</module>
         <module>oidc</module>
       </modules>
     </profile>

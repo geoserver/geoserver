@@ -10,9 +10,9 @@ GeoServer's speed depends a lot on the chosen Java Runtime Environment (JRE). Th
 
 Tested:
 
-* Java 21 - GeoServer 2.28.x and above (OpenJDK tested)
-* Java 17 - GeoServer 2.28.x and above (OpenJDK tested)
-* Java 11 - GeoServer 2.15.x to GeoServer 2.27.x (OpenJDK tested)
+* Java 21 - GeoServer 2.28.x and above
+* Java 17 - GeoServer 2.28.x and above
+* Java 11 - GeoServer 2.15.x to GeoServer 2.27.x
 * Java 8 - GeoServer 2.9.x to GeoServer 2.22.x (OpenJDK and Oracle JRE tested)
 * Java 7 - GeoServer 2.6.x to GeoServer 2.8.x (OpenJDK and Oracle JRE tested)
 * Java 6 - GeoServer 2.3.x to GeoServer 2.5.x (Oracle JRE tested)
@@ -38,6 +38,6 @@ here is the full list of opens used by the build process::
 Running on Java 21
 ------------------
 
-GeoServer 2.28.x and above supports Java 21 with no additional configuration on **Tomcat 9** or newer and **Jetty 9.4.12** or newer.
+GeoServer 2.28.x and above supports Java 21 with no additional configuration on **Tomcat 9** and **Jetty 9.4.12** or newer.
 
 Running GeoServer under Java 21 on other Application Servers may require some additional configuration. Most modern Application Servers now support Java 21.

@@ -293,7 +293,7 @@ public final class GeoServerInstance {
         // dispose XSD schema, this is important for WFS schemas
         applicationContext.getBeansOfType(XSD.class).values().forEach(XSD::dispose);
         // destroy Spring application context
-        applicationContext.destroy();
+        applicationContext.close();
         // remove the data directory
         try {
             IOUtils.delete(dataDirectory);

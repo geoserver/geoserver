@@ -15,6 +15,8 @@ For really quick fixes:
       
       GitHub Preview of style.rst page
 
+   Note: you must first be signed into GitHub, and GitHub will help you create a fork from which to submit the quick fix, (we recommend that you keep the fork for next time.)
+
 #. Use the editor to modify the file
 
    .. figure:: github_edit1.png

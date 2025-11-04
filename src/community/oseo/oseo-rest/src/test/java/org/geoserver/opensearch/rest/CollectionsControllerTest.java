@@ -21,17 +21,27 @@ import java.util.zip.ZipOutputStream;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
+import org.geoserver.opensearch.eo.store.OSEOPostGISResource;
 import org.geoserver.opensearch.rest.CollectionsController.CollectionPart;
 import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.data.geojson.GeoJSONReader;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.locationtech.jts.geom.Envelope;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class CollectionsControllerTest extends OSEORestTestSupport {
+
+    @ClassRule
+    public static final OSEOPostGISResource postgis = new OSEOPostGISResource(false);
+
+    @Override
+    protected OSEOPostGISResource getOSEOPostGIS() {
+        return postgis;
+    }
 
     @Test
     public void testGetCollections() throws Exception {

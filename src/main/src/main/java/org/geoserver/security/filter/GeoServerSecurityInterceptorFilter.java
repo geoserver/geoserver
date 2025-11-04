@@ -8,12 +8,12 @@ package org.geoserver.security.filter;
 
 import static org.geoserver.platform.GeoServerExtensions.bean;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Supplier;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.security.config.SecurityInterceptorFilterConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.springframework.security.access.ConfigAttribute;
@@ -32,6 +32,7 @@ import org.springframework.security.web.access.intercept.AuthorizationFilter;
  * @author mcr
  * @author awaterme
  */
+@SuppressWarnings({"deprecation", "removal"})
 public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter {
 
     private static final AuthorizationDecision ACCESS_GRANTED = new AuthorizationDecision(true);

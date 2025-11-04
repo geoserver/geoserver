@@ -8,6 +8,13 @@ package org.geoserver.security.cas;
 
 import static org.geoserver.security.cas.CasAuthenticationFilterConfig.CasSpecificRoleSource.CustomAttribute;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Arrays;
@@ -18,13 +25,14 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import org.apereo.cas.client.configuration.ConfigurationKeys;
+import org.apereo.cas.client.proxy.ProxyGrantingTicketStorage;
+import org.apereo.cas.client.session.SingleSignOutHandler;
+import org.apereo.cas.client.util.CommonUtils;
+import org.apereo.cas.client.util.WebUtils;
+import org.apereo.cas.client.validation.Assertion;
+import org.apereo.cas.client.validation.Cas20ProxyTicketValidator;
+import org.apereo.cas.client.validation.TicketValidationException;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
@@ -35,13 +43,6 @@ import org.geoserver.security.filter.GeoServerPreAuthenticatedUserNameFilter;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.RoleCalculator;
 import org.geotools.util.logging.Logging;
-import org.jasig.cas.client.configuration.ConfigurationKeys;
-import org.jasig.cas.client.proxy.ProxyGrantingTicketStorage;
-import org.jasig.cas.client.session.SingleSignOutHandler;
-import org.jasig.cas.client.util.CommonUtils;
-import org.jasig.cas.client.validation.Assertion;
-import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
-import org.jasig.cas.client.validation.TicketValidationException;
 import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.cas.web.authentication.ServiceAuthenticationDetailsSource;
 import org.springframework.security.core.Authentication;
@@ -261,8 +262,8 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
      */
     public boolean isLogoutRequest(final HttpServletRequest request) {
         return "POST".equals(request.getMethod())
-                && CommonUtils.isNotBlank(CommonUtils.safeGetParameter(
-                        request, ConfigurationKeys.LOGOUT_PARAMETER_NAME.getDefaultValue()));
+                && CommonUtils.isNotBlank(
+                        WebUtils.safeGetParameter(request, ConfigurationKeys.LOGOUT_PARAMETER_NAME.getDefaultValue()));
     }
 
     @Override

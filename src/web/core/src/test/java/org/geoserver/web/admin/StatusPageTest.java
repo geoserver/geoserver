@@ -249,8 +249,8 @@ public class StatusPageTest extends GeoServerWicketTestSupport {
     @Test
     public void redirectUnauthorizedToLogin() throws Exception {
         logout();
-        MockHttpServletResponse response = getAsServletResponse("web/wicket/bookmarkable/org.geoserver.web.admin"
-                + ".StatusPage?29-1.ILinkListener-tabs-tabs~container-tabs-1-link");
+        MockHttpServletResponse response =
+                getAsServletResponse("web/wicket/bookmarkable/org.geoserver.web.admin" + ".StatusPage");
         assertEquals(HttpStatus.FOUND.value(), response.getStatus());
         assertEquals("./org.geoserver.web.GeoServerLoginPage", response.getHeader("Location"));
     }

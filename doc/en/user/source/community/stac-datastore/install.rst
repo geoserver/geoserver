@@ -6,19 +6,29 @@ Installing the STAC data store
 The STAC store community module is listed among the other community modules on the GeoServer download page.
 
 
-The installation process is similar to other GeoServer extensions:
+The installation process is similar to other GeoServer community modules:
 
-#. Download the STAC store nightly GeoServer community module from :download_community:`stac-datastore`.
+#. Login, and navigate to :menuselection:`About & Status > About GeoServer` and check **Build Information**
+   to determine the exact version of GeoServer you are running.
+
+#. Visit the :website:`website download <download>` page, change the **Development** tab,
+   and locate the nightly release that corresponds to the GeoServer you are running.
    
-   Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example |release| above).
+   Follow the **Community Modules** link and download ``stac-datastore`` zip archive.
+   
+   * |version| example: :nightly_community:`stac-datastore`
+   
+   The website lists active nightly builds to provide feedback to developers,
+   you may also `browse <https://build.geoserver.org/geoserver/>`__ for earlier branches.
 
 #. Extract the contents of the archive into the :file:`WEB-INF/lib` directory in GeoServer.
-   Make sure you do not create any sub-directories during the extraction process.
+
+   .. warning:: Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-|version|-stac-datastore-plugin.zip above).
 
 #. Restart GeoServer.
 
-If installation was successful, you will see a new STAC datastore entry in the "new Data Source" menu. 
+   On successful installation there is a new STAC-API datastore entry in the "new Data Source" menu. 
 
-.. figure:: images/store-selection.png
-
-   STAC datastore entry
+   .. figure:: images/store-selection.png
+   
+      STAC datastore entry

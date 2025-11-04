@@ -96,8 +96,11 @@ public class GraticulePanel extends Panel {
             final IModel paramsModel, final String paramName, final String paramTitle, final boolean required) {
         final String resourceKey = getClass().getSimpleName() + "." + paramName;
 
-        final TextParamPanel textParamPanel = new TextParamPanel(
-                paramName, new MapModel(paramsModel, paramTitle), new ResourceModel(resourceKey, paramName), required);
+        final TextParamPanel textParamPanel = new TextParamPanel<>(
+                paramName,
+                new MapModel<>(paramsModel, paramTitle),
+                new ResourceModel(resourceKey, paramName),
+                required);
         textParamPanel.getFormComponent().setType(String.class /*param.type*/);
 
         String defaultTitle = paramTitle;

@@ -5,10 +5,10 @@
 package org.geoserver.taskmanager.tasks;
 
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
+import jakarta.annotation.PostConstruct;
 import java.net.MalformedURLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.taskmanager.external.ExtTypes;
 import org.geoserver.taskmanager.external.ExternalGS;

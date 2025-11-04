@@ -23,6 +23,7 @@
 		<constructor-arg index="0" value="gs-sec-oidc-web" />
 		<constructor-arg index="1"
 			value="GeoServer Web UI Security OpenID Connect" />
+        <property name="category" value="COMMUNITY"/>
 	</bean>
     
 	<!-- ui auth provider panel info -->
@@ -94,7 +95,7 @@
     <bean id="openIdConnectOidcLoginButton" class="org.geoserver.web.LoginFormInfo">
         <!-- id must contain Spring oauthClient registrationId for enablement to work -->
         <property name="id" value="openIdConnectOidcLoginButton" />
-        <property name="titleKey" value="" />
+        <property name="titleKey" value="openidconnect.login.button.title" />
         <property name="descriptionKey" value="OAuth2LoginAuthProviderPanel.oidcDescription" />
         <property name="componentClass" value="org.geoserver.web.security.oauth2.login.OAuth2LoginAuthProviderPanel" />
         <property name="name" value="openidconnect-oidc" />

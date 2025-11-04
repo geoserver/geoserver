@@ -4,11 +4,11 @@
  */
 package org.geoserver.featurestemplating.configuration.schema;
 
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.UUID;
-import javax.xml.bind.annotation.XmlRootElement;
 import org.geoserver.featurestemplating.configuration.SupportedFormat;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.ows.Request;

@@ -104,7 +104,7 @@ public class CatalogImpl implements Catalog {
     protected GeoServerResourceLoader resourceLoader;
 
     /** extended validation switch */
-    protected boolean extendedValidation = true;
+    protected volatile boolean extendedValidation = true;
 
     protected CatalogImpl(CatalogImpl catalog) {
         this.dispatcher = catalog.dispatcher;

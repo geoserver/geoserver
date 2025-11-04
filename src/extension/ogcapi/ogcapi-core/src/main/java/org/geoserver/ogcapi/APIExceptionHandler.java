@@ -5,7 +5,7 @@
 
 package org.geoserver.ogcapi;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * A class that handles exceptions caught by {@link APIDispatcher}. Only the first handler able to process the request

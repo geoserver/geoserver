@@ -8,12 +8,12 @@ package org.geoserver.ows;
 import static org.geoserver.ows.util.ResponseUtils.baseURL;
 import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
-import javax.servlet.http.HttpServletResponse;
 import net.opengis.ows11.ExceptionReportType;
 import org.eclipse.xsd.XSDSchema;
 import org.geoserver.platform.Service;

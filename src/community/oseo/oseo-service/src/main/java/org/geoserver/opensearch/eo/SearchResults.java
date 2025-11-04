@@ -6,6 +6,8 @@ package org.geoserver.opensearch.eo;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
 import org.geotools.feature.FeatureCollection;
 
 /**
@@ -17,13 +19,17 @@ public class SearchResults {
 
     SearchRequest request;
 
-    FeatureCollection results;
+    FeatureCollection<FeatureType, Feature> results;
 
     private Integer totalResults;
 
     private final boolean nextPage;
 
-    public SearchResults(SearchRequest request, FeatureCollection results, Integer totalResults, boolean nextPage) {
+    public SearchResults(
+            SearchRequest request,
+            FeatureCollection<FeatureType, Feature> results,
+            Integer totalResults,
+            boolean nextPage) {
         super();
         this.request = request;
         this.results = results;
@@ -37,7 +43,7 @@ public class SearchResults {
     }
 
     /** The search results */
-    public FeatureCollection getResults() {
+    public FeatureCollection<FeatureType, Feature> getResults() {
         return results;
     }
 

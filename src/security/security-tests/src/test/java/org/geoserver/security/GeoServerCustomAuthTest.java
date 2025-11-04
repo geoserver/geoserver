@@ -7,9 +7,9 @@ package org.geoserver.security;
 
 import static org.junit.Assert.assertTrue;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig;

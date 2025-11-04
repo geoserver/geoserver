@@ -5,8 +5,8 @@
  */
 package org.geoserver.security.rememberme;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.security.core.Authentication;

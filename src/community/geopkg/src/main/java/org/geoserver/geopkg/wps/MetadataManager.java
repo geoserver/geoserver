@@ -15,8 +15,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.fileupload.util.LimitedInputStream;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BoundedInputStream;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geotools.geopkg.GeoPackage;
@@ -93,9 +93,9 @@ class MetadataManager {
         client.setConnectTimeout(METADATA_CONNECT_TIMEOUT);
         client.setReadTimeout(METADATA_READ_TIMEOUT);
         HTTPResponse response = client.get(new URL(link.getContent()));
-        try (InputStream is = new LimitedInputStream(response.getResponseStream(), MAX_METADATA_SIZE_BYTES) {
+        try (InputStream is = new BoundedInputStream(response.getResponseStream(), MAX_METADATA_SIZE_BYTES) {
             @Override
-            protected void raiseError(long pSizeMax, long pCount) throws IOException {
+            protected void onMaxLength(long pSizeMax, long pCount) throws IOException {
                 throw new IOException("Metadata document size exceeds maximum size of " + pSizeMax / 1024 + " KBs");
             }
         }) {

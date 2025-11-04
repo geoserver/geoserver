@@ -55,10 +55,9 @@ public class CogSettings implements Serializable {
                 return "it.geosolutions.imageioimpl.plugins.cog.AzureRangeReader";
             }
         };
-        ;
 
         abstract String getRangeReaderClassName();
-    };
+    }
 
     public static final String COG_SETTINGS_KEY = "CogSettings.Key";
 

@@ -10,6 +10,7 @@
   <bean id="wfsWebExtension" class="org.geoserver.platform.ModuleStatusImpl">
     <constructor-arg index="0" value="gs-web-wfs"/>
     <constructor-arg index="1" value="GeoServer Web UI Web Feature Service"/>
+    <property name="category" value="CORE"/>
   </bean>
   <bean id="wfsServicePage" class="org.geoserver.web.services.ServiceMenuPageInfo">
     <property name="id" value="wfs"/>

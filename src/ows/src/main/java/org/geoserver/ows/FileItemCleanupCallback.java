@@ -9,28 +9,31 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload2.core.FileItem;
 import org.geotools.util.logging.Logging;
 
 /**
  * Dispatcher callback to ensure that all uploaded files are deleted at the end of a multipart/form-data request instead
- * of relying on the garbage collector to delete the files through the
- * {@link org.apache.commons.fileupload.disk.DiskFileItem#finalize()} method.
+ * of relying on GC.
  */
 public class FileItemCleanupCallback extends AbstractDispatcherCallback {
 
     private static final Logger LOGGER = Logging.getLogger(FileItemCleanupCallback.class);
 
-    private static final ThreadLocal<List<FileItem>> FILE_ITEMS = ThreadLocal.withInitial(Collections::emptyList);
+    // Hold any concrete List<? extends FileItem<?>>, e.g., List<DiskFileItem>
+    private static final ThreadLocal<List<? extends FileItem<?>>> FILE_ITEMS =
+            ThreadLocal.withInitial(Collections::<FileItem<?>>emptyList);
 
-    public static void setFileItems(List<FileItem> fileItems) {
+    // Accept any concrete list of FileItem implementations
+    public static void setFileItems(List<? extends FileItem<?>> fileItems) {
         FILE_ITEMS.set(fileItems);
     }
 
     @Override
     public void finished(Request request) {
-        List<FileItem> items = FILE_ITEMS.get();
+        final List<? extends FileItem<?>> items = FILE_ITEMS.get();
         FILE_ITEMS.remove();
+
         if (!items.isEmpty()) {
             //noinspection EmptyTryBlock
             try (Reader ignored = request.getInput()) {
@@ -38,8 +41,14 @@ public class FileItemCleanupCallback extends AbstractDispatcherCallback {
             } catch (Exception e) {
                 LOGGER.log(Level.FINEST, "Unable to close request input", e);
             }
-            // delete all of the temp file uploads for this request
-            items.forEach(FileItem::delete);
+            // delete all the temp file uploads for this request
+            for (FileItem<?> item : items) {
+                try {
+                    item.delete();
+                } catch (Exception e) {
+                    LOGGER.log(Level.WARNING, "Unable to delete uploaded file item: " + item.getName(), e);
+                }
+            }
         }
     }
 }

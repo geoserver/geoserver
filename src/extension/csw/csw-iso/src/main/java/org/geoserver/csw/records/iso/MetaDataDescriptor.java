@@ -12,7 +12,6 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geoserver.csw.records.RecordFeatureTypeRegistryConfiguration;
 import org.geoserver.csw.records.SpatialFilterChecker;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.api.feature.type.AttributeDescriptor;
 import org.geotools.api.feature.type.AttributeType;
 import org.geotools.api.feature.type.FeatureType;
@@ -32,6 +31,8 @@ import org.xml.sax.helpers.NamespaceSupport;
 /**
  * Describes the ISO MetaData records and provides some handy constants to help building features representing
  * MD_Metadata.
+ *
+ * <p>Configured as a singleton bean in {@literal applicationContext.xml}
  *
  * @author Niels Charlier
  */
@@ -208,21 +209,5 @@ public class MetaDataDescriptor extends QueryableMappingRecordDescriptor {
     @Override
     public void verifySpatialFilters(Filter filter) {
         filter.accept(new SpatialFilterChecker(getFeatureType()), null);
-    }
-
-    // singleton
-
-    private MetaDataDescriptor() {}
-
-    private static MetaDataDescriptor INSTANCE;
-
-    public static MetaDataDescriptor getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = GeoServerExtensions.bean(MetaDataDescriptor.class);
-            if (INSTANCE == null) {
-                INSTANCE = new MetaDataDescriptor();
-            }
-        }
-        return INSTANCE;
     }
 }

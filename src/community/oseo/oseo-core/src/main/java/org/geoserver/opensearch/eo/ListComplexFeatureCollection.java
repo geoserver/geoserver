@@ -27,7 +27,7 @@ import org.geotools.util.factory.Hints;
  * @author Andrea Aime - GeoSolutions
  */
 @SuppressWarnings("unchecked")
-public class ListComplexFeatureCollection extends BaseFeatureCollection {
+public class ListComplexFeatureCollection extends BaseFeatureCollection<FeatureType, Feature> {
 
     /** wrapped list of features containing the contents */
     private List<Feature> list;
@@ -104,6 +104,7 @@ public class ListComplexFeatureCollection extends BaseFeatureCollection {
         }
 
         @Override
+        @SuppressWarnings("PMD.CloseResource")
         public void close() {
             if (iter instanceof FeatureIterator<?> iterator) {
                 iterator.close();

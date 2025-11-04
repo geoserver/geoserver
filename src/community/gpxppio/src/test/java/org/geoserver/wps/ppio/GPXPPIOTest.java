@@ -38,7 +38,7 @@ public class GPXPPIOTest extends GeoServerTestSupport {
         super.oneTimeSetUp();
 
         // init xmlunit
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("", "http://www.topografix.com/GPX/1/1");
         namespaces.put("gpx", "http://www.topografix.com/GPX/1/1");
         namespaces.put("att", "http://www.geoserver.org");

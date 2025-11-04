@@ -12,6 +12,7 @@
         <property name="component" value="Excel WPS download output extension"/>
         <property name="available" value="true"/>
         <property name="enabled" value="true"/>
+        <property name="category" value="EXTENSION"/>
     </bean>
     <bean id="ExcelPPIO" class="org.geoserver.wps.ppio.XLSXPPIO"/>
 </beans>

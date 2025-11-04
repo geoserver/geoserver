@@ -14,11 +14,13 @@
   <packaging>jar</packaging>
   <name>GeoServer Config Backup And Restore REST Module</name>
 
-  <properties></properties>
-
   <dependencies>
 
     <!-- GeoServer Resources -->
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.geoserver.community.backuprestore</groupId>
       <artifactId>gs-backup-restore-core</artifactId>
@@ -39,8 +41,8 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>commons-fileupload</groupId>
-      <artifactId>commons-fileupload</artifactId>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-fileupload2-jakarta-servlet6</artifactId>
     </dependency>
 
   </dependencies>

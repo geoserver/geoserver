@@ -20,6 +20,14 @@
 
   <dependencies>
     <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-rest</artifactId>
     </dependency>
@@ -55,7 +63,7 @@
     <dependency>
       <groupId>org.eclipse.persistence</groupId>
       <artifactId>org.eclipse.persistence.moxy</artifactId>
-      <version>2.7.4</version>
+      <version>4.0.8</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
@@ -105,6 +113,12 @@
       <groupId>com.mockrunner</groupId>
       <artifactId>mockrunner</artifactId>
       <version>0.3.6</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.wicket</groupId>
+      <artifactId>wicket-tester</artifactId>
+      <version>10.7.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>

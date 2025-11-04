@@ -472,9 +472,8 @@ public abstract class NearestMatchFinder {
                     // reverse comparison
                     return compare((Range) b, a) * -1;
                 }
-            } else if (a instanceof Range) {
+            } else if (a instanceof Range ra) {
                 if (b instanceof Range rb) {
-                    Range ra = (Range) a;
 
                     if (ra.intersects(rb)) {
                         return 0;
@@ -484,7 +483,7 @@ public abstract class NearestMatchFinder {
                         return -1;
                     }
                 } else {
-                    return compare((Range) a, b);
+                    return compare(ra, b);
                 }
             }
 

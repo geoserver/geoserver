@@ -10,6 +10,7 @@
     <bean id="wmsExtension" class="org.geoserver.platform.ModuleStatusImpl">
       <constructor-arg index="0" value="gs-wms"/>
       <constructor-arg index="1" value="GeoServer Web Map Service"/>
+      <property name="category" value="CORE"/>
     </bean>
 	<bean id="wmsLegacyLoader" class="org.geoserver.wms.WMSLoader"/>
     <bean id="wmsLoader" class="org.geoserver.wms.WMSXStreamLoader">
@@ -425,7 +426,7 @@
 		</property>
 		<property name="mappings">
 			<props>
-			    <prop key="/kml/icon/**/*">kmlIconService</prop>
+			    <prop key="/kml/icon/**">kmlIconService</prop>
 				<prop key="/wms">dispatcher</prop>
 				<prop key="/wms/*">dispatcher</prop>
 			</props>
@@ -762,6 +763,7 @@
     
     <bean id="wmsClasspathPublisherMapping"
     class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+     <property name="patternParser"><null/></property><!-- Spring 5.x backwards compatibility -->
      <property name="alwaysUseFullPath" value="true"/>
      <property name="mappings">
        <props>

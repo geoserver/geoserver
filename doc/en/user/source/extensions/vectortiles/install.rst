@@ -3,15 +3,23 @@
 Installing the Vector Tiles Extension
 -------------------------------------
 
-#. From the :website:`website download <download>` page, locate your release, and download:  :download_extension:`vectortiles`
+#. Login, and navigate to :menuselection:`About & Status > About GeoServer` and check **Build Information**
+   to determine the exact version of GeoServer you are running.
 
-   .. warning:: Make sure to match the version of the extension to the version of GeoServer.
+#. Visit the :website:`website download <download>` page, change the **Archive** tab,
+   and locate your release.
+   
+   From the list of **Output Formats** extensions download **Vector Tiles**.
+
+   * |release| example: :download_extension:`vectortiles`
+   * |version| example: :nightly_extension:`vectortiles`
+
+   Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example |release| above).
 
 #. Extract the archive and copy the contents into the GeoServer library :file:`WEB-INF/lib` directory located in:
    
   * GeoServer binary Jetty: :file:`<GEOSERVER_ROOT>/webapps/geoserver/WEB-INF/lib`
   * Default Tomcat deployment: :file:`<CATALINA_BASE>/webapps/geoserver/WEB-INF/lib`
-
 
 #. Restart GeoServer.
 

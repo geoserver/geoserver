@@ -277,7 +277,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
                     null,
                     UriComponentsBuilder.newInstance());
 
-            assertEquals(201, resp.getStatusCodeValue());
+            assertEquals(201, resp.getStatusCode().value());
             HttpHeaders headers = resp.getHeaders();
             assertNotNull(headers.getLocation());
             assertThat(headers.getLocation().getPath(), is("/security/authproviders/" + name));
@@ -303,7 +303,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
 
             ResponseEntity<RestWrapper<SecurityAuthProviderConfig>> resp =
                     controller.create(xmlRequest(provider), 0, UriComponentsBuilder.newInstance());
-            assertEquals(201, resp.getStatusCodeValue());
+            assertEquals(201, resp.getStatusCode().value());
             created.add(name);
 
             List<String> names = getSecurityManager().loadSecurityConfig().getAuthProviderNames();
@@ -512,7 +512,7 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
         AuthProviderOrder ord = new AuthProviderOrder();
         ord.setOrder(Arrays.asList(a, b));
         ResponseEntity<Void> resp = controller.reorder(xmlRequest(ord));
-        assertEquals(200, resp.getStatusCodeValue());
+        assertEquals(200, resp.getStatusCode().value());
 
         assertThat(getSecurityManager().loadSecurityConfig().getAuthProviderNames(), is(Arrays.asList(a, b)));
     }
@@ -545,8 +545,8 @@ public class AuthenticationProviderRestControllerTest extends GeoServerTestSuppo
         ResponseEntity<Void> g = controller.orderGetNotAllowed();
         ResponseEntity<Void> p = controller.orderPostNotAllowed();
         ResponseEntity<Void> d = controller.orderDeleteNotAllowed();
-        assertEquals(405, g.getStatusCodeValue());
-        assertEquals(405, p.getStatusCodeValue());
-        assertEquals(405, d.getStatusCodeValue());
+        assertEquals(405, g.getStatusCode().value());
+        assertEquals(405, p.getStatusCode().value());
+        assertEquals(405, d.getStatusCode().value());
     }
 }

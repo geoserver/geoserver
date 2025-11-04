@@ -5,11 +5,11 @@
  */
 package org.geoserver.wfs.response;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.OWS10ServiceExceptionHandler;
 import org.geoserver.ows.Request;

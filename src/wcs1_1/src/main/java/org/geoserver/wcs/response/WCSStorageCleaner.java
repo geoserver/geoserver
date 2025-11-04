@@ -23,7 +23,7 @@ import org.geotools.util.logging.Logging;
 public class WCSStorageCleaner extends TimerTask {
     Logger LOGGER = Logging.getLogger(WCSStorageCleaner.class);
 
-    long expirationDelay;
+    volatile long expirationDelay;
 
     @Override
     public void run() {

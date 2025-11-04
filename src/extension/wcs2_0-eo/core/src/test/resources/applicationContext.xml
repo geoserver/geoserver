@@ -12,6 +12,7 @@
 		<property name="component" value="Web Coverage Service 2.0 Earth Observation extensions" />
 		<property name="available" value="true" />
 		<property name="enabled" value="true" />
+        <property name="category" value="EXTENSION"/>
 	</bean>
 	
 </beans>

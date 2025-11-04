@@ -10,6 +10,7 @@
     <bean class="org.geoserver.platform.ModuleStatusImpl">
       <constructor-arg index="0" value="gs-wfs"/>
       <constructor-arg index="1" value="GeoServer Web Feature Service"/>
+      <property name="category" value="CORE"/>
     </bean>
 	<bean id="wfsLegacyLoader" class="org.geoserver.wfs.WFSLoader"/>
 	<bean id="wfsLoader" class="org.geoserver.wfs.WFSXStreamLoader">

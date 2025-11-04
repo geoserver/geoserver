@@ -8,34 +8,28 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.GregorianCalendar;
-import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import org.apache.http.Header;
-import org.apache.http.HeaderIterator;
-import org.apache.http.HttpClientConnection;
-import org.apache.http.HttpConnectionMetrics;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpEntityEnclosingRequest;
-import org.apache.http.HttpException;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
-import org.apache.http.ProtocolVersion;
-import org.apache.http.StatusLine;
-import org.apache.http.conn.ConnectionPoolTimeoutException;
-import org.apache.http.conn.ConnectionRequest;
-import org.apache.http.conn.HttpClientConnectionManager;
-import org.apache.http.conn.routing.HttpRoute;
-import org.apache.http.entity.BasicHttpEntity;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.message.BasicHeaderIterator;
-import org.apache.http.message.BasicStatusLine;
-import org.apache.http.protocol.HttpContext;
+import java.util.concurrent.CancellationException;
+import org.apache.hc.client5.http.HttpRoute;
+import org.apache.hc.client5.http.io.ConnectionEndpoint;
+import org.apache.hc.client5.http.io.HttpClientConnectionManager;
+import org.apache.hc.client5.http.io.LeaseRequest;
+import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpException;
+import org.apache.hc.core5.http.HttpVersion;
+import org.apache.hc.core5.http.impl.io.HttpRequestExecutor;
+import org.apache.hc.core5.http.io.entity.BasicHttpEntity;
+import org.apache.hc.core5.http.message.BasicClassicHttpResponse;
+import org.apache.hc.core5.http.message.BasicHeader;
+import org.apache.hc.core5.http.protocol.HttpContext;
+import org.apache.hc.core5.io.CloseMode;
+import org.apache.hc.core5.util.TimeValue;
+import org.apache.hc.core5.util.Timeout;
 
 /**
  * Mock connection manager, to emulate remote connections and get mocked data from them.
@@ -44,258 +38,146 @@ import org.apache.http.protocol.HttpContext;
  */
 @SuppressWarnings("deprecation")
 public class MockHttpClientConnectionManager implements HttpClientConnectionManager {
-    static SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+
+    static final SimpleDateFormat DATE_FMT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
 
     static {
-        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+        DATE_FMT.setTimeZone(TimeZone.getTimeZone("GMT"));
     }
 
-    private String response;
-    private boolean enableCache;
+    private final String response;
+    private final boolean enableCache;
     private int connections = 0;
 
     public MockHttpClientConnectionManager(String response, boolean enableCache) {
-        super();
         this.response = response;
         this.enableCache = enableCache;
     }
-
-    @Override
-    public void closeExpiredConnections() {}
-
-    @Override
-    public void closeIdleConnections(long arg0, TimeUnit arg1) {}
-
-    @Override
-    public void connect(HttpClientConnection arg0, HttpRoute arg1, int arg2, HttpContext arg3) throws IOException {}
-
-    @Override
-    public void releaseConnection(HttpClientConnection arg0, Object arg1, long arg2, TimeUnit arg3) {}
 
     public int getConnections() {
         return connections;
     }
 
+    // ---- HttpClientConnectionManager (HC5) ----
+
     @Override
-    public ConnectionRequest requestConnection(HttpRoute arg0, Object arg1) {
-        return new ConnectionRequest() {
+    public LeaseRequest lease(String id, HttpRoute route, Timeout requestTimeout, Object state) {
+        // Return a LeaseRequest whose get(...) yields our fake endpoint.
+        return new LeaseRequest() {
+            private volatile boolean cancelled = false;
 
             @Override
-            public boolean cancel() {
-                return false;
+            public ConnectionEndpoint get(Timeout timeout) throws InterruptedException, CancellationException {
+                if (cancelled) {
+                    throw new CancellationException("lease request cancelled");
+                }
+                connections++;
+                return new MockEndpoint();
             }
 
             @Override
-            public HttpClientConnection get(long arg0, TimeUnit arg1)
-                    throws InterruptedException, ExecutionException, ConnectionPoolTimeoutException {
-                connections++;
-                return new HttpClientConnection() {
-
-                    @Override
-                    public void shutdown() throws IOException {}
-
-                    @Override
-                    public void setSocketTimeout(int arg0) {}
-
-                    @Override
-                    public boolean isStale() {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean isOpen() {
-                        return true;
-                    }
-
-                    @Override
-                    public int getSocketTimeout() {
-                        return 0;
-                    }
-
-                    @Override
-                    public HttpConnectionMetrics getMetrics() {
-                        return null;
-                    }
-
-                    @Override
-                    public void close() throws IOException {}
-
-                    @Override
-                    public void sendRequestHeader(HttpRequest arg0) throws HttpException, IOException {}
-
-                    @Override
-                    public void sendRequestEntity(HttpEntityEnclosingRequest arg0) throws HttpException, IOException {}
-
-                    @Override
-                    public HttpResponse receiveResponseHeader() throws HttpException, IOException {
-                        return new HttpResponse() {
-
-                            List<Header> headers = new ArrayList<>();
-
-                            @Override
-                            public void addHeader(Header arg0) {}
-
-                            @Override
-                            public void addHeader(String arg0, String arg1) {}
-
-                            @Override
-                            public boolean containsHeader(String arg0) {
-                                return false;
-                            }
-
-                            @Override
-                            public Header[] getAllHeaders() {
-                                return headers.toArray(new Header[] {});
-                            }
-
-                            public Header getHeader(String header) {
-                                if ("transfer-encoding".equalsIgnoreCase(header)) {
-                                    return new BasicHeader(header, "identity");
-                                }
-                                if ("date".equalsIgnoreCase(header)) {
-
-                                    return new BasicHeader(
-                                            header, dateFormat.format(new GregorianCalendar().getTime()));
-                                }
-                                if ("cache-control".equalsIgnoreCase(header)) {
-                                    return new BasicHeader(header, enableCache ? "public" : "no-cache");
-                                }
-                                if ("content-length".equalsIgnoreCase(header)) {
-                                    return new BasicHeader(header, response.length() + "");
-                                }
-                                if ("content-encoding".equalsIgnoreCase(header)) {
-                                    return new BasicHeader(header, "identity");
-                                }
-                                if ("age".equalsIgnoreCase(header)) {
-                                    return new BasicHeader(header, "0");
-                                }
-                                if ("expires".equalsIgnoreCase(header) && enableCache) {
-                                    GregorianCalendar expires = new GregorianCalendar();
-                                    expires.add(GregorianCalendar.MINUTE, 30);
-                                    return new BasicHeader(header, dateFormat.format(expires.getTime()));
-                                }
-                                return new BasicHeader(header, "");
-                            }
-
-                            @Override
-                            public Header getFirstHeader(String header) {
-                                Header value = getHeader(header);
-                                headers.add(value);
-                                return value;
-                            }
-
-                            @Override
-                            public Header[] getHeaders(String header) {
-
-                                return new Header[] {getFirstHeader(header)};
-                            }
-
-                            @Override
-                            public Header getLastHeader(String header) {
-                                return new BasicHeader(header, "");
-                            }
-
-                            @Override
-                            public org.apache.http.params.HttpParams getParams() {
-                                // TODO Auto-generated method stub
-                                return null;
-                            }
-
-                            @Override
-                            public ProtocolVersion getProtocolVersion() {
-                                return HttpVersion.HTTP_1_1;
-                            }
-
-                            @Override
-                            public HeaderIterator headerIterator() {
-                                return new BasicHeaderIterator(headers.toArray(new Header[] {}), "mock");
-                            }
-
-                            @Override
-                            public HeaderIterator headerIterator(String header) {
-                                return new BasicHeaderIterator(headers.toArray(new Header[] {}), "mock");
-                            }
-
-                            @Override
-                            public void removeHeader(Header arg0) {}
-
-                            @Override
-                            public void removeHeaders(String arg0) {}
-
-                            @Override
-                            public void setHeader(Header arg0) {}
-
-                            @Override
-                            public void setHeader(String arg0, String arg1) {}
-
-                            @Override
-                            public void setHeaders(Header[] arg0) {}
-
-                            @Override
-                            public void setParams(org.apache.http.params.HttpParams arg0) {}
-
-                            @Override
-                            public HttpEntity getEntity() {
-                                BasicHttpEntity entity = new BasicHttpEntity();
-                                entity.setContentLength(response.length());
-                                entity.setContent(new ByteArrayInputStream(response.getBytes(StandardCharsets.UTF_8)));
-                                return entity;
-                            }
-
-                            @Override
-                            public Locale getLocale() {
-                                return Locale.ENGLISH;
-                            }
-
-                            @Override
-                            public StatusLine getStatusLine() {
-                                return new BasicStatusLine(HttpVersion.HTTP_1_1, 200, "OK");
-                            }
-
-                            @Override
-                            public void setEntity(HttpEntity arg0) {}
-
-                            @Override
-                            public void setLocale(Locale arg0) {}
-
-                            @Override
-                            public void setReasonPhrase(String arg0) throws IllegalStateException {}
-
-                            @Override
-                            public void setStatusCode(int arg0) throws IllegalStateException {}
-
-                            @Override
-                            public void setStatusLine(StatusLine arg0) {}
-
-                            @Override
-                            public void setStatusLine(ProtocolVersion arg0, int arg1) {}
-
-                            @Override
-                            public void setStatusLine(ProtocolVersion arg0, int arg1, String arg2) {}
-                        };
-                    }
-
-                    @Override
-                    public void receiveResponseEntity(HttpResponse arg0) throws HttpException, IOException {}
-
-                    @Override
-                    public boolean isResponseAvailable(int arg0) throws IOException {
-                        return true;
-                    }
-
-                    @Override
-                    public void flush() throws IOException {}
-                };
+            public boolean cancel() {
+                cancelled = true;
+                return true;
             }
         };
     }
 
     @Override
-    public void routeComplete(HttpClientConnection arg0, HttpRoute arg1, HttpContext arg2) throws IOException {}
+    public void connect(ConnectionEndpoint endpoint, TimeValue connectTimeout, HttpContext context) throws IOException {
+        // No-op: our mock endpoint is always "connected" from the test's POV.
+    }
 
     @Override
-    public void shutdown() {}
+    public void upgrade(ConnectionEndpoint endpoint, HttpContext context) throws IOException {
+        // No-op for mock
+    }
 
     @Override
-    public void upgrade(HttpClientConnection arg0, HttpRoute arg1, HttpContext arg2) throws IOException {}
+    public void release(ConnectionEndpoint endpoint, Object newState, TimeValue validDuration) {
+        // Close quietly
+        endpoint.close(CloseMode.GRACEFUL);
+    }
+
+    @Override
+    public void close(CloseMode closeMode) {
+        // No-op for mock
+    }
+
+    @Override
+    public void close() throws IOException {
+        // No-op for mock
+    }
+
+    // ---- Minimal mock endpoint that executes requests by returning a fabricated response ----
+
+    private final class MockEndpoint extends ConnectionEndpoint {
+
+        @Override
+        public boolean isConnected() {
+            return true;
+        }
+
+        @Override
+        public void setSocketTimeout(Timeout timeout) {
+            // no-op
+        }
+
+        @Override
+        public ClassicHttpResponse execute(
+                String id, ClassicHttpRequest request, HttpRequestExecutor executor, HttpContext context)
+                throws IOException, HttpException {
+            return null;
+        }
+
+        @Override
+        public ClassicHttpResponse execute(
+                String id,
+                ClassicHttpRequest request,
+                ConnectionEndpoint.RequestExecutor requestExecutor,
+                HttpContext context)
+                throws IOException, HttpException {
+
+            // Build a basic 200 OK with the same headers your old mock produced
+            BasicClassicHttpResponse resp = new BasicClassicHttpResponse(200, "OK");
+            resp.setVersion(HttpVersion.HTTP_1_1);
+
+            // Required headers
+            addHeader(resp, "transfer-encoding", "identity");
+            addHeader(resp, "date", DATE_FMT.format(new GregorianCalendar().getTime()));
+            addHeader(resp, "cache-control", enableCache ? "public" : "no-cache");
+            addHeader(resp, "content-encoding", "identity");
+            addHeader(resp, "age", "0");
+
+            if (enableCache) {
+                GregorianCalendar expires = new GregorianCalendar();
+                expires.add(GregorianCalendar.MINUTE, 30);
+                addHeader(resp, "expires", DATE_FMT.format(expires.getTime()));
+            }
+
+            // Entity
+            byte[] bytes = response.getBytes(StandardCharsets.UTF_8);
+            BasicHttpEntity entity =
+                    new BasicHttpEntity(new ByteArrayInputStream(bytes), bytes.length, ContentType.DEFAULT_BINARY);
+            resp.setEntity(entity);
+
+            addHeader(resp, "content-length", Long.toString(bytes.length));
+
+            return resp;
+        }
+
+        private void addHeader(BasicClassicHttpResponse r, String name, String value) {
+            r.addHeader((Header) new BasicHeader(name, value));
+        }
+
+        @Override
+        public void close() throws IOException {
+            // nothing to do
+        }
+
+        @Override
+        public void close(CloseMode closeMode) {
+            // nothing to do
+        }
+    }
 }

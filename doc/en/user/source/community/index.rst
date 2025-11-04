@@ -3,20 +3,34 @@
 Community modules
 =================
 
-This section is devoted to GeoServer community modules. Community modules are considered "pending" in that they are not
-officially part of the GeoServer releases. They are however built along with the
-`nightly builds <https://build.geoserver.org/geoserver/>`_, so you can download and play with them.
+This section is devoted to GeoServer community modules that are not officially part of the GeoServer releases.
+
+**Pending Community Modules**
+
+The following community modules have indicated a wish to graduate. In each case they are in need of resources,
+funding, and feedback to be completed. Please see the individual pages below for opportunities to help out.
+
+.. note:: Pending community modules are included in the community folder of each release, as they seek greater production experience.
+
+.. toctree::
+   :maxdepth: 1
+   
+   opensearch-eo/index
+
+**Remaining Community Modules**
+
+Community modules are considered experimental in nature and are considered under development.
+For that reason documentation in this section is in the process of being written and will be subject to change.
+
+Community modules are provided "as is" alongside the `nightly builds <https://build.geoserver.org/geoserver/>`_, so you can download and play with them.
 
 .. warning::
+   
+   Unlike official extensions, community modules are not released to SourceForge alongside each official GeoServer
+   release. As a consequence, using a module built against the nightly build of GeoServer with an official
+   release, risks incompatibility and often will not work.
 
-   Community modules are generally considered experimental in nature and are often under constant development. For that reason documentation in this section should not be considered solid or final and will be subject to change.
-
-.. note::
-
-   Unlike the official extensions, these modules are not released and stored on SourceForge when an official GeoServer release is produced.
-   As a consequence, using a module built against the nightly build of GeoServer with an official release won't probably work.
-
-   If you need a community module for an official release, the only way is to build it with the sources of the GitHub tag matching the release.
+   *If you need a community module to exactly match an official release, the only way is to build it with the sources of the GitHub tag matching the release.*
 
 .. please keep the following list sorted alphabetically
 
@@ -49,7 +63,6 @@ officially part of the GeoServer releases. They are however built along with the
    jdbcstore/index
    jms-cluster/index
    jwt-headers/index
-   keycloak/index
    libdeflate/index
    mbtiles/index
    monitor-kafka/index
@@ -57,11 +70,9 @@ officially part of the GeoServer releases. They are however built along with the
    ncwms/index
    netcdf-ghrsst/index
    notification/index
-   oauth2/index
    ogc-api/index
    ogr-store/index
    oidc/index
-   opensearch-eo/index
    pmtiles-store/index
    proxy-base-ext/index
    remote-wps/index

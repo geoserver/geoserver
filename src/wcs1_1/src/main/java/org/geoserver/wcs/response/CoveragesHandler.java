@@ -5,12 +5,11 @@
  */
 package org.geoserver.wcs.response;
 
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.UnsupportedFlavorException;
+import jakarta.activation.ActivationDataFlavor;
+import jakarta.activation.DataContentHandler;
+import jakarta.activation.DataSource;
 import java.io.IOException;
 import java.io.OutputStream;
-import javax.activation.DataContentHandler;
-import javax.activation.DataSource;
 import javax.xml.transform.TransformerException;
 import net.opengis.wcs11.GetCoverageType;
 import org.geoserver.catalog.CoverageInfo;
@@ -29,12 +28,12 @@ public class CoveragesHandler implements DataContentHandler {
     }
 
     @Override
-    public Object getTransferData(DataFlavor flavor, DataSource source) throws UnsupportedFlavorException, IOException {
+    public Object getTransferData(ActivationDataFlavor flavor, DataSource source) throws IOException {
         throw new UnsupportedOperationException("This handler is not able to work on the parsing side");
     }
 
     @Override
-    public DataFlavor[] getTransferDataFlavors() {
+    public ActivationDataFlavor[] getTransferDataFlavors() {
         return null;
     }
 

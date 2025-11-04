@@ -49,15 +49,16 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.cache.HttpCacheContext;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.protocol.HttpContext;
+import org.apache.hc.client5.http.ClientProtocolException;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.message.BasicHeader;
+import org.apache.hc.core5.http.protocol.HttpContext;
 import org.eclipse.imagen.InterpolationBicubic;
 import org.eclipse.imagen.InterpolationBilinear;
 import org.eclipse.imagen.InterpolationNearest;
@@ -548,10 +549,11 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
             while ((inputLine = in.readLine()) != null) builder.append(inputLine);
         }
 
+        @SuppressWarnings("PMD.CloseResource")
         MockHttpClientConnectionManager manager = new MockHttpClientConnectionManager(builder.toString(), true);
         reader = new GetMapKvpRequestReader(wms, manager);
         // no style name, but the sld has a default for that layer
-        HashMap kvp = new HashMap<>();
+        Map<String, Object> kvp = new HashMap<>();
         String url = "http://cached_sld";
         kvp.put("sld", url);
         kvp.put("layers", getLayerId(BASIC_POLYGONS));
@@ -584,6 +586,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
             while ((inputLine = in.readLine()) != null) builder.append(inputLine);
         }
 
+        @SuppressWarnings("PMD.CloseResource")
         MockHttpClientConnectionManager manager = new MockHttpClientConnectionManager(builder.toString(), false);
         reader = new GetMapKvpRequestReader(wms, manager);
         // no style name, but the sld has a default for that layer
@@ -752,9 +755,10 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
             GetMapKvpRequestReader reqReader = new GetMapKvpRequestReader(wms, null) {
 
                 @Override
-                protected CloseableHttpResponse executeRequest(HttpCacheContext cacheContext, HttpGet httpget)
-                        throws IOException {
+                protected ClassicHttpResponse executeRequest(HttpContext httpContext, HttpGet httpget)
+                        throws IOException, ClientProtocolException {
                     CloseableHttpResponse response = mock(CloseableHttpResponse.class);
+                    @SuppressWarnings("PMD.CloseResource")
                     HttpEntity entity = mock(HttpEntity.class);
 
                     when(response.getEntity()).thenReturn(entity);
@@ -778,18 +782,18 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     }
 
     @Test
+    @SuppressWarnings("PMD.CloseResource")
     public void testSldRemoteHttpConcurrency() throws Exception {
         GetMapRequest request = reader.createRequest();
         GetMapRequest spyRequest = spy(request);
 
         CloseableHttpClient client = mock(CloseableHttpClient.class);
 
-        @SuppressWarnings("PMD.CloseResource")
         CloseableHttpResponse response = mock(CloseableHttpResponse.class);
         HttpEntity entity = mock(HttpEntity.class);
 
         when(response.getEntity()).thenReturn(entity);
-        when(client.execute(any(HttpGet.class), any(HttpCacheContext.class))).thenReturn(response);
+        when(client.executeOpen(any(), any(), any())).thenReturn(response);
         when(entity.getContent())
                 .thenAnswer(invocation ->
                         GetMapKvpRequestReader.class.getResourceAsStream("BasicPolygonsLibraryNoDefault.sld"));
@@ -826,7 +830,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         service.shutdownNow();
 
         // Assert the same mock HTTP client instance was used by every thread
-        verify(client, times(numberOfThreads)).execute(any(HttpGet.class), any(HttpContext.class));
+        verify(client, times(numberOfThreads)).executeOpen(any(), any(), any());
     }
 
     @Test

@@ -141,10 +141,6 @@ To include the legacy modules::
 
    -Plegacy
    
-To include remote tests::
-
-   -PremoteOwsTests
-
 Profiles are also used manage several of the optional community plugins::
 
    -Pupload

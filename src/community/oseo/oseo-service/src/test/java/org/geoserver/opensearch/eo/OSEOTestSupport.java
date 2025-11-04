@@ -4,10 +4,10 @@
  */
 package org.geoserver.opensearch.eo;
 
-import static org.geoserver.opensearch.eo.store.GeoServerOpenSearchTestSupport.setupBasicOpenSearch;
 import static org.geoserver.opensearch.eo.store.JDBCOpenSearchAccessTest.GS_PRODUCT;
 import static org.junit.Assert.assertEquals;
 
+import jakarta.servlet.Filter;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
-import javax.servlet.Filter;
 import javax.xml.XMLConstants;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -24,15 +23,14 @@ import org.apache.commons.io.IOUtils;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.opensearch.eo.store.GeoServerOpenSearchTestSupport;
 import org.geoserver.opensearch.eo.store.JDBCOpenSearchAccessTest;
+import org.geoserver.opensearch.eo.store.OSEOPostGISResource;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.util.xml.SimpleNamespaceContext;
 import org.w3c.dom.Document;
@@ -44,7 +42,7 @@ import org.xml.sax.SAXException;
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class OSEOTestSupport extends GeoServerSystemTestSupport {
+public abstract class OSEOTestSupport extends GeoServerSystemTestSupport {
 
     private static Schema OS_SCHEMA;
 
@@ -104,7 +102,7 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
         super.onSetUp(testData);
 
         GeoServer geoServer = getGeoServer();
-        setupBasicOpenSearch(testData, getCatalog(), geoServer, populateGranulesTable());
+        getOSEOPostGIS().setupBasicOpenSearch(getCatalog(), geoServer);
 
         // add the custom product class and attribution
         OSEOInfo oseo = geoServer.getService(OSEOInfo.class);
@@ -113,15 +111,7 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
         geoServer.save(oseo);
     }
 
-    /** Allows subclasses to decide if to populate the granules table, or not */
-    protected boolean populateGranulesTable() {
-        return false;
-    }
-
-    @BeforeClass
-    public static void checkOnLine() {
-        GeoServerOpenSearchTestSupport.checkOnLine();
-    }
+    protected abstract OSEOPostGISResource getOSEOPostGIS();
 
     @Before
     public void setupNamespaces() {

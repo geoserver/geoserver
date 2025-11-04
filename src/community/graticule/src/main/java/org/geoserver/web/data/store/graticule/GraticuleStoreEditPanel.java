@@ -17,7 +17,7 @@ public final class GraticuleStoreEditPanel extends StoreEditPanel {
 
         final IModel model = storeEditForm.getModel();
         setDefaultModel(model);
-        final IModel paramsModel = new PropertyModel(model, "connectionParameters");
+        final IModel paramsModel = new PropertyModel<>(model, "connectionParameters");
 
         final WebMarkupContainer configsContainer = new WebMarkupContainer("configsContainer");
         configsContainer.setOutputMarkupId(true);

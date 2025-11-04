@@ -14,13 +14,12 @@ import java.util.logging.Level;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.gwc.layer.TileLayerCatalog;
 import org.geoserver.platform.GeoServerExtensions;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.batch.core.BatchStatus;
 
 public class GwcRestoreTest extends BackupRestoreTestSupport {
 
-    @Before
+    @Override
     public void beforeTest() throws InterruptedException {
         ensureCleanedQueues();
 

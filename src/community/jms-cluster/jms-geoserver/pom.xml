@@ -13,11 +13,6 @@
   <packaging>jar</packaging>
   <name>GeoServer JMS clustering module</name>
 
-  <properties>
-    <amq.version>5.16.8</amq.version>
-
-  </properties>
-
   <dependencies>
 
     <dependency>
@@ -30,6 +25,10 @@
     <dependency>
       <groupId>com.thoughtworks.xstream</groupId>
       <artifactId>xstream</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
     </dependency>
 
     <dependency>
@@ -56,13 +55,13 @@
     <dependency>
       <groupId>org.restlet</groupId>
       <artifactId>org.restlet</artifactId>
-      <classifier>noobjrep</classifier>
-      <!-- remove after upgrading Restlet -->
+      <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.restlet</groupId>
-      <artifactId>org.restlet</artifactId>
-      <scope>provided</scope>
+      <groupId>org.apache.wicket</groupId>
+      <artifactId>wicket-tester</artifactId>
+      <version>10.7.0</version>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
@@ -230,8 +229,8 @@
     </dependency>
 
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>

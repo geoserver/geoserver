@@ -57,6 +57,10 @@
       <artifactId>json-patch</artifactId>
       <version>1.12</version>
     </dependency>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+    </dependency>
   </dependencies>
 
 </project>

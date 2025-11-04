@@ -10,6 +10,7 @@
   <bean id="webCoreExtension" class="org.geoserver.platform.ModuleStatusImpl">
     <constructor-arg index="0" value="gs-web-core"/>
     <constructor-arg index="1" value="GeoServer Web UI Core"/>
+    <property name="category" value="CORE"/>
   </bean>
   <!-- Core web app setup -->
   <bean id="webApplication" class="org.geoserver.web.GeoServerApplication">
@@ -48,6 +49,7 @@
     class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping"
     lazy-init="true">
     <property name="alwaysUseFullPath" value="true" />
+    <property name="patternParser"><null/></property> <!-- Spring 5.x backwards compatibility -->
     <property name="mappings">
       <props>
         <prop key="/web">#{webDispatcherMappingSystem}</prop>

@@ -5,11 +5,11 @@
  */
 package org.geoserver.wcs.web.demo;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.logging.Level;
-import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.TransformerException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;

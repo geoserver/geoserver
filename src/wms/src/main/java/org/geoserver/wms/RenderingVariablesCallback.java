@@ -30,8 +30,8 @@ public class RenderingVariablesCallback implements GetMapCallback {
     @Override
     public WMSMapContent beforeRender(WMSMapContent mapContent) {
         for (Layer layer : mapContent.layers()) {
-            if (layer instanceof FeatureLayer) {
-                setQueryHintsFromEnv((FeatureLayer) layer);
+            if (layer instanceof FeatureLayer featureLayer) {
+                setQueryHintsFromEnv(featureLayer);
             }
         }
         return mapContent;

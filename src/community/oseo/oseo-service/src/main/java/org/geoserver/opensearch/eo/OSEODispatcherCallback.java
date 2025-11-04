@@ -29,8 +29,8 @@ public class OSEODispatcherCallback extends AbstractDispatcherCallback {
 
     @Override
     public Service serviceDispatched(Request request, Service service) throws ServiceException {
-        final Map kvp = request.getKvp();
-        final Map rawKvp = request.getRawKvp();
+        final Map<String, Object> kvp = request.getKvp();
+        final Map<String, Object> rawKvp = request.getRawKvp();
         if ("oseo".equalsIgnoreCase(request.getService())) {
             if ("description".equalsIgnoreCase(request.getRequest())) {
                 kvp.put("service", "oseo");
@@ -55,7 +55,7 @@ public class OSEODispatcherCallback extends AbstractDispatcherCallback {
         return service;
     }
 
-    private void cleanupRequestParams(Request request, Map rawKvp, Map kvp) {
+    private void cleanupRequestParams(Request request, Map<String, Object> rawKvp, Map<String, Object> kvp) {
         if (rawKvp == null) {
             return;
         }

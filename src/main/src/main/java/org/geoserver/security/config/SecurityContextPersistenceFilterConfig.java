@@ -5,8 +5,8 @@
  */
 package org.geoserver.security.config;
 
+import jakarta.servlet.http.HttpSession;
 import java.io.Serial;
-import javax.servlet.http.HttpSession;
 import org.springframework.security.core.Authentication;
 
 /**

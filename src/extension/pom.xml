@@ -24,8 +24,8 @@
       <artifactId>gs-platform</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
   </dependencies>
@@ -312,7 +312,7 @@
         <module>sldService</module>
       </modules>
     </profile>
-    <profile>
+    <!-- profile>
       <id>geofence</id>
       <activation>
         <property>
@@ -333,7 +333,7 @@
       <modules>
         <module>geofence</module>
       </modules>
-    </profile>
+    </profile -->
     <profile>
       <id>authkey</id>
       <modules>
@@ -455,7 +455,7 @@
         <module>mbstyle</module>
         <module>mongodb</module>
         <module>sldService</module>
-        <module>geofence</module>
+        <!-- module>geofence</module -->
         <module>authkey</module>
         <module>web-resource</module>
         <module>params-extractor</module>
@@ -510,7 +510,7 @@
         <module>mbstyle</module>
         <module>mongodb</module>
         <module>sldService</module>
-        <module>geofence</module>
+        <!-- module>geofence</module -->
         <module>authkey</module>
         <module>web-resource</module>
         <module>params-extractor</module>

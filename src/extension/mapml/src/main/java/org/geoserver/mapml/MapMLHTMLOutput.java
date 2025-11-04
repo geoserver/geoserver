@@ -6,8 +6,8 @@ package org.geoserver.mapml;
 
 import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Locale;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.mapml.tcrs.Bounds;
 import org.geoserver.mapml.tcrs.MapMLProjection;
 import org.geoserver.mapml.tcrs.Point;

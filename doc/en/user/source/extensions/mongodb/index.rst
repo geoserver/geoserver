@@ -9,11 +9,18 @@ This module provides support for MongoDB data store. This extension is build on 
 Installation
 ------------
 
-#. Visit the :website:`website download <download>` page, locate your release, and download:  :download_extension:`mongodb`
+#. Login, and navigate to :menuselection:`About & Status > About GeoServer` and check **Build Information**
+   to determine the exact version of GeoServer you are running.
 
-   The download link will be in the :guilabel:`Extensions` section under :guilabel:`Vector Formats`.
+#. Visit the :website:`website download <download>` page, change the **Archive** tab,
+   and locate your release.
    
-   .. warning:: Make sure to match the version of the extension (for example |release| above) to the version of the GeoServer instance!
+   From the list of **Vector Formats** extensions download **MongoDB**.
+
+   * |release| example: :download_extension:`mongodb`
+   * |version| example: :nightly_extension:`mongodb`
+
+   Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example |release| above).
 
 #. Extract the files in this archive to the :file:`WEB-INF/lib` directory of your GeoServer installation.
 

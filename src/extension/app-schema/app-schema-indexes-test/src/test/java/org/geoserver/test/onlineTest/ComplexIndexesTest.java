@@ -62,10 +62,8 @@ public class ComplexIndexesTest extends GeoServerSystemTestSupport {
     // test root directory
     private static final File TESTS_ROOT_DIR = createTempDirectory("complex-indexes");
     public static final String STATIONS_NAMESPACE = "http://www.stations.org/1.0";
-    public static final String OBSERVATIONS_MAPPING_NAME =
-            "ObservationType-e17fbd44-fd26-46e7-bd71-e2568073c6c5";
-    public static final String STATIONS_MAPPING_NAME =
-            "StationType-f46d72da-5591-4873-b210-5ed30a6ffb0d";
+    public static final String OBSERVATIONS_MAPPING_NAME = "ObservationType-e17fbd44-fd26-46e7-bd71-e2568073c6c5";
+    public static final String STATIONS_MAPPING_NAME = "StationType-f46d72da-5591-4873-b210-5ed30a6ffb0d";
 
     public static final StationsMappingsSetup stationSetup = new StationsMappingsSetup();
 
@@ -78,11 +76,7 @@ public class ComplexIndexesTest extends GeoServerSystemTestSupport {
             String wfsQuery = resourceToString(TEST_DATA_DIR + "/pagination-test-query.xml");
             Document responseDoc = postAsDOM("wfs", wfsQuery);
             // without pagination-limit we'd get 3 features, test we got only 1:
-            checkCount(
-                    WFS20_XPATH_ENGINE,
-                    responseDoc,
-                    1,
-                    "//wfs:FeatureCollection/wfs:member/st:Station");
+            checkCount(WFS20_XPATH_ENGINE, responseDoc, 1, "//wfs:FeatureCollection/wfs:member/st:Station");
         } finally {
             IndexUniqueVisitorIterator.uniqueVisitorBuildHook = null;
         }
@@ -98,11 +92,7 @@ public class ComplexIndexesTest extends GeoServerSystemTestSupport {
         setupXmlUnitNamespaces();
         String wfsQuery = resourceToString(TEST_DATA_DIR + "/complex-wildcard-query.xml");
         Document responseDoc = postAsDOM("wfs", wfsQuery);
-        checkCount(
-                WFS20_XPATH_ENGINE,
-                responseDoc,
-                1,
-                "//wfs:FeatureCollection/wfs:member/st:Station");
+        checkCount(WFS20_XPATH_ENGINE, responseDoc, 1, "//wfs:FeatureCollection/wfs:member/st:Station");
         checkCount(
                 WFS20_XPATH_ENGINE,
                 responseDoc,
@@ -150,17 +140,15 @@ public class ComplexIndexesTest extends GeoServerSystemTestSupport {
     public void beforeTest() {
         // instantiate WFS 1.1 xpath engine
         Pair<String, String> stationsNamespace = Pair.of("st", STATIONS_NAMESPACE);
-        WFS11_XPATH_ENGINE =
-                buildXpathEngine(
-                        Pair.of("wfs", "http://www.opengis.net/wfs"),
-                        Pair.of("gml", "http://www.opengis.net/gml"),
-                        stationsNamespace);
+        WFS11_XPATH_ENGINE = buildXpathEngine(
+                Pair.of("wfs", "http://www.opengis.net/wfs"),
+                Pair.of("gml", "http://www.opengis.net/gml"),
+                stationsNamespace);
         // instantiate WFS 2.0 xpath engine
-        WFS20_XPATH_ENGINE =
-                buildXpathEngine(
-                        Pair.of("wfs", "http://www.opengis.net/wfs/2.0"),
-                        Pair.of("gml", "http://www.opengis.net/gml/3.2"),
-                        stationsNamespace);
+        WFS20_XPATH_ENGINE = buildXpathEngine(
+                Pair.of("wfs", "http://www.opengis.net/wfs/2.0"),
+                Pair.of("gml", "http://www.opengis.net/gml/3.2"),
+                stationsNamespace);
     }
 
     @AfterClass
@@ -176,8 +164,8 @@ public class ComplexIndexesTest extends GeoServerSystemTestSupport {
     }
 
     /**
-     * Helper method that builds a XPATH engine using the base namespaces (ow, ogc, etc ...), all
-     * the namespaces available in the GeoServer catalog and the provided extra namespaces.
+     * Helper method that builds a XPATH engine using the base namespaces (ow, ogc, etc ...), all the namespaces
+     * available in the GeoServer catalog and the provided extra namespaces.
      */
     protected XpathEngine buildXpathEngine(Pair<String, String>... extraNamespaces) {
         // build xpath engine
@@ -189,12 +177,10 @@ public class ComplexIndexesTest extends GeoServerSystemTestSupport {
     }
 
     protected void setupXmlUnitNamespaces() {
-        XMLUnit.setXpathNamespaceContext(
-                new SimpleNamespaceContext(
-                        defaultNamespacesMap(
-                                Pair.of("st", STATIONS_NAMESPACE),
-                                Pair.of("wfs", "http://www.opengis.net/wfs/2.0"),
-                                Pair.of("gml", "http://www.opengis.net/gml/3.2"))));
+        XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(defaultNamespacesMap(
+                Pair.of("st", STATIONS_NAMESPACE),
+                Pair.of("wfs", "http://www.opengis.net/wfs/2.0"),
+                Pair.of("gml", "http://www.opengis.net/gml/3.2"))));
     }
 
     protected Map<String, String> defaultNamespacesMap(Pair<String, String>... extraNamespaces) {
@@ -233,15 +219,13 @@ public class ComplexIndexesTest extends GeoServerSystemTestSupport {
         builder.setStore(store);
         builder.setWorkspace(catalog.getWorkspaceByName("st"));
         // Stations
-        FeatureTypeInfo stationsFeatureType =
-                builder.buildFeatureType(new NameImpl(null, STATIONS_MAPPING_NAME));
+        FeatureTypeInfo stationsFeatureType = builder.buildFeatureType(new NameImpl(null, STATIONS_MAPPING_NAME));
         catalog.add(stationsFeatureType);
         LayerInfo stLayer = builder.buildLayer(stationsFeatureType);
         stLayer.setDefaultStyle(catalog.getStyleByName("point"));
         catalog.add(stLayer);
         // Observations
-        FeatureTypeInfo obserFeatureType =
-                builder.buildFeatureType(new NameImpl(null, OBSERVATIONS_MAPPING_NAME));
+        FeatureTypeInfo obserFeatureType = builder.buildFeatureType(new NameImpl(null, OBSERVATIONS_MAPPING_NAME));
         catalog.add(obserFeatureType);
         LayerInfo obsLayer = builder.buildLayer(obserFeatureType);
         obsLayer.setDefaultStyle(catalog.getStyleByName("point"));
@@ -285,10 +269,7 @@ public class ComplexIndexesTest extends GeoServerSystemTestSupport {
         return pgp;
     }
 
-    /**
-     * Try to load the fixture file associated with this tests, if the load file the tests are
-     * skipped.
-     */
+    /** Try to load the fixture file associated with this tests, if the load file the tests are skipped. */
     private static Properties loadFixture() {
         // get the fixture file path
         File fixFile = getFixtureFile();
@@ -317,9 +298,7 @@ public class ComplexIndexesTest extends GeoServerSystemTestSupport {
             return properties;
         } catch (Exception exception) {
             throw new RuntimeException(
-                    String.format(
-                            "Error reading fixture file '%s'.", fixtureFile.getAbsolutePath()),
-                    exception);
+                    String.format("Error reading fixture file '%s'.", fixtureFile.getAbsolutePath()), exception);
         }
     }
 
@@ -337,14 +316,14 @@ public class ComplexIndexesTest extends GeoServerSystemTestSupport {
     }
 
     /**
-     * Helper method that checks if the provided XPath expression evaluated against the provided XML
-     * document yields the expected number of matches.
+     * Helper method that checks if the provided XPath expression evaluated against the provided XML document yields the
+     * expected number of matches.
      */
-    private void checkCount(
-            XpathEngine xpathEngine, Document document, int expectedCount, String xpath) {
+    private void checkCount(XpathEngine xpathEngine, Document document, int expectedCount, String xpath) {
         try {
             // evaluate the xpath and compare the number of nodes found
-            assertEquals(expectedCount, xpathEngine.getMatchingNodes(xpath, document).getLength());
+            assertEquals(
+                    expectedCount, xpathEngine.getMatchingNodes(xpath, document).getLength());
         } catch (Exception exception) {
             throw new RuntimeException("Error evaluating xpath.", exception);
         }

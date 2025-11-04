@@ -4,6 +4,8 @@
  */
 package org.geoserver.rest.catalog;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -21,8 +23,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -94,6 +94,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
         formatToDataStoreFactory.put("appschema", "org.geotools.data.complex.AppSchemaDataAccessFactory");
         formatToDataStoreFactory.put("gpkg", "org.geotools.geopkg.GeoPkgDataStoreFactory");
         formatToDataStoreFactory.put("mbtiles", "org.geotools.mbtiles.MBTilesDataStoreFactory");
+        formatToDataStoreFactory.put("geoparquet", "org.geotools.data.geoparquet.GeoParquetDataStoreFactory");
     }
 
     protected static final Map<String, Map<String, Serializable>> dataStoreFactoryToDefaultParams = new HashMap<>();
@@ -180,6 +181,11 @@ public class DataStoreFileController extends AbstractStoreUploadController {
                     Object result = param.lookUp(paramValues);
                     if (result instanceof URL rL) {
                         directory = URLs.urlToFile(rL);
+                    }
+                } else if (String.class == param.getType() && "uri".equals(param.getName())) {
+                    Object result = param.lookUp(paramValues);
+                    if (result instanceof String path) {
+                        directory = new File(path);
                     }
                 }
 
@@ -639,6 +645,11 @@ public class DataStoreFileController extends AbstractStoreUploadController {
                 }
 
                 continue;
+            }
+
+            // it occurs usually with parquet
+            if (String.class == p.type && "uri".equals(p.key)) {
+                connectionParameters.put(p.key, f.getAbsolutePath());
             }
 
             if (p.required) {

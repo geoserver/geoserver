@@ -1,5 +1,5 @@
-Geoserver Task Manager
-======================
+Task Manager
+============
 
 The GeoServer Task Manager is a tool that allows scheduled tasks and
 batches to run inside a GeoServer instance. The initial purpose of the

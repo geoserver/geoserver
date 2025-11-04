@@ -42,24 +42,17 @@ public class ComplexMongoDBTest extends ComplexMongoDBSupport {
 
     @Test
     public void testAttributeIsNull() throws Exception {
-        Document document =
-                getAsDOM(
-                        "wfs?request=GetFeature&version=1.1.0&typename=st:StationFeature"
-                                + "&filter=<Filter><PropertyIsNull>"
-                                + "<PropertyName>StationFeature/nullableField</PropertyName>"
-                                + "</PropertyIsNull></Filter>");
-        checkCount(
-                WFS11_XPATH_ENGINE,
-                document,
-                12,
-                "/wfs:FeatureCollection/gml:featureMembers/st:StationFeature");
+        Document document = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=st:StationFeature"
+                + "&filter=<Filter><PropertyIsNull>"
+                + "<PropertyName>StationFeature/nullableField</PropertyName>"
+                + "</PropertyIsNull></Filter>");
+        checkCount(WFS11_XPATH_ENGINE, document, 12, "/wfs:FeatureCollection/gml:featureMembers/st:StationFeature");
     }
 
     /** Tests inferred attributes on improved mongodb schema generation. */
     @Test
     public void testGetStationInferredAttributes() throws Exception {
-        Document document =
-                getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=st:StationFeature");
+        Document document = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=st:StationFeature");
         checkInferredAttributes(document);
     }
 
@@ -82,33 +75,29 @@ public class ComplexMongoDBTest extends ComplexMongoDBSupport {
                         "station 2", "ok"));
     }
 
-    /**
-     * Tests the clean and rebuild schemas Rest endpoints for mongodb internal appschema datastores.
-     */
+    /** Tests the clean and rebuild schemas Rest endpoints for mongodb internal appschema datastores. */
     @Test
     public void testStationRestCleanRebuildSchema() throws Exception {
         addUser("mongo", "geoserver", null, Collections.singletonList("ROLE_ADMINISTRATOR"));
         addLayerAccessRule("*", "*", AccessMode.ADMIN, "ROLE_ADMINISTRATOR");
         login("mongo", "geoserver", "ROLE_ADMINISTRATOR");
         setRequestAuth("mongo", "geoserver");
-        Document document =
-                getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=st:StationFeature");
-        String restPath =
-                String.format(
-                        "rest/workspaces/st/appschemastores/%s/datastores/%s/cleanSchemas",
-                        STATIONS_STORE_NAME, "data_source");
+        Document document = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=st:StationFeature");
+        String restPath = String.format(
+                "rest/workspaces/st/appschemastores/%s/datastores/%s/cleanSchemas", STATIONS_STORE_NAME, "data_source");
         MockHttpServletResponse servletResponse = postAsServletResponse(restPath);
         assertEquals(200, servletResponse.getStatus());
         DataStoreInfo dataStoreInfo = getCatalog().getDataStoreByName("st", STATIONS_STORE_NAME);
-        DataAccess<? extends FeatureType, ? extends Feature> dataAccess =
-                dataStoreInfo.getDataStore(null);
+        DataAccess<? extends FeatureType, ? extends Feature> dataAccess = dataStoreInfo.getDataStore(null);
         assertTrue(dataAccess instanceof AppSchemaDataAccess);
         AppSchemaDataAccess appSchemaStore = (AppSchemaDataAccess) dataAccess;
         MongoDataStore mongoStore = null;
         List<Name> names = appSchemaStore.getNames();
         for (Name ename : names) {
             FeatureTypeMapping mapping = appSchemaStore.getMappingByName(ename);
-            if (mapping.getSourceDatastoreId().filter(id -> "data_source".equals(id)).isPresent()) {
+            if (mapping.getSourceDatastoreId()
+                    .filter(id -> "data_source".equals(id))
+                    .isPresent()) {
                 DataAccess internalStore = mapping.getSource().getDataStore();
                 if (internalStore instanceof MongoDataStore) {
                     mongoStore = (MongoDataStore) internalStore;
@@ -129,18 +118,18 @@ public class ComplexMongoDBTest extends ComplexMongoDBSupport {
 
     /** Tests the cleanSchemas Rest endpoint for mongodb internal appschema datastores. */
     public void checkStationRestrebuildMongoSchemas() throws Exception {
-        Document document =
-                getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=st:StationFeature");
+        Document document = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=st:StationFeature");
         DataStoreInfo dataStoreInfo = getCatalog().getDataStoreByName("st", STATIONS_STORE_NAME);
-        DataAccess<? extends FeatureType, ? extends Feature> dataAccess =
-                dataStoreInfo.getDataStore(null);
+        DataAccess<? extends FeatureType, ? extends Feature> dataAccess = dataStoreInfo.getDataStore(null);
         assertTrue(dataAccess instanceof AppSchemaDataAccess);
         AppSchemaDataAccess appSchemaStore = (AppSchemaDataAccess) dataAccess;
         MongoDataStore mongoStore = null;
         List<Name> names = appSchemaStore.getNames();
         for (Name ename : names) {
             FeatureTypeMapping mapping = appSchemaStore.getMappingByName(ename);
-            if (mapping.getSourceDatastoreId().filter(id -> "data_source".equals(id)).isPresent()) {
+            if (mapping.getSourceDatastoreId()
+                    .filter(id -> "data_source".equals(id))
+                    .isPresent()) {
                 DataAccess internalStore = mapping.getSource().getDataStore();
                 if (internalStore instanceof MongoDataStore) {
                     mongoStore = (MongoDataStore) internalStore;
@@ -150,38 +139,32 @@ public class ComplexMongoDBTest extends ComplexMongoDBSupport {
         }
         assertNotNull(mongoStore);
         clearSchemas(mongoStore);
-        String restPath =
-                String.format(
-                        "rest/workspaces/st/appschemastores/%s/rebuildMongoSchemas"
-                                + "?ids=58e5889ce4b02461ad5af081,58e5889ce4b02461ad5af080",
-                        STATIONS_STORE_NAME);
+        String restPath = String.format(
+                "rest/workspaces/st/appschemastores/%s/rebuildMongoSchemas"
+                        + "?ids=58e5889ce4b02461ad5af081,58e5889ce4b02461ad5af080",
+                STATIONS_STORE_NAME);
         MockHttpServletResponse servletResponse = postAsServletResponse(restPath);
         assertEquals(200, servletResponse.getStatus());
         // [stations]
         List<String> typeNames = mongoStore.getSchemaStore().typeNames();
         assertTrue(CollectionUtils.isNotEmpty(typeNames));
         // check inferredAttribute
-        SimpleFeatureType featureType =
-                mongoStore.getSchemaStore().retrieveSchema(new NameImpl("stations"));
+        SimpleFeatureType featureType = mongoStore.getSchemaStore().retrieveSchema(new NameImpl("stations"));
         AttributeDescriptor attributeDescriptor = featureType.getDescriptor("inferredAttribute");
         assertNotNull(attributeDescriptor);
         clearSchemas(mongoStore);
         // return to default schema build
-        restPath =
-                String.format(
-                        "rest/workspaces/st/appschemastores/%s/rebuildMongoSchemas" + "?max=1",
-                        STATIONS_STORE_NAME);
+        restPath = String.format(
+                "rest/workspaces/st/appschemastores/%s/rebuildMongoSchemas" + "?max=1", STATIONS_STORE_NAME);
         servletResponse = postAsServletResponse(restPath);
         assertEquals(200, servletResponse.getStatus());
         featureType = mongoStore.getSchemaStore().retrieveSchema(new NameImpl("stations"));
         attributeDescriptor = featureType.getDescriptor("inferredAttribute");
         assertNull(attributeDescriptor);
         // check all items schema generation
-        restPath =
-                String.format(
-                        "rest/workspaces/st/appschemastores/%s/datastores/%s/rebuildMongoSchemas"
-                                + "?max=-1&schema=%s",
-                        STATIONS_STORE_NAME, "data_source", STATIONS_COLLECTION_NAME);
+        restPath = String.format(
+                "rest/workspaces/st/appschemastores/%s/datastores/%s/rebuildMongoSchemas" + "?max=-1&schema=%s",
+                STATIONS_STORE_NAME, "data_source", STATIONS_COLLECTION_NAME);
         servletResponse = postAsServletResponse(restPath);
         assertEquals(200, servletResponse.getStatus());
         // [stations]
@@ -195,17 +178,13 @@ public class ComplexMongoDBTest extends ComplexMongoDBSupport {
 
     private void clearSchemas(MongoDataStore mongoStore) {
         final MongoDataStore finalMongoStore = mongoStore;
-        finalMongoStore
-                .getSchemaStore()
-                .typeNames()
-                .forEach(
-                        tn -> {
-                            try {
-                                finalMongoStore.getSchemaStore().deleteSchema(new NameImpl(tn));
-                            } catch (IOException e) {
-                                // ok
-                            }
-                        });
+        finalMongoStore.getSchemaStore().typeNames().forEach(tn -> {
+            try {
+                finalMongoStore.getSchemaStore().deleteSchema(new NameImpl(tn));
+            } catch (IOException e) {
+                // ok
+            }
+        });
         assertTrue(finalMongoStore.getSchemaStore().typeNames().isEmpty());
     }
 

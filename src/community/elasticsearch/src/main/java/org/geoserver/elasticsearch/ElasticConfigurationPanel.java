@@ -163,7 +163,7 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
     /*
      * Open modal dialog on window load
      */
-    private class OpenWindowOnLoadBehavior extends AbstractDefaultAjaxBehavior {
+    private static class OpenWindowOnLoadBehavior extends AbstractDefaultAjaxBehavior {
         @Override
         protected void respond(AjaxRequestTarget target) {
             GSModalWindow window = (GSModalWindow) getComponent();

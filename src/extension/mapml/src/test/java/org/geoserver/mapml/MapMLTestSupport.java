@@ -7,12 +7,12 @@ package org.geoserver.mapml;
 import static org.geowebcache.grid.GridSubsetFactory.createGridSubSet;
 import static org.junit.Assert.fail;
 
+import jakarta.xml.bind.DataBindingException;
+import jakarta.xml.bind.JAXBException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.Locale;
 import java.util.Map;
-import javax.xml.bind.DataBindingException;
-import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;

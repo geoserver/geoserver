@@ -23,5 +23,6 @@
 		<property name="component" value="SLD Service plugin" />
 		<property name="available" value="true" />
 		<property name="enabled" value="true" />
+        <property  name="category" value="EXTENSION"/>
 	</bean>
 </beans>

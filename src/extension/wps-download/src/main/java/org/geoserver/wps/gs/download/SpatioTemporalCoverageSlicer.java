@@ -546,7 +546,7 @@ class SpatioTemporalCoverageSlicer {
                     date = new Date(timestamp.getTime());
                 } else if (raw instanceof String string) {
                     try {
-                        date = javax.xml.bind.DatatypeConverter.parseDateTime(string)
+                        date = jakarta.xml.bind.DatatypeConverter.parseDateTime(string)
                                 .getTime();
                     } catch (Exception e) {
                         throw new IllegalArgumentException("Unable to parse TIME dimension value: " + raw, e);

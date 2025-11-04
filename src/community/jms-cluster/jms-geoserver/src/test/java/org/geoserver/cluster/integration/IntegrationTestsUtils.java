@@ -194,13 +194,12 @@ public final class IntegrationTestsUtils {
             try {
                 // get first info value for the current property
                 Object propertyValue = OwsUtils.get(infoA, propertyName);
-                if (propertyValue instanceof Info) {
+                if (propertyValue instanceof Info info1) {
                     // we are dealing with an info object, check that both properties are compatible
                     Object otherPropertyValue = OwsUtils.get(infoB, propertyName);
                     if (otherPropertyValue instanceof Info info) {
                         // recursively update this info
-                        propertyValue =
-                                updateInfoImpl((Info) propertyValue, info, getInfoInterface(propertyValue.getClass()));
+                        propertyValue = updateInfoImpl(info1, info, getInfoInterface(propertyValue.getClass()));
                     }
                 }
                 // if the property value is not a info clone it if possible

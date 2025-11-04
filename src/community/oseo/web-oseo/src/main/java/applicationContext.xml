@@ -23,7 +23,13 @@
   
   <bean id="oseoDescriptionProvider" class="org.geoserver.opensearch.eo.web.OSEODescriptionProvider">
   </bean>
-  
+
+  <bean id="oseoWebExtension" class="org.geoserver.platform.ModuleStatusImpl">
+      <constructor-arg index="0" value="gs-web-oseo"/>
+      <constructor-arg index="1" value="GeoServer OpenSearch for EO GUI"/>
+      <property name="category" value="PENDING"/>
+      <property name="contact" value="andrea.aime@geosolutionsgroup.com"/>
+  </bean>
 
 </beans>
   

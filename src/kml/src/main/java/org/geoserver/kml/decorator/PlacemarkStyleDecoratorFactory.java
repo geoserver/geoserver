@@ -187,13 +187,13 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
             String imageURL = "http://icons.opengeo.org/markers/icon-" + (poly ? "poly.1" : "line.1") + ".png";
             Icon icon = is.createAndSetIcon();
             icon.setHref(imageURL);
-            icon.setViewBoundScale(1);
+            icon.setViewBoundScale(1.);
         }
 
         /** Encodes a KML IconStyle from a point style and symbolizer. */
         protected void setIconStyle(
                 Style style, org.geotools.api.style.Style sld, IconProperties properties, KmlEncodingContext context) {
-            if (context.isLiveIcons() || properties.isExternal()) {
+            if (!context.isKmz() && (context.isLiveIcons() || properties.isExternal())) {
                 setLiveIconStyle(style, sld, properties, context);
             } else {
                 setInlineIconStyle(style, sld, properties, context);

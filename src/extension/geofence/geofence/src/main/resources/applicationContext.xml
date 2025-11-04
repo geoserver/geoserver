@@ -71,10 +71,10 @@
 
     </bean>
 
-    <bean id="remoteReaderService" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean" lazy-init="true">
+    <!--<bean id="remoteReaderService" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean" lazy-init="true">
         <property name="serviceUrl" value="${servicesUrl}"/>
         <property name="serviceInterface" value="org.geoserver.geofence.services.RuleReaderService"/>
-    </bean>
+    </bean>-->
 
     <bean id="defaultContainerAccessResolver" class="org.geoserver.geofence.containers.DefaultContainerAccessResolver">
         <property name="ruleReaderService" ref="${ruleReaderFrontend}" />

@@ -5,15 +5,15 @@
  */
 package org.geoserver.cluster.client;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.ObjectMessage;
+import jakarta.jms.Session;
 import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.ObjectMessage;
-import javax.jms.Session;
 import org.geoserver.cluster.JMSApplicationListener;
 import org.geoserver.cluster.JMSEventHandler;
 import org.geoserver.cluster.JMSEventHandlerSPI;

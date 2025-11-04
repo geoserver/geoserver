@@ -153,7 +153,7 @@ public class AccessControllersTest extends SecurityRESTTestSupport {
     }
 
     String[][] getDefaultRestRulesForDelete() {
-        return new String[][] {{"%2F**:GET,HEAD,OPTIONS", "ADMIN"}, {"%2F**:POST,DELETE,PUT", "ADMIN"}};
+        return new String[][] {{"/**:GET,HEAD,OPTIONS", "ADMIN"}, {"/**:POST,DELETE,PUT", "ADMIN"}};
     }
 
     @Test

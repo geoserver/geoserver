@@ -22,7 +22,7 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
-import org.apache.http.HttpStatus;
+import org.apache.hc.core5.http.HttpStatus;
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.geoserver.catalog.LayerGroupInfo;

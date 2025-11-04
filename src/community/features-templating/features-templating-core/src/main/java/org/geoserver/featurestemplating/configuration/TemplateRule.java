@@ -4,11 +4,11 @@
  */
 package org.geoserver.featurestemplating.configuration;
 
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.UUID;
-import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.lang3.StringUtils;
 import org.geoserver.ows.Request;
 import org.geoserver.util.XCQL;

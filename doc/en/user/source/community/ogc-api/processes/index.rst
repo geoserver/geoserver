@@ -35,13 +35,26 @@ OGC API - Processes Implementation status
 Installing the GeoServer OGC API - Processes module
 ---------------------------------------------------
 
-#. Download the OGC API nightly GeoServer community module from :download_community:`ogcapi-processes`.
+#. Login, and navigate to :menuselection:`About & Status > About GeoServer` and check **Build Information**
+   to determine the exact version of GeoServer you are running.
+
+#. Visit the :website:`website download <download>` page, change the **Development** tab,
+   and locate the nightly release that corresponds to the GeoServer you are running.
    
-   .. warning:: Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-|release|-ogcapi-processes-plugin.zip above).
+   Follow the **Community Modules** link and download ``ogcapi-processes`` zip archive.
+   
+   * |version| example: :nightly_community:`ogcapi-processes`
+   
+   The website lists active nightly builds to provide feedback to developers,
+   you may also `browse <https://build.geoserver.org/geoserver/>`__ for earlier branches.
 
-#. Extract the contents of the archive into the ``WEB-INF/lib`` directory of the GeoServer installation.
+#. Extract the contents of the archive into the :file:`WEB-INF/lib` directory in GeoServer.
 
-#. On restart the services are listed at http://localhost:8080/geoserver
+   .. warning:: Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-|version|-ogcapi-processes-plugin.zip above).
+
+#. Restart GeoServer.
+
+   On restart the services are listed at http://localhost:8080/geoserver
 
 Configuration of OGC API - Processes module
 -------------------------------------------

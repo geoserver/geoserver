@@ -7,6 +7,7 @@
 package org.geoserver.security.cas;
 
 import java.util.logging.Logger;
+import org.apereo.cas.client.proxy.ProxyGrantingTicketStorage;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.security.ConstantFilterChain;
 import org.geoserver.security.GeoServerSecurityFilterChain;
@@ -17,7 +18,6 @@ import org.geoserver.security.filter.AbstractFilterProvider;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
 import org.geoserver.security.validation.SecurityConfigValidator;
 import org.geotools.util.logging.Logging;
-import org.jasig.cas.client.proxy.ProxyGrantingTicketStorage;
 
 /**
  * Security provider for CAS

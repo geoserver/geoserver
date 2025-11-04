@@ -763,7 +763,7 @@ public class JDBCCatalogFacade implements CatalogFacade {
     }
 
     public <T extends CatalogInfo> void saveInternal(T info, Class<T> type) {
-        Assert.notNull(info);
+        Assert.notNull(info, "must not be null");
         Assert.notNull(info.getId(), "Can't modify a CatalogInfo with no id");
 
         // this object is a proxy

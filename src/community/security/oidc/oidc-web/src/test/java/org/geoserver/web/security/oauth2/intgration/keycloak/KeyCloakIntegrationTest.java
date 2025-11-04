@@ -4,22 +4,25 @@
  */
 package org.geoserver.web.security.oauth2.intgration.keycloak;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import jakarta.servlet.ServletRequestEvent;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.servlet.ServletRequestEvent;
-import javax.servlet.http.HttpSession;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.net.URIBuilder;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityFilterChain;
@@ -35,13 +38,12 @@ import org.junit.Test;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
-import org.springframework.security.web.context.HttpRequestResponseHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.context.request.RequestContextListener;
-import org.testcontainers.shaded.org.apache.commons.lang3.tuple.ImmutablePair;
-import org.testcontainers.shaded.org.apache.commons.lang3.tuple.Pair;
 
 /**
  * Basic login is as follows:
@@ -78,7 +80,7 @@ import org.testcontainers.shaded.org.apache.commons.lang3.tuple.Pair;
  */
 public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
 
-    // these are whats expected in the GS->OIDC IDP redirect URL
+    // these are what's expected in the GS->OIDC IDP redirect URL
     String oidcLogin_responseType = "code";
     String oidcLogin_client_id = "gs-client";
     String oidcLogin_scope = "openid profile email phone address";
@@ -107,8 +109,7 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
      */
     @Test
     public void test_login_as_admin() throws Exception {
-        // do login
-        var auth = login("admin", "admin");
+        OAuth2AuthenticationToken auth = login("admin", "admin");
 
         // validate the security context (auth)
         assertTrue(auth.isAuthenticated());
@@ -120,11 +121,11 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
         assertEquals(2, auth.getAuthorities().size());
         assertEquals(2, auth.getPrincipal().getAuthorities().size());
         assertTrue(auth.getAuthorities().stream()
-                .map(x -> x.getAuthority())
+                .map(GrantedAuthority::getAuthority)
                 .toList()
                 .contains("ROLE_AUTHENTICATED"));
         assertTrue(auth.getAuthorities().stream()
-                .map(x -> x.getAuthority())
+                .map(GrantedAuthority::getAuthority)
                 .toList()
                 .contains("ROLE_ADMINISTRATOR"));
 
@@ -135,12 +136,15 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
 
         // get IDTOKEN.resource_access.gs-client.roles
         // this should be "geoserverAdmin" (from keycloak)
-        var principal = (DefaultOidcUser) auth.getPrincipal();
-        var resourceAccess = (Map) principal.getIdToken().getClaim("resource_access");
+        DefaultOidcUser principal = (DefaultOidcUser) auth.getPrincipal();
+        @SuppressWarnings("rawtypes")
+        Map resourceAccess = (Map) principal.getIdToken().getClaim("resource_access");
         assertNotNull(resourceAccess);
-        var gsClient = (Map) resourceAccess.get("gs-client");
+        @SuppressWarnings("rawtypes")
+        Map gsClient = (Map) resourceAccess.get("gs-client");
         assertNotNull(gsClient);
-        var gsClientRoles = ((List) gsClient.get("roles"));
+        @SuppressWarnings("rawtypes")
+        List gsClientRoles = (List) gsClient.get("roles");
         assertEquals("geoserverAdmin", gsClientRoles.get(0));
     }
 
@@ -151,8 +155,7 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
      */
     @Test
     public void test_login_as_user_sample1() throws Exception {
-        // do login
-        var auth = login("user_sample1", "user_sample1");
+        OAuth2AuthenticationToken auth = login("user_sample1", "user_sample1");
 
         // validate the security context (auth)
         assertTrue(auth.isAuthenticated());
@@ -164,7 +167,7 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
         assertEquals(1, auth.getAuthorities().size());
         assertEquals(1, auth.getPrincipal().getAuthorities().size());
         assertTrue(auth.getAuthorities().stream()
-                .map(x -> x.getAuthority())
+                .map(GrantedAuthority::getAuthority)
                 .toList()
                 .contains("ROLE_AUTHENTICATED"));
 
@@ -183,7 +186,7 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
      */
     public OAuth2AuthenticationToken login(String keycloakUserName, String keycloakPassword) throws Exception {
         tester.startPage(new GeoServerHomePage());
-        var html = tester.getLastResponseAsString();
+        String html = tester.getLastResponseAsString();
 
         // 1. verify that there's a login button for oidc
         assertTrue(html.contains(
@@ -192,16 +195,14 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
         // 2. lets "press" the oidc login link:
         MockHttpServletRequest webRequest = createRequest("web/oauth2/authorization/oidc", true);
         MockHttpServletResponse webResponse = executeOnSecurityFilters(webRequest);
-        var session = webRequest.getSession();
+        HttpSession session = webRequest.getSession();
 
         // should be a 302 redirect to keycloak to start the login process
-        var state_nonce = validateRedirectToKeyCloak(webResponse);
-        var oidcLogin_state = state_nonce.getLeft();
-        var oidcLogin_nonce = state_nonce.getRight();
+        Pair<String, String> state_nonce = validateRedirectToKeyCloak(webResponse);
+        String oidcLogin_state = state_nonce.getLeft();
+        String oidcLogin_nonce = state_nonce.getRight();
 
-        var auth = keycloakLogin(session, oidcLogin_state, oidcLogin_nonce, keycloakUserName, keycloakPassword);
-
-        return auth;
+        return keycloakLogin(session, oidcLogin_state, oidcLogin_nonce, keycloakUserName, keycloakPassword);
     }
 
     /**
@@ -216,11 +217,11 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
         // should be a 302 redirect to keycloak to start the login process
         assertEquals(302, webResponse.getStatus());
         assertNotNull(webResponse.getHeader("Location"));
-        var redirectURL = webResponse.getHeader("Location");
+        String redirectURL = webResponse.getHeader("Location");
 
         assertTrue(redirectURL.startsWith(authServerUrl));
 
-        List<NameValuePair> params = URLEncodedUtils.parse(new URI(redirectURL), Charset.forName("UTF-8"));
+        List<NameValuePair> params = new URIBuilder(new URI(redirectURL), StandardCharsets.UTF_8).getQueryParams();
 
         assertEquals(
                 oidcLogin_responseType,
@@ -251,7 +252,7 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
                         .get()
                         .getValue());
 
-        var oidcLogin_state = params.stream()
+        String oidcLogin_state = params.stream()
                 .filter(x -> x.getName().equals("state"))
                 .findFirst()
                 .get()
@@ -262,7 +263,7 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
                 .get()
                 .getValue();
 
-        return new ImmutablePair<String, String>(oidcLogin_state, oidcLogin_nonce);
+        return new ImmutablePair<>(oidcLogin_state, oidcLogin_nonce);
     }
 
     /**
@@ -280,32 +281,33 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
             HttpSession session, String oidcLoginState, String oidcLoginNonce, String username, String password)
             throws Exception {
         // send request to keycloak to start the login process (will return with username/password form)
-        var startKeyCloakResponse = executeKeycloakStartUrl(oidcLoginState, oidcLoginNonce);
+        WebRequests.WebResponse startKeyCloakResponse = executeKeycloakStartUrl(oidcLoginState, oidcLoginNonce);
         assertEquals(200, startKeyCloakResponse.statusCode);
 
         // send keycloak the completed username/password form
-        var keycloakResponseSubmitUserPassword =
+        WebRequests.WebResponse keycloakResponseSubmitUserPassword =
                 executeKeycloakResponseSubmitUserPassword(startKeyCloakResponse, username, password);
         assertEquals(302, keycloakResponseSubmitUserPassword.statusCode);
-        var redirectCodeToGS =
+        String redirectCodeToGS =
                 keycloakResponseSubmitUserPassword.headers.get("Location").get(0);
         // should be redirecting to GS's code endpoint
         assertTrue(redirectCodeToGS.startsWith("http://localhost:8080/geoserver/web/login/oauth2/code/oidc"));
 
-        var shortenedRedirectCodeToGS = redirectCodeToGS.substring("http://localhost:8080/geoserver/".length());
+        String shortenedRedirectCodeToGS = redirectCodeToGS.substring("http://localhost:8080/geoserver/".length());
         MockHttpServletRequest webRequest = createRequest(shortenedRedirectCodeToGS);
         webRequest.setSession(session);
-        MockHttpServletResponse webResponse = executeOnSecurityFilters(webRequest);
+        // execute on security filters (response result is unused)
+        executeOnSecurityFilters(webRequest);
 
-        // get security context
-        var securityContext = new HttpSessionSecurityContextRepository()
-                .loadContext(new HttpRequestResponseHolder(webRequest, webResponse));
+        // get security context (Spring Security 6 style)
+        HttpSessionSecurityContextRepository repo = new HttpSessionSecurityContextRepository();
+        SecurityContext securityContext = repo.loadDeferredContext(webRequest).get(); // lazily resolves from session
+
         assertNotNull(securityContext);
         assertNotNull(securityContext.getAuthentication());
         assertTrue(securityContext.getAuthentication() instanceof OAuth2AuthenticationToken);
-        var authentication = (OAuth2AuthenticationToken) securityContext.getAuthentication();
 
-        return authentication;
+        return (OAuth2AuthenticationToken) securityContext.getAuthentication();
     }
 
     /**
@@ -319,16 +321,14 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
      */
     public WebRequests.WebResponse executeKeycloakResponseSubmitUserPassword(
             WebRequests.WebResponse startKeyCloakResponse, String username, String password) throws Exception {
-        Pattern pattern =
-                Pattern.compile(".* action=\"([^\"]+)\".*", Pattern.DOTALL); // Compile the regex into a Pattern object
+        Pattern pattern = Pattern.compile(".* action=\"([^\"]+)\".*", Pattern.DOTALL);
         Matcher matcher = pattern.matcher(startKeyCloakResponse.body);
         if (!matcher.matches()) {
             throw new Exception("keycloak - couldnt find the login form's action url");
         }
         String postUrl = matcher.group(1).replaceAll("&amp;", "&");
         String postBody = "username=" + username + "&password=" + password + "&credentialId=";
-        var response = WebRequests.webRequestPOSTForm(postUrl, postBody, startKeyCloakResponse.cookieManager);
-        return response;
+        return WebRequests.webRequestPOSTForm(postUrl, postBody, startKeyCloakResponse.cookieManager);
     }
 
     /**
@@ -357,14 +357,13 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
      * @param request request to execute
      * @return response from GS
      * @throws IOException error occurred
-     * @throws javax.servlet.ServletException error occurred
+     * @throws jakarta.servlet.ServletException error occurred
      */
     private MockHttpServletResponse executeOnSecurityFilters(MockHttpServletRequest request)
-            throws IOException, javax.servlet.ServletException {
+            throws IOException, jakarta.servlet.ServletException {
         // for session local support in Spring
         new RequestContextListener().requestInitialized(new ServletRequestEvent(request.getServletContext(), request));
 
-        // run on the
         MockFilterChain chain = new MockFilterChain();
         MockHttpServletResponse response = new MockHttpServletResponse();
         GeoServerSecurityFilterChainProxy filterChainProxy =
@@ -384,7 +383,7 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
-        var baseKeycloakUrl = keycloakContainer.getAuthServerUrl() + "/realms/gs-realm/protocol/openid-connect";
+        String baseKeycloakUrl = keycloakContainer.getAuthServerUrl() + "/realms/gs-realm/protocol/openid-connect";
         // setup openid
         GeoServerSecurityManager manager = getSecurityManager();
         GeoServerOAuth2LoginFilterConfig filterConfig = new GeoServerOAuth2LoginFilterConfig();
@@ -415,7 +414,7 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
 
         filterConfig.setOidcForceAuthorizationUriHttps(false);
         filterConfig.setOidcForceTokenUriHttps(false);
-        //        filterConfig.setOidcJwsAlgorithmName(JwsAlgorithms.HS256);
+        // filterConfig.setOidcJwsAlgorithmName(JwsAlgorithms.HS256);
         manager.saveFilter(filterConfig);
 
         // add our oidc to the WEB chain

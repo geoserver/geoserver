@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        jdk: [ 17, 21 ]
+        jdk: [ 17, 21, 25 ]
         dist: [ 'temurin' ]
         os: [ 'ubuntu-22.04' ]
     runs-on: ${{ matrix.os }}
@@ -47,7 +47,7 @@ jobs:
     - name: Build with Maven
       run: |
         mvn --version
-        mvn -B -ntp -U -T1C -fae -Prelease -f src/pom.xml clean install
+        mvn -B -ntp -U -T1C -fae -Prelease,pending -f src/pom.xml clean install
     - name: Build community modules without tests
       run: |
         mvn -B -ntp -nsu -U -T1C -fae -DskipTests -PcommunityRelease -f src/community/pom.xml clean install

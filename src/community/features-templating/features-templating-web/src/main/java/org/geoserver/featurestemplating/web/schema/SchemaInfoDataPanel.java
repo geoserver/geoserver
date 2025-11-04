@@ -8,6 +8,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -90,6 +91,7 @@ public class SchemaInfoDataPanel extends Panel {
         wsDropDown = new DropDownChoice<>("workspace", new PropertyModel<>(model, "workspace"), getWorkspaces());
         wsDropDown.setNullValid(true);
         wsDropDown.add(new OnChangeAjaxBehavior() {
+            @Serial
             private static final long serialVersionUID = 732177308220189475L;
 
             @Override
@@ -140,6 +142,7 @@ public class SchemaInfoDataPanel extends Panel {
     AjaxSubmitLink uploadLink() {
         return new ConfirmOverwriteSubmitLink("upload", page.getForm()) {
 
+            @Serial
             private static final long serialVersionUID = 658341311654601761L;
 
             @Override
@@ -193,6 +196,7 @@ public class SchemaInfoDataPanel extends Panel {
 
     class ConfirmOverwriteSubmitLink extends AjaxSubmitLink {
 
+        @Serial
         private static final long serialVersionUID = 2673499149884774636L;
 
         public ConfirmOverwriteSubmitLink(String id, Form<?> form) {
@@ -204,6 +208,7 @@ public class SchemaInfoDataPanel extends Panel {
             super.updateAjaxAttributes(attributes);
             attributes.getAjaxCallListeners().add(new AjaxCallListener() {
                 /** serialVersionUID */
+                @Serial
                 private static final long serialVersionUID = 8637613472102572505L;
 
                 @Override

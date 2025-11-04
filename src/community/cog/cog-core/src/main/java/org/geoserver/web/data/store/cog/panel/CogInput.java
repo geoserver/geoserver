@@ -52,7 +52,7 @@ public class CogInput extends Panel {
 
         // the text field, with a decorator for validations
         FileRootsFinder rootsFinder = new FileRootsFinder(false);
-        textField = new AutoCompleteTextField<String>("paramValue", getCogFileModel(paramValue, controlFlagModel)) {
+        textField = new AutoCompleteTextField<>("paramValue", getCogFileModel(paramValue, controlFlagModel)) {
             @Override
             protected Iterator<String> getChoices(String input) {
                 try {
@@ -89,7 +89,7 @@ public class CogInput extends Panel {
     }
 
     protected Component chooserButton(final String windowTitle) {
-        AjaxSubmitLink link = new AjaxSubmitLink("chooser") {
+        return new AjaxSubmitLink("chooser") {
 
             @Override
             public boolean getDefaultFormProcessing() {
@@ -101,11 +101,11 @@ public class CogInput extends Panel {
                 File file = null;
                 textField.processInput();
                 String input = textField.getConvertedInput();
-                if (input != null && !input.equals("")) {
+                if (input != null && !input.isEmpty()) {
                     file = new File(input);
                 }
 
-                GeoServerFileChooser chooser = new GeoServerFileChooser(dialog.getContentId(), new Model<File>(file)) {
+                GeoServerFileChooser chooser = new GeoServerFileChooser(dialog.getContentId(), new Model<>(file)) {
                     @Serial
                     private static final long serialVersionUID = -7096642192491726498L;
 
@@ -120,7 +120,6 @@ public class CogInput extends Panel {
                             dialog.close(target.get());
                         }
                     }
-                    ;
                 };
                 chooser.setFileTableHeight(null);
                 chooser.setFilter(fileFilter);
@@ -129,7 +128,6 @@ public class CogInput extends Panel {
                 dialog.show(target);
             }
         };
-        return link;
     }
 
     /** The text field stored inside the panel. */

@@ -14,6 +14,8 @@ import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_FEATURE_FTL;
 import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_FEATURE_HEAD_FTL;
 
 import freemarker.template.TemplateNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigInteger;
@@ -29,8 +31,6 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.JAXBException;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;

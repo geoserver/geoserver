@@ -105,7 +105,7 @@ public class ItemsTest extends STACTestSupport {
                 getAsJSONPath("sf/ogc/stac/v1/collections/SENTINEL2/items?limit=50", 200);
         assertEquals(Integer.valueOf(19), docMatchingWorkspace.read("numberReturned"));
         // No match, but has null in workspace array and this is the global workspace
-        DocumentContext docNullWorkspace = getAsJSONPath("ogc/stac/v1/collections/SAS1/items?limit=50", 200);
+        getAsJSONPath("ogc/stac/v1/collections/SAS1/items?limit=50", 200);
         assertEquals(Integer.valueOf(19), docMatchingWorkspace.read("numberReturned"));
     }
 
@@ -129,7 +129,7 @@ public class ItemsTest extends STACTestSupport {
     @Test
     public void testSentinelItemJSONWorkspace() throws Exception {
         // matched workspace
-        DocumentContext json = getAsJSONPath(
+        getAsJSONPath(
                 "sf/ogc/stac/v1/collections/SENTINEL2/items/S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04",
                 200);
 
@@ -138,8 +138,7 @@ public class ItemsTest extends STACTestSupport {
                 "cite/ogc/stac/v1/collections/SENTINEL2/items/S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04",
                 404);
         // No workspace set
-        DocumentContext jsonNoWorkspaceSet =
-                getAsJSONPath("sf/ogc/stac/v1/collections/SAS1/items/SAS1_20180227102021.02", 200);
+        getAsJSONPath("sf/ogc/stac/v1/collections/SAS1/items/SAS1_20180227102021.02", 200);
     }
 
     @Test
@@ -484,7 +483,7 @@ public class ItemsTest extends STACTestSupport {
                 200);
 
         assertThat(
-                (List<String>) doc.read("features[*].id"),
+                doc.read("features[*].id"),
                 contains(
                         "S2A_OPER_MSI_L1C_TL_SGS__20170226T171842_A008785_T32TPN_N02.04",
                         "S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04"));
@@ -497,7 +496,7 @@ public class ItemsTest extends STACTestSupport {
                 200);
 
         assertThat(
-                (List<String>) doc.read("features[*].id"),
+                doc.read("features[*].id"),
                 contains(
                         "S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04",
                         "S2A_OPER_MSI_L1C_TL_SGS__20170226T171842_A008785_T32TPN_N02.04"));
@@ -510,7 +509,7 @@ public class ItemsTest extends STACTestSupport {
                 200);
 
         assertThat(
-                (List<String>) doc.read("features[*].id"),
+                doc.read("features[*].id"),
                 contains(
                         "S2A_OPER_MSI_L1C_TL_SGS__20170226T171842_A008785_T32TPN_N02.04",
                         "S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04"));
@@ -523,7 +522,7 @@ public class ItemsTest extends STACTestSupport {
                 "ogc/stac/v1/collections/SAS1/items?filter=s2:datastrip_id = 'S2A_OPER_MSI_L2A_DS_VGS1_20201206T095713_S20201206T074838_N02.14'",
                 200);
 
-        assertThat((List<String>) doc.read("features[*].id"), contains("SAS1_20180226102021.01"));
+        assertThat(doc.read("features[*].id"), contains("SAS1_20180226102021.01"));
     }
 
     @Test
@@ -583,12 +582,12 @@ public class ItemsTest extends STACTestSupport {
         assertFalse(properties.containsKey("datetime"));
 
         // asserts some of the properties value included.
-        assertEquals(properties.get("platform"), "LANDSAT_8");
-        assertEquals(properties.get("constellation"), "landsat8");
-        assertEquals(properties.get("eo:cloud_cover"), 0d);
-        assertEquals(properties.get("sat:orbit_state"), "descending");
-        assertEquals(properties.get("gsd"), 30);
-        assertEquals(properties.get("landsat:orbit"), 65);
+        assertEquals("LANDSAT_8", properties.get("platform"));
+        assertEquals("landsat8", properties.get("constellation"));
+        assertEquals(0d, properties.get("eo:cloud_cover"));
+        assertEquals("descending", properties.get("sat:orbit_state"));
+        assertEquals(30, properties.get("gsd"));
+        assertEquals(65, properties.get("landsat:orbit"));
 
         assertNotNull(assets);
         assertFalse(assets.isEmpty());
@@ -624,12 +623,12 @@ public class ItemsTest extends STACTestSupport {
         // asserts some of the properties value included.
         assertTrue(properties.containsKey("created"));
         assertTrue(properties.containsKey("datetime"));
-        assertEquals(properties.get("s1:frame_number"), 218);
-        assertEquals(properties.get("s1:start_anxtime"), 1090739);
-        assertEquals(properties.get("s1:stop_anxtime"), 1117820);
-        assertEquals(properties.get("s1:processing_date"), "2019-07-07T18: 33: 12.592265Z");
-        assertEquals(properties.get("s1:processing_site"), "Airbus DS-Newport");
-        assertEquals(properties.get("s1:ipf_version"), 3.1);
+        assertEquals(218, properties.get("s1:frame_number"));
+        assertEquals(1090739, properties.get("s1:start_anxtime"));
+        assertEquals(1117820, properties.get("s1:stop_anxtime"));
+        assertEquals("2019-07-07T18: 33: 12.592265Z", properties.get("s1:processing_date"));
+        assertEquals("Airbus DS-Newport", properties.get("s1:processing_site"));
+        assertEquals(3.1, properties.get("s1:ipf_version"));
 
         assertNotNull(assets);
         assertFalse(assets.isEmpty());
@@ -656,7 +655,7 @@ public class ItemsTest extends STACTestSupport {
         DocumentContext doc2 = getAsJSONPath(
                 "ogc/stac/v1/collections/SAS1/items?filter=s2:granule_id = 'S2A_OPER_MSI_L2A_TL_VGS1_20201206T095713_A028503_T37MDU_N02.143'",
                 200);
-        assertThat((List<String>) doc2.read("features[*].id"), contains("SAS1_20180227102021.02"));
+        assertThat(doc2.read("features[*].id"), contains("SAS1_20180227102021.02"));
     }
 
     @Test
@@ -716,6 +715,7 @@ public class ItemsTest extends STACTestSupport {
         assertNotEquals(-1, i);
         array.remove(i);
 
+        @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) array.get(0);
         assertEquals(1, map.size());
         assertFalse(map.containsKey("titleMTL"));

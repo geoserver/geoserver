@@ -18,16 +18,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class UnknownFieldsSerializer extends JsonSerializer {
 
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-
     @Override
+    @SuppressWarnings("unchecked")
     public void serialize(Object value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
         if (value instanceof Map) {
             for (Map.Entry<String, Object> entry : ((Map<String, Object>) value).entrySet()) {
                 String key = entry.getKey();
                 Object valuePair = entry.getValue();
                 if (valuePair instanceof Date) {
-                    gen.writeObjectField(key, DATE_FORMAT.format(valuePair));
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                    gen.writeObjectField(key, dateFormat.format(valuePair));
                 } else {
                     gen.writeObjectField(key, valuePair);
                 }

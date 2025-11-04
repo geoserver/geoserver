@@ -4,13 +4,13 @@
  */
 package org.geoserver.security.oauth2.login;
 
+import jakarta.servlet.Filter;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.Filter;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.security.filter.GeoServerAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerCompositeFilter;
 import org.geotools.util.logging.Logging;
@@ -70,7 +70,7 @@ public class GeoServerOAuth2LoginAuthenticationFilter extends GeoServerComposite
             return;
         }
         if (!(pAuthentication instanceof OAuth2AuthenticationToken)) {
-            return; // dont do anything - user isn't signed on as oidc
+            return; // don't do anything - user isn't signed on as oidc
         }
         try {
             logoutSuccessHandler.onLogoutSuccess(pRequest, pResponse, pAuthentication);

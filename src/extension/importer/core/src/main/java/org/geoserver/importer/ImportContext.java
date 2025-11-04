@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
@@ -84,7 +85,7 @@ public class ImportContext implements Serializable {
     List<ImportTransform> defaultTransforms = new ArrayList<>();
 
     /** id generator for task */
-    int taskid = 0;
+    AtomicInteger taskid = new AtomicInteger(0);
 
     /** date import was created */
     Date created;
@@ -100,7 +101,7 @@ public class ImportContext implements Serializable {
      * default, now false since by default importing a shapefile directly from the local file system would result in the
      * shapefile, and its parent directory being deleted
      */
-    boolean archive = false;
+    volatile boolean archive = false;
 
     /** Used for error messages */
     String message;
@@ -186,12 +187,12 @@ public class ImportContext implements Serializable {
     }
 
     public void addTask(ImportTask task) {
-        task.setId(taskid++);
+        task.setId(taskid.getAndAdd(1));
         task.setContext(this);
         this.tasks.add(task);
 
         // apply the default transformations
-        TransformChain chain = task.getTransform();
+        TransformChain<? extends ImportTransform> chain = task.getTransform();
         for (ImportTransform tx : defaultTransforms) {
             if (chain instanceof RasterTransformChain transformChain1 && tx instanceof RasterTransform transform1) {
                 transformChain1.add(transform1);

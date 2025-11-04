@@ -7,6 +7,8 @@ package org.geoserver.web;
 
 import static org.apache.wicket.RuntimeConfigurationType.DEPLOYMENT;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
@@ -17,8 +19,6 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.Application;
 import org.apache.wicket.Component;
 import org.apache.wicket.ConverterLocator;
@@ -31,7 +31,9 @@ import org.apache.wicket.core.request.handler.IPageRequestHandler;
 import org.apache.wicket.core.request.handler.PageProvider;
 import org.apache.wicket.csp.CSPDirective;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
-import org.apache.wicket.protocol.http.CsrfPreventionRequestCycleListener;
+import org.apache.wicket.protocol.http.FetchMetadataResourceIsolationPolicy;
+import org.apache.wicket.protocol.http.OriginResourceIsolationPolicy;
+import org.apache.wicket.protocol.http.ResourceIsolationRequestCycleListener;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
@@ -280,21 +282,23 @@ public class GeoServerApplication extends WebApplication
         // Don't add a new lister each time init() is called
         List<IRequestCycleListener> csrfListenersToRemove = new ArrayList<>();
         for (IRequestCycleListener listener : getRequestCycleListeners()) {
-            if (listener instanceof CsrfPreventionRequestCycleListener) {
+            if (listener instanceof ResourceIsolationRequestCycleListener) {
                 csrfListenersToRemove.add(listener);
             }
         }
         for (IRequestCycleListener listener : csrfListenersToRemove) {
             getRequestCycleListeners().remove(listener);
         }
-        CsrfPreventionRequestCycleListener csrfListener = new CsrfPreventionRequestCycleListener();
         if (!geoserverCsrfDisabled) {
+            OriginResourceIsolationPolicy csrfListener = new OriginResourceIsolationPolicy();
             if (geoserverCsrfWhitelist != null && !"".equals(geoserverCsrfWhitelist.trim())) {
                 for (String origin : geoserverCsrfWhitelist.split(",")) {
                     csrfListener.addAcceptedOrigin(origin.trim());
                 }
             }
-            getRequestCycleListeners().add(csrfListener);
+            ResourceIsolationRequestCycleListener isolationListener =
+                    new ResourceIsolationRequestCycleListener(new FetchMetadataResourceIsolationPolicy(), csrfListener);
+            getRequestCycleListeners().add(isolationListener);
         }
 
         getRequestCycleListeners().add(new FeedbackPanelAjaxListener());

@@ -5,9 +5,9 @@
  */
 package org.geoserver.test;
 
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponseWrapper;
 import java.io.IOException;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
 
 /**
  * HttpServletResponse wrapper to help in making assertions about expected status codes.
@@ -27,13 +27,6 @@ public class CodeExpectingHttpServletResponse extends HttpServletResponseWrapper
     public void setStatus(int sc) {
         myErrorCode = sc;
         super.setStatus(sc);
-    }
-
-    @Override
-    @SuppressWarnings("deprecation")
-    public void setStatus(int sc, String sm) {
-        myErrorCode = sc;
-        super.setStatus(sc, sm);
     }
 
     @Override

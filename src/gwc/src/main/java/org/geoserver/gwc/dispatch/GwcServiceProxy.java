@@ -6,18 +6,17 @@
 package org.geoserver.gwc.dispatch;
 
 import com.google.common.collect.ImmutableList;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.WriteListener;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponseWrapper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.impl.ServiceInfoImpl;
-import org.geoserver.gwc.config.GWCServiceEnablementInterceptor;
 import org.geoserver.ows.DisabledServiceCheck;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Response;
@@ -54,10 +53,9 @@ public class GwcServiceProxy {
     /**
      * This method is here to assist the {@link DisabledServiceCheck} callback, that uses reflection to find such a
      * method and check if the returned service info is {@link ServiceInfo#isEnabled() enabled} (and hence avoid the
-     * WARNING message it spits out if this method is not found); not though, that in the interest of keeping a single
+     * WARNING message it spits out if this method is not found); note though, that in the interest of keeping a single
      * {@link GwcServiceProxy} to proxy all gwc provided services (wmts, tms, etc), the service info returned here will
-     * always be enabled, we already have a GWC {@link GWCServiceEnablementInterceptor service interceptor} aspect that
-     * decorates specific gwc services to check for enablement.
+     * always be enabled, we already have GWC {@link GwcDisabledServiceCheck} to check for enablement.
      */
     public ServiceInfo getServiceInfo() {
         return serviceInfo;

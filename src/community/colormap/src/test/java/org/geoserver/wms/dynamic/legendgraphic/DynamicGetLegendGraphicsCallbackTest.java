@@ -55,7 +55,7 @@ public class DynamicGetLegendGraphicsCallbackTest extends GeoServerSystemTestSup
     public void testLegendExpasion() throws Exception {
         // manually parse a request
         GetLegendGraphicKvpReader requestReader = GeoServerExtensions.bean(GetLegendGraphicKvpReader.class);
-        Map params = new KvpMap();
+        Map<String, Object> params = new KvpMap<>();
         params.put("VERSION", "1.0.0");
         params.put("REQUEST", "GetLegendGraphic");
         params.put("LAYER", "watertemp_dynamic");

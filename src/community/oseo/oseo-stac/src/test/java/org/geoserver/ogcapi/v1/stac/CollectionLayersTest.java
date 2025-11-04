@@ -42,7 +42,6 @@ public class CollectionLayersTest extends STACTestSupport {
         // Create fake layers matching the collection ones
         Catalog catalog = getCatalog();
         NamespaceInfo ns = catalog.getNamespaceByPrefix("gs");
-        System.out.println(catalog.getCoverages());
 
         CoverageInfo c1 = catalog.getCoverageByName(getLayerId(TASMANIA_DEM));
         c1.setNamespace(ns);
@@ -59,7 +58,6 @@ public class CollectionLayersTest extends STACTestSupport {
         catalog.save(c2);
 
         LayerInfo l2 = catalog.getLayerByName(c2.prefixedName());
-        System.out.println(catalog.getStyles());
         StyleInfo polygon = catalog.getStyleByName("polygon");
         l2.getStyles().add(polygon);
         catalog.save(l2);
@@ -76,17 +74,17 @@ public class CollectionLayersTest extends STACTestSupport {
 
     private static void checkLandsat8CollectionLayers(Document document) {
         Elements titles = document.select("p.title");
-        assertEquals(titles.get(0).text(), "Single title");
-        assertEquals(titles.get(1).text(), "Separate title");
+        assertEquals("Single title", titles.get(0).text());
+        assertEquals("Separate title", titles.get(1).text());
 
         Elements descriptions = document.select("p.description");
-        assertEquals(descriptions.get(0).text(), "Single description");
-        assertEquals(descriptions.get(1).text(), "Separate description");
+        assertEquals("Single description", descriptions.get(0).text());
+        assertEquals("Separate description", descriptions.get(1).text());
 
         Elements styles = document.select("p.style");
-        assertEquals(styles.get(0).text(), "raster: Raster");
-        assertEquals(styles.get(1).text(), "raster: Raster");
-        assertEquals(styles.get(2).text(), "polygon: Grey Polygon");
+        assertEquals("raster: Raster", styles.get(0).text());
+        assertEquals("raster: Raster", styles.get(1).text());
+        assertEquals("polygon: Grey Polygon", styles.get(2).text());
     }
 
     @Test

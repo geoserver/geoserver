@@ -70,17 +70,17 @@ public class ReaderDimensionsAccessor {
     /** Comparator for the TreeSet made either by Date objects, or by DateRange objects */
     public static final Comparator<Object> TEMPORAL_COMPARATOR = (o1, o2) -> {
         // the domain can be a mix of dates and ranges
-        if (o1 instanceof Date) {
+        if (o1 instanceof Date date1) {
             if (o2 instanceof DateRange range) {
-                return ((Date) o1).compareTo(range.getMinValue());
+                return date1.compareTo(range.getMinValue());
             } else {
-                return ((Date) o1).compareTo((Date) o2);
+                return date1.compareTo((Date) o2);
             }
-        } else if (o1 instanceof DateRange) {
+        } else if (o1 instanceof DateRange range) {
             if (o2 instanceof Date date) {
-                return ((DateRange) o1).getMinValue().compareTo(date);
+                return range.getMinValue().compareTo(date);
             } else {
-                return ((DateRange) o1).getMinValue().compareTo(((DateRange) o2).getMinValue());
+                return range.getMinValue().compareTo(((DateRange) o2).getMinValue());
             }
         }
         throw new IllegalArgumentException(
@@ -90,9 +90,9 @@ public class ReaderDimensionsAccessor {
     /** Comparator for TreeSet made either by Double objects, or by NumberRange objects */
     @SuppressWarnings("unchecked")
     public static final Comparator<Object> ELEVATION_COMPARATOR = (o1, o2) -> {
-        if (o1 instanceof Double) {
+        if (o1 instanceof Double double2) {
             if (o2 instanceof Double double1) {
-                return ((Double) o1).compareTo(double1);
+                return double2.compareTo(double1);
             } else if (o2 instanceof NumberRange) {
                 NumberRange<Double> nrd = (NumberRange<Double>) o2;
                 return ((Double) o1).compareTo(nrd.getMinValue());
@@ -582,9 +582,9 @@ public class ReaderDimensionsAccessor {
         if (a instanceof Date) {
             if (b instanceof Date) return ((Date) a).equals(b);
             else if (b instanceof DateRange range) return range.contains((Date) a);
-        } else if (a instanceof DateRange) {
-            if (b instanceof DateRange range) return ((DateRange) a).intersects(range);
-            else if (b instanceof Date date) return ((DateRange) a).contains(date);
+        } else if (a instanceof DateRange dateRange) {
+            if (b instanceof DateRange range) return dateRange.intersects(range);
+            else if (b instanceof Date date) return dateRange.contains(date);
         }
         return false;
     }
@@ -601,9 +601,9 @@ public class ReaderDimensionsAccessor {
         if (a instanceof Double) {
             if (b instanceof Double) return ((Double) a).equals(b);
             else if (b instanceof NumberRange range) return range.contains((Number) a);
-        } else if (a instanceof NumberRange) {
-            if (b instanceof NumberRange range) return ((NumberRange) a).intersects(range);
-            else if (b instanceof Number double1) return ((NumberRange) a).contains(double1);
+        } else if (a instanceof NumberRange numberRange) {
+            if (b instanceof NumberRange range) return numberRange.intersects(range);
+            else if (b instanceof Number double1) return numberRange.contains(double1);
         }
         return false;
     }

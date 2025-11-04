@@ -15,7 +15,7 @@ This section describes most of the extensions available for GeoServer. Other dat
    dxf/index
    excel
    geopkg-output/index
-   grib/grib
+   grib/index
    importer/index
    inspire/index
    jp2k/index

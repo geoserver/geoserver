@@ -92,7 +92,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService i
 
     GeoServerRestRoleServiceConfig restRoleServiceConfig;
 
-    private boolean convertToUpperCase = true;
+    private volatile boolean convertToUpperCase = true;
 
     private String adminGroup;
 
@@ -450,6 +450,8 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService i
 
     private ClientHttpRequestFactory clientHttpRequestFactory() {
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+        // Manual migration to `SocketConfig.Builder.setSoTimeout(Timeout)` necessary; see:
+        // https://docs.spring.io/spring-framework/docs/6.0.0/javadoc-api/org/springframework/http/client/HttpComponentsClientHttpRequestFactory.html#setReadTimeout(int)
         factory.setReadTimeout(READ_TIMEOUT);
         factory.setConnectTimeout(CONN_TIMEOUT);
         return factory;
@@ -488,7 +490,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService i
                             req.getHeaders().add("Authorization", "ApiKey " + authApiKey);
                         }
                         try (ClientHttpResponse res = req.execute()) {
-                            int status = res.getRawStatusCode();
+                            int status = res.getStatusCode().value();
 
                             switch (status) {
                                 case 200:

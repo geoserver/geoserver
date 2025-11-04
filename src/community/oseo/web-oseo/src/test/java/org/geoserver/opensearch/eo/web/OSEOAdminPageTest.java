@@ -12,10 +12,20 @@ import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.config.GeoServer;
 import org.geoserver.opensearch.eo.OSEOInfo;
+import org.geoserver.opensearch.eo.store.OSEOPostGISResource;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 public class OSEOAdminPageTest extends OSEOWebTestSupport {
+
+    @ClassRule
+    public static final OSEOPostGISResource postgis = new OSEOPostGISResource(false);
+
+    @Override
+    protected OSEOPostGISResource getOSEOPostGIS() {
+        return postgis;
+    }
 
     @Before
     public void startPage() {

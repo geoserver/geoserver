@@ -4,15 +4,24 @@
  */
 package org.geoserver.web.security.oauth2.intgration.keycloak;
 
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.CookieManager;
+import java.net.HttpCookie;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
 
 /** simple class to make web requests to keycloak easier - GET and POST. */
 public class WebRequests {
+
+    private static final Logger LOG = Logger.getLogger(WebRequests.class.getName());
 
     /**
      * execute a GET request (i.e. to keycloak container)
@@ -25,7 +34,7 @@ public class WebRequests {
         URL url = new URL(uri);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
-        var response = new WebResponse(connection);
+        WebResponse response = new WebResponse(connection);
         connection.disconnect();
         return response;
     }
@@ -48,24 +57,29 @@ public class WebRequests {
         connection.setDoOutput(true); // Enable output for sending data
         connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
         connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+        // don't follow redirects - we need to do them ourselves.
+        connection.setInstanceFollowRedirects(false);
 
-        var cookieVal = String.join(
+        String cookieVal = String.join(
                 "; ",
                 cookieManager.getCookieStore().getCookies().stream()
                         .map(x -> x.getName() + "=" + x.getValue())
                         .toList());
-        if (cookieManager.getCookieStore().getCookies().size() > 0) {
+        if (!cookieManager.getCookieStore().getCookies().isEmpty()) {
             connection.setRequestProperty("Cookie", cookieVal);
         }
+
         try (OutputStream os = connection.getOutputStream()) {
-            os.write(body.getBytes("UTF-8"));
+            os.write(body.getBytes(StandardCharsets.UTF_8));
         }
-        // don't follow redirects - we need to do them ourselves.
-        connection.setInstanceFollowRedirects(false);
-        System.out.println("curl -H \"Content-Type:application/x-www-form-urlencoded\" -d \"" + body + "\"  \\");
-        System.out.println("     -H \"Cookie: " + cookieVal + "\"  \\");
-        System.out.println("     \"" + uri + "\" -v");
-        var response = new WebResponse(connection);
+
+        if (LOG.isLoggable(Level.FINE)) {
+            LOG.fine("curl -H \"Content-Type:application/x-www-form-urlencoded\" -d \"" + body + "\"  \\");
+            LOG.fine("     -H \"Cookie: " + cookieVal + "\"  \\");
+            LOG.fine("     \"" + uri + "\" -v");
+        }
+
+        WebResponse response = new WebResponse(connection);
         connection.disconnect();
         return response;
     }
@@ -80,15 +94,16 @@ public class WebRequests {
         public CookieManager cookieManager;
 
         public WebResponse(HttpURLConnection connection) throws IOException {
-            statusCode = connection.getResponseCode();
-            body = IOUtils.toString(getInputStream(connection), StandardCharsets.UTF_8);
-            headers = connection.getHeaderFields();
+            this.connection = connection;
+            this.statusCode = connection.getResponseCode();
+            this.body = IOUtils.toString(getInputStream(connection), StandardCharsets.UTF_8);
+            this.headers = connection.getHeaderFields();
 
-            cookieManager = new CookieManager();
+            this.cookieManager = new CookieManager();
             List<String> cookies = headers.get("Set-Cookie");
             if (cookies != null) {
                 for (String cookie : cookies) {
-                    cookieManager
+                    this.cookieManager
                             .getCookieStore()
                             .add(null, HttpCookie.parse(cookie).get(0));
                 }

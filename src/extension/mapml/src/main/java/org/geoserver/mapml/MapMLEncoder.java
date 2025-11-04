@@ -4,12 +4,12 @@
  */
 package org.geoserver.mapml;
 
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 import java.io.OutputStream;
 import java.io.Reader;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -82,7 +82,7 @@ public class MapMLEncoder {
     public Mapml decode(Reader reader) {
         try {
             Unmarshaller unmarshaller = context.createUnmarshaller();
-            unmarshaller.setEventHandler(new javax.xml.bind.helpers.DefaultValidationEventHandler());
+            unmarshaller.setEventHandler(new jakarta.xml.bind.helpers.DefaultValidationEventHandler());
             return (Mapml) unmarshaller.unmarshal(reader);
         } catch (JAXBException e) {
             throw new ServiceException(e);

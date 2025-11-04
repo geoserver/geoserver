@@ -14,6 +14,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import jakarta.servlet.Filter;
+import jakarta.servlet.ReadListener;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -41,14 +49,6 @@ import java.util.logging.Level;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-import javax.servlet.Filter;
-import javax.servlet.ReadListener;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
@@ -66,8 +66,9 @@ import net.sf.json.JSON;
 import net.sf.json.JSONException;
 import net.sf.json.JSONSerializer;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.http.HeaderElement;
-import org.apache.http.message.BasicHeaderValueParser;
+import org.apache.hc.core5.http.HeaderElement;
+import org.apache.hc.core5.http.message.BasicHeaderValueParser;
+import org.apache.hc.core5.http.message.ParserCursor;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.custommonkey.xmlunit.exceptions.XpathException;
@@ -412,7 +413,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     }
 
     /**
-     * Subclass hook called after the system (ie spring context) has been fully initialized.
+     * Subclass hook called after the system (ie spring context) has been fully initialized. Called by
+     * {@link #onSetUp(SystemTestData)}
      *
      * <p>Subclasses should override for post setup that is needed. The default implementation does nothing.
      */
@@ -1596,7 +1598,9 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         if (mimeType == null) {
             return null;
         }
-        HeaderElement headerElement = BasicHeaderValueParser.parseHeaderElement(mimeType, null);
+        BasicHeaderValueParser parser = new BasicHeaderValueParser();
+        ParserCursor cursor = new ParserCursor(0, mimeType.length());
+        HeaderElement headerElement = parser.parseHeaderElement(mimeType, cursor);
         return headerElement.getName();
     }
 

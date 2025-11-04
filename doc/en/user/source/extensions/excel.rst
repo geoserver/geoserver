@@ -8,8 +8,21 @@ The GeoServer Excel plugin adds the ability to output WFS responses in either Ex
 Installation
 ------------
 
-#. From the :website:`website download <download>` page, locate your release, and download: :download_extension:`excel`
+#. Login, and navigate to :menuselection:`About & Status > About GeoServer` and check **Build Information**
+   to determine the exact version of GeoServer you are running.
+
+#. Visit the :website:`website download <download>` page, change the **Archive** tab,
+   and locate your release.
+   
+   From the list of **Output formats** extensions download **Excel**.
+
+   * |release| example: :download_extension:`excel`
+   * |version| example: :nightly_extension:`excel`
+
+   Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example |release| above).
+   
 #. Unzip the archive into the :file:`WEB-INF/lib` directory of the GeoServer installation.
+
 #. Restart GeoServer.
 
 Usage
@@ -26,18 +39,20 @@ Excel 97-2003 GET:
 Excel 2007 GET:
   http://localhost:8080/geoserver/wfs?request=GetFeature&version=1.1.0&typeName=topp:states&outputFormat=excel2007
 
-**Excel 97-2003 POST**::
+**Excel 97-2003 POST**:
 
-  <wfs:GetFeature service="WFS" version="1.1.0"
-    outputFormat="excel"
-    xmlns:topp="http://www.openplans.org/topp"
-    xmlns:wfs="http://www.opengis.net/wfs"
-    xmlns:ogc="http://www.opengis.net/ogc"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.opengis.net/wfs
-                        http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
-    <wfs:Query typeName="topp:states" />
-  </wfs:GetFeature>
+  .. code-block:: xml
+   
+     <wfs:GetFeature service="WFS" version="1.1.0"
+       outputFormat="excel"
+       xmlns:topp="http://www.openplans.org/topp"
+       xmlns:wfs="http://www.opengis.net/wfs"
+       xmlns:ogc="http://www.opengis.net/ogc"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.opengis.net/wfs
+                           http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+       <wfs:Query typeName="topp:states" />
+     </wfs:GetFeature>
 
 Limitations
 -----------

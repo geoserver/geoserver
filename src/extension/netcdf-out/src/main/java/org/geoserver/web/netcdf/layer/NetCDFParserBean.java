@@ -4,11 +4,11 @@
  */
 package org.geoserver.web.netcdf.layer;
 
+import jakarta.xml.bind.JAXBException;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.bind.JAXBException;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.geoserver.config.GeoServerDataDirectory;

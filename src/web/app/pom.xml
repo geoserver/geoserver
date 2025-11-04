@@ -218,7 +218,19 @@
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-servlets</artifactId>
+      <artifactId>jetty-xml</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty.ee10</groupId>
+      <artifactId>jetty-ee10-webapp</artifactId>
+      <version>${jetty.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty.ee10</groupId>
+      <artifactId>jetty-ee10-servlet</artifactId>
+      <version>${jetty.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -229,8 +241,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -1025,7 +1037,7 @@
         </dependency>
       </dependencies>
     </profile>
-    <profile>
+    <!-- profile>
       <id>geofence</id>
       <dependencies>
         <dependency>
@@ -1043,8 +1055,8 @@
           <artifactId>gs-geofence-server</artifactId>
           <version>${project.version}</version>
         </dependency>
-        <!-- Older versions of h2 fail in drop/create tables   -->
-        <!-- This version may break netcdf/grib modules        -->
+        <! Older versions of h2 fail in drop/create tables    >
+        <! This version may break netcdf/grib modules         >
         <dependency>
           <groupId>com.h2database</groupId>
           <artifactId>h2</artifactId>
@@ -1095,7 +1107,7 @@
           <version>${project.version}</version>
         </dependency>
       </dependencies>
-    </profile>
+    </profile -->
     <profile>
       <id>sldService</id>
       <dependencies>
@@ -1278,86 +1290,6 @@
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-gwc-sqlite</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>keycloak</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-sec-keycloak</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>oauth2-google</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community.security</groupId>
-          <artifactId>gs-sec-oauth2-core</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.geoserver.community.security</groupId>
-          <artifactId>gs-sec-oauth2-web</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-sec-oauth2-google</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>oauth2-github</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community.security</groupId>
-          <artifactId>gs-sec-oauth2-core</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.geoserver.community.security</groupId>
-          <artifactId>gs-sec-oauth2-web</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-sec-oauth2-github</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>oauth2-geonode</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community.security</groupId>
-          <artifactId>gs-sec-oauth2-core</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.geoserver.community.security</groupId>
-          <artifactId>gs-sec-oauth2-web</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-sec-oauth2-geonode</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>oauth2-openid-connect</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community.security</groupId>
-          <artifactId>gs-sec-oauth2-openid-connect-web</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>
@@ -1585,11 +1517,6 @@
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-ogcapi-images</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-ogcapi-changeset</artifactId>
           <version>${project.version}</version>
         </dependency>
         <dependency>

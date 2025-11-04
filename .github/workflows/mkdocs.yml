@@ -50,8 +50,11 @@ jobs:
 
     - name: Install pandoc
       run: |
-        sudo apt-get update
-        sudo apt-get install -y pandoc
+        # Install latest Pandoc from GitHub releases instead of apt (which has old 2.9.2.1)
+        # This ensures consistent behavior with modern Pandoc 3.x and fixes other conversion issues
+        PANDOC_VERSION="3.5"
+        wget https://github.com/jgm/pandoc/releases/download/${PANDOC_VERSION}/pandoc-${PANDOC_VERSION}-1-amd64.deb
+        sudo dpkg -i pandoc-${PANDOC_VERSION}-1-amd64.deb
         echo "=== Pandoc Version ==="
         pandoc --version
         echo ""

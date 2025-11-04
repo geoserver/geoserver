@@ -198,6 +198,11 @@ jobs:
         # Create main output directory
         mkdir -p gh-pages-output
         
+        # Show Python-Markdown version for debugging
+        echo "=== Python-Markdown Version ==="
+        python -c "import markdown; print(f'Python-Markdown version: {markdown.__version__}')"
+        echo ""
+        
         # Array of documentation directories to build
         declare -a MKDOCS_DIRS=(
           "doc/en/docguide:docguide:en"
@@ -215,6 +220,15 @@ jobs:
             # Change to the documentation directory
             cd "$DOC_DIR"
             
+            # Debug: Show the mkdocs.yml being used
+            echo "=== Contents of $DOC_DIR/mkdocs.yml ==="
+            echo "--- markdown_extensions section ---"
+            grep -A 10 "markdown_extensions:" mkdocs.yml || echo "No markdown_extensions found"
+            echo "--- end of markdown_extensions ---"
+            echo ""
+            echo "--- end of markdown_extensions ---"
+            echo ""
+            
             # Ensure docs directory exists
             if [ ! -d "docs" ]; then
               mkdir -p docs
@@ -222,8 +236,14 @@ jobs:
               echo "Documentation build in progress." >> docs/index.md
             fi
             
+            # Debug: Test if md_in_html extension is available
+            echo "=== Testing md_in_html extension availability ==="
+            python -c "from markdown.extensions.md_in_html import MarkdownInHtmlExtension; print('✓ md_in_html extension is available')" || echo "✗ md_in_html extension NOT available"
+            echo ""
+            
             # Build the site - fail on error (site_dir already set in mkdocs.yml)
-            if ! mkdocs build --clean; then
+            echo "=== Starting MkDocs build for $LANG/$DOC_TYPE ==="
+            if ! mkdocs build --clean --verbose; then
               echo "❌ ERROR: MkDocs build FAILED for $LANG/$DOC_TYPE"
               echo "Build cannot continue with errors. Please fix the issues above."
               exit 1

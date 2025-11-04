@@ -554,4 +554,18 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         form.setValue("gwcServicesPanel:metaTilingThreads", threadCount);
         form.submit("submit");
     }
+
+    @Test
+    public void testCacheValidationProperty() throws IOException {
+        // enable in memory caching
+        GWC gwc = GWC.get();
+        GWCConfig config = gwc.getConfig();
+        config.setCacheValidationProperty("mytimestamp");
+        gwc.saveConfig(config);
+
+        // used to blow because an unused label element was added in the code but not in HTML
+        GWCSettingsPage page = new GWCSettingsPage();
+        tester.startPage(page);
+        tester.assertModelValue("form:gwcServicesPanel:cacheValidationProperty", "mytimestamp");
+    }
 }

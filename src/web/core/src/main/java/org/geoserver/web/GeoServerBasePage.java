@@ -58,6 +58,7 @@ import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.web.spring.security.GeoServerSession;
 import org.geoserver.web.util.LocalizationsFinder;
 import org.geoserver.web.wicket.GeoServerTablePanel;
+import org.geoserver.web.wicket.LoggedInUserLabel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -270,7 +271,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 
         // logout form
         WebMarkupContainer loggedInAsForm = new WebMarkupContainer("loggedinasform");
-        loggedInAsForm.add(new Label("loggedInUsername", GeoServerSession.get().getUsername()));
+        loggedInAsForm.add(new LoggedInUserLabel("loggedInUsername"));
         loggedInAsForm.setVisible(!anonymous);
         add(loggedInAsForm);
 

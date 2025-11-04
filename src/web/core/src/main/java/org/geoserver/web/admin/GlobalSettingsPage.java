@@ -17,8 +17,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -38,6 +41,7 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.config.SettingsInfo;
+import org.geoserver.config.UIDisplayInfo;
 import org.geoserver.logging.LoggingUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -73,6 +77,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
 
         CompoundPropertyModel<GeoServerInfo> globalModel = new CompoundPropertyModel<>(globalInfoModel);
         PropertyModel<SettingsInfo> settingsModel = new PropertyModel<>(globalModel, "settings");
+        PropertyModel<UIDisplayInfo> uiDisplayModel = new PropertyModel<>(globalModel, "uiDisplay");
         PropertyModel<MetadataMap> metadataModel = new PropertyModel<>(globalInfoModel, "metadata");
         Form<GeoServerInfo> form = new Form<>("form", globalModel);
 
@@ -158,6 +163,8 @@ public class GlobalSettingsPage extends ServerAdminPage {
 
         form.add(webUIModeChoice);
 
+        form.add(uiDisplaySettings(uiDisplayModel));
+
         form.add(new CheckBox(
                 "allowStoredQueriesPerWorkspace",
                 new PropertyModel<>(globalInfoModel, "allowStoredQueriesPerWorkspace")));
@@ -200,6 +207,70 @@ public class GlobalSettingsPage extends ServerAdminPage {
             }
         };
         form.add(cancel);
+    }
+
+    private WebMarkupContainer uiDisplaySettings(PropertyModel<UIDisplayInfo> uiDisplayModel) {
+
+        WebMarkupContainer fieldset = new WebMarkupContainer("uiDisplaySettingsFragment");
+
+        IModel<UIDisplayInfo.LoggedInUserDisplayMode> loggedInUserDisplayModeModel =
+                new PropertyModel<>(uiDisplayModel, "loggedInUserDisplayMode");
+        if (loggedInUserDisplayModeModel.getObject() == null) {
+            loggedInUserDisplayModeModel.setObject(UIDisplayInfo.LoggedInUserDisplayMode.USERNAME);
+        }
+        DropDownChoice<UIDisplayInfo.LoggedInUserDisplayMode> loggedInUserDisplayModeChoice =
+                new Select2DropDownChoice<>(
+                        "loggedInUserDisplayMode",
+                        loggedInUserDisplayModeModel,
+                        Arrays.asList(UIDisplayInfo.LoggedInUserDisplayMode.values()));
+
+        CheckBox showProfileColumnsInUserList = new CheckBox(
+                "showProfileColumnsInUserList", new PropertyModel<>(uiDisplayModel, "showProfileColumnsInUserList"));
+
+        IModel<UIDisplayInfo.EmailDisplayMode> emailDisplayModeModel =
+                new PropertyModel<>(uiDisplayModel, "emailDisplayMode");
+        if (emailDisplayModeModel.getObject() == null) {
+            emailDisplayModeModel.setObject(UIDisplayInfo.EmailDisplayMode.DOMAIN_ONLY);
+        }
+        DropDownChoice<UIDisplayInfo.EmailDisplayMode> emailDisplayModeChoice = new Select2DropDownChoice<>(
+                "emailDisplayMode", emailDisplayModeModel, Arrays.asList(UIDisplayInfo.EmailDisplayMode.values()));
+
+        CheckBox revealEmailAtClickCheckbox =
+                new CheckBox("revealEmailAtClick", new PropertyModel<>(uiDisplayModel, "revealEmailAtClick"));
+        revealEmailAtClickCheckbox.setOutputMarkupPlaceholderTag(true);
+        revealEmailAtClickCheckbox.setOutputMarkupId(true);
+
+        emailDisplayModeChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                if (!emailDisplayModeChoice.getModelObject().allowsReveal()) {
+                    revealEmailAtClickCheckbox.setModelObject(false);
+                }
+                target.add(revealEmailAtClickCheckbox);
+            }
+        });
+        revealEmailAtClickCheckbox
+                .add(new AjaxFormComponentUpdatingBehavior("change") {
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        target.add(revealEmailAtClickCheckbox);
+                    }
+                })
+                .add(new Behavior() {
+                    @Override
+                    public void onConfigure(Component component) {
+                        super.onConfigure(component);
+                        component.setEnabled(
+                                emailDisplayModeChoice.getModelObject().allowsReveal());
+                    }
+                });
+
+        fieldset.add(loggedInUserDisplayModeChoice);
+        fieldset.add(showProfileColumnsInUserList);
+        fieldset.add(emailDisplayModeChoice);
+        fieldset.add(revealEmailAtClickCheckbox);
+
+        return fieldset;
     }
 
     private GeoserverAjaxSubmitLink applyLink(Form form) {

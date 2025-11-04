@@ -17,6 +17,7 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.ImageProcessingInfo;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.config.SettingsInfo;
+import org.geoserver.config.UIDisplayInfo;
 import org.geoserver.filters.LoggingFilter;
 
 public class GeoServerInfoImpl implements GeoServerInfo {
@@ -55,6 +56,8 @@ public class GeoServerInfoImpl implements GeoServerInfo {
     protected String lockProviderName;
 
     protected WebUIMode webUIMode = WebUIMode.DEFAULT;
+
+    protected UIDisplayInfo uiDisplayInfo = new UIDisplayInfoImpl();
 
     protected Boolean allowStoredQueriesPerWorkspace = true;
 
@@ -349,6 +352,7 @@ public class GeoServerInfoImpl implements GeoServerInfo {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((settings == null) ? 0 : settings.hashCode());
+        result = prime * result + ((uiDisplayInfo == null) ? 0 : uiDisplayInfo.hashCode());
         result = prime * result + ((adminPassword == null) ? 0 : adminPassword.hashCode());
         result = prime * result + ((adminUsername == null) ? 0 : adminUsername.hashCode());
         result = prime * result + ((clientProperties == null) ? 0 : clientProperties.hashCode());
@@ -379,6 +383,9 @@ public class GeoServerInfoImpl implements GeoServerInfo {
         if (settings == null) {
             if (other.getSettings() != null) return false;
         } else if (!settings.equals(other.getSettings())) return false;
+        if (uiDisplayInfo == null) {
+            if (other.getUiDisplay() != null) return false;
+        } else if (!uiDisplayInfo.equals(other.getUiDisplay())) return false;
         if (id == null) {
             if (other.getId() != null) return false;
         } else if (!id.equals(other.getId())) return false;
@@ -430,6 +437,9 @@ public class GeoServerInfoImpl implements GeoServerInfo {
         }
         if (this.settings == null) {
             this.settings = new SettingsInfoImpl();
+        }
+        if (this.uiDisplayInfo == null) {
+            this.uiDisplayInfo = new UIDisplayInfoImpl();
         }
 
         // handle deprecated members, forward values onto the setter methods
@@ -495,6 +505,16 @@ public class GeoServerInfoImpl implements GeoServerInfo {
     @Override
     public void setWebUIMode(WebUIMode webUIMode) {
         this.webUIMode = webUIMode;
+    }
+
+    @Override
+    public UIDisplayInfo getUiDisplay() {
+        return uiDisplayInfo;
+    }
+
+    @Override
+    public void setUiDisplay(UIDisplayInfo uiDisplay) {
+        this.uiDisplayInfo = uiDisplay;
     }
 
     public Boolean getUseHeadersProxyURLRaw() {

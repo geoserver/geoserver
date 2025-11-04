@@ -113,6 +113,31 @@
       </li>
     </ul>
   </fieldset>
+  <fieldset wicket:id="uiDisplaySettingsFragment">
+    <legend><span><wicket:message key="uiDisplaySettings">UI Display Settings</wicket:message></span></legend>
+    <ul>
+      <li>
+        <label><wicket:message key="loggedInUserDisplayMode">Logged-in User Display Mode:</wicket:message></label>
+        <select class="select" id="loggedInUserDisplayMode" wicket:id="loggedInUserDisplayMode"></select>
+      </li>
+      <li>
+      <li class="choiceItem">
+        <input id="showProfileColumnsInUserList" type="checkbox" wicket:id="showProfileColumnsInUserList" />
+        <label for="showProfileColumnsInUserList"><wicket:message key="showProfileColumnsInUserList">Show profile columns in users list</wicket:message></label>
+      </li>
+      </li>
+      <li>
+        <label><wicket:message key="emailDisplayMode">Email Display Mode:</wicket:message></label>
+        <select class="select" id="emailDisplayMode" wicket:id="emailDisplayMode" style="width: 141.111px"></select>
+      </li>
+      <li>
+        <li class="choiceItem">
+          <input id="revealEmailAtClick" type="checkbox" wicket:id="revealEmailAtClick" />
+          <label for="revealEmailAtClick"><wicket:message key="revealEmailAtClick">Reveal Email at Click</wicket:message></label>
+        </li>
+      </li>
+    </ul>
+  </fieldset>
   <fieldset>
     <legend><span><wicket:message key="i18nSettings">i18n Settings</wicket:message></span></legend>
     <ul>

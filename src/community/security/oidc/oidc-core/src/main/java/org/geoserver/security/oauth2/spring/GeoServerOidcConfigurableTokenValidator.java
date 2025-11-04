@@ -4,7 +4,6 @@
  */
 package org.geoserver.security.oauth2.spring;
 
-import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 
 import java.util.logging.Level;
@@ -52,7 +51,7 @@ public class GeoServerOidcConfigurableTokenValidator implements OAuth2TokenValid
 
         if (lResult.hasErrors()) {
             int lCount = lResult.getErrors().size();
-            String lTxt = format("OIDC token validation failed with %d errors.", lCount);
+            String lTxt = "OIDC token validation failed with %d errors.".formatted(lCount);
             StringBuilder lBuilder = new StringBuilder(lTxt);
             if (LOGGER.isLoggable(Level.FINE)) {
                 lBuilder.append(" ")

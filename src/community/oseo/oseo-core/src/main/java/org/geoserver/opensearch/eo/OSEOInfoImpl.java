@@ -110,6 +110,7 @@ public class OSEOInfoImpl extends ServiceInfoImpl implements OSEOInfo {
         this.aggregatesCacheTTLUnit = aggregatesCacheTTLUnit;
     }
 
+    @Override
     public boolean isSkipNumberMatched() {
         return skipNumberMatched;
     }

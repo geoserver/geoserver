@@ -23,9 +23,9 @@ package org.geoserver.backuprestore.writer;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import org.geoserver.backuprestore.Backup;
 import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemStreamException;
 import org.springframework.batch.item.file.MultiResourceItemWriter;
@@ -34,6 +34,8 @@ import org.springframework.batch.item.file.ResourceSuffixCreator;
 import org.springframework.batch.item.file.SimpleResourceSuffixCreator;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.WritableResource;
+import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**
@@ -83,7 +85,7 @@ public class CatalogMultiResourceItemWriter<T> extends CatalogWriter<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void write(List<? extends T> items) throws Exception {
+    public void write(@NonNull Chunk<? extends T> chunk) throws Exception {
         try {
             if (!opened) {
                 File file = setResourceToDelegate();
@@ -93,8 +95,8 @@ public class CatalogMultiResourceItemWriter<T> extends CatalogWriter<T> {
                 delegate.open(new ExecutionContext());
                 opened = true;
             }
-            delegate.write(items);
-            currentResourceItemCount += items.size();
+            delegate.write(chunk);
+            currentResourceItemCount += chunk.size();
             if (currentResourceItemCount >= itemCountLimitPerResource) {
                 delegate.close();
                 resourceIndex++;
@@ -127,7 +129,7 @@ public class CatalogMultiResourceItemWriter<T> extends CatalogWriter<T> {
      * as this prototype with appended suffix (according to {@link #setResourceSuffixCreator(ResourceSuffixCreator)}.
      */
     @Override
-    public void setResource(Resource resource) {
+    public void setResource(WritableResource resource) {
         this.resource = resource;
     }
 

@@ -5,6 +5,7 @@
 package org.geoserver.taskmanager.external.impl;
 
 import it.geosolutions.geoserver.rest.encoder.GSAbstractStoreEncoder;
+import jakarta.annotation.PostConstruct;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,7 +14,6 @@ import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import org.geoserver.taskmanager.external.DbTable;
 import org.geoserver.taskmanager.external.Dialect;

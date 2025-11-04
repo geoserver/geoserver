@@ -7,6 +7,7 @@ package org.geoserver.monitor;
 
 import static org.geoserver.monitor.MonitorFilter.LOGGER;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,7 +15,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.platform.FileWatcher;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Paths;

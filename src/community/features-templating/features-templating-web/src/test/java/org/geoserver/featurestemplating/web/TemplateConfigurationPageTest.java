@@ -8,8 +8,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import org.apache.http.client.CookieStore;
-import org.apache.http.cookie.Cookie;
+import org.apache.hc.client5.http.cookie.Cookie;
+import org.apache.hc.client5.http.cookie.CookieStore;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.model.Model;

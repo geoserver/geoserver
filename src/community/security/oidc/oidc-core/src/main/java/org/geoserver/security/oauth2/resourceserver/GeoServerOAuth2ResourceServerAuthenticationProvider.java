@@ -7,8 +7,8 @@ package org.geoserver.security.oauth2.resourceserver;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 
+import jakarta.servlet.Filter;
 import java.util.List;
-import javax.servlet.Filter;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.logging.LoggingUtils;
@@ -32,7 +32,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtDecoders;
@@ -55,8 +54,8 @@ public class GeoServerOAuth2ResourceServerAuthenticationProvider extends Abstrac
 
     private class FilterBuilder {
 
-        private GeoServerOAuth2ResourceServerFilterConfig config;
-        private HttpSecurity http;
+        private final GeoServerOAuth2ResourceServerFilterConfig config;
+        private final HttpSecurity http;
 
         /**
          * @param pConfig
@@ -64,8 +63,8 @@ public class GeoServerOAuth2ResourceServerAuthenticationProvider extends Abstrac
          */
         public FilterBuilder(GeoServerOAuth2ResourceServerFilterConfig pConfig, HttpSecurity pHttpSecurity) {
             super();
-            config = pConfig;
-            http = pHttpSecurity;
+            this.config = pConfig;
+            this.http = pHttpSecurity;
         }
 
         private List<Filter> createFilters() {
@@ -85,11 +84,12 @@ public class GeoServerOAuth2ResourceServerAuthenticationProvider extends Abstrac
             JwtDecoder lDecoder = JwtDecoders.fromIssuerLocation(config.getIssuerUri());
             ResolverContext lRoleResolverCtx = createRoleResolverContext();
             jwtAuthenticationConverter = new GeoServerJwtAuthenticationConverter(lRoleResolverCtx);
-            OAuth2ResourceServerConfigurer<HttpSecurity> oauthConfig = http.oauth2ResourceServer();
-            oauthConfig.jwt(jwtConfig -> {
-                jwtConfig.decoder(lDecoder);
-                jwtConfig.jwtAuthenticationConverter(jwtAuthenticationConverter);
-            });
+
+            // Use lambda customizer (non-deprecated) instead of http.oauth2ResourceServer()
+            http.oauth2ResourceServer(oauth -> oauth.jwt(jwt -> {
+                jwt.decoder(lDecoder);
+                jwt.jwtAuthenticationConverter(jwtAuthenticationConverter);
+            }));
 
             SecurityFilterChain lChain = http.build();
             List<Filter> lFilters = lChain.getFilters();
@@ -115,15 +115,15 @@ public class GeoServerOAuth2ResourceServerAuthenticationProvider extends Abstrac
         }
     }
 
-    private GeoServerSecurityManager securityManager;
-    private ApplicationContext context;
+    private final GeoServerSecurityManager securityManager;
+    private final ApplicationContext context;
     private boolean redirectAuto = false;
 
     public GeoServerOAuth2ResourceServerAuthenticationProvider(GeoServerSecurityManager pSecurityManager) {
         assert pSecurityManager != null;
         this.securityManager = pSecurityManager;
-        context = pSecurityManager.getApplicationContext();
-        assert context != null;
+        this.context = pSecurityManager.getApplicationContext();
+        assert this.context != null;
     }
 
     @Override

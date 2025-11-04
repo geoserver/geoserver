@@ -18,6 +18,11 @@
       <artifactId>gs-rest-openapi-generated-model</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <!-- HTTP client: Netflix Feign -->
     <dependency>
       <groupId>io.github.openfeign</groupId>
@@ -84,6 +89,9 @@
               <generateApiTests>false</generateApiTests>
               <generateApiDocumentation>false</generateApiDocumentation>
               <generateModelDocumentation>false</generateModelDocumentation>
+              <configOptions>
+                <useJakartaEe>true</useJakartaEe>
+              </configOptions>
             </configuration>
           </execution>
           <execution>
@@ -100,6 +108,9 @@
               <generateApiTests>false</generateApiTests>
               <generateApiDocumentation>false</generateApiDocumentation>
               <generateModelDocumentation>false</generateModelDocumentation>
+              <configOptions>
+                <useJakartaEe>true</useJakartaEe>
+              </configOptions>
             </configuration>
           </execution>
           <execution>
@@ -116,6 +127,9 @@
               <generateApiTests>false</generateApiTests>
               <generateApiDocumentation>false</generateApiDocumentation>
               <generateModelDocumentation>false</generateModelDocumentation>
+              <configOptions>
+                <useJakartaEe>true</useJakartaEe>
+              </configOptions>
             </configuration>
           </execution>
           <execution>
@@ -132,6 +146,9 @@
               <generateApiTests>false</generateApiTests>
               <generateApiDocumentation>false</generateApiDocumentation>
               <generateModelDocumentation>false</generateModelDocumentation>
+              <configOptions>
+                <useJakartaEe>true</useJakartaEe>
+              </configOptions>
             </configuration>
           </execution>
           <execution>
@@ -148,6 +165,9 @@
               <generateApiTests>false</generateApiTests>
               <generateApiDocumentation>false</generateApiDocumentation>
               <generateModelDocumentation>false</generateModelDocumentation>
+              <configOptions>
+                <useJakartaEe>true</useJakartaEe>
+              </configOptions>
             </configuration>
           </execution>
           <execution>
@@ -164,6 +184,9 @@
               <generateApiTests>false</generateApiTests>
               <generateApiDocumentation>false</generateApiDocumentation>
               <generateModelDocumentation>false</generateModelDocumentation>
+              <configOptions>
+                <useJakartaEe>true</useJakartaEe>
+              </configOptions>
             </configuration>
           </execution>
           <execution>
@@ -180,6 +203,9 @@
               <generateApiTests>false</generateApiTests>
               <generateApiDocumentation>false</generateApiDocumentation>
               <generateModelDocumentation>false</generateModelDocumentation>
+              <configOptions>
+                <useJakartaEe>true</useJakartaEe>
+              </configOptions>
             </configuration>
           </execution>
           <execution>
@@ -196,6 +222,9 @@
               <generateApiTests>false</generateApiTests>
               <generateApiDocumentation>false</generateApiDocumentation>
               <generateModelDocumentation>false</generateModelDocumentation>
+              <configOptions>
+                <useJakartaEe>true</useJakartaEe>
+              </configOptions>
             </configuration>
           </execution>
           <execution>
@@ -212,6 +241,9 @@
               <generateApiTests>false</generateApiTests>
               <generateApiDocumentation>false</generateApiDocumentation>
               <generateModelDocumentation>false</generateModelDocumentation>
+              <configOptions>
+                <useJakartaEe>true</useJakartaEe>
+              </configOptions>
             </configuration>
           </execution>
           <execution>
@@ -228,6 +260,9 @@
               <generateApiTests>false</generateApiTests>
               <generateApiDocumentation>false</generateApiDocumentation>
               <generateModelDocumentation>false</generateModelDocumentation>
+              <configOptions>
+                <useJakartaEe>true</useJakartaEe>
+              </configOptions>
             </configuration>
           </execution>
           <execution>
@@ -244,6 +279,9 @@
               <generateApiTests>false</generateApiTests>
               <generateApiDocumentation>false</generateApiDocumentation>
               <generateModelDocumentation>false</generateModelDocumentation>
+              <configOptions>
+                <useJakartaEe>true</useJakartaEe>
+              </configOptions>
             </configuration>
           </execution>
           <execution>
@@ -260,6 +298,9 @@
               <generateApiTests>false</generateApiTests>
               <generateApiDocumentation>false</generateApiDocumentation>
               <generateModelDocumentation>false</generateModelDocumentation>
+              <configOptions>
+                <useJakartaEe>true</useJakartaEe>
+              </configOptions>
             </configuration>
           </execution>
           <execution>
@@ -276,6 +317,9 @@
               <generateApiTests>false</generateApiTests>
               <generateApiDocumentation>false</generateApiDocumentation>
               <generateModelDocumentation>false</generateModelDocumentation>
+              <configOptions>
+                <useJakartaEe>true</useJakartaEe>
+              </configOptions>
             </configuration>
           </execution>
         </executions>

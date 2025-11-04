@@ -241,7 +241,7 @@ public class ProcessDescriptionTest extends OGCApiTestSupport {
         assertEquals("imageInput", imageInput.read("title"));
         DocumentContext imageSchemas = readContext(imageInput, "schema.oneOf");
         for (int i = 0; i < 2; i++) {
-            DocumentContext schema = readContext(imageSchemas, String.format("[%d]", i));
+            DocumentContext schema = readContext(imageSchemas, "[%d]".formatted(i));
             assertEquals("string", schema.read("type"));
             assertEquals("binary", schema.read("format"));
             String format = schema.read("contentMediaType");

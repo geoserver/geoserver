@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.data.resource;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,6 +47,7 @@ import org.geotools.util.NumberRange;
  */
 public class AttributeTypeInfoEditPanel extends Panel {
 
+    @Serial
     private static final long serialVersionUID = -4226325094883373205L;
 
     enum RESTRICTION_TYPE {
@@ -230,9 +232,8 @@ public class AttributeTypeInfoEditPanel extends Panel {
     }
 
     private String adjustModalHeightScript() {
-        return String.format(
-                "var modal = document.querySelector('.wicket-modal'); modal.style.height = '%spx';",
-                calculateModalHeight());
+        return "var modal = document.querySelector('.wicket-modal'); modal.style.height = '%spx';"
+                .formatted(calculateModalHeight());
     }
 
     private int calculateModalHeight() {

@@ -4,13 +4,13 @@
  */
 package org.geoserver.security;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.config.impl.GeoServerLifecycleHandler;
 import org.geoserver.security.config.BruteForcePreventionConfig;
 import org.geotools.util.logging.Logging;

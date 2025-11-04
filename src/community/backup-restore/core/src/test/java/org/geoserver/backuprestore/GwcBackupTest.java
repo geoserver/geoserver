@@ -19,13 +19,12 @@ import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geotools.util.factory.Hints;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.batch.core.BatchStatus;
 
 public class GwcBackupTest extends BackupRestoreTestSupport {
 
-    @Before
+    @Override
     public void beforeTest() throws InterruptedException {
         ensureCleanedQueues();
 
@@ -40,7 +39,7 @@ public class GwcBackupTest extends BackupRestoreTestSupport {
         BackupUtils.dir(dd.get(Paths.BASE), "foo/folder");
         assertTrue(Resources.exists(dd.get("foo/folder")));
 
-        Hints hints = new Hints(new HashMap(3));
+        Hints hints = new Hints(new HashMap<>(3));
         hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
         hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_SKIP_GWC), Backup.PARAM_SKIP_GWC));
 
@@ -74,7 +73,7 @@ public class GwcBackupTest extends BackupRestoreTestSupport {
             }
         }
 
-        assertEquals(backupExecution.getStatus(), BatchStatus.COMPLETED);
+        assertEquals(BatchStatus.COMPLETED, backupExecution.getStatus());
 
         assertTrue(Resources.exists(backupFile));
         Resource srcDir = BackupUtils.dir(dd.get(Paths.BASE), "WEB-INF");

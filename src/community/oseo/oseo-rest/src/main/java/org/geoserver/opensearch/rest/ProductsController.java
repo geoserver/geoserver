@@ -6,6 +6,8 @@ package org.geoserver.opensearch.rest;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -17,8 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.opensearch.eo.DefaultOpenSearchEoService;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
@@ -79,6 +79,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/oseo/collections/{collection}/products")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class ProductsController extends AbstractOpenSearchController {
 
     private static final String EOP_IDENTIFIER = "eop:identifier";
@@ -364,8 +365,8 @@ public class ProductsController extends AbstractOpenSearchController {
             names.add(propertyName);
             values.add(p.getValue());
         }
-        Name[] attributeNames = (Name[]) names.toArray(new Name[names.size()]);
-        Object[] attributeValues = (Object[]) values.toArray();
+        Name[] attributeNames = names.toArray(new Name[names.size()]);
+        Object[] attributeValues = values.toArray();
         Filter filter = getProductFilter(collection, product);
 
         fs.modifyFeatures(attributeNames, attributeValues, filter);

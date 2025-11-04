@@ -242,7 +242,7 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
             if (obj.size() == 1) {
                 String key = (String) obj.keySet().iterator().next();
                 Object val = obj.get(key);
-                if (val instanceof JSONArray) return (JSONArray) val;
+                if (val instanceof JSONArray array) return array;
                 JSONArray out = new JSONArray();
                 out.add(val);
                 return out;

@@ -14,21 +14,21 @@ public class EmailAddressValidatorTest {
     @Test
     public void shouldPassSavingEmailIsValid() {
         StringValidatable validatable = new StringValidatable("test@mail.com");
-        new EmailAddressValidator().validate(validatable);
+        EmailAddressValidator.getInstance().validate(validatable);
         assertTrue(validatable.isValid());
     }
 
     @Test
     public void shouldPassIfUnicodeEmailIsValid() {
         StringValidatable validatable = new StringValidatable("用户名@领域.电脑");
-        new EmailAddressValidator().validate(validatable);
+        EmailAddressValidator.getInstance().validate(validatable);
         assertTrue(validatable.isValid());
     }
 
     @Test
     public void shouldFailIfEmailIsInvalid() {
         StringValidatable validatable = new StringValidatable("test@gmail.com\"><script>alert('XSS')</script>");
-        new EmailAddressValidator().validate(validatable);
+        EmailAddressValidator.getInstance().validate(validatable);
         assertFalse(validatable.isValid());
     }
 }

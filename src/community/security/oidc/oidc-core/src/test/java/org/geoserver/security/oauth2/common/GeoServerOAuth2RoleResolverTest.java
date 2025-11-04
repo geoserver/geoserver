@@ -19,13 +19,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.security.GeoServerRoleConverter;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerSecurityManager;
@@ -184,9 +184,9 @@ public class GeoServerOAuth2RoleResolverTest {
     public void testGetRolesFromIdToken() {
         // given
         context = newResolverContext(OpenIdRoleSource.IdToken);
-        var lToken = new OidcIdToken(
+        OidcIdToken lToken = new OidcIdToken(
                 "tokenValue", now(), now().plusMillis(1), Collections.singletonMap(ROLES_CLAIM_NAME, "ROLE1"));
-        var lRequest = new OidcUserRequest(mockClientReg, accessToken, lToken);
+        OidcUserRequest lRequest = new OidcUserRequest(mockClientReg, accessToken, lToken);
         OAuth2ResolverParam lParam = new OAuth2ResolverParam(PRINCIPAL_NAME, mockRequest, context, lRequest);
 
         // when

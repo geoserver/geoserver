@@ -6,6 +6,7 @@ package org.geoserver.ogcapi;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import java.util.Map;
 import org.springframework.http.HttpMethod;
@@ -56,6 +57,8 @@ public class Link {
     Boolean templated;
     Boolean merge;
     Map<String, Object> body;
+
+    @JsonSerialize(using = HttpMethodSerializer.class)
     HttpMethod method;
 
     public Link() {}

@@ -5,8 +5,8 @@
 package org.geoserver.opensearch.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.geoserver.opensearch.eo.store.OpenSearchAccess.*;
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.EO_IDENTIFIER;
+import static org.geoserver.opensearch.eo.store.OpenSearchAccess.LAYERS;
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.LAYER_DESCRIPTION;
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.LAYER_TITLE;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -45,6 +45,7 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.ImageProcessingInfo.PngEncoderType;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
+import org.geoserver.opensearch.eo.store.OSEOPostGISResource;
 import org.geotools.api.data.Query;
 import org.geotools.api.feature.Feature;
 import org.geotools.api.feature.Property;
@@ -67,6 +68,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -74,13 +76,20 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 public class CollectionLayerTest extends OSEORestTestSupport {
+    @ClassRule
+    public static final OSEOPostGISResource postgis = new OSEOPostGISResource(false);
+
+    @Override
+    protected OSEOPostGISResource getOSEOPostGIS() {
+        return postgis;
+    }
 
     private String resourceBase;
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
         namespaces.put("wfs", "http://www.opengis.net/wfs");
@@ -521,7 +530,6 @@ public class CollectionLayerTest extends OSEORestTestSupport {
         json = getAsJSONPath("/rest/oseo/collections/TEST123/layers", 200);
         assertEquals(Integer.valueOf(2), json.read("$.layers.length()"));
         checkTest123SecondaryLayer();
-        return;
     }
 
     private void checkTest123SecondaryLayer() throws Exception {
@@ -651,7 +659,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
                 Boolean.TRUE);
 
         // check the configuration elements are there too
-        LayerInfo layer = validateBasicLayerStructure("gs", "test123", new String[] {"B02", "B03", "B04", "B08"});
+        validateBasicLayerStructure("gs", "test123", new String[] {"B02", "B03", "B04", "B08"});
 
         // get the capabilites and check the times are indeed ranges
         Document dom = getAsDOM("wms?service=WMS&version=1.3.0&request=GetCapabilities");

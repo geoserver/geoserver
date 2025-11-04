@@ -10,25 +10,47 @@ Installing the WPS Download NetCDF module
 
 The WPS Download NetCDF module depends on 3 extensions:
 
-#. :ref:`wps`
-#. :ref:`wpsdownload`
-#. :ref:`netcdf_out`
+* :ref:`wps`
+* :ref:`wpsdownload`
+* :ref:`netcdf_out`
 
-If you haven't installed already, visit the :website:`website download <download>` page, locate your release, and download: 
+To install:
 
-#. :download_extension:`wps` containing the WPS extension.
-#. :download_extension:`wps-download` containing the WPS Download extension.
-#. :download_extension:`netcdf-out` containing the NetCDF Output extension.
+#. Login, and navigate to :menuselection:`About & Status > About GeoServer` and check **Build Information**
+   to determine the exact version of GeoServer you are running.
+   
+#. Visit the :website:`website download <download>` page, change the **Archive** tab,
+   and locate your release.
+   
+   From the list of **OGC Services** extensions download **WPS**.
 
-Then: 
+   * |release| example: :download_extension:`wps`
+   * |version| example: :nightly_extension:`wps`
+   
+
+   From the list of **OGC Services** extensions download **WPS Download**.
+
+   * |release| example: :download_extension:`wps-download`
+   * |version| example: :nightly_extension:`wps-download`
+
+#. From the list of **Output Formats** extensions download **NetCDF**.
+
+   * |release| example: :download_extension:`netcdf-out`
+   * |version| example: :nightly_extension:`netcdf-out`
  
- #. Download the WPS Download NetCDF community module from the `nightly GeoServer community module builds <https://build.geoserver.org/geoserver/main/community-latest/>`_.
+#. Visit the :website:`website download <download>` page, change the **Development** tab,
+   and locate the nightly release that corresponds to the GeoServer you are running.
+   
+   Following the **Community Modules** link and download **wps-download-netcdf** zip archive.
+   
+   * |version| example: :nightly_community:`wps-download-netcdf`
 
-    .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance!
+   The website lists active nightly builds to provide feedback to developers,
+   you may also `browse <https://build.geoserver.org/geoserver/>`__ for earlier branches.
 
- #. Extract all the contents of the archives into the ``WEB-INF/lib`` directory of the GeoServer installation.
+#. Extract all the contents of the archives into the ``WEB-INF/lib`` directory of the GeoServer installation.
 
- #. Restart GeoServer
+#. Restart GeoServer
 
 
 Module description

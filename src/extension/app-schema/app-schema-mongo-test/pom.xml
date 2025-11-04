@@ -69,6 +69,11 @@
       <version>2.0.0-2</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.wicket</groupId>
+      <artifactId>wicket-tester</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <profiles>

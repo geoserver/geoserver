@@ -51,12 +51,12 @@ import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.item.NonTransientResourceException;
 import org.springframework.batch.item.UnexpectedInputException;
 import org.springframework.batch.item.xml.StaxEventItemReader;
-import org.springframework.batch.item.xml.StaxUtils;
 import org.springframework.batch.item.xml.stax.DefaultFragmentEventReader;
 import org.springframework.batch.item.xml.stax.FragmentEventReader;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+import org.springframework.util.xml.StaxUtils;
 
 /**
  * Item reader for reading XML input based on StAX.
@@ -247,7 +247,7 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
 
                 try {
                     @SuppressWarnings("unchecked")
-                    T mappedFragment = (T) unmarshal(StaxUtils.getSource(fragmentReader));
+                    T mappedFragment = (T) unmarshal(StaxUtils.createStaxSource(fragmentReader));
                     item = mappedFragment;
                     try {
                         firePostRead(item, resource);

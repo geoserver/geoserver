@@ -8,11 +8,11 @@ import static org.geoserver.platform.GeoServerEnvironment.ENV_PROPERTIES_NAME;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
+import jakarta.servlet.ServletContext;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
-import javax.servlet.ServletContext;
 import org.easymock.EasyMock;
 import org.geotools.util.logging.Logging;
 import org.hamcrest.CoreMatchers;

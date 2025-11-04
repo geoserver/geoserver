@@ -14,6 +14,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import de.micromata.opengis.kml.v_2_2_0.Kml;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Unmarshaller;
 import java.awt.RenderingHints.Key;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -39,8 +41,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
@@ -1089,6 +1089,66 @@ public class KMLReflectorTest extends WMSTestSupport {
                         .getTextContent());
                 assertEquals(49d / 16d, scale, 0.01);
             }
+        }
+    }
+
+    @Test
+    public void testGraphicPackageViaReflector() throws Exception {
+        // request a KMZ (graphic package) via the kml reflector endpoint for the Points layer
+        final String requestUrl = "wms/kml?layers=" + getLayerId(MockData.POINTS)
+                + "&styles=big-mark&mode=download&format=" + KMZMapOutputFormat.MIME_TYPE;
+        MockHttpServletResponse response = getAsServletResponse(requestUrl);
+        assertEquals(KMZMapOutputFormat.MIME_TYPE, response.getContentType());
+
+        // open the returned KMZ and inspect entries
+        try (ZipInputStream zis = new ZipInputStream(getBinaryInputStream(response))) {
+            // first entry should be the KML document
+            ZipEntry entry = zis.getNextEntry();
+            assertNotNull("expected kml entry", entry);
+            assertEquals("wms.kml", entry.getName());
+
+            // read the kml into a DOM for inspection
+            byte[] kmlData = IOUtils.toByteArray(zis);
+            Document kmlDoc = dom(new ByteArrayInputStream(kmlData));
+
+            // ensure there's at least one Placemark and an Icon href that references an embedded image
+            assertXpathEvaluatesTo("1", "count(//kml:Placemark)", kmlDoc);
+            String href = XMLUnit.newXpathEngine().evaluate("(//kml:Icon/kml:href)[1]", kmlDoc);
+            assertNotNull("icon href must be present in the generated KML", href);
+            // href should reference a file inside the kmz (relative path), not an absolute external URL
+            assertFalse(
+                    "icon href should not be an external http url",
+                    href.startsWith("http://") || href.startsWith("https://"));
+            assertTrue(
+                    "icon href should reference an embedded file path",
+                    href.contains("images/")
+                            || href.contains("files/")
+                            || href.endsWith(".png")
+                            || href.endsWith(".jpg")
+                            || href.endsWith(".gif"));
+
+            zis.closeEntry();
+
+            // walk remaining entries to confirm an image entry exists
+            boolean foundImageEntry = false;
+            ZipEntry next;
+            while ((next = zis.getNextEntry()) != null) {
+                String name = next.getName();
+                if (name.endsWith(".png") || name.endsWith(".jpg") || name.endsWith(".gif")) {
+                    foundImageEntry = true;
+                    // optionally verify image file name matches the one referenced by the KML
+                    if (href.contains("/")) {
+                        String referenced = href.substring(href.lastIndexOf('/') + 1);
+                        if (name.endsWith(referenced)) {
+                            // match found; break early
+                            break;
+                        }
+                    }
+                }
+                zis.closeEntry();
+            }
+
+            assertTrue("KMZ must contain an embedded image entry", foundImageEntry);
         }
     }
 

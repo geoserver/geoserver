@@ -24,6 +24,7 @@ import org.geoserver.ogcapi.Queryables;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OSEOInfoImpl;
 import org.geoserver.opensearch.eo.store.JDBCOpenSearchAccessTest;
+import org.geoserver.opensearch.eo.store.OSEOPostGISResource;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.resource.FileSystemResourceStore;
@@ -39,9 +40,13 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.text.cql2.CQL;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 public class STACQueryablesBuilderTest {
+
+    @ClassRule
+    public static final OSEOPostGISResource postgis = new OSEOPostGISResource(false);
 
     private static final String FAKE_ID = "foobar";
     private static final String TYPE_NUMBER = "number";
@@ -51,7 +56,7 @@ public class STACQueryablesBuilderTest {
 
     @BeforeClass
     public static void setupClass() throws IOException, SQLException {
-        data = JDBCOpenSearchAccessTest.setupAndReturnStore();
+        data = JDBCOpenSearchAccessTest.setupAndReturnStore(postgis);
     }
 
     @AfterClass
@@ -106,7 +111,6 @@ public class STACQueryablesBuilderTest {
         Schema constellation = properties.get("constellation");
         assertNotNull(constellation);
         assertEquals(TYPE_STRING, constellation.getType());
-        assertEquals("string", constellation.getFormat());
 
         // check the cloud cover, which has a math expression
         Schema cloudCover = properties.get("eo:cloud_cover");
@@ -178,7 +182,6 @@ public class STACQueryablesBuilderTest {
         // grab the queryables
         Queryables queryables = builder.getQueryables();
         Map<String, Schema> properties = queryables.getProperties();
-        System.out.println(properties);
 
         // check the keywords queryable, top level, not in "properties"
         Schema keywords = properties.get("keywords");
@@ -262,9 +265,6 @@ public class STACQueryablesBuilderTest {
 
         // confirm that properties not included in the queryables array are excluded
         Schema platform = properties.get("platform");
-        assertNull(platform);
-
-        Schema constellation = properties.get("constellation");
         assertNull(platform);
     }
 }

@@ -37,7 +37,6 @@ import org.geoserver.wfs.request.Update;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.api.feature.simple.SimpleFeatureType;
-import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.feature.type.Name;
 import org.geotools.feature.NameImpl;
 import org.geotools.util.logging.Logging;
@@ -218,17 +217,6 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
     }
 
     /**
-     * Get the feature type info for the given feature type.
-     *
-     * @param featureType the feature type
-     * @return FeatureTypeInfo the feature type info
-     */
-    private FeatureTypeInfo getFeatureTypeInfo(FeatureType featureType) {
-        Name featureTypeName = featureType.getName();
-        return getFeatureTypeInfo(featureTypeName);
-    }
-
-    /**
      * Get the feature type info for the given feature type name.
      *
      * @param featureTypeName the feature type name
@@ -243,26 +231,12 @@ public class AutopopulateTransactionCallback implements TransactionCallback {
     }
 
     /**
-     * Set the updated attributes for the given feature.
-     *
-     * @param feature the feature
-     * @param update the update
-     */
-    private SimpleFeature prepareUpdateFeature(SimpleFeature feature, Update update) {
-        // run the update
-        for (Object o : update.getUpdateProperties()) {
-            Property p = (Property) o;
-            feature.setAttribute(p.getName().getLocalPart(), p.getValue());
-        }
-        return feature;
-    }
-
-    /**
      * Get the feature template for the given update.
      *
      * @param update the update transaction element
      * @return SimpleFeature the feature template with the updated properties
      */
+    @SuppressWarnings("unchecked")
     private SimpleFeature getTransactionFeatureTemplate(Update update) throws IOException {
         QName typeName = update.getTypeName();
 

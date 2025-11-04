@@ -6,35 +6,31 @@ package org.geoserver.cog;
 
 import it.geosolutions.imageio.core.BasicAuthURI;
 import it.geosolutions.imageio.core.SourceSPIProvider;
-import it.geosolutions.imageioimpl.plugins.cog.*;
+import it.geosolutions.imageioimpl.plugins.cog.CogImageInputStreamSpi;
+import it.geosolutions.imageioimpl.plugins.cog.CogImageReaderSpi;
 import it.geosolutions.imageioimpl.plugins.cog.CogSourceSPIProvider;
 import java.io.Serializable;
 import java.net.URI;
 import java.util.Map;
 import java.util.Optional;
-import java.util.logging.Logger;
 import javax.annotation.Nullable;
 import javax.imageio.spi.ImageInputStreamSpi;
 import javax.imageio.spi.ImageReaderSpi;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageReaderInputObjectConverter;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.MetadataMap;
 import org.geotools.api.coverage.grid.GridCoverageReader;
 import org.geotools.util.factory.Hints;
-import org.geotools.util.logging.Logging;
 
 /** Attempts to convert the source input object for a {@link GridCoverageReader} to a {@link SourceSPIProvider} */
 public class CoverageReaderCogInputObjectConverter implements CoverageReaderInputObjectConverter<SourceSPIProvider> {
-
-    static Logger LOGGER = Logging.getLogger(CoverageReaderCogInputObjectConverter.class);
 
     private static final ImageInputStreamSpi COG_IMAGE_INPUT_STREAM_SPI = new CogImageInputStreamSpi();
 
     private static final ImageReaderSpi COG_IMAGE_READER_SPI = new CogImageReaderSpi();
 
-    private final Catalog catalog;
-
-    public CoverageReaderCogInputObjectConverter(Catalog catalog) {
-        this.catalog = catalog;
-    }
+    public CoverageReaderCogInputObjectConverter() {}
 
     @Override
     public Optional<SourceSPIProvider> convert(
@@ -58,10 +54,9 @@ public class CoverageReaderCogInputObjectConverter implements CoverageReaderInpu
             @Nullable CoverageInfo coverageInfo,
             @Nullable CoverageStoreInfo coverageStoreInfo,
             @Nullable Hints hints) {
-        if (!(input instanceof String)) {
+        if (!(input instanceof String urlString)) {
             return Optional.empty();
         }
-        String urlString = (String) input;
         return canConvert(urlString) ? convertReaderInputObject(urlString, coverageStoreInfo) : Optional.empty();
     }
 

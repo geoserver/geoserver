@@ -8,20 +8,18 @@ import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.util.visit.IVisitor;
 import org.geoserver.cog.CogSettings;
 
 /** Basic Panel to configure CogSettings. */
+@SuppressWarnings("unchecked")
 public class CogSettingsPanel<T extends CogSettings> extends FormComponentPanel<T> {
 
     /** Note that caching is temporarily disabled from the UI */
@@ -37,28 +35,27 @@ public class CogSettingsPanel<T extends CogSettings> extends FormComponentPanel<
         container = new WebMarkupContainer("container");
         container.setOutputMarkupId(true);
         add(container);
-        useCachingStream = new CheckBox("useCachingStream", new PropertyModel(model, "useCachingStream"));
+        useCachingStream = new CheckBox("useCachingStream", new PropertyModel<>(model, "useCachingStream"));
         useCachingStream.setVisible(false);
         container.add(useCachingStream);
 
         List<CogSettings.RangeReaderType> rangeReaderTypes =
-                new ArrayList<CogSettings.RangeReaderType>(Arrays.asList(CogSettings.RangeReaderType.values()));
+                new ArrayList<>(Arrays.asList(CogSettings.RangeReaderType.values()));
 
         // create the editor, eventually set a default value
-        rangeReaderSettings = new DropDownChoice<CogSettings.RangeReaderType>(
-                "rangeReaderSettings", new PropertyModel(model, "rangeReaderSettings"), rangeReaderTypes);
+        rangeReaderSettings = new DropDownChoice<>(
+                "rangeReaderSettings", new PropertyModel<>(model, "rangeReaderSettings"), rangeReaderTypes);
 
         rangeReaderSettings.setOutputMarkupId(true);
         container.add(rangeReaderSettings);
 
-        CogSettings object = getSettings(model);
         useCachingStream.add(new OnChangeAjaxBehavior() {
             @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                boolean useCache = useCachingStream.getModelObject().booleanValue();
+                boolean useCache = useCachingStream.getModelObject();
                 CogSettings object = getSettings(model);
                 object.setUseCachingStream(useCache);
                 model.setObject((T) object);
@@ -87,12 +84,6 @@ public class CogSettingsPanel<T extends CogSettings> extends FormComponentPanel<
 
     @Override
     public void convertInput() {
-        IVisitor<Component, Object> formComponentVisitor = (component, visit) -> {
-            if (component instanceof FormComponent<?> formComponent) {
-                formComponent.processInput();
-            }
-        };
-
         CogSettings convertedInput = new CogSettings();
         convertedInput.setUseCachingStream(useCachingStream.getModelObject());
         convertedInput.setRangeReaderSettings(rangeReaderSettings.getModelObject());

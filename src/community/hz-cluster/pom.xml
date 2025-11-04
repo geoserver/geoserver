@@ -14,8 +14,7 @@
   <name>GeoServer Hazelcast Clustering Module</name>
 
   <properties>
-
-    <hazelcast.web.version>4.0</hazelcast.web.version>
+    <hazelcast.web.version>5.1</hazelcast.web.version>
     <metrics.version>4.0.3</metrics.version>
   </properties>
 
@@ -47,6 +46,10 @@
       <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-servlet</artifactId>
       <version>${metrics.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>

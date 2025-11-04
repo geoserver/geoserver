@@ -45,7 +45,6 @@ import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.locationtech.jts.linearref.LengthIndexedLine;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.PlaceholderConfigurerSupport;
-import org.springframework.core.Constants;
 import org.springframework.util.PropertyPlaceholderHelper;
 
 /**
@@ -386,20 +385,20 @@ public class MapMLGenerator {
 
     private static class AttributeValueResolver {
 
-        private final Constants constants = new Constants(PlaceholderConfigurerSupport.class);
         private final PropertyPlaceholderHelper helper = new PropertyPlaceholderHelper(
-                constants.asString("DEFAULT_PLACEHOLDER_PREFIX"),
-                constants.asString("DEFAULT_PLACEHOLDER_SUFFIX"),
-                constants.asString("DEFAULT_VALUE_SEPARATOR"),
+                PlaceholderConfigurerSupport.DEFAULT_PLACEHOLDER_PREFIX,
+                PlaceholderConfigurerSupport.DEFAULT_PLACEHOLDER_SUFFIX,
+                PlaceholderConfigurerSupport.DEFAULT_VALUE_SEPARATOR,
+                null,
                 true);
         private final String nullValue = "null";
         private final SimpleFeature feature;
-        private final PropertyPlaceholderHelper.PlaceholderResolver resolver = (name) -> resolveAttributeNames(name);
+        private final PropertyPlaceholderHelper.PlaceholderResolver resolver = this::resolveAttributeNames;
 
         /**
          * Wrap the feature to caption via this constructor
          *
-         * @param feature
+         * @param feature - feature to resolve attributes from
          */
         protected AttributeValueResolver(SimpleFeature feature) {
             this.feature = feature;
@@ -410,7 +409,7 @@ public class MapMLGenerator {
          * them, but these seem to require that the space be replaced by an underscore, so this function performs that
          * transformation.
          *
-         * @param attributeName
+         * @param attributeName - name of attribute to resolve
          * @return null-signifying token (nullValue) or the attribute value
          */
         private String resolveAttributeNames(String attributeName) {
@@ -425,7 +424,7 @@ public class MapMLGenerator {
          * Invokes PropertyPlaceholderHelper.replacePlaceholders, which iterates over the userTemplate string to replace
          * placeholders with attribute values of the attribute of that name, if found.
          *
-         * @param userTemplate
+         * @param userTemplate - template string possibly containing ${placeholders}
          * @return A possibly null string with placeholders resolved
          * @throws BeansException if something goes wrong
          */
@@ -438,8 +437,8 @@ public class MapMLGenerator {
     /**
      * Build a MapML geometry from a JTS geometry
      *
-     * @param g
-     * @return
+     * @param g a JTS Geometry
+     * @return the geometry content
      * @throws IOException - IOException
      */
     public GeometryContent buildGeometry(Geometry g) throws IOException {
@@ -473,7 +472,7 @@ public class MapMLGenerator {
 
     /**
      * @param g a JTS Geometry
-     * @return
+     * @return the specific geometry object
      * @throws IOException - IOException
      */
     private Object buildSpecificGeom(Geometry g) throws IOException {

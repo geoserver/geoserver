@@ -5,9 +5,9 @@
  */
 package org.geoserver.security;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.impl.AbstractGeoServerSecurityService;
 import org.geotools.util.logging.Logging;

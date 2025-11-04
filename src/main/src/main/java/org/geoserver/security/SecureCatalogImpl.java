@@ -10,11 +10,11 @@ import static org.geoserver.catalog.Predicates.or;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import jakarta.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nonnull;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogCapabilities;
 import org.geoserver.catalog.CatalogFacade;

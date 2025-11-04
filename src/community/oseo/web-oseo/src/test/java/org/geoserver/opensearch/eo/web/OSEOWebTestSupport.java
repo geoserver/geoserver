@@ -6,7 +6,7 @@ package org.geoserver.opensearch.eo.web;
 
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.opensearch.eo.OSEOInfo;
-import org.geoserver.opensearch.eo.store.GeoServerOpenSearchTestSupport;
+import org.geoserver.opensearch.eo.store.OSEOPostGISResource;
 import org.geoserver.web.GeoServerWicketTestSupport;
 
 /**
@@ -14,9 +14,11 @@ import org.geoserver.web.GeoServerWicketTestSupport;
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class OSEOWebTestSupport extends GeoServerWicketTestSupport {
+public abstract class OSEOWebTestSupport extends GeoServerWicketTestSupport {
 
     String openSearchAccessStoreId;
+
+    protected abstract OSEOPostGISResource getOSEOPostGIS();
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -27,7 +29,7 @@ public class OSEOWebTestSupport extends GeoServerWicketTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
-        GeoServerOpenSearchTestSupport.setupBasicOpenSearch(testData, getCatalog(), getGeoServer(), false);
+        getOSEOPostGIS().setupBasicOpenSearch(getCatalog(), getGeoServer());
         OSEOInfo service = getGeoServer().getService(OSEOInfo.class);
         openSearchAccessStoreId = service.getOpenSearchAccessStoreId();
     }

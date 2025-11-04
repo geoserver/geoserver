@@ -38,13 +38,21 @@
     <include>jetty-*.jar</include>
     <include>jetty-util-*.jar</include>
     <include>xmlParserAPIs-*.jar</include>
-    <include>slf4j-*.jar</include>
-    <include>log4j-*.jar</include>
+    <include>jakarta.servlet*.jar</include>
    </includes>
    <excludes>
-    <exclude>log4j-over-slf4j-*.jar</exclude>
+    <exclude>*-slf4j-*.jar</exclude>
     <exclude>jetty-start*.jar</exclude>
+       <exclude>*log4j*.jar</exclude>
    </excludes>
+  </fileSet>
+  <fileSet>
+     <directory>release/target/dependency</directory>
+     <outputDirectory>lib/logging</outputDirectory>
+     <includes>
+         <include>slf4j-*.jar</include>
+         <include>jetty-slf4j-*.jar</include>
+     </includes>
   </fileSet>
   <fileSet>
    <!-- windows batch files -->
@@ -90,7 +98,18 @@
    <includes>
     <include>**/*</include>
    </includes>
+   <excludes>
+       <exclude>start.ini</exclude>
+   </excludes>
   </fileSet>
+     <fileSet>
+       <!-- start.ini with template expansion -->
+       <directory>release/target/jetty</directory>
+       <outputDirectory></outputDirectory>
+       <includes>
+           <include>start.ini</include>
+       </includes>
+     </fileSet>
   <fileSet>
    <!-- empty log directory -->
    <directory>release/logs</directory>

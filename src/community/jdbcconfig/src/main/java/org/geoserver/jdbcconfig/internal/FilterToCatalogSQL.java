@@ -164,7 +164,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
             String valueCol2 = matchingCase ? "o2.value" : "UPPER(o2.value)";
 
             switch (matchAction) {
-                    // respect matchaction
+                // respect matchaction
                 case ALL: // all = another value for the property may not occur
                     append(
                             extraData,
@@ -242,7 +242,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
             String valueCol = matchingCase ? "value" : "UPPER(value)";
 
             switch (matchAction) {
-                    // respect match action
+                // respect match action
                 case ALL: // all = another value for the property may not occur
                     append(
                             extraData,
@@ -316,7 +316,7 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         String valueCol = matchCase ? "value" : "UPPER(value)";
 
         switch (matchAction) {
-                // respect match action
+            // respect match action
             case ALL: // all = another value for the property may not occur
                 append(
                         extraData,

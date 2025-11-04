@@ -75,7 +75,7 @@ public class KMLPPIO extends CDataPPIO {
         this.type = b.buildFeatureType();
     }
 
-    private static final Map<Name, Class<?>> getSignature(SimpleFeature f) {
+    private static Map<Name, Class<?>> getSignature(SimpleFeature f) {
         Map<Name, Class<?>> ftype = new HashMap<>();
         Collection<Property> properties = f.getProperties();
         for (Property p : properties) {

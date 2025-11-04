@@ -94,11 +94,11 @@
     <gs.version>3.0-SNAPSHOT</gs.version>
     <gt.version>35-SNAPSHOT</gt.version>
     <gwc.version>2.0-SNAPSHOT</gwc.version>
-    <spring.version>5.3.39</spring.version>
-    <spring.security.version>5.8.16</spring.security.version>
+    <spring.version>6.2.12</spring.version>
+    <spring.security.version>6.5.5</spring.security.version>
     <spring.security.oauth2.version>2.5.2.RELEASE</spring.security.oauth2.version>
     <spring-integration.version>5.5.18</spring-integration.version>
-    <wicket.version>9.21.0</wicket.version>
+    <wicket.version>10.7.0</wicket.version>
 
     <!-- ================================ -->
     <!-- Dependency version management    -->
@@ -109,23 +109,24 @@
     <errorProne.version>2.31.0</errorProne.version>
     <gf.version>3.8.2</gf.version>
     <hazelcast.version>5.3.8</hazelcast.version>
-    <hibernate-version>5.6.15.Final</hibernate-version>
+    <hibernate-version>7.1.4.Final</hibernate-version>
     <httpcore.version>4.4.16</httpcore.version>
-    <jacoco.version>0.8.13</jacoco.version>
+    <httpclient.version>5.4.4</httpclient.version>
+    <jacoco.version>0.8.14</jacoco.version>
     <jasypt.version>1.9.3</jasypt.version>
     <javac.version>9+181-r4173-1</javac.version>
-    <jetty.servlet-api.version>4.0.6</jetty.servlet-api.version>
-    <jetty.version>10.0.25</jetty.version>
+    <javaapiforkml.version>3.0.11</javaapiforkml.version>
+    <jetty.version>12.1.3</jetty.version>
     <jmh.version>1.37</jmh.version>
     <joda-time.version>2.8.1</joda-time.version>
     <marlin.version>0.9.4.8</marlin.version>
-    <mf.version>2.4-SNAPSHOT</mf.version>
-    <mockito.version>5.15.2</mockito.version>
+    <mf.version>2.5-SNAPSHOT</mf.version>
+    <mockito.version>5.20.0</mockito.version>
     <opengeo-geodb.version>0.9</opengeo-geodb.version>
     <pmd.version>7.14.0</pmd.version>
     <poi.version>5.4.0</poi.version>
     <postgis.jdbc.version>1.3.3</postgis.jdbc.version>
-    <servlet-api.version>3.1.0</servlet-api.version>
+    <servlet-api.version>6.1.0</servlet-api.version>
     <xalan.version>2.7.3</xalan.version>
 
     <!-- ================================ -->
@@ -209,6 +210,20 @@
         <groupId>org.springframework.security</groupId>
         <artifactId>spring-security-bom</artifactId>
         <version>${spring.security.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-bom</artifactId>
+        <version>${jetty.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>testcontainers-bom</artifactId>
+        <version>2.0.1</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -470,11 +485,6 @@
         <version>${hibernate-version}</version>
       </dependency>
       <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate-entitymanager</artifactId>
-        <version>${hibernate-version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.hibernatespatial</groupId>
         <artifactId>hibernate-spatial</artifactId>
         <version>${hibernate-spatial-version}</version>
@@ -493,7 +503,7 @@
       <dependency>
         <groupId>org.easymock</groupId>
         <artifactId>easymock</artifactId>
-        <version>5.5.0</version>
+        <version>5.6.0</version>
       </dependency>
       <dependency>
         <groupId>cglib</groupId>
@@ -531,14 +541,14 @@
         <version>1.4.3</version>
       </dependency>
       <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>javax.servlet-api</artifactId>
+        <groupId>jakarta.servlet</groupId>
+        <artifactId>jakarta.servlet-api</artifactId>
         <version>${servlet-api.version}</version>
       </dependency>
       <dependency>
-        <groupId>commons-fileupload</groupId>
-        <artifactId>commons-fileupload</artifactId>
-        <version>1.6.0</version>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-fileupload2-jakarta-servlet6</artifactId>
+        <version>2.0.0-M4</version>
       </dependency>
       <dependency>
         <groupId>commons-codec</groupId>
@@ -546,9 +556,14 @@
         <version>1.18.0</version>
       </dependency>
       <dependency>
-        <groupId>commons-httpclient</groupId>
-        <artifactId>commons-httpclient</artifactId>
-        <version>3.1</version>
+        <groupId>org.apache.httpcomponents.client5</groupId>
+        <artifactId>httpclient5</artifactId>
+        <version>${httpclient.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents.client5</groupId>
+        <artifactId>httpclient5-cache</artifactId>
+        <version>${httpclient.version}</version>
       </dependency>
       <dependency>
         <groupId>commons-validator</groupId>
@@ -642,6 +657,11 @@
         <version>${wicket.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.apache.wicket</groupId>
+        <artifactId>wicket-tester</artifactId>
+        <version>${wicket.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.wicketstuff</groupId>
         <artifactId>wicketstuff-select2</artifactId>
         <version>${wicket.version}</version>
@@ -656,31 +676,6 @@
         <groupId>com.github.librepdf</groupId>
         <artifactId>openpdf</artifactId>
         <version>1.3.26</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-server</artifactId>
-        <version>${jetty.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-jndi</artifactId>
-        <version>${jetty.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-plus</artifactId>
-        <version>${jetty.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-util</artifactId>
-        <version>${jetty.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-servlets</artifactId>
-        <version>${jetty.version}</version>
       </dependency>
       <dependency>
         <groupId>commons-el</groupId>
@@ -716,30 +711,35 @@
         <artifactId>woodstox-core</artifactId>
         <version>6.4.0</version>
       </dependency>
-
+      <!-- jakarta mail and activation interfaces -->
       <dependency>
-        <groupId>com.sun.mail</groupId>
-        <artifactId>jakarta.mail</artifactId>
-        <version>1.6.7</version>
+        <groupId>jakarta.mail</groupId>
+        <artifactId>jakarta.mail-api</artifactId>
+        <version>2.1.5</version>
       </dependency>
       <dependency>
-        <groupId>com.sun.activation</groupId>
-        <artifactId>jakarta.activation</artifactId>
-        <version>1.2.2</version>
+        <groupId>jakarta.activation</groupId>
+        <artifactId>jakarta.activation-api</artifactId>
+        <version>2.1.4</version>
+      </dependency>
+
+      <!-- jakarta mail and activation implementations -->
+      <dependency>
+        <groupId>org.eclipse.angus</groupId>
+        <artifactId>angus-mail</artifactId>
+        <version>2.0.5</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.angus</groupId>
+        <artifactId>angus-activation</artifactId>
+        <version>2.0.3</version>
       </dependency>
 
       <!-- restlet: legacy -->
       <dependency>
         <groupId>org.restlet</groupId>
         <artifactId>org.restlet</artifactId>
-        <version>1.0.8</version>
-        <!-- Classifier selects a hacked JAR where we've removed a class we don't need and which has a security vulnerability.  This should be removed when we update to A current version of Restlet (2.2 or later)-->
-        <classifier>noobjrep</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.restlet</groupId>
-        <artifactId>org.restlet</artifactId>
-        <version>1.0.8</version>
+        <version>2.6.0</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -750,17 +750,17 @@
       <dependency>
         <groupId>org.restlet</groupId>
         <artifactId>org.restlet.ext.freemarker</artifactId>
-        <version>1.0.8</version>
+        <version>2.6.0</version>
       </dependency>
       <dependency>
         <groupId>org.restlet</groupId>
         <artifactId>org.restlet.ext.spring</artifactId>
-        <version>1.0.8</version>
+        <version>2.6.0</version>
       </dependency>
       <dependency>
         <groupId>org.restlet</groupId>
         <artifactId>org.restlet.ext.json</artifactId>
-        <version>1.0.8</version>
+        <version>2.6.0</version>
       </dependency>
       <dependency>
         <groupId>com.noelios.restlet</groupId>
@@ -835,9 +835,9 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>javax.jms</groupId>
-        <artifactId>jms-api</artifactId>
-        <version>1.1-rev-1</version>
+        <groupId>jakarta.jms</groupId>
+        <artifactId>jakarta.jms-api</artifactId>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.xbean</groupId>
@@ -910,9 +910,9 @@
         <version>2.0.0-M24</version>
       </dependency>
       <dependency>
-        <groupId>javax.annotation</groupId>
-        <artifactId>javax.annotation-api</artifactId>
-        <version>1.3.1</version>
+        <groupId>jakarta.annotation</groupId>
+        <artifactId>jakarta.annotation-api</artifactId>
+        <version>2.1.1</version>
       </dependency>
       <dependency>
         <groupId>com.hazelcast</groupId>
@@ -1148,7 +1148,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.14.0</version>
+          <version>3.14.1</version>
         </plugin>
         <plugin>
           <artifactId>maven-dependency-plugin</artifactId>
@@ -1228,7 +1228,7 @@
         <plugin>
           <groupId>com.diffplug.spotless</groupId>
           <artifactId>spotless-maven-plugin</artifactId>
-          <version>2.43.0</version>
+          <version>3.0.0</version>
         </plugin>
         <plugin>
           <groupId>com.github.ekryd.sortpom</groupId>
@@ -1238,12 +1238,12 @@
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.13</version>
+          <version>0.8.14</version>
         </plugin>
         <plugin>
           <groupId>org.eclipse.jetty</groupId>
           <artifactId>jetty-maven-plugin</artifactId>
-          <version>10.0.25</version>
+          <version>11.0.26</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -1251,14 +1251,9 @@
           <version>3.2.0</version>
         </plugin>
         <plugin>
-          <groupId>org.mortbay.jetty</groupId>
-          <artifactId>maven-jetty-plugin</artifactId>
-          <version>6.1.8</version>
-        </plugin>
-        <plugin>
           <groupId>com.github.spotbugs</groupId>
           <artifactId>spotbugs-maven-plugin</artifactId>
-          <version>4.7.3.4</version>
+          <version>4.9.7.0</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -1338,10 +1333,10 @@
             <descriptor>release/ext-excel.xml</descriptor>
             <descriptor>release/ext-feature-pregeneralized.xml</descriptor>
             <descriptor>release/ext-gdal.xml</descriptor>
-            <descriptor>release/ext-geofence-server-h2.xml</descriptor>
+            <!-- descriptor>release/ext-geofence-server-h2.xml</descriptor>
             <descriptor>release/ext-geofence-server-postgres.xml</descriptor>
             <descriptor>release/ext-geofence-wps.xml</descriptor>
-            <descriptor>release/ext-geofence.xml</descriptor>
+            <descriptor>release/ext-geofence.xml</descriptor -->
             <descriptor>release/ext-geopkg-output.xml</descriptor>
             <descriptor>release/ext-grib.xml</descriptor>
             <descriptor>release/ext-gwc-s3.xml</descriptor>
@@ -1584,7 +1579,7 @@
         <configuration>
           <java>
             <palantirJavaFormat>
-              <version>2.50.0</version>
+              <version>2.74.0</version>
               <formatJavadoc>true</formatJavadoc>
             </palantirJavaFormat>
           </java>
@@ -2327,6 +2322,60 @@
         </plugins>
       </build>
     </profile>
+    <!-- GitHub build profiles enabled by Github actions. Can be used to turn off tests that
+        are unreliable in a Github build-->
+    <profile>
+      <id>macos-github-build</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <systemPropertyVariables>
+                <macos-github-build>true</macos-github-build>
+                <github-build>true</github-build>
+              </systemPropertyVariables>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>windows-github-build</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <systemPropertyVariables>
+                <windows-github-build>true</windows-github-build>
+                <github-build>true</github-build>
+              </systemPropertyVariables>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>linux-github-build</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <systemPropertyVariables>
+                <linux-github-build>true</linux-github-build>
+                <github-build>true</github-build>
+              </systemPropertyVariables>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
   </profiles>
 
 </project>

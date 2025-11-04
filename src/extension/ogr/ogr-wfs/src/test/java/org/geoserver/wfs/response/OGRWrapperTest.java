@@ -25,7 +25,7 @@ public class OGRWrapperTest {
     }
 
     @Test
-    public void testAvaialable() {
+    public void testAvailable() {
         // kind of a smoke test, since ogr2ogrtestutil uses the same command!
         ogr.isAvailable();
     }

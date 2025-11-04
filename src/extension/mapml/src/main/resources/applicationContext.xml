@@ -52,7 +52,7 @@
             <map>
                 <entry>
                     <key>
-                        <util:constant static-field="javax.xml.bind.Marshaller.JAXB_FRAGMENT"/>
+                        <util:constant static-field="jakarta.xml.bind.Marshaller.JAXB_FRAGMENT"/>
                     </key>
                     <value type="java.lang.Boolean">true</value>
                 </entry>
@@ -77,6 +77,7 @@
         <property name="component" value="MapML plugin"/>
         <property name="available" value="true"/>
         <property name="enabled" value="true"/>
+        <property name="category" value="EXTENSION"/>
     </bean>
     <bean id="mapMLMapProducer" class="org.geoserver.mapml.MapMLMapOutputFormat">
         <constructor-arg index="0" ref="wms"/>

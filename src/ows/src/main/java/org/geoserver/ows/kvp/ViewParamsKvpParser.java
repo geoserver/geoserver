@@ -5,11 +5,11 @@
  */
 package org.geoserver.ows.kvp;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.KvpParser;

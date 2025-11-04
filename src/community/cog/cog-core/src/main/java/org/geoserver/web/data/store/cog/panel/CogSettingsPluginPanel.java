@@ -18,14 +18,14 @@ public class CogSettingsPluginPanel extends SettingsPluginPanel {
     public CogSettingsPluginPanel(String id, IModel<SettingsInfo> model) {
         super(id, model);
         // Model associated to the metadata map
-        final PropertyModel<MetadataMap> metadata = new PropertyModel<MetadataMap>(model, "metadata");
+        final PropertyModel<MetadataMap> metadata = new PropertyModel<>(model, "metadata");
 
         IModel<CogSettings> cogSettingsModel =
-                new MetadataMapModel(metadata, CogSettings.COG_SETTINGS_KEY, CogSettings.class);
+                new MetadataMapModel<>(metadata, CogSettings.COG_SETTINGS_KEY, CogSettings.class);
 
         // New Container
         // container for ajax updates
-        CogSettingsPanel panel = new CogSettingsPanel("panel", cogSettingsModel);
+        CogSettingsPanel panel = new CogSettingsPanel<>("panel", cogSettingsModel);
         add(panel);
     }
 }

@@ -23,15 +23,12 @@ import org.geotools.api.data.FeatureSource;
  * to live, reacts to GeoService lifecycle events to reset the cache
  */
 public class AggregatesCache implements GeoServerLifecycleHandler {
-    private final GeoServer geoServer;
     private final OSEOInfo service;
     private final OpenSearchAccessProvider accessProvider;
 
     private LoadingCache<AggregateCacheKey, Object> aggregates;
 
     public AggregatesCache(GeoServer geoServer, OpenSearchAccessProvider accessProvider) {
-
-        this.geoServer = geoServer;
         service = geoServer.getService(OSEOInfo.class);
         this.accessProvider = accessProvider;
         initCache();
@@ -43,21 +40,19 @@ public class AggregatesCache implements GeoServerLifecycleHandler {
                 ? TimeUnit.HOURS
                 : TimeUnit.valueOf(service.getAggregatesCacheTTLUnit().toUpperCase());
 
-        aggregates = CacheBuilder.newBuilder()
-                .expireAfterWrite(duration, unit)
-                .build(new CacheLoader<AggregateCacheKey, Object>() {
-                    @Override
-                    public Object load(AggregateCacheKey key) throws Exception {
-                        String property = key.getProperty();
-                        String aggregate = key.getAggregate();
-                        String collectionIdentifier = key.getCollectionIdentifier();
-                        OpenSearchAccess openSearchAccess = accessProvider.getOpenSearchAccess();
-                        FeatureSource productSource = openSearchAccess.getProductSource();
-                        AggregateStats aggregateStats = AggregateFactory.getAggregateStats(
-                                AggregateFactory.AggregateType.fromString(aggregate));
-                        return aggregateStats.getStat(productSource, collectionIdentifier, property);
-                    }
-                });
+        aggregates = CacheBuilder.newBuilder().expireAfterWrite(duration, unit).build(new CacheLoader<>() {
+            @Override
+            public Object load(AggregateCacheKey key) throws Exception {
+                String property = key.getProperty();
+                String aggregate = key.getAggregate();
+                String collectionIdentifier = key.getCollectionIdentifier();
+                OpenSearchAccess openSearchAccess = accessProvider.getOpenSearchAccess();
+                FeatureSource productSource = openSearchAccess.getProductSource();
+                AggregateStats aggregateStats =
+                        AggregateFactory.getAggregateStats(AggregateFactory.AggregateType.fromString(aggregate));
+                return aggregateStats.getStat(productSource, collectionIdentifier, property);
+            }
+        });
     }
 
     /**

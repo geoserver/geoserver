@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -12,7 +13,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import org.geoserver.platform.resource.Files;
 import org.geotools.util.factory.Hints;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.batch.core.BatchStatus;
 
@@ -22,7 +22,6 @@ public class ParameterizedBackupTest extends BackupRestoreTestSupport {
     protected static Backup backupFacade;
 
     @Override
-    @Before
     public void beforeTest() throws InterruptedException {
         backupFacade = (Backup) applicationContext.getBean("backupFacade");
         ensureCleanedQueues();
@@ -33,7 +32,7 @@ public class ParameterizedBackupTest extends BackupRestoreTestSupport {
 
     @Test
     public void testParameterizePasswordsInBackup() throws Exception {
-        Hints hints = new Hints(new HashMap(2));
+        Hints hints = new Hints(new HashMap<>(2));
         hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
         hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_PARAMETERIZE_PASSWDS), Backup.PARAM_PARAMETERIZE_PASSWDS));
 
@@ -70,10 +69,12 @@ public class ParameterizedBackupTest extends BackupRestoreTestSupport {
 
         if (backupExecution.getStatus() == BatchStatus.COMPLETED) {
             // unzip the completed backup
-            ZipFile backup = new ZipFile(parameterizedBackup);
-            ZipEntry entry = backup.getEntry("store.dat.1");
+            Scanner scanner;
+            try (ZipFile backup = new ZipFile(parameterizedBackup)) {
+                ZipEntry entry = backup.getEntry("store.dat.1");
 
-            Scanner scanner = new Scanner(backup.getInputStream(entry), "UTF-8");
+                scanner = new Scanner(backup.getInputStream(entry), StandardCharsets.UTF_8);
+            }
             boolean hasExpectedValue = false;
             while (scanner.hasNextLine() && !hasExpectedValue) {
                 String line = scanner.nextLine();

@@ -33,7 +33,7 @@ public class MapMLMarshalTest {
         marshaller = new Jaxb2Marshaller();
         marshaller.setContextPath("org.geoserver.mapml.xml");
         Map<String, Object> properties = new HashMap<>();
-        properties.put(javax.xml.bind.Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
+        properties.put(jakarta.xml.bind.Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
         properties.put(NAMESPACE_PREFIX_MAPPER, Map.of("http://www.w3.org/1999/xhtml", ""));
         marshaller.setMarshallerProperties(properties);
     }

@@ -4,19 +4,19 @@
  */
 package org.geoserver.web.system.status;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.management.LockInfo;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MonitorInfo;
 import java.lang.management.ThreadInfo;
 import java.util.Arrays;
-import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
 
 /** utility interface for thread and memory heap info */
 public final class ConsoleInfoUtils {
+
+    public static final int MAX_HISTO_LINES = 50;
 
     private ConsoleInfoUtils() {}
 
@@ -121,25 +121,24 @@ public final class ConsoleInfoUtils {
      */
     static String getHistoMemoryDump() {
         try {
-            int pid = Optional.ofNullable(ManagementFactory.getRuntimeMXBean().getName())
-                    .map(processName -> Arrays.asList(processName.split("@")))
-                    .filter(elements -> !elements.isEmpty())
-                    .map(maybePid -> Integer.valueOf(maybePid.get(0)))
-                    .orElseThrow(() -> new IOException("Problem on getting the PID for the java process"));
+            // 1. Get the Platform MBean Server
+            MBeanServerConnection server = ManagementFactory.getPlatformMBeanServer();
 
-            final Process jmapProcess = Runtime.getRuntime().exec("jmap -histo:live %d".formatted(pid));
-            try (final BufferedReader stdConsole =
-                    new BufferedReader(new InputStreamReader(jmapProcess.getInputStream()))) {
+            // 2. Identify the DiagnosticCommand MBean
+            // The ObjectName for the DiagnosticCommand MBean is standard in HotSpot JVMs.
+            ObjectName dcmdName = new ObjectName("com.sun.management:type=DiagnosticCommand");
 
-                final StringBuilder accumulator = new StringBuilder();
-                String buffer;
-                while ((buffer = stdConsole.readLine()) != null) {
-                    accumulator.append(buffer).append("\n");
-                }
-                return accumulator.toString();
-            }
-        } catch (IOException e) {
-            return "Error reading the histo memory dump with the jmap command. Exception: %s".formatted(e.getMessage());
+            // 3. Define the command to execute
+            String commandName = "gcClassHistogram";
+
+            // Passing the -all=false argument to get only live objects
+            Object[] params = {new String[] {"-all=false"}};
+            String[] signature = {String[].class.getName()};
+
+            // 4. Invoke the command and return
+            return (String) server.invoke(dcmdName, commandName, params, signature);
+        } catch (Exception e) {
+            return "Error invoking DiagnosticCommand MBean: " + e.getMessage();
         }
     }
 }

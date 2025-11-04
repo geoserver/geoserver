@@ -38,7 +38,7 @@ public class WebServiceBodyResponseUserGroupService extends AbstractGeoServerSec
 
     static final SortedSet<GeoServerUser> emptyUserSet = Collections.unmodifiableSortedSet(new TreeSet<>());
 
-    private boolean convertToUpperCase = true;
+    private volatile boolean convertToUpperCase = true;
 
     private static final String rolePrefix = "ROLE_";
 

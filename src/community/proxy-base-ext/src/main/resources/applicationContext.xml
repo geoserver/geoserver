@@ -32,6 +32,7 @@ application directory.
 		<property name="component" value="Proxy Base Extension plugin" />
 		<property name="available" value="true" />
 		<property name="enabled" value="true" />
+        <property name="category" value="COMMUNITY"/>
 	</bean>
 
     <bean id="proxyBaseExtUrlMangler" class="org.geoserver.proxybase.ext.ProxyBaseExtUrlMangler" >

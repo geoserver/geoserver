@@ -24,10 +24,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.oauth2.core.ClientAuthenticationMethod.CLIENT_SECRET_POST;
 
+import jakarta.servlet.Filter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.servlet.Filter;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.oauth2.common.ConfidentialLogger;
 import org.geoserver.security.oauth2.spring.GeoServerAuthorizationRequestCustomizer;
@@ -36,6 +36,7 @@ import org.geoserver.security.oauth2.spring.GeoServerOidcIdTokenDecoderFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.stubbing.Answer;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -70,11 +71,12 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilderTest {
     private GeoServerOidcIdTokenDecoderFactory mockTokenDecoderFactory;
     private OAuth2LoginConfigurer mockOAuth2LoginConfigurer;
 
-    private UserInfoEndpointConfig mockUserInfoConfig = mock(UserInfoEndpointConfig.class);
-    private AuthorizationEndpointConfig mockAuthorizationConfig = mock(AuthorizationEndpointConfig.class);
-    private TokenEndpointConfig mockTokenConfig = mock(TokenEndpointConfig.class);
+    private final UserInfoEndpointConfig mockUserInfoConfig = mock(UserInfoEndpointConfig.class);
+    private final AuthorizationEndpointConfig mockAuthorizationConfig = mock(AuthorizationEndpointConfig.class);
+    private final TokenEndpointConfig mockTokenConfig = mock(TokenEndpointConfig.class);
 
-    private GeoServerOAuth2LoginAuthenticationFilterBuilder sut = new GeoServerOAuth2LoginAuthenticationFilterBuilder();
+    private final GeoServerOAuth2LoginAuthenticationFilterBuilder sut =
+            new GeoServerOAuth2LoginAuthenticationFilterBuilder();
 
     @Before
     public void setupDependencies() throws Exception {
@@ -88,14 +90,38 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilderTest {
         mockTokenDecoderFactory = mock(GeoServerOidcIdTokenDecoderFactory.class);
         mockOAuth2LoginConfigurer = mock(OAuth2LoginConfigurer.class);
 
-        when(mockOAuth2LoginConfigurer.userInfoEndpoint()).thenReturn(mockUserInfoConfig);
-        when(mockOAuth2LoginConfigurer.authorizationEndpoint()).thenReturn(mockAuthorizationConfig);
-        when(mockOAuth2LoginConfigurer.tokenEndpoint()).thenReturn(mockTokenConfig);
+        // Support chaining on the top-level configurer methods that the builder uses
+        when(mockOAuth2LoginConfigurer.clientRegistrationRepository(any())).thenReturn(mockOAuth2LoginConfigurer);
+        when(mockOAuth2LoginConfigurer.authorizedClientRepository(any())).thenReturn(mockOAuth2LoginConfigurer);
+        when(mockOAuth2LoginConfigurer.authorizedClientService(any())).thenReturn(mockOAuth2LoginConfigurer);
+        when(mockOAuth2LoginConfigurer.loginProcessingUrl(any())).thenReturn(mockOAuth2LoginConfigurer);
 
-        // when oauth2Login(): provide mock configurer
+        // For the lambda-based (non-deprecated) endpoint customizers, apply the customizer to our mocks
+        when(mockOAuth2LoginConfigurer.userInfoEndpoint(any(Customizer.class)))
+                .thenAnswer((Answer<OAuth2LoginConfigurer>) inv -> {
+                    Customizer<UserInfoEndpointConfig> c = inv.getArgument(0);
+                    c.customize(mockUserInfoConfig);
+                    return mockOAuth2LoginConfigurer;
+                });
+
+        when(mockOAuth2LoginConfigurer.authorizationEndpoint(any(Customizer.class)))
+                .thenAnswer((Answer<OAuth2LoginConfigurer>) inv -> {
+                    Customizer<AuthorizationEndpointConfig> c = inv.getArgument(0);
+                    c.customize(mockAuthorizationConfig);
+                    return mockOAuth2LoginConfigurer;
+                });
+
+        when(mockOAuth2LoginConfigurer.tokenEndpoint(any(Customizer.class)))
+                .thenAnswer((Answer<OAuth2LoginConfigurer>) inv -> {
+                    Customizer<TokenEndpointConfig> c = inv.getArgument(0);
+                    c.customize(mockTokenConfig);
+                    return mockOAuth2LoginConfigurer;
+                });
+
+        // When oauth2Login(customizer) is invoked, we run the customizer against our mock configurer
         when(mockHttp.oauth2Login(any())).thenAnswer(stub -> {
-            Customizer<OAuth2LoginConfigurer<HttpSecurity>> lCallback = stub.getArgument(0, Customizer.class);
-            lCallback.customize(mockOAuth2LoginConfigurer);
+            Customizer<OAuth2LoginConfigurer<HttpSecurity>> callback = stub.getArgument(0, Customizer.class);
+            callback.customize(mockOAuth2LoginConfigurer);
             return mockHttp;
         });
     }
@@ -338,7 +364,7 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilderTest {
         configuration.setGitHubClientId("ghClientId");
         configuration.setGitHubClientSecret("ghClientSecret");
 
-        // * GitHub is active and setup
+        // * Microsoft is active and setup
         configuration.setMsEnabled(true);
         configuration.setMsClientId("msClientId");
         configuration.setMsClientSecret("msClientSecret");
@@ -346,7 +372,7 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilderTest {
         // when: building filter
         sut.build();
 
-        // * google client is setup as expected
+        // * clients are setup as expected
         ClientRegistrationRepository lClientRepo = sut.getClientRegistrationRepository();
         assertNotNull(lClientRepo);
         ClientRegistration lClientReg = lClientRepo.findByRegistrationId(REG_ID_GIT_HUB);

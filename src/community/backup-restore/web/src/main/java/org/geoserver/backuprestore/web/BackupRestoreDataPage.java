@@ -7,6 +7,7 @@ package org.geoserver.backuprestore.web;
 import static org.geoserver.catalog.Predicates.equal;
 import static org.geoserver.catalog.Predicates.or;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +30,6 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.util.time.Duration;
 import org.geoserver.backuprestore.AbstractExecutionAdapter;
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.backuprestore.BackupExecutionAdapter;
@@ -284,7 +284,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                 }
 
                 cancel.setDefaultModelObject(jobid);
-                this.add(new AbstractAjaxTimerBehavior(Duration.milliseconds(100)) {
+                this.add(new AbstractAjaxTimerBehavior(Duration.ofMillis(100)) {
                     @Override
                     protected void onTimer(AjaxRequestTarget target) {
                         Backup backupFacade = BackupRestoreWebUtils.backupFacade();
@@ -491,7 +491,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                 }
 
                 cancel.setDefaultModelObject(jobid);
-                this.add(new AbstractAjaxTimerBehavior(Duration.milliseconds(100)) {
+                this.add(new AbstractAjaxTimerBehavior(Duration.ofMillis(100)) {
                     @Override
                     protected void onTimer(AjaxRequestTarget target) {
                         Backup backupFacade = BackupRestoreWebUtils.backupFacade();

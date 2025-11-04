@@ -47,10 +47,11 @@ class MappingFeatureCollection extends BaseFeatureCollection<FeatureType, Featur
     }
 
     @Override
+    @SuppressWarnings("PMD.CloseResource")
     public FeatureIterator<Feature> features() {
         PushbackFeatureIterator<SimpleFeature> iterator = new PushbackFeatureIterator<>(features.features());
         // scan through the joined features and map them
-        return new FeatureIterator<Feature>() {
+        return new FeatureIterator<>() {
 
             @Override
             public boolean hasNext() {

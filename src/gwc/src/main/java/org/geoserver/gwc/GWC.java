@@ -20,16 +20,19 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -45,11 +48,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.XMLConstants;
-import org.apache.http.client.utils.DateUtils;
+import org.apache.hc.client5.http.utils.DateUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -1322,8 +1322,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         // request
         String workspace = params.remove(WORKSPACE_PARAM);
 
-        FakeHttpServletRequest req = new FakeHttpServletRequest(params, cookies, workspace);
-        FakeHttpServletResponse resp = new FakeHttpServletResponse();
+        InternalDispatchServletRequest req = new InternalDispatchServletRequest(params, cookies, workspace);
+        InternalDispatchServletResponse resp = new InternalDispatchServletResponse();
 
         Request request = Dispatcher.REQUEST.get();
         Dispatcher.REQUEST.remove();
@@ -1368,7 +1368,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
         // cascade
         Cookie[] cookies = actualRequest.getCookies();
-        FakeHttpServletRequest request = new FakeHttpServletRequest(parameterMap, cookies);
+        InternalDispatchServletRequest request = new InternalDispatchServletRequest(parameterMap, cookies);
         owsDispatcher.handleRequest(request, tile.servletResp);
     }
 
@@ -2525,15 +2525,15 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         // (e.g. 'Sun, 06 Nov 1994 08:49:37 GMT'). See
         // http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1
 
-        final String lastModified = DateUtils.formatDate(new Date(tileTimeStamp));
+        final String lastModified = DateUtils.formatStandardDate(Instant.ofEpochMilli(tileTimeStamp));
         map.put("Last-Modified", lastModified);
 
-        final Date ifModifiedSince;
+        final Instant ifModifiedSince;
         if (ifModSinceHeader != null && !ifModSinceHeader.isEmpty()) {
-            ifModifiedSince = DateUtils.parseDate(ifModSinceHeader);
+            ifModifiedSince = DateUtils.parseStandardDate(ifModSinceHeader);
             if (ifModifiedSince != null) {
                 // the HTTP header has second precision
-                long ifModSinceSeconds = 1000 * (ifModifiedSince.getTime() / 1000);
+                long ifModSinceSeconds = 1000 * (ifModifiedSince.toEpochMilli() / 1000);
                 long tileTimeStampSeconds = 1000 * (tileTimeStamp / 1000);
                 if (ifModSinceSeconds >= tileTimeStampSeconds) {
                     throw new HttpErrorCodeException(HttpServletResponse.SC_NOT_MODIFIED);

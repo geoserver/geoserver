@@ -184,7 +184,7 @@ public class ApiTest extends StylesTestSupport {
         // assertThat(styleIdValues, Matchers.containsInAnyOrder(expectedStyleIds));
         Collections.sort(styleIdValues);
         Collections.sort(expectedStyleIds);
-        assertEquals(styleIdValues, expectedStyleIds);
+        assertEquals(expectedStyleIds, styleIdValues);
     }
 
     @Test

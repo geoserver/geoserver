@@ -27,15 +27,21 @@
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-util</artifactId>
+      <version>${jetty.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-servlets</artifactId>
+      <groupId>org.eclipse.jetty.ee11</groupId>
+      <artifactId>jetty-ee11-servlets</artifactId>
+      <version>${jetty.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty.ee11</groupId>
+      <artifactId>jetty-ee11-webapp</artifactId>
       <version>${jetty.version}</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-webapp</artifactId>
+      <artifactId>jetty-security</artifactId>
       <version>${jetty.version}</version>
     </dependency>
     <dependency>
@@ -60,8 +66,8 @@
       <version>${jetty.version}</version>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-el</groupId>
@@ -357,7 +363,7 @@
       <artifactId>gs-sldservice</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
+    <!-- dependency>
       <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-geofence</artifactId>
       <version>${project.version}</version>
@@ -371,7 +377,7 @@
       <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-geofence-wps</artifactId>
       <version>${project.version}</version>
-    </dependency>
+    </dependency -->
     <dependency>
       <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-authkey</artifactId>
@@ -474,6 +480,82 @@
               </resources>
             </configuration>
           </execution>
+          <!--
+             Filter start.ini to include the correct slf4j version
+             Works in 3 steps:
+             0) copy-dependencies (during compile phase)
+             1) extract the slf4j version from the dependency jar name (during validate phase)
+             2) filter start.ini (during install phase)
+          -->
+          <execution>
+            <id>filter-start-ini</id>
+            <phase>install</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/jetty</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>jetty</directory>
+                  <filtering>true</filtering>
+                  <includes>
+                    <include>start.ini</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>extract-slf4j-version-from-jarname</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <exportAntProperties>true</exportAntProperties>
+              <target name="extract-slf4j-version">
+
+                <!-- Find all slf4j-api-*.jar in target/dependency -->
+                <pathconvert pathsep="," property="slf4j.matches">
+                  <fileset dir="${project.build.directory}/dependency">
+                    <include name="slf4j-api-*.jar"></include>
+                  </fileset>
+                </pathconvert>
+
+                <!-- Fail fast if none found -->
+                <fail message="No slf4j-api-*.jar found under ${project.build.directory}/dependency">
+                  <condition>
+                    <equals arg1="${slf4j.matches}" arg2=""></equals>
+                  </condition>
+                </fail>
+
+                <!-- Fail if multiple (avoid ambiguity) -->
+                <fail message="Multiple slf4j-api jars found: ${slf4j.matches}. Keep only one.">
+                  <condition>
+                    <contains string="${slf4j.matches}" substring=","></contains>
+                  </condition>
+                </fail>
+
+                <!-- Extract the version from the single match -->
+                <pathconvert property="slf4j.version">
+                  <path>
+                    <pathelement location="${slf4j.matches}"></pathelement>
+                  </path>
+                  <mapper from="^.*[/\\]slf4j-api-(.*)\.jar$" to="\1" type="regexp"></mapper>
+                </pathconvert>
+
+                <echo>Using SLF4J version: ${slf4j.version}</echo>
+              </target>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>
@@ -529,7 +611,7 @@
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
-            <phase>install</phase>
+            <phase>compile</phase>
             <goals>
               <goal>copy-dependencies</goal>
             </goals>
@@ -551,6 +633,49 @@
                 <delete>
                   <fileset dir="${project.build.directory}/dependency" includes="servlet-api-*.jar,core*.jar"></fileset>
                 </delete>
+              </target>
+            </configuration>
+          </execution>
+          <execution>
+            <id>extract-slf4j-version-from-jarname</id>
+            <phase>test</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <exportAntProperties>true</exportAntProperties>
+              <target name="extract-slf4j-version">
+
+                <!-- Find all slf4j-api-*.jar in target/dependency -->
+                <pathconvert pathsep="," property="slf4j.matches">
+                  <fileset dir="${project.build.directory}/dependency">
+                    <include name="slf4j-api-*.jar"></include>
+                  </fileset>
+                </pathconvert>
+
+                <!-- Fail fast if none found -->
+                <fail message="No slf4j-api-*.jar found under ${project.build.directory}/dependency">
+                  <condition>
+                    <equals arg1="${slf4j.matches}" arg2=""></equals>
+                  </condition>
+                </fail>
+
+                <!-- Fail if multiple (avoid ambiguity) -->
+                <fail message="Multiple slf4j-api jars found: ${slf4j.matches}. Keep only one.">
+                  <condition>
+                    <contains string="${slf4j.matches}" substring=","></contains>
+                  </condition>
+                </fail>
+
+                <!-- Extract the version from the single match -->
+                <pathconvert property="slf4j.version">
+                  <path>
+                    <pathelement location="${slf4j.matches}"></pathelement>
+                  </path>
+                  <mapper from="^.*[/\\]slf4j-api-(.*)\.jar$" to="\1" type="regexp"></mapper>
+                </pathconvert>
+
+                <echo>Using SLF4J version: ${slf4j.version}</echo>
               </target>
             </configuration>
           </execution>

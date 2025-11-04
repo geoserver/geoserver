@@ -4,11 +4,13 @@
  */
 package org.geoserver.security.oauth2.common;
 
+import java.io.Serial;
 import org.geoserver.security.validation.FilterConfigException;
 
 public class GeoServerOAuth2FilterConfigException extends FilterConfigException {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = -3686715589371356406L;
 
     public GeoServerOAuth2FilterConfigException(String errorId, Object... args) {

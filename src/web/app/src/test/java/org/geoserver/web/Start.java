@@ -26,6 +26,7 @@ import javax.naming.NamingException;
 import javax.security.auth.x500.X500Principal;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.eclipse.jetty.ee10.webapp.WebAppContext;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.plus.jndi.Resource;
 import org.eclipse.jetty.server.Connector;
@@ -35,9 +36,8 @@ import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
-import org.eclipse.jetty.util.resource.PathResource;
+import org.eclipse.jetty.util.resource.ResourceFactory;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.xml.XmlConfiguration;
 
 /**
@@ -95,14 +95,17 @@ public class Start {
             jettyServer.setHandler(wah);
             wah.setTempDirectory(new File("target/work"));
             // this allows to send large SLD's from the styles form
-            wah.getServletContext().getContextHandler().setMaxFormContentSize(1024 * 1024 * 5);
+            wah.setMaxFormContentSize(1024 * 1024 * 5);
             // this allows to configure hyperspectral images
-            wah.getServletContext().getContextHandler().setMaxFormKeys(2000);
+            wah.setMaxFormKeys(2000);
 
             String jettyConfigFile = System.getProperty("jetty.config.file");
             if (jettyConfigFile != null) {
                 log.info("Loading Jetty config from file: " + jettyConfigFile);
-                (new XmlConfiguration(PathResource.newResource(jettyConfigFile))).configure(jettyServer);
+                ResourceFactory rootResourceFactory = ResourceFactory.root();
+                org.eclipse.jetty.util.resource.Resource resource = rootResourceFactory.newResource(jettyConfigFile);
+                XmlConfiguration xmlConfiguration = new XmlConfiguration(resource);
+                xmlConfiguration.configure(jettyServer);
             }
 
             long start = System.currentTimeMillis();

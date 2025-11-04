@@ -24,7 +24,7 @@ class OrderedTypeBuilder extends TypeBuilder {
     @SuppressWarnings("unchecked")
     @Override
     protected Collection<PropertyDescriptor> newCollection() {
-        return new LinkedHashSet<PropertyDescriptor>();
+        return new LinkedHashSet<>();
     }
 
     @Override

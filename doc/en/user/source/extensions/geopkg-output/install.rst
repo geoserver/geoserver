@@ -3,11 +3,18 @@
 Installing the GeoPackage Output Extension
 ------------------------------------------
 
-The GeoPackage Output extension is an official extension.  Download the extension here - :download_extension:`geopkg-output`
+#. Login, and navigate to :menuselection:`About & Status > About GeoServer` and check **Build Information**
+   to determine the exact version of GeoServer you are running.
 
-#. Download the extension for your version of GeoServer. 
+#. Visit the :website:`website download <download>` page, change the **Archive** tab,
+   and locate your release.
+   
+   From the list of **Output Formats** extensions download **GeoPkg**.
 
-   .. warning:: Make sure to match the version of the extension to the version of GeoServer.
+   * |release| example: :download_extension:`geopkg-output`
+   * |version| example: :nightly_extension:`geopkg-output`
+
+   Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example |release| above).
 
 #. Extract the archive and copy the contents into the GeoServer :file:`WEB-INF/lib` directory.
 
@@ -19,7 +26,9 @@ Verify Installation
 To verify that the extension was installed successfully:
 
 #. Request the `WFS 1.0.0 <http://localhost:8080/geoserver/ows?service=wfs&version=1.0.0&request=GetCapabilities>`__ GetCapabilities document from your server.
+
 #. Inside the resulting WFS 1.0.0 XML GetCapabilities document, find the ``WFS_Capabilities/Capability/GetFeature/ResultFormat`` section
+
 #. Verify that `geopkg`, `geopackage`, and `gpkg` are listed as a supported format
 
    .. code-block:: XML

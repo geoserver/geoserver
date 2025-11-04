@@ -1,8 +1,19 @@
 Installing the GeoServer GSR extension
 ==========================================
-  
- #. Download the extension from the nightly GeoServer community module builds :download_community:`gsr`.
 
-    .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance!
+#. Login, and navigate to :menuselection:`About & Status > About GeoServer` and check **Build Information**
+   to determine the exact version of GeoServer you are running.
 
- #. Extract the contents of the archive into the ``WEB-INF/lib`` directory of the GeoServer installation.
+#. Visit the :website:`website download <download>` page, change the **Development** tab,
+   and locate the nightly release that corresponds to the GeoServer you are running.
+   
+   Follow the **Community Modules** link and download `gsr` zip archive.
+   
+   * |version| example: :nightly_community:`gsr`
+   
+   The website lists active nightly builds to provide feedback to developers,
+   you may also `browse <https://build.geoserver.org/geoserver/>`__ for earlier branches.
+
+#. Extract the contents of the archive into the :file:`WEB-INF/lib` directory in GeoServer.
+
+#. Restart GeoServer.

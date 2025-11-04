@@ -34,7 +34,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -50,11 +49,9 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.easymock.EasyMock;
 import org.geoserver.catalog.Catalog;
@@ -71,7 +68,6 @@ import org.geoserver.ows.Request;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.security.decorators.DecoratingSimpleFeatureSource;
 import org.geotools.api.data.DataAccessFinder;
-import org.geotools.api.data.DataStoreFinder;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.api.data.FeatureStore;
 import org.geotools.api.data.Query;
@@ -108,8 +104,8 @@ import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.locationtech.jts.geom.Polygon;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -130,38 +126,23 @@ public class JDBCOpenSearchAccessTest {
     public static final ProductClass GS_PRODUCT =
             new ProductClass("geoServer", "gs", "http://www.geoserver.org/eo/test");
 
+    @ClassRule
+    public static final OSEOPostGISResource postgis = new OSEOPostGISResource(true);
+
     // make sure Java logging is used
     @BeforeClass
     public static void setupLogging() throws IOException, SQLException {
         GeoTools.setLoggerFactory(DefaultLoggerFactory.getInstance());
     }
 
-    /**
-     * Returns the test fixture to run tests against a PostGIS database
-     *
-     * @return
-     */
-    public static Properties getFixture() {
-        Properties properties = GSFixtureUtilitiesDelegate.loadFixture("oseo-postgis");
-        if (properties != null) {
-            properties.put("Expose primary keys", "true");
-            properties.put("dbtype", "postgis");
-        }
-        return properties;
-    }
-
     @BeforeClass
     public static void setupStore() throws IOException, SQLException {
-        osAccess = setupAndReturnStore();
+        osAccess = setupAndReturnStore(postgis);
     }
 
-    public static OpenSearchAccess setupAndReturnStore() throws IOException, SQLException {
-        Assume.assumeNotNull(getFixture());
-
-        Map params = new HashMap<>();
-        params.putAll(getFixture());
-        store = (JDBCDataStore) DataStoreFinder.getDataStore(params);
-        JDBCOpenSearchAccessTest.populateTestDatabase(store, true);
+    @SuppressWarnings("unchecked")
+    public static OpenSearchAccess setupAndReturnStore(OSEOPostGISResource postgis) throws IOException, SQLException {
+        store = postgis.createPostGISDataStore();
 
         Name name = new NameImpl("test", "jdbcStore");
         SerializableDefaultRepository repository = new SerializableDefaultRepository();
@@ -207,7 +188,7 @@ public class JDBCOpenSearchAccessTest {
         replay(geoServer);
 
         // create the OpenSeach wrapper store
-        params = new HashMap<>();
+        Map params = new HashMap<>();
         params.put("dbtype", "opensearch-eo-jdbc");
         params.put("store", "test:jdbcStore");
         params.put("namespace", TEST_NAMESPACE);
@@ -244,111 +225,10 @@ public class JDBCOpenSearchAccessTest {
         }
     }
 
-    public static void populateTestDatabase(JDBCDataStore h2, boolean addGranuleTable)
-            throws SQLException, IOException {
-        try (Connection conn = h2.getConnection(Transaction.AUTO_COMMIT);
-                Statement st = conn.createStatement()) {
-            // setup for fast import
-
-            createTables(conn);
-            populateCollections(conn);
-            populateProducts(conn);
-            if (addGranuleTable) {
-                populateGranules(conn);
-            }
-            addCustomProductClass(conn);
-        }
-    }
-
     @AfterClass
     public static void tearDownStore() {
         osAccess.dispose();
         store.dispose();
-    }
-
-    private static List<String> loadScriptCommands(String scriptLocation) throws IOException {
-        // grab all non comment, non empty lines
-        try (InputStream is = JDBCOpenSearchAccess.class.getResourceAsStream(scriptLocation)) {
-            List<String> lines = IOUtils.readLines(is).stream()
-                    .map(l -> l.trim())
-                    .filter(l -> !l.startsWith("--") && !l.isEmpty())
-                    .collect(Collectors.toList());
-            // regroup them into statements
-            List<String> statements = new ArrayList<String>();
-            String buffer = null;
-            for (String line : lines) {
-                if (buffer == null) {
-                    buffer = line;
-                } else {
-                    buffer = buffer + "\n" + line;
-                }
-                if (line.trim().endsWith(";")) {
-                    statements.add(buffer);
-                    buffer = null;
-                }
-            }
-            return statements;
-        }
-    }
-
-    /** Takes the postgis.sql creation script, adapts it and runs it on H2 */
-    static void createTables(Connection conn) throws SQLException, IOException {
-        List<String> statements = loadScriptCommands("/postgis.sql");
-        try (Statement st = conn.createStatement(); ) {
-            for (String statement : statements) {
-                //                /* Skip statements H2 does not support */
-                //                if (statement.contains("GIST") || statement.contains("create
-                // extension")) {
-                //                    continue;
-                //                }
-                //                if (statement.contains("geography(Polygon, 4326)")) {
-                //                    statement = statement.replace("geography(Polygon, 4326)",
-                // "POLYGON");
-                //                } else if (statement.contains("geometry(Polygon, 4326)")) {
-                //                    statement = statement.replace("geometry(Polygon, 4326)",
-                // "POLYGON");
-                //                }
-                //                if (statement.contains("float[]")) {
-                //                    statement = statement.replace("float[]", "ARRAY");
-                //                }
-                //                if (statement.contains("varchar[]")) {
-                //                    statement = statement.replace("varchar[]", "ARRAY");
-                //                }
-                st.execute(statement);
-            }
-        }
-    }
-
-    /** Adds the collection data into the H2 database */
-    static void populateCollections(Connection conn) throws SQLException, IOException {
-        runScript("/collection_test_data.sql", conn);
-    }
-
-    /** Adds the product data into the H2 database */
-    static void populateProducts(Connection conn) throws SQLException, IOException {
-        runScript("/product_test_data.sql", conn);
-    }
-
-    /** Adds the granules table */
-    static void populateGranules(Connection conn) throws SQLException, IOException {
-        runScript("/granule_test_data.sql", conn);
-    }
-
-    static void addCustomProductClass(Connection conn) throws SQLException, IOException {
-        runScript("/custom_product_class.sql", conn);
-    }
-
-    static void runScript(String script, Connection conn) throws IOException, SQLException {
-        List<String> statements = loadScriptCommands(script);
-        try (Statement st = conn.createStatement(); ) {
-            for (String statement : statements) {
-                try {
-                    st.execute(statement);
-                } catch (SQLException e) {
-                    throw new IOException("Failed to run " + statement, e);
-                }
-            }
-        }
     }
 
     @Test
@@ -831,6 +711,7 @@ public class JDBCOpenSearchAccessTest {
     }
 
     @Test
+    @SuppressWarnings("PMD.CheckResultSet")
     public void testIndexCreationRemoval() throws Exception {
         Indexable simple = new Indexable("eo:cloud_cover", CQL.toExpression("opt:cloudCover"), FieldType.Other);
         Indexable geom = new Indexable("geometry", CQL.toExpression("footprint"), FieldType.Geometry);
@@ -929,7 +810,8 @@ public class JDBCOpenSearchAccessTest {
         testSource.getFeatures().accepts(visitor, null);
         Date maxDate = (Date) visitor.getMax();
         FastDateFormat format = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ssZZ", TimeZone.getTimeZone("UTC"));
-        assertEquals("2018-02-27 09:20:21Z", format.format(maxDate));
+        // when running interactively please set -Duser.timezone=UTC
+        assertEquals("2018-02-27 10:20:21Z", format.format(maxDate));
     }
 
     @Test
@@ -949,6 +831,7 @@ public class JDBCOpenSearchAccessTest {
             assertThat(collectionIdentifiers, hasItems("SENTINEL2", "LANDSAT8"));
 
             // check it has been cached too
+            @SuppressWarnings("unchecked")
             Set<String> cachedCollections = (Set<String>)
                     attrs.getAttribute(WorkspaceFeatureSource.WS_COLLECTION_CACHE_KEY, RequestAttributes.SCOPE_REQUEST);
             assertThat(cachedCollections, hasItems("SENTINEL2", "LANDSAT8"));

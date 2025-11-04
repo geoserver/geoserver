@@ -10,6 +10,7 @@
   <bean id="wcs_1_1_Extension" class="org.geoserver.platform.ModuleStatusImpl">
     <constructor-arg index="0" value="gs-wcs1_1"/>
     <constructor-arg index="1" value="GeoServer Web Coverage Service 1.1"/>
+    <property name="category" value="CORE"/>
   </bean>
   <!-- wcs service setup, with loggin as an interceptor -->
   <bean id="wcs111ServiceTarget" class="org.geoserver.wcs.DefaultWebCoverageService111">
@@ -177,6 +178,7 @@
   <!-- Map dispatcher in order to publish the wcsTempStorage directory -->
   <bean id="wcs111DispatcherMapping"
     class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="patternParser"><null/></property><!-- Spring 5.x backwards compatibility -->
     <property name="alwaysUseFullPath" value="true" />
     <property name="mappings">
       <props>

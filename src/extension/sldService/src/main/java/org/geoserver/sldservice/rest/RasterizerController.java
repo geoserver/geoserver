@@ -5,6 +5,7 @@
  */
 package org.geoserver.sldservice.rest;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,7 +14,6 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.TransformerException;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;

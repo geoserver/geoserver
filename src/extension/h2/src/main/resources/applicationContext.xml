@@ -12,45 +12,15 @@
   <bean id="h2DataStoreFactoryInitializer" class="org.geoserver.h2.H2DataStoreFactoryInitializer">
     <property name="resourceLoader" ref="resourceLoader"/>
   </bean>
-  
-  <!-- h2 console -->
-  <bean id="h2ConsoleServlet" class="org.springframework.web.servlet.mvc.ServletWrappingController">
-    <property name="servletClass">
-     <value>org.h2.server.web.WebServlet</value>
-    </property>
-    <property name="servletName">
-      <value>h2</value>
-    </property>
-  </bean>
-  
-  <bean id="h2DispatcherMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-    <property name="alwaysUseFullPath" value="true"/>
-    <property name="mappings">
-        <props>
-            <prop key="/h2">h2ConsoleServlet</prop>
-            <prop key="/h2/**">h2ConsoleServlet</prop>
-        </props>
-    </property>
-  </bean>
-  
-  <!-- tool link -->
-  <bean id="h2ConsoleTool" class="org.geoserver.web.ToolLinkExternalInfo">
-    <property name="id" value="H2Console.id"/>
-    <property name="titleKey" value="H2Console.title"/>
-    <property name="descriptionKey" value="H2Console.shortDescription"/>
-    <property name="href" value="../h2/"/>
-    <property name="authorizer">
-      <bean class="org.geoserver.web.AdminComponentAuthorizer"/>
-    </property>
-  </bean>
 
-<bean id="h2Extension" class="org.geoserver.platform.ModuleStatusImpl">
+  <bean id="h2Extension" class="org.geoserver.platform.ModuleStatusImpl">
     <property name="module" value="gs-h2" />
     <property name="name" value="H2 Extension"/>
     <property name="component" value="H2 extension"/>
     
     <property name="available" value="true"/>
     <property name="enabled" value="true"/>
+    <property name="category" value="EXTENSION"/>
   </bean>
   
 </beans>

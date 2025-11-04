@@ -5,6 +5,7 @@
     <constructor-arg index="0" value="gs-gwc"/>
     <constructor-arg index="1" value="GeoWebCache"/>
     <constructor-arg index="2" value="Tile services"/>
+    <property name="category" value="CORE"/>
   </bean>
 
   <bean id="GWCLifeCycleHandler" class="org.geoserver.gwc.config.GWCLifeCycleHandler" depends-on="gwcFacade">
@@ -124,7 +125,7 @@
   <bean id="gwcServiceProxyDescriptor" class="org.geoserver.platform.Service">
     <description>
       GeoServer Dispatcher framework service descriptor that englobes all gwc provided (and proxied) service requests
-      as a reques to the
+      as a request to the
       "fake" "gwc" service
     </description>
     <constructor-arg index="0" value="gwc" />
@@ -141,32 +142,7 @@
     <constructor-arg value="gwc"/>
   </bean>
 
-  <bean id="gwcServiceWMSInterceptorEnabledCheck" class="org.geoserver.gwc.config.GWCServiceEnablementInterceptor">
-    <constructor-arg ref="gwcFacade" />
-    <constructor-arg ref="geoServer" />
-  </bean>
-  <bean id="gwcServiceTMSInterceptorEnabledCheck" class="org.geoserver.gwc.config.GWCServiceEnablementInterceptor">
-    <constructor-arg ref="gwcFacade" />
-    <constructor-arg ref="geoServer" />
-  </bean>
-  <bean id="gwcWMTSServiceInterceptorEnabledCheck" class="org.geoserver.gwc.config.GWCServiceEnablementInterceptor">
-    <constructor-arg ref="gwcFacade" />
-    <constructor-arg ref="geoServer" />
-  </bean>
-  <bean id="gwcServiceVEInterceptorEnabledCheck" class="org.geoserver.gwc.config.GWCServiceEnablementInterceptor">
-    <constructor-arg ref="gwcFacade" />
-    <constructor-arg ref="geoServer" />
-  </bean>
-  <bean id="gwcServiceKMLInterceptorEnabledCheck" class="org.geoserver.gwc.config.GWCServiceEnablementInterceptor">
-    <constructor-arg ref="gwcFacade" />
-    <constructor-arg ref="geoServer" />
-  </bean>
-  <bean id="gwcServiceGMapsterceptorEnabledCheck" class="org.geoserver.gwc.config.GWCServiceEnablementInterceptor">
-    <constructor-arg ref="gwcFacade" />
-    <constructor-arg ref="geoServer" />
-  </bean>
-  <bean id="gwcServiceMGMapsterceptorEnabledCheck" class="org.geoserver.gwc.config.GWCServiceEnablementInterceptor">
-    <constructor-arg ref="gwcFacade" />
+  <bean id="gwcDisabledServiceCheck" class="org.geoserver.gwc.dispatch.GwcDisabledServiceCheck">
     <constructor-arg ref="geoServer" />
   </bean>
 

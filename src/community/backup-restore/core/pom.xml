@@ -15,7 +15,7 @@
   <name>GeoServer Config Backup And Restore Core Module</name>
 
   <properties>
-    <spring.batch.version>3.0.10.RELEASE</spring.batch.version>
+    <spring.batch.version>5.2.0</spring.batch.version>
   </properties>
 
   <dependencies>
@@ -62,8 +62,8 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>commons-fileupload</groupId>
-      <artifactId>commons-fileupload</artifactId>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-fileupload2-jakarta-servlet6</artifactId>
     </dependency>
 
     <!-- Spring Batch unit test -->

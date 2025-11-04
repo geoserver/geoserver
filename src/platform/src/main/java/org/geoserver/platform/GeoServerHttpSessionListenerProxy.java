@@ -6,10 +6,10 @@
 
 package org.geoserver.platform;
 
+import jakarta.servlet.http.HttpSessionEvent;
+import jakarta.servlet.http.HttpSessionListener;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSessionListener;
 
 /**
  * This class has to be registered as a listener in the web.xml file.

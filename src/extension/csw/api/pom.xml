@@ -23,7 +23,6 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-main</artifactId>
-      <version>${gs.version}</version>
     </dependency>
 
     <dependency>

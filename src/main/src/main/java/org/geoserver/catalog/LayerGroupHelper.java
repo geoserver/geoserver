@@ -280,7 +280,7 @@ public class LayerGroupHelper {
                     throw new UnsupportedOperationException(
                             "LayerGroup mode " + Mode.CONTAINER.getName() + " can not be rendered");
                 }
-                // continue to default behaviour:
+            // continue to default behaviour:
             default:
                 List<PublishedInfo> publishables = groupStyle == null ? group.getLayers() : groupStyle.getLayers();
                 List<StyleInfo> styles = groupStyle == null ? group.getStyles() : groupStyle.getStyles();
@@ -336,7 +336,7 @@ public class LayerGroupHelper {
                     throw new UnsupportedOperationException(
                             "LayerGroup mode " + Mode.CONTAINER.getName() + " can not be rendered");
                 }
-                // continue to default behaviour:
+            // continue to default behaviour:
             default:
                 List<PublishedInfo> publishables = groupStyle == null ? group.getLayers() : groupStyle.getLayers();
                 List<StyleInfo> stylesList = groupStyle == null ? group.getStyles() : groupStyle.getStyles();

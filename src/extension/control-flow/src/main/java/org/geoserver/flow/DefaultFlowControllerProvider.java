@@ -29,7 +29,7 @@ public class DefaultFlowControllerProvider implements FlowControllerProvider {
 
     List<FlowController> controllers = Collections.emptyList();
 
-    private long timeout;
+    private volatile long timeout;
 
     public DefaultFlowControllerProvider(ApplicationContext applicationContext) {
         // look for a ControlFlowConfigurator in the application context, if none is found, use the

@@ -77,7 +77,7 @@ public class NdArray extends CoverageJson {
     @JsonProperty("values")
     public Iterator<Number> getValues() {
 
-        return new Iterator<Number>() {
+        return new Iterator<>() {
             int shapeSize = shape.size();
             int numRows = shape.get(shapeSize - 2);
             int numColumns = shape.get(shapeSize - 1);

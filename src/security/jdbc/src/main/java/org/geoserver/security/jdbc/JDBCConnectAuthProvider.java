@@ -6,6 +6,7 @@
 
 package org.geoserver.security.jdbc;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,7 +14,6 @@ import java.sql.SQLException;
 import java.sql.SQLInvalidAuthorizationSpecException;
 import java.util.HashSet;
 import java.util.Set;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.security.GeoServerAuthenticationProvider;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.config.SecurityNamedServiceConfig;

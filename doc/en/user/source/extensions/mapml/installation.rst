@@ -3,9 +3,18 @@
 Installation
 --------------------
 
-#. Visit the :website:`website download <download>` page, locate your release, and download:  :download_extension:`mapml`
+#. Login, and navigate to :menuselection:`About & Status > About GeoServer` and check **Build Information**
+   to determine the exact version of GeoServer you are running.
+
+#. Visit the :website:`website download <download>` page, change the **Archive** tab,
+   and locate your release.
    
-   .. warning:: Make sure to match the version of the extension (for example |release| above) to the version of the GeoServer instance!
+   From the list of **Output Formats** extensions download **MapML**.
+
+   * |release| example: :download_extension:`mapml`
+   * |version| example: :nightly_extension:`mapml`
+
+   Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example |release| above).
 
 #. Extract the contents of the archive into the :file:`WEB-INF/lib` directory of the GeoServer installation.
 

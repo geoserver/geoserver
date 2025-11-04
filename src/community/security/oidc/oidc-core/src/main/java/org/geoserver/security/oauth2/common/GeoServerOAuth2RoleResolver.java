@@ -4,7 +4,6 @@
  */
 package org.geoserver.security.oauth2.common;
 
-import static java.lang.String.format;
 import static java.util.logging.Level.SEVERE;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -15,6 +14,7 @@ import static org.geoserver.security.jwtheaders.roles.JwtHeadersRolesExtractor.a
 import static org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId.REG_ID_MICROSOFT;
 
 import com.nimbusds.jose.JWSObject;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -27,7 +27,6 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.RoleSource;
 import org.geoserver.security.filter.GeoServerRoleResolvers.ResolverContext;
@@ -110,14 +109,13 @@ public class GeoServerOAuth2RoleResolver implements RoleResolver {
         if (ADMIN_USERNAME.equalsIgnoreCase(lPrincipal) || ROOT_USERNAME.equalsIgnoreCase(lPrincipal)) {
             // avoid unintentional match with pre-existing administrator
             String lMsg = "Potentially harmful OAuth2 user '%s' detected. Granting no roles.";
-            LOGGER.log(Level.WARNING, format(lMsg, lPrincipal));
+            LOGGER.log(Level.WARNING, lMsg.formatted(lPrincipal));
             return result;
         }
         RoleSource rs = pParam.getContext().getRoleSource();
         if (rs == null) {
             LOGGER.log(SEVERE, "Role assignment failed. Role source unspecified.");
-        } else if (rs instanceof OpenIdRoleSource) {
-            OpenIdRoleSource oirs = (OpenIdRoleSource) rs;
+        } else if (rs instanceof OpenIdRoleSource oirs) {
             switch (oirs) {
                 case AccessToken:
                     result = getRolesFromAccessToken(pParam);
@@ -148,7 +146,7 @@ public class GeoServerOAuth2RoleResolver implements RoleResolver {
             calc.addInheritedRoles(result);
         } catch (IOException e) {
             String lMsg = "Role calculation failed on inherited roles for user '%s'.";
-            LOGGER.log(SEVERE, format(lMsg, pParam.getPrincipal()), e);
+            LOGGER.log(SEVERE, lMsg.formatted(pParam.getPrincipal()), e);
         }
         calc.addMappedSystemRoles(result);
         if (!result.contains(GeoServerRole.AUTHENTICATED_ROLE)) {
@@ -158,7 +156,7 @@ public class GeoServerOAuth2RoleResolver implements RoleResolver {
             String lUser = lPrincipal;
             String lSrc = rs == null ? null : rs.toString();
             String lRoles = result.stream().map(r -> r.getAuthority()).collect(joining(","));
-            LOGGER.fine(format("User '%s' received roles from roleSource=%s: %s", lUser, lSrc, lRoles));
+            LOGGER.fine("User '%s' received roles from roleSource=%s: %s".formatted(lUser, lSrc, lRoles));
         }
         return result;
     }
@@ -172,7 +170,7 @@ public class GeoServerOAuth2RoleResolver implements RoleResolver {
         if (LOGGER.isLoggable(Level.FINE)) {
             String lMsg = "Analyzing access token for roles. Claim: %s. Scopes: %s, additionals: %s";
             String lScopeTxt = lScopes == null ? null : lScopes.stream().collect(joining(","));
-            LOGGER.fine(format(lMsg, lClaimName, lScopeTxt, lUsrRequest.getAdditionalParameters()));
+            LOGGER.fine(lMsg.formatted(lClaimName, lScopeTxt, lUsrRequest.getAdditionalParameters()));
         }
         if ("scope".equals(lClaimName)) {
             lRoles = new ArrayList<>(lAccessToken.getScopes());
@@ -205,11 +203,12 @@ public class GeoServerOAuth2RoleResolver implements RoleResolver {
 
     private Collection<GeoServerRole> getRolesFromIdToken(ResolverParam pParam) {
         OAuth2UserRequest lUsrRequest = ((OAuth2ResolverParam) pParam).getUserRequest();
-        OidcUserRequest lOidcReq = lUsrRequest instanceof OidcUserRequest ? ((OidcUserRequest) lUsrRequest) : null;
+        OidcUserRequest lOidcReq = lUsrRequest instanceof OidcUserRequest our ? our : null;
 
         if (lOidcReq == null) {
             String lMsg = "Role extraction failed. ID token unavailable for clientRegistration %s.";
-            LOGGER.log(SEVERE, format(lMsg, lUsrRequest.getClientRegistration().getRegistrationId()));
+            LOGGER.log(
+                    SEVERE, lMsg.formatted(lUsrRequest.getClientRegistration().getRegistrationId()));
             return new ArrayList<>();
         }
         String lClaimName = config.getTokenRolesClaim();
@@ -218,7 +217,7 @@ public class GeoServerOAuth2RoleResolver implements RoleResolver {
         OidcIdToken lIdToken = lOidcReq.getIdToken();
         if (LOGGER.isLoggable(Level.FINE)) {
             String lMsg = "Analyzing access token for roles. Claim: %s. Claims: %s";
-            LOGGER.fine(format(lMsg, lClaimName, lIdToken.getClaims()));
+            LOGGER.fine(lMsg.formatted(lClaimName, lIdToken.getClaims()));
         }
         List<String> lClaimList = asStringList(JwtHeaderUserNameExtractor.getClaim(lIdToken.getClaims(), lClaimName));
 
@@ -242,7 +241,7 @@ public class GeoServerOAuth2RoleResolver implements RoleResolver {
 
         if (LOGGER.isLoggable(Level.FINE)) {
             String lMsg = "Analyzing userInfo for roles. Claim: %s. User: %s";
-            LOGGER.fine(format(lMsg, lClaimName, lUser));
+            LOGGER.fine(lMsg.formatted(lClaimName, lUser));
         }
         if ("authorities".equals(lClaimName)) {
             Collection<? extends GrantedAuthority> authorities = lUser.getAuthorities();
@@ -266,7 +265,7 @@ public class GeoServerOAuth2RoleResolver implements RoleResolver {
             // token around
             String lMsg = "Resolving roles failed. RoleSource Microsoft Graph API supported with "
                     + "provider %s only. Currently processing login with %s instead.";
-            LOGGER.log(SEVERE, format(lMsg, REG_ID_MICROSOFT, lClientReg.getClientName()));
+            LOGGER.log(SEVERE, lMsg.formatted(REG_ID_MICROSOFT, lClientReg.getClientName()));
             return new ArrayList<>();
         }
         List<String> lRoles = new ArrayList<>();
@@ -281,11 +280,11 @@ public class GeoServerOAuth2RoleResolver implements RoleResolver {
             if (LOGGER.isLoggable(Level.FINE)) {
                 String lMsg = "Role assignments for '%s' from MS Graph: %s";
                 String lRolesTxt = lRoles.stream().collect(joining(","));
-                LOGGER.fine(format(lMsg, lUsr, lRolesTxt));
+                LOGGER.fine(lMsg.formatted(lUsr, lRolesTxt));
             }
         } catch (Exception e) {
             String lMsg = "Resolving roles from Microsoft Graph API failed for user '%s'.";
-            LOGGER.log(SEVERE, format(lMsg, lUsr), e);
+            LOGGER.log(SEVERE, lMsg.formatted(lUsr), e);
         }
 
         lRoles = this.roleConverter.convert(lRoles);
@@ -300,14 +299,13 @@ public class GeoServerOAuth2RoleResolver implements RoleResolver {
         if (pObject == null) {
             String lMsg = "Role extraction failed. User '%s', roleSource=%s: Claim '%s' is missing.";
             String lClaim = config.getTokenRolesClaim();
-            LOGGER.log(SEVERE, format(lMsg, pParam.getPrincipal(), pParam.getRoleSource(), lClaim));
+            LOGGER.log(SEVERE, lMsg.formatted(pParam.getPrincipal(), pParam.getRoleSource(), lClaim));
             return new ArrayList<>();
         } else if (pObject instanceof String) {
             return Collections.singleton(pObject.toString());
-        } else if (pObject instanceof String[]) {
-            return Arrays.asList((String[]) pObject);
-        } else if (pObject instanceof List) {
-            List<?> lList = (List<?>) pObject;
+        } else if (pObject instanceof String[] strings) {
+            return Arrays.asList(strings);
+        } else if (pObject instanceof List<?> lList) {
             List<String> lRoles = lList.stream()
                     .filter(o -> o instanceof String)
                     .map(o -> (String) o)
@@ -322,7 +320,7 @@ public class GeoServerOAuth2RoleResolver implements RoleResolver {
         String lValue = pObject.toString();
         String lMsg = "Role extraction failed. User '%s', roleSource=%s: Type %s is not supported.";
         lMsg += " Value: %s";
-        LOGGER.log(SEVERE, format(lMsg, lUser, pParam.getRoleSource(), lType, lValue));
+        LOGGER.log(SEVERE, lMsg.formatted(lUser, pParam.getRoleSource(), lType, lValue));
         return new ArrayList<>();
     }
 

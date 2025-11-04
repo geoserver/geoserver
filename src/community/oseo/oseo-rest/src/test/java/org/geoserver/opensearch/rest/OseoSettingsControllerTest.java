@@ -15,13 +15,23 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.geoserver.config.GeoServer;
 import org.geoserver.opensearch.eo.OSEOInfo;
+import org.geoserver.opensearch.eo.store.OSEOPostGISResource;
 import org.geoserver.rest.RestBaseController;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 public class OseoSettingsControllerTest extends OSEORestTestSupport {
+
+    @ClassRule
+    public static final OSEOPostGISResource postgis = new OSEOPostGISResource(false);
+
+    @Override
+    protected OSEOPostGISResource getOSEOPostGIS() {
+        return postgis;
+    }
 
     @Before
     public void revertChanges() {

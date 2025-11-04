@@ -6,6 +6,9 @@
 package org.geoserver;
 
 import com.google.common.collect.Lists;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
 import java.beans.Introspector;
 import java.lang.reflect.Method;
 import java.sql.Driver;
@@ -28,9 +31,6 @@ import javax.imageio.spi.IIOServiceProvider;
 import javax.imageio.spi.ImageReaderSpi;
 import javax.imageio.spi.ImageReaderWriterSpi;
 import javax.imageio.spi.ImageWriterSpi;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.LogManager;
 import org.eclipse.imagen.ImageN;

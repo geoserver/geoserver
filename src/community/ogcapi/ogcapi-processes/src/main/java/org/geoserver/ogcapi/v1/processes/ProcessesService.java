@@ -14,14 +14,14 @@ import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import io.swagger.v3.oas.models.OpenAPI;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
@@ -402,7 +402,7 @@ public class ProcessesService {
         } else if (result
                 instanceof
                 net.opengis.wfs20.FeatureCollectionType
-                fct) { // these input happen while deserializing an async response
+                        fct) { // these input happen while deserializing an async response
             FeatureCollection<?, ?> fc =
                     (FeatureCollection<?, ?>) fct.getMember().get(0);
             writeXMLOutput(generator, new XMLEncoderDelegate(new WFSPPIO.WFS20(), fc));

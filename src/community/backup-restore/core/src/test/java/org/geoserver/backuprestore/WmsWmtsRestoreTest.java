@@ -10,13 +10,12 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import org.geoserver.catalog.*;
 import org.geotools.util.factory.Hints;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.batch.core.BatchStatus;
 
 public class WmsWmtsRestoreTest extends BackupRestoreTestSupport {
 
-    @Before
+    @Override
     public void beforeTest() throws InterruptedException {
         ensureCleanedQueues();
 
@@ -29,7 +28,7 @@ public class WmsWmtsRestoreTest extends BackupRestoreTestSupport {
         // Given
         cleanCatalogInternal();
 
-        Hints hints = new Hints(new HashMap(2));
+        Hints hints = new Hints(new HashMap<>(2));
         hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
 
         // When

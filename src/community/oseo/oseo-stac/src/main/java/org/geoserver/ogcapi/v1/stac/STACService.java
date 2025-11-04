@@ -23,6 +23,7 @@ import static org.geoserver.ows.util.ResponseUtils.buildURL;
 import static org.geoserver.ows.util.ResponseUtils.urlEncode;
 
 import io.swagger.v3.oas.models.OpenAPI;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -33,8 +34,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.visitors.PropertySelectionVisitor;
@@ -158,10 +157,6 @@ public class STACService {
     @SuppressWarnings("unused")
     public OSEOInfo getServiceInfo() {
         return getService();
-    }
-
-    private Catalog getCatalog() {
-        return geoServer.getCatalog();
     }
 
     @GetMapping(name = "getLandingPage")
@@ -493,20 +488,6 @@ public class STACService {
         return response;
     }
 
-    private void addCollectionsFilter(
-            FilterMerger filters, List<String> collectionIds, boolean excludeDisabledCollection) throws IOException {
-        List<String> disabledIds =
-                excludeDisabledCollection ? getDisabledCollections(collectionIds) : Collections.emptyList();
-
-        if (collectionIds != null && !collectionIds.isEmpty()) {
-            collectionIds.removeAll(disabledIds);
-            filters.add(getProductInCollectionFilter(collectionIds));
-        } else if (!disabledIds.isEmpty()) {
-            // exclude disabled collections
-            filters.add(FF.not(getProductInCollectionFilter(disabledIds)));
-        }
-    }
-
     public PropertyIsEqualTo getEnabledFilter() {
         return FF.equals(FF.property(OpenSearchAccess.ENABLED), FF.literal(true));
     }
@@ -526,27 +507,6 @@ public class STACService {
                 .mapProperties(collectionIds, parsed);
         STACIndexOptimizerVisitor stacIndexOptimizerVisitor = new STACIndexOptimizerVisitor();
         return (Filter) templateMapped.accept(stacIndexOptimizerVisitor, null);
-    }
-
-    private List<String> getDisabledCollections(List<String> collectionIds) throws IOException {
-        Query q = new Query();
-        Filter filter = FF.equals(FF.property(OpenSearchAccess.ENABLED), FF.literal(false));
-        if (collectionIds != null && !collectionIds.isEmpty()) {
-            List<Filter> filters = new ArrayList<>();
-            filters.add(filter);
-
-            filters.addAll(collectionIds.stream()
-                    .map(cid -> FF.equals(FF.property(EO_IDENTIFIER), FF.literal(cid)))
-                    .collect(Collectors.toList()));
-            filter = FF.and(filters);
-        }
-        q.setFilter(filter);
-        q.setProperties(Arrays.asList(FF.property(EO_IDENTIFIER)));
-        FeatureCollection<FeatureType, Feature> collections =
-                accessProvider.getOpenSearchAccess().getCollectionSource().getFeatures(q);
-        return DataUtilities.list(collections).stream()
-                .map(f -> (String) f.getProperty(EO_IDENTIFIER).getValue())
-                .collect(Collectors.toList());
     }
 
     static Filter getProductInCollectionFilter(List<String> collectionIds) {

@@ -1,5 +1,5 @@
-Configuration
-*************
+Printing Configuration
+**********************
 
 The server side uses a `YAML <http://www.yaml.org/>`_ configuration file that defines the page layouts and allowed values. This file is usually called config.yaml.
 

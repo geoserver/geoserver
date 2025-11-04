@@ -5,11 +5,11 @@
  */
 package org.geoserver.cluster;
 
+import jakarta.jms.JMSException;
+import jakarta.jms.Topic;
 import java.io.Serializable;
 import java.util.Properties;
 import java.util.logging.Logger;
-import javax.jms.JMSException;
-import javax.jms.Topic;
 import org.geoserver.cluster.message.JMSObjectMessageCreator;
 import org.geotools.util.logging.Logging;
 import org.springframework.jms.core.JmsTemplate;

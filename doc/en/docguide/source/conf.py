@@ -12,6 +12,8 @@
 # serve to show the default value.
 
 import sys, os, string
+import xml.etree.ElementTree as ET
+import re
 import datetime
 
 # If your extensions are in another directory, add it here. If the directory
@@ -46,14 +48,25 @@ copyright = u'{}, Open Source Geospatial Foundation'.format(now.year)
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
+
+# The full version, including alpha/beta/rc tags.
+# This is looked up from the pom.xml
+pompath = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))), "src","pom.xml")
+print("Reading version from ",pompath)
+pomtree = ET.parse(pompath)
+
+version = pomtree.getroot().find("{http://maven.apache.org/POM/4.0.0}version").text
+snapshot = version.find('SNAPSHOT') != -1
+if snapshot:
+    print("Building snapshot docs version", version)
+    version = version.replace('-SNAPSHOT','.x')
+else:
+    print("Building release docs version", version)
+
 #
 # The short X.Y version.
-version = '3.0'
-# The full version, including alpha/beta/rc tags.
-release = '3.0-SNAPSHOT'
-# Users don't need to see the "SNAPSHOT" notation when it's there
-if release.find('SNAPSHOT') != -1:
-   release = '3.0.x'
+parts = version.split('.')
+release = '.'.join(parts[:2])
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:

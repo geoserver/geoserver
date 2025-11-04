@@ -103,7 +103,8 @@ public class LandingPageTest extends STACTestSupport {
         // check landing page links
         assertJSONList(
                 json,
-                "links[?(@.type == 'application/json' && @.title == 'This document' && @.href =~ /.*ogc\\/stac\\/v1\\/\\?.*/)].rel",
+                "links[?(@.type == 'application/json' && @.title == 'This document' && @.href =~"
+                        + " /.*ogc\\/stac\\/v1\\/\\?.*/)].rel",
                 "self");
         assertJSONList(
                 json,

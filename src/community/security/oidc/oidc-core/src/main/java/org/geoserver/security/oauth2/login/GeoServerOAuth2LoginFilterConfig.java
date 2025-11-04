@@ -7,6 +7,7 @@ package org.geoserver.security.oauth2.login;
 import static java.util.Optional.ofNullable;
 import static org.geoserver.security.oauth2.login.GeoServerOAuth2LoginAuthenticationFilterBuilder.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +28,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFilterConfig
         implements SecurityAuthFilterConfig, GeoServerOAuth2ClientRegistrationId {
 
+    @Serial
     private static final long serialVersionUID = -8581346584859849804L;
 
     /** Supports extraction of roles among the token claims */
@@ -172,7 +174,7 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
         if (isOidcEnabled()) {
             lRegIds.add(REG_ID_OIDC);
         }
-        if (lRegIds.isEmpty() || 1 < lRegIds.size()) {
+        if (lRegIds.size() != 1) {
             return null;
         }
         String lBase = baseRedirectUriNormalized();

@@ -14,13 +14,13 @@ import static org.junit.Assert.assertTrue;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
+import jakarta.servlet.ServletRequestEvent;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Base64;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.servlet.ServletRequestEvent;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityFilterChainProxy;
@@ -275,7 +275,7 @@ public class WebAuthProviderTest extends AbstractAuthenticationProviderTest {
     }
 
     private MockHttpServletResponse executeOnSecurityFilters(MockHttpServletRequest request)
-            throws IOException, javax.servlet.ServletException {
+            throws IOException, jakarta.servlet.ServletException {
         // for session local support in Spring
         new RequestContextListener().requestInitialized(new ServletRequestEvent(request.getServletContext(), request));
 

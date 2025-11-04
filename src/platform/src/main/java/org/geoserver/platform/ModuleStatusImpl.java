@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geotools.util.logging.Logging;
@@ -52,10 +53,14 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
     private String message;
 
     /** True if module is enabled */
-    private boolean isEnabled;
+    private final AtomicBoolean isEnabled = new AtomicBoolean();
 
     /** True if module is available for use */
-    private boolean isAvailable;
+    private final AtomicBoolean isAvailable = new AtomicBoolean();
+
+    private Category category;
+
+    private String contact;
 
     public ModuleStatusImpl() {}
 
@@ -71,8 +76,10 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
         this.version = status.getVersion().orElse(getVersionInternal());
         this.documentation = status.getDocumentation().orElse(null);
         this.message = status.getMessage().orElse(null);
-        this.isEnabled = status.isEnabled();
-        this.isAvailable = status.isAvailable();
+        this.isEnabled.set(status.isEnabled());
+        this.isAvailable.set(status.isAvailable());
+        this.category = status.getCategory();
+        this.contact = status.getContact();
     }
 
     /**
@@ -84,8 +91,8 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
     public ModuleStatusImpl(String module, String name) {
         this.module = module;
         this.name = name;
-        this.isAvailable = true;
-        this.isEnabled = true;
+        this.isAvailable.set(true);
+        this.isEnabled.set(true);
         this.version = getVersionInternal();
     }
     /**
@@ -100,7 +107,7 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
         this.component = component;
     }
 
-    /** @return the machine readable name */
+    /** @return the machine-readable name */
     @Override
     public String getModule() {
         return module;
@@ -145,20 +152,20 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
 
     @Override
     public boolean isAvailable() {
-        return this.isAvailable;
+        return this.isAvailable.get();
     }
 
     public void setAvailable(boolean isAvailable) {
-        this.isAvailable = isAvailable;
+        this.isAvailable.set(isAvailable);
     }
 
     @Override
     public boolean isEnabled() {
-        return this.isEnabled;
+        return this.isEnabled.get();
     }
 
     public void setEnabled(boolean isEnabled) {
-        this.isEnabled = isEnabled;
+        this.isEnabled.set(isEnabled);
     }
 
     @Override
@@ -220,5 +227,23 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
             }
         }
         return MAVEN_VERSIONS;
+    }
+
+    @Override
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    @Override
+    public String getContact() {
+        return contact;
+    }
+
+    public void setContact(String contact) {
+        this.contact = contact;
     }
 }

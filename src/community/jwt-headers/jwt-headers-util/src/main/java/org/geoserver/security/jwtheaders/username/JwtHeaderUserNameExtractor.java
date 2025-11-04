@@ -33,6 +33,7 @@ public class JwtHeaderUserNameExtractor {
     // recursive.
     // if this is trivial (single item in pathList), return the value.
     // otherwise, go into the map one level (pathList[0]) and recurse on the result.
+    @SuppressWarnings("unchecked")
     private static Object getClaim(Map<String, Object> map, List<String> pathList) {
         if (map == null) {
             return null;
@@ -91,8 +92,7 @@ public class JwtHeaderUserNameExtractor {
                 throw new RuntimeException(e);
             }
             Map<String, Object> claims = jwsObject.getPayload().toJSONObject();
-            String userName = (String) getClaim(claims, jwtHeadersConfig.getUserNameJsonPath());
-            return userName;
+            return (String) getClaim(claims, jwtHeadersConfig.getUserNameJsonPath());
         }
 
         // Simple JSON (extract by path)

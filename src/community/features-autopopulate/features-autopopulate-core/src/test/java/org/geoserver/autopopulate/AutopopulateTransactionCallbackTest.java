@@ -73,10 +73,11 @@ public class AutopopulateTransactionCallbackTest extends GeoServerSystemTestSupp
     }
 
     @Before
+    @SuppressWarnings("unchecked")
     public void setUp() throws Exception {
         listener = new AutopopulateTransactionCallback(getCatalog());
         File f = new File(
-                this.getTestData().getDataDirectoryRoot() + "\\workspaces\\cite\\cite\\NamedPlaces\\",
+                this.getTestData().getDataDirectoryRoot() + "/workspaces/cite/cite/NamedPlaces/",
                 "transactionCustomizer.properties");
         f.deleteOnExit();
         try (FileOutputStream fout = new FileOutputStream(f)) {
@@ -126,7 +127,7 @@ public class AutopopulateTransactionCallbackTest extends GeoServerSystemTestSupp
     public void testBeforeTransactionOfNoInterest() {
         TransactionRequest request = mock(TransactionRequest.class);
         when(request.getVersion()).thenReturn("1.1.0");
-        when(request.getElements()).thenReturn(new ArrayList<TransactionElement>());
+        when(request.getElements()).thenReturn(new ArrayList<>());
         TransactionRequest returned = listener.beforeTransaction(request);
         assertSame(request, returned);
 
@@ -148,11 +149,13 @@ public class AutopopulateTransactionCallbackTest extends GeoServerSystemTestSupp
     @Test
     public void testUpdateTransactionElement() throws Exception {
         Update element = mock(Update.class);
-        List<Property> properties = new ArrayList<Property>();
+        List<Property> properties = new ArrayList<>();
         PropertyType property = WfsFactory.eINSTANCE.createPropertyType();
         Property.WFS11 updateProperty = new Property.WFS11(property);
         when(element.createProperty()).thenReturn(updateProperty);
         when(element.getUpdateProperties()).thenReturn(properties);
+
+        @SuppressWarnings("MockNotUsedInProduction")
         FeatureTypeInfo featureTypeInfo = mock(FeatureTypeInfo.class);
         when(element.getTypeName()).thenReturn(new QName("NamedPlaces"));
         NamespaceInfo nameSpaceInfo = mock(NamespaceInfo.class);
@@ -160,7 +163,7 @@ public class AutopopulateTransactionCallbackTest extends GeoServerSystemTestSupp
         when(featureTypeInfo.getNamespace()).thenReturn(nameSpaceInfo);
 
         TransactionRequest request = mock(TransactionRequest.class);
-        List<TransactionElement> transactionElements = new ArrayList<TransactionElement>();
+        List<TransactionElement> transactionElements = new ArrayList<>();
         transactionElements.add(element);
         when(request.getElements()).thenReturn(transactionElements);
         when(request.getVersion()).thenReturn("1.1.0");
@@ -172,7 +175,7 @@ public class AutopopulateTransactionCallbackTest extends GeoServerSystemTestSupp
                 .append("application/json");
         JSONObject result = (JSONObject) getJson(sb.toString());
         JSONArray features = (JSONArray) result.get("features");
-        assertEquals(features.size(), 2);
+        assertEquals(2, features.size());
         verify(element, times(features.size())).getTypeName();
 
         assertTrue(properties.stream().anyMatch(p -> p.getName().getLocalPart().equals("NAME")));
@@ -191,7 +194,7 @@ public class AutopopulateTransactionCallbackTest extends GeoServerSystemTestSupp
         String contentType = response.getContentType();
         // in the case of GeoJSON response with ogcapi, the output format is not
         // set to MockHttpServlet request, so skipping
-        if (contentType != null) assertEquals(contentType, "application/json;charset=UTF-8");
+        if (contentType != null) assertEquals("application/json;charset=UTF-8", contentType);
         return json(response);
     }
 }

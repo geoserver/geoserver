@@ -1,18 +1,6 @@
-/*
- *    GeoTools - The Open Source Java GIS Toolkit
- *    http://geotools.org
- *
- *    (C) 2021, Open Source Geospatial Foundation (OSGeo)
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the GNU Lesser General Public
- *    License as published by the Free Software Foundation;
- *    version 2.1 of the License.
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *    Lesser General Public License for more details.
+/* (c) 2025 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 package org.geoserver.ogcapi.v1.stac;
 
@@ -22,9 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.function.BiConsumer;
-import net.sf.json.JSONObject;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
-import org.geoserver.featurestemplating.builders.JSONFieldSupport;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.impl.CompositeBuilder;
 import org.geoserver.featurestemplating.builders.impl.DynamicIncludeFlatBuilder;
@@ -153,14 +139,6 @@ class TemplatePropertyVisitor {
                 visitTemplateBuilder(parentPath, child, false);
             }
         }
-    }
-
-    private JSONObject evaluate(Expression exp) {
-        Object result = exp.evaluate(sampleFeature);
-        if (!(result instanceof JSONObject)) result = JSONFieldSupport.parseWhenJSON(exp, null, result);
-        if (result instanceof JSONObject object) return object;
-
-        return null;
     }
 
     private String getPath(String parentPath, String key, boolean skipPath) {

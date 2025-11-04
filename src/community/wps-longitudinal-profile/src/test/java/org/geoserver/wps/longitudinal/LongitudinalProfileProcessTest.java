@@ -61,7 +61,6 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
     private static final String LINESTRING_2154_EWKT = "SRID=2154;" + LINESTRING_2154_WKT;
     private static final String LINESTRING_4326_EWKT =
             "SRID=4326;LINESTRING(4.816667349546753 44.86746046117114, 4.820617515841021 44.86445081066109, 4.829431492334357 44.86579440463876, 4.82464829777395 44.869717699053616)";
-    private static final double DELTA = 1e-3;
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {

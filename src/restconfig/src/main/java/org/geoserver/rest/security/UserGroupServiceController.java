@@ -4,8 +4,6 @@
  */
 package org.geoserver.rest.security;
 
-import static java.lang.String.format;
-
 import com.google.common.base.Strings;
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -24,6 +22,7 @@ import org.geoserver.security.validation.SecurityConfigException;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -78,7 +77,7 @@ public class UserGroupServiceController extends RestBaseController {
             SecurityUserGroupServiceConfig cfg = securityManager.loadUserGroupServiceConfig(serviceName);
             if (cfg == null) {
                 throw new HttpClientErrorException(
-                        HttpStatus.NOT_FOUND, format("Cannot find user/group service %s", serviceName));
+                        HttpStatus.NOT_FOUND, "Cannot find user/group service %s".formatted(serviceName));
             }
             return wrapObject(cfg, SecurityUserGroupServiceConfig.class);
         } catch (IOException e) {
@@ -177,10 +176,10 @@ public class UserGroupServiceController extends RestBaseController {
 
         try {
             if (securityManager.loadUserGroupServiceConfig(newCfg.getName()) != null) {
-                LOGGER.warning(format("Cannot create user/group service %s: name already exists", newCfg.getName()));
+                LOGGER.warning("Cannot create user/group service %s: name already exists".formatted(newCfg.getName()));
                 throw new HttpClientErrorException(
                         HttpStatus.BAD_REQUEST,
-                        format("Cannot create the config %s because the name is already in use", newCfg.getName()));
+                        "Cannot create the config %s because the name is already in use".formatted(newCfg.getName()));
             }
         } catch (IOException ex) {
             throw new HttpClientErrorException(
@@ -214,23 +213,21 @@ public class UserGroupServiceController extends RestBaseController {
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Request body is empty");
         }
         if (!serviceName.equals(request.getName())) {
-            LOGGER.warning(format(
-                    "Cannot modify service %s because the name %s in the body does not match",
-                    serviceName, request.getName()));
+            LOGGER.warning("Cannot modify service %s because the name %s in the body does not match"
+                    .formatted(serviceName, request.getName()));
             throw new HttpClientErrorException(
                     HttpStatus.BAD_REQUEST,
-                    format(
-                            "Cannot modify the config %s because the name %s in the body does not match",
-                            serviceName, request.getName()));
+                    "Cannot modify the config %s because the name %s in the body does not match"
+                            .formatted(serviceName, request.getName()));
         }
 
         try {
             SecurityUserGroupServiceConfig existing = securityManager.loadUserGroupServiceConfig(serviceName);
             if (existing == null) {
-                LOGGER.warning(format("Cannot update %s because it does not exist", serviceName));
+                LOGGER.warning("Cannot update %s because it does not exist".formatted(serviceName));
                 // for this API we use 400 (matches existing tests/behavior)
                 throw new HttpClientErrorException(
-                        HttpStatus.BAD_REQUEST, format("Cannot update %s because it does not exist", serviceName));
+                        HttpStatus.BAD_REQUEST, "Cannot update %s because it does not exist".formatted(serviceName));
             }
 
             // keep id stable
@@ -249,16 +246,16 @@ public class UserGroupServiceController extends RestBaseController {
 
     protected void removeUserGroupService(String serviceName) {
         if (DELETE_BLACK_LIST.contains(serviceName)) {
-            LOGGER.warning(format("Cannot delete %s because it is a required user/group service", serviceName));
+            LOGGER.warning("Cannot delete %s because it is a required user/group service".formatted(serviceName));
             throw new HttpClientErrorException(
                     HttpStatus.BAD_REQUEST,
-                    format("Cannot delete %s because it is a required user/group service", serviceName));
+                    "Cannot delete %s because it is a required user/group service".formatted(serviceName));
         }
 
         try {
             SecurityUserGroupServiceConfig cfg = securityManager.loadUserGroupServiceConfig(serviceName);
             if (cfg == null) {
-                LOGGER.warning(format("Cannot delete %s because it does not exist", serviceName));
+                LOGGER.warning("Cannot delete %s because it does not exist".formatted(serviceName));
                 throw new HttpClientErrorException(
                         HttpStatus.NOT_FOUND, "Cannot find user/group service " + serviceName);
             }
@@ -279,7 +276,7 @@ public class UserGroupServiceController extends RestBaseController {
     @ExceptionHandler(HttpClientErrorException.class)
     public ResponseEntity<ErrorResponse> handleHttpClientError(HttpClientErrorException ex) {
         // Use status from exception; prefer its statusText (we passed our message there)
-        HttpStatus status = ex.getStatusCode();
+        HttpStatusCode status = ex.getStatusCode();
         String message = ex.getStatusText();
         // Allow content negotiation to serialize this small error bean
         return ResponseEntity.status(status)

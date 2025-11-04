@@ -4,12 +4,12 @@
  */
 package org.geoserver.geofence.server.rest;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.geoserver.geofence.core.dao.DuplicateKeyException;
 import org.geoserver.geofence.server.rest.xml.AbstractPayload;
 import org.geoserver.geofence.server.rest.xml.Batch;

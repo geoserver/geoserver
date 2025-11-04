@@ -21,7 +21,6 @@ import org.geotools.api.feature.Property;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.api.feature.type.Name;
 import org.geotools.api.referencing.FactoryException;
-import org.geotools.api.referencing.NoSuchAuthorityCodeException;
 import org.geotools.api.referencing.crs.CRSAuthorityFactory;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -60,9 +59,6 @@ public class GpxEncoder {
         this.format.setDecimalFormatSymbols(new DecimalFormatSymbols(Locale.ENGLISH));
         trkAttributes.put("name", String.class);
         trkAttributes.put("desc", String.class);
-
-        trkAttributes.put("name", String.class);
-        trkAttributes.put("desc", String.class);
     }
 
     public void setCreator(String creator) {
@@ -73,10 +69,8 @@ public class GpxEncoder {
         this.link = link;
     }
 
-    private Map<String, String> types = new HashMap<String, String>();
-
     public void encode(OutputStream lFileOutputStream, SimpleFeatureCollection collection)
-            throws XMLStreamException, NoSuchAuthorityCodeException, FactoryException {
+            throws XMLStreamException, FactoryException {
 
         CRSAuthorityFactory crsFactory = CRS.getAuthorityFactory(true);
 
@@ -113,14 +107,9 @@ public class GpxEncoder {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         writer.writeCharacters(sdf.format(calendar.getTime()));
         writer.writeEndElement();
-
         writer.writeEndElement(); // metadata
 
-        String schemaName = "";
-
-        FeatureIterator<SimpleFeature> iter = collection.features();
-
-        try {
+        try (FeatureIterator<SimpleFeature> iter = collection.features()) {
             while (iter.hasNext()) {
                 SimpleFeature f = iter.next();
 
@@ -151,23 +140,18 @@ public class GpxEncoder {
                             "Unsupported geometry type: " + g.getClass().getSimpleName());
                 }
             }
-        } finally {
-            iter.close();
         }
 
         writer.writeEndDocument();
         writer.flush();
         writer.close();
-        return;
-        /*
-         */
     }
 
     private void writeCoordinates(XMLStreamWriter writer, String ptElementName, LineString ls)
             throws XMLStreamException {
         Coordinate[] coordinates = ls.getCoordinates();
-        for (int ic = 0; ic < coordinates.length; ic++) {
-            writeWpt(writer, ptElementName, coordinates[ic].x, coordinates[ic].y, coordinates[ic].z);
+        for (Coordinate coordinate : coordinates) {
+            writeWpt(writer, ptElementName, coordinate.x, coordinate.y, coordinate.z);
         }
     }
 

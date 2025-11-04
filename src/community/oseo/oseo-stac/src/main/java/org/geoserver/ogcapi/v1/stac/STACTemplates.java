@@ -27,10 +27,10 @@ import org.geotools.api.data.FeatureSource;
 import org.geotools.api.feature.Attribute;
 import org.geotools.api.feature.Feature;
 import org.geotools.api.feature.type.FeatureType;
-import org.geotools.api.feature.type.PropertyDescriptor;
 import org.geotools.api.filter.FilterFactory;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.visitor.UniqueVisitor;
+import org.geotools.util.SuppressFBWarnings;
 import org.geotools.util.logging.Logging;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -39,6 +39,7 @@ import org.xml.sax.helpers.NamespaceSupport;
 
 /** Provides access to the collection and item templates used for the STAC JSON outputs */
 @Component
+@SuppressFBWarnings("AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION")
 public class STACTemplates extends AbstractTemplates {
 
     static final Logger LOGGER = Logging.getLogger(STACTemplates.class);
@@ -72,6 +73,7 @@ public class STACTemplates extends AbstractTemplates {
         }
     }
 
+    @Override
     public void reloadTemplates() {
         try {
             copyHTMLTemplates();
@@ -89,21 +91,6 @@ public class STACTemplates extends AbstractTemplates {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Failed to load STAC JSON templates", e);
         }
-    }
-
-    static NamespaceSupport getNamespaces(FeatureSource<FeatureType, Feature> fs) {
-        // collect properties from all namespaces
-        FeatureType schema = fs.getSchema();
-        NamespaceSupport namespaces = new NamespaceSupport();
-        for (PropertyDescriptor pd : schema.getDescriptors()) {
-            String uri = pd.getName().getNamespaceURI();
-            String prefix = (String) pd.getUserData().get(OpenSearchAccess.PREFIX);
-            if (prefix == null) throw new RuntimeException("No prefix available for " + uri);
-            namespaces.declarePrefix(prefix, uri);
-        }
-        // done last, to avoid overrides
-        namespaces.declarePrefix("", schema.getName().getNamespaceURI());
-        return namespaces;
     }
 
     private void reloadItemTemplate(GeoServerDataDirectory dd, NamespaceSupport namespaces) throws IOException {

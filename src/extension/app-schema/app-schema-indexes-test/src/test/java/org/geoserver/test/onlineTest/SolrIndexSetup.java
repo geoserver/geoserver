@@ -45,12 +45,10 @@ public class SolrIndexSetup {
             HttpPost post = new HttpPost(url);
             post.setHeader("User-Agent", USER_AGENT);
             // inject content post data
-            File jsonFile =
-                    new File(
-                            getClass()
-                                    .getClassLoader()
-                                    .getResource("test-data/" + fileName)
-                                    .getFile());
+            File jsonFile = new File(getClass()
+                    .getClassLoader()
+                    .getResource("test-data/" + fileName)
+                    .getFile());
             FileEntity entity = new FileEntity(jsonFile, ContentType.APPLICATION_JSON);
             post.setEntity(entity);
             try (CloseableHttpResponse response = client.execute(post)) {

@@ -263,9 +263,11 @@ When creating the first release candidate of a series, there are some extra step
       * Name: ``GEOSERVER_MAIN_DOCKER_NAME``
       * Value: ``2.29-SNAPSHOT``
 
-9. Announce on the developer group that the new stable branch has been created.
+9. Update the MAIN variable in Docker `release.sh <https://github.com/geoserver/docker/blob/master/build/release.sh#L6>`_ to the new main branch 2.29.
 
-10. Switch to the new branch and update the documentation links, replacing ``docs.geoserver.org/latest`` with ``docs.geoserver.org/2.29.x`` (for example):
+10. Announce on the developer group that the new stable branch has been created.
+
+11. Switch to the new branch and update the documentation links, replacing ``docs.geoserver.org/latest`` with ``docs.geoserver.org/2.29.x`` (for example):
    
     * ``README.md``
     * ``doc/en/developer/source/conf.py``
@@ -274,7 +276,12 @@ When creating the first release candidate of a series, there are some extra step
 Build the Release
 -----------------
 
-Run the `geoserver-release <https://build.geoserver.org/view/geoserver/job/geoserver-release/>`_ job in Jenkins. The job takes the following parameters:
+Run the `geoserver-release` job in Jenkins:
+
+* `geoserver-release-jdk11 <https://build.geoserver.org/view/release/job/geoserver-release-jdk11/>`__
+* `geoserver-release-jdk17 <https://build.geoserver.org/view/release/job/geoserver-release-jdk17/>`__
+
+The job takes the following parameters:
 
 **BRANCH**
 
@@ -323,7 +330,12 @@ It is important to test the artifacts using the minimum supported version of Jav
 Publish the Release
 -------------------
 
-Run the `geoserver-release-publish <https://build.geoserver.org/view/geoserver/job/geoserver-release-publish/>`_ in Jenkins. The job takes the following parameters:
+Run the `geoserver-release-publish` in Jenkins:
+
+* `geoserver-release-publish-jdk11 <https://build.geoserver.org/view/release/job/geoserver-release-publish-jdk11/>`__
+* `geoserver-release-publish-jdk17 <https://build.geoserver.org/view/release/job/geoserver-release-publish-jdk17/>`__
+
+The job takes the following parameters:
 
 **VERSION**
 

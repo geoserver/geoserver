@@ -11,4 +11,9 @@ public final class GeoFenceModuleStatus extends ModuleStatusImpl {
     public GeoFenceModuleStatus(String module, String name) {
         super(module, name);
     }
+
+    @Override
+    public Category getCategory() {
+        return Category.EXTENSION;
+    }
 }

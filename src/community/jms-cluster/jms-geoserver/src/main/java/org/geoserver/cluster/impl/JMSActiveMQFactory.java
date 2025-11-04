@@ -5,14 +5,14 @@
  */
 package org.geoserver.cluster.impl;
 
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.Destination;
+import jakarta.jms.Topic;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Properties;
 import java.util.logging.Level;
-import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
-import javax.jms.Topic;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.geoserver.cluster.JMSFactory;

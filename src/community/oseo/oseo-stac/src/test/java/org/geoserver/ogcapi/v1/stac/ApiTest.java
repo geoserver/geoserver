@@ -171,6 +171,7 @@ public class ApiTest extends STACTestSupport {
         // check collectionId parameter
         Map<String, Parameter> params = api.getComponents().getParameters();
         Parameter collectionId = params.get("collectionId");
+        @SuppressWarnings("unchecked")
         List<String> collectionIdValues = collectionId.getSchema().getEnum();
         List<String> expectedCollectionIds =
                 Arrays.asList("ATMTEST", "ATMTEST2", "GS_TEST", "LANDSAT8", "SENTINEL1", "SENTINEL2");

@@ -7,8 +7,8 @@ package org.geoserver.params.extractor;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.junit.Before;
 import org.junit.Test;

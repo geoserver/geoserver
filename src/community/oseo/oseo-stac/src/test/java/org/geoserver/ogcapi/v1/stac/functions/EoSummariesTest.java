@@ -6,7 +6,10 @@ package org.geoserver.ogcapi.v1.stac.functions;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -22,7 +25,6 @@ import org.geotools.api.feature.Feature;
 import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.filter.expression.Expression;
-import org.geotools.api.filter.sort.SortBy;
 import org.geotools.api.filter.sort.SortOrder;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.visitor.MaxVisitor;
@@ -89,7 +91,10 @@ public class EoSummariesTest extends STACTestSupport {
     public void testBoundsX() {
         List<Expression> parameters = List.of(ff.literal("bounds"), ff.literal("SENTINEL2"), ff.literal("x"));
         when(eoSummaries.getParameters()).thenReturn(parameters);
-        assertEquals(Double.valueOf(-119.173780060482), ((List<Double>) eoSummaries.evaluate(null)).get(0), 0.1);
+        assertEquals(
+                Double.valueOf(-119.173780060482),
+                (Double) eoSummaries.evaluate(null, List.class).get(0),
+                0.1);
     }
 
     @Test
@@ -179,7 +184,7 @@ public class EoSummariesTest extends STACTestSupport {
     public void testUniqueOptimization() throws Exception {
         MyUniqueVisitor visitor = new MyUniqueVisitor(ff.property("name"));
         Query query = new Query();
-        query.setSortBy(new SortBy[] {ff.sort("name", SortOrder.ASCENDING)});
+        query.setSortBy(ff.sort("name", SortOrder.ASCENDING));
         collectionSource.getFeatures(query).accepts(visitor, null);
         assertFalse(visited);
         assertEquals(

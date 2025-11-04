@@ -15,12 +15,12 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertNull;
 
 import com.jayway.jsonpath.DocumentContext;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
-import javax.xml.bind.DatatypeConverter;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.MockData;
@@ -318,7 +318,7 @@ public class StyleMetadataTest extends StylesTestSupport {
     }
 
     public Date parseDate(String date) {
-        return DatatypeConverter.parseDate(date).getTime();
+        return Date.from(Instant.parse(date));
     }
 
     @Test

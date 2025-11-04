@@ -20,8 +20,8 @@
   <dependencies>
     <!-- Do not add any other dependency here, modules shall explicitly declare their dependencies -->
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
   </dependencies>
@@ -106,19 +106,6 @@
       </modules>
     </profile>
     <profile>
-      <id>notification</id>
-      <modules>
-        <module>notification-common</module>
-        <module>notification</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>notification-geonode</id>
-      <modules>
-        <module>notification-geonode</module>
-      </modules>
-    </profile>
-    <profile>
       <id>communityRelease</id>
       <modules>
         <module>dds</module>
@@ -147,9 +134,6 @@
         <module>gwc-sqlite</module>
         <module>jwt-headers</module>
         <module>security</module>
-        <module>notification</module>
-        <module>notification-common</module>
-        <module>notification-geonode</module>
         <module>oseo</module>
         <module>s3-geotiff</module>
         <module>netcdf-ghrsst</module>
@@ -183,6 +167,12 @@
         <module>singlestore</module>
         <module>pmtiles-store</module>
         <module>wps-openai</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>pending</id>
+      <modules>
+        <module>oseo</module>
       </modules>
     </profile>
     <profile>
@@ -374,12 +364,6 @@
     </profile>
     <profile>
       <id>oauth2-all</id>
-      <modules>
-        <module>security</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>keycloak</id>
       <modules>
         <module>security</module>
       </modules>

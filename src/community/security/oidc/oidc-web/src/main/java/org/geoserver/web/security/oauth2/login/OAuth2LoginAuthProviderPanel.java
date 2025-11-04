@@ -12,6 +12,7 @@ import static org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConf
 import com.google.common.io.CharStreams;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Serial;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,6 +58,7 @@ public class OAuth2LoginAuthProviderPanel
         extends PreAuthenticatedUserNameFilterPanel<GeoServerOAuth2LoginFilterConfig> {
 
     /** serialVersionUID */
+    @Serial
     private static final long serialVersionUID = -3025321797363970333L;
 
     /** Prefix of Microsoft specific attributes */
@@ -90,6 +92,7 @@ public class OAuth2LoginAuthProviderPanel
     }
 
     private class DiscoveryPanel extends Panel {
+        @Serial
         private static final long serialVersionUID = 1L;
 
         public DiscoveryPanel(String panelId) {
@@ -99,6 +102,7 @@ public class OAuth2LoginAuthProviderPanel
                     "oidcDiscoveryUri", new PropertyModel<>(configModel.getObject(), "oidcDiscoveryUri"));
             add(url);
             add(new AjaxButton("discover") {
+                @Serial
                 private static final long serialVersionUID = 1L;
 
                 @Override
@@ -130,6 +134,7 @@ public class OAuth2LoginAuthProviderPanel
     }
 
     static class TokenClaimPanel extends Panel {
+        @Serial
         private static final long serialVersionUID = 1L;
 
         @Override
@@ -160,6 +165,7 @@ public class OAuth2LoginAuthProviderPanel
     }
 
     static class MSGraphPanel extends Panel {
+        @Serial
         private static final long serialVersionUID = 1L;
 
         @Override
@@ -183,18 +189,22 @@ public class OAuth2LoginAuthProviderPanel
             // this will attach a change listener to the checkbox
             // the state of the checkbox will then display:block/display:none the panel
             // this is used while the user is working with the page
-            script += "$('#msGraphAppRoleAssignments').on('change',function() { \n"
-                    // + " debugger;\n"
-                    + "    var checkbox = $('#msGraphAppRoleAssignments')[0];\n"
-                    + "    var div = $('#msGraphObjectIdDiv');\n"
-                    + "    if (checkbox.checked) {\n"
-                    + "        div.addClass('display-block');\n"
-                    + "        div.removeClass('display-none');\n"
-                    + "    } else {\n"
-                    + "        div.addClass('display-none');\n"
-                    + "        div.removeClass('display-block');\n"
-                    + "   }\n"
-                    + "} \n);\n\n";
+            script +=
+                    """
+                    $('#msGraphAppRoleAssignments').on('change',function() {\s
+                        var checkbox = $('#msGraphAppRoleAssignments')[0];
+                        var div = $('#msGraphObjectIdDiv');
+                        if (checkbox.checked) {
+                            div.addClass('display-block');
+                            div.removeClass('display-none');
+                        } else {
+                            div.addClass('display-none');
+                            div.removeClass('display-block');
+                       }
+                    }\s
+                    );
+
+                    """;
 
             script += "$('#msGraphAppRoleAssignments').trigger(\"change\"); // ensure in correct state";
 

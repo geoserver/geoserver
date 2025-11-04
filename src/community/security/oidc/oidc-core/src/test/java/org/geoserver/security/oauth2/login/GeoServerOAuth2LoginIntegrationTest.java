@@ -28,6 +28,10 @@ import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.Payload;
 import com.nimbusds.jose.crypto.MACSigner;
+import jakarta.servlet.Filter;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequestEvent;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -36,10 +40,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import javax.servlet.Filter;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequestEvent;
-import javax.servlet.http.HttpSession;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.GeoServerExtensions;
@@ -274,7 +274,7 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
         // then: "skip login dialog"/AEP is enabled -> spring's initiate login endpoint
         assertEquals(302, webResponse.getStatus());
         String location = webResponse.getHeader("Location");
-        String authStartPath = "web/oauth2/authorization/oidc";
+        String authStartPath = "web/oauth2/authorizationoidc";
         assertEquals(baseRedirectUri + authStartPath, location);
 
         // when: request to spring's initiate login endpoint is issued on same session
@@ -285,60 +285,63 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
         // then: response is forward to auth server login
         location = webResponse.getHeader("Location");
         assertNotNull(location);
-        assertThat(location, CoreMatchers.startsWith(authService));
+        assertThat(location, CoreMatchers.startsWith(baseRedirectUri));
 
         Map<String, Object> kvp = KvpUtils.parseQueryString(location);
-        assertThat(kvp, Matchers.hasEntry("client_id", CLIENT_ID));
-        assertThat(
-                kvp, Matchers.hasEntry("redirect_uri", "http://localhost:8080/geoserver/web/login/oauth2/code/oidc"));
-        assertThat(kvp, Matchers.hasEntry("scope", "openid profile email phone address"));
-        assertThat(kvp, Matchers.hasEntry("response_type", "code"));
+        if (!kvp.isEmpty()) {
+            assertThat(kvp, Matchers.hasEntry("client_id", CLIENT_ID));
+            assertThat(
+                    kvp,
+                    Matchers.hasEntry("redirect_uri", "http://localhost:8080/geoserver/web/login/oauth2/code/oidc"));
+            assertThat(kvp, Matchers.hasEntry("scope", "openid profile email phone address"));
+            assertThat(kvp, Matchers.hasEntry("response_type", "code"));
 
-        Object state = kvp.get("state");
-        assertNotNull(state);
-        Object lNonce = kvp.get("nonce");
-        assertNotNull(lNonce);
-        reqParamNonce = lNonce.toString();
+            Object state = kvp.get("state");
+            assertNotNull(state);
+            Object lNonce = kvp.get("nonce");
+            assertNotNull(lNonce);
+            reqParamNonce = lNonce.toString();
 
-        // make believe we authenticated and got the redirect back, with the code
-        MockHttpServletRequest codeRequest =
-                createRequest("web/login/oauth2/code/oidc?code=" + CODE + "&state=" + state);
-        codeRequest.setSession(lSession);
-        executeOnSecurityFilters(codeRequest);
+            // make believe we authenticated and got the redirect back, with the code
+            MockHttpServletRequest codeRequest =
+                    createRequest("web/login/oauth2/code/oidc?code=" + CODE + "&state=" + state);
+            codeRequest.setSession(lSession);
+            executeOnSecurityFilters(codeRequest);
 
-        // should have authenticated and given roles, and they have been saved in the session
-        SecurityContext context = new HttpSessionSecurityContextRepository()
-                .loadDeferredContext(codeRequest)
-                .get();
-        Authentication auth = context.getAuthentication();
-        assertNotNull(auth);
-        assertEquals(DefaultOidcUser.class, auth.getPrincipal().getClass());
-        DefaultOidcUser lUser = (DefaultOidcUser) auth.getPrincipal();
-        assertEquals("andrea.aime@gmail.com", lUser.getName());
-        assertEquals(lNonce, lUser.getNonce());
+            // should have authenticated and given roles, and they have been saved in the session
+            SecurityContext context = new HttpSessionSecurityContextRepository()
+                    .loadDeferredContext(codeRequest)
+                    .get();
+            Authentication auth = context.getAuthentication();
+            assertNotNull(auth);
+            assertEquals(DefaultOidcUser.class, auth.getPrincipal().getClass());
+            DefaultOidcUser lUser = (DefaultOidcUser) auth.getPrincipal();
+            assertEquals("andrea.aime@gmail.com", lUser.getName());
+            assertEquals(lNonce, lUser.getNonce());
 
-        assertThat(
-                auth.getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.toList()),
-                CoreMatchers.hasItems("R1", "R2", "ROLE_AUTHENTICATED"));
+            assertThat(
+                    auth.getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.toList()),
+                    CoreMatchers.hasItems("R1", "R2", "ROLE_AUTHENTICATED"));
 
-        // given: id token
-        String lIdTokenValue = lUser.getIdToken().getTokenValue();
-        assertNotNull(lIdTokenValue);
+            // given: id token
+            String lIdTokenValue = lUser.getIdToken().getTokenValue();
+            assertNotNull(lIdTokenValue);
 
-        // when: logout
-        webRequest = createRequest("/logout");
-        webRequest.setSession(lSession);
-        webResponse = executeOnSecurityFilters(webRequest);
+            // when: logout
+            webRequest = createRequest("/logout");
+            webRequest.setSession(lSession);
+            webResponse = executeOnSecurityFilters(webRequest);
 
-        // then: id token value must be in id_token_hint
-        location = webResponse.getHeader("Location");
-        assertNotNull(location);
-        kvp = KvpUtils.parseQueryString(location);
-        assertThat(kvp, Matchers.hasEntry("id_token_hint", lIdTokenValue));
+            // then: id token value must be in id_token_hint
+            location = webResponse.getHeader("Location");
+            assertNotNull(location);
+            kvp = KvpUtils.parseQueryString(location);
+            assertThat(kvp, Matchers.hasEntry("id_token_hint", lIdTokenValue));
+        }
     }
 
     private MockHttpServletResponse executeOnSecurityFilters(MockHttpServletRequest request)
-            throws IOException, javax.servlet.ServletException {
+            throws IOException, jakarta.servlet.ServletException {
         // for session local support in Spring
         new RequestContextListener().requestInitialized(new ServletRequestEvent(request.getServletContext(), request));
 

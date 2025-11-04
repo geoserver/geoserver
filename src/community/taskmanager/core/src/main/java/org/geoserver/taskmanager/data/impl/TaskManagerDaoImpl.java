@@ -4,16 +4,16 @@
  */
 package org.geoserver.taskmanager.data.impl;
 
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.LockModeType;
-import javax.persistence.NoResultException;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 import org.geoserver.taskmanager.data.Attribute;
 import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.BatchElement;
@@ -30,6 +30,7 @@ import org.geoserver.taskmanager.util.InitConfigUtil;
 import org.hibernate.Hibernate;
 import org.hibernate.LockMode;
 import org.hibernate.LockOptions;
+import org.hibernate.Locking.Scope;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,7 +80,10 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
     @Override
     public <T extends Identifiable> T lockReload(T object) {
         return (T) getSession()
-                .get(object.getClass(), object.getId(), new LockOptions(LockMode.PESSIMISTIC_READ).setScope(true));
+                .get(
+                        object.getClass(),
+                        object.getId(),
+                        new LockOptions(LockMode.PESSIMISTIC_READ).setScope(Scope.INCLUDE_COLLECTIONS));
     }
 
     @Override
@@ -520,30 +524,30 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
 
     @Override
     public void delete(Batch batch) {
-        batch = (Batch) getSessionNoFilters().get(BatchImpl.class, batch.getId());
+        batch = getSessionNoFilters().get(BatchImpl.class, batch.getId());
         if (batch.getConfiguration() != null) {
             batch.getConfiguration().getBatches().remove(batch.getName());
         }
-        getSessionNoFilters().delete(batch);
+        getSessionNoFilters().remove(batch);
     }
 
     @Override
     public void delete(Configuration config) {
-        getSessionNoFilters().delete(getSessionNoFilters().get(ConfigurationImpl.class, config.getId()));
+        getSessionNoFilters().remove(getSessionNoFilters().get(ConfigurationImpl.class, config.getId()));
     }
 
     @Override
     public void delete(BatchElement batchElement) {
-        batchElement = (BatchElement) getSession().get(BatchElementImpl.class, batchElement.getId());
+        batchElement = getSession().get(BatchElementImpl.class, batchElement.getId());
         batchElement.getBatch().getElements().remove(batchElement);
-        getSession().delete(batchElement);
+        getSession().remove(batchElement);
     }
 
     @Override
     public void delete(Task task) {
-        task = (Task) getSessionNoFilters().get(TaskImpl.class, task.getId());
+        task = getSessionNoFilters().get(TaskImpl.class, task.getId());
         task.getConfiguration().getTasks().remove(task.getName());
-        getSessionNoFilters().delete(task);
+        getSessionNoFilters().remove(task);
     }
 
     /**

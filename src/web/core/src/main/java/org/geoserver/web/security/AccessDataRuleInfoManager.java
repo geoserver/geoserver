@@ -105,8 +105,8 @@ public class AccessDataRuleInfoManager {
         Set<DataAccessRule> rules = null;
         if (info instanceof PublishedInfo layerInfo) {
             rules = getLayerSecurityRule(workspaceName, layerInfo.getName());
-        } else if (info instanceof LayerGroupInfo) {
-            if (workspaceName == null) rules = getGlobalLayerGroupSecurityRule(((LayerGroupInfo) info).getName());
+        } else if (info instanceof LayerGroupInfo groupInfo) {
+            if (workspaceName == null) rules = getGlobalLayerGroupSecurityRule(groupInfo.getName());
             else rules = getLayerSecurityRule(workspaceName, ((PublishedInfo) info).getName());
         } else if (info instanceof WorkspaceInfo workspaceInfo) {
             rules = getWorkspaceDataAccessRules(workspaceInfo.getName());

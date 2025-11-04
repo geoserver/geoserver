@@ -110,7 +110,7 @@ class DGGSGeometryFilterParser {
             this.geometry = null;
             Iterator<Zone> zoneIterator =
                     Arrays.stream(identifiers).map(id -> dggs.getZone(id)).iterator();
-            this.filter = DGGSFilterTransformer.getFilterFrom(dggs, zoneIterator, resolution, zoneIdAttribute);
+            this.filter = DGGSFilterTransformer.getFilterFrom(dggs, zoneIterator, resolution, null, zoneIdAttribute);
             this.geometry = CascadedPolygonUnion.union(Arrays.stream(identifiers)
                     .map(id -> dggs.getZone(id).getBoundary())
                     .collect(Collectors.toList()));

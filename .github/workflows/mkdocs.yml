@@ -241,6 +241,15 @@ jobs:
             python -c "from markdown.extensions.md_in_html import MarkdownInHtmlExtension; print('✓ md_in_html extension is available')" || echo "✗ md_in_html extension NOT available"
             echo ""
             
+            # Debug: Show the generated index.md to see if grid cards HTML is correct
+            if [ -f "docs/index.md" ]; then
+              echo "=== First 30 lines of generated docs/index.md ==="
+              head -30 docs/index.md
+              echo "=== Checking for 'grid cards' in index.md ==="
+              grep -B 2 -A 10 "grid cards" docs/index.md || echo "No 'grid cards' found in index.md"
+              echo ""
+            fi
+            
             # Build the site - fail on error (site_dir already set in mkdocs.yml)
             echo "=== Starting MkDocs build for $LANG/$DOC_TYPE ==="
             if ! mkdocs build --clean --verbose; then

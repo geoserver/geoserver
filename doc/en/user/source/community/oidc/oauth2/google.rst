@@ -26,7 +26,7 @@ Configure the Google IDP
      .. figure:: ../img/google-create-project2.png
         :align: center
 
-   * Click on ``Credencials`` (left column)
+   * Click on ``Credentials`` (left column)
    
      .. figure:: ../img/google-credentials.png
         :align: center
@@ -88,7 +88,7 @@ Configure the Google IDP
 
    *  Record your Client ID and Client Secret, then press "Ok"
     
-      * **You will not be able to retreive your client secret once you press "ok"**
+      * **You will not be able to retrieve your client secret once you press "ok"**
    
       .. figure:: ../img/google-credentials13.png
          :align: center

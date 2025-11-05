@@ -32,6 +32,19 @@ public class QueryControllerTest extends ControllerTest {
         JSON json = getAsJSON(query("cite", 11, "?f=json&geometryType=esriGeometryEnvelope&geometry=-180,-90,180,90"));
         assertTrue(String.valueOf(json) + " is a JSON object", json instanceof JSONObject);
         JSONObject jsonObject = (JSONObject) json;
+        validateStreamsQueryResult(json, jsonObject);
+    }
+
+    @Test
+    public void testStreamsQueryEmptyWhere() throws Exception {
+        JSON json = getAsJSON(
+                query("cite", 11, "?f=json&geometryType=esriGeometryEnvelope&geometry=-180,-90,180,90&where="));
+        assertTrue(String.valueOf(json) + " is a JSON object", json instanceof JSONObject);
+        JSONObject jsonObject = (JSONObject) json;
+        validateStreamsQueryResult(json, jsonObject);
+    }
+
+    private static void validateStreamsQueryResult(JSON json, JSONObject jsonObject) {
         System.out.println(json.toString());
         //        assertTrue("objectIdFieldName is not present",
         // jsonObject.containsKey("objectIdFieldName"));

@@ -775,7 +775,7 @@ public class FeatureDAO {
             throw new UnsupportedOperationException(
                     "Generalization (via 'maxAllowableOffsets' parameter) not implemented");
         }
-        if (whereClause != null) {
+        if (whereClause != null && !whereClause.trim().isEmpty()) {
             Filter whereFilter;
             try {
                 whereFilter = ECQL.toFilter(whereClause);

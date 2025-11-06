@@ -28,6 +28,7 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -215,13 +216,19 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
     // ---------------------------------------------------------------------
 
     private static JSONObject unwrapSingle(JSONObject root) {
+        // If wrapped in {"authprovider": {...}} peel that first
         if (root.containsKey("authprovider")) {
-            return root.getJSONObject("authprovider");
+            Object ap = root.get("authprovider");
+            if (ap instanceof JSONObject) {
+                root = (JSONObject) ap;
+            }
         }
+        // If it's a single-key object like {"<FQN>": {...}}, unwrap again
         if (root.size() == 1) {
             String key = (String) root.keySet().iterator().next();
-            if (key.startsWith("org.geoserver.security.config.")) {
-                return root.getJSONObject(key);
+            Object val = root.get(key);
+            if (val instanceof JSONObject) {
+                return (JSONObject) val;
             }
         }
         return root;
@@ -233,12 +240,16 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
             throw new AssertionError("Server returned error: " + root);
         }
         Object ap = root.get("authproviders");
-        if (ap instanceof JSONArray arr) {
+        if (ap instanceof JSONArray) {
+            JSONArray arr = (JSONArray) ap;
             JSONArray out = new JSONArray();
-            for (Object o : arr) out.add(unwrapSingle((JSONObject) o));
+            for (Object o : arr) {
+                out.add(unwrapSingle((JSONObject) o));
+            }
             return out;
         }
-        if (ap instanceof JSONObject obj) {
+        if (ap instanceof JSONObject) {
+            JSONObject obj = (JSONObject) ap;
             if (obj.size() == 1) {
                 String key = (String) obj.keySet().iterator().next();
                 Object val = obj.get(key);
@@ -251,10 +262,56 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
         throw new AssertionError("Unrecognized authproviders JSON shape: " + root);
     }
 
+    private static String jsonCreateLdapLegacyWrapper(String name) {
+        JSONObject props = new JSONObject();
+        props.put("name", name);
+        props.put("className", "org.geoserver.security.ldap.LDAPAuthenticationProvider");
+        props.put("serverURL", "ldap://localhost:10389/dc=acme,dc=org");
+        props.put("groupSearchBase", "ou=groups");
+        props.put("groupSearchFilter", "member={0}");
+        props.put("useTLS", false);
+        props.put("useNestedParentGroups", false);
+        props.put("maxGroupSearchLevel", 10);
+        props.put("nestedGroupSearchFilter", "(member={0})");
+        props.put("bindBeforeGroupSearch", false);
+        props.put("adminGroup", "admin");
+        props.put("groupAdminGroup", "admin");
+        props.put("rolePrefix", "ROLE_");
+        props.put("convertToUpperCase", true);
+        props.put("userDnPattern", "uid={0},ou=people");
+
+        JSONObject wrapper = new JSONObject();
+        wrapper.put("org.geoserver.security.ldap.LDAPSecurityServiceConfig", props);
+
+        JSONObject root = new JSONObject();
+        root.put("authprovider", wrapper);
+        return root.toString();
+    }
+
     private static List<String> names(JSONArray arr) {
         List<String> out = new ArrayList<>();
         for (Object o : arr) out.add(((JSONObject) o).optString("name"));
         return out;
+    }
+
+    // LDAP presence helpers ------------------------------------------------
+
+    private static boolean classPresent(String fqn) {
+        try {
+            Class.forName(fqn);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
+    /** LDAP plugin present? Accept both historical and current config FQNs. */
+    private static boolean ldapAvailable() {
+        boolean hasProvider = classPresent("org.geoserver.security.ldap.LDAPAuthenticationProvider");
+        boolean hasCfg1 = classPresent("org.geoserver.security.ldap.LDAPSecurityServiceConfig");
+        boolean hasCfg2 = classPresent("org.geoserver.security.ldap.LDAPAuthenticationProviderConfig");
+        boolean hasCfg3 = classPresent("org.geoserver.security.ldap.config.LDAPAuthenticationProviderConfig");
+        return hasProvider && (hasCfg1 || hasCfg2 || hasCfg3);
     }
 
     // ---------------------------------------------------------------------
@@ -604,5 +661,39 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
         MockHttpServletRequest d = createRequest(BASE + "/security/authproviders/order");
         d.setMethod("DELETE");
         assertEquals(405, dispatch(d).getStatus());
+    }
+
+    /** Creates an LDAP provider using the legacy wrapper under "authprovider" and validates persistence. */
+    @Test
+    public void createLdapLegacyWrapperIsAccepted() throws Exception {
+        // Skip if the LDAP extension isn't present on the test classpath
+        Assume.assumeTrue("LDAP plugin not on classpath, skipping", ldapAvailable());
+
+        String name = "MARSHAL-" + System.nanoTime() + "-ldap-legacy";
+        created.add(name);
+
+        // POST like the provided cURL
+        MockHttpServletResponse r = adminPOST(
+                BASE + "/security/authproviders", json(jsonCreateLdapLegacyWrapper(name)), "application/json");
+        assertEquals(201, r.getStatus());
+        String loc = r.getHeader("Location");
+        assertNotNull(loc);
+        assertTrue(loc.endsWith("/security/authproviders/" + name));
+
+        // GET -> ensure fields are there
+        JSON j = adminGETJSON(BASE + "/security/authproviders/" + name + ".json");
+        JSONObject core = unwrapSingle((JSONObject) j);
+
+        assertEquals(name, core.getString("name"));
+        assertEquals("org.geoserver.security.ldap.LDAPAuthenticationProvider", core.getString("className"));
+        assertEquals("ldap://localhost:10389/dc=acme,dc=org", core.getString("serverURL"));
+        assertEquals("ou=groups", core.getString("groupSearchBase"));
+        assertEquals("member={0}", core.getString("groupSearchFilter"));
+        assertEquals("uid={0},ou=people", core.getString("userDnPattern"));
+
+        // sanity check that it shows up in list of enabled providers
+        JSON list = adminGETJSON(BASE + "/security/authproviders.json");
+        List<String> order = names(unwrapList(list));
+        assertThat(order, hasItem(name));
     }
 }

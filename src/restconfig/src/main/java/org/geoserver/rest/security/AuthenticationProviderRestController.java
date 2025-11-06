@@ -8,6 +8,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.thoughtworks.xstream.XStream;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -29,6 +31,7 @@ import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.security.xml.AuthProviderCollection;
 import org.geoserver.rest.security.xml.AuthProviderOrder;
 import org.geoserver.rest.wrapper.RestWrapper;
+import org.geoserver.security.GeoServerAuthenticationProvider;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
 import org.geoserver.security.config.SecurityManagerConfig;
@@ -416,14 +419,7 @@ public class AuthenticationProviderRestController extends RestBaseController {
             // B) className is a provider class – derive plausible config classes
             try {
                 Class<?> provider = Class.forName(cn);
-                String simple = provider.getSimpleName() + "Config";
-                String pkg = provider.getPackage().getName();
-
-                String[] candidates = {
-                    pkg.replace(".auth", ".config") + "." + simple, // typical
-                    "org.geoserver.security.config." + simple, // fallback
-                    pkg + "." + simple // same package (defensive)
-                };
+                String[] candidates = getCandidates(provider);
 
                 for (String fqn : candidates) {
                     try {
@@ -443,6 +439,22 @@ public class AuthenticationProviderRestController extends RestBaseController {
         });
     }
 
+    private static String[] getCandidates(Class<?> provider) {
+        String simple = provider.getSimpleName() + "Config";
+        String pkg = provider.getPackage().getName();
+
+        return new String[] {
+            // typical: *.auth -> *.config
+            pkg.replace(".auth", ".config") + "." + simple,
+            // explicit ".config" subpackage next to the provider package
+            pkg + ".config." + simple,
+            // global fallback
+            "org.geoserver.security.config." + simple,
+            // same package (some modules keep config next to provider)
+            pkg + "." + simple
+        };
+    }
+
     private SecurityAuthProviderConfig parseConfig(HttpServletRequest req) throws IOException {
         byte[] body = read(req);
 
@@ -450,14 +462,21 @@ public class AuthenticationProviderRestController extends RestBaseController {
             XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
             configurePersister(xp, null);
             Object o = xp.load(new ByteArrayInputStream(body), Object.class);
-            if (o instanceof SecurityAuthProviderConfig cfg) return cfg;
-            if (o instanceof AuthProviderCollection c && c.first() != null) return c.first();
+            if (o instanceof SecurityAuthProviderConfig) {
+                return (SecurityAuthProviderConfig) o;
+            }
+            if (o instanceof AuthProviderCollection) {
+                AuthProviderCollection c = (AuthProviderCollection) o;
+                if (c.first() != null) return c.first();
+            }
             throw new BadRequest("Malformed XML payload");
         }
 
         // JSON
-        JsonNode n = MAPPER.readTree(body);
-        if (n == null || n.isNull()) throw new BadRequest("Empty JSON payload");
+        JsonNode root = MAPPER.readTree(body);
+        if (root == null || root.isNull()) throw new BadRequest("Empty JSON payload");
+
+        JsonNode n = root;
 
         // unwrap "authprovider" or single-item "authproviders"
         if (n.has("authprovider")) n = n.get("authprovider");
@@ -468,13 +487,65 @@ public class AuthenticationProviderRestController extends RestBaseController {
         }
         if (!n.isObject()) throw new BadRequest("Malformed JSON payload");
 
+        Class<? extends SecurityAuthProviderConfig> type = null;
+
+        // Optional explicit override for the config class
+        String explicitCfg = n.path("configClassName").asText(null);
+        if (explicitCfg != null && !explicitCfg.isBlank()) {
+            try {
+                Class<?> c = Class.forName(explicitCfg);
+                if (!SecurityAuthProviderConfig.class.isAssignableFrom(c)) {
+                    throw new BadRequest("configClassName must be a SecurityAuthProviderConfig");
+                }
+                @SuppressWarnings("unchecked")
+                Class<? extends SecurityAuthProviderConfig> cc = (Class<? extends SecurityAuthProviderConfig>) c;
+                type = cc;
+            } catch (ClassNotFoundException e) {
+                throw new BadRequest("Unsupported configClassName: " + explicitCfg);
+            }
+        }
+
+        // Legacy wrapper support: {"<FQN>": {...}}
+        if (type == null && !n.has("className") && n.size() == 1) {
+            Map.Entry<String, JsonNode> e = n.properties().iterator().next();
+            String fqn = e.getKey();
+            JsonNode inner = e.getValue();
+            if (!inner.isObject()) throw new BadRequest("Malformed JSON payload");
+
+            ObjectNode innerObj = ((ObjectNode) inner).deepCopy();
+            try {
+                Class<?> c = Class.forName(fqn);
+                if (GeoServerAuthenticationProvider.class.isAssignableFrom(c)) {
+                    // wrapper is a PROVIDER -> set provider FQN into className and resolve config
+                    type = resolveConfigClass(fqn);
+                    if (type == null) throw new BadRequest("Unsupported className: " + fqn);
+                    innerObj.put("className", fqn);
+                    n = innerObj;
+                } else if (SecurityAuthProviderConfig.class.isAssignableFrom(c)) {
+                    // wrapper is a CONFIG -> use it directly (derive provider name is optional)
+                    @SuppressWarnings("unchecked")
+                    Class<? extends SecurityAuthProviderConfig> cfgClass =
+                            (Class<? extends SecurityAuthProviderConfig>) c;
+                    type = cfgClass;
+                    n = innerObj;
+                } else {
+                    throw new BadRequest("Unsupported className: " + fqn);
+                }
+            } catch (ClassNotFoundException ex) {
+                throw new BadRequest("Unsupported className: " + fqn);
+            }
+        }
+
         String className = n.path("className").asText(null);
         if (className == null || className.isBlank()) {
             throw new BadRequest("Missing 'className' in JSON payload");
         }
-        Class<? extends SecurityAuthProviderConfig> type = resolveConfigClass(className);
+
         if (type == null) {
-            throw new BadRequest("Unsupported className: " + className);
+            type = resolveConfigClass(className);
+            if (type == null) {
+                throw new BadRequest("Unsupported className: " + className);
+            }
         }
 
         SecurityAuthProviderConfig cfg = MAPPER.treeToValue(n, type);
@@ -489,10 +560,11 @@ public class AuthenticationProviderRestController extends RestBaseController {
             XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
             configurePersister(xp, null);
             Object o = xp.load(new ByteArrayInputStream(body), Object.class);
-            if (o instanceof AuthProviderOrder ord
-                    && ord.getOrder() != null
-                    && !ord.getOrder().isEmpty()) {
-                return ord.getOrder();
+            if (o instanceof AuthProviderOrder) {
+                AuthProviderOrder ord = (AuthProviderOrder) o;
+                if (ord.getOrder() != null && !ord.getOrder().isEmpty()) {
+                    return ord.getOrder();
+                }
             }
             throw new BadRequest("`order` array required");
         } else {

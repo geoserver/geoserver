@@ -665,7 +665,7 @@ public class AuthenticationProviderRestControllerMarshallingTest extends GeoServ
 
     /** Creates an LDAP provider using the legacy wrapper under "authprovider" and validates persistence. */
     @Test
-    public void create_ldap_legacy_wrapper_is_accepted() throws Exception {
+    public void createLdapLegacyWrapperIsAccepted() throws Exception {
         // Skip if the LDAP extension isn't present on the test classpath
         Assume.assumeTrue("LDAP plugin not on classpath, skipping", ldapAvailable());
 

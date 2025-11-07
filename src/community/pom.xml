@@ -608,6 +608,13 @@
                         <available file="src/assembly/assembly.xml"></available>
                       </not>
                     </condition>
+                    <!-- Skip dependency copy if assembly.xml doesn't exist OR module uses dependencySets -->
+                    <condition property="skipDependencyCopy" value="true">
+                      <or>
+                        <isset property="skipAssembly"></isset>
+                        <isset property="assembly.useDependencySets"></isset>
+                      </or>
+                    </condition>
                   </target>
                 </configuration>
               </execution>
@@ -623,7 +630,8 @@
                   <goal>copy-dependencies</goal>
                 </goals>
                 <configuration>
-                  <skip>${skipAssembly}</skip>
+                  <!-- Skip if assembly.xml doesn't exist OR if using dependencySets -->
+                  <skip>${skipDependencyCopy}</skip>
                 </configuration>
               </execution>
             </executions>

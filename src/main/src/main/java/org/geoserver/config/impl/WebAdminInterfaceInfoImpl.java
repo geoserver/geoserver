@@ -4,9 +4,9 @@
  */
 package org.geoserver.config.impl;
 
-import org.geoserver.config.UIDisplayInfo;
+import org.geoserver.config.WebAdminInterfaceInfo;
 
-public class UIDisplayInfoImpl implements UIDisplayInfo {
+public class WebAdminInterfaceInfoImpl implements WebAdminInterfaceInfo {
 
     private String id;
 
@@ -80,8 +80,8 @@ public class UIDisplayInfoImpl implements UIDisplayInfo {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null) return false;
-        if (!(obj instanceof UIDisplayInfo)) return false;
-        final UIDisplayInfo other = (UIDisplayInfo) obj;
+        if (!(obj instanceof WebAdminInterfaceInfo)) return false;
+        final WebAdminInterfaceInfo other = (WebAdminInterfaceInfo) obj;
 
         if (id == null) {
             if (other.getId() != null) return false;

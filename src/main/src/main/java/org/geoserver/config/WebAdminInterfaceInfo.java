@@ -6,8 +6,8 @@ package org.geoserver.config;
 
 import org.geoserver.catalog.Info;
 
-/** GeoServer UIDisplay information. */
-public interface UIDisplayInfo extends Info {
+/** GeoServer information class for Web Administration Interface settings. */
+public interface WebAdminInterfaceInfo extends Info {
 
     enum LoggedInUserDisplayMode {
         USERNAME,

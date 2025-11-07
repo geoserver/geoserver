@@ -15,7 +15,7 @@ import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.model.Model;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
-import org.geoserver.config.UIDisplayInfo;
+import org.geoserver.config.WebAdminInterfaceInfo;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Test;
 
@@ -27,7 +27,7 @@ public class EmailLabelTest extends GeoServerWicketTestSupport {
         GeoServer gs = getGeoServer();
         GeoServerInfo global = gs.getGlobal();
 
-        global.getUiDisplay().setEmailDisplayMode(UIDisplayInfo.EmailDisplayMode.HIDDEN);
+        global.getWebAdminInterface().setEmailDisplayMode(WebAdminInterfaceInfo.EmailDisplayMode.HIDDEN);
         gs.save(global);
 
         EmailLabel emailLabel = new EmailLabel("label", Model.of("test@example.com"));
@@ -41,7 +41,7 @@ public class EmailLabelTest extends GeoServerWicketTestSupport {
         GeoServer gs = getGeoServer();
         GeoServerInfo global = gs.getGlobal();
 
-        global.getUiDisplay().setEmailDisplayMode(UIDisplayInfo.EmailDisplayMode.DOMAIN_ONLY);
+        global.getWebAdminInterface().setEmailDisplayMode(WebAdminInterfaceInfo.EmailDisplayMode.DOMAIN_ONLY);
         gs.save(global);
 
         EmailLabel emailLabel = new EmailLabel("label", Model.of("test@example.com"));
@@ -55,7 +55,7 @@ public class EmailLabelTest extends GeoServerWicketTestSupport {
         GeoServer gs = getGeoServer();
         GeoServerInfo global = gs.getGlobal();
 
-        global.getUiDisplay().setEmailDisplayMode(UIDisplayInfo.EmailDisplayMode.MASKED);
+        global.getWebAdminInterface().setEmailDisplayMode(WebAdminInterfaceInfo.EmailDisplayMode.MASKED);
         gs.save(global);
 
         EmailLabel emailLabel = new EmailLabel("label", Model.of("test_.foo-bar@xyz.example.com"));
@@ -69,7 +69,7 @@ public class EmailLabelTest extends GeoServerWicketTestSupport {
         GeoServer gs = getGeoServer();
         GeoServerInfo global = gs.getGlobal();
 
-        global.getUiDisplay().setEmailDisplayMode(UIDisplayInfo.EmailDisplayMode.FULL);
+        global.getWebAdminInterface().setEmailDisplayMode(WebAdminInterfaceInfo.EmailDisplayMode.FULL);
         gs.save(global);
 
         EmailLabel emailLabel = new EmailLabel("label", Model.of("test@example.com"));
@@ -83,7 +83,7 @@ public class EmailLabelTest extends GeoServerWicketTestSupport {
         GeoServer gs = getGeoServer();
         GeoServerInfo global = gs.getGlobal();
 
-        global.getUiDisplay().setEmailDisplayMode(UIDisplayInfo.EmailDisplayMode.HIDDEN);
+        global.getWebAdminInterface().setEmailDisplayMode(WebAdminInterfaceInfo.EmailDisplayMode.HIDDEN);
         gs.save(global);
 
         EmailLabel emailLabel = new EmailLabel("label", Model.of("test@example.com"));
@@ -105,9 +105,9 @@ public class EmailLabelTest extends GeoServerWicketTestSupport {
         GeoServer gs = getGeoServer();
         GeoServerInfo global = gs.getGlobal();
 
-        UIDisplayInfo uiDisplay = global.getUiDisplay();
-        uiDisplay.setEmailDisplayMode(UIDisplayInfo.EmailDisplayMode.MASKED);
-        uiDisplay.setRevealEmailAtClick(true);
+        WebAdminInterfaceInfo webAdminInterface = global.getWebAdminInterface();
+        webAdminInterface.setEmailDisplayMode(WebAdminInterfaceInfo.EmailDisplayMode.MASKED);
+        webAdminInterface.setRevealEmailAtClick(true);
         gs.save(global);
 
         EmailLabel emailLabel = new EmailLabel("label", Model.of("test@example.com"));

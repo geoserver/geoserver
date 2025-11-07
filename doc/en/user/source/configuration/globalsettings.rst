@@ -280,10 +280,12 @@ There are three options:
 
 Note that a restart of GeoServer is necessary for a change in the setting to have effect.
 
-UI Display Settings
+.. _config_globalsettings_web_admin_interface:
+
+Web Administration Interface Settings
 ^^^^^^^^^^^^^^^^^^^
 
-.. _config_globalsettings_ui:
+.. _config_globalsettings_web_admin_interface_loggedin_display_mode:
 
 Logged-in User Display Mode
 '''''''''''''''''''''''''''
@@ -302,11 +304,15 @@ There are several options:
 
 If the property corresponding to the selected display mode is not available, the username is displayed.
 
+.. _config_globalsettings_web_admin_interface_show_user_profile_columns:
+
 Show profile columns in users list
 ''''''''''''''''''''''''''''''''''
 
 When enabled, additional columns are displayed in the **Users list** table of the :ref:`Users, Groups, and Roles <security_webadmin_ugr>` page, showing the values for ``preferred_username``, ``first_name``, ``last_name``, and ``email`` user profile properties.
 These profile properties are retrieved, when available, from the active user/group service.
+
+.. _config_globalsettings_web_admin_interface_email_display_mode:
 
 Email Display Mode
 ''''''''''''''''''
@@ -323,11 +329,13 @@ There are several options:
 
 * **FULL**: The complete e-mail address is displayed.
 
+.. _config_globalsettings_web_admin_interface_reveal_email_at_click:
+
 Reveal Email at Click
 '''''''''''''''''''''
 
 When enabled, clicking a partially visible email address in the GeoServer Web UI reveals the complete user's email address.
-This setting is only available when the **Email Display Mode** is set to **DOMAIN_ONLY** or **MASKED**.
+This setting is only available when the :ref:`Email Display Mode <config_globalsettings_web_admin_interface_email_display_mode>` option is set to **DOMAIN_ONLY** or **MASKED**.
 
 Other Settings
 --------------

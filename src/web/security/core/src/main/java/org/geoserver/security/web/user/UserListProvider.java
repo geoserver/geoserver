@@ -187,7 +187,7 @@ public class UserListProvider extends GeoServerDataProvider<GeoServerUser> {
         return GeoServerApplication.get()
                 .getGeoServer()
                 .getGlobal()
-                .getUiDisplay()
+                .getWebAdminInterface()
                 .getShowProfileColumnsInUserList();
     }
 

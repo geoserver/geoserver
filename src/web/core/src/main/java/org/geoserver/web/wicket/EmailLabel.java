@@ -10,15 +10,16 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.geoserver.config.UIDisplayInfo.EmailDisplayMode;
+import org.geoserver.config.WebAdminInterfaceInfo;
+import org.geoserver.config.WebAdminInterfaceInfo.EmailDisplayMode;
 import org.geoserver.web.GeoServerApplication;
 
 /**
  * A customised {@link Label} component for displaying user e-mail addresses in the GeoServer Web UI.
  *
- * <p>The {@code EmailLabel} respects the current GeoServer UI display settings (as configured in
- * {@link org.geoserver.config.UIDisplayInfo}) to determine how e-mail addresses are shown to users. The visualisation
- * of the e-mail is controlled by {@link EmailDisplayMode}, and can be one of:
+ * <p>The {@code EmailLabel} respects the current GeoServer web admin interface settings (as configured in
+ * {@link WebAdminInterfaceInfo}) to determine how e-mail addresses are shown to users. The visualisation of the e-mail
+ * is controlled by {@link EmailDisplayMode}, and can be one of:
  *
  * <ul>
  *   <li>{@code FULL} – the complete e-mail address is displayed
@@ -27,8 +28,8 @@ import org.geoserver.web.GeoServerApplication;
  *   <li>{@code HIDDEN} – a placeholder text (such as "(hidden)") is shown instead of the e-mail address
  * </ul>
  *
- * Optionally, when the UI display settings allows it, this component adds an AJAX click behaviour that replaces the
- * current partially visible e-mail with its full version without reloading the page.
+ * Optionally, when the web admin interface settings allows it, this component adds an AJAX click behaviour that
+ * replaces the current partially visible e-mail with its full version without reloading the page.
  */
 public class EmailLabel extends Label {
 
@@ -81,7 +82,7 @@ public class EmailLabel extends Label {
         return GeoServerApplication.get()
                 .getGeoServer()
                 .getGlobal()
-                .getUiDisplay()
+                .getWebAdminInterface()
                 .getEmailDisplayMode();
     }
 
@@ -100,7 +101,7 @@ public class EmailLabel extends Label {
         return GeoServerApplication.get()
                 .getGeoServer()
                 .getGlobal()
-                .getUiDisplay()
+                .getWebAdminInterface()
                 .getRevealEmailAtClick();
     }
 }

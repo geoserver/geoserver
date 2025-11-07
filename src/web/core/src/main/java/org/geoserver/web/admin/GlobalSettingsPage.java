@@ -164,7 +164,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
 
         form.add(webUIModeChoice);
 
-        form.add(webAdminInterfaceSettings(webAdminInterfaceModel));
+        form.add(webAdminInterfaceSettings(settingsModel, webAdminInterfaceModel));
 
         form.add(new CheckBox(
                 "allowStoredQueriesPerWorkspace",
@@ -175,20 +175,6 @@ public class GlobalSettingsPage extends ServerAdminPage {
         ListView extensions =
                 SettingsPluginPanelInfo.createExtensions("extensions", settingsModel, getGeoServerApplication());
         form.add(extensions);
-
-        form.add(new CheckBox(
-                "showCreatedTimeCols", new PropertyModel<>(settingsModel, "showCreatedTimeColumnsInAdminList")));
-
-        form.add(new CheckBox(
-                "showModifiedTimeCols", new PropertyModel<>(settingsModel, "showModifiedTimeColumnsInAdminList")));
-
-        CheckBox showModifiedColumnCheckbox =
-                new CheckBox("showModifiedByCols", new PropertyModel<>(settingsModel, "showModifiedUserInAdminList"));
-        String property = GeoServerExtensions.getProperty(TRACK_USER);
-        if (property != null) {
-            showModifiedColumnCheckbox.setEnabled(false);
-        }
-        form.add(showModifiedColumnCheckbox);
 
         form.add(new LocalesDropdown("defaultLocale", new PropertyModel<>(settingsModel, "defaultLocale")));
         Button submit = new Button("submit") {
@@ -210,7 +196,8 @@ public class GlobalSettingsPage extends ServerAdminPage {
         form.add(cancel);
     }
 
-    private WebMarkupContainer webAdminInterfaceSettings(PropertyModel<WebAdminInterfaceInfo> webAdminInterfaceModel) {
+    private WebMarkupContainer webAdminInterfaceSettings(
+            PropertyModel<SettingsInfo> settingsModel, PropertyModel<WebAdminInterfaceInfo> webAdminInterfaceModel) {
 
         WebMarkupContainer fieldset = new WebMarkupContainer("webAdminInterfaceSettingsFragment");
 
@@ -226,7 +213,8 @@ public class GlobalSettingsPage extends ServerAdminPage {
                         Arrays.asList(WebAdminInterfaceInfo.LoggedInUserDisplayMode.values()));
 
         CheckBox showProfileColumnsInUserList = new CheckBox(
-                "showProfileColumnsInUserList", new PropertyModel<>(webAdminInterfaceModel, "showProfileColumnsInUserList"));
+                "showProfileColumnsInUserList",
+                new PropertyModel<>(webAdminInterfaceModel, "showProfileColumnsInUserList"));
 
         IModel<WebAdminInterfaceInfo.EmailDisplayMode> emailDisplayModeModel =
                 new PropertyModel<>(webAdminInterfaceModel, "emailDisplayMode");
@@ -234,7 +222,9 @@ public class GlobalSettingsPage extends ServerAdminPage {
             emailDisplayModeModel.setObject(WebAdminInterfaceInfo.EmailDisplayMode.DOMAIN_ONLY);
         }
         DropDownChoice<WebAdminInterfaceInfo.EmailDisplayMode> emailDisplayModeChoice = new Select2DropDownChoice<>(
-                "emailDisplayMode", emailDisplayModeModel, Arrays.asList(WebAdminInterfaceInfo.EmailDisplayMode.values()));
+                "emailDisplayMode",
+                emailDisplayModeModel,
+                Arrays.asList(WebAdminInterfaceInfo.EmailDisplayMode.values()));
 
         CheckBox revealEmailAtClickCheckbox =
                 new CheckBox("revealEmailAtClick", new PropertyModel<>(webAdminInterfaceModel, "revealEmailAtClick"));
@@ -266,10 +256,26 @@ public class GlobalSettingsPage extends ServerAdminPage {
                     }
                 });
 
+        CheckBox showCreatedTimeColumnsInAdminListCheckbox = new CheckBox(
+                "showCreatedTimeCols", new PropertyModel<>(settingsModel, "showCreatedTimeColumnsInAdminList"));
+
+        CheckBox showModifiedTimeColumnsInAdminListCheckbox = new CheckBox(
+                "showModifiedTimeCols", new PropertyModel<>(settingsModel, "showModifiedTimeColumnsInAdminList"));
+
+        CheckBox showModifiedUserInAdminListCheckbox =
+                new CheckBox("showModifiedByCols", new PropertyModel<>(settingsModel, "showModifiedUserInAdminList"));
+        String property = GeoServerExtensions.getProperty(TRACK_USER);
+        if (property != null) {
+            showModifiedUserInAdminListCheckbox.setEnabled(false);
+        }
+
         fieldset.add(loggedInUserDisplayModeChoice);
         fieldset.add(showProfileColumnsInUserList);
         fieldset.add(emailDisplayModeChoice);
         fieldset.add(revealEmailAtClickCheckbox);
+        fieldset.add(showCreatedTimeColumnsInAdminListCheckbox);
+        fieldset.add(showModifiedTimeColumnsInAdminListCheckbox);
+        fieldset.add(showModifiedUserInAdminListCheckbox);
 
         return fieldset;
     }

@@ -1,0 +1,33 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+  <wicket:panel>
+    <legend>
+      <input type="checkbox" wicket:id="layerAttributesCheck"></input>
+      <span><wicket:message key="layerAttributes">Layer Atrributes</wicket:message></span>
+    </legend>
+    <div wicket:id="attributesContainer" style="padding-left:1em;">
+      <fieldset>
+        <ul>
+          <li>
+            <div wicket:id="table" id="layerAttributes" class="w-60 h-25-em"></div>
+          </li>
+        </ul>
+      </fieldset>
+    </div>
+  </wicket:panel>
+  <wicket:fragment wicket:id="attributeAccessFragment">
+    <span wicket:id="access" id="access">
+      <div class="switch-field">
+        <input wicket:id="NONE" type="radio" class="none" />
+        <label wicket:for="NONE"><wicket:message key="LayerAttributesEditPanel.AccessType.NONE"/></label>
+        
+        <input wicket:id="READONLY" type="radio" class="ro" />
+        <label wicket:for="READONLY"><wicket:message key="LayerAttributesEditPanel.AccessType.READONLY"/></label>
+        
+        <input wicket:id="READWRITE" type="radio" class="rw" />
+        <label wicket:for="READWRITE"><wicket:message key="LayerAttributesEditPanel.AccessType.READWRITE"/></label>
+      </div>
+    </span>
+  </wicket:fragment>
+</body>
+</html>

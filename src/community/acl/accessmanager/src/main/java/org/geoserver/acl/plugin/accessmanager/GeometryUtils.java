@@ -1,0 +1,180 @@
+/* (c) 2023 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ *
+ * Original from GeoServer 2.24-SNAPSHOT under GPL 2.0 license
+ */
+package org.geoserver.acl.plugin.accessmanager;
+
+import java.util.function.BiFunction;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
+import org.geotools.api.referencing.operation.TransformException;
+import org.geotools.geometry.jts.JTS;
+import org.geotools.referencing.CRS;
+import org.geotools.util.logging.Logging;
+import org.locationtech.jts.geom.Geometry;
+
+/**
+ * Class grouping methods to handle geometry union and intersection needed to merge limit together when dealing with
+ * layer groups.
+ */
+final class GeometryUtils {
+
+    private static final Logger LOGGER = Logging.getLogger(GeometryUtils.class);
+
+    private GeometryUtils() {
+        // private to enforce usage as utility class
+    }
+
+    public static Geometry toJTS(org.geolatte.geom.Geometry<?> geolatteGeom) {
+        return geolatteGeom == null ? null : org.geolatte.geom.jts.JTS.to(geolatteGeom);
+    }
+
+    /**
+     * Reproject and intersects two geometries.
+     *
+     * @param first the first geometry to merge.
+     * @param second the other geometry as a WKT.
+     * @param lessRestrictive if true when one of the geometry is null, null will be returned. Otherwise the other
+     *     geometry will be returned.
+     * @return the result of intersection.
+     */
+    public static Geometry reprojectAndUnion(Geometry first, Geometry second, boolean lessRestrictive) {
+        BiFunction<Geometry, Geometry, Geometry> union = (g1, g2) -> g1.union(g2);
+        if (lessRestrictive) {
+            return reprojectAndApplyOpFavourNull(first, second, union);
+        }
+        return reprojectAndApplyOperation(first, second, union);
+    }
+
+    /**
+     * Reproject and intersects two geometries.
+     *
+     * @param first the first geometry to merge.
+     * @param second the other geometry as a WKT.
+     * @param favourNull if true when one of the geometry is null, null will be returned. Otherwise the other geometry
+     *     will be returned.
+     * @return the result of intersection.
+     */
+    public static Geometry reprojectAndIntersect(Geometry first, Geometry second, boolean favourNull) {
+        BiFunction<Geometry, Geometry, Geometry> intersection = (g1, g2) -> g1.intersection(g2);
+        if (favourNull) {
+            return reprojectAndApplyOpFavourNull(first, second, intersection);
+        }
+        return reprojectAndApplyOperation(first, second, intersection);
+    }
+
+    /**
+     * Reproject and intersects two geometries. If one of the geoms is null, the other will be returned.
+     *
+     * @return the result of intersection.
+     */
+    public static Geometry reprojectAndIntersect(Geometry g1, Geometry g2) {
+        return reprojectAndIntersect(g1, g2, false);
+    }
+
+    /**
+     * Reproject and intersects two geometries. If one of the two parameters is null returns null.
+     *
+     * @param first the first geometry to merge.
+     * @param second the other geometry.
+     * @param operation a bifunction with the operation to apply to the geometries.
+     * @return the result of intersection.
+     */
+    private static Geometry reprojectAndApplyOpFavourNull(
+            Geometry first, Geometry second, BiFunction<Geometry, Geometry, Geometry> operation) {
+        if (first == null || second == null) {
+            return null;
+        }
+        return reprojectAndApplyOperation(first, second, operation);
+    }
+
+    /**
+     * Reproject and intersects two geometries.
+     *
+     * @param first the first geometry to merge.
+     * @param second the other geometry as a WKT.
+     * @param operation a BiFunction accepting Geometry parameters and returning a Geometry.
+     * @return the result of intersection.
+     */
+    private static Geometry reprojectAndApplyOperation(
+            Geometry first, Geometry second, BiFunction<Geometry, Geometry, Geometry> operation) {
+        if (first == null) {
+            return second;
+        }
+        if (second == null) {
+            return first;
+        }
+        if (first.getSRID() != second.getSRID()) {
+            try {
+                CoordinateReferenceSystem target = CRS.decode("EPSG:" + first.getSRID(), true);
+                CoordinateReferenceSystem source = CRS.decode("EPSG:" + second.getSRID(), true);
+                MathTransform transformation = CRS.findMathTransform(source, target);
+                second = JTS.transform(second, transformation);
+                second.setSRID(first.getSRID());
+            } catch (FactoryException | TransformException e) {
+                throw new RuntimeException("Unable to intersect allowed areas: error during transformation from "
+                        + second.getSRID()
+                        + " to "
+                        + first.getSRID());
+            }
+        }
+        Geometry result = operation.apply(first, second);
+        result.setSRID(first.getSRID());
+        return result;
+    }
+
+    /**
+     * Reproject a geometry to target CRS.
+     *
+     * @param geometry the geometry, may be {@code null}
+     * @param targetCRS the target CRS. If {@code null} or same as the input geometry's, no reprojection is performed
+     * @return the reprojected geometry, or {@code null} if {@code geometry == null}
+     */
+    public static Geometry reprojectGeometry(Geometry geometry, CoordinateReferenceSystem targetCRS) {
+        if (geometry == null) return null;
+
+        try {
+            CoordinateReferenceSystem geomCrs = CRS.decode("EPSG:" + geometry.getSRID(), true);
+            if ((targetCRS != null) && !CRS.equalsIgnoreMetadata(geomCrs, targetCRS)) {
+                MathTransform mt = CRS.findMathTransform(geomCrs, targetCRS, true);
+                geometry = JTS.transform(geometry, mt);
+                Integer srid = CRS.lookupEpsgCode(targetCRS, false);
+                geometry.setSRID(srid);
+            }
+            return geometry;
+        } catch (FactoryException | TransformException e) {
+            LOGGER.log(Level.SEVERE, "Error while reprojecting geometry: " + e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Retrieve CRS from a CatalogInfo object.
+     *
+     * @param info from which retrieve the crs.
+     * @return the crs or null.
+     */
+    public static CoordinateReferenceSystem getCRSFromInfo(CatalogInfo info) {
+        CoordinateReferenceSystem crs = null;
+        if (info instanceof LayerInfo layerInfo) {
+            crs = layerInfo.getResource().getCRS();
+        } else if (info instanceof ResourceInfo resourceInfo) {
+            crs = resourceInfo.getCRS();
+        } else if (info instanceof LayerGroupInfo groupInfo) {
+            crs = groupInfo.getBounds().getCoordinateReferenceSystem();
+        } else {
+            throw new IllegalArgumentException(
+                    "Cannot retrieve CRS from info " + info.getClass().getSimpleName());
+        }
+        return crs;
+    }
+}

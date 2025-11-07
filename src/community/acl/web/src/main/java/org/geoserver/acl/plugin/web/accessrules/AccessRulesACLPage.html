@@ -1,0 +1,18 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+</head>
+<body>
+<wicket:extend>
+    <div wicket:id="simulatorPanel"></div>
+    <div wicket:id="rulesPanel"></div>
+    
+    <wicket:fragment wicket:id="header">
+      <ul class="action-group">
+        <li><a class="add-link" href="#" wicket:id="addNew"><wicket:message key="addNew" /></a></li>
+        <li><a class="remove-link" href="#" wicket:id="removeSelected"><wicket:message key="removeSelected" /></a></li>
+        <li><a class="cog-link" href="#" wicket:id="simulator"><wicket:message key="simulate" /></a></li>
+      </ul>
+    </wicket:fragment>
+</wicket:extend>
+</body>
+</html>

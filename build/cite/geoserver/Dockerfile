@@ -39,7 +39,7 @@ ARG GEOSERVER_DATA_DIR_SRC
 # Download or copy the GeoServer WAR or ZIP file, or extract if it’s a .zip
 ADD ${SOURCE_FILE} "$CATALINA_HOME/webapps/"
 
-# zip files require explicit extracion
+# zip files require explicit extraction
 RUN \
     cd "$CATALINA_HOME/webapps/"; \
     if [ "${SOURCE_FILE##*.}" = "zip" ]; then \

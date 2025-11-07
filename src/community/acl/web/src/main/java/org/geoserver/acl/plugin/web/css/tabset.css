@@ -1,0 +1,58 @@
+/*
+ * Pure CSS tabbed panels. Wicket's TabbedPanel forces to submit the form to switch tabs
+ * Inspired on https://codepen.io/markcaron/pen/MvGRYV
+ */
+.tabset {
+  white-space: nowrap;  
+  display: block;
+}
+.tabset > input[type="radio"] {
+  position: absolute !important;
+  clip: rect(0, 0, 0, 0);
+}
+
+.tabset .tab-panel {
+  display: none;
+  white-space: normal;
+}
+
+.tabset > input:first-child:checked ~ .tab-panels > .tab-panel:first-child,
+.tabset > input:nth-child(3):checked ~ .tab-panels > .tab-panel:nth-child(2),
+.tabset > input:nth-child(5):checked ~ .tab-panels > .tab-panel:nth-child(3),
+.tabset > input:nth-child(7):checked ~ .tab-panels > .tab-panel:nth-child(4),
+.tabset > input:nth-child(9):checked ~ .tab-panels > .tab-panel:nth-child(5),
+.tabset > input:nth-child(11):checked ~ .tab-panels > .tab-panel:nth-child(6) {
+  display: block;
+}
+
+.tabset > label {
+  position: relative;
+  display: inline-block;
+  padding: 0.5em 1em 0.2em 1em !important;
+  border: 1px solid transparent;
+  border-bottom: 0;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.tabset > label:hover,
+.tabset > input:focus + label {
+  color: #06c;
+}
+.tabset > input + label {
+  background-color: #ddd;
+}
+.tabset > input:checked + label {
+  border-color: #ccc;
+  background-color: #fff;
+  border-bottom: 1px solid #fff;
+  margin-bottom: -1px;
+}
+.tabset > input[type="radio"]:disabled + label{
+  display: none;
+}
+.tab-panel {
+  padding: 10px;
+  border-top: 1px solid #ccc;
+}
+

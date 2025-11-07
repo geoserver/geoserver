@@ -1,0 +1,99 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+ <body>
+   <wicket:panel>
+      <fieldset>
+        <ul>
+          <li>
+            <label wicket:for="priority"><wicket:message key="priority"></wicket:message></label>
+            <input wicket:id="priority" type="number" class="text" />
+          </li>
+          <li>
+            <label wicket:for="roleName"><wicket:message key="roleName"></wicket:message></label>
+            <input wicket:id="roleName" type="text" class="text" placeholder="*"/>
+          </li>
+          <li>
+            <label wicket:for="userName"><wicket:message key="username"></wicket:message></label>
+            <input wicket:id="userName" type="text" class="text" placeholder="*"/>
+          </li>
+          <li>
+            <label wicket:for="addressRange"><wicket:message key="addressRange"></wicket:message></label>
+            <input wicket:id="addressRange" type="text" class="text" placeholder="0.0.0.0/00"/>
+          </li>
+          <li>
+            <div style="white-space:nowrap">
+              <table style="table-layout: auto;width:25em;">
+                <tr>
+                  <td style="width:33%;padding: 0px 0px 0px 0px;">
+                    <label wicket:for="service"><wicket:message key="service"></wicket:message></label>
+                    <select wicket:id="service"></select>
+                  </td>
+                  <td style="width:77%;padding: 0px 0px 0px 0px;">
+                    <label wicket:for="request"><wicket:message key="request"></wicket:message></label>
+                    <select wicket:id="request" style="width:100%"></select>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </li>
+          <li>
+            <label wicket:id="subfieldLabel"></label>
+            <input wicket:id="subfield" type="text" class="text" placeholder="*"/>
+          </li>
+          <li>
+            <label wicket:for="workspace"><wicket:message key="workspace"></wicket:message></label>
+            <input wicket:id="workspace" type="text" class="text" placeholder="*"/>
+          </li>
+          <li>
+            <label wicket:for="layer"><wicket:message key="layer"></wicket:message></label>
+            <input wicket:id="layer" type="text" class="text" placeholder="*"/>
+          </li>
+          <li>
+            <label wicket:for="grantType"><wicket:message key="grantType"/></label>
+            <div wicket:id="grantType">
+              <div class="switch-field">
+                <input wicket:id="DENY" type="radio"/>
+                <label wicket:for="DENY"><wicket:message key="GrantType.DENY"/></label>
+
+                <input wicket:id="ALLOW" type="radio"/>
+                <label wicket:for="ALLOW"><wicket:message key="GrantType.ALLOW"/></label>
+
+                <input wicket:id="LIMIT" type="radio"/>
+                <label wicket:for="LIMIT"><wicket:message key="GrantType.LIMIT"/></label>
+              </div>
+            </div>
+          </li>
+          <li>
+            <span wicket:id="catalogModeContainer">
+              <label><wicket:message key="catalogMode"/></label>
+              <div wicket:id="catalogMode">
+                <div class="switch-field">
+                  <input wicket:id="HIDE" type="radio"/>
+                  <label wicket:for="HIDE"><wicket:message key="CatalogMode.HIDE"/></label>
+                  
+                  <input wicket:id="CHALLENGE" type="radio"/>
+                  <label wicket:for="CHALLENGE"><wicket:message key="CatalogMode.CHALLENGE"/></label>
+                  
+                  <input wicket:id="MIXED" type="radio"/>
+                  <label wicket:for="MIXED"><wicket:message key="CatalogMode.MIXED"/></label>
+                </div>
+              </div>
+             </span>
+          </li>          
+          <li>
+            <span wicket:id="ruleLimitsContainer" id="ruleLimitsContainer">
+              <fieldset>
+                <legend><wicket:message key="ruleLimits"></wicket:message></legend>
+                <div id="ruleLimits" wicket:id="ruleLimits"></div>
+              </fieldset>
+            </span>
+          </li>
+          <li>
+            <span wicket:id="layerDetailsContainer" id="layerDetailsContainer">
+              <div id="layerDetails" wicket:id="layerDetails"></div>
+            </span>
+          </li>
+        </ul>
+      </fieldset>
+   </wicket:panel>
+ </body>
+</html>

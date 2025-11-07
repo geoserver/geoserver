@@ -1,0 +1,59 @@
+/*
+ * Radio buttons as toggle buttons
+ * inspiration: https://codepen.io/JiveDig/pen/jbdJXR 
+ */
+.switch-field {
+	display: flex;
+	margin-bottom: 0px;
+	overflow: hidden;
+}
+
+.switch-field input {
+	position: absolute !important;
+	clip: rect(0, 0, 0, 0);
+	height: 1px;
+	width: 1px;
+	border: 0;
+	overflow: hidden;
+}
+
+.switch-field label {
+	background-color: var(--gs-table-bg-even);
+	color: rgba(0, 0, 0, 0.6);
+	line-height: 1;
+	text-align: center;
+	padding: 2px 16px;
+	margin-right: -1px;
+	border: 1px solid rgba(0, 0, 0, 0.2);
+	box-shadow: none;
+	transition: all 0.1s ease-in-out;
+}
+.switch-field label:hover {
+	cursor: pointer;
+}
+.switch-field input:checked + label {
+	box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px rgba(255, 255, 255, 0.1);
+	font-weight: bold;
+	background-color: #a5dc86;
+}
+.switch-field input:disabled + label {
+	box-shadow: none;
+	font-style: italic;
+	background-color: #e4e4e4;
+}
+input:checked[class=none] + label  {
+	background-color: #f78871;
+}
+input:checked[class=ro] + label  {
+	background-color: #0092c8;
+}
+input:checked[class=rw] + label  {
+	background-color: #a5dc86;
+}
+
+.switch-field label:first-of-type {
+	border-radius: 4px 0 0 4px;
+}
+.switch-field label:last-of-type {
+	border-radius: 0 4px 4px 0;
+}

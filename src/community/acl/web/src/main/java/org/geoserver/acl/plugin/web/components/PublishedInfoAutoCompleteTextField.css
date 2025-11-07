@@ -1,0 +1,23 @@
+.wicket-aa-container li span{
+ display:inline-block;
+ background-repeat: no-repeat;
+ text-indent: 24px;
+}
+.wicket-aa-container li span.point{
+ background-image: url('../org.geoserver.web.GeoServerBasePage/img/icons/silk/bullet_blue.png');
+}
+.wicket-aa-container li span.line{
+ background-image: url('../org.geoserver.web.GeoServerBasePage/img/icons/silk/line_blue.png');
+}
+.wicket-aa-container li span.polygon{
+ background-image: url('../org.geoserver.web.GeoServerBasePage/img/icons/silk/shape_square_blue.png');
+}
+.wicket-aa-container li span.raster{
+ background-image: url('../org.geoserver.web.GeoServerBasePage/img/icons/geosilk/raster.png');
+}
+.wicket-aa-container li span.group{
+ background-image: url('../org.geoserver.web.GeoServerBasePage/img/icons/silk/layers.png');
+}
+.wicket-aa-container li span.unknown{
+ background-image: url('../org.geoserver.web.GeoServerBasePage/img/icons/geosilk/vector.png');
+}

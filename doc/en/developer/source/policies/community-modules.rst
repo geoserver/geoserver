@@ -296,7 +296,7 @@ The following properties must hold true in order to promote a community module:
 
    A minimum of 60% test coverage must be maintained by the module in order to
    be promoted. Of course higher coverage is encouraged. The more test 
-   coverage a community module the more credibility it gets.
+   coverage a community module has, the more credibility it gets.
 
 #. **The module has no IP violations**
 
@@ -423,7 +423,7 @@ Process
       * Add additional ``include`` elements in the licenses folder (outputDirectory ``licenses``) for
         licenses required
       * Add an additional fileSet if there are any static file dependencies of the module required by the module
-      * Use ``file`` with ``desName`` for any individual files that require renaming
+      * Use ``file`` with ``destName`` for any individual files that require renaming
 
    #. Add a dependency from ``release/pom.xml`` to the extension 
       module:
@@ -494,7 +494,7 @@ Process
 
             #. Visit the :website:`website download <download>` page and download :download_community:`jdbcconfig`.
  
-       For more information see :docguide:`documentaion guide <>`.
+       For more information see :docguide:`documentation guide <>`.
 
     #. Download and a contributor license agreement as pdf for txt file:
 

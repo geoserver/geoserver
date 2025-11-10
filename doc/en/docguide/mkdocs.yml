@@ -1,0 +1,50 @@
+site_name: GeoServer Documentation (docguide - en)
+site_description: GeoServer docguide documentation in en
+site_author: GeoServer Team
+site_url: https://docs.geoserver.org/
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: blue
+      accent: blue
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - search.share
+  # Disable syntax highlighting to avoid Pygments issues
+  hljs: false
+
+plugins:
+  - search
+  # Minify plugin disabled - causes htmlmin.parser.OpenTagNotFoundError with HTML code examples
+  # - minify:
+  #     minify_html: true
+
+nav:
+  - Home: index.md
+  - Background: background.md
+  - Quick Fix: quickfix.md
+  - Contributing: contributing.md
+  - Workflow: workflow.md
+  - Installing Sphinx: install.md
+  - Installing LaTeX: installlatex.md
+  - Sphinx Syntax: sphinx.md
+  - Style Guidelines: style.md
+  - Writing a Tutorial: tutorial.md
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+extra_css:
+  - css/extra.css
+
+site_dir: ../../../gh-pages-output/en/docguide

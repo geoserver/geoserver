@@ -1,0 +1,398 @@
+name: MkDocs GitHub CI
+
+on:
+  pull_request:
+    paths:
+      - doc/**
+      - src/pom.xml
+  push:
+    branches:
+      - main
+    paths:
+      - doc/**
+      - src/pom.xml
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  MAVEN_OPTS: -Xmx1024m -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.retryHandler.count=3 -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dspotless.apply.skip=true
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  mkdocs-build-and-deploy:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+      pull-requests: write
+      issues: write
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Fetch full history for proper git operations
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: 17
+        distribution: 'temurin'
+
+    - name: Set up Maven
+      uses: stCarolas/setup-maven@v5
+      with:
+        maven-version: 3.9.8
+
+    - name: Install pandoc
+      run: |
+        # Install latest Pandoc from GitHub releases instead of apt (which has old 2.9.2.1)
+        # This ensures consistent behavior with modern Pandoc 3.x and fixes other conversion issues
+        PANDOC_VERSION="3.5"
+        wget https://github.com/jgm/pandoc/releases/download/${PANDOC_VERSION}/pandoc-${PANDOC_VERSION}-1-amd64.deb
+        sudo dpkg -i pandoc-${PANDOC_VERSION}-1-amd64.deb
+        echo "=== Pandoc Version ==="
+        pandoc --version
+        echo ""
+    
+    - name: Setup Python and virtualenv
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
+    - name: Create virtual environment and install mkdocs-translate
+      run: |
+        python -m venv venv
+        source venv/bin/activate
+        # Using petersmythe/translate fork with UTF-8 encoding fixes and RST admonition fix
+        pip install git+https://github.com/petersmythe/translate.git
+        pip install mkdocs mkdocs-material mkdocs-minify-plugin
+        echo "VIRTUAL_ENV=$PWD/venv" >> $GITHUB_ENV
+        echo "$PWD/venv/bin" >> $GITHUB_PATH
+    - name: Create minimal config for mkdocs_translate
+      run: |
+        source venv/bin/activate
+        # Find the exact path and create minimal config
+        PACKAGE_PATH=$(python -c "import mkdocs_translate; import os; print(os.path.dirname(mkdocs_translate.__file__))")
+        mkdir -p "$PACKAGE_PATH"
+        cat > "$PACKAGE_PATH/config.yml" <<'EOL'
+        # Minimal configuration for mkdocs_translate
+        project_folder: "."
+        rst_folder: "source"
+        docs_folder: "docs"
+        build_folder: "target"
+        anchor_file: "anchors.txt"
+        convert_folder: "convert" 
+        upload_folder: "upload"
+        download_folder: "download"
+        deepl_base_url: "https://api-free.deepl.com"
+        substitutions: {}
+        extlinks: {}
+        EOL
+    - name: Validate mkdocs_translate installation and check version
+      run: |
+        source venv/bin/activate
+        echo "Checking mkdocs_translate version..."
+        mkdocs_translate --version || echo "Version check not available"
+        mkdocs_translate --help || (echo "mkdocs_translate validation failed" && exit 1)
+        echo "mkdocs_translate is working correctly"
+    # - name: Build Sphinx documentation first (English) - COMMENTED OUT
+    #   run: |
+    #     source venv/bin/activate
+    #     cd doc/en
+    #     pip install -r requirements.txt
+    #     mvn -B -ntp compile
+    
+
+    
+    - name: Convert RST to Markdown
+      run: |
+        source venv/bin/activate
+        
+        echo "=== Environment Information ==="
+        echo "Pandoc version:"
+        pandoc --version | head -2
+        echo ""
+        echo "mkdocs_translate version:"
+        mkdocs_translate --version
+        echo ""
+        
+        # Array of documentation directories to process
+        declare -a DOC_DIRS=(
+          "doc/en/docguide:docguide:en"
+          "doc/en/developer:developer:en"
+          "doc/en/user:user:en"
+        )
+        
+        # Process each directory
+        for DIR_INFO in "${DOC_DIRS[@]}"; do
+          IFS=':' read -r DOC_DIR DOC_TYPE LANG <<< "$DIR_INFO"
+          
+          if [ -d "$DOC_DIR" ] && [ -d "$DOC_DIR/source" ]; then
+            echo "Converting $LANG $DOC_TYPE documentation..."
+            echo "   Working directory: $DOC_DIR"
+            
+            # Count RST files
+            RST_COUNT=$(find "$DOC_DIR/source" -name "*.rst" 2>/dev/null | wc -l)
+            echo "   Found $RST_COUNT RST files"
+            
+            # Change to the documentation directory
+            cd "$DOC_DIR"
+            
+            # Create mkdocs.yml if it doesn't exist
+            if [ ! -f "mkdocs.yml" ]; then
+              echo "   Creating mkdocs.yml configuration..."
+              cat > mkdocs.yml << EOF
+        site_name: GeoServer $DOC_TYPE Documentation (English)
+        site_description: GeoServer $DOC_TYPE documentation in English
+        site_author: GeoServer Project
+        theme:
+          name: material
+          language: en
+          features:
+            - navigation.tabs
+            - navigation.sections
+            - navigation.expand
+            - navigation.top
+            - search.highlight
+            - search.share
+        nav:
+          - Home: index.md
+        markdown_extensions:
+          - admonition
+          - pymdownx.details
+          - pymdownx.superfences
+          - tables
+          - toc:
+              permalink: true
+        plugins:
+          - search
+        site_dir: ../../gh-pages-output/$LANG/$DOC_TYPE
+        EOF
+            fi
+            
+            echo "   Step 1: Initializing docs directory..."
+            mkdocs_translate init || (echo "Init failed, exiting..." && exit 1)
+            
+            echo "   Step 2: Scanning RST files..."
+            mkdocs_translate scan || (echo "Scan failed, exiting..." && exit 2)
+            
+            echo "   Step 3: Converting RST to Markdown..."
+            mkdocs_translate migrate || (echo "Migration failed, exiting..." && exit 3)
+            
+            echo "   Step 4: Generating navigation..."
+            mkdocs_translate nav > nav_generated.yml || (echo "Nav generation failed, exiting..." && exit 4)
+            
+            # Ensure docs directory exists with fallback content
+            if [ ! -d "docs" ]; then
+              echo "   Creating fallback docs directory..."
+              mkdir -p docs
+              echo "# GeoServer $DOC_TYPE Documentation" > docs/index.md
+            fi
+            
+            # Return to project root
+            cd - > /dev/null
+            
+            echo "   Conversion complete for $LANG $DOC_TYPE"
+          else
+            echo "   Skipping $LANG $DOC_TYPE (directory not found: $DOC_DIR)"
+          fi
+        done
+    
+
+
+    - name: Build all MkDocs sites
+      run: |
+        source venv/bin/activate
+        
+        # Create main output directory
+        mkdir -p gh-pages-output
+        
+        # Show Python-Markdown version for debugging
+        echo "=== Python-Markdown Version ==="
+        python -c "import markdown; print(f'Python-Markdown version: {markdown.__version__}')"
+        echo ""
+        
+        # Array of documentation directories to build
+        declare -a MKDOCS_DIRS=(
+          "doc/en/docguide:docguide:en"
+          "doc/en/developer:developer:en"
+          "doc/en/user:user:en"
+        )
+        
+        # Build each MkDocs site
+        for DIR_INFO in "${MKDOCS_DIRS[@]}"; do
+          IFS=':' read -r DOC_DIR DOC_TYPE LANG <<< "$DIR_INFO"
+          
+          if [ -d "$DOC_DIR" ] && [ -f "$DOC_DIR/mkdocs.yml" ]; then
+            echo "Building $LANG $DOC_TYPE documentation..."
+            
+            # Change to the documentation directory
+            cd "$DOC_DIR"
+            
+            # Debug: Show the mkdocs.yml being used
+            echo "=== Contents of $DOC_DIR/mkdocs.yml ==="
+            echo "--- markdown_extensions section ---"
+            grep -A 10 "markdown_extensions:" mkdocs.yml || echo "No markdown_extensions found"
+            echo "--- end of markdown_extensions ---"
+            echo ""
+            echo "--- end of markdown_extensions ---"
+            echo ""
+            
+            # Ensure docs directory exists
+            if [ ! -d "docs" ]; then
+              mkdir -p docs
+              echo "# GeoServer $DOC_TYPE Documentation" > docs/index.md
+              echo "Documentation build in progress." >> docs/index.md
+            fi
+            
+            # Debug: Test if md_in_html extension is available
+            echo "=== Testing md_in_html extension availability ==="
+            python -c "from markdown.extensions.md_in_html import MarkdownInHtmlExtension; print('✓ md_in_html extension is available')" || echo "✗ md_in_html extension NOT available"
+            echo ""
+            
+            # Debug: Show the generated index.md to see if grid cards HTML is correct
+            if [ -f "docs/index.md" ]; then
+              echo "=== First 30 lines of generated docs/index.md ==="
+              head -30 docs/index.md
+              echo "=== Checking for 'grid cards' in index.md ==="
+              grep -B 2 -A 10 "grid cards" docs/index.md || echo "No 'grid cards' found in index.md"
+              echo ""
+            fi
+            
+            # Build the site - fail on error (site_dir already set in mkdocs.yml)
+            echo "=== Starting MkDocs build for $LANG/$DOC_TYPE ==="
+            if ! mkdocs build --clean --verbose; then
+              echo "❌ ERROR: MkDocs build FAILED for $LANG/$DOC_TYPE"
+              echo "Build cannot continue with errors. Please fix the issues above."
+              exit 1
+            fi
+            echo "✓ Successfully built $LANG/$DOC_TYPE"
+            
+            # Return to project root
+            cd - > /dev/null
+          else
+            echo "Skipping $LANG $DOC_TYPE (directory or mkdocs.yml not found: $DOC_DIR)"
+          fi
+        done
+    
+    - name: Create main index page for gh-pages
+      run: |
+        mkdir -p gh-pages-output
+        cat > gh-pages-output/index.html <<EOL
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>GeoServer Documentation Guide</title>
+            <style>
+                body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+                h1 { color: #2c3e50; }
+                .doc-link { display: block; padding: 20px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; text-decoration: none; color: #495057; transition: background-color 0.2s; margin: 20px 0; }
+                .doc-link:hover { background: #e9ecef; }
+            </style>
+        </head>
+        <body>
+            <h1>MkDocs build</h1>
+            <p>For comparison against the current Sphinx documentation</p>
+            
+            <h2>English Documentation</h2>
+            <a href="en/docguide/" class="doc-link">
+                <strong>Documentation Guide</strong><br>
+                <small>Guidelines for editing GeoServer docs</small>
+            </a>
+            
+            <a href="en/developer/" class="doc-link">
+                <strong>Developer Guide</strong><br>
+                <small>Developer documentation and programming guide</small>
+            </a>
+            
+            <a href="en/user/" class="doc-link">
+                <strong>User Guide</strong><br>
+                <small>Complete user documentation and tutorials</small>
+            </a>
+
+        </body>
+        </html>
+        EOL
+    
+    - name: Check for mkdocs label
+      id: check-label
+      if: github.event_name == 'pull_request'
+      run: |
+        # Check if mkdocs label exists
+        echo "Checking for 'mkdocs' label on this PR..."
+        LABELS=$(echo '${{ toJSON(github.event.pull_request.labels) }}' | jq -r '.[].name')
+        echo "Found labels: $LABELS"
+        
+        if echo "$LABELS" | grep -q "mkdocs"; then
+          echo "SUCCESS: 'mkdocs' label found - will deploy to Pages"
+          echo "has-mkdocs-label=true" >> $GITHUB_OUTPUT
+        else
+          echo "SKIPPING: 'mkdocs' label not found - no deployment"
+          echo "To enable deployment preview, add the 'mkdocs' label to this PR"
+          echo "has-mkdocs-label=false" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Setup Pages
+      if: |
+        (github.ref == 'refs/heads/main') || 
+        (github.event_name == 'pull_request' && steps.check-label.outputs.has-mkdocs-label == 'true')
+      uses: actions/configure-pages@v4
+      with:
+        enablement: true
+
+    - name: Upload to GitHub Pages
+      if: |
+        (github.ref == 'refs/heads/main') || 
+        (github.event_name == 'pull_request' && steps.check-label.outputs.has-mkdocs-label == 'true')
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: gh-pages-output
+
+    - name: Deploy to GitHub Pages
+      if: |
+        (github.ref == 'refs/heads/main') || 
+        (github.event_name == 'pull_request' && steps.check-label.outputs.has-mkdocs-label == 'true')
+      uses: actions/deploy-pages@v4
+      id: deployment
+
+    - name: Skip deployment (no mkdocs label)
+      if: github.event_name == 'pull_request' && steps.check-label.outputs.has-mkdocs-label == 'false'
+      run: |
+        echo "=== DEPLOYMENT SKIPPED ==="
+        echo "Reason: No 'mkdocs' label found on this PR"
+        echo "To enable deployment preview:"
+        echo "   1. Go to this PR on GitHub"
+        echo "   2. Add the 'mkdocs' label"
+        echo "   3. Push a new commit to trigger deployment"
+        echo "Documentation was built successfully and is ready for deployment"
+        echo "=== END SKIP MESSAGE ==="
+    
+    - name: Comment PR with deployment URL
+      if: github.event_name == 'pull_request' && steps.check-label.outputs.has-mkdocs-label == 'true'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `**Documentation Preview Deployed!**
+            
+            The MkDocs documentation has been built and deployed successfully.
+            
+            **Preview URL**: ${{ steps.deployment.outputs.page_url }}
+            
+            **Available Documentation:**
+            - [English Documentation Guide](${{ steps.deployment.outputs.page_url }}en/docguide/) _compare to https://docs.geoserver.org/latest/en/docguide/_
+            - [English Developer Guide](${{ steps.deployment.outputs.page_url }}en/developer/) _compare to https://docs.geoserver.org/latest/en/developer/_
+            - [English User Guide](${{ steps.deployment.outputs.page_url }}en/user/) _compare to https://docs.geoserver.org/latest/en/user/_
+            
+            _This preview will be updated automatically with each new commit to this **and other** PRs that have the \`mkdocs\` label._`
+          });

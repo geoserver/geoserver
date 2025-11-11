@@ -48,7 +48,7 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
         private IModel<List<org.geoserver.web.wicket.GeoServerDataProvider.Property<T>>> properties;
 
         @SuppressWarnings("unchecked")
-        public ReorderableDataProvider(List<T> items, IModel<List<Property<T>>> properties) {
+        public ReorderableDataProvider(List<T> items, IModel<List<Property<T>>> properties, boolean showOrder) {
             this.items = items;
             // make sure we don't serialize the list, but get it fresh from the dataProvider,
             // to avoid serialization issues seen in GEOS-8273
@@ -58,7 +58,9 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
                 protected List<Property<T>> load() {
                     List result = new ArrayList<>(properties.getObject());
                     result.add(0, POSITION);
-                    result.add(0, RENDERING_ORDER);
+                    if (showOrder) {
+                        result.add(0, RENDERING_ORDER);
+                    }
                     return result;
                 }
             };
@@ -83,10 +85,19 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
 
     static Property<?> RENDERING_ORDER = new PropertyPlaceholder<>("order");
 
-    @SuppressWarnings("serial")
     public ReorderableTablePanel(
             String id, Class<T> contentsClass, List<T> items, IModel<List<Property<T>>> properties) {
-        super(id, new ReorderableDataProvider<>(items, properties));
+        this(id, contentsClass, items, properties, true);
+    }
+
+    @SuppressWarnings("serial")
+    public ReorderableTablePanel(
+            String id,
+            Class<T> contentsClass,
+            List<T> items,
+            IModel<List<Property<T>>> properties,
+            boolean showPosition) {
+        super(id, new ReorderableDataProvider<>(items, properties, showPosition));
         this.items = items;
         this.setOutputMarkupId(true);
         this.setSortable(false); // order is manually configured here

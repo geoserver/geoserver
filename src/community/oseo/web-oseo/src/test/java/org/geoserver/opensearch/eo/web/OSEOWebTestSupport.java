@@ -4,19 +4,27 @@
  */
 package org.geoserver.opensearch.eo.web;
 
+import java.io.IOException;
+import java.util.List;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.store.GeoServerOpenSearchTestSupport;
+import org.geoserver.security.GeoServerRoleService;
+import org.geoserver.security.GeoServerRoleStore;
+import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.junit.Before;
 
 /**
  * Support class for writing UI tests
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class OSEOWebTestSupport extends GeoServerWicketTestSupport {
+public abstract class OSEOWebTestSupport extends GeoServerWicketTestSupport {
 
-    String openSearchAccessStoreId;
+    protected List<String> collectionNames;
+    protected String openSearchAccessStoreId;
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -27,8 +35,24 @@ public class OSEOWebTestSupport extends GeoServerWicketTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
-        GeoServerOpenSearchTestSupport.setupBasicOpenSearch(testData, getCatalog(), getGeoServer(), false);
+        GeoServerOpenSearchTestSupport.setupBasicOpenSearch(testData, getCatalog(), getGeoServer(), true);
         OSEOInfo service = getGeoServer().getService(OSEOInfo.class);
         openSearchAccessStoreId = service.getOpenSearchAccessStoreId();
+    }
+
+    @Before
+    public void collectCollectionNames() {
+        // model returns sorted collection names
+        this.collectionNames = new EOCollectionsModel().load();
+    }
+
+    protected void ensureRolesAvailable(List<String> roleNames) throws IOException {
+        GeoServerSecurityManager securityManager = getGeoServerApplication().getSecurityManager();
+        GeoServerRoleService roleService = securityManager.getActiveRoleService();
+        GeoServerRoleStore roleStore = roleService.createStore();
+        for (String roleName : roleNames) {
+            if (roleService.getRoleByName(roleName) == null) roleStore.addRole(new GeoServerRole(roleName));
+        }
+        roleStore.store();
     }
 }

@@ -12,11 +12,15 @@ import com.jayway.jsonpath.DocumentContext;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.APIException;
 import org.geoserver.ogcapi.Queryables;
 import org.geoserver.ogcapi.Sortables;
+import org.geoserver.opensearch.eo.OSEOInfo;
+import org.geoserver.opensearch.eo.security.EOCollectionAccessLimitInfo;
+import org.geoserver.opensearch.eo.security.EOCollectionAccessLimitInfoImpl;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.api.data.Query;
@@ -129,22 +133,18 @@ public class CollectionsTest extends STACTestSupport {
         Integer collectionCountCite = osa.getCollectionSource().getCount(Query.ALL) - 3;
         assertEquals(collectionCountCite, jsonCite.read("$.collections.length()"));
         // no Sentinel2 collection in cite workspace because it has a workspace other than cite
-        List listCite = jsonCite.read("collections[?(@.id == 'SENTINEL2')]", List.class);
-        assertEquals(0, listCite.size());
+        assertJsonListSize(jsonCite, "collections[?(@.id == 'SENTINEL2')]", 0);
         // sf workspace has Sentinel2 collection because it explicitly has a sf workspace reference
         DocumentContext jsonSf = getAsJSONPath("sf/ogc/stac/v1/collections?f=json", 200);
         Integer collectionCountSf = osa.getCollectionSource().getCount(Query.ALL) - 2;
         assertEquals(collectionCountSf, jsonSf.read("$.collections.length()"));
-        List listSf = jsonSf.read("collections[?(@.id == 'SENTINEL2')]", List.class);
-        assertEquals(1, listSf.size());
+        assertJsonListSize(jsonSf, "collections[?(@.id == 'SENTINEL2')]", 1);
         // sf workspace has Sentinel1 collection because its workspaces array is null
-        List listSf2 = jsonSf.read("collections[?(@.id == 'SENTINEL1')]", List.class);
-        assertEquals(1, listSf2.size());
+        assertJsonListSize(jsonSf, "collections[?(@.id == 'SENTINEL1')]", 1);
         // global workspace has Landsat8 collection because thereis a null value in the workspaces
         // array
         DocumentContext jsonGlobal = getAsJSONPath("ogc/stac/v1/collections?f=json", 200);
-        List listGlobal = jsonGlobal.read("collections[?(@.id == 'LANDSAT8')]", List.class);
-        assertEquals(1, listGlobal.size());
+        assertJsonListSize(jsonGlobal, "collections[?(@.id == 'LANDSAT8')]", 1);
     }
 
     @Test
@@ -230,5 +230,46 @@ public class CollectionsTest extends STACTestSupport {
     public void testVersionHeader() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("ogc/stac/v1/collections/SENTINEL2?f=json");
         assertTrue(headerHasValue(response, "API-Version", "1.0.0"));
+    }
+
+    @Test
+    public void testProprietaryCollections() throws Exception {
+        // set a collection limit on proprietary collections
+        GeoServer gs = getGeoServer();
+        OSEOInfo service = gs.getService(OSEOInfo.class);
+        List<EOCollectionAccessLimitInfo> collectionLimits = service.getCollectionLimits();
+        collectionLimits.add(new EOCollectionAccessLimitInfoImpl("license = 'proprietary'", List.of(ROLE_PROPRIETARY)));
+        // the sensor type is not exposed in JSON, will have to use the collection identifiers for JSON tests
+        collectionLimits.add(new EOCollectionAccessLimitInfoImpl("eo:sensorType = 'ATMOSPHERIC'", List.of(ROLE_ATM)));
+        gs.save(service);
+
+        // without role, no proprietary collections
+        DocumentContext jsAnonymous = getAsJSONPath("ogc/stac/v1/collections?f=json", 200);
+        assertJsonListSize(jsAnonymous, "collections[?(@.license == 'proprietary')]", 0);
+        assertJsonListSize(jsAnonymous, "collections[?(@.id == 'ATMTEST' || @.id == 'ATMTEST2')]", 0);
+
+        // with role, non-disabled proprietary collections show up (only one at the moment)
+        login("propuser", "secret", ROLE_PROPRIETARY);
+        DocumentContext jsProp = getAsJSONPath("ogc/stac/v1/collections?f=json", 200);
+        assertJsonListSize(jsProp, "collections[?(@.license == 'proprietary')]", 1);
+        assertJsonListSize(jsProp, "collections[?(@.id == 'ATMTEST' || @.id == 'ATMTEST2')]", 0);
+
+        // now try with atm role, should get the other proprietary collection (2 of them) but not the proprietary one
+        login("atmuser", "secret", ROLE_ATM);
+        DocumentContext jsAtm = getAsJSONPath("ogc/stac/v1/collections?f=json", 200);
+        assertJsonListSize(jsAtm, "collections[?(@.license == 'proprietary')]", 0);
+        assertJsonListSize(jsAtm, "collections[?(@.id == 'ATMTEST' || @.id == 'ATMTEST2')]", 2);
+
+        // now use both roles, should get both proprietary and atm collections
+        login("bothuser", "secret", ROLE_ATM, ROLE_PROPRIETARY);
+        DocumentContext jsBoth = getAsJSONPath("ogc/stac/v1/collections?f=json", 200);
+        assertJsonListSize(jsBoth, "collections[?(@.license == 'proprietary')]", 1);
+        assertJsonListSize(jsBoth, "collections[?(@.id == 'ATMTEST' || @.id == 'ATMTEST2')]", 2);
+
+        // finally, become all powerful admin and get them all
+        login("admin", "geoserver", "ROLE_ADMINISTRATOR");
+        DocumentContext jsAdmin = getAsJSONPath("ogc/stac/v1/collections?f=json", 200);
+        assertJsonListSize(jsAdmin, "collections[?(@.license == 'proprietary')]", 1);
+        assertJsonListSize(jsAdmin, "collections[?(@.id == 'ATMTEST' || @.id == 'ATMTEST2')]", 2);
     }
 }

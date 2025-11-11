@@ -7,6 +7,8 @@ package org.geoserver.opensearch.eo;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.geoserver.config.ServiceInfo;
+import org.geoserver.opensearch.eo.security.EOCollectionAccessLimitInfo;
+import org.geoserver.opensearch.eo.security.EOProductAccessLimitInfo;
 import org.geotools.util.Version;
 
 /**
@@ -72,4 +74,10 @@ public interface OSEOInfo extends ServiceInfo {
 
     /** Set to true if this feature type info is overriding the default counting of numberMatched. */
     void setSkipNumberMatched(boolean skipNumberMatched);
+
+    /** Returns the list of collection access limits (as a live, editable collection) */
+    List<EOCollectionAccessLimitInfo> getCollectionLimits();
+
+    /** Returns the list of product access limits (as a live, editable collection) */
+    List<EOProductAccessLimitInfo> getProductLimits();
 }

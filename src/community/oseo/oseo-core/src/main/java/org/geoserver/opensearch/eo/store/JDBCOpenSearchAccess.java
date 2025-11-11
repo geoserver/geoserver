@@ -113,9 +113,9 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
 
     public static final String GRANULE = "granule";
 
-    static final String EO_PREFIX = "eo";
+    public static final String EO_PREFIX = "eo";
 
-    static final String EOP_PREFIX = "eop";
+    public static final String EOP_PREFIX = "eop";
 
     static final String SAR_PREFIX = "sar";
 
@@ -165,6 +165,16 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         collectionFeatureType = buildCollectionFeatureType(delegate, this.namespaceURI);
         productFeatureType = buildProductFeatureType(delegate);
         this.propertyMapper = new SourcePropertyMapper(productFeatureType);
+    }
+
+    /**
+     * Returns the property mapper used to map product properties back to source attributes. It's used internally to
+     * back-map filter expressions down to the source store, but also exposed so that other components can perform
+     * back-mapping as needed over the collection granules feature types (e.g. the ones named [collection] or
+     * [collection__band]).
+     */
+    SourcePropertyMapper getProductPropertyMapper() {
+        return propertyMapper;
     }
 
     @Override
@@ -880,7 +890,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
     public SimpleFeatureSource getCollectionGranulesSource(String typeName) throws IOException {
         int idx = typeName.lastIndexOf(OpenSearchAccess.BAND_LAYER_SEPARATOR);
         String collection, band;
-        // the two parts must be non empty in order to have a valid combination
+        // the two parts must be non-empty in order to have a valid combination
         if (idx > 1 && idx < (typeName.length() - 3)) {
             collection = typeName.substring(0, idx);
             band = typeName.substring(idx + OpenSearchAccess.BAND_LAYER_SEPARATOR.length());

@@ -7,6 +7,8 @@ package org.geoserver.opensearch.eo;
 import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.config.impl.ServiceInfoImpl;
+import org.geoserver.opensearch.eo.security.EOCollectionAccessLimitInfo;
+import org.geoserver.opensearch.eo.security.EOProductAccessLimitInfo;
 
 public class OSEOInfoImpl extends ServiceInfoImpl implements OSEOInfo {
 
@@ -29,6 +31,9 @@ public class OSEOInfoImpl extends ServiceInfoImpl implements OSEOInfo {
     List<String> globalQueryables = new ArrayList<>();
 
     boolean skipNumberMatched = false;
+
+    List<EOCollectionAccessLimitInfo> collectionLimits = new ArrayList<>();
+    List<EOProductAccessLimitInfo> productLimits = new ArrayList<>();
 
     @Override
     public int getRecordsPerPage() {
@@ -115,5 +120,23 @@ public class OSEOInfoImpl extends ServiceInfoImpl implements OSEOInfo {
     @Override
     public void setSkipNumberMatched(boolean skipNumberMatched) {
         this.skipNumberMatched = skipNumberMatched;
+    }
+
+    @Override
+    public List<EOCollectionAccessLimitInfo> getCollectionLimits() {
+        return collectionLimits;
+    }
+
+    public void setCollectionLimits(List<EOCollectionAccessLimitInfo> collectionLimits) {
+        this.collectionLimits = collectionLimits;
+    }
+
+    @Override
+    public List<EOProductAccessLimitInfo> getProductLimits() {
+        return productLimits;
+    }
+
+    public void setProductLimits(List<EOProductAccessLimitInfo> productLimits) {
+        this.productLimits = productLimits;
     }
 }

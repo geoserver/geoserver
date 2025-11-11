@@ -10,7 +10,9 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
+import org.geoserver.opensearch.eo.store.SecuredOpenSearchAccess;
 import org.geoserver.platform.OWS20Exception;
+import org.geoserver.security.GeoServerSecurityManager;
 import org.geotools.api.data.DataAccess;
 
 /**
@@ -20,12 +22,14 @@ import org.geotools.api.data.DataAccess;
  */
 public class OpenSearchAccessProvider {
 
+    private final GeoServerSecurityManager securityManager;
     private GeoServer geoServer;
     private Catalog rawCatalog;
 
-    public OpenSearchAccessProvider(GeoServer geoServer, Catalog rawCatalog) {
+    public OpenSearchAccessProvider(GeoServer geoServer, GeoServerSecurityManager securityManager, Catalog rawCatalog) {
         this.geoServer = geoServer;
         this.rawCatalog = rawCatalog;
+        this.securityManager = securityManager;
     }
 
     public OSEOInfo getService() {
@@ -57,7 +61,15 @@ public class OpenSearchAccessProvider {
                     + result);
         }
 
-        return (OpenSearchAccess) result;
+        OpenSearchAccess openSearchAccess = (OpenSearchAccess) result;
+
+        if (securityManager.checkAuthenticationForAdminRole()) {
+            // admin user, no need to secure anything
+            return openSearchAccess;
+        } else {
+            // non admin user, wrap with security
+            return new SecuredOpenSearchAccess(openSearchAccess, geoServer);
+        }
     }
 
     /** Returns the configuration of the store backing the OpenSearch subsystem */

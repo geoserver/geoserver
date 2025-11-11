@@ -29,6 +29,10 @@ import org.geoserver.opensearch.eo.store.OSEOPostGISResource;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.security.GeoServerRoleService;
+import org.geoserver.security.GeoServerRoleStore;
+import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.security.impl.GeoServerRole;
 import org.hamcrest.Matchers;
 import org.jsoup.select.Elements;
 import org.junit.AfterClass;
@@ -37,6 +41,9 @@ import org.junit.BeforeClass;
 
 public class STACTestSupport extends OGCApiTestSupport {
     protected static final String STAC_TITLE = "STAC server title";
+    protected static final String ROLE_PROPRIETARY = "ROLE_PROPRIETARY";
+    protected static final String ROLE_ATM = "ROLE_ATMOSPHERIC";
+    protected static final String ROLE_NOCLOUD = "ROLE_LOWCLOUD";
 
     /** The EPS value to use for floating point comparisons. Matches precision of the expected values */
     protected static final double EPS = 1e-4;
@@ -247,5 +254,40 @@ public class STACTestSupport extends OGCApiTestSupport {
     protected void assertPoint(double x, double y, JSONArray coordinate) {
         assertEquals(x, (Double) coordinate.get(0), EPS);
         assertEquals(y, (Double) coordinate.get(1), EPS);
+    }
+
+    protected void ensureRolesAvailable(List<String> roleNames) throws IOException {
+        GeoServerSecurityManager securityManager = GeoServerExtensions.bean(GeoServerSecurityManager.class);
+        GeoServerRoleService roleService = securityManager.getActiveRoleService();
+        GeoServerRoleStore roleStore = roleService.createStore();
+        for (String roleName : roleNames) {
+            if (roleService.getRoleByName(roleName) == null) roleStore.addRole(new GeoServerRole(roleName));
+        }
+        roleStore.store();
+    }
+
+    protected int getJsonListSize(DocumentContext json, String jsonPath) {
+        List<?> list = json.read(jsonPath, List.class);
+        return list.size();
+    }
+
+    protected void assertJsonListSize(DocumentContext json, String jsonPath, int expectedSize) {
+        assertEquals(expectedSize, getJsonListSize(json, jsonPath));
+    }
+
+    @Before
+    public void resetSecurity() throws Exception {
+        // clear security rules
+        GeoServer gs = getGeoServer();
+        OSEOInfo service = gs.getService(OSEOInfo.class);
+        service.getCollectionLimits().clear();
+        service.getProductLimits().clear();
+        gs.save(service);
+
+        // clear eventual login
+        logout();
+
+        // ensure the test roles are there
+        ensureRolesAvailable(List.of(ROLE_PROPRIETARY, ROLE_ATM, ROLE_NOCLOUD));
     }
 }

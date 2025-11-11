@@ -5,22 +5,15 @@
  */
 package org.geoserver.security.web.role;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.security.impl.GeoServerRole;
-import org.geoserver.web.GeoServerApplication;
 
 /** A form component that can be used to edit user/rule role lists */
 @SuppressWarnings("serial")
@@ -29,7 +22,7 @@ public class RuleRolesFormComponent extends RolePaletteFormComponent {
     static final Set<String> ANY_ROLE = Collections.singleton("*");
 
     public RuleRolesFormComponent(String id, IModel<Collection<String>> roleNamesModel) {
-        super(id, new RolesModel(roleNamesModel), new RuleRolesModel());
+        super(id, new RoleNamesModel(roleNamesModel), new RuleRolesModel());
 
         boolean anyRolesEnabled = ANY_ROLE.equals(roleNamesModel.getObject());
         add(new AjaxCheckBox("anyRole", new Model<>(anyRolesEnabled)) {
@@ -62,29 +55,6 @@ public class RuleRolesFormComponent extends RolePaletteFormComponent {
         return "RuleRolesFormComponent.availableHeader";
     }
 
-    //
-    //        add(hasAnyBox);
-    //        if (hasStoredAnyRole(rootObject)) {
-    //            rolePalette.setEnabled(false);
-    //            rolePalette.add(new AttributeAppender("disabled", true, new
-    // Model<String>("disabled"), " "));
-    //            hasAnyBox.setDefaultModelObject(Boolean.TRUE);
-    //        }
-    //        else {
-    //            rolePalette.setEnabled(true);
-    //            rolePalette.add(new AttributeAppender("enabled", true, new
-    // Model<String>("enabled"), " "));
-    //            hasAnyBox.setDefaultModelObject(Boolean.FALSE);
-    //        }
-    //
-    //    }
-    //
-    //    public abstract boolean hasStoredAnyRole(T rootObject);
-    //
-    //    public boolean hasAnyRole() {
-    //        return (Boolean) hasAnyBox.getDefaultModelObject();
-    //    }
-    //
     public Set<GeoServerRole> getRolesForStoring() {
         Set<GeoServerRole> result = new HashSet<>();
         if (isHasAnyRole()) {
@@ -102,62 +72,4 @@ public class RuleRolesFormComponent extends RolePaletteFormComponent {
         }
         return result;
     }
-
-    static class RolesModel extends LoadableDetachableModel<List<GeoServerRole>> {
-
-        IModel<Collection<String>> roleNamesModel;
-
-        RolesModel(IModel<Collection<String>> roleNamesModel) {
-            this.roleNamesModel = roleNamesModel;
-        }
-
-        @Override
-        protected List<GeoServerRole> load() {
-
-            Map<String, GeoServerRole> roleMap = new HashMap<>();
-            try {
-                for (GeoServerRole role :
-                        GeoServerApplication.get().getSecurityManager().getRolesForAccessControl())
-                    roleMap.put(role.getAuthority(), role);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            List<GeoServerRole> roles = new ArrayList<>();
-            for (String roleName : roleNamesModel.getObject()) {
-                GeoServerRole role = roleMap.get(roleName);
-                if (role != null) roles.add(role);
-            }
-            return roles;
-        }
-
-        @Override
-        public void setObject(List<GeoServerRole> object) {
-            super.setObject(object);
-
-            // set back to the delegate model
-            Collection<String> roleNames = roleNamesModel.getObject();
-            roleNames.clear();
-
-            for (GeoServerRole role : object) {
-                roleNames.add(role.getAuthority());
-            }
-            // roleNamesModel.setObject(roleNames);
-        }
-    }
-
-    //    public boolean isHasAny() {
-    //        return hasAny;
-    //    }
-    //
-    //    public void setHasAny(boolean hasAny) {
-    //        this.hasAny = hasAny;
-    //    }
-    //
-    //    @Override
-    //    public void updateModel() {
-    //        super.updateModel();
-    //        hasAnyBox.updateModel();
-    //    }
-
 }

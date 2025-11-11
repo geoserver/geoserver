@@ -1,0 +1,33 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:panel>
+    <form id="form" wicket:id="form">
+        <fieldset>
+            <!--legend><span><wicket:message key="AttributeTypeInfoEditPanel.details">Details</wicket:message></span>
+            </legend-->
+            <ul>
+                <li wicket:id="collectionContainer">
+                    <label for="collection">
+                        <wicket:message key="OSEOSecurityPage.th.collection">collection</wicket:message>
+                    </label>
+                    <select id="collection" wicket:id="collection"></select>
+                </li>
+                <li>
+                    <label for="cqlFilter">
+                        <wicket:message key="OSEOSecurityPage.th.cqlFilter">CQL Filter</wicket:message>
+                    </label>
+                    <textarea id="cqlFilter" type="text" wicket:id="cqlFilter" class="cql"></textarea>
+                </li>
+                <li>
+                    <label for="roles">
+                        <wicket:message key="OSEOSecurityPage.th.roles">Roles</wicket:message>
+                    </label>
+                    <div wicket:id="roles"></div>
+                </li>
+            </ul>
+        </fieldset>
+        <div wicket:id="dialogFeedback"></div>
+    </form>
+</wicket:panel>
+</body>
+</html>

@@ -204,4 +204,16 @@ public class OGCApiTestSupport extends GeoServerSystemTestSupport {
         String headerValue = response.getHeader(headerName);
         return headerValue != null && headerValue.contains(expectedValue);
     }
+
+    /**
+     * Checks an OGC API exception structure
+     *
+     * @param json The JSON document
+     * @param expectedCode The expected code
+     * @param expectedDescription The expected description
+     */
+    protected void checkOGCAPIException(DocumentContext json, String expectedCode, String expectedDescription) {
+        assertEquals(expectedCode, json.read("code"));
+        assertEquals(expectedDescription, json.read("description"));
+    }
 }

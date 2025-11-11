@@ -9,6 +9,7 @@ OpenSearch for EO
    intro
    installation
    configuration
+   security
    database
    automation
    STAC

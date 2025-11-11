@@ -314,8 +314,7 @@ public class STACService {
         FeatureCollection<FeatureType, Feature> items = products.getFeatures(q);
         Feature item = DataUtilities.first(items);
         if (item == null) {
-            throw new APIException(
-                    ServiceException.INVALID_PARAMETER_VALUE, "Could not locate item " + itemId, HttpStatus.NOT_FOUND);
+            throw new APIException(APIException.NOT_FOUND, "Could not locate item " + itemId, HttpStatus.NOT_FOUND);
         }
         ItemResponse response = new ItemResponse(collectionId, item);
         response.setTemplate(rootBuilder);

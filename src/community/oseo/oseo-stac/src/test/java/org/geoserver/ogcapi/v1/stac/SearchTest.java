@@ -22,9 +22,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.minidev.json.JSONArray;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.OGCAPIMediaTypes;
+import org.geoserver.opensearch.eo.OSEOInfo;
+import org.geoserver.opensearch.eo.security.EOCollectionAccessLimitInfo;
+import org.geoserver.opensearch.eo.security.EOCollectionAccessLimitInfoImpl;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.expression.Literal;
 import org.geotools.filter.IsGreaterThanImpl;
@@ -890,5 +894,62 @@ public class SearchTest extends STACTestSupport {
             global.getSettings().setProxyBaseUrl(null);
             getGeoServer().save(global);
         }
+    }
+
+    @Test
+    public void testCollectionSecurity() throws Exception {
+        // set a collection limit on proprietary collections
+        GeoServer gs = getGeoServer();
+        OSEOInfo service = gs.getService(OSEOInfo.class);
+        service.setRecordsPerPage(10000); // avoid paging hiding items
+        service.setMaximumRecordsPerPage(10000);
+        List<EOCollectionAccessLimitInfo> collectionLimits = service.getCollectionLimits();
+        collectionLimits.add(new EOCollectionAccessLimitInfoImpl("license = 'proprietary'", List.of(ROLE_PROPRIETARY)));
+        // the sensor type is not exposed in JSON, will have to use the collection identifiers for JSON tests
+        collectionLimits.add(new EOCollectionAccessLimitInfoImpl("eo:sensorType = 'ATMOSPHERIC'", List.of(ROLE_ATM)));
+        gs.save(service);
+
+        // warning about test data oddity, SAS1 and SAS9 are the eoIdentifiers of the two atm collections
+        // also, SAS9 has no items inside, so we cannot test its presence in results, only SAS1
+
+        // try to get everything as the anonymous user, should filter out proprietary and atm products
+        DocumentContext jsAnonymous = getAsJSONPath("ogc/stac/v1/search", 200);
+        assertJsonListSizeGreater(jsAnonymous, "features[?(@.collection == 'SENTINEL2')]", 0);
+        assertJsonListSize(jsAnonymous, "features[?(@.collection == 'LANDSAT8')]", 0);
+        assertJsonListSize(jsAnonymous, "features[?(@.collection == 'SAS1')]", 0);
+        assertJsonListSize(jsAnonymous, "features[?(@.collection == 'SAS9')]", 0);
+
+        // with role, non-disabled proprietary collections show up too (landsat8)
+        login("propuser", "secret", ROLE_PROPRIETARY);
+        DocumentContext jsProp = getAsJSONPath("ogc/stac/v1/search", 200);
+        assertJsonListSizeGreater(jsProp, "features[?(@.collection == 'SENTINEL2')]", 0);
+        assertJsonListSizeGreater(jsProp, "features[?(@.collection == 'LANDSAT8')]", 0);
+        assertJsonListSize(jsProp, "features[?(@.collection == 'SAS1')]", 0);
+
+        // with atm role, atm collections show up (sas1, sas9) but not proprietary ones (landsat8)
+        login("atmuser", "secret", ROLE_ATM);
+        DocumentContext jsAtm = getAsJSONPath("ogc/stac/v1/search", 200);
+        assertJsonListSizeGreater(jsAtm, "features[?(@.collection == 'SENTINEL2')]", 0);
+        assertJsonListSize(jsAtm, "features[?(@.collection == 'LANDSAT8')]", 0);
+        assertJsonListSizeGreater(jsAtm, "features[?(@.collection == 'SAS1')]", 0);
+
+        // now use both roles, should get both proprietary and atm collections
+        login("bothuser", "secret", ROLE_ATM, ROLE_PROPRIETARY);
+        DocumentContext jsBoth = getAsJSONPath("ogc/stac/v1/search", 200);
+        assertJsonListSizeGreater(jsBoth, "features[?(@.collection == 'SENTINEL2')]", 0);
+        assertJsonListSizeGreater(jsBoth, "features[?(@.collection == 'LANDSAT8')]", 0);
+        assertJsonListSizeGreater(jsBoth, "features[?(@.collection == 'SAS1')]", 0);
+
+        // finally, become all powerful admin and get them all
+        login("admin", "geoserver", "ROLE_ADMINISTRATOR");
+        DocumentContext jsAdmin = getAsJSONPath("ogc/stac/v1/search", 200);
+        assertJsonListSizeGreater(jsAdmin, "features[?(@.collection == 'SENTINEL2')]", 0);
+        assertJsonListSizeGreater(jsAdmin, "features[?(@.collection == 'LANDSAT8')]", 0);
+        assertJsonListSizeGreater(jsAdmin, "features[?(@.collection == 'SAS1')]", 0);
+    }
+
+    protected void assertJsonListSizeGreater(DocumentContext json, String jsonPath, int minimumSize) {
+        List<?> list = json.read(jsonPath, List.class);
+        assertThat(list.size(), Matchers.greaterThan(minimumSize));
     }
 }

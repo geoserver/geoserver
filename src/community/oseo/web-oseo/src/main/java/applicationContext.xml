@@ -25,5 +25,15 @@
   </bean>
   
 
+  <bean id="oseoSecurityPage" class="org.geoserver.web.MenuPageInfo">
+      <property name="id" value="security.oseo" />
+      <property name="titleKey" value="oseo.security.title" />
+      <property name="descriptionKey" value="oseo.security.description" />
+      <property name="componentClass" value="org.geoserver.opensearch.eo.web.OSEOSecurityPage" />
+      <property name="icon" value="server_oseo.png" />
+      <property name="category" ref="securityCategory" />
+      <property name="order" value="600" />
+  </bean>
+
 </beans>
   

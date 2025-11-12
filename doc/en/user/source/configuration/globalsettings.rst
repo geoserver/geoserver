@@ -303,7 +303,7 @@ There are several options:
 
 * **PREFERRED_USERNAME**: User property ``preferred_username`` is displayed.
 
-* **FIRST_NAME_LAST_NAME**: A concatenation of the properties ``first_name`` and ``last_name`` is displayed.
+* **FULL_NAME**: A concatenation of the properties ``first_name`` and ``last_name`` is displayed.
 
 * **FALLBACK**: Displays the user's full name if available; otherwise falls back to the preferred username, and finally to the username.
 

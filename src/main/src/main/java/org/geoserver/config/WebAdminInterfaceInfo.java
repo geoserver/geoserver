@@ -12,7 +12,7 @@ public interface WebAdminInterfaceInfo extends Info {
     enum LoggedInUserDisplayMode {
         USERNAME,
         PREFERRED_USERNAME,
-        FIRST_NAME_LAST_NAME,
+        FULL_NAME,
         FALLBACK;
     }
 

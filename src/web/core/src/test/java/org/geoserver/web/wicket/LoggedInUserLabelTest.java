@@ -54,13 +54,13 @@ public class LoggedInUserLabelTest extends GeoServerWicketTestSupport {
     }
 
     @Test
-    public void testFirstNameLastNameMode() {
+    public void testFullNameMode() {
 
         GeoServer gs = getGeoServer();
         GeoServerInfo global = gs.getGlobal();
 
         global.getWebAdminInterface()
-                .setLoggedInUserDisplayMode(WebAdminInterfaceInfo.LoggedInUserDisplayMode.FIRST_NAME_LAST_NAME);
+                .setLoggedInUserDisplayMode(WebAdminInterfaceInfo.LoggedInUserDisplayMode.FULL_NAME);
         gs.save(global);
 
         /* first and last names are present */

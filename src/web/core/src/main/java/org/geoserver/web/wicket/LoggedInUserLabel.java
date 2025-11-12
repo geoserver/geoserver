@@ -25,9 +25,9 @@ import org.springframework.security.core.Authentication;
  * <ul>
  *   <li>{@code USERNAME} – the GeoServer username is displayed
  *   <li>{@code PREFERRED_USERNAME} – the value of the {@code preferred_username} property is displayed
- *   <li>{@code FIRST_NAME_LAST_NAME} – the concatenation of the {@code first_name} and {@code last_name} properties is
+ *   <li>{@code FULL_NAME} – the concatenation of the {@code first_name} and {@code last_name} properties is
  *       displayed
- *   <li>{@code FALLBACK} – tries {@code FIRST_NAME_LAST_NAME} first, then falls back to {@code PREFERRED_USERNAME}, and
+ *   <li>{@code FALLBACK} – tries {@code FULL_NAME} first, then falls back to {@code PREFERRED_USERNAME}, and
  *       finally to {@code USERNAME}
  * </ul>
  *
@@ -71,7 +71,7 @@ public class LoggedInUserLabel extends Label {
 
         return switch (loggedInUserDisplayMode) {
             case PREFERRED_USERNAME -> userProperties.getProperty(UserProfilePropertyNames.PREFERRED_USERNAME);
-            case FIRST_NAME_LAST_NAME -> joinFirstAndLastNames(userProperties);
+            case FULL_NAME -> joinFirstAndLastNames(userProperties);
             case FALLBACK ->
                 Optional.ofNullable(joinFirstAndLastNames(userProperties))
                         .orElse(userProperties.getProperty(UserProfilePropertyNames.PREFERRED_USERNAME));

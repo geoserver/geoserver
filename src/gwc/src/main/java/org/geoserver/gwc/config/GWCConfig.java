@@ -268,7 +268,7 @@ public class GWCConfig implements Cloneable, Serializable {
         if (!defaultVectorCacheFormats.isEmpty()) {
             sane.setDefaultVectorCacheFormats(defaultVectorCacheFormats);
         }
-        if (metaTilingThreads != null && metaTilingThreads > 0) {
+        if (metaTilingThreads != null && metaTilingThreads >= 0) {
             sane.setMetaTilingThreads(metaTilingThreads);
         }
         return sane;

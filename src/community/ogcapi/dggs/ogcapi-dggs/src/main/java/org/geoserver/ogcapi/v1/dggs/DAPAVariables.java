@@ -34,7 +34,7 @@ public class DAPAVariables extends AbstractDocument {
                 .filter(ad -> !(ad instanceof GeometryDescriptor) && !excludedAttributes.contains(ad.getLocalName()))
                 .map(ad -> new DAPAVariable(ad))
                 .collect(Collectors.toList());
-        addSelfLinks("ogc/dggs/v1/collections/" + collectionId + "/dapa/variables");
+        addSelfLinks("ogc/dggs/v1/collections/" + collectionId + "/variables");
         new LinksBuilder(CollectionDocument.class, "ogc/dggs/v1/collections/")
                 .segment(collectionId, true)
                 .title("foobar")

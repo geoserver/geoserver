@@ -69,6 +69,7 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.logging.Logging;
 import org.geotools.xsd.EMFUtils;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
@@ -96,8 +97,6 @@ public class DGGSService {
     private final GeoServer gs;
 
     private static final String DISPLAY_NAME = "DGGS";
-
-    // private static final String ZONE_ID = "zoneId";
 
     /**
      * This is used for time support, default time and time filtering.
@@ -138,7 +137,7 @@ public class DGGSService {
     @ResponseBody
     @HTMLResponseBody(templateName = "conformance.ftl", fileName = "conformance.html")
     public ConformanceDocument conformance() {
-        List<String> classes = Arrays.asList(CORE);
+        List<String> classes = List.of(CORE);
         return new ConformanceDocument(DISPLAY_NAME, classes);
     }
 
@@ -164,9 +163,7 @@ public class DGGSService {
     @HTMLResponseBody(templateName = "collection.ftl", fileName = "collection.html")
     public CollectionDocument collection(@PathVariable(name = "collectionId") String collectionId) throws IOException {
         FeatureTypeInfo ft = getFeatureType(collectionId);
-        CollectionDocument collection = new CollectionDocument(gs, ft);
-
-        return collection;
+        return new CollectionDocument(gs, ft);
     }
 
     /** Returns the feature type for the specified collection, checking it's a valid DGGS collection */
@@ -244,7 +241,7 @@ public class DGGSService {
         // handle possible geometry filters
         AttributeDescriptor zoneId = getZoneColumnDescriptor(collectionId);
         DGGSGeometryFilterParser geometryParser =
-                new DGGSGeometryFilterParser(FF, getDGGSInstance(collectionId), zoneId);
+                new DGGSGeometryFilterParser(FF, getDGGSInstance(collectionId), Geometry.class, zoneId);
         geometryParser.setBBOX(bbox);
         geometryParser.setGeometry(wkt);
         geometryParser.setZoneIds(zones, resolution);
@@ -259,16 +256,14 @@ public class DGGSService {
                 format,
                 request -> {
                     // add the resolution hint
-                    if (resolution != null) {
-                        request.setViewParams(Collections.singletonList(
-                                Collections.singletonMap(DGGSStore.VP_RESOLUTION, String.valueOf(resolution))));
-                        Filter resolutionFilter = FF.equals(FF.property(RESOLUTION), FF.literal(resolution));
-                        mixFilter(request, resolutionFilter);
+                    request.setViewParams(Collections.singletonList(
+                            Collections.singletonMap(DGGSStore.VP_RESOLUTION, String.valueOf(resolution))));
+                    Filter resolutionFilter = FF.equals(FF.property(RESOLUTION), FF.literal(resolution));
+                    mixFilter(request, resolutionFilter);
 
-                        Filter geometryFilter = geometryParser.getFilter();
-                        if (geometryFilter != null && geometryFilter != Filter.INCLUDE) {
-                            mixFilter(request, geometryFilter);
-                        }
+                    Filter geometryFilter = geometryParser.getFilter();
+                    if (geometryFilter != null && geometryFilter != Filter.INCLUDE) {
+                        mixFilter(request, geometryFilter);
                     }
                 },
                 collectionName -> "ogc/dggs/v1/collections/" + ResponseUtils.urlEncode(collectionName) + "/zones");

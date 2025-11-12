@@ -7,7 +7,7 @@ package org.geoserver.web.wicket;
 import java.util.Optional;
 import java.util.Properties;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.Model;
 import org.geoserver.config.WebAdminInterfaceInfo;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.UserProfilePropertyNames;
@@ -25,10 +25,9 @@ import org.springframework.security.core.Authentication;
  * <ul>
  *   <li>{@code USERNAME} – the GeoServer username is displayed
  *   <li>{@code PREFERRED_USERNAME} – the value of the {@code preferred_username} property is displayed
- *   <li>{@code FULL_NAME} – the concatenation of the {@code first_name} and {@code last_name} properties is
- *       displayed
- *   <li>{@code FALLBACK} – tries {@code FULL_NAME} first, then falls back to {@code PREFERRED_USERNAME}, and
- *       finally to {@code USERNAME}
+ *   <li>{@code FULL_NAME} – the concatenation of the {@code first_name} and {@code last_name} properties is displayed
+ *   <li>{@code FALLBACK} – tries {@code FULL_NAME} first, then falls back to {@code PREFERRED_USERNAME}, and finally to
+ *       {@code USERNAME}
  * </ul>
  *
  * <p>The component safely handles cases where the user properties are missing or null, and will always display the
@@ -37,13 +36,10 @@ import org.springframework.security.core.Authentication;
 public class LoggedInUserLabel extends Label {
 
     public LoggedInUserLabel(String id) {
-        super(id, new LoadableDetachableModel<String>() {
-            @Override
-            protected String load() {
-                return Optional.ofNullable(resolveLoggedInUserDisplayMode(loggedInUserDisplayMode()))
-                        .orElse(GeoServerSession.get().getUsername());
-            }
-        });
+        super(
+                id,
+                Model.of(Optional.ofNullable(resolveLoggedInUserDisplayMode(loggedInUserDisplayMode()))
+                        .orElse(GeoServerSession.get().getUsername())));
     }
 
     private static WebAdminInterfaceInfo.LoggedInUserDisplayMode loggedInUserDisplayMode() {

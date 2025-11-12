@@ -164,6 +164,9 @@ public class SpatioTemporalZonalStatistics implements GeoServerProcess {
         private double aggregatedMin = Double.POSITIVE_INFINITY;
         private double aggregatedMax = Double.NEGATIVE_INFINITY;
         private double aggregatedMedian;
+        private int aggregatedSumCount;
+        private int aggregatedMeanCount;
+        private int aggregatedMedianCount;
         private int count;
         private int aggregated;
 
@@ -185,44 +188,60 @@ public class SpatioTemporalZonalStatistics implements GeoServerProcess {
                     .results()
                     .get(0)
                     .getNumAccepted();
-
+            Double result;
             if (requestedStats.contains(Statistic.SUM)) {
-                this.aggregatedSum += getStatsValue(stats, Statistic.SUM);
+                result = getStatsValue(stats, Statistic.SUM);
+                if (!Double.isNaN(result)) {
+                    aggregatedSumCount++;
+                    aggregatedSum += result;
+                }
             }
 
             if (requestedStats.contains(Statistic.MEAN)) {
-                this.aggregatedMean =
-                        this.aggregatedMean + (getStatsValue(stats, Statistic.MEAN) - this.aggregatedMean) / aggregated;
+                result = getStatsValue(stats, Statistic.MEAN);
+                if (!Double.isNaN(result)) {
+                    aggregatedMeanCount++;
+                    aggregatedMean = aggregatedMean + (result - aggregatedMean) / aggregatedMeanCount;
+                }
             }
 
             if (requestedStats.contains(Statistic.MIN)) {
-                this.aggregatedMin = Math.min(this.aggregatedMin, getStatsValue(stats, Statistic.MIN));
+                result = getStatsValue(stats, Statistic.MIN);
+                if (!Double.isNaN(result)) {
+                    aggregatedMin = Math.min(aggregatedMin, result);
+                }
             }
 
             if (requestedStats.contains(Statistic.MAX)) {
-                this.aggregatedMax = Math.max(this.aggregatedMax, getStatsValue(stats, Statistic.MAX));
+                result = getStatsValue(stats, Statistic.MAX);
+                if (!Double.isNaN(result)) {
+                    aggregatedMax = Math.max(aggregatedMax, result);
+                }
             }
 
             if (requestedStats.contains(Statistic.MEDIAN)) {
-                this.aggregatedMedian = this.aggregatedMedian
-                        + (getStatsValue(stats, Statistic.MEDIAN) - this.aggregatedMedian) / aggregated;
+                result = getStatsValue(stats, Statistic.MEDIAN);
+                if (!Double.isNaN(result)) {
+                    aggregatedMedianCount++;
+                    aggregatedMedian = aggregatedMedian + (result - aggregatedMedian) / aggregatedMedianCount;
+                }
             }
         }
 
         public double getAggregatedSum() {
-            return aggregatedSum;
+            return (aggregatedSumCount > 0) ? aggregatedSum : Double.NaN;
         }
 
         public double getAggregatedMean() {
-            return aggregatedMean;
+            return (aggregatedMeanCount > 0) ? aggregatedMean : Double.NaN;
         }
 
         public double getAggregatedMin() {
-            return aggregatedMin;
+            return (aggregatedMin == Double.POSITIVE_INFINITY) ? Double.NaN : aggregatedMin;
         }
 
         public double getAggregatedMax() {
-            return aggregatedMax;
+            return (aggregatedMax == Double.NEGATIVE_INFINITY) ? Double.NaN : aggregatedMax;
         }
 
         public int getAggregated() {
@@ -234,7 +253,7 @@ public class SpatioTemporalZonalStatistics implements GeoServerProcess {
         }
 
         public double getAggregatedMedian() {
-            return aggregatedMedian;
+            return (aggregatedMedianCount > 0) ? aggregatedMedian : Double.NaN;
         }
     }
 
@@ -541,7 +560,7 @@ public class SpatioTemporalZonalStatistics implements GeoServerProcess {
         return new GridGeometry2D(gridRange, geometryEnvelope);
     }
 
-    private static double getStatsValue(ZonalStats zonalStats, Statistic statistic) {
+    private static Double getStatsValue(ZonalStats zonalStats, Statistic statistic) {
         return zonalStats.statistic(statistic).results().get(0).getValue();
     }
 

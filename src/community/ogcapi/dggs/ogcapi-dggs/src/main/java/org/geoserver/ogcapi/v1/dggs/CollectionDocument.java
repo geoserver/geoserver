@@ -29,9 +29,15 @@ import org.geoserver.ogcapi.Link;
 import org.geoserver.ogcapi.TimeExtentCalculator;
 import org.geoserver.ogcapi.v1.features.FeaturesResponse;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geotools.api.data.DataAccess;
 import org.geotools.api.data.Query;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.AttributeDescriptor;
 import org.geotools.api.feature.type.FeatureType;
+import org.geotools.dggs.datastore.DGGSDataStore;
 import org.geotools.dggs.gstore.DGGSFeatureSource;
+import org.geotools.dggs.gstore.DGGSResolutionCalculator;
 import org.geotools.dggs.gstore.DGGSStore;
 import org.geotools.feature.visitor.UniqueVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -148,12 +154,26 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
     }
 
     public int[] getResolutions() throws IOException {
-        UniqueVisitor visitor = new UniqueVisitor(DGGSStore.RESOLUTION);
-        fs.getFeatures(Query.ALL).accepts(visitor, null);
-        @SuppressWarnings("unchecked")
-        List<Integer> list = visitor.getResult().toList();
-        int[] resolutions = list.stream().mapToInt(v -> v).toArray();
-        return resolutions;
+        AttributeDescriptor resolutionAttribute = fs.getSchema().getDescriptor(DGGSStore.RESOLUTION);
+        if (resolutionAttribute != null) {
+            UniqueVisitor visitor = new UniqueVisitor(DGGSStore.RESOLUTION);
+
+            fs.getFeatures(Query.ALL).accepts(visitor, null);
+            @SuppressWarnings("unchecked")
+            List<Integer> list = visitor.getResult().toList();
+            return list.stream().mapToInt(v -> v).toArray();
+        } else {
+            DataAccess<SimpleFeatureType, SimpleFeature> datastore = (fs.getDataStore());
+            if (datastore instanceof DGGSDataStore ds) {
+                DGGSResolutionCalculator calculator = ds.getResolutions();
+                Integer resolution = calculator.getFixedResolution();
+                if (resolution != null) {
+                    return new int[] {resolution};
+                }
+            }
+        }
+
+        return new int[0];
     }
 
     @JsonProperty("dggs-id")

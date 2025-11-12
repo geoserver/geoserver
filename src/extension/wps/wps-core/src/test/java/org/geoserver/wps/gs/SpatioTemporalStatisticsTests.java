@@ -31,7 +31,9 @@ public class SpatioTemporalStatisticsTests extends WPSTestSupport {
 
     public static final double DELTA = 0.0001;
     private static QName ZONES = new QName(MockData.SF_URI, "zones", MockData.SF_PREFIX);
+    private static QName ZONES2 = new QName(MockData.SF_URI, "zones2", MockData.SF_PREFIX);
     private static QName TEMPERATURES = new QName(MockData.SF_URI, "tempstat", MockData.SF_PREFIX);
+    private static QName TEMPERATURES2 = new QName(MockData.SF_URI, "tempstatnan", MockData.SF_PREFIX);
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -50,12 +52,16 @@ public class SpatioTemporalStatisticsTests extends WPSTestSupport {
         // Zone4: 10-40
         testData.addRasterLayer(TEMPERATURES, "temperatures.zip", null, null, getClass(), catalog);
         setupRasterDimension(TEMPERATURES, ResourceInfo.TIME, DimensionPresentation.LIST, null, "ISO8601", null);
+
+        testData.addVectorLayer(ZONES2, props, "zones2.properties", getClass(), getCatalog());
+        testData.addRasterLayer(TEMPERATURES2, "temperatures2.zip", null, null, getClass(), catalog);
+        setupRasterDimension(TEMPERATURES2, ResourceInfo.TIME, DimensionPresentation.LIST, null, "ISO8601", null);
     }
 
     @Test
     public void testSingleStatistic() throws IOException {
-        try (SimpleFeatureIterator features =
-                executeProcess("2025-04-16T00:00:00Z,2025-04-18T00:00:00Z,2025-04-20T00:00:00Z", "min")) {
+        try (SimpleFeatureIterator features = executeProcess(
+                "2025-04-16T00:00:00Z,2025-04-18T00:00:00Z,2025-04-20T00:00:00Z", "min", "sf:tempstat", "zones")) {
 
             SimpleFeature sf = features.next();
             assertNotNull(sf.getAttribute("min"));
@@ -67,8 +73,8 @@ public class SpatioTemporalStatisticsTests extends WPSTestSupport {
 
     @Test
     public void testTimeRangeStatistics() throws IOException {
-        try (SimpleFeatureIterator features =
-                executeProcess("2025-04-16T00:00:00Z/2025-04-20T00:00:00Z", "min,max,mean,median,sum")) {
+        try (SimpleFeatureIterator features = executeProcess(
+                "2025-04-16T00:00:00Z/2025-04-20T00:00:00Z", "min,max,mean,median,sum", "sf:tempstat", "zones")) {
             assertZoneFeature(
                     features.next(),
                     1L,
@@ -116,9 +122,40 @@ public class SpatioTemporalStatisticsTests extends WPSTestSupport {
     }
 
     @Test
+    public void testTimeRangeStatisticsWithNaN() throws IOException {
+        // Data for time 2025-10-17 and 2025-10-18 only contains NoData within Zone1
+        // and a mix of NoData and valid pixels for Zone2
+        // Data for time 2025-10-19 has valid pixels for both zones
+
+        try (SimpleFeatureIterator features = executeProcess(
+                "2025-10-17T00:00:00Z/2025-10-20T00:00:00Z", "min,max,mean,median,sum", "sf:tempstatnan", "zones2")) {
+            assertZoneFeature(features.next(), 1L, "5-255", 21, 5.0, 213, 2167.0, 103.19047619047618, 102.0);
+
+            assertZoneFeature(
+                    features.next(), 2L, "5-255", 50, 47.0, 172, 5292.0, 106.15555555555555, 102.33333333333333);
+        }
+
+        // Requesting stats on a time with all NoData in Zone1 will return NaN stats
+        try (SimpleFeatureIterator features =
+                executeProcess("2025-10-18T00:00:00Z", "min,max,mean,median,sum", "sf:tempstatnan", "zones2")) {
+            assertZoneFeature(
+                    features.next(), 1L, "5-255", 0, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN);
+        }
+        // Requesting stats on a single time that doesn't contain any NoData will return same stats
+        // as the time range including the NoData pixels (being the NoData values ignored)
+        try (SimpleFeatureIterator features =
+                executeProcess("2025-10-19T00:00:00Z", "min,max,mean,median,sum", "sf:tempstatnan", "zones2")) {
+            assertZoneFeature(features.next(), 1L, "5-255", 21, 5.0, 213, 2167.0, 103.19047619047618, 102.0);
+        }
+    }
+
+    @Test
     public void testTimeListStatistics() throws IOException {
         try (SimpleFeatureIterator features = executeProcess(
-                "2025-04-16T00:00:00Z,2025-04-18T00:00:00Z,2025-04-20T00:00:00Z", "min,max,mean,median,sum")) {
+                "2025-04-16T00:00:00Z,2025-04-18T00:00:00Z,2025-04-20T00:00:00Z",
+                "min,max,mean,median,sum",
+                "sf:tempstat",
+                "zones")) {
 
             assertZoneFeature(
                     features.next(),
@@ -171,26 +208,31 @@ public class SpatioTemporalStatisticsTests extends WPSTestSupport {
         SimpleFeature sf;
         try (SimpleFeatureIterator allTimesFeatures = executeProcess(
                 "2025-04-16T00:00:00Z,2025-04-17T00:00:00Z,2025-04-18T00:00:00Z,2025-04-19T00:00:00Z,2025-04-20T00:00:00Z",
-                "min")) {
+                "min",
+                "sf:tempstat",
+                "zones")) {
             sf = allTimesFeatures.next();
             // Each zone covers 20x10 valid pixels so with 5 times, we get an aggregated count of 1000 (200x5)
             assertEquals("Feature count", 1000, ((Number) sf.getAttribute("count")).intValue());
         }
         try (SimpleFeatureIterator missingTimesFeatures = executeProcess(
                 "2025-04-16T00:00:00Z,2025-04-24T00:00:00Z,2025-04-26T00:00:00Z,2025-04-27T00:00:00Z,2025-04-29T00:00:00Z",
-                "min")) {
+                "min",
+                "sf:tempstat",
+                "zones")) {
             sf = missingTimesFeatures.next();
             // Although we have specified 5 times, we only get a count of 200 due to the only matching time (2025-04-16)
             assertEquals("Feature count", 200, ((Number) sf.getAttribute("count")).intValue());
         }
     }
 
-    private SimpleFeatureIterator executeProcess(String timeRange, String stats) throws IOException {
+    private SimpleFeatureIterator executeProcess(String timeRange, String stats, String layerName, String zoneName)
+            throws IOException {
         SpatioTemporalZonalStatistics process = applicationContext.getBean(SpatioTemporalZonalStatistics.class);
-        FeatureTypeInfo featureType = catalog.getFeatureTypeByName("sf", "zones");
+        FeatureTypeInfo featureType = catalog.getFeatureTypeByName("sf", zoneName);
         SimpleFeatureSource featureSource = (SimpleFeatureSource) featureType.getFeatureSource(null, null);
         SimpleFeatureCollection zones = featureSource.getFeatures();
-        SimpleFeatureCollection collection = process.execute("sf:tempstat", timeRange, zones, stats);
+        SimpleFeatureCollection collection = process.execute(layerName, timeRange, zones, stats);
         return collection.features();
     }
 

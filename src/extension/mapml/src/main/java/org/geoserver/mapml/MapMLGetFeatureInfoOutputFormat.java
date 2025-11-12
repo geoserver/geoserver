@@ -26,6 +26,7 @@ import org.geoserver.mapml.xml.Base;
 import org.geoserver.mapml.xml.BodyContent;
 import org.geoserver.mapml.xml.Feature;
 import org.geoserver.mapml.xml.HeadContent;
+import org.geoserver.mapml.xml.MapMLElement;
 import org.geoserver.mapml.xml.Mapml;
 import org.geoserver.mapml.xml.Meta;
 import org.geoserver.ows.URLMangler;
@@ -126,7 +127,7 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
             Iterator<FeatureCollection> fci = featureCollections.iterator();
             while (fci.hasNext()) {
                 fc = (SimpleFeatureCollection) fci.next();
-                List<Object> features = body.getTilesOrFeatures();
+                List<MapMLElement> features = body.getTilesOrFeatures();
                 try (SimpleFeatureIterator iterator = fc.features()) {
                     while (iterator.hasNext()) {
                         SimpleFeature feature;

@@ -22,8 +22,8 @@ import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 
 /**
- * Validates that a ECQL expression is syntactically valid, and if a set of valid attribute is
- * provided, that the expression only uses those attributes
+ * Validates that a ECQL expression is syntactically valid, and if a set of valid attribute is provided, that the
+ * expression only uses those attributes
  *
  * @author Andrea Aime - GeoSolutions
  */

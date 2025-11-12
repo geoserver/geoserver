@@ -31,6 +31,8 @@
         <include>accessors-smart*</include>
         <include>json-simple*</include>
         <include>nimbus-jose-jwt*</include>
+        <include>jwt-headers-util*</include>
+        <include>gs-jwt-headers*</include>
       </includes>
     </fileSet>
   </fileSets>

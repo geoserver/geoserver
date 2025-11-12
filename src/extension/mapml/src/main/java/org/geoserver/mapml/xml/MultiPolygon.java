@@ -11,6 +11,7 @@ package org.geoserver.mapml.xml;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,8 @@ import java.util.List;
 @XmlType(
         name = "",
         propOrder = {"polygon"})
-public class MultiPolygon {
+@XmlRootElement(name = "map-multipolygon", namespace = "http://www.w3.org/1999/xhtml")
+public class MultiPolygon implements MapMLElement {
 
     @XmlElement(name = "map-polygon", required = true, namespace = "http://www.w3.org/1999/xhtml")
     protected List<Polygon> polygon;

@@ -165,6 +165,9 @@ public class SpatioTemporalZonalStatistics implements GeoServerProcess {
         private double aggregatedMin = Double.POSITIVE_INFINITY;
         private double aggregatedMax = Double.NEGATIVE_INFINITY;
         private double aggregatedMedian;
+        private int aggregatedSumCount;
+        private int aggregatedMeanCount;
+        private int aggregatedMedianCount;
         private int count;
         private int aggregated;
 
@@ -198,33 +201,46 @@ public class SpatioTemporalZonalStatistics implements GeoServerProcess {
                 StatsType stat = requestedStats[i];
                 double result = ((Number) statsArray[i].getResult()).doubleValue();
                 if (stat == StatsType.MIN) {
-                    aggregatedMin = Math.min(aggregatedMin, result);
+                    if (!Double.isNaN(result)) {
+                        aggregatedMin = Math.min(aggregatedMin, result);
+                    }
                 } else if (stat == StatsType.MAX) {
-                    aggregatedMax = Math.max(aggregatedMax, result);
+                    if (!Double.isNaN(result)) {
+                        aggregatedMax = Math.max(aggregatedMax, result);
+                    }
                 } else if (stat == StatsType.SUM) {
-                    aggregatedSum += result;
+                    if (!Double.isNaN(result)) {
+                        aggregatedSum += result;
+                        aggregatedSumCount++;
+                    }
                 } else if (stat == StatsType.MEAN) {
-                    aggregatedMean = aggregatedMean + (result - aggregatedMean) / aggregated;
+                    if (!Double.isNaN(result)) {
+                        aggregatedMeanCount++;
+                        aggregatedMean = aggregatedMean + (result - aggregatedMean) / aggregated;
+                    }
                 } else if (stat == StatsType.MEDIAN) {
-                    aggregatedMedian = aggregatedMedian + (result - aggregatedMedian) / aggregated;
+                    if (!Double.isNaN(result)) {
+                        aggregatedMedianCount++;
+                        aggregatedMedian = aggregatedMedian + (result - aggregatedMedian) / aggregated;
+                    }
                 }
             }
         }
 
         public double getAggregatedSum() {
-            return aggregatedSum;
+            return (aggregatedSumCount > 0) ? aggregatedSum : Double.NaN;
         }
 
         public double getAggregatedMean() {
-            return aggregatedMean;
+            return (aggregatedMeanCount > 0) ? aggregatedMean : Double.NaN;
         }
 
         public double getAggregatedMin() {
-            return aggregatedMin;
+            return (aggregatedMin == Double.POSITIVE_INFINITY) ? Double.NaN : aggregatedMin;
         }
 
         public double getAggregatedMax() {
-            return aggregatedMax;
+            return (aggregatedMax == Double.NEGATIVE_INFINITY) ? Double.NaN : aggregatedMax;
         }
 
         public int getAggregated() {
@@ -236,7 +252,7 @@ public class SpatioTemporalZonalStatistics implements GeoServerProcess {
         }
 
         public double getAggregatedMedian() {
-            return aggregatedMedian;
+            return (aggregatedMedianCount > 0) ? aggregatedMedian : Double.NaN;
         }
     }
 

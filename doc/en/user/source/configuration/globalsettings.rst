@@ -222,7 +222,7 @@ Enable Request Logging
 
 These settings enable the logging of the requested URL, and optionally request headers and the POST requests' contents, for all requests sent to GeoServer.
 
-* :guilabel:`Enable Request Logging`: Select to enable logging of incoming requests, this will include the operation (``GET``,``POST``,etc...) and the URL requested.
+* :guilabel:`Enable Request Logging`: Select to enable logging of incoming requests, this will include the operation (``GET``, ``POST``, etc...) and the URL requested.
 
 * :guilabel:`Log Request Bodies`: Select to enable logging the body of the incoming request. Text content will be logged, or the number of bytes for binary content, based on the setting Number of characters to log for incoming requests setting below.
 
@@ -280,6 +280,93 @@ There are three options:
 
 Note that a restart of GeoServer is necessary for a change in the setting to have effect.
 
+.. _config_globalsettings_web_admin_interface:
+
+Web Administration Interface Settings
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The Web Administration Interface Settings control how user information and metadata are displayed throughout the GeoServer Web UI.
+These options allow administrators to customize the visibility of user profile details (such as names and e-mail addresses) and to toggle the display of creation, modification, and user-related metadata in administration lists.
+
+.. figure:: img/web_admin_interface.png
+
+.. _config_globalsettings_web_admin_interface_loggedin_display_mode:
+
+Logged-in User Display Mode
+'''''''''''''''''''''''''''
+
+This setting controls which user property value is displayed after “Logged in as” in the UI header, instead of the username. These profile properties are retrieved, when available, from the active user/group service.
+
+There are several options:
+
+* **USERNAME**: Default mode. The user's username is displayed.
+
+* **PREFERRED_USERNAME**: User property ``preferred_username`` is displayed.
+
+* **FULL_NAME**: A concatenation of the properties ``first_name`` and ``last_name`` is displayed.
+
+* **FALLBACK**: Displays the user's full name if available; otherwise falls back to the preferred username, and finally to the username.
+
+If the property corresponding to the selected display mode is not available, the username is displayed.
+
+.. _config_globalsettings_web_admin_interface_show_user_profile_columns:
+
+Show profile columns in users list
+''''''''''''''''''''''''''''''''''
+
+When enabled, additional columns are displayed in the **Users list** table of the :ref:`Users, Groups, and Roles <security_webadmin_ugr>` page, showing the values for ``preferred_username``, ``first_name``, ``last_name``, and ``email`` user profile properties.
+These profile properties are retrieved, when available, from the active user/group service.
+
+.. _config_globalsettings_web_admin_interface_email_display_mode:
+
+Email Display Mode
+''''''''''''''''''
+
+This configuration defines how user e-mail addresses are displayed in the GeoServer Web UI.
+
+There are several options:
+
+* **HIDDEN**: The user’s e-mail address is not shown.
+
+* **DOMAIN_ONLY**: Default mode. Only the domain part (for example, `example.com`) is displayed.
+
+* **MASKED**: The local part (before the `@`) is masked with `*`, leaving only the first character visible. The domain part is fully visible.
+
+* **FULL**: The complete e-mail address is displayed.
+
+.. _config_globalsettings_web_admin_interface_reveal_email_at_click:
+
+Reveal Email at Click
+'''''''''''''''''''''
+
+When enabled, clicking a partially visible email address in the GeoServer Web UI reveals the complete user's email address.
+This setting is only available when the :ref:`Email Display Mode <config_globalsettings_web_admin_interface_email_display_mode>` option is set to **DOMAIN_ONLY** or **MASKED**.
+
+.. _config_globalsettings_web_admin_interface_display_creation:
+
+Display creation timestamps on administration lists
+'''''''''''''''''''''''''''''''''''''''''''''''''''
+
+This check box can be used to toggle the display of the Date of Creation on the administration list pages for Workspaces, Stores, Layers, Layer Groups and Styles.
+
+The Time of Creation can be viewed by hovering the mouse cursor over the displayed dates.
+
+.. _config_globalsettings_web_admin_interface_display_modify:
+
+Display modification timestamps on administration lists
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+This check box can be used to toggle the display of the Date of Modification on the administration list pages for Workspaces, Stores, Layers, Layer Groups and Styles.
+
+The Time of Modification can be viewed by hovering the mouse cursor over the displayed dates.
+
+.. _config_globalsettings_web_admin_interface_display_modifier:
+
+Display the user who performed last modification
+''''''''''''''''''''''''''''''''''''''''''''''''
+
+This check box can be used to toggle displaying the user that performed the last modification on the administration list pages for Workspaces, Stores, Layers, Layer Groups and Styles.
+
 Other Settings
 --------------
 
@@ -306,33 +393,9 @@ This parameter is used by the RESTful API as the `Root Directory` for the newly 
 
     ${rootDirectory}/workspace/store[/<file>]
 
-.. _config_globalsettings_display_creation:
-
-Display creation timestamps on administration lists
-'''''''''''''''''''''''''''''''''''''''''''''''''''
-
-These check boxes can be used to toggle Date of Creation on Workspaces, Stores, Layers, Layer Groups and Styles administration list pages.
-
-Time of Creation can be seen by hovering the mouse cursor over the dates.
-
-.. _config_globalsettings_display_modify:
-
-Display modification timestamps on administration lists
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''
-
-These check boxes can be used to toggle Date of Modification on Workspaces, Stores, Layers, Layer Groups and Styles administration list pages.
-
-Time of Modification can be seen by hovering the mouse cursor over the dates.
-
 Match URLs with trailing slash
 ''''''''''''''''''''''''''''''
 
 This setting determine whether GeoServer matches URLs whether or not the request has a trailing slash. If enabled a request mapped to "/ogc/collections" also matches "/ogc/collections/".  A restart is required for a change to this setting to take effect.
 
 Note that trailing slash matches may be removed entirely in future versions of GeoServer due to introduced ambiguities that can lead to security vulnerabilities.  Discussion of the issue can be found in `this Spring issue <https://github.com/spring-projects/spring-framework/issues/28552>`_.
-
-Display the user who performed last modification
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''
-
-These check boxes can be used to toggle displaying user that performed last modification on Workspaces, Styles, Stores, Layers, Layer Groups administration list pages
-

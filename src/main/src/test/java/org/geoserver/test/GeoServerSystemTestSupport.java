@@ -839,13 +839,30 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * @param roles Roles to assign.
      */
     protected Authentication login(String username, String password, String... roles) {
+        return createAuthentication(username, password, roles);
+    }
+
+    /**
+     * Sets up the authentication context for the test.
+     *
+     * <p>This context lasts only for a single test case, it is cleared after every test has completed.
+     *
+     * @param user The user to set as principal.
+     * @param password The password.
+     * @param roles Roles to assign.
+     */
+    protected Authentication login(GeoServerUser user, String password, String... roles) {
+        return createAuthentication(user, password, roles);
+    }
+
+    private Authentication createAuthentication(Object principal, String credentials, String... roles) {
         SecurityContextHolder.setContext(new SecurityContextImpl());
-        List<GrantedAuthority> l = new ArrayList<>();
+        List<GrantedAuthority> authorities = new ArrayList<>();
         for (String role : roles) {
-            l.add(new SimpleGrantedAuthority(role));
+            authorities.add(new SimpleGrantedAuthority(role));
         }
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(username, password, l);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(principal, credentials, authorities);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return authentication;
     }

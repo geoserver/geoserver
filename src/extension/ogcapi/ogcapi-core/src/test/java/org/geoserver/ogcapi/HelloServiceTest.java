@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;
 import org.geoserver.ows.TestDispatcherCallback;
@@ -421,7 +422,8 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
     @Test
     public void testDocumentHTML() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("ogc/hello/v1/document?f=html");
-        assertEquals(MediaType.TEXT_HTML_VALUE, response.getContentType());
+        String contentAsString = response.getContentAsString();
+        assertEquals(contentAsString, MediaType.TEXT_HTML_VALUE, response.getContentType());
         // Testing:
         // - the message is in the body
         // - service link generation
@@ -435,11 +437,40 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
                 <body>
                   <p>The message: hello</p>
                   <p><a class="wmsCapabilities" href="http://localhost:8080/geoserver/wms?request=GetCapabilities&amp;service=WMS">Capabilities URL</a></p>
+                  <div>
+                      <h2>value1</h2>
+                      <h2>value2</h2>
+                      <h2>value3</h2>
+                  </div>
                 </body>
                 </html>""";
         // windows line endings are normalized to unix
         String normalizedResponse = response.getContentAsString().replaceAll("\r\n", "\n");
         assertEquals(expected, normalizedResponse);
+    }
+
+    /**
+     * Verify {@link CloseableIterator} properties are properly closed by {@link AutoCloseableTracker} after encoding to
+     * HTML
+     */
+    @Test
+    public void testAutoCloseableTracker() throws Exception {
+        AutoCloseableTracker.closed.set(0);
+        MockHttpServletResponse response = getAsServletResponse("ogc/hello/v1/document?f=html");
+        assertEquals(MediaType.TEXT_HTML_VALUE, response.getContentType());
+        assertEquals(1, AutoCloseableTracker.closed.get());
+    }
+
+    /**
+     * Verify {@link CloseableIterator} properties are properly closed by {@link CloseableIteratorSerializer} after
+     * encoding to JSON
+     */
+    @Test
+    public void testCloseableIteratorJsonSerializer() throws Exception {
+        CloseableIteratorSerializer.closed.set(0);
+        MockHttpServletResponse response = getAsServletResponse("ogc/hello/v1/document");
+        assertEquals(MediaType.APPLICATION_JSON_VALUE, response.getContentType());
+        assertEquals(1, CloseableIteratorSerializer.closed.get());
     }
 
     @Test

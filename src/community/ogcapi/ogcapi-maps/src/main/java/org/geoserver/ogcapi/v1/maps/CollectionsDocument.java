@@ -4,12 +4,14 @@
  */
 package org.geoserver.ogcapi.v1.maps;
 
+import static org.geoserver.catalog.util.CloseableIteratorAdapter.filter;
+import static org.geoserver.catalog.util.CloseableIteratorAdapter.transform;
+
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -50,50 +52,43 @@ public class CollectionsDocument extends AbstractDocument {
         return links;
     }
 
+    /**
+     * @implNote by returning a {@link CloseableIterator} we ensure it'll be closed by
+     *     {@code org.geoserver.ogcapi.CloseableIteratorSerializer} for JSON output or
+     *     {@code org.geoserver.ogcapi.AutoCloseableTracker} for HTML output
+     */
     @JacksonXmlProperty(localName = "Collection")
-    public Iterator<CollectionDocument> getCollections() {
-        @SuppressWarnings("PMD.CloseResource") // wrapped and returned
+    @SuppressWarnings("PMD.CloseResource")
+    public CloseableIterator<CollectionDocument> getCollections() {
         CloseableIterator<PublishedInfo> publisheds = geoServer.getCatalog().list(PublishedInfo.class, Filter.INCLUDE);
-        return new Iterator<>() {
 
-            CollectionDocument next;
+        CloseableIterator<CollectionDocument> collections =
+                transform(publisheds, published -> getCollectionDocument(published, publisheds));
 
-            @Override
-            public boolean hasNext() {
-                if (next != null) {
-                    return true;
-                }
-                while (publisheds.hasNext()) {
-                    PublishedInfo published = publisheds.next();
-                    try {
-                        next = getCollectionDocument(published, publisheds);
-                        return true;
-                    } catch (Exception e) {
-                        if (skipInvalid) {
-                            LOGGER.log(Level.WARNING, "Skipping map type " + published.prefixedName());
-                        } else {
-                            publisheds.close();
-                            throw new ServiceException("Failed to iterate over the map types in the catalog", e);
-                        }
-                    }
-                }
-                return next != null;
-            }
-
-            @Override
-            public CollectionDocument next() {
-                CollectionDocument result = next;
-                this.next = null;
-                return result;
-            }
-        };
+        return filter(collections, Objects::nonNull);
     }
 
+    /**
+     * @param published the published info to create a collection document for
+     * @param publisheds to be closed early if an exception is caught and {@code skipInvalid == false}
+     * @return the collection document for {@code published}, or {@code null} if an exception is caught and
+     *     {@code skipInvalid == true}
+     */
     private CollectionDocument getCollectionDocument(
-            PublishedInfo published, CloseableIterator<PublishedInfo> publisheds) throws IOException {
-        CollectionDocument collection = new CollectionDocument(geoServer, published);
-        for (Consumer<CollectionDocument> collectionDecorator : collectionDecorators) {
-            collectionDecorator.accept(collection);
+            PublishedInfo published, CloseableIterator<PublishedInfo> publisheds) {
+        CollectionDocument collection = null;
+        try {
+            collection = new CollectionDocument(geoServer, published);
+            for (Consumer<CollectionDocument> collectionDecorator : collectionDecorators) {
+                collectionDecorator.accept(collection);
+            }
+        } catch (Exception e) {
+            if (skipInvalid) {
+                LOGGER.log(Level.WARNING, "Skipping map type " + published.prefixedName());
+            } else {
+                publisheds.close();
+                throw new ServiceException("Failed to iterate over the map types in the catalog", e);
+            }
         }
         return collection;
     }

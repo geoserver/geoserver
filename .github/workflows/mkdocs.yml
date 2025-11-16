@@ -68,12 +68,12 @@ jobs:
       run: |
         python -m venv venv
         source venv/bin/activate
-        # Using petersmythe/translate fork (v0.5.x) which is essential for Pandoc 3.5 compatibility:
+        # Using petersmythe/translate fork geoserver-minimal branch (8 essential commits):
         # - Converts Pandoc 3.5 fenced divs (:::: note) to MkDocs admonitions (!!! note)
         # - Adds UTF-8 encoding support for international characters in RST files
         # - Handles custom admonition titles from RST directives
-        # - Based on jodygarnett/translate v0.4.0 with critical Pandoc 3.x adaptations
-        pip install git+https://github.com/petersmythe/translate.git
+        # - Based on jodygarnett/translate v0.4.0 with minimal Pandoc 3.x adaptations
+        pip install git+https://github.com/petersmythe/translate.git@geoserver-minimal
         pip install mkdocs mkdocs-material mkdocs-minify-plugin
         echo "VIRTUAL_ENV=$PWD/venv" >> $GITHUB_ENV
         echo "$PWD/venv/bin" >> $GITHUB_PATH

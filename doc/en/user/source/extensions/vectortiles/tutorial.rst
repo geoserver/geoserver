@@ -96,7 +96,7 @@ Create OpenLayers application - TMS Vector Tiles
    .. code-block:: html
       :emphasize-lines: 5
       
-      <!DOCTYPE html -->
+      <!DOCTYPE html>
       <html>
       <head>
         <title>Vector tiles</title>

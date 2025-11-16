@@ -56,6 +56,10 @@ echo "✓ Pandoc installation complete"
 echo ""
 echo "=== Installing Python Dependencies ==="
 echo "Installing mkdocs-translate from petersmythe fork..."
+echo "  This fork (v0.5.x) is essential for Pandoc 3.5 compatibility:"
+echo "  - Converts Pandoc 3.5 fenced divs (:::: note) to MkDocs admonitions (!!! note)"
+echo "  - Adds UTF-8 encoding support for international characters in RST files"
+echo "  - Based on jodygarnett/translate v0.4.0 with critical Pandoc 3.x adaptations"
 pip install git+https://github.com/petersmythe/translate.git
 
 echo "Installing MkDocs and plugins..."

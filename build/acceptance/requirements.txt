@@ -1,0 +1,3 @@
+geoservercloud==0.7.1
+# To debug a local version of python-geoservercloud, uncomment the following line and adjust the path accordingly
+#-e file:./../../../python-geoservercloud

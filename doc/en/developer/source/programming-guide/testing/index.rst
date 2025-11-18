@@ -83,6 +83,11 @@ a data directory/configuration and a spring context.
 
 Helper classes are provided to help inject your classes into the system configuration including ``GeoServerExtensionsHelper``.
 
+Acceptance
+^^^^^^^^^^
+
+Tests that exercise a functionality from end to end by running requests against a GeoServer instance.
+
 Writing System Tests
 --------------------
 
@@ -1000,3 +1005,49 @@ Using Docker Test Containers can be done by extending an existing test support b
         authServerUrl = keycloakContainer.getAuthServerUrl();
     } 
 
+Acceptance Tests
+----------------
+
+Acceptance tests are end-to-end tests that exercise a particular functionality by running
+requests against a GeoServer instance and checking its reponses.
+The tests call the REST API and the OGC services to test functionalities such as creating a workspace and publishing a PostGIS or an ImageMosaic layer.
+
+The GeoServer acceptance tests are written in Python using the `pytest <https://docs.pytest.org/>`_ framework.
+The test suite is bundled in the Python package `python-geoservercloud <https://pypi.org/project/geoservercloud/>`_.
+
+Running Acceptance Tests
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Requirements: Python 3, docker, make
+
+Head over to the ``build/acceptance`` directory and build GeoServer with:
+
+.. code-block:: shell
+
+    make war
+
+Build the docker image, setup the Python virtual environment and start the acceptance test docker composition with:
+
+.. code-block:: shell
+
+    make up
+
+Now the tests are ready to be run with:
+
+.. code-block:: shell
+
+    make test
+
+It's possible to run only a specific test file or a single test function with for example:
+
+.. code-block:: shell
+
+    GEOSERVER_ACCEPTANCE_CONFIG=./config.yaml .venv/bin/pytest --pyargs geoserver_acceptance_tests.tests.test_gwc::test_tile_cache -vv
+
+If you need to debug the tests, see the instructions in the `GeoServer acceptance tests README <https://github.com/camptocamp/python-geoservercloud/tree/master/geoserver_acceptance_tests#readme>`_.
+
+When you are done testing, stop the docker composition with:
+
+.. code-block:: shell
+
+    make down

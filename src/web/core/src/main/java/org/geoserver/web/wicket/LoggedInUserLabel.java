@@ -9,6 +9,7 @@ import java.util.Properties;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.Model;
 import org.geoserver.config.WebAdminInterfaceInfo;
+import org.geoserver.config.impl.WebAdminInterfaceInfoImpl;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.UserProfilePropertyNames;
 import org.geoserver.web.GeoServerApplication;
@@ -43,11 +44,10 @@ public class LoggedInUserLabel extends Label {
     }
 
     private static WebAdminInterfaceInfo.LoggedInUserDisplayMode loggedInUserDisplayMode() {
-        return GeoServerApplication.get()
-                .getGeoServer()
-                .getGlobal()
-                .getWebAdminInterface()
-                .getLoggedInUserDisplayMode();
+        WebAdminInterfaceInfo webAdminInterfaceInfo = Optional.ofNullable(
+                        GeoServerApplication.get().getGeoServer().getGlobal().getWebAdminInterface())
+                .orElse(new WebAdminInterfaceInfoImpl());
+        return webAdminInterfaceInfo.getLoggedInUserDisplayMode();
     }
 
     private static String resolveLoggedInUserDisplayMode(

@@ -26,7 +26,10 @@ public class WebAdminInterfaceInfoImpl implements WebAdminInterfaceInfo {
 
     @Override
     public LoggedInUserDisplayMode getLoggedInUserDisplayMode() {
-        return this.loggedInUserDisplayMode;
+        if (loggedInUserDisplayMode == null) {
+            loggedInUserDisplayMode = LoggedInUserDisplayMode.USERNAME;
+        }
+        return loggedInUserDisplayMode;
     }
 
     @Override
@@ -36,7 +39,7 @@ public class WebAdminInterfaceInfoImpl implements WebAdminInterfaceInfo {
 
     @Override
     public boolean getShowProfileColumnsInUserList() {
-        return this.showProfileColumnsInUserList;
+        return showProfileColumnsInUserList;
     }
 
     @Override
@@ -46,7 +49,10 @@ public class WebAdminInterfaceInfoImpl implements WebAdminInterfaceInfo {
 
     @Override
     public EmailDisplayMode getEmailDisplayMode() {
-        return this.emailDisplayMode;
+        if (emailDisplayMode == null) {
+            emailDisplayMode = EmailDisplayMode.DOMAIN_ONLY;
+        }
+        return emailDisplayMode;
     }
 
     @Override
@@ -56,7 +62,7 @@ public class WebAdminInterfaceInfoImpl implements WebAdminInterfaceInfo {
 
     @Override
     public boolean getRevealEmailAtClick() {
-        return this.revealEmailAtClick;
+        return revealEmailAtClick;
     }
 
     @Override

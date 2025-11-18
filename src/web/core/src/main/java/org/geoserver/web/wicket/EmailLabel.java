@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.wicket;
 
+import java.util.Optional;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -12,6 +13,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.geoserver.config.WebAdminInterfaceInfo;
 import org.geoserver.config.WebAdminInterfaceInfo.EmailDisplayMode;
+import org.geoserver.config.impl.WebAdminInterfaceInfoImpl;
 import org.geoserver.web.GeoServerApplication;
 
 /**
@@ -79,11 +81,10 @@ public class EmailLabel extends Label {
     }
 
     private static EmailDisplayMode emailDisplayMode() {
-        return GeoServerApplication.get()
-                .getGeoServer()
-                .getGlobal()
-                .getWebAdminInterface()
-                .getEmailDisplayMode();
+        WebAdminInterfaceInfo webAdminInterfaceInfo = Optional.ofNullable(
+                        GeoServerApplication.get().getGeoServer().getGlobal().getWebAdminInterface())
+                .orElse(new WebAdminInterfaceInfoImpl());
+        return webAdminInterfaceInfo.getEmailDisplayMode();
     }
 
     private static String hiddenEmailText() {
@@ -98,10 +99,9 @@ public class EmailLabel extends Label {
     }
 
     private static boolean revealEmailAtClick() {
-        return GeoServerApplication.get()
-                .getGeoServer()
-                .getGlobal()
-                .getWebAdminInterface()
-                .getRevealEmailAtClick();
+        WebAdminInterfaceInfo webAdminInterfaceInfo = Optional.ofNullable(
+                        GeoServerApplication.get().getGeoServer().getGlobal().getWebAdminInterface())
+                .orElse(new WebAdminInterfaceInfoImpl());
+        return webAdminInterfaceInfo.getRevealEmailAtClick();
     }
 }

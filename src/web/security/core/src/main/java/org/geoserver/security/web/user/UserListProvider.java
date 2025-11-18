@@ -14,8 +14,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.geoserver.config.WebAdminInterfaceInfo;
-import org.geoserver.config.impl.WebAdminInterfaceInfoImpl;
+import org.geoserver.config.UserDetailsDisplaySettingsInfo;
+import org.geoserver.config.impl.UserDetailsDisplaySettingsInfoImpl;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.UserProfilePropertyNames;
@@ -187,10 +187,10 @@ public class UserListProvider extends GeoServerDataProvider<GeoServerUser> {
     }
 
     private boolean shouldShowProfileColumns() {
-        WebAdminInterfaceInfo webAdminInterfaceInfo = Optional.ofNullable(
-                        GeoServerApplication.get().getGeoServer().getGlobal().getWebAdminInterface())
-                .orElse(new WebAdminInterfaceInfoImpl());
-        return webAdminInterfaceInfo.getShowProfileColumnsInUserList();
+        UserDetailsDisplaySettingsInfo userDetailsDisplaySettingsInfo = Optional.ofNullable(
+                        GeoServerApplication.get().getGeoServer().getGlobal().getUserDetailsDisplaySettings())
+                .orElse(new UserDetailsDisplaySettingsInfoImpl());
+        return userDetailsDisplaySettingsInfo.getShowProfileColumnsInUserList();
     }
 
     private static class GeoServerUserPropProperty implements Property<GeoServerUser> {

@@ -197,9 +197,9 @@ public interface GeoServerInfo extends Info {
     /** Set the WebUIMode */
     public void setWebUIMode(WebUIMode mode);
 
-    WebAdminInterfaceInfo getWebAdminInterface();
+    UserDetailsDisplaySettingsInfo getUserDetailsDisplaySettings();
 
-    void setWebAdminInterface(WebAdminInterfaceInfo webAdminInterface);
+    void setUserDetailsDisplaySettings(UserDetailsDisplaySettingsInfo userDetailsDisplaySettings);
 
     /** Determines if Per-workspace Stores Queries are activated. */
     Boolean isAllowStoredQueriesPerWorkspace();

@@ -11,17 +11,17 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.geoserver.config.WebAdminInterfaceInfo;
-import org.geoserver.config.WebAdminInterfaceInfo.EmailDisplayMode;
-import org.geoserver.config.impl.WebAdminInterfaceInfoImpl;
+import org.geoserver.config.UserDetailsDisplaySettingsInfo;
+import org.geoserver.config.UserDetailsDisplaySettingsInfo.EmailDisplayMode;
+import org.geoserver.config.impl.UserDetailsDisplaySettingsInfoImpl;
 import org.geoserver.web.GeoServerApplication;
 
 /**
  * A customised {@link Label} component for displaying user e-mail addresses in the GeoServer Web UI.
  *
- * <p>The {@code EmailLabel} respects the current GeoServer web admin interface settings (as configured in
- * {@link WebAdminInterfaceInfo}) to determine how e-mail addresses are shown to users. The visualisation of the e-mail
- * is controlled by {@link EmailDisplayMode}, and can be one of:
+ * <p>The {@code EmailLabel} respects the current GeoServer user details display settings (as configured in
+ * {@link UserDetailsDisplaySettingsInfo}) to determine how e-mail addresses are shown to users. The visualisation of
+ * the e-mail is controlled by {@link EmailDisplayMode}, and can be one of:
  *
  * <ul>
  *   <li>{@code FULL} – the complete e-mail address is displayed
@@ -81,10 +81,10 @@ public class EmailLabel extends Label {
     }
 
     private static EmailDisplayMode emailDisplayMode() {
-        WebAdminInterfaceInfo webAdminInterfaceInfo = Optional.ofNullable(
-                        GeoServerApplication.get().getGeoServer().getGlobal().getWebAdminInterface())
-                .orElse(new WebAdminInterfaceInfoImpl());
-        return webAdminInterfaceInfo.getEmailDisplayMode();
+        UserDetailsDisplaySettingsInfo userDetailsDisplaySettingsInfo = Optional.ofNullable(
+                        GeoServerApplication.get().getGeoServer().getGlobal().getUserDetailsDisplaySettings())
+                .orElse(new UserDetailsDisplaySettingsInfoImpl());
+        return userDetailsDisplaySettingsInfo.getEmailDisplayMode();
     }
 
     private static String hiddenEmailText() {
@@ -99,9 +99,9 @@ public class EmailLabel extends Label {
     }
 
     private static boolean revealEmailAtClick() {
-        WebAdminInterfaceInfo webAdminInterfaceInfo = Optional.ofNullable(
-                        GeoServerApplication.get().getGeoServer().getGlobal().getWebAdminInterface())
-                .orElse(new WebAdminInterfaceInfoImpl());
-        return webAdminInterfaceInfo.getRevealEmailAtClick();
+        UserDetailsDisplaySettingsInfo userDetailsDisplaySettingsInfo = Optional.ofNullable(
+                        GeoServerApplication.get().getGeoServer().getGlobal().getUserDetailsDisplaySettings())
+                .orElse(new UserDetailsDisplaySettingsInfoImpl());
+        return userDetailsDisplaySettingsInfo.getRevealEmailAtClick();
     }
 }

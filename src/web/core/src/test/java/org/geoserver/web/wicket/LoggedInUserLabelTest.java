@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Map;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
-import org.geoserver.config.WebAdminInterfaceInfo;
+import org.geoserver.config.UserDetailsDisplaySettingsInfo;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Test;
@@ -25,8 +25,8 @@ public class LoggedInUserLabelTest extends GeoServerWicketTestSupport {
         GeoServer gs = getGeoServer();
         GeoServerInfo global = gs.getGlobal();
 
-        global.getWebAdminInterface()
-                .setLoggedInUserDisplayMode(WebAdminInterfaceInfo.LoggedInUserDisplayMode.USERNAME);
+        global.getUserDetailsDisplaySettings()
+                .setLoggedInUserDisplayMode(UserDetailsDisplaySettingsInfo.LoggedInUserDisplayMode.USERNAME);
         gs.save(global);
 
         loginAsAdmin();
@@ -41,8 +41,8 @@ public class LoggedInUserLabelTest extends GeoServerWicketTestSupport {
         GeoServer gs = getGeoServer();
         GeoServerInfo global = gs.getGlobal();
 
-        global.getWebAdminInterface()
-                .setLoggedInUserDisplayMode(WebAdminInterfaceInfo.LoggedInUserDisplayMode.PREFERRED_USERNAME);
+        global.getUserDetailsDisplaySettings()
+                .setLoggedInUserDisplayMode(UserDetailsDisplaySettingsInfo.LoggedInUserDisplayMode.PREFERRED_USERNAME);
         gs.save(global);
 
         GeoServerUser user = new GeoServerUser("user");
@@ -59,8 +59,8 @@ public class LoggedInUserLabelTest extends GeoServerWicketTestSupport {
         GeoServer gs = getGeoServer();
         GeoServerInfo global = gs.getGlobal();
 
-        global.getWebAdminInterface()
-                .setLoggedInUserDisplayMode(WebAdminInterfaceInfo.LoggedInUserDisplayMode.FULL_NAME);
+        global.getUserDetailsDisplaySettings()
+                .setLoggedInUserDisplayMode(UserDetailsDisplaySettingsInfo.LoggedInUserDisplayMode.FULL_NAME);
         gs.save(global);
 
         /* first and last names are present */
@@ -102,8 +102,8 @@ public class LoggedInUserLabelTest extends GeoServerWicketTestSupport {
         GeoServer gs = getGeoServer();
         GeoServerInfo global = gs.getGlobal();
 
-        global.getWebAdminInterface()
-                .setLoggedInUserDisplayMode(WebAdminInterfaceInfo.LoggedInUserDisplayMode.FALLBACK);
+        global.getUserDetailsDisplaySettings()
+                .setLoggedInUserDisplayMode(UserDetailsDisplaySettingsInfo.LoggedInUserDisplayMode.FALLBACK);
         gs.save(global);
 
         /* first and last names are present */
@@ -136,8 +136,8 @@ public class LoggedInUserLabelTest extends GeoServerWicketTestSupport {
         GeoServer gs = getGeoServer();
         GeoServerInfo global = gs.getGlobal();
 
-        global.getWebAdminInterface()
-                .setLoggedInUserDisplayMode(WebAdminInterfaceInfo.LoggedInUserDisplayMode.PREFERRED_USERNAME);
+        global.getUserDetailsDisplaySettings()
+                .setLoggedInUserDisplayMode(UserDetailsDisplaySettingsInfo.LoggedInUserDisplayMode.PREFERRED_USERNAME);
         gs.save(global);
 
         loginAsAdmin();

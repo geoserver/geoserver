@@ -44,19 +44,19 @@ public class GlobalSettingsPageTest extends GeoServerWicketTestSupport {
                 "form:webAdminInterfaceSettingsFragment:loggedInUserDisplayMode", Select2DropDownChoice.class);
         tester.assertModelValue(
                 "form:webAdminInterfaceSettingsFragment:loggedInUserDisplayMode",
-                info.getWebAdminInterface().getLoggedInUserDisplayMode());
+                info.getUserDetailsDisplaySettings().getLoggedInUserDisplayMode());
         tester.assertComponent("form:webAdminInterfaceSettingsFragment:showProfileColumnsInUserList", CheckBox.class);
         tester.assertModelValue(
                 "form:webAdminInterfaceSettingsFragment:showProfileColumnsInUserList",
-                info.getWebAdminInterface().getShowProfileColumnsInUserList());
+                info.getUserDetailsDisplaySettings().getShowProfileColumnsInUserList());
         tester.assertComponent("form:webAdminInterfaceSettingsFragment:emailDisplayMode", Select2DropDownChoice.class);
         tester.assertModelValue(
                 "form:webAdminInterfaceSettingsFragment:emailDisplayMode",
-                info.getWebAdminInterface().getEmailDisplayMode());
+                info.getUserDetailsDisplaySettings().getEmailDisplayMode());
         tester.assertComponent("form:webAdminInterfaceSettingsFragment:revealEmailAtClick", CheckBox.class);
         tester.assertModelValue(
                 "form:webAdminInterfaceSettingsFragment:revealEmailAtClick",
-                info.getWebAdminInterface().getRevealEmailAtClick());
+                info.getUserDetailsDisplaySettings().getRevealEmailAtClick());
         tester.assertComponent("form:webAdminInterfaceSettingsFragment:showCreatedTimeCols", CheckBox.class);
         tester.assertModelValue(
                 "form:webAdminInterfaceSettingsFragment:showCreatedTimeCols",

@@ -4,9 +4,9 @@
  */
 package org.geoserver.config.impl;
 
-import org.geoserver.config.WebAdminInterfaceInfo;
+import org.geoserver.config.UserDetailsDisplaySettingsInfo;
 
-public class WebAdminInterfaceInfoImpl implements WebAdminInterfaceInfo {
+public class UserDetailsDisplaySettingsInfoImpl implements UserDetailsDisplaySettingsInfo {
 
     private String id;
 
@@ -86,8 +86,8 @@ public class WebAdminInterfaceInfoImpl implements WebAdminInterfaceInfo {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null) return false;
-        if (!(obj instanceof WebAdminInterfaceInfo)) return false;
-        final WebAdminInterfaceInfo other = (WebAdminInterfaceInfo) obj;
+        if (!(obj instanceof UserDetailsDisplaySettingsInfo)) return false;
+        final UserDetailsDisplaySettingsInfo other = (UserDetailsDisplaySettingsInfo) obj;
 
         if (id == null) {
             if (other.getId() != null) return false;

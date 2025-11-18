@@ -41,7 +41,7 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.config.SettingsInfo;
-import org.geoserver.config.WebAdminInterfaceInfo;
+import org.geoserver.config.UserDetailsDisplaySettingsInfo;
 import org.geoserver.logging.LoggingUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -77,8 +77,8 @@ public class GlobalSettingsPage extends ServerAdminPage {
 
         CompoundPropertyModel<GeoServerInfo> globalModel = new CompoundPropertyModel<>(globalInfoModel);
         PropertyModel<SettingsInfo> settingsModel = new PropertyModel<>(globalModel, "settings");
-        PropertyModel<WebAdminInterfaceInfo> webAdminInterfaceModel =
-                new PropertyModel<>(globalModel, "webAdminInterface");
+        PropertyModel<UserDetailsDisplaySettingsInfo> userDetailsDisplaySettingsModel =
+                new PropertyModel<>(globalModel, "userDetailsDisplaySettings");
         PropertyModel<MetadataMap> metadataModel = new PropertyModel<>(globalInfoModel, "metadata");
         Form<GeoServerInfo> form = new Form<>("form", globalModel);
 
@@ -164,7 +164,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
 
         form.add(webUIModeChoice);
 
-        form.add(webAdminInterfaceSettings(settingsModel, webAdminInterfaceModel));
+        form.add(webAdminInterfaceSettings(settingsModel, userDetailsDisplaySettingsModel));
 
         form.add(new CheckBox(
                 "allowStoredQueriesPerWorkspace",
@@ -197,37 +197,39 @@ public class GlobalSettingsPage extends ServerAdminPage {
     }
 
     private WebMarkupContainer webAdminInterfaceSettings(
-            PropertyModel<SettingsInfo> settingsModel, PropertyModel<WebAdminInterfaceInfo> webAdminInterfaceModel) {
+            PropertyModel<SettingsInfo> settingsModel,
+            PropertyModel<UserDetailsDisplaySettingsInfo> userDetailsDisplaySettingsModel) {
 
         WebMarkupContainer fieldset = new WebMarkupContainer("webAdminInterfaceSettingsFragment");
 
-        IModel<WebAdminInterfaceInfo.LoggedInUserDisplayMode> loggedInUserDisplayModeModel =
-                new PropertyModel<>(webAdminInterfaceModel, "loggedInUserDisplayMode");
+        IModel<UserDetailsDisplaySettingsInfo.LoggedInUserDisplayMode> loggedInUserDisplayModeModel =
+                new PropertyModel<>(userDetailsDisplaySettingsModel, "loggedInUserDisplayMode");
         if (loggedInUserDisplayModeModel.getObject() == null) {
-            loggedInUserDisplayModeModel.setObject(WebAdminInterfaceInfo.LoggedInUserDisplayMode.USERNAME);
+            loggedInUserDisplayModeModel.setObject(UserDetailsDisplaySettingsInfo.LoggedInUserDisplayMode.USERNAME);
         }
-        DropDownChoice<WebAdminInterfaceInfo.LoggedInUserDisplayMode> loggedInUserDisplayModeChoice =
+        DropDownChoice<UserDetailsDisplaySettingsInfo.LoggedInUserDisplayMode> loggedInUserDisplayModeChoice =
                 new Select2DropDownChoice<>(
                         "loggedInUserDisplayMode",
                         loggedInUserDisplayModeModel,
-                        Arrays.asList(WebAdminInterfaceInfo.LoggedInUserDisplayMode.values()));
+                        Arrays.asList(UserDetailsDisplaySettingsInfo.LoggedInUserDisplayMode.values()));
 
         CheckBox showProfileColumnsInUserList = new CheckBox(
                 "showProfileColumnsInUserList",
-                new PropertyModel<>(webAdminInterfaceModel, "showProfileColumnsInUserList"));
+                new PropertyModel<>(userDetailsDisplaySettingsModel, "showProfileColumnsInUserList"));
 
-        IModel<WebAdminInterfaceInfo.EmailDisplayMode> emailDisplayModeModel =
-                new PropertyModel<>(webAdminInterfaceModel, "emailDisplayMode");
+        IModel<UserDetailsDisplaySettingsInfo.EmailDisplayMode> emailDisplayModeModel =
+                new PropertyModel<>(userDetailsDisplaySettingsModel, "emailDisplayMode");
         if (emailDisplayModeModel.getObject() == null) {
-            emailDisplayModeModel.setObject(WebAdminInterfaceInfo.EmailDisplayMode.DOMAIN_ONLY);
+            emailDisplayModeModel.setObject(UserDetailsDisplaySettingsInfo.EmailDisplayMode.DOMAIN_ONLY);
         }
-        DropDownChoice<WebAdminInterfaceInfo.EmailDisplayMode> emailDisplayModeChoice = new Select2DropDownChoice<>(
-                "emailDisplayMode",
-                emailDisplayModeModel,
-                Arrays.asList(WebAdminInterfaceInfo.EmailDisplayMode.values()));
+        DropDownChoice<UserDetailsDisplaySettingsInfo.EmailDisplayMode> emailDisplayModeChoice =
+                new Select2DropDownChoice<>(
+                        "emailDisplayMode",
+                        emailDisplayModeModel,
+                        Arrays.asList(UserDetailsDisplaySettingsInfo.EmailDisplayMode.values()));
 
-        CheckBox revealEmailAtClickCheckbox =
-                new CheckBox("revealEmailAtClick", new PropertyModel<>(webAdminInterfaceModel, "revealEmailAtClick"));
+        CheckBox revealEmailAtClickCheckbox = new CheckBox(
+                "revealEmailAtClick", new PropertyModel<>(userDetailsDisplaySettingsModel, "revealEmailAtClick"));
         revealEmailAtClickCheckbox.setOutputMarkupPlaceholderTag(true);
         revealEmailAtClickCheckbox.setOutputMarkupId(true);
 

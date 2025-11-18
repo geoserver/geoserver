@@ -8,8 +8,8 @@ import java.util.Optional;
 import java.util.Properties;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.Model;
-import org.geoserver.config.WebAdminInterfaceInfo;
-import org.geoserver.config.impl.WebAdminInterfaceInfoImpl;
+import org.geoserver.config.UserDetailsDisplaySettingsInfo;
+import org.geoserver.config.impl.UserDetailsDisplaySettingsInfoImpl;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.UserProfilePropertyNames;
 import org.geoserver.web.GeoServerApplication;
@@ -19,9 +19,9 @@ import org.springframework.security.core.Authentication;
 /**
  * A customised {@link Label} component for displaying the currently logged-in user’s name in the GeoServer Web UI.
  *
- * <p>The {@code LoggedInUserLabel} respects the current GeoServer web admin interface settings (as configured in
- * {@link WebAdminInterfaceInfo}) to determine how the user’s name is shown. The visualisation of the name is controlled
- * by {@link WebAdminInterfaceInfo.LoggedInUserDisplayMode}, and can be one of:
+ * <p>The {@code LoggedInUserLabel} respects the current GeoServer user details display settings (as configured in
+ * {@link UserDetailsDisplaySettingsInfo}) to determine how the user’s name is shown. The visualisation of the name is
+ * controlled by {@link UserDetailsDisplaySettingsInfo.LoggedInUserDisplayMode}, and can be one of:
  *
  * <ul>
  *   <li>{@code USERNAME} – the GeoServer username is displayed
@@ -43,15 +43,15 @@ public class LoggedInUserLabel extends Label {
                         .orElse(GeoServerSession.get().getUsername())));
     }
 
-    private static WebAdminInterfaceInfo.LoggedInUserDisplayMode loggedInUserDisplayMode() {
-        WebAdminInterfaceInfo webAdminInterfaceInfo = Optional.ofNullable(
-                        GeoServerApplication.get().getGeoServer().getGlobal().getWebAdminInterface())
-                .orElse(new WebAdminInterfaceInfoImpl());
-        return webAdminInterfaceInfo.getLoggedInUserDisplayMode();
+    private static UserDetailsDisplaySettingsInfo.LoggedInUserDisplayMode loggedInUserDisplayMode() {
+        UserDetailsDisplaySettingsInfo userDetailsDisplaySettingsInfo = Optional.ofNullable(
+                        GeoServerApplication.get().getGeoServer().getGlobal().getUserDetailsDisplaySettings())
+                .orElse(new UserDetailsDisplaySettingsInfoImpl());
+        return userDetailsDisplaySettingsInfo.getLoggedInUserDisplayMode();
     }
 
     private static String resolveLoggedInUserDisplayMode(
-            WebAdminInterfaceInfo.LoggedInUserDisplayMode loggedInUserDisplayMode) {
+            UserDetailsDisplaySettingsInfo.LoggedInUserDisplayMode loggedInUserDisplayMode) {
 
         GeoServerSession geoServerSession = GeoServerSession.get();
         String username = geoServerSession.getUsername();

@@ -9,7 +9,7 @@ import java.util.Map;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
-import org.geoserver.config.WebAdminInterfaceInfo;
+import org.geoserver.config.UserDetailsDisplaySettingsInfo;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Test;
@@ -22,7 +22,7 @@ public class UserTablePanelTest extends GeoServerWicketTestSupport {
         GeoServer gs = getGeoServer();
         GeoServerInfo global = gs.getGlobal();
 
-        global.getWebAdminInterface().setShowProfileColumnsInUserList(false);
+        global.getUserDetailsDisplaySettings().setShowProfileColumnsInUserList(false);
         gs.save(global);
 
         UserTablePanel userTablePanel = new UserTablePanel("users", null, new UserListProvider(null) {
@@ -50,7 +50,7 @@ public class UserTablePanelTest extends GeoServerWicketTestSupport {
         GeoServer gs = getGeoServer();
         GeoServerInfo global = gs.getGlobal();
 
-        global.getWebAdminInterface().setShowProfileColumnsInUserList(true);
+        global.getUserDetailsDisplaySettings().setShowProfileColumnsInUserList(true);
         gs.save(global);
 
         GeoServerUser user = new GeoServerUser("user");
@@ -88,9 +88,9 @@ public class UserTablePanelTest extends GeoServerWicketTestSupport {
         GeoServer gs = getGeoServer();
         GeoServerInfo global = gs.getGlobal();
 
-        WebAdminInterfaceInfo webAdminInterface = global.getWebAdminInterface();
-        webAdminInterface.setShowProfileColumnsInUserList(true);
-        webAdminInterface.setRevealEmailAtClick(false);
+        UserDetailsDisplaySettingsInfo userDetailsDisplaySettings = global.getUserDetailsDisplaySettings();
+        userDetailsDisplaySettings.setShowProfileColumnsInUserList(true);
+        userDetailsDisplaySettings.setRevealEmailAtClick(false);
         gs.save(global);
 
         GeoServerUser user = new GeoServerUser("user");
@@ -125,9 +125,9 @@ public class UserTablePanelTest extends GeoServerWicketTestSupport {
         GeoServer gs = getGeoServer();
         GeoServerInfo global = gs.getGlobal();
 
-        WebAdminInterfaceInfo webAdminInterface = global.getWebAdminInterface();
-        webAdminInterface.setShowProfileColumnsInUserList(true);
-        webAdminInterface.setRevealEmailAtClick(true);
+        UserDetailsDisplaySettingsInfo userDetailsDisplaySettings = global.getUserDetailsDisplaySettings();
+        userDetailsDisplaySettings.setShowProfileColumnsInUserList(true);
+        userDetailsDisplaySettings.setRevealEmailAtClick(true);
         gs.save(global);
 
         GeoServerUser user = new GeoServerUser("user");
@@ -162,8 +162,8 @@ public class UserTablePanelTest extends GeoServerWicketTestSupport {
         GeoServer gs = getGeoServer();
         GeoServerInfo global = gs.getGlobal();
 
-        WebAdminInterfaceInfo webAdminInterface = global.getWebAdminInterface();
-        webAdminInterface.setShowProfileColumnsInUserList(true);
+        UserDetailsDisplaySettingsInfo userDetailsDisplaySettings = global.getUserDetailsDisplaySettings();
+        userDetailsDisplaySettings.setShowProfileColumnsInUserList(true);
         gs.save(global);
 
         GeoServerUser user = new GeoServerUser("user");

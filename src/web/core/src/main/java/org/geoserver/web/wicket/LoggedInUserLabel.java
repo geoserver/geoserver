@@ -68,9 +68,8 @@ public class LoggedInUserLabel extends Label {
         return switch (loggedInUserDisplayMode) {
             case PREFERRED_USERNAME -> userProperties.getProperty(UserProfilePropertyNames.PREFERRED_USERNAME);
             case FULL_NAME -> joinFirstAndLastNames(userProperties);
-            case FALLBACK ->
-                Optional.ofNullable(joinFirstAndLastNames(userProperties))
-                        .orElse(userProperties.getProperty(UserProfilePropertyNames.PREFERRED_USERNAME));
+            case FALLBACK -> Optional.ofNullable(joinFirstAndLastNames(userProperties))
+                    .orElse(userProperties.getProperty(UserProfilePropertyNames.PREFERRED_USERNAME));
             case USERNAME -> username;
         };
     }

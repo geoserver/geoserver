@@ -14,7 +14,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.CharArrayReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -1685,7 +1684,10 @@ public class Dispatcher extends AbstractController {
         String version;
         String outputFormat;
         List<String> acceptVersions = new ArrayList<>();
-
+        // We parse the root element to determine the metadata, then rewind the input stream and start parsing again.
+        // See GEOS-10509 .  req.getInput must be a BufferedReader, so we wrap it.
+        RewindableReader rewindableReader = new RewindableReader(req.getInput());
+        req.setInput(new BufferedReader(rewindableReader));
         XMLStreamReader parser = createParserForRootElement(req);
         try {
             // position at root element
@@ -1732,6 +1734,11 @@ public class Dispatcher extends AbstractController {
             parser.close();
         }
 
+        // Done getting metadata from the root element.  Rewind and do a real parse.  We need a fresh
+        // BufferedReader as we can't fully reset it.
+        rewindableReader.rewind();
+        req.setInput(new BufferedReader(rewindableReader));
+
         req.setNamespace(normalize(namespace));
         req.setPostRequestElementName(normalize(elementName));
         // These may already be given by the request query string KVP's, override only if non-null
@@ -1773,24 +1780,13 @@ public class Dispatcher extends AbstractController {
 
     private static XMLStreamReader createParserForRootElement(Request req)
             throws IOException, FactoryConfigurationError, XMLStreamException {
-        char[] buff = new char[XML_LOOKAHEAD];
-        {
-            // Read into buff and use that for the XML stream reader, using req.getInput() directly
-            // can mess up the BufferedReader's state depending on the implementation
-            @SuppressWarnings("PMD.CloseResource")
-            BufferedReader input = req.getInput();
-            input.mark(XML_LOOKAHEAD);
-            input.read(buff);
-            input.reset();
-        }
         // create stream parser
         XMLInputFactory factory = XMLInputFactory.newFactory();
         // disable DTDs
         factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
         // disable external entities
         factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
-        XMLStreamReader parser = factory.createXMLStreamReader(new CharArrayReader(buff));
-        return parser;
+        return factory.createXMLStreamReader(req.getInput());
     }
 
     void exception(Throwable t, Service service, Request request) {

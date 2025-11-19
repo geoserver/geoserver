@@ -113,6 +113,39 @@
       </li>
     </ul>
   </fieldset>
+  <fieldset wicket:id="webAdminInterfaceSettingsFragment">
+    <legend><span><wicket:message key="webAdminInterfaceSettings">Web Administration Interface Settings</wicket:message></span></legend>
+    <ul>
+      <li>
+        <label><wicket:message key="loggedInUserDisplayMode">Logged-in User Display Mode:</wicket:message></label>
+        <select class="select" id="loggedInUserDisplayMode" wicket:id="loggedInUserDisplayMode"></select>
+      </li>
+      <li class="choiceItem">
+        <input id="showProfileColumnsInUserList" type="checkbox" wicket:id="showProfileColumnsInUserList" />
+        <label for="showProfileColumnsInUserList"><wicket:message key="showProfileColumnsInUserList">Show profile columns in users list</wicket:message></label>
+      </li>
+      <li>
+        <label><wicket:message key="emailDisplayMode">Email Display Mode:</wicket:message></label>
+        <select class="select" id="emailDisplayMode" wicket:id="emailDisplayMode" style="width: 141.111px"></select>
+      </li>
+      <li class="choiceItem">
+        <input id="revealEmailAtClick" type="checkbox" wicket:id="revealEmailAtClick" />
+        <label for="revealEmailAtClick"><wicket:message key="revealEmailAtClick">Reveal Email at Click</wicket:message></label>
+      </li>
+      <li class="choiceItem">
+        <input id="showCreatedTimeCols" type="checkbox" wicket:id="showCreatedTimeCols" />
+        <label for="showCreatedTimeCols"><wicket:message key="timeCreatedColChkBox">Display creation timestamps on administration lists</wicket:message></label>
+      </li>
+      <li class="choiceItem">
+        <input id="showModifiedTimeCols" type="checkbox" wicket:id="showModifiedTimeCols" />
+        <label for="showModifiedTimeCols"><wicket:message key="timeModifiedColChkBox">Display modification timestamps on administration lists</wicket:message></label>
+      </li>
+      <li class="choiceItem">
+        <input id="showModifiedByCols" type="checkbox" wicket:id="showModifiedByCols" />
+        <label for="showModifiedByCols"><wicket:message key="modifiedByColChkBox">Display the user who performed last modification on administration lists</wicket:message></label>
+      </li>
+    </ul>
+  </fieldset>
   <fieldset>
     <legend><span><wicket:message key="i18nSettings">i18n Settings</wicket:message></span></legend>
     <ul>
@@ -129,22 +162,10 @@
     </li>
   </ul>
   <ul>
-      <li class="choiceItem">
-        <input id="showCreatedTimeCols" type="checkbox" wicket:id="showCreatedTimeCols" />
-        <label for="showCreatedTimeCols"><wicket:message key="timeCreatedColChkBox">Display creation timestamps on administration lists</wicket:message></label>
-      </li>
-      <li class="choiceItem">
-        <input id="showModifiedTimeCols" type="checkbox" wicket:id="showModifiedTimeCols" />
-        <label for="showModifiedTimeCols"><wicket:message key="timeModifiedColChkBox">Display modification timestamps on administration lists</wicket:message></label>
-      </li>
     <li class="choiceItem">
-      <input id="showModifiedByCols" type="checkbox" wicket:id="showModifiedByCols" />
-      <label for="showModifiedByCols"><wicket:message key="modifiedByColChkBox">Display the user who performed last modification</wicket:message></label>
+      <input id="trailingSlashMatch" type="checkbox" wicket:id="trailingSlashMatch" />
+      <label for="trailingSlashMatch"><wicket:message key="trailingSlashMatch">Match URLs with Trailing Slash (Requires restart)</wicket:message></label>
     </li>
-      <li class="choiceItem">
-        <input id="trailingSlashMatch" type="checkbox" wicket:id="trailingSlashMatch" />
-        <label for="trailingSlashMatch"><wicket:message key="trailingSlashMatch">Match URLs with Trailing Slash (Requires restart)</wicket:message></label>
-      </li>
   </ul>
   <div class="button-group toolbar-sticky selfclear">
     <button type="submit" class="form-button-save" wicket:id="submit"><wicket:message key="save">save</wicket:message></button>

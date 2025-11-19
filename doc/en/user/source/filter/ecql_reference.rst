@@ -226,9 +226,9 @@ Literals specify constant values of various types.
        A custom type of Envelope is also supported with syntax ``ENVELOPE (`` *x1* *x2* *y1* *y2* ``)``.
        
    * - *Time*
-     - A UTC date/time value in the format ``yyyy-mm-hhThh:mm:ss``.
+     - A UTC date/time value in the format ``YYYY-MM-DDTHH:mm:ss``.
        The seconds value may have a decimal fraction.
-       The time zone may be specified as ``Z`` or ``+/-hh:mm``.
+       The time zone may be specified as ``Z`` or ``+/-HH:mm``.
        Example: ``2006-11-30T00:30:00Z``
    * - *Duration*
      - A time duration specified as ``P`` **[** y ``Y`` m ``M`` d ``D`` **]** ``T`` **[** h ``H`` m ``M`` s ``S`` **]**.  

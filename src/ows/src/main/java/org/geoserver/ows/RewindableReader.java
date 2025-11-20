@@ -68,6 +68,7 @@ public class RewindableReader extends Reader {
         isFirstPhase = false;
     }
 
+    @Override
     public boolean ready() throws IOException {
         if (!isFirstPhase && !buffer.isEmpty()) {
             // We're replaying the buffer

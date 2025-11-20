@@ -1686,6 +1686,7 @@ public class Dispatcher extends AbstractController {
         List<String> acceptVersions = new ArrayList<>();
         // We parse the root element to determine the metadata, then rewind the input stream and start parsing again.
         // See GEOS-10509 .  req.getInput must be a BufferedReader, so we wrap it.
+        @SuppressWarnings("PMD.CloseResource")
         RewindableReader rewindableReader = new RewindableReader(req.getInput());
         req.setInput(new BufferedReader(rewindableReader));
         XMLStreamReader parser = createParserForRootElement(req);

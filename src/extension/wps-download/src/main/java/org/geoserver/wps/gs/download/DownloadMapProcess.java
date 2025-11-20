@@ -654,7 +654,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             RenderedImage alpha =
                     new ImageWorker(image).retainBands(new int[] {1}).getRenderedImage();
             image = new ImageWorker(gray)
-                    .addBands(new RenderedImage[] {gray, gray, gray, alpha}, true, null)
+                    .addBands(new RenderedImage[] {gray, gray, alpha}, true, null)
                     .getRenderedImage();
         }
         graphics.drawRenderedImage(image, AffineTransform.getScaleInstance(1, 1));

@@ -1,0 +1,89 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+  <wicket:panel>
+    <legend>
+     <input type="checkbox" wicket:id="setLayerDetails"></input>
+     <span><wicket:message key="layerDetails">Layer Details</wicket:message></span>
+    </legend>
+    <div wicket:id="detailsContainer" style="padding-left:1em;">
+      <fieldset>
+        <ul>
+          <li>
+            <label for="layerType"><wicket:message key="layerType"/></label>
+            <span wicket:id="layerType"></span>
+          </li>
+          <li>
+            <div wicket:id="styles" id="styles">
+              <fieldset>
+                <ul>
+                  <li>
+                    <legend>
+                     <span><wicket:message key="styles">Limit styles</wicket:message></span>
+                    </legend>
+                  </li>
+                  <li>
+                    <label for="defaultStyle"><wicket:message key="defaultStyle"/></label>
+                    <input id="defaultStyle" wicket:id="defaultStyle" type="text" class="text"/>
+                  </li>
+                  <li>
+                    <label for="allowedStyles"><wicket:message key="allowedStyles"/></label>
+                    <div wicket:id="allowedStyles" id="allowedStyles"></div>
+                  </li>
+                </ul>
+              </fieldset>
+            </div>
+          </li>
+          <li>
+            <legend>
+             <span><wicket:message key="filters">Filter contents</wicket:message></span>
+            </legend>
+          </li>
+          <li>
+            <div class="tabset" id="filterTabs" wicket:id="filterTabs">
+              <span wicket:id="filtertabset">
+              <!-- Tab 1 -->
+              <input type="radio" name="filtertabset" wicket:id="wktareaTab" aria-controls="wktarea">
+              <label wicket:for="wktareaTab"><wicket:message key="allowedArea"/></label>
+              <!-- Tab 2 -->
+              <input type="radio" name="filtertabset" wicket:id="cqlreadTab" aria-controls="cqlread">
+              <label wicket:for="cqlreadTab"><wicket:message key="cqlFilterRead"/></label>
+              <!-- Tab 3 -->
+              <input type="radio" name="filtertabset" wicket:id="cqlwriteTab" aria-controls="cqlwrite">
+              <label wicket:for="cqlwriteTab"><wicket:message key="cqlFilterWrite"/></label>
+              </span>
+              <div class="tab-panels">
+                <div id="wktarea" class="tab-panel">
+                  <div wicket:id="allowedArea" id="allowedArea"></div>
+                </div>
+                <div id="cqlread" class="tab-panel">
+                  <fieldset>
+                    <ul> 
+                      <li>
+                        <label><wicket:message key="cqlFilterRead"/></label>
+                        <textarea wicket:id="cqlFilterRead" id="cqlFilterRead"></textarea>
+                      </li>
+                    </ul>
+                  </fieldset>
+                </div>
+                <div id="cqlwrite" class="tab-panel">
+                  <fieldset>
+                    <ul> 
+                      <li>
+                        <label><wicket:message key="cqlFilterWrite"/></label>
+                        <textarea wicket:id="cqlFilterWrite" id="cqlFilterWrite"></textarea>
+                      </li>
+                    </ul>
+                  </fieldset>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div id="layerAttributes" wicket:id="layerAttributes"></div>
+          </li>
+        </ul>
+      </fieldset>
+    </div>
+  </wicket:panel>
+</body>
+</html>

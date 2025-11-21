@@ -1,0 +1,44 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:extend>
+  <form wicket:id="form">
+  <fieldset>
+    <ul>
+      <li>
+        <label for="priority"><wicket:message key="priority"></wicket:message></label>
+        <input id="priority" wicket:id="priority" type="text" class="text" />
+      </li>
+      <li>
+        <label for="roleName"><wicket:message key="roleName"></wicket:message></label>
+        <input id="roleName" wicket:id="roleName" type="text" class="text" placeholder="*"/>
+      </li>
+      <li>
+        <label for="userName"><wicket:message key="username"></wicket:message></label>
+        <input id="userName" wicket:id="userName" type="text" class="text" placeholder="*"/>
+      </li>
+      <li>
+        <label for="workspace"><wicket:message key="workspace"></wicket:message></label>
+        <input id="workspace" wicket:id="workspace" type="text" class="text" placeholder="*"/>
+      </li>
+      <li>
+        <label wicket:for="access"><wicket:message key="access"></wicket:message></label>
+        <span wicket:id="access">
+          <div class="switch-field">
+            <input wicket:id="USER" type="radio"/>
+            <label wicket:for="USER"><wicket:message key="AdminGrantType.USER"/></label>
+            
+            <input wicket:id="ADMIN" type="radio"/>
+            <label wicket:for="ADMIN"><wicket:message key="AdminGrantType.ADMIN"/></label>      
+          </div>
+        </span>
+      </li>
+    </ul>
+  </fieldset>
+  <div class="button-group toolbar-sticky selfclear">
+    <a href="#" class="form-button-save" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
+    <a href="#" class="form-button-cancel" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
+  </div>
+  </form>
+</wicket:extend>
+</body>
+</html>

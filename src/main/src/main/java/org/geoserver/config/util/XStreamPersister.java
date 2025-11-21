@@ -136,6 +136,7 @@ import org.geoserver.config.ImageProcessingInfo;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
+import org.geoserver.config.UserDetailsDisplaySettingsInfo;
 import org.geoserver.config.impl.ContactInfoImpl;
 import org.geoserver.config.impl.CoverageAccessInfoImpl;
 import org.geoserver.config.impl.GeoServerImpl;
@@ -144,6 +145,7 @@ import org.geoserver.config.impl.ImageProcessingInfoImpl;
 import org.geoserver.config.impl.LoggingInfoImpl;
 import org.geoserver.config.impl.ServiceInfoImpl;
 import org.geoserver.config.impl.SettingsInfoImpl;
+import org.geoserver.config.impl.UserDetailsDisplaySettingsInfoImpl;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityManager;
@@ -326,6 +328,7 @@ public class XStreamPersister {
         xs.alias("settings", SettingsInfo.class);
         xs.alias("logging", LoggingInfo.class);
         xs.alias("jai", ImageProcessingInfo.class);
+        xs.alias("userDetailsDisplaySettings", UserDetailsDisplaySettingsInfo.class);
         xs.alias("coverageAccess", CoverageAccessInfo.class);
         xs.alias("catalog", Catalog.class);
         xs.alias("namespace", NamespaceInfo.class);
@@ -714,6 +717,7 @@ public class XStreamPersister {
         xs.addDefaultImplementation(ImageProcessingInfoImpl.class, ImageProcessingInfo.class);
         xs.addDefaultImplementation(CoverageAccessInfoImpl.class, CoverageAccessInfo.class);
         xs.addDefaultImplementation(ContactInfoImpl.class, ContactInfo.class);
+        xs.addDefaultImplementation(UserDetailsDisplaySettingsInfoImpl.class, UserDetailsDisplaySettingsInfo.class);
         xs.addDefaultImplementation(AttributionInfoImpl.class, AttributionInfo.class);
 
         // catalog

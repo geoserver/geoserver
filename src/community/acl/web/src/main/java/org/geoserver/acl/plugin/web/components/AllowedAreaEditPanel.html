@@ -1,0 +1,26 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+ <body>
+   <wicket:panel>
+      <fieldset>
+        <ul> 
+          <li>
+            <label for="allowedArea"><wicket:message key="allowedArea"/></label>
+            <textarea id="allowedArea" wicket:id="allowedArea" draggable="true" placeholder="SRID=4326;MULTIPOLYGON(((...)))"></textarea>
+          </li>
+          <li>
+            <label><wicket:message key="spatialFilterType"/></label>
+            <span wicket:id="spatialFilterType">
+              <div class="switch-field">
+                <input wicket:id="INTERSECT" type="radio"/>
+                <label wicket:for="INTERSECT"><wicket:message key="SpatialFilterType.INTERSECT"/></label>
+  
+                <input wicket:id="CLIP" type="radio"/>
+                <label wicket:for="CLIP"><wicket:message key="SpatialFilterType.CLIP"/></label>
+              </div>
+            </span>
+          </li>
+        </ul>
+      </fieldset>
+   </wicket:panel>
+ </body>
+</html>

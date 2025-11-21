@@ -9,12 +9,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.geoserver.config.UserDetailsDisplaySettingsInfo;
+import org.geoserver.config.impl.UserDetailsDisplaySettingsInfoImpl;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.impl.GeoServerUser;
+import org.geoserver.security.impl.UserProfilePropertyNames;
+import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 
 /** Page listing the users contained in the users.properties file */
@@ -23,6 +28,17 @@ public class UserListProvider extends GeoServerDataProvider<GeoServerUser> {
 
     public static final Property<GeoServerUser> USERNAME = new BeanProperty<>("username", "username");
     public static final Property<GeoServerUser> ENABLED = new BeanProperty<>("enabled", "enabled");
+    public static final Property<GeoServerUser> FIRST_NAME =
+            new GeoServerUserPropProperty(UserProfilePropertyNames.FIRST_NAME);
+    public static final Property<GeoServerUser> LAST_NAME =
+            new GeoServerUserPropProperty(UserProfilePropertyNames.LAST_NAME);
+    public static final Property<GeoServerUser> PREFERRED_USERNAME =
+            new GeoServerUserPropProperty(UserProfilePropertyNames.PREFERRED_USERNAME);
+    public static final Property<GeoServerUser> EMAIL = new GeoServerUserPropProperty(UserProfilePropertyNames.EMAIL);
+
+    private static final List<Property<GeoServerUser>> PROFILE_COLUMNS =
+            List.of(FIRST_NAME, LAST_NAME, PREFERRED_USERNAME, EMAIL);
+
     protected String userGroupServiceName;
 
     public UserListProvider(String userGroupServiceName) {
@@ -164,6 +180,55 @@ public class UserListProvider extends GeoServerDataProvider<GeoServerUser> {
         result.add(HASATTRIBUTES);
         //        result.add(ROLES);
         //        result.add(ADMIN);
+        if (shouldShowProfileColumns()) {
+            result.addAll(PROFILE_COLUMNS);
+        }
         return result;
+    }
+
+    private boolean shouldShowProfileColumns() {
+        UserDetailsDisplaySettingsInfo userDetailsDisplaySettingsInfo = Optional.ofNullable(
+                        GeoServerApplication.get().getGeoServer().getGlobal().getUserDetailsDisplaySettings())
+                .orElse(new UserDetailsDisplaySettingsInfoImpl());
+        return userDetailsDisplaySettingsInfo.getShowProfileColumnsInUserList();
+    }
+
+    private static class GeoServerUserPropProperty implements Property<GeoServerUser> {
+
+        private final String propertyName;
+
+        public GeoServerUserPropProperty(String propertyName) {
+            this.propertyName = propertyName;
+        }
+
+        @Override
+        public String getName() {
+            return propertyName;
+        }
+
+        @Override
+        public Object getPropertyValue(GeoServerUser item) {
+            return item.getProperties().getProperty(propertyName, "");
+        }
+
+        @Override
+        public IModel<String> getModel(IModel itemModel) {
+            return new Model<>((String) getPropertyValue((GeoServerUser) itemModel.getObject()));
+        }
+
+        @Override
+        public Comparator<GeoServerUser> getComparator() {
+            return new PropertyComparator<>(this);
+        }
+
+        @Override
+        public boolean isVisible() {
+            return true;
+        }
+
+        @Override
+        public boolean isSearchable() {
+            return true;
+        }
     }
 }

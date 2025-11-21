@@ -15,6 +15,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.wicket.Select2DropDownChoice;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,14 +39,39 @@ public class GlobalSettingsPageTest extends GeoServerWicketTestSupport {
         tester.startPage(GlobalSettingsPage.class);
         tester.assertComponent("form:verbose", CheckBox.class);
         tester.assertModelValue("form:verbose", info.getSettings().isVerbose());
-        tester.assertComponent("form:showCreatedTimeCols", CheckBox.class);
-        tester.assertModelValue("form:showCreatedTimeCols", info.getSettings().isShowCreatedTimeColumnsInAdminList());
-        tester.assertComponent("form:showModifiedTimeCols", CheckBox.class);
-        tester.assertModelValue("form:showModifiedTimeCols", info.getSettings().isShowModifiedTimeColumnsInAdminList());
+
+        tester.assertComponent(
+                "form:webAdminInterfaceSettingsFragment:loggedInUserDisplayMode", Select2DropDownChoice.class);
+        tester.assertModelValue(
+                "form:webAdminInterfaceSettingsFragment:loggedInUserDisplayMode",
+                info.getUserDetailsDisplaySettings().getLoggedInUserDisplayMode());
+        tester.assertComponent("form:webAdminInterfaceSettingsFragment:showProfileColumnsInUserList", CheckBox.class);
+        tester.assertModelValue(
+                "form:webAdminInterfaceSettingsFragment:showProfileColumnsInUserList",
+                info.getUserDetailsDisplaySettings().getShowProfileColumnsInUserList());
+        tester.assertComponent("form:webAdminInterfaceSettingsFragment:emailDisplayMode", Select2DropDownChoice.class);
+        tester.assertModelValue(
+                "form:webAdminInterfaceSettingsFragment:emailDisplayMode",
+                info.getUserDetailsDisplaySettings().getEmailDisplayMode());
+        tester.assertComponent("form:webAdminInterfaceSettingsFragment:revealEmailAtClick", CheckBox.class);
+        tester.assertModelValue(
+                "form:webAdminInterfaceSettingsFragment:revealEmailAtClick",
+                info.getUserDetailsDisplaySettings().getRevealEmailAtClick());
+        tester.assertComponent("form:webAdminInterfaceSettingsFragment:showCreatedTimeCols", CheckBox.class);
+        tester.assertModelValue(
+                "form:webAdminInterfaceSettingsFragment:showCreatedTimeCols",
+                info.getSettings().isShowCreatedTimeColumnsInAdminList());
+        tester.assertComponent("form:webAdminInterfaceSettingsFragment:showModifiedTimeCols", CheckBox.class);
+        tester.assertModelValue(
+                "form:webAdminInterfaceSettingsFragment:showModifiedTimeCols",
+                info.getSettings().isShowModifiedTimeColumnsInAdminList());
+        tester.assertComponent("form:webAdminInterfaceSettingsFragment:showModifiedByCols", CheckBox.class);
+        tester.assertModelValue(
+                "form:webAdminInterfaceSettingsFragment:showModifiedByCols",
+                info.getSettings().isShowModifiedUserInAdminList());
+
         tester.assertComponent("form:trailingSlashMatch", CheckBox.class);
         tester.assertModelValue("form:trailingSlashMatch", info.isTrailingSlashMatch());
-        tester.assertComponent("form:showModifiedByCols", CheckBox.class);
-        tester.assertModelValue("form:showModifiedByCols", info.getSettings().isShowModifiedUserInAdminList());
     }
 
     @Test

@@ -13,16 +13,24 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
+/**
+ * Contributes:
+ *
+ * <ul>
+ *   <li>{@link AclResourceAccessManager}
+ *   <li>{@link AuthorizationServiceConfig}
+ * </ul>
+ *
+ * Requires:
+ *
+ * <ul>
+ *   <li>{@link AuthorizationService}
+ *   <li>{@link Catalog} ({@code rawCatalog}
+ *   <li>Optional: {@link AclWPSHelper}
+ * </ul>
+ */
 @Configuration
 public class AclResourceAccessManagerSpringConfig {
-
-    @Bean
-    AuthorizationServiceConfig aclConfig(Environment env) {
-        AuthorizationServiceConfig config = new AuthorizationServiceConfig();
-        String serviceUrl = env.getProperty("geoserver.acl.client.basePath");
-        config.setServiceUrl(serviceUrl);
-        return config;
-    }
 
     @Bean
     AclResourceAccessManager aclAccessManager(
@@ -32,6 +40,14 @@ public class AclResourceAccessManagerSpringConfig {
             AclWPSHelper wpsHelper) {
 
         return new AclResourceAccessManager(aclService, groupsCache, configuration, wpsHelper);
+    }
+
+    @Bean
+    AuthorizationServiceConfig aclConfig(Environment env) {
+        AuthorizationServiceConfig config = new AuthorizationServiceConfig();
+        String serviceUrl = env.getProperty("geoserver.acl.client.basePath");
+        config.setServiceUrl(serviceUrl);
+        return config;
     }
 
     @Bean

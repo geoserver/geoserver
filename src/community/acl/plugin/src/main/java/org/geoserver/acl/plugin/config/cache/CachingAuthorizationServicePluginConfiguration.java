@@ -7,7 +7,7 @@ package org.geoserver.acl.plugin.config.cache;
 import jakarta.annotation.PostConstruct;
 import java.util.logging.Logger;
 import org.geoserver.acl.authorization.cache.CachingAuthorizationService;
-import org.geoserver.acl.authorization.cache.CachingAuthorizationServiceConfiguration;
+import org.geoserver.acl.config.authorization.cache.CachingAuthorizationServiceConfiguration;
 import org.geoserver.config.impl.GeoServerLifecycleHandler;
 import org.geotools.util.logging.Logging;
 import org.springframework.context.annotation.Bean;

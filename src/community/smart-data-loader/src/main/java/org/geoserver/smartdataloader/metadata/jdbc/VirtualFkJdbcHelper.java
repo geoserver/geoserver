@@ -22,16 +22,43 @@ import org.geoserver.smartdataloader.metadata.VirtualRelationMetadata;
 import org.geoserver.smartdataloader.metadata.jdbc.constraint.JdbcForeignKeyConstraintMetadata;
 import org.geoserver.smartdataloader.metadata.jdbc.constraint.JdbcPrimaryKeyConstraintMetadata;
 
+/**
+ * {@link JdbcHelper} decorator that augments the metadata retrieved from the underlying database with the virtual
+ * relationships provided by the Smart Data Loader configuration. For each declared relationship the inverse direction
+ * is synthesized so the virtual link is visible from both the source and target entities.
+ */
 public class VirtualFkJdbcHelper implements JdbcHelper {
 
     private final JdbcHelper delegate;
     private final Relationships relationships;
 
+    /**
+     * Builds a helper using the default JDBC metadata implementation as delegate.
+     *
+     * @param relationships user provided relationships (may be {@code null}); inverse relations will be synthesized
+     *     automatically
+     */
     public VirtualFkJdbcHelper(Relationships relationships) {
         this(new DefaultJdbcHelper(), relationships);
     }
 
-    /** Allow injecting a different delegate (useful for testing or custom implementations). */
+    /**
+     * Validates that all configured virtual relationships point to existing entities/columns and adhere to the optional
+     * schema constraint. Throws {@link IllegalArgumentException} on any violation.
+     */
+    public void validateVirtualRelationships(DatabaseMetaData metaData, String allowedSchema) throws Exception {
+        for (Relationship relationship : relationships.getRelationships()) {
+            validateEndpoint(metaData, relationship.getSource(), relationship.getName(), "source", allowedSchema);
+            validateEndpoint(metaData, relationship.getTarget(), relationship.getName(), "target", allowedSchema);
+        }
+    }
+
+    /**
+     * Allow injecting a different delegate (useful for testing or custom implementations).
+     *
+     * @param delegate base helper to delegate all standard JDBC operations to
+     * @param relationships user provided relationships (may be {@code null})
+     */
     public VirtualFkJdbcHelper(JdbcHelper delegate, Relationships relationships) {
         this.delegate = (delegate != null) ? delegate : new DefaultJdbcHelper();
         this.relationships = (relationships != null) ? relationships : new Relationships();
@@ -111,6 +138,7 @@ public class VirtualFkJdbcHelper implements JdbcHelper {
             }
 
             if (matchesTarget) {
+                // Generate the complementary direction so App-Schema sees a bidirectional mapping.
                 AttributeMetadata targetAttr =
                         findAttribute(table, relationship.getTarget().getKey().getColumn());
                 JdbcTableMetadata sourceTableMetadata = findTableMetadata(
@@ -143,6 +171,43 @@ public class VirtualFkJdbcHelper implements JdbcHelper {
                 .anyMatch(rel -> rel.getSource().getEntity().equals(table.getName())
                         && rel.getSource().getKey().getColumn().equals(columnName)
                         && rel.getSource().getSchema().equals(table.getSchema()));
+    }
+
+    private void validateEndpoint(
+            DatabaseMetaData metaData, EntityRef endpoint, String relationshipName, String role, String allowedSchema)
+            throws Exception {
+        if (endpoint == null || endpoint.getKey() == null) {
+            throw new IllegalArgumentException(
+                    "Missing " + role + " definition for relationship '" + relationshipName + "'");
+        }
+        if (!isSingleColumn(endpoint.getKey().getColumn())) {
+            throw new IllegalArgumentException(
+                    "Relationship '" + relationshipName + "' " + role + " key must reference a single column");
+        }
+        if (allowedSchema != null
+                && !allowedSchema.trim().isEmpty()
+                && endpoint.getSchema() != null
+                && !allowedSchema.equalsIgnoreCase(endpoint.getSchema())) {
+            throw new IllegalArgumentException(
+                    "Relationship '" + relationshipName + "' " + role + " schema must be '" + allowedSchema + "'");
+        }
+        JdbcTableMetadata table = findTableMetadata(metaData, endpoint.getSchema(), endpoint.getEntity());
+        if (table == null) {
+            throw new IllegalArgumentException("Relationship '" + relationshipName + "' references missing " + role
+                    + " entity '" + endpoint.getEntity() + "'");
+        }
+        AttributeMetadata column = findAttribute(table, endpoint.getKey().getColumn());
+        if (column == null) {
+            throw new IllegalArgumentException("Relationship '" + relationshipName + "' references missing column '"
+                    + endpoint.getKey().getColumn() + "' on " + role + " entity '" + endpoint.getEntity() + "'");
+        }
+    }
+
+    private boolean isSingleColumn(String column) {
+        if (column == null) {
+            return false;
+        }
+        return !column.contains(",") && !column.contains(";") && !column.contains(" ");
     }
 
     @Override

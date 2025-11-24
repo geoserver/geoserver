@@ -6,6 +6,7 @@ package org.geoserver.smartdataloader.data.store.virtualfk;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 
 import org.junit.Test;
 
@@ -54,9 +55,118 @@ public class RelationshipsXmlParserTest {
         assertEquals(0, relationships.getRelationships().size());
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseMissingRelationshipNameFails() throws Exception {
+        String xml = "<relationships>"
+                + "<relationship cardinality=\"n:1\">"
+                + "<source schema=\"public\" entity=\"observations_v\" kind=\"VIEW\">"
+                + "<key column=\"station_id\"/>"
+                + "</source>"
+                + "<target schema=\"public\" entity=\"stations\" kind=\"TABLE\">"
+                + "<key column=\"id\"/>"
+                + "</target>"
+                + "</relationship>"
+                + "</relationships>";
+        RelationshipsXmlParser.parse(xml);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseMissingKeyColumnFails() throws Exception {
+        String xml = "<relationships>"
+                + "<relationship name=\"observations_has_station\" cardinality=\"n:1\">"
+                + "<source schema=\"public\" entity=\"observations_v\" kind=\"VIEW\">"
+                + "<key column=\"\"/>"
+                + "</source>"
+                + "<target schema=\"public\" entity=\"stations\" kind=\"TABLE\">"
+                + "<key column=\"id\"/>"
+                + "</target>"
+                + "</relationship>"
+                + "</relationships>";
+        RelationshipsXmlParser.parse(xml);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseInvalidCardinalityFails() throws Exception {
+        String xml = "<relationships>"
+                + "<relationship name=\"observations_has_station\" cardinality=\"invalid\">"
+                + "<source schema=\"public\" entity=\"observations_v\" kind=\"VIEW\">"
+                + "<key column=\"station_id\"/>"
+                + "</source>"
+                + "<target schema=\"public\" entity=\"stations\" kind=\"TABLE\">"
+                + "<key column=\"id\"/>"
+                + "</target>"
+                + "</relationship>"
+                + "</relationships>";
+        RelationshipsXmlParser.parse(xml);
+    }
+
     @Test(expected = Exception.class)
     public void testParseInvalidXml() throws Exception {
         String xml = "<relationships><relationship></relationships"; // malformed
         RelationshipsXmlParser.parse(xml);
+    }
+
+    @Test
+    public void testRejectsExternalEntities() {
+        String xml = "<!DOCTYPE relationships ["
+                + "<!ENTITY xxe SYSTEM \"file:///etc/passwd\">"
+                + "]>"
+                + "<relationships>"
+                + "<relationship name=\"evil\" cardinality=\"1:1\">"
+                + "<source schema=\"public\" entity=\"observations_v\" kind=\"VIEW\">"
+                + "<key column=\"station_id\"/>"
+                + "</source>"
+                + "<target schema=\"public\" entity=\"stations\" kind=\"TABLE\">"
+                + "<key column=\"&xxe;\"/>"
+                + "</target>"
+                + "</relationship>"
+                + "</relationships>";
+
+        assertThrows(Exception.class, () -> RelationshipsXmlParser.parse(xml));
+    }
+
+    @Test
+    public void testRejectsOversizedDocument() {
+        int limit = RelationshipsXmlParser.MAX_DOCUMENT_BYTES;
+        StringBuilder xml = new StringBuilder(limit + 100);
+        xml.append("<relationships>");
+        String relationship = "<relationship name=\"r\" cardinality=\"1:1\">"
+                + "<source schema=\"public\" entity=\"observations_v\" kind=\"VIEW\">"
+                + "<key column=\"station_id\"/>"
+                + "</source>"
+                + "<target schema=\"public\" entity=\"stations\" kind=\"TABLE\">"
+                + "<key column=\"id\"/>"
+                + "</target>"
+                + "</relationship>";
+        while (xml.length() <= limit + 1) {
+            xml.append(relationship);
+        }
+        xml.append("</relationships>");
+
+        assertThrows(IllegalArgumentException.class, () -> RelationshipsXmlParser.parse(xml.toString()));
+    }
+
+    @Test
+    public void testRejectsOverlyDeepDocument() {
+        int depthLimit = RelationshipsXmlParser.MAX_DOCUMENT_DEPTH;
+        StringBuilder xml = new StringBuilder();
+        xml.append("<relationships>");
+        for (int i = 0; i <= depthLimit; i++) {
+            xml.append("<wrapper>");
+        }
+        xml.append("<relationship name=\"deep\" cardinality=\"1:1\">"
+                + "<source schema=\"public\" entity=\"observations_v\" kind=\"VIEW\">"
+                + "<key column=\"station_id\"/>"
+                + "</source>"
+                + "<target schema=\"public\" entity=\"stations\" kind=\"TABLE\">"
+                + "<key column=\"id\"/>"
+                + "</target>"
+                + "</relationship>");
+        for (int i = 0; i <= depthLimit; i++) {
+            xml.append("</wrapper>");
+        }
+        xml.append("</relationships>");
+
+        assertThrows(IllegalArgumentException.class, () -> RelationshipsXmlParser.parse(xml.toString()));
     }
 }

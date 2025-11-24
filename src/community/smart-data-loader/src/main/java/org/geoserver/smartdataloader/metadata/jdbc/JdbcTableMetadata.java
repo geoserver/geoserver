@@ -50,12 +50,16 @@ public class JdbcTableMetadata extends EntityMetadata implements JdbcConnectable
 
     @Override
     public boolean equals(Object object) {
-        if (object == null || !(object instanceof JdbcTableMetadata)) {
+        if (this == object) {
+            return true;
+        }
+        if (!(object instanceof JdbcTableMetadata)) {
             return false;
         }
-        if (!super.equals(object)) return false;
         JdbcTableMetadata table = (JdbcTableMetadata) object;
-        return this.compareTo(table) == 0;
+        return Objects.equals(this.catalog, table.catalog)
+                && Objects.equals(this.schema, table.schema)
+                && Objects.equals(this.getName(), table.getName());
     }
 
     @Override

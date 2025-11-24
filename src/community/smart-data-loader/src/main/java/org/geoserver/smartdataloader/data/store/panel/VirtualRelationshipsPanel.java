@@ -47,7 +47,7 @@ public class VirtualRelationshipsPanel extends Panel {
 
     private static final Logger LOGGER = Logging.getLogger(VirtualRelationshipsPanel.class);
 
-    private static final List<String> CARDINALITIES = Arrays.asList("1:1", "1:n", "n:1", "n:n");
+    private static final List<String> CARDINALITIES = Arrays.asList("1:1", "1:n", "n:1");
 
     private static final List<String> ENTITY_KINDS = Arrays.asList("table", "view");
 
@@ -61,6 +61,12 @@ public class VirtualRelationshipsPanel extends Panel {
     private FeedbackPanel feedback;
     private GSModalWindow relationshipModal;
 
+    /**
+     * Builds the panel bound to the provided connection parameters map.
+     *
+     * @param id Wicket component id
+     * @param connectionParametersModel model exposing the store connection parameters to update
+     */
     public VirtualRelationshipsPanel(String id, IModel<Map<String, Serializable>> connectionParametersModel) {
         super(id);
         this.connectionParametersModel = connectionParametersModel;
@@ -263,7 +269,7 @@ public class VirtualRelationshipsPanel extends Panel {
         String xml = RelationshipsXmlWriter.toXml(rels);
         Map<String, Serializable> parameters = connectionParametersModel.getObject();
         if (parameters != null) {
-            if (xml == null) {
+            if (xml == null || xml.trim().isEmpty()) {
                 parameters.remove(SmartDataLoaderDataAccessFactory.VIRTUAL_RELATIONSHIPS.key);
             } else {
                 parameters.put(SmartDataLoaderDataAccessFactory.VIRTUAL_RELATIONSHIPS.key, xml);
@@ -289,9 +295,6 @@ public class VirtualRelationshipsPanel extends Panel {
         if ("1:1".equalsIgnoreCase(value)) {
             return "1<->1";
         }
-        if ("n:n".equalsIgnoreCase(value)) {
-            return "n<->n";
-        }
         return value;
     }
 
@@ -303,16 +306,27 @@ public class VirtualRelationshipsPanel extends Panel {
         return getString("VirtualRelationshipsPanel.editLegend", null, "Edit virtual relationship");
     }
 
+    private String getEnforcedSchema() {
+        Map<String, Serializable> params = connectionParametersModel.getObject();
+        if (params == null) {
+            return null;
+        }
+        Object schema = params.get("schema");
+        if (schema instanceof String) {
+            String value = ((String) schema).trim();
+            return value.isEmpty() ? null : value;
+        }
+        return null;
+    }
+
     private class RelationshipFormPanel extends Panel {
 
         private final CompoundPropertyModel<VirtualRelationshipBean> formModel;
         private final FeedbackPanel modalFeedback;
-        private final int relationshipIndex;
 
         RelationshipFormPanel(String id, VirtualRelationshipBean bean, int relationshipIndex, boolean editMode) {
             super(id);
             setOutputMarkupId(true);
-            this.relationshipIndex = relationshipIndex;
             this.formModel = new CompoundPropertyModel<>(bean);
 
             Form<VirtualRelationshipBean> form = new Form<>("form", formModel);
@@ -344,6 +358,23 @@ public class VirtualRelationshipsPanel extends Panel {
                     if (!bean.isValid()) {
                         error(getString(
                                 "VirtualRelationshipsPanel.validationError", null, "All fields must be provided."));
+                        target.add(modalFeedback);
+                        return;
+                    }
+                    if (!bean.hasSingleColumnKeys()) {
+                        error(getString(
+                                "VirtualRelationshipsPanel.singleColumnError",
+                                null,
+                                "Key columns must reference a single column (no separators)."));
+                        target.add(modalFeedback);
+                        return;
+                    }
+                    String enforcedSchema = getEnforcedSchema();
+                    if (!bean.belongsToSchema(enforcedSchema)) {
+                        error(getString(
+                                "VirtualRelationshipsPanel.schemaError",
+                                null,
+                                "Source and target schemas must match the configured schema"));
                         target.add(modalFeedback);
                         return;
                     }
@@ -473,6 +504,24 @@ public class VirtualRelationshipsPanel extends Panel {
                     && targetEntity != null
                     && targetKind != null
                     && targetColumn != null;
+        }
+
+        boolean hasSingleColumnKeys() {
+            return isSingleColumn(sourceColumn) && isSingleColumn(targetColumn);
+        }
+
+        boolean belongsToSchema(String enforcedSchema) {
+            if (enforcedSchema == null || enforcedSchema.isEmpty()) {
+                return true;
+            }
+            return enforcedSchema.equalsIgnoreCase(sourceSchema) && enforcedSchema.equalsIgnoreCase(targetSchema);
+        }
+
+        private boolean isSingleColumn(String column) {
+            if (column == null) {
+                return false;
+            }
+            return !column.contains(",") && !column.contains(";") && !column.contains(" ");
         }
 
         String getSourceSummary() {

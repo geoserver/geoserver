@@ -56,7 +56,7 @@ import org.geotools.jdbc.JDBCDataStoreFactory;
 public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
 
     // resources
-    private Model<DataStoreSummmary> datastoreModel;
+    private Model<DataStoreSummary> datastoreModel;
     private ParamResourceModel rootentitiesResource =
             new ParamResourceModel("PostGisSmartAppSchemaStoreEditPanel.rootentities", this);
     private ParamResourceModel domainmodelResource =
@@ -68,7 +68,7 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
 
     // view components
     private NestedTreePanel domainModelTree;
-    private DropDownChoice<DataStoreSummmary> datastores;
+    private DropDownChoice<DataStoreSummary> datastores;
     private SimpleDropDownChoiceParamPanel availableRootEntities;
     private WorkspacePanel workspacePanel;
 
@@ -134,7 +134,7 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
                         ((WorkspaceInfo) workspacePanel.getFormComponent().getModelObject());
                 selectedWorkspaceName =
                         ((WorkspaceInfo) workspacePanel.getFormComponent().getModelObject()).getName();
-                List<DataStoreSummmary> list = getPostgisDataStores(wi);
+                List<DataStoreSummary> list = getPostgisDataStores(wi);
                 datastores.setChoices(list);
                 availableRootEntities.getFormComponent().setChoices(Collections.EMPTY_LIST);
                 selectedRootEntityName = "";
@@ -182,13 +182,13 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
     /** Helper method that creates dropdown for postgis datastore selection. */
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected void buildPostgisDropDownPanel() {
-        List<DataStoreSummmary> postgisDSs = getPostgisDataStores(getWorkspaceInfo());
+        List<DataStoreSummary> postgisDSs = getPostgisDataStores(getWorkspaceInfo());
 
         if (datastoreModel == null && selectedPostgisDataStoreId != null && !selectedPostgisDataStoreId.isEmpty()) {
             this.datastoreModel =
-                    new Model<>(new DataStoreSummmary(getCatalog().getDataStore(selectedPostgisDataStoreId)));
+                    new Model<>(new DataStoreSummary(getCatalog().getDataStore(selectedPostgisDataStoreId)));
         } else if (datastoreModel == null) {
-            this.datastoreModel = new Model<>(new DataStoreSummmary());
+            this.datastoreModel = new Model<>(new DataStoreSummary());
         }
         datastores = new DropDownChoice<>("postgisdatastore", datastoreModel, postgisDSs, new StoreRenderer());
         datastores.setRequired(true);
@@ -219,8 +219,8 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
         add(datastores);
     }
 
-    private List<DataStoreSummmary> getPostgisDataStores(WorkspaceInfo wi) {
-        List<DataStoreSummmary> postgisDSs = new ArrayList<>();
+    private List<DataStoreSummary> getPostgisDataStores(WorkspaceInfo wi) {
+        List<DataStoreSummary> postgisDSs = new ArrayList<>();
         List<DataStoreInfo> dsList = getCatalog().getDataStoresByWorkspace(wi);
         // need to keep only those related to postgis
         for (DataStoreInfo ds : dsList) {
@@ -232,7 +232,7 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
                     && supportedStoreTypes.stream()
                             .anyMatch(st -> dbType.toUpperCase().contains(st.name()));
             if (isSupported) {
-                postgisDSs.add(new DataStoreSummmary(ds));
+                postgisDSs.add(new DataStoreSummary(ds));
             }
         }
         return postgisDSs;
@@ -243,7 +243,7 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
     protected void buildRootEntitySelectionPanel(final IModel model) {
         IModel iModel = new PropertyModel(model, "connectionParameters");
         List<String> list = new ArrayList<>();
-        DataStoreSummmary postgisSummary = datastores.getModel().getObject();
+        DataStoreSummary postgisSummary = datastores.getModel().getObject();
         if (postgisSummary != null && postgisSummary.getId() != null) {
             DataStoreInfo postgisDS = getCatalog().getDataStore(postgisSummary.getId());
             list = getAvailableRootEntities(postgisDS);
@@ -414,7 +414,11 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
             DataStoreMetadataConfig config = new JdbcDataStoreMetadataConfig(
                     jdbcDataStore, ds.getConnectionParameters().get("passwd").toString());
             Relationships relationships = extractVirtualRelationships();
-            dsm = (new DataStoreMetadataFactory()).getDataStoreMetadata(config, new VirtualFkJdbcHelper(relationships));
+            VirtualFkJdbcHelper helper = new VirtualFkJdbcHelper(relationships);
+            try (java.sql.Connection connection = jdbcDataStore.getDataSource().getConnection()) {
+                helper.validateVirtualRelationships(connection.getMetaData(), jdbcDataStore.getDatabaseSchema());
+            }
+            dsm = (new DataStoreMetadataFactory()).getDataStoreMetadata(config, helper);
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
@@ -507,22 +511,21 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
         add(entitiesPrefixPanel);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private void buildVirtualRelationshipsPanel(final IModel model) {
-        IModel<Map<String, Serializable>> paramsModel = new PropertyModel(model, "connectionParameters");
+    private void buildVirtualRelationshipsPanel(final IModel<?> model) {
+        IModel<Map<String, Serializable>> paramsModel = new PropertyModel<>(model, "connectionParameters");
         VirtualRelationshipsPanel panel = new VirtualRelationshipsPanel("virtualRelationships", paramsModel);
         panel.setOutputMarkupId(true);
         add(panel);
     }
 
-    public static class DataStoreSummmary implements Serializable {
+    public static class DataStoreSummary implements Serializable {
 
         private String name;
         private String id;
 
-        public DataStoreSummmary() {}
+        public DataStoreSummary() {}
 
-        public DataStoreSummmary(DataStoreInfo ds) {
+        public DataStoreSummary(DataStoreInfo ds) {
             this.name = ds.getName();
             this.id = ds.getId();
         }
@@ -536,14 +539,14 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
         }
     }
 
-    public static class StoreRenderer extends ChoiceRenderer<DataStoreSummmary> {
+    public static class StoreRenderer extends ChoiceRenderer<DataStoreSummary> {
         @Override
-        public Object getDisplayValue(DataStoreSummmary object) {
+        public Object getDisplayValue(DataStoreSummary object) {
             return object.getName();
         }
 
         @Override
-        public String getIdValue(DataStoreSummmary object, int index) {
+        public String getIdValue(DataStoreSummary object, int index) {
             return object.getId();
         }
     }

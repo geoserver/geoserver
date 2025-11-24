@@ -16,18 +16,24 @@ public final class RelationshipsXmlWriter {
         // utility class
     }
 
+    /**
+     * Serializes the provided relationships into the XML fragment stored in the connection parameters.
+     *
+     * @param relationships relationships to serialize (empty or {@code null} collections yield an empty string)
+     * @return XML string or an empty string when no relationships are provided
+     */
     public static String toXml(Relationships relationships) {
-        if (relationships == null
-                || relationships.getRelationships() == null
-                || relationships.getRelationships().isEmpty()) {
-            return null;
+        if (relationships == null || relationships.getRelationships() == null) {
+            return "";
         }
+        int serializedCount = 0;
         StringBuilder sb = new StringBuilder();
         sb.append("<relationships>");
         for (Relationship relationship : relationships.getRelationships()) {
             if (relationship == null) {
                 continue;
             }
+            serializedCount++;
             sb.append("<relationship");
             appendAttribute(sb, "name", relationship.getName());
             appendAttribute(sb, "cardinality", relationship.getCardinality());
@@ -37,7 +43,7 @@ public final class RelationshipsXmlWriter {
             sb.append("</relationship>");
         }
         sb.append("</relationships>");
-        return sb.toString();
+        return serializedCount == 0 ? "" : sb.toString();
     }
 
     private static void appendEntityRef(StringBuilder sb, String tagName, EntityRef ref) {

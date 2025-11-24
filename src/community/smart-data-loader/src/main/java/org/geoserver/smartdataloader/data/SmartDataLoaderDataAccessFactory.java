@@ -260,6 +260,7 @@ public class SmartDataLoaderDataAccessFactory implements DataAccessFactory {
                 }
             }
             JdbcHelper jdbcHelper = new VirtualFkJdbcHelper(new DefaultJdbcHelper(), relationships);
+            validateVirtualRelationships(jdbcHelper, jdbcDataStore, relationships);
             dsm = (new DataStoreMetadataFactory()).getDataStoreMetadata(config, jdbcHelper);
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Sql exception while retrieving metadata from the DB " + e.getMessage());
@@ -327,6 +328,17 @@ public class SmartDataLoaderDataAccessFactory implements DataAccessFactory {
             throw new RuntimeException("Cannot save generated mapping in the workspace related folder.");
         }
         return file;
+    }
+
+    private void validateVirtualRelationships(
+            JdbcHelper jdbcHelper, JDBCDataStore jdbcDataStore, Relationships relationships) throws Exception {
+        if (!(jdbcHelper instanceof VirtualFkJdbcHelper)) {
+            return;
+        }
+        String allowedSchema = jdbcDataStore.getDatabaseSchema();
+        try (java.sql.Connection connection = jdbcDataStore.getDataSource().getConnection()) {
+            ((VirtualFkJdbcHelper) jdbcHelper).validateVirtualRelationships(connection.getMetaData(), allowedSchema);
+        }
     }
 
     /** Method that allows to get a DataStoreInfo based on a set of parameters. */

@@ -6,6 +6,7 @@ package org.geoserver.featurestemplating.ows;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.Catalog;
@@ -89,7 +90,19 @@ public class SchemaCallback extends AbstractDispatcherCallback {
 
     private Response findResponse(Object param1) {
         DescribeFeatureTypeRequest dftr = DescribeFeatureTypeRequest.adapt(param1);
+        if (dftr == null) {
+            LOGGER.log(Level.FINE, "DescribeFeatureTypeRequest not found in operation parameters");
+            return null;
+        }
         List<QName> qNames = dftr.getTypeNames();
+        if (qNames == null || qNames.isEmpty()) {
+            LOGGER.log(Level.FINE, "No type names found in DescribeFeatureTypeRequest");
+            return null;
+        } else if (qNames.size() > 1) {
+            LOGGER.log(
+                    Level.FINE, "Multiple type names found in DescribeFeatureTypeRequest, only single type supported");
+            return null;
+        }
         QName qName = qNames.get(0);
         FeatureTypeInfo featureTypeByName = catalog.getFeatureTypeByName(qName.getPrefix(), qName.getLocalPart());
         return getTemplateFeatureResponse(featureTypeByName, dftr.getOutputFormat());

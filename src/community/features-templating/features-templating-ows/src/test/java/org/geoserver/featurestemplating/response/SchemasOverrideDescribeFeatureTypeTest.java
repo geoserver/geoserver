@@ -12,6 +12,7 @@ import org.geoserver.featurestemplating.configuration.SupportedFormat;
 import org.geoserver.util.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 /** Tests for the DescribeFeatureType response when using the schemas override. */
 public class SchemasOverrideDescribeFeatureTypeTest extends SchemaComplexTestSupport {
@@ -56,5 +57,17 @@ public class SchemasOverrideDescribeFeatureTypeTest extends SchemaComplexTestSup
                         + "&outputformat=application/json");
         String expectedContent = IOUtils.toString(this.getClass().getResourceAsStream(JSON_SCHEMA_OVERRIDE_FILE));
         Assert.assertEquals(expectedContent.trim(), schemaStr.trim());
+    }
+
+    @Test
+    public void testDescribeFeatureTypeWithoutTypeNamesIgnoredByOverride() throws Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse("wfs?service=WFS&request=DescribeFeatureType&version=1.1.0");
+        Assert.assertEquals(200, response.getStatus());
+
+        String body = response.getContentAsString();
+        Assert.assertFalse(body.isEmpty());
+        Assert.assertFalse(body.contains("ows:ExceptionReport"));
+        Assert.assertTrue(body.contains("<xsd:schema") || body.contains("<schema"));
     }
 }

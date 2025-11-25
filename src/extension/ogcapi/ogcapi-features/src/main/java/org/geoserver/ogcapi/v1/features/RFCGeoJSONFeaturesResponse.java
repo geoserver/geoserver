@@ -104,7 +104,8 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
                 || "GetFeatureWithLock".equalsIgnoreCase(operationId)
                 || "getTile".equalsIgnoreCase(operationId)) {
             return operation.getService() != null
-                    && "Features".equals(operation.getService().getId());
+                            && "Features".equals(operation.getService().getId())
+                    || "WFS".equalsIgnoreCase(operation.getService().getId());
         }
         return false;
     }

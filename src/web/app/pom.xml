@@ -1531,6 +1531,11 @@
         </dependency>
         <dependency>
           <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-dggs-core</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
           <artifactId>gs-web-dggs</artifactId>
           <version>${project.version}</version>
         </dependency>
@@ -1845,8 +1850,14 @@
       <id>vector-mosaic</id>
       <dependencies>
         <dependency>
-          <groupId>org.geotools</groupId>
-          <artifactId>gt-vector-mosaic</artifactId>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-vector-mosaic-rest</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-web-vector-mosaic</artifactId>
+          <version>${project.version}</version>
         </dependency>
       </dependencies>
     </profile>

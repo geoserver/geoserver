@@ -296,6 +296,8 @@ This defines a regex-based name collector which extracts the coverage name from 
 
 .. note:: The extraction works from the match of the full regular expression, if there are no capturing groups. If there are capturing groups instead, the match will be the concatenation of the text matched by all the capturing groups. This can be used to simplify the regular expression, for example, in order to match a string surrounded by underscores, ``regex=.*_(\\w+)_.*`` can be used instead of the more complex ``regex=(?<\=_)\\w+(?\=_)`` (using non capturing groups instead).
 
+.. _imagemosaic_property_collectors:
+   
 Property collectors
 ~~~~~~~~~~~~~~~~~~~
   

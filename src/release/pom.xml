@@ -135,11 +135,6 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver.extension</groupId>
-      <artifactId>gs-h2</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-mbstyle</artifactId>
       <version>${project.version}</version>
     </dependency>

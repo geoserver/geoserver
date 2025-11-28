@@ -448,16 +448,6 @@
       </dependencies>
     </profile>
     <profile>
-      <id>h2</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.extension</groupId>
-          <artifactId>gs-h2</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>app-schema</id>
       <dependencies>
         <dependency>

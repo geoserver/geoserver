@@ -1340,7 +1340,6 @@
             <descriptor>release/ext-geopkg-output.xml</descriptor>
             <descriptor>release/ext-grib.xml</descriptor>
             <descriptor>release/ext-gwc-s3.xml</descriptor>
-            <descriptor>release/ext-h2.xml</descriptor>
             <descriptor>release/ext-iau.xml</descriptor>
             <descriptor>release/ext-importer.xml</descriptor>
             <descriptor>release/ext-inspire.xml</descriptor>

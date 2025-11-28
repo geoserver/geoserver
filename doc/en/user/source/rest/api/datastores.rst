@@ -191,8 +191,6 @@ The ``extension`` parameter specifies the type of data being uploaded. The follo
      - Shapefile
    * - properties
      - Property file
-   * - h2
-     - H2 Database
    * - appschema
      - App-schema mapping configuration
 

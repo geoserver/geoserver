@@ -74,13 +74,6 @@
     </profile>
 
     <profile>
-      <id>h2</id>
-      <modules>
-        <module>h2</module>
-      </modules>
-    </profile>
-
-    <profile>
       <id>sqlserver</id>
       <modules>
         <module>sqlserver</module>
@@ -421,7 +414,6 @@
       <id>allExtensions</id>
       <modules>
         <module>app-schema</module>
-        <module>h2</module>
         <module>sqlserver</module>
         <module>oracle</module>
         <module>mysql</module>
@@ -476,7 +468,6 @@
       <id>release</id>
       <modules>
         <module>app-schema</module>
-        <module>h2</module>
         <module>sqlserver</module>
         <module>oracle</module>
         <module>mysql</module>

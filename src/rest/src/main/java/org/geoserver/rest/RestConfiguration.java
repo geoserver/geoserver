@@ -7,8 +7,11 @@ package org.geoserver.rest;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleHandler;
@@ -36,6 +39,7 @@ import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConvert
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.accept.ContentNegotiationStrategy;
+import org.springframework.web.accept.HeaderContentNegotiationStrategy;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
@@ -164,25 +168,27 @@ public class RestConfiguration extends DelegatingWebMvcConfiguration {
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
         // scan and register media types for style handlers
         List<StyleHandler> styleHandlers = GeoServerExtensions.extensions(StyleHandler.class);
+        Map<String, MediaType> mediaTypes = new LinkedHashMap<>();
         for (StyleHandler handler : styleHandlers) {
             if (handler.getVersions() != null && !handler.getVersions().isEmpty()) {
                 // Spring configuration allows associating a single mime to extensions, pick the
                 // latest
                 List<Version> versions = handler.getVersions();
                 final Version firstVersion = versions.get(versions.size() - 1);
-                configurer.mediaType(handler.getFormat(), MediaType.valueOf(handler.mimeType(firstVersion)));
+                mediaTypes.put(handler.getFormat(), MediaType.valueOf(handler.mimeType(firstVersion)));
             }
         }
         // manually force SLD to v10 for backwards compatibility
-        configurer.mediaType("sld", MediaType.valueOf(SLDHandler.MIMETYPE_10));
+        mediaTypes.put("sld", MediaType.valueOf(SLDHandler.MIMETYPE_10));
 
         // other common media types
-        configurer.mediaType("html", MediaType.TEXT_HTML);
-        configurer.mediaType("xml", MediaType.APPLICATION_XML);
-        configurer.mediaType("json", MediaType.APPLICATION_JSON);
-        configurer.mediaType("xslt", MediaType.valueOf("application/xslt+xml"));
-        configurer.mediaType("ftl", MediaType.TEXT_PLAIN);
-        configurer.mediaType("xml", MediaType.APPLICATION_XML);
+        mediaTypes.put("html", MediaType.TEXT_HTML);
+        mediaTypes.put("xml", MediaType.APPLICATION_XML);
+        mediaTypes.put("json", MediaType.APPLICATION_JSON);
+        mediaTypes.put("xslt", MediaType.valueOf("application/xslt+xml"));
+        mediaTypes.put("ftl", MediaType.TEXT_PLAIN);
+        mediaTypes.put("xml", MediaType.APPLICATION_XML);
+        configurer.mediaTypes(mediaTypes);
         configurer.favorParameter(true);
 
         // allow extension point configuration of media types
@@ -190,6 +196,12 @@ public class RestConfiguration extends DelegatingWebMvcConfiguration {
         for (MediaTypeCallback callback : callbacks) {
             callback.configure(configurer);
         }
+
+        // Use explicit strategies – this replaces the old favorPathExtension + favorParameter combo
+        List<ContentNegotiationStrategy> strategies = new ArrayList<>();
+        strategies.add(new SuffixContentNegotiationStrategy(mediaTypes)); // .sld, .xml, etc.
+        strategies.add(new HeaderContentNegotiationStrategy()); // Accept: header
+        configurer.strategies(strategies);
 
         //        configurer.favorPathExtension(true);
         // todo properties files are only supported for test cases. should try to find a way to

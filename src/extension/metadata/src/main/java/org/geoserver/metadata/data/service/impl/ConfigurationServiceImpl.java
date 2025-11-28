@@ -40,6 +40,7 @@ import org.geoserver.platform.resource.Resources;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.dataformat.yaml.YAMLMapper;
 
@@ -134,31 +135,31 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         for (Resource file : files) {
             try (InputStream in = file.in()) {
                 readConfiguration(in, mapper);
-            } catch (IOException e) {
+            } catch (IOException | JacksonException e) {
                 LOGGER.log(Level.FINE, e.getMessage(), e);
             }
             try (InputStream in = file.in()) {
                 readMapping(in, mapper);
-            } catch (IOException e) {
+            } catch (IOException | JacksonException e) {
                 LOGGER.log(Level.FINE, e.getMessage(), e);
             }
             try (InputStream in = file.in()) {
                 readingCustomNativeMapping(in, mapper);
-            } catch (IOException e) {
+            } catch (IOException | JacksonException e) {
                 LOGGER.log(Level.FINE, e.getMessage(), e);
             }
         }
         // add feature catalog
         try (InputStream in = getClass().getResourceAsStream(MetadataConstants.FEATURE_CATALOG_CONFIG_FILE)) {
             readConfiguration(in, mapper);
-        } catch (IOException e) {
+        } catch (IOException | JacksonException e) {
             LOGGER.log(Level.FINE, e.getMessage(), e);
         }
         // add WCS field
         if (configuration.isWcsField()) {
             try (InputStream in = getClass().getResourceAsStream(MetadataConstants.WCS_FIELD_CONFIG_FILE)) {
                 readConfiguration(in, mapper);
-            } catch (IOException e) {
+            } catch (IOException | JacksonException e) {
                 LOGGER.log(Level.FINE, e.getMessage(), e);
             }
         }

@@ -1340,61 +1340,6 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         JDBCQuotaStoreFactory.ENABLE_HSQL_AUTO_SHUTDOWN = false;
     }
 
-    @Test
-    public void testDiskQuotaH2Storage() throws Exception {
-        // normal state, quota is not enabled by default
-        GWC gwc = GWC.get();
-        ConfigurableQuotaStoreProvider provider = GeoServerExtensions.bean(ConfigurableQuotaStoreProvider.class);
-        DiskQuotaConfig quota = gwc.getDiskQuotaConfig();
-        JDBCConfiguration jdbc = gwc.getJDBCDiskQuotaConfig();
-        assertFalse("Disk quota is enabled??", quota.isEnabled());
-        assertNull("jdbc quota config should be missing", jdbc);
-        assertTrue(getActualStore(provider) instanceof DummyQuotaStore);
-
-        GeoServerDataDirectory dd = GeoServerExtensions.bean(GeoServerDataDirectory.class);
-        String jdbcConfigPath = "gwc/geowebcache-diskquota-jdbc.xml";
-        String h2StorePath = "gwc/diskquota_page_store_h2";
-
-        // now enable it in JDBC mode, with HSQL local storage
-        quota.setEnabled(true);
-        quota.setQuotaStore("JDBC");
-        jdbc = new JDBCConfiguration();
-        jdbc.setDialect("H2");
-        ConnectionPoolConfiguration pool = new ConnectionPoolConfiguration();
-        pool.setDriver("org.h2.Driver");
-        pool.setUrl("jdbc:h2:file:./target/quota-h2");
-        pool.setUsername("sa");
-        pool.setPassword("");
-        pool.setMinConnections(1);
-        pool.setMaxConnections(1);
-        pool.setMaxOpenPreparedStatements(50);
-        jdbc.setConnectionPool(pool);
-
-        pool.setValidationQuery("SELECT 1");
-        gwc.saveDiskQuotaConfig(quota, jdbc);
-        assertNotNull("jdbc config (" + jdbcConfigPath + ") should be there", dd.findFile(jdbcConfigPath));
-        assertNull("jdbc store (" + h2StorePath + ") should be there", dd.findDataFile(h2StorePath));
-
-        File newQuotaStore = new File("./target/quota-h2.data.db");
-        assertTrue(newQuotaStore.exists());
-        try {
-            pool.setValidationQuery("SELECT 1 FROM DUAL");
-            gwc.saveDiskQuotaConfig(quota, jdbc);
-            fail("Expect configuration due to incorrect validation query used for H2");
-        } catch (ConfigurationException expected) {
-        }
-
-        File jdbcConfigFile = dd.findFile(jdbcConfigPath);
-        try (FileInputStream fis = new FileInputStream(jdbcConfigFile)) {
-            Document dom = dom(fis);
-            // print(dom);
-            String storedPassword =
-                    XMLUnit.newXpathEngine().evaluate("/gwcJdbcConfiguration/connectionPool/password", dom);
-            // check the password has been encoded properly
-            assertTrue(storedPassword.startsWith("crypt1:"));
-        }
-    }
-
     private QuotaStore getActualStore(ConfigurableQuotaStoreProvider provider)
             throws ConfigurationException, IOException {
         return ((ConfigurableQuotaStore) provider.getQuotaStore()).getStore();

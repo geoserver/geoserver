@@ -117,10 +117,7 @@
           <!--
             Should the default grids be named EPSG:4326 and EPSG:900913 (TRUE),
             or (FALSE) use the new names similar to what WMTS suggests,
-            GlobalCRS84Geometric and GoogleMapsCompatible ? 
-            
-            If you say FALSE here, you have to manually
-            rename the directories and entries in the H2 database.
+            GlobalCRS84Geometric and GoogleMapsCompatible ?
            -->
           <constructor-arg type="boolean" value="TRUE" />
         </bean>
@@ -199,11 +196,6 @@
   
   <bean id="globalLock" class="org.geoserver.gwc.GeoServerLockProvider">
       <property name="delegate" ref="lockProvider"/>
-  </bean>
-  
-  <!-- The tool performing the automatic migration between metastore and fs hashes -->
-  <bean id="metastoreRemover" class="org.geowebcache.storage.MetastoreRemover">
-    <constructor-arg ref="gwcDefaultStorageFinder"/>
   </bean>
   
   <bean id="cacheConfiguration" class="org.geowebcache.storage.blobstore.memory.CacheConfiguration">

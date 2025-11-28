@@ -11,8 +11,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
 import io.swagger.v3.oas.models.OpenAPI;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -83,6 +81,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.ObjectWriteContext;
+import tools.jackson.core.json.JsonFactory;
 
 @APIService(service = "Processes", version = "1.0.0", landingPage = "ogc/processes/v1", serviceClass = WPSInfo.class)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/processes/v1")
@@ -291,7 +292,9 @@ public class ProcessesService {
                 responseWriter.getServletOutputStream().print(literal.getValue());
             } else if (bbox != null) {
                 responseWriter.beginPart(APPLICATION_JSON_VALUE, identifier);
-                try (JsonGenerator generator = new JsonFactory().createGenerator(httpResponse.getOutputStream())) {
+                try (JsonGenerator generator = JsonFactory.builder()
+                        .build()
+                        .createGenerator(ObjectWriteContext.empty(), httpResponse.getOutputStream())) {
                     writeBoundingBox(generator, bbox);
                 }
             } else if (complexData != null && complexData.getData().get(0) != null) {
@@ -309,7 +312,9 @@ public class ProcessesService {
     private void writeDocumentResponse(Process process, HttpServletResponse httpResponse, ExecuteResponseType response)
             throws Exception {
         httpResponse.setContentType("application/json");
-        try (JsonGenerator generator = new JsonFactory().createGenerator(httpResponse.getOutputStream())) {
+        try (JsonGenerator generator = JsonFactory.builder()
+                .build()
+                .createGenerator(ObjectWriteContext.empty(), httpResponse.getOutputStream())) {
             generator.writeStartObject();
 
             @SuppressWarnings("unchecked")
@@ -321,25 +326,25 @@ public class ProcessesService {
                 DataType data = output.getData();
                 if (data != null) {
                     if (data.getLiteralData() != null && data.getLiteralData().getValue() != null) {
-                        generator.writeFieldName(outputId);
+                        generator.writeName(outputId);
                         Object converted =
                                 Converters.convert(data.getLiteralData().getValue(), parameter.getType());
-                        generator.writeObject(converted);
+                        generator.writePOJO(converted);
                     } else if (data.getBoundingBoxData() != null) {
-                        generator.writeFieldName(outputId);
+                        generator.writeName(outputId);
                         writeBoundingBox(generator, data.getBoundingBoxData());
                     } else if (data.getComplexData() != null) {
-                        generator.writeFieldName(outputId);
+                        generator.writeName(outputId);
                         writeComplex(generator, data.getComplexData());
                     }
                     // if reaching here, the data was null, won't encode the output
                 } else if (output.getReference() != null) {
                     OutputReferenceType reference = output.getReference();
-                    generator.writeFieldName(outputId);
+                    generator.writeName(outputId);
                     generator.writeStartObject();
                     if (reference.getMimeType() != null)
-                        generator.writeStringField("mediaType", reference.getMimeType());
-                    generator.writeStringField("href", reference.getHref());
+                        generator.writeStringProperty("mediaType", reference.getMimeType());
+                    generator.writeStringProperty("href", reference.getHref());
 
                 } else {
                     throw new IllegalStateException("Cannot handle this output yet: " + outputId);
@@ -360,8 +365,8 @@ public class ProcessesService {
         if (result instanceof RawDataEncoderDelegate encoder) {
             generator.writeStartObject();
             String mimeType = encoder.getRawData().getMimeType();
-            generator.writeStringField("mediaType", mimeType);
-            generator.writeFieldName("value");
+            generator.writeStringProperty("mediaType", mimeType);
+            generator.writeName("value");
             generator.writeRaw(": ");
             encoder.encode(generator);
             generator.writeEndObject();
@@ -375,8 +380,8 @@ public class ProcessesService {
                 streamToGenerator(generator, false, cdata);
             } else {
                 generator.writeStartObject();
-                generator.writeStringField("mediaType", mimeType);
-                generator.writeFieldName("value");
+                generator.writeStringProperty("mediaType", mimeType);
+                generator.writeName("value");
                 generator.writeRaw(": \"");
                 streamToGenerator(generator, true, cdata);
                 generator.writeRaw("\"");
@@ -384,8 +389,8 @@ public class ProcessesService {
             }
         } else if (result instanceof BinaryEncoderDelegate binary) {
             generator.writeStartObject();
-            generator.writeStringField("mediaType", binary.getPPIO().getMimeType());
-            generator.writeFieldName("value");
+            generator.writeStringProperty("mediaType", binary.getPPIO().getMimeType());
+            generator.writeName("value");
             generator.writeRaw(": ");
             binary.encode(generator);
             generator.writeEndObject();
@@ -413,8 +418,8 @@ public class ProcessesService {
 
     private static void writeXMLOutput(JsonGenerator generator, XMLEncoderDelegate xml) throws Exception {
         generator.writeStartObject();
-        generator.writeStringField("mediaType", xml.getPPIO().getMimeType());
-        generator.writeFieldName("value");
+        generator.writeStringProperty("mediaType", xml.getPPIO().getMimeType());
+        generator.writeName("value");
         generator.writeRaw(": \"");
         streamToGenerator(generator, xml);
         generator.writeRaw("\"");
@@ -442,20 +447,20 @@ public class ProcessesService {
 
     private static void writeBoundingBox(JsonGenerator generator, BoundingBoxType bbox) throws IOException {
         generator.writeStartObject();
-        generator.writeFieldName("bbox");
+        generator.writeName("bbox");
         generator.writeStartArray();
         for (int i = 0; i < bbox.getLowerCorner().size(); i++) {
-            generator.writeObject(bbox.getLowerCorner().get(i));
+            generator.writePOJO(bbox.getLowerCorner().get(i));
         }
         for (int i = 0; i < bbox.getUpperCorner().size(); i++) {
-            generator.writeObject(bbox.getUpperCorner().get(i));
+            generator.writePOJO(bbox.getUpperCorner().get(i));
         }
         generator.writeEndArray();
         if (bbox.getCrs() != null) {
             try {
                 CoordinateReferenceSystem crs = CRS.decode(bbox.getCrs());
                 String uri = GML2EncodingUtils.toURI(crs, SrsSyntax.OGC_HTTP_URI, false);
-                generator.writeStringField("crs", uri);
+                generator.writeStringProperty("crs", uri);
             } catch (FactoryException e) {
                 // should not happen, has been encoded previously
                 throw new RuntimeException("Failed to decode the bbox CRS: " + bbox.getCrs(), e);

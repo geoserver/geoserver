@@ -4,10 +4,10 @@
  */
 package org.geoserver.ogcapi.v1.processes;
 
-import com.fasterxml.jackson.core.JsonGenerator;
 import java.io.IOException;
 import java.io.Writer;
 import org.apache.commons.text.StringEscapeUtils;
+import tools.jackson.core.JsonGenerator;
 
 /** Writer that writes characters to a {@link JsonGenerator}. */
 class GeneratorWriter extends Writer {

@@ -54,7 +54,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.ServletServerHttpResponse;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -333,7 +332,7 @@ public class StylesService {
             // write out the style body
             catalog.getResourcePool().writeStyle(styleInfo, new ByteArrayInputStream(rawData));
 
-            MultiValueMap<String, String> headers = new HttpHeaders();
+            HttpHeaders headers = new HttpHeaders();
             String href = ResponseUtils.buildURL(
                     APIRequestInfo.get().getBaseURL(),
                     "ogc/styles/v1/styles/" + styleId,

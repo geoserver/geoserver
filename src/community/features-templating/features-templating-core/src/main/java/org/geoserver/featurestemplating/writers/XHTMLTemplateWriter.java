@@ -9,9 +9,6 @@ import static org.geoserver.featurestemplating.builders.VendorOptions.LINK;
 import static org.geoserver.featurestemplating.builders.VendorOptions.SCRIPT;
 import static org.geoserver.featurestemplating.builders.VendorOptions.STYLE;
 
-import com.fasterxml.jackson.core.JsonEncoding;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
@@ -29,6 +26,10 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.jts.WKTWriter2;
 import org.locationtech.jts.geom.Geometry;
+import tools.jackson.core.JsonEncoding;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.ObjectWriteContext;
+import tools.jackson.core.json.JsonFactory;
 
 /** A template writer able to produce XHTML output. */
 public class XHTMLTemplateWriter extends XMLTemplateWriter {
@@ -88,8 +89,9 @@ public class XHTMLTemplateWriter extends XMLTemplateWriter {
     }
 
     private JSONLDWriter getJSONLDWriter(OutputStream output) throws IOException {
-        JsonGenerator generator = new JsonFactory().createGenerator(output, JsonEncoding.UTF8);
-        generator.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
+        // AUTO_CLOSE_TARGET is no longer available in Jackson 3.x
+        JsonGenerator generator =
+                JsonFactory.builder().build().createGenerator(ObjectWriteContext.empty(), output, JsonEncoding.UTF8);
         return new JSONLDWriter(generator);
     }
 

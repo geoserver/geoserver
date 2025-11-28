@@ -4,8 +4,8 @@
  */
 package org.geoserver.ows.kvp.view;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.dataformat.xml.XmlMapper;
 
 public final class XMLViewParamsUtils {
 
@@ -24,7 +24,7 @@ public final class XMLViewParamsUtils {
         try {
             viewParamsRoot = XML_MAPPER.readValue(xmlStr, ViewParamsRoot.class);
             return viewParamsRoot;
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new RuntimeException(e);
         }
     }

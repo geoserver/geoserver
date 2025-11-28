@@ -6,30 +6,29 @@
 package org.geoserver.ogcapi;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.models.media.Schema;
+import java.util.List;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.json.JsonMapper;
 
 /** A custom JSON converter that uses the JSON schema mime type */
 @Component
-public class JSONSchemaMessageConverter extends AbstractJackson2HttpMessageConverter {
+public class JSONSchemaMessageConverter extends JacksonJsonHttpMessageConverter {
 
     public static final String SCHEMA_TYPE_VALUE = "application/schema+json";
     public static final MediaType SCHEMA_TYPE = MediaType.parseMediaType(SCHEMA_TYPE_VALUE);
 
     public JSONSchemaMessageConverter() {
-        super(getMapper(), SCHEMA_TYPE);
+        super(buildMapper());
+        setSupportedMediaTypes(List.of(SCHEMA_TYPE));
     }
 
-    public static ObjectMapper getMapper() {
-        ObjectMapper mapper = Json.mapper();
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        mapper.writer(new DefaultPrettyPrinter());
-        return mapper;
+    public static JsonMapper buildMapper() {
+        return JsonMapper.builder()
+                .changeDefaultPropertyInclusion(incl -> incl.withValueInclusion(JsonInclude.Include.NON_NULL))
+                .build();
     }
 
     @Override

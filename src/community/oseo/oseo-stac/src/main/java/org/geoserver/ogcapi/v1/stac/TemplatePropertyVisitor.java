@@ -4,8 +4,6 @@
  */
 package org.geoserver.ogcapi.v1.stac;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeType;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
@@ -19,6 +17,8 @@ import org.geoserver.featurestemplating.builders.impl.StaticBuilder;
 import org.geotools.api.feature.Feature;
 import org.geotools.api.filter.expression.Expression;
 import org.geotools.api.filter.expression.Literal;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.JsonNodeType;
 
 /** Class visiting a feature template and performing some action on the properties mapped via dynamic builders */
 class TemplatePropertyVisitor {
@@ -115,7 +115,7 @@ class TemplatePropertyVisitor {
             case NUMBER:
                 return Double.class;
             case STRING:
-                if (isDate(value.textValue())) return Date.class;
+                if (isDate(value.asString())) return Date.class;
                 return String.class;
             case BOOLEAN:
                 return Boolean.class;

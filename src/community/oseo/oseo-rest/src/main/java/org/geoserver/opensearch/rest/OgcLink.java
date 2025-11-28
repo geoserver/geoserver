@@ -6,9 +6,9 @@ package org.geoserver.opensearch.rest;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.HashMap;
 import java.util.Map;
+import tools.jackson.databind.annotation.JsonSerialize;
 
 /**
  * Bean representation of a OWS context OGC Link

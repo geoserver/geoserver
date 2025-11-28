@@ -6,10 +6,10 @@ package org.geoserver.ogcapi;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import java.util.Map;
 import org.springframework.http.HttpMethod;
+import tools.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 /** Represents a JSON/XML link */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)

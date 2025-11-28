@@ -4,9 +4,9 @@
  */
 package org.geoserver.ogcapi.v1.processes;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.List;
+import tools.jackson.databind.JsonNode;
 
 /** An interface to represent all possible input values for a process in the OGC API Processes */
 public interface InputValue {

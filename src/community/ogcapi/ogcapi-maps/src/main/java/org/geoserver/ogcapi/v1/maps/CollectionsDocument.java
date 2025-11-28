@@ -5,7 +5,6 @@
 package org.geoserver.ogcapi.v1.maps;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -22,6 +21,7 @@ import org.geoserver.ogcapi.Link;
 import org.geoserver.platform.ServiceException;
 import org.geotools.api.filter.Filter;
 import org.geotools.util.logging.Logging;
+import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 /**
  * A class representing the Maps service "collections" in a way that Jackson can easily translate to JSON/YAML (and can

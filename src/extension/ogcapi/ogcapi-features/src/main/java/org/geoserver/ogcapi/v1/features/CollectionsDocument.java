@@ -5,8 +5,6 @@
 package org.geoserver.ogcapi.v1.features;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +22,8 @@ import org.geoserver.ogcapi.Link;
 import org.geoserver.platform.ServiceException;
 import org.geotools.api.filter.Filter;
 import org.geotools.util.logging.Logging;
+import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import tools.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 /**
  * A class representing the OGC API for Features server "collections" in a way that Jackson can easily translate to

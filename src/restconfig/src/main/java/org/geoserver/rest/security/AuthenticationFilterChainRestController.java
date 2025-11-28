@@ -6,8 +6,6 @@ package org.geoserver.rest.security;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.xstream.XStream;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
@@ -53,6 +51,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
+import tools.jackson.databind.DatabindException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 @RestController
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/security/filterchain")
@@ -61,8 +62,7 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
     private static final Set<String> RESERVED = Set.of("order");
 
     // --- JSON/XML parsing ----------------------------------------------------
-    private static final com.fasterxml.jackson.databind.ObjectMapper MAPPER =
-            new com.fasterxml.jackson.databind.ObjectMapper();
+    private static final tools.jackson.databind.ObjectMapper MAPPER = new tools.jackson.databind.ObjectMapper();
 
     private static final String CHAIN_PATH = "/{chainName:^(?!order(?:\\.(?:json|xml))?$).+}";
 
@@ -551,12 +551,12 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
         String ct = Optional.ofNullable(request.getContentType()).orElse("");
         try (ServletInputStream in = request.getInputStream()) {
             if (ct.contains("json")) {
-                com.fasterxml.jackson.databind.JsonNode root = MAPPER.readTree(in);
+                tools.jackson.databind.JsonNode root = MAPPER.readTree(in);
                 // Accept any of these shapes:
                 //   { "filters": { "@name": ... } }
                 //   { "@name": ... }                      (bare)
                 //   { "filterchain": { "filters":[{...}] } }  (collection with one element)
-                com.fasterxml.jackson.databind.JsonNode node = root;
+                tools.jackson.databind.JsonNode node = root;
                 if (node.has("filters") && node.get("filters").isObject()) {
                     node = node.get("filters");
                 } else if (node.has("filterchain")) {
@@ -591,8 +591,8 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
                 List<String> filters = new ArrayList<>();
                 JsonNode f = node.get("filter");
                 if (f != null) {
-                    if (f.isArray()) f.forEach(n -> filters.add(n.asText()));
-                    else filters.add(f.asText());
+                    if (f.isArray()) f.forEach(n -> filters.add(n.asString()));
+                    else filters.add(f.asString());
                 }
                 dto.setFilters(filters);
                 return dto;
@@ -612,8 +612,7 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
             }
         } catch (BadRequest e) {
             throw e;
-        } catch (com.fasterxml.jackson.core.JsonParseException
-                | com.fasterxml.jackson.databind.JsonMappingException e) {
+        } catch (DatabindException e) {
             throw new BadRequest("Malformed payload: " + e.getOriginalMessage());
         } catch (IOException e) {
             throw new CannotReadConfig(e);
@@ -628,12 +627,12 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
                 // Accept:
                 //   { "order":[ ... ] }
                 //   { "filterchain": { "order":[ ... ] } }
-                com.fasterxml.jackson.databind.JsonNode n = root.has("order")
+                tools.jackson.databind.JsonNode n = root.has("order")
                         ? root.get("order")
                         : (root.has("filterchain") ? root.get("filterchain").get("order") : null);
                 if (n == null || !n.isArray()) throw new BadRequest("`order` array required");
                 List<String> out = new ArrayList<>();
-                n.forEach(x -> out.add(x.asText()));
+                n.forEach(x -> out.add(x.asString()));
                 return out;
             } else {
                 // XML: <order><order>name</order>...</order>  OR  <filterchain><order>...</order></filterchain>
@@ -654,10 +653,10 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
         }
     }
 
-    private static String getText(com.fasterxml.jackson.databind.JsonNode node, String... keys) {
+    private static String getText(tools.jackson.databind.JsonNode node, String... keys) {
         for (String k : keys) {
             JsonNode v = node.get(k);
-            if (v != null && !v.isNull()) return v.asText();
+            if (v != null && !v.isNull()) return v.asString();
         }
         return null;
     }

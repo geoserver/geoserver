@@ -632,15 +632,6 @@ public class APIDispatcher extends AbstractController {
             return pathHelper;
         }
 
-        @Override
-        public boolean useTrailingSlashMatch() {
-            if (geoServer != null && geoServer.getGlobal() != null) {
-                return geoServer.getGlobal().isTrailingSlashMatch();
-            } else {
-                return true;
-            }
-        }
-
         /**
          * Override to disable pattern parser usage. We do this to match the behavior of Spring 5.x. With pattern parser
          * enabled, Spring will strip path elements and will match only against a portion of the path, e.g., <code>

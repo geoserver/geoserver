@@ -8,8 +8,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
@@ -31,6 +29,8 @@ import org.geoserver.filters.SpringDelegatingFilter;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.hamcrest.Matchers;
 import org.springframework.mock.web.MockHttpServletResponse;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.dataformat.yaml.YAMLMapper;
 
 public class OGCApiTestSupport extends GeoServerSystemTestSupport {
 
@@ -98,7 +98,7 @@ public class OGCApiTestSupport extends GeoServerSystemTestSupport {
     }
 
     protected JsonContext convertYamlToJsonPath(String yaml) throws Exception {
-        ObjectMapper yamlReader = new ObjectMapper(new YAMLFactory());
+        ObjectMapper yamlReader = new YAMLMapper();
         Object obj = yamlReader.readValue(yaml, Object.class);
 
         ObjectMapper jsonWriter = new ObjectMapper();

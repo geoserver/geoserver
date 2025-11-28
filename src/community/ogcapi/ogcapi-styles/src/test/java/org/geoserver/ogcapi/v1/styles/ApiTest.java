@@ -13,9 +13,6 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.v3.core.util.Json;
-import io.swagger.v3.core.util.Yaml;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
@@ -34,6 +31,9 @@ import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.dataformat.yaml.YAMLMapper;
 
 public class ApiTest extends StylesTestSupport {
 
@@ -45,7 +45,7 @@ public class ApiTest extends StylesTestSupport {
         String json = response.getContentAsString();
         LOGGER.log(Level.INFO, json);
 
-        ObjectMapper mapper = Json.mapper();
+        ObjectMapper mapper = new JsonMapper();
         OpenAPI api = mapper.readValue(json, OpenAPI.class);
         validateApi(api);
     }
@@ -87,7 +87,7 @@ public class ApiTest extends StylesTestSupport {
         String yaml = getAsString("ogc/styles/v1/openapi?f=application/yaml");
         LOGGER.log(Level.INFO, yaml);
 
-        ObjectMapper mapper = Yaml.mapper();
+        ObjectMapper mapper = new YAMLMapper();
         OpenAPI api = mapper.readValue(yaml, OpenAPI.class);
         validateApi(api);
     }
@@ -104,7 +104,7 @@ public class ApiTest extends StylesTestSupport {
         String yaml =
                 string(new ByteArrayInputStream(response.getContentAsString().getBytes()));
 
-        ObjectMapper mapper = Yaml.mapper();
+        ObjectMapper mapper = new YAMLMapper();
         OpenAPI api = mapper.readValue(yaml, OpenAPI.class);
         validateApi(api);
     }
@@ -213,7 +213,7 @@ public class ApiTest extends StylesTestSupport {
         String yaml =
                 string(new ByteArrayInputStream(response.getContentAsString().getBytes()));
 
-        ObjectMapper mapper = Yaml.mapper();
+        ObjectMapper mapper = new YAMLMapper();
         return mapper.readValue(yaml, OpenAPI.class);
     }
 }

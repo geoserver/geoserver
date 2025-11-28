@@ -4,13 +4,13 @@
  */
 package org.geoserver.featurestemplating.builders.selectionwrappers;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.impl.StaticBuilder;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
 import org.geoserver.featurestemplating.builders.visitors.PropertySelectionHandler;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
+import tools.jackson.databind.JsonNode;
 
 /** A PropertySelectionWrapper meant to wrap a StaticBuilder. */
 public class StaticPropertySelection extends PropertySelectionWrapper {

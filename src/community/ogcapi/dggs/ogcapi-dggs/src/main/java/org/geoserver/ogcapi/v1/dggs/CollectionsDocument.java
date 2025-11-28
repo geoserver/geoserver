@@ -5,7 +5,6 @@
 package org.geoserver.ogcapi.v1.dggs;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import java.util.Iterator;
 import java.util.List;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -15,6 +14,7 @@ import org.geoserver.ogcapi.AbstractDocument;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.platform.ServiceException;
 import org.geotools.api.filter.Filter;
+import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 /**
  * A class representing the DGGS server "collections" in a way that Jackson can easily translate to JSON/YAML (and can

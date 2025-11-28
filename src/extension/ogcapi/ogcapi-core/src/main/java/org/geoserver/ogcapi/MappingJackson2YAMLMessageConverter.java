@@ -4,8 +4,6 @@
  */
 package org.geoserver.ogcapi;
 
-import static org.geoserver.ogcapi.MappingJackson2HttpMessageConverter.canJacksonHandle;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import io.swagger.v3.core.util.Yaml;
 import java.io.IOException;

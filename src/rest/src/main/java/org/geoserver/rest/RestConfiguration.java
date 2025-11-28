@@ -9,7 +9,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleHandler;
@@ -184,7 +183,7 @@ public class RestConfiguration extends DelegatingWebMvcConfiguration {
         configurer.mediaType("xslt", MediaType.valueOf("application/xslt+xml"));
         configurer.mediaType("ftl", MediaType.TEXT_PLAIN);
         configurer.mediaType("xml", MediaType.APPLICATION_XML);
-        configurer.favorParameter(true).favorPathExtension(true);
+        configurer.favorParameter(true);
 
         // allow extension point configuration of media types
         List<MediaTypeCallback> callbacks = GeoServerExtensions.extensions(MediaTypeCallback.class);
@@ -211,11 +210,11 @@ public class RestConfiguration extends DelegatingWebMvcConfiguration {
         GeoServerUrlPathHelper helper = new GeoServerUrlPathHelper();
         helper.setAlwaysUseFullPath(true);
         configurer.setUrlPathHelper(helper);
-        configurer.setUseSuffixPatternMatch(true);
-        configurer.setUseTrailingSlashMatch(Optional.ofNullable(geoServer)
-                .map(g -> g.getGlobal())
-                .map(g -> g.isTrailingSlashMatch())
-                .orElse(true));
+        //        configurer.setUseSuffixPatternMatch(true);
+        //        configurer.setUseTrailingSlashMatch(Optional.ofNullable(geoServer)
+        //                .map(g -> g.getGlobal())
+        //                .map(g -> g.isTrailingSlashMatch())
+        //                .orElse(true));
         // finally, allow any other WebMvcConfigurer in the application context to do its thing
         super.configurePathMatch(configurer);
     }

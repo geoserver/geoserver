@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import com.fasterxml.jackson.core.JsonEncoding;
-import com.fasterxml.jackson.core.JsonFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import net.sf.json.JSONObject;
@@ -15,6 +13,9 @@ import org.geoserver.featurestemplating.writers.GeoJSONWriter;
 import org.geotools.data.DataTestCase;
 import org.junit.Test;
 import org.xml.sax.helpers.NamespaceSupport;
+import tools.jackson.core.JsonEncoding;
+import tools.jackson.core.ObjectWriteContext;
+import tools.jackson.core.json.JsonFactory;
 
 public class CompositeBuilderTest extends DataTestCase {
 
@@ -64,8 +65,9 @@ public class CompositeBuilderTest extends DataTestCase {
         composite.addChild(p2);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        GeoJSONWriter writer =
-                new GeoJSONWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8), TemplateIdentifier.JSON);
+        GeoJSONWriter writer = new GeoJSONWriter(
+                JsonFactory.builder().build().createGenerator(ObjectWriteContext.empty(), baos, JsonEncoding.UTF8),
+                TemplateIdentifier.JSON);
 
         writer.writeStartObject();
         composite.evaluate(writer, new TemplateBuilderContext(roadFeatures[0]));

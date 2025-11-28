@@ -41,7 +41,7 @@ import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.util.EntityResolverProvider;
 import org.geotools.util.logging.Logging;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 

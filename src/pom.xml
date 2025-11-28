@@ -94,7 +94,7 @@
     <gs.version>3.0-SNAPSHOT</gs.version>
     <gt.version>35-SNAPSHOT</gt.version>
     <gwc.version>2.0-SNAPSHOT</gwc.version>
-    <spring.version>6.2.12</spring.version>
+    <spring.version>7.0.1</spring.version>
     <spring.security.version>6.5.5</spring.security.version>
     <spring.security.oauth2.version>2.5.2.RELEASE</spring.security.oauth2.version>
     <spring-integration.version>5.5.18</spring-integration.version>
@@ -959,6 +959,11 @@
         <version>7.11.0</version>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>jakarta.xml.bind</groupId>
+        <artifactId>jakarta.xml.bind-api</artifactId>
+        <version>4.0.4</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -1176,7 +1181,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.5.3</version>
+          <version>3.5.4</version>
         </plugin>
         <plugin>
           <artifactId>maven-war-plugin</artifactId>
@@ -1930,7 +1935,7 @@
         </plugins>
       </build>
       <modules>
-        <module>release</module>
+        <!--module>release</module-->
       </modules>
       <dependencies>
         <dependency>

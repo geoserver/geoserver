@@ -9,8 +9,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertNotNull;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
@@ -21,6 +19,8 @@ import org.geoserver.ogcapi.OpenAPIMessageConverter;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 public class ApiTest extends TiledFeaturesTestSupport {
 
@@ -32,7 +32,7 @@ public class ApiTest extends TiledFeaturesTestSupport {
         String json = response.getContentAsString();
         LOGGER.log(Level.INFO, json);
 
-        ObjectMapper mapper = Json.mapper();
+        ObjectMapper mapper = new JsonMapper();
         OpenAPI api = mapper.readValue(json, OpenAPI.class);
         validateApi(api);
     }

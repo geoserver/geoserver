@@ -228,8 +228,11 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
         return requestInfo.getBaseURL();
     }
 
-    /** Purges iterators that might have been used when walking over GeoTools features */
+    /** Purges iterators and other AutoCloseable resources used during template rendering */
     protected void purgeIterators() {
+        // handles TemplateFeatureIterator closing FetureIterators
         FreemarkerTemplateSupport.FC_FACTORY.purge();
+        // closes other AutoCloseables such as org.geoserver.catalog.util.CloseableIterator
+        AutoCloseableTracker.purge();
     }
 }

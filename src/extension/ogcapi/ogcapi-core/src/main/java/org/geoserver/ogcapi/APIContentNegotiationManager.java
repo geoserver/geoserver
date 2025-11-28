@@ -5,8 +5,8 @@
 
 package org.geoserver.ogcapi;
 
-import static org.geoserver.ogcapi.MappingJackson2YAMLMessageConverter.APPLICATION_YAML;
-import static org.geoserver.ogcapi.OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE;
+import static org.geoserver.ogcapi.SwaggerJSONAPIMessageConverter.OPEN_API_MEDIA_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_YAML;
 import static org.springframework.http.MediaType.TEXT_HTML;
 import static org.springframework.http.MediaType.TEXT_XML;
 

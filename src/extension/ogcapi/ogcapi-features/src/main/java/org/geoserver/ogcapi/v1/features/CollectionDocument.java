@@ -6,7 +6,6 @@ package org.geoserver.ogcapi.v1.features;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -39,7 +38,6 @@ import org.springframework.http.MediaType;
 
 /** Description of a single collection, that will be serialized to JSON/XML/HTML */
 @JsonPropertyOrder({"id", "title", "description", "extent", "links"})
-@JacksonXmlRootElement(localName = "Collection", namespace = "http://www.opengis.net/wfs/3.0")
 public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeInfo> {
     static final Logger LOGGER = Logging.getLogger(CollectionDocument.class);
 

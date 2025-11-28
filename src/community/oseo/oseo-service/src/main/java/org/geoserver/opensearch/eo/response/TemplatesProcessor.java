@@ -6,7 +6,6 @@ package org.geoserver.opensearch.eo.response;
 
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.EO_NAMESPACE;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import freemarker.ext.beans.BeanModel;
 import freemarker.ext.beans.SimpleMapModel;
 import freemarker.template.Template;
@@ -67,6 +66,7 @@ import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 import org.geotools.xsd.Encoder;
 import org.locationtech.jts.geom.Geometry;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Loads, caches and processes Freemarker templates against a stream of features. It's meant to be used for a single

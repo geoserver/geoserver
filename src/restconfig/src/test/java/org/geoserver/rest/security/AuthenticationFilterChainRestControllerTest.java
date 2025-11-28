@@ -10,8 +10,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,6 +27,8 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 /** System tests for AuthenticationFilterChainRestController using both XML and JSON. */
 public class AuthenticationFilterChainRestControllerTest extends GeoServerSystemTestSupport {
@@ -174,7 +174,7 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerSystem
         JsonNode arr = root.path("filterchain").path("filters");
         List<String> names = new ArrayList<>();
         if (arr.isArray()) {
-            for (JsonNode n : arr) names.add(n.path("@name").asText());
+            for (JsonNode n : arr) names.add(n.path("@name").asString());
         }
         return names;
     }
@@ -196,7 +196,7 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerSystem
         JsonNode arr = root.path("filterchain").path("filters");
         boolean found = false;
         if (arr.isArray()) {
-            for (JsonNode n : arr) if ("default".equals(n.path("@name").asText())) found = true;
+            for (JsonNode n : arr) if ("default".equals(n.path("@name").asString())) found = true;
         }
         assertTrue("default chain should be present", found);
     }
@@ -238,11 +238,11 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerSystem
             JsonNode w = om.readTree(r.getContentAsByteArray());
             JsonNode obj = w.path("filters");
 
-            assertEquals(name, obj.path("@name").asText());
+            assertEquals(name, obj.path("@name").asString());
             // class can appear as "@class" or "class" depending on serializer
             String clazz = obj.has("@class")
-                    ? obj.path("@class").asText()
-                    : obj.path("class").asText();
+                    ? obj.path("@class").asString()
+                    : obj.path("class").asString();
             assertEquals(CLASS_HTML, clazz);
 
             assertFalse(obj.path("@disabled").asBoolean());
@@ -281,7 +281,7 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerSystem
             MockHttpServletResponse r = getAsServletResponse(BASE + "/" + name + ".json");
             TestCase.assertEquals(200, r.getStatus());
             JsonNode obj = om.readTree(r.getContentAsByteArray()).path("filters");
-            assertEquals(name, obj.path("@name").asText());
+            assertEquals(name, obj.path("@name").asString());
         } finally {
             safeDelete(name);
         }
@@ -304,7 +304,7 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerSystem
                     om.readTree(r.getContentAsByteArray())
                             .path("filters")
                             .path("@name")
-                            .asText());
+                            .asString());
         } finally {
             safeDelete(name);
         }
@@ -377,7 +377,7 @@ public class AuthenticationFilterChainRestControllerTest extends GeoServerSystem
             MockHttpServletResponse r = getAsServletResponse(BASE + "/" + name + ".json");
             JsonNode obj = om.readTree(r.getContentAsByteArray()).path("filters");
             assertTrue(obj.path("@disabled").asBoolean());
-            assertEquals("/web/**,/", obj.path("@path").asText());
+            assertEquals("/web/**,/", obj.path("@path").asString());
         } finally {
             safeDelete(name);
         }

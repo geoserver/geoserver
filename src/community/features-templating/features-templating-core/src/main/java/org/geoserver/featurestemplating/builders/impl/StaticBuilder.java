@@ -4,13 +4,13 @@
  */
 package org.geoserver.featurestemplating.builders.impl;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
 import java.util.Objects;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.visitors.TemplateVisitor;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 import org.xml.sax.helpers.NamespaceSupport;
+import tools.jackson.databind.JsonNode;
 
 /** This class provides functionality to write content from Json-ld template file as it is */
 public class StaticBuilder extends AbstractTemplateBuilder {

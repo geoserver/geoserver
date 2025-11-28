@@ -12,6 +12,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -87,7 +88,9 @@ public abstract class OSEOTestSupport extends GeoServerSystemTestSupport {
 
     @Override
     protected List<Filter> getFilters() {
-        return Collections.singletonList(new OSEOFilter());
+        List<Filter> filters = new ArrayList<>(super.getFilters());
+        filters.add(new OSEOFilter());
+        return Collections.unmodifiableList(filters);
     }
 
     @Override

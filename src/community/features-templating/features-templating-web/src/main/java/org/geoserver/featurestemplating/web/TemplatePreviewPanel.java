@@ -4,10 +4,6 @@
  */
 package org.geoserver.featurestemplating.web;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.io.StringReader;
@@ -67,6 +63,9 @@ import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.CodeMirrorEditor;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 public class TemplatePreviewPanel extends Panel {
 
@@ -475,11 +474,10 @@ public class TemplatePreviewPanel extends Panel {
 
     private String prettyPrintJson(String input) {
         try {
-            ObjectMapper objectMapper = new ObjectMapper(new JsonFactory());
+            ObjectMapper objectMapper = new JsonMapper();
             Object json = objectMapper.readValue(input, Object.class);
-            objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
             return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new RuntimeException(e);
         }
     }

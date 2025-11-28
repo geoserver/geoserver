@@ -110,7 +110,7 @@ public abstract class AbstractAclController<R extends Comparable<R>, DAO extends
         ruleString = URLDecoder.decode(ruleString, "utf-8");
 
         String msg = validateRuleKey(ruleString);
-        if (msg != null) throw new RestException(msg, HttpStatus.UNPROCESSABLE_ENTITY);
+        if (msg != null) throw new RestException(msg, HttpStatus.UNPROCESSABLE_CONTENT);
 
         R rule = null;
         for (R ruleCandidate : ruleDAO.getRules()) {
@@ -219,7 +219,7 @@ public abstract class AbstractAclController<R extends Comparable<R>, DAO extends
         for (Entry<String, String> entry : ruleMap.entrySet()) {
             String msg = validateRule(entry.getKey(), entry.getValue());
             if (msg != null) {
-                throw new RestException(msg, HttpStatus.UNPROCESSABLE_ENTITY);
+                throw new RestException(msg, HttpStatus.UNPROCESSABLE_CONTENT);
             }
         }
     }

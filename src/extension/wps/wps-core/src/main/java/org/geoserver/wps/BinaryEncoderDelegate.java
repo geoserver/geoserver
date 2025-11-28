@@ -5,7 +5,6 @@
  */
 package org.geoserver.wps;
 
-import com.fasterxml.jackson.core.JsonGenerator;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -14,6 +13,7 @@ import org.geoserver.wps.ppio.BinaryPPIO;
 import org.geotools.xsd.EncoderDelegate;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
+import tools.jackson.core.JsonGenerator;
 
 /**
  * Encodes objects as base64 binaries

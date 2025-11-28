@@ -4,8 +4,8 @@
  */
 package org.geoserver.metadata.data.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.geoserver.metadata.data.dto.impl.NamespaceConfigurationImpl;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(as = NamespaceConfigurationImpl.class)
 public interface NamespaceConfiguration {

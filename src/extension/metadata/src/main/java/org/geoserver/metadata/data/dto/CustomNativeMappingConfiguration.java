@@ -5,9 +5,9 @@
 package org.geoserver.metadata.data.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.util.Map;
 import org.geoserver.metadata.data.dto.impl.CustomNativeMappingConfigurationImpl;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(as = CustomNativeMappingConfigurationImpl.class)
 @JsonIgnoreProperties(ignoreUnknown = true)

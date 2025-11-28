@@ -4,8 +4,6 @@
  */
 package org.geoserver.metadata.data.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import jakarta.annotation.PostConstruct;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -42,6 +40,9 @@ import org.geoserver.platform.resource.Resources;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.dataformat.yaml.YAMLMapper;
 
 /**
  * Service responsible for interaction with yaml files. It will search for all *.yaml files in a given directory and try
@@ -121,7 +122,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     private void readConfiguration() {
         Resource folder = getFolder();
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        ObjectMapper mapper = new YAMLMapper();
         List<Resource> files = Resources.list(folder, new Resources.ExtensionFilter("YAML"));
         Collections.sort(files, (o1, o2) -> o1.name().compareTo(o2.name()));
 
@@ -134,31 +135,31 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         for (Resource file : files) {
             try (InputStream in = file.in()) {
                 readConfiguration(in, mapper);
-            } catch (IOException e) {
+            } catch (IOException | JacksonException e) {
                 LOGGER.log(Level.FINE, e.getMessage(), e);
             }
             try (InputStream in = file.in()) {
                 readMapping(in, mapper);
-            } catch (IOException e) {
+            } catch (IOException | JacksonException e) {
                 LOGGER.log(Level.FINE, e.getMessage(), e);
             }
             try (InputStream in = file.in()) {
                 readingCustomNativeMapping(in, mapper);
-            } catch (IOException e) {
+            } catch (IOException | JacksonException e) {
                 LOGGER.log(Level.FINE, e.getMessage(), e);
             }
         }
         // add feature catalog
         try (InputStream in = getClass().getResourceAsStream(MetadataConstants.FEATURE_CATALOG_CONFIG_FILE)) {
             readConfiguration(in, mapper);
-        } catch (IOException e) {
+        } catch (IOException | JacksonException e) {
             LOGGER.log(Level.FINE, e.getMessage(), e);
         }
         // add WCS field
         if (configuration.isWcsField()) {
             try (InputStream in = getClass().getResourceAsStream(MetadataConstants.WCS_FIELD_CONFIG_FILE)) {
                 readConfiguration(in, mapper);
-            } catch (IOException e) {
+            } catch (IOException | JacksonException e) {
                 LOGGER.log(Level.FINE, e.getMessage(), e);
             }
         }

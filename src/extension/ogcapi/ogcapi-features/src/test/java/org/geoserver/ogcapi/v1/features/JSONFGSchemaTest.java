@@ -4,7 +4,7 @@
  */
 package org.geoserver.ogcapi.v1.features;
 
-import static org.geoserver.ogcapi.JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE;
+import static org.geoserver.ogcapi.SwaggerJSONSchemaMessageConverter.SCHEMA_TYPE_VALUE;
 import static org.junit.Assert.assertEquals;
 
 import com.jayway.jsonpath.DocumentContext;

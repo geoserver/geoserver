@@ -27,7 +27,7 @@ import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.sort.SortBy;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * {@link GeoServerDataProvider} providing a table model for listing {@link LayerGroupInfo layer groups} available in

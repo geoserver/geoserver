@@ -13,12 +13,6 @@
     http://www.springframework.org/schema/mvc
     http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd" >
 
-    <bean id="contentNegotiationManager"
-          class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
-        <property name="favorPathExtension" value="true" />
-        <property name="favorParameter" value="false"/>
-    </bean>
-    
     <!-- monitor daos -->
     <bean id="memMonitorDAO" class="org.geoserver.monitor.MemoryMonitorDAO"/>
     

@@ -16,12 +16,15 @@ import org.springframework.stereotype.Component;
 
 /** A custom JSON converter that uses the Open API mime type */
 @Component
-public class OpenAPIMessageConverter extends AbstractJackson2HttpMessageConverter {
+@SuppressWarnings({"deprecation", "removal"})
+// Cannot use the new Jackson support in Spring as swagger is still using older jackson versions
+// Monitor https://github.com/swagger-api/swagger-core/issues/4991 and switch to Jackson 3 when resolved
+public class SwaggerJSONAPIMessageConverter extends AbstractJackson2HttpMessageConverter {
 
     public static final String OPEN_API_MEDIA_TYPE_VALUE = "application/vnd.oai.openapi+json;version=3.0";
     public static final MediaType OPEN_API_MEDIA_TYPE = MediaType.parseMediaType(OPEN_API_MEDIA_TYPE_VALUE);
 
-    public OpenAPIMessageConverter() {
+    public SwaggerJSONAPIMessageConverter() {
         super(getMapper(), OPEN_API_MEDIA_TYPE);
     }
 

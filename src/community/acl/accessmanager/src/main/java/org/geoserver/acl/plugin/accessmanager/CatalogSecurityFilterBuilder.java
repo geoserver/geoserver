@@ -38,7 +38,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.api.filter.Filter;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
-import org.springframework.lang.NonNull;
+import org.jspecify.annotations.NonNull;
 import org.springframework.util.Assert;
 
 /**

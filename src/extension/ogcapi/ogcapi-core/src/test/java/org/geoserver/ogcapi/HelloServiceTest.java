@@ -6,10 +6,10 @@
 
 package org.geoserver.ogcapi;
 
-import static org.geoserver.ogcapi.MappingJackson2YAMLMessageConverter.APPLICATION_YAML_VALUE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.springframework.http.MediaType.APPLICATION_YAML_VALUE;
 
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;

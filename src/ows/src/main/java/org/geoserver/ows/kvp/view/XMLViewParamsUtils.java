@@ -4,12 +4,12 @@
  */
 package org.geoserver.ows.kvp.view;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.dataformat.xml.XmlMapper;
 
 public final class XMLViewParamsUtils {
 
-    static final XmlMapper XML_MAPPER = new XmlMapper();
+    static final XmlMapper XML_MAPPER = XmlMapper.xmlBuilder().build();
 
     private XMLViewParamsUtils() {}
 
@@ -24,8 +24,12 @@ public final class XMLViewParamsUtils {
         try {
             viewParamsRoot = XML_MAPPER.readValue(xmlStr, ViewParamsRoot.class);
             return viewParamsRoot;
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new RuntimeException(e);
+        } catch (NoSuchFieldError e2) {
+            // Jackson XML 2.13.x issue workaround
+            throw new RuntimeException(
+                    "Incompatible Jackson XML version detected. Please ensure Jackson XML 2.14.x is used.", e2);
         }
     }
 }

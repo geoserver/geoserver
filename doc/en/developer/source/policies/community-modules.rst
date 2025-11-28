@@ -390,17 +390,17 @@ Process
       #. A license called :file:`<module>-LICENSE.md` which contains the license notice
          for the extension (linking to full `licenses/` documents included below).
          
-         Follow the :download:`h2-LICENSE.md </../../../../src/release/extensions/h2/h2-LICENSE.md>` example:
+         Follow the :download:`dxf-LICENSE.md </../../../../src/release/extensions/dxf/dxf-LICENSE.md>` example:
          
-         .. literalinclude:: /../../../../src/release/extensions/h2/h2-LICENSE.md
+         .. literalinclude:: /../../../../src/release/extensions/dxf/dxf-LICENSE.md
             :language: markdown
 
       #. A readme called :file:`<module>-README.md` which contains instructions 
          on how to install the extension.
          
-         Follow the :download:`h2-README.md </../../../../src/release/extensions/h2/h2-README.md>` example:
+         Follow the :download:`dxf-README.md </../../../../src/release/extensions/dxf/dxf-README.md>` example:
          
-         .. literalinclude:: /../../../../src/release/extensions/h2/h2-README.md
+         .. literalinclude:: /../../../../src/release/extensions/dxf/dxf-README.md
             :language: markdown
             
          .. warning::
@@ -413,9 +413,9 @@ Process
 
    #. Create a release assembly called :file:`ext-<module>.xml` under the release `src/assembly` directory.
       
-      Follow the example of :download:`ext-h2-xml </../../../../src/release/ext-h2.xml>`:
+      Follow the example of :download:`ext-dxf-xml </../../../../src/release/ext-dxf.xml>`:
       
-      .. literalinclude:: /../../../../src/release/ext-h2.xml
+      .. literalinclude:: /../../../../src/release/ext-dxf.xml
          :language: xml
          
       * Add additional ``include`` elements in the root folder (outputDirectory empty) for

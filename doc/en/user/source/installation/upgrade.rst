@@ -180,6 +180,16 @@ Tomcat 10.1 or Tomcat 11.0 Required
 GeoServer 3.0 makes the transition to Jakarata EE Servlet 6.0.0 and requires Tomcat 10.1 or Tomcat 11.0
 for those using WebArchive distribution.
 
+H2 Datastore Removal (GeoServer 3.0 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As of GeoServer 3.0, the H2 datastore extension (``gs-h2``) has been removed and is no longer available for use
+as a GeoServer vector datastore.
+
+If your installation contains any H2-based datastores, migrate those layers to another supported datastore before upgrading to GeoServer 3.0.
+
+After upgrading, review the startup logs for missing datastore errors and verify all layers and services load as expected.
+
 Upgrading GeoServer 2 Guidance
 ------------------------------
 

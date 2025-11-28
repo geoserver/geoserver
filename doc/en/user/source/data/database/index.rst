@@ -11,7 +11,6 @@ The standard GeoServer installation supports accessing the following databases:
    :maxdepth: 1
 
    postgis
-   h2
 
 
 Other data sources are supplied as GeoServer extensions.  

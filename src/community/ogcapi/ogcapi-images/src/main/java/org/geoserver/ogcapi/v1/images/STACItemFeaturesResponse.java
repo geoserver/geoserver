@@ -11,30 +11,34 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.json.GeoJSONBuilder;
+import org.geoserver.json.GeoJSONFeatureWriter;
 import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.Link;
+import org.geoserver.ogcapi.OGCAPIMediaTypes;
+import org.geoserver.ogcapi.v1.features.CollectionDocument;
+import org.geoserver.ogcapi.v1.features.FeaturesResponse;
+import org.geoserver.ogcapi.v1.features.RFCGeoJSONFeatureWriter;
+import org.geoserver.ogcapi.v1.features.RFCGeoJSONFeaturesResponse;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
-import org.geoserver.wfs.json.GeoJSONBuilder;
-import org.geoserver.wfs.json.GeoJSONGetFeatureResponse;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geotools.api.data.FileGroupProvider;
 import org.geotools.api.feature.Feature;
-import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.feature.type.FeatureType;
 import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
-import org.geotools.referencing.CRS;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
@@ -42,7 +46,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 
 /** A subclass of GeoJSONGetFeatureResponse that encodes a RFC compliant document */
 @Component
-public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
+public class STACItemFeaturesResponse extends RFCGeoJSONFeaturesResponse {
 
     /** The MIME type requested for GeoJSON Responses */
     public static final String MIME = "application/stac+json";
@@ -86,21 +90,23 @@ public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
             throws IOException {
         OutputStreamWriter osw =
                 new OutputStreamWriter(output, gs.getGlobal().getSettings().getCharset());
+        @SuppressWarnings({"unchecked", "raw"})
+        List<FeatureCollection<FeatureType, Feature>> features = (List) value.getFeatures();
         try (BufferedWriter outWriter = new BufferedWriter(osw)) {
-            FeatureCollectionResponse featureCollection = value;
-            boolean isComplex = isComplexFeature(featureCollection);
-            GeoJSONBuilder jsonWriter = getGeoJSONBuilder(featureCollection, outWriter);
-            writeFeatures(featureCollection.getFeatures(), operation, isComplex, jsonWriter);
+            getFeatureWriter(operation).writeFeaturesContent(features, osw);
             outWriter.flush();
         }
     }
 
     @Override
-    protected void writeExtraFeatureProperties(Feature feature, Operation operation, GeoJSONBuilder jw) {
-        jw.key("stac_version").value("0.8.0");
-        jw.key("collection").value(getParentCollectionId());
-        writeAssets(feature, jw);
-        writeLinks(null, operation, jw, feature.getIdentifier().getID());
+    protected <T extends FeatureType, F extends Feature> GeoJSONFeatureWriter<T, F> getFeatureWriter(
+            FeatureCollectionResponse response, Operation operation) {
+        return new STACGeoJSONFeatureWriter<>(gs, response, getItemId());
+    }
+
+    protected <T extends FeatureType, F extends Feature> GeoJSONFeatureWriter<T, F> getFeatureWriter(
+            Operation operation) {
+        return new STACGeoJSONFeatureWriter<>(gs, null, getItemId());
     }
 
     private void writeAssets(Feature feature, GeoJSONBuilder jw) {
@@ -147,108 +153,11 @@ public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
                 URLMangler.URLType.SERVICE);
     }
 
-    @Override
-    protected void writePagingLinks(FeatureCollectionResponse response, Operation operation, GeoJSONBuilder jw) {
-        // we have more than just paging links here
-        writeLinks(response, operation, jw, null);
-    }
-
-    private void writeLinks(
-            FeatureCollectionResponse response, Operation operation, GeoJSONBuilder jw, String featureId) {
-        APIRequestInfo requestInfo = APIRequestInfo.get();
-        String baseUrl = requestInfo.getBaseURL();
-        String basePath = "ogc/images/v1/collections/" + ResponseUtils.urlEncode(getParentCollectionId());
-        jw.key("links");
-        jw.array();
-        // paging links (only for collections)
-        if (response != null && getImageId() == null && featureId == null) {
-            if (response.getPrevious() != null) {
-                writeLink(jw, "Previous page", MIME, "prev", response.getPrevious());
-            }
-            if (response.getNext() != null) {
-                writeLink(jw, "Next page", MIME, "next", response.getNext());
-            }
-            // links to each an every image at top level (sigh... from spec)
-            FeatureCollection fc = response.getFeatures().get(0);
-            try (FeatureIterator fi = fc.features()) {
-                while (fi.hasNext()) {
-                    Feature next = fi.next();
-                    String href = ResponseUtils.buildURL(
-                            baseUrl,
-                            basePath
-                                    + "/images/"
-                                    + ResponseUtils.urlEncode(
-                                            next.getIdentifier().getID()),
-                            Collections.singletonMap("f", MIME),
-                            URLMangler.URLType.SERVICE);
-                    String linkType = Link.REL_ITEM;
-                    writeLink(jw, null, MIME, linkType, href);
-                }
-            }
-        }
-        // alternate/self links
-        Collection<MediaType> formats = requestInfo.getProducibleMediaTypes(ImagesResponse.class, true);
-        for (MediaType format : formats) {
-            String path = basePath + "/images";
-            if (featureId != null) {
-                path += "/" + ResponseUtils.urlEncode(featureId);
-            }
-            String href = ResponseUtils.buildURL(
-                    baseUrl, path, Collections.singletonMap("f", format.toString()), URLMangler.URLType.SERVICE);
-            String linkType = Link.REL_ALTERNATE;
-            String linkTitle = "This document as " + format;
-            if (format.toString().equals(MIME)) {
-                linkType = Link.REL_SELF;
-                linkTitle = "This document";
-            }
-            writeLink(jw, linkTitle, format.toString(), linkType, href);
-        }
-        // backpointer to the collection, if it was a single feature request, or for the collection
-        // only
-        if (featureId == null || getImageId() != null) {
-            for (MediaType format : requestInfo.getProducibleMediaTypes(ImagesCollectionsDocument.class, true)) {
-                String href = ResponseUtils.buildURL(
-                        baseUrl,
-                        basePath,
-                        Collections.singletonMap("f", format.toString()),
-                        URLMangler.URLType.SERVICE);
-                String linkType = Link.REL_COLLECTION;
-                String linkTitle = "The collection description as " + format;
-                writeLink(jw, linkTitle, format.toString(), linkType, href);
-            }
-        }
-
-        jw.endArray();
-    }
-
     private String getParentCollectionId() {
         return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
                 .map(a -> a.getAttribute(ImagesService.COLLECTION_ID, RequestAttributes.SCOPE_REQUEST))
                 .map(String::valueOf)
                 .orElse(null);
-    }
-
-    @Override
-    protected void writeCollectionCRS(GeoJSONBuilder jsonWriter, CoordinateReferenceSystem crs) throws IOException {
-        // write the CRS block only if needed
-        if (!CRS.equalsIgnoreMetadata(DefaultGeographicCRS.WGS84, crs)) {
-            super.writeCollectionCRS(jsonWriter, crs);
-        }
-    }
-
-    @Override
-    protected void writeCollectionCounts(BigInteger featureCount, long numberReturned, GeoJSONBuilder jsonWriter) {
-        // counts
-        if (featureCount != null) {
-            jsonWriter.key("numberMatched").value(featureCount);
-        }
-        jsonWriter.key("numberReturned").value(numberReturned);
-    }
-
-    @Override
-    protected void writeCollectionBounds(
-            boolean featureBounding, GeoJSONBuilder jsonWriter, List<FeatureCollection> resultsList, boolean hasGeom) {
-        // not needed in STAC
     }
 
     /**
@@ -269,5 +178,153 @@ public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
             return canHandleInternal(operation);
         }
         return false;
+    }
+
+    /** RFC compliant GeoJSON feature writer */
+    protected class STACGeoJSONFeatureWriter<T extends FeatureType, F extends Feature>
+            extends RFCGeoJSONFeatureWriter<T, F> {
+
+        public STACGeoJSONFeatureWriter(GeoServer gs, FeatureCollectionResponse response, String featureId) {
+            super(gs, response, featureId);
+        }
+
+        @Override
+        protected void writeExtraFeatureProperties(Feature feature, GeoJSONBuilder jb) {
+            jb.key("stac_version").value("0.8.0");
+            jb.key("collection").value(getParentCollectionId());
+            writeAssets(feature, jb);
+            writeLinks(null, jb, feature.getIdentifier().getID());
+        }
+
+        @Override
+        protected void writeExtraCollectionProperties(
+                List<FeatureCollection<T, F>> featureCollections, GeoJSONBuilder jb) {
+            writeLinks(response, jb, null);
+        }
+
+        protected void writeLinks(FeatureCollectionResponse response, GeoJSONBuilder jw, String featureId) {
+            APIRequestInfo requestInfo = APIRequestInfo.get();
+            String baseUrl = requestInfo.getBaseURL();
+            String basePath = "ogc/images/v1/collections/" + ResponseUtils.urlEncode(getParentCollectionId());
+            jw.key("links");
+            jw.array();
+            // paging links (only for collections)
+            if (response != null && getImageId() == null && featureId == null) {
+                if (response.getPrevious() != null) {
+                    jw.writeLink(jw, "Previous page", MIME, "prev", response.getPrevious());
+                }
+                if (response.getNext() != null) {
+                    jw.writeLink(jw, "Next page", MIME, "next", response.getNext());
+                }
+                // links to each an every image at top level (sigh... from spec)
+                FeatureCollection fc = response.getFeatures().get(0);
+                try (FeatureIterator fi = fc.features()) {
+                    while (fi.hasNext()) {
+                        Feature next = fi.next();
+                        String href = ResponseUtils.buildURL(
+                                baseUrl,
+                                basePath
+                                        + "/images/"
+                                        + ResponseUtils.urlEncode(
+                                                next.getIdentifier().getID()),
+                                Collections.singletonMap("f", MIME),
+                                URLMangler.URLType.SERVICE);
+                        String linkType = Link.REL_ITEM;
+                        jw.writeLink(jw, null, MIME, linkType, href);
+                    }
+                }
+            }
+            // alternate/self links
+            Collection<MediaType> formats = requestInfo.getProducibleMediaTypes(ImagesResponse.class, true);
+            for (MediaType format : formats) {
+                String path = basePath + "/images";
+                if (featureId != null) {
+                    path += "/" + ResponseUtils.urlEncode(featureId);
+                }
+                String href = ResponseUtils.buildURL(
+                        baseUrl, path, Collections.singletonMap("f", format.toString()), URLMangler.URLType.SERVICE);
+                String linkType = Link.REL_ALTERNATE;
+                String linkTitle = "This document as " + format;
+                if (format.toString().equals(MIME)) {
+                    linkType = Link.REL_SELF;
+                    linkTitle = "This document";
+                }
+                jw.writeLink(jw, linkTitle, format.toString(), linkType, href);
+            }
+            // backpointer to the collection, if it was a single feature request, or for the collection
+            // only
+            if (featureId == null || getImageId() != null) {
+                for (MediaType format : requestInfo.getProducibleMediaTypes(ImagesCollectionsDocument.class, true)) {
+                    String href = ResponseUtils.buildURL(
+                            baseUrl,
+                            basePath,
+                            Collections.singletonMap("f", format.toString()),
+                            URLMangler.URLType.SERVICE);
+                    String linkType = Link.REL_COLLECTION;
+                    String linkTitle = "The collection description as " + format;
+                    jw.writeLink(jw, linkTitle, format.toString(), linkType, href);
+                }
+            }
+
+            jw.endArray();
+        }
+
+        protected void addLinks(
+                FeatureCollectionResponse response,
+                GetFeatureRequest request,
+                GeoJSONBuilder jw,
+                String featureId,
+                FeatureTypeInfo featureType) {
+            String baseUrl = response.getBaseUrl();
+            APIRequestInfo requestInfo = APIRequestInfo.get();
+
+            // paging links
+            if (response != null) {
+                if (response.getPrevious() != null) {
+                    jw.writeLink(jw, "Previous page", OGCAPIMediaTypes.GEOJSON_VALUE, "prev", response.getPrevious());
+                }
+                if (response.getNext() != null) {
+                    jw.writeLink(jw, "Next page", OGCAPIMediaTypes.GEOJSON_VALUE, "next", response.getNext());
+                }
+            }
+            // alternate/self links
+            String basePath = "ogc/features/v1/collections/" + ResponseUtils.urlEncode(featureType.prefixedName());
+            Collection<MediaType> formats = requestInfo.getProducibleMediaTypes(FeaturesResponse.class, true);
+            for (MediaType format : formats) {
+                String path = basePath + "/items";
+                if (featureId != null) {
+                    path += "/" + ResponseUtils.urlEncode(featureId);
+                }
+                String href = ResponseUtils.buildURL(
+                        baseUrl, path, Collections.singletonMap("f", format.toString()), URLMangler.URLType.SERVICE);
+                String linkType = Link.REL_ALTERNATE;
+                String linkTitle = "This document as " + format;
+                if (format.toString().equals(OGCAPIMediaTypes.GEOJSON_VALUE)) {
+                    linkType = Link.REL_SELF;
+                    linkTitle = "This document";
+                }
+                jw.writeLink(jw, linkTitle, format.toString(), linkType, href);
+            }
+            // back-pointer to the collection
+            for (MediaType format : requestInfo.getProducibleMediaTypes(CollectionDocument.class, true)) {
+                String href = ResponseUtils.buildURL(
+                        baseUrl,
+                        basePath,
+                        Collections.singletonMap("f", format.toString()),
+                        URLMangler.URLType.SERVICE);
+                String linkType = Link.REL_COLLECTION;
+                String linkTitle = "The collection description as " + format;
+                jw.writeLink(jw, linkTitle, format.toString(), linkType, href);
+            }
+        }
+
+        @Override
+        protected void writeCollectionBounds(
+                boolean featureBounding,
+                GeoJSONBuilder jsonWriter,
+                List<FeatureCollection<T, F>> resultsList,
+                boolean hasGeom) {
+            // STAC does not require collection level bounds
+        }
     }
 }

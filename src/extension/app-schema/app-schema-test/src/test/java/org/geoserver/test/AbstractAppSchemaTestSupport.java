@@ -147,6 +147,7 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
         DataAccessRegistry.unregisterAndDisposeAll();
         AppSchemaDataAccessRegistry.clearAppSchemaProperties();
         AppSchemaXSDRegistry.getInstance().dispose();
+        SchemaCache.enableAutomaticConfiguration(); // reset default behavior
         catalog = null;
     }
 

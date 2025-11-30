@@ -8,12 +8,12 @@ package org.geoserver.wfs.response;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import org.geoserver.config.GeoServer;
+import org.geoserver.json.JSONType;
 import org.geoserver.ows.OWS11ServiceExceptionHandler;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSException;
-import org.geoserver.wfs.json.JSONType;
 
 /**
  * Handles a WFS 2.0 service exception by producing an exception report.

@@ -33,13 +33,13 @@ import java.util.Set;
 import java.util.logging.Level;
 import javax.imageio.ImageIO;
 import org.geoserver.config.GeoServer;
+import org.geoserver.json.JSONType;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.ServiceExceptionHandler;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.wfs.json.JSONType;
 import org.geoserver.wms.map.RenderedImageMap;
 import org.geotools.util.Version;
 

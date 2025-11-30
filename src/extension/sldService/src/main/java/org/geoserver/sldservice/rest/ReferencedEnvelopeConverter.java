@@ -4,8 +4,8 @@
  */
 package org.geoserver.sldservice.rest;
 
+import org.geoserver.ows.kvp.BBoxKvpParser;
 import org.geoserver.rest.RestException;
-import org.geoserver.wfs.kvp.BBoxKvpParser;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.HttpStatus;

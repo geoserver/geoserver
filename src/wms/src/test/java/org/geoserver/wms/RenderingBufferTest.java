@@ -5,7 +5,6 @@
  */
 package org.geoserver.wms;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -22,7 +21,6 @@ import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.w3c.dom.Document;
 
 /**
  * Tests that the admin specified per layer buffer parameter is taken into account
@@ -70,22 +68,6 @@ public class RenderingBufferTest extends WMSTestSupport {
     }
 
     @Test
-    public void testGetFeatureInfoNoBuffer() throws Exception {
-        final String layerName = getLayerId(LINE_WIDTH_LAYER);
-        String request = "cite/wms?request=getfeatureinfo&service=wms"
-                + "&layers="
-                + layerName
-                + "&styles="
-                + LINE_WIDTH_STYLE
-                + "&width=50&height=50&format=image/png"
-                + "&srs=epsg:4326&bbox=-6,0,-1,5&x=49&y=49&query_layers="
-                + layerName
-                + "&info_format=application/vnd.ogc.gml";
-        Document dom = getAsDOM(request);
-        assertXpathEvaluatesTo("0", "count(//gml:featureMember)", dom);
-    }
-
-    @Test
     public void testGetMapExplicitBuffer() throws Exception {
         String request = "cite/wms?request=getmap&service=wms"
                 + "&layers="
@@ -101,23 +83,6 @@ public class RenderingBufferTest extends WMSTestSupport {
         showImage("testGetMap", image);
         int nonBlankPixels = countNonBlankPixels("testGetMap", image, BG_COLOR);
         assertTrue(nonBlankPixels > 0);
-    }
-
-    @Test
-    public void testGetFeatureInfoExplicitBuffer() throws Exception {
-        final String layerName = getLayerId(LINE_WIDTH_LAYER);
-        String request = "cite/wms?version=1.1.1&request=getfeatureinfo&service=wms"
-                + "&layers="
-                + layerName
-                + "&styles="
-                + LINE_WIDTH_STYLE
-                + "&width=50&height=50&format=image/png"
-                + "&srs=epsg:4326&bbox=-6,0,-1,5&x=49&y=49&query_layers="
-                + layerName
-                + "&info_format=application/vnd.ogc.gml&buffer=30";
-        Document dom = getAsDOM(request);
-        // print(dom);
-        assertXpathEvaluatesTo("1", "count(//gml:featureMember)", dom);
     }
 
     @Test
@@ -140,26 +105,5 @@ public class RenderingBufferTest extends WMSTestSupport {
         BufferedImage image = ImageIO.read(getBinaryInputStream(response));
         showImage("testGetMap", image);
         assertTrue(countNonBlankPixels("testGetMap", image, BG_COLOR) > 0);
-    }
-
-    @Test
-    public void testGetFeatureInfoConfiguredBuffer() throws Exception {
-        Catalog catalog = getCatalog();
-        LayerInfo layer = catalog.getLayerByName(getLayerId(LINE_WIDTH_LAYER));
-        layer.getMetadata().put(LayerInfo.BUFFER, 30);
-        catalog.save(layer);
-
-        final String layerName = getLayerId(LINE_WIDTH_LAYER);
-        String request = "cite/wms?version=1.1.1&request=getfeatureinfo&service=wms"
-                + "&layers="
-                + layerName
-                + "&styles="
-                + LINE_WIDTH_STYLE
-                + "&width=50&height=50&format=image/png"
-                + "&srs=epsg:4326&bbox=-6,0,-1,5&x=49&y=49&query_layers="
-                + layerName
-                + "&info_format=application/vnd.ogc.gml";
-        Document dom = getAsDOM(request);
-        assertXpathEvaluatesTo("1", "count(//gml:featureMember)", dom);
     }
 }

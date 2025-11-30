@@ -4,8 +4,8 @@
  */
 package org.geoserver.opensearch.eo.kvp;
 
+import org.geoserver.ows.kvp.BBoxKvpParser;
 import org.geoserver.platform.OWS20Exception;
-import org.geoserver.wfs.kvp.BBoxKvpParser;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.NoSuchAuthorityCodeException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;

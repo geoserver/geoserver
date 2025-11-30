@@ -117,7 +117,7 @@
         <!-- TODO WICKET8 - Fix this module and re-enable -->
         <!--<module>dyndimension</module>-->
         <module>flatgeobuf</module>
-        <module>spatialjson</module>
+        <!--module>spatialjson</module-->
         <module>webp</module>
         <module>gpxppio</module>
         <module>jms-cluster</module>

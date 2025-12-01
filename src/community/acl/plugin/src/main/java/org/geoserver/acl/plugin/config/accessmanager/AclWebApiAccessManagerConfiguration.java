@@ -9,7 +9,7 @@ import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.domain.rules.RuleAdminService;
 import org.geoserver.acl.plugin.accessmanager.AclResourceAccessManager;
 import org.geoserver.acl.plugin.accessmanager.AclResourceAccessManagerSpringConfig;
-import org.geoserver.acl.plugin.config.domain.client.ApiClientAclDomainServicesConfiguration;
+import org.geoserver.acl.plugin.config.webapi.ApiClientConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
@@ -20,16 +20,16 @@ import org.springframework.context.annotation.Import;
  * <p>
  *
  * <ul>
- *   <li>{@link ApiClientAclDomainServicesConfiguration} contributes the {@link AuthorizationService},
- *       {@link RuleAdminService}, and {@link AdminRuleAdminService}, that work by delegating to a remote ACL service
- *       through the OpenAPI HTTP interface.
+ *   <li>{@link ApiClientConfiguration} contributes the {@link AuthorizationService}, {@link RuleAdminService}, and
+ *       {@link AdminRuleAdminService}, that work by delegating to a remote ACL service through the OpenAPI HTTP
+ *       interface.
  *   <li>{@link AclResourceAccessManagerSpringConfig} sets up the {@link AclResourceAccessManager} with the
  *       implementations provided by {@code ApiClientAclDomainServicesConfiguration}
  * </ul>
  *
- * @see ApiClientAclDomainServicesConfiguration
+ * @see ApiClientConfiguration
  * @see AccessManagerSpringConfig
  */
 @Configuration
-@Import({ApiClientAclDomainServicesConfiguration.class, AclResourceAccessManagerSpringConfig.class})
+@Import({ApiClientConfiguration.class, AclResourceAccessManagerSpringConfig.class})
 public class AclWebApiAccessManagerConfiguration {}

@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -47,6 +48,7 @@ import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.dggs.DGGSInstance;
 import org.geotools.dggs.GroupedMatrixAggregate;
+import org.geotools.dggs.IterableCalcResult;
 import org.geotools.dggs.MatrixAggregate;
 import org.geotools.dggs.Zone;
 import org.geotools.factory.CommonFactoryFinder;
@@ -134,6 +136,7 @@ public class DGGSDAPAExtension {
                 collectionId, startIndex, limit, resolution, datetime, bbox, wkt, zones, variableNames, format);
     }
 
+    @SuppressWarnings("unchecked")
     @GetMapping(path = "collections/{collectionId}/processes/area:aggregate-space", name = "dapaAreaSpaceAggregate")
     @ResponseBody
     @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
@@ -183,14 +186,15 @@ public class DGGSDAPAExtension {
         SimpleFeatureType targetType = getAreaSpaceAggregateTargetType(
                 (SimpleFeatureType) ft.getFeatureType(), variables, functions, timeGroupExpressions);
         SimpleFeatureBuilder fb = new SimpleFeatureBuilder(targetType);
-        GroupedMatrixAggregate.IterableResult result = (GroupedMatrixAggregate.IterableResult) aggregate.getResult();
+        IterableCalcResult<GroupedMatrixAggregate.GroupByResult> result =
+                (IterableCalcResult<GroupedMatrixAggregate.GroupByResult>) aggregate.getResult();
         return new GroupMatrixFeatureCollection(targetType, result, gr -> {
             fb.add(geometryParser.getGeometry());
-            gr.getKey().forEach(v -> fb.add(v));
-            gr.getValues().forEach(v -> fb.add(v));
+            gr.getKey().forEach(fb::add);
+            gr.getValues().forEach(fb::add);
             return fb.buildFeature("area_space_time_"
                     + gr.getKey().stream()
-                            .map(k -> k.toString())
+                            .map(Object::toString)
                             .collect(Collectors.joining("_"))
                             .replace(" ", "_"));
         });
@@ -206,6 +210,7 @@ public class DGGSDAPAExtension {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     @GetMapping(path = "collections/{collectionId}/processes/area:aggregate-time", name = "dapaAreaTimeAggregate")
     @ResponseBody
     @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
@@ -236,7 +241,7 @@ public class DGGSDAPAExtension {
             DateTimeList datetime = new DateTimeConverter().convert(dateTimeSpec);
             filters.add(service.buildDateTimeFilter(ft, datetime));
         }
-        Filter filter = service.FF.and(filters);
+        Filter filter = DGGSService.FF.and(filters);
         String[] variables = parseVariables(collectionId, variableNames);
 
         // setup and run the query with aggregation
@@ -244,17 +249,20 @@ public class DGGSDAPAExtension {
         q.getHints().put(VIRTUAL_TABLE_PARAMETERS, singletonMap(VP_RESOLUTION, resolution));
         SimpleFeatureSource fs = (SimpleFeatureSource) ft.getFeatureSource(null, null);
         List<Expression> expressions =
-                Arrays.stream(variables).map(v -> FF.property(v)).collect(Collectors.toList());
+                Arrays.stream(variables).map(FF::property).collect(Collectors.toList());
         // run a full aggregate and build the feature
         GroupedMatrixAggregate aggregate = new GroupedMatrixAggregate(
-                expressions, Arrays.asList(functions), Arrays.asList(FF.property(getZoneColumnName(collectionId))));
+                expressions,
+                Arrays.asList(functions),
+                Collections.singletonList(FF.property(getZoneColumnName(collectionId))));
         fs.getFeatures(q).accepts(aggregate, null);
 
         // build the target feature type and feature
         SimpleFeatureType targetType = getTimeTargetType(
                 (SimpleFeatureType) ft.getFeatureType(), variables, functions, "area", getZoneColumnName(collectionId));
         SimpleFeatureBuilder fb = new SimpleFeatureBuilder(targetType);
-        GroupedMatrixAggregate.IterableResult result = (GroupedMatrixAggregate.IterableResult) aggregate.getResult();
+        IterableCalcResult<GroupedMatrixAggregate.GroupByResult> result =
+                (IterableCalcResult<GroupedMatrixAggregate.GroupByResult>) aggregate.getResult();
         return new GroupMatrixFeatureCollection(targetType, result, gr -> {
             fb.add(getFeatureGeometry(ft, geometryParser));
             gr.getKey().forEach(v -> fb.add(v));
@@ -271,6 +279,7 @@ public class DGGSDAPAExtension {
         return g;
     }
 
+    @SuppressWarnings("rawtypes")
     @GetMapping(
             path = "collections/{collectionId}/processes/area:aggregate-space-time",
             name = "dapaAreaSpaceTimeAggregate")
@@ -302,7 +311,7 @@ public class DGGSDAPAExtension {
             DateTimeList datetime = new DateTimeConverter().convert(dateTimeSpec);
             filters.add(service.buildDateTimeFilter(ft, datetime));
         }
-        Filter filter = service.FF.and(filters);
+        Filter filter = DGGSService.FF.and(filters);
         String[] variables = parseVariables(collectionId, variableNames);
 
         // setup and run the query with aggregation
@@ -310,7 +319,7 @@ public class DGGSDAPAExtension {
         q.getHints().put(VIRTUAL_TABLE_PARAMETERS, singletonMap(VP_RESOLUTION, resolution));
         SimpleFeatureSource fs = (SimpleFeatureSource) ft.getFeatureSource(null, null);
         List<Expression> expressions =
-                Arrays.stream(variables).map(v -> FF.property(v)).collect(Collectors.toList());
+                Arrays.stream(variables).map(FF::property).collect(Collectors.toList());
         // run a full aggregate and build the feature
         MatrixAggregate aggregate = new MatrixAggregate(expressions, Arrays.asList(functions));
         fs.getFeatures(q).accepts(aggregate, null);
@@ -333,6 +342,7 @@ public class DGGSDAPAExtension {
         return DataUtilities.collection(feature);
     }
 
+    @SuppressWarnings("rawtypes")
     private String getFullTimeRangeSpec(FeatureTypeInfo ft) throws IOException {
         DimensionInfo time = ft.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
         if (time == null) {
@@ -374,6 +384,7 @@ public class DGGSDAPAExtension {
     }
 
     // this is exactly the same as "zone"
+    @SuppressWarnings("unchecked")
     @GetMapping(
             path = "collections/{collectionId}/processes/position:aggregate-time",
             name = "dapaPositionTimeAggregate")
@@ -401,7 +412,7 @@ public class DGGSDAPAExtension {
         if (dateTimeSpec != null) {
             filters.add(service.buildDateTimeFilter(ft, new DateTimeConverter().convert(dateTimeSpec)));
         }
-        Filter filter = service.FF.and(filters);
+        Filter filter = DGGSService.FF.and(filters);
         String[] variables = parseVariables(collectionId, variableNames);
 
         // setup and run the query with aggregation
@@ -409,10 +420,12 @@ public class DGGSDAPAExtension {
         q.getHints().put(VIRTUAL_TABLE_PARAMETERS, singletonMap(VP_RESOLUTION, resolution));
         SimpleFeatureSource fs = (SimpleFeatureSource) ft.getFeatureSource(null, null);
         List<Expression> expressions =
-                Arrays.stream(variables).map(v -> FF.property(v)).collect(Collectors.toList());
+                Arrays.stream(variables).map(FF::property).collect(Collectors.toList());
         // run a full aggregate and build the feature
         GroupedMatrixAggregate aggregate = new GroupedMatrixAggregate(
-                expressions, Arrays.asList(functions), Arrays.asList(FF.property(getZoneColumnName(collectionId))));
+                expressions,
+                Arrays.asList(functions),
+                Collections.singletonList(FF.property(getZoneColumnName(collectionId))));
         fs.getFeatures(q).accepts(aggregate, null);
 
         // build the target feature type and feature
@@ -423,12 +436,13 @@ public class DGGSDAPAExtension {
                 "position",
                 getZoneColumnName(collectionId));
         SimpleFeatureBuilder fb = new SimpleFeatureBuilder(targetType);
-        GroupedMatrixAggregate.IterableResult result = (GroupedMatrixAggregate.IterableResult) aggregate.getResult();
+        IterableCalcResult<GroupedMatrixAggregate.GroupByResult> result =
+                (IterableCalcResult<GroupedMatrixAggregate.GroupByResult>) aggregate.getResult();
         Point center = dggs.getZone(zoneId).getCenter();
         return new GroupMatrixFeatureCollection(targetType, result, gr -> {
             fb.add(center);
-            gr.getKey().forEach(v -> fb.add(v));
-            gr.getValues().forEach(v -> fb.add(v));
+            gr.getKey().forEach(fb::add);
+            gr.getValues().forEach(fb::add);
             return fb.buildFeature("position_time_" + gr.getKey().get(0));
         });
     }
@@ -496,7 +510,7 @@ public class DGGSDAPAExtension {
         builder.add(GEOMETRY, Geometry.class, 4326);
         LinkedHashSet<String> timeAttributes = timeGroupExpressions.stream()
                 .map(e -> e.evaluate(featureType, AttributeDescriptor.class).getLocalName())
-                .collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
+                .collect(Collectors.toCollection(LinkedHashSet::new));
         timeAttributes.forEach(att -> builder.add(att, Date.class));
         for (String variable : variables) {
             for (Aggregate function : functions) {
@@ -534,8 +548,8 @@ public class DGGSDAPAExtension {
 
     private String[] parseVariables(String collectionId, String variableNames) throws IOException {
         Set<String> allVariables = variableNames(collectionId).getVariables().stream()
-                .map(dv -> dv.getId())
-                .collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
+                .map(DAPAVariable::getId)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
         if (variableNames == null) return allVariables.toArray(new String[allVariables.size()]);
 
         String[] variables = variableNames.split("\\s*,\\s*");

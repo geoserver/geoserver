@@ -5,9 +5,8 @@
 package org.geoserver.acl.plugin.test.config;
 
 import org.geoserver.acl.authorization.AuthorizationService;
-import org.geoserver.acl.config.domain.AdminRuleAdminServiceConfiguration;
-import org.geoserver.acl.config.domain.AuthorizationServiceConfiguration;
-import org.geoserver.acl.config.domain.RuleAdminServiceConfiguration;
+import org.geoserver.acl.config.application.ApplicationServicesConfiguration;
+import org.geoserver.acl.config.domain.DomainServicesConfiguration;
 import org.geoserver.acl.domain.adminrules.AdminRuleAdminService;
 import org.geoserver.acl.domain.adminrules.AdminRuleRepository;
 import org.geoserver.acl.domain.adminrules.MemoryAdminRuleRepository;
@@ -27,11 +26,7 @@ import org.springframework.context.annotation.Import;
  * storage.
  */
 @Configuration
-@Import({
-    RuleAdminServiceConfiguration.class,
-    AdminRuleAdminServiceConfiguration.class,
-    AuthorizationServiceConfiguration.class
-})
+@Import({DomainServicesConfiguration.class, ApplicationServicesConfiguration.class})
 public class AuthorizationServiceTestConfig {
 
     @Bean

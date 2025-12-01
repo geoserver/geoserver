@@ -74,7 +74,6 @@ public class TimeExtentCalculator {
             final MaxVisitor max = new MaxVisitor(endTimeAttribute);
             collection.accepts(max, null);
             Date maxDate = (Date) max.getMax();
-
             if (minDate != null && maxDate != null) return new DateRange(minDate, maxDate);
         }
 

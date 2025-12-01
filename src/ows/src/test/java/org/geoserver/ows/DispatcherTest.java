@@ -1130,6 +1130,43 @@ public class DispatcherTest {
         }
     }
 
+    /**
+     * Test fix for GEOS-10509, where xml longer than XML_LOOKAHEAD gets truncated. It is a copy of
+     * testMultiPartFormUpload, with the xml size increased.
+     */
+    @Test
+    public void testLongXML() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setContextPath("/geoserver");
+        request.setRequestURI("/geoserver/hello");
+        request.setMethod("post");
+        // Force the size of the first tag to >8K
+        String xml = " ".repeat(Dispatcher.XML_LOOKAHEAD)
+                + "<Hello service='hello' message='Hello world!' version='1.0.0'/>";
+        MimeMultipart body = new MimeMultipart();
+        request.setContentType(body.getContentType());
+
+        InternetHeaders headers = new InternetHeaders();
+        headers.setHeader("Content-Disposition", "form-data; name=\"body\";");
+        headers.setHeader("Content-Type", "application/xml");
+        body.addBodyPart(new MimeBodyPart(headers, xml.getBytes()));
+
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        body.writeTo(bout);
+
+        request.setContent(bout.toByteArray());
+
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        URL url = getClass().getResource("applicationContext.xml");
+        try (FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString())) {
+            Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
+            dispatcher.handleRequestInternal(request, response);
+
+            Assert.assertEquals("Hello world!", response.getContentAsString());
+        }
+    }
+
     @Test
     public void testMultiPartFormUploadWithBodyField() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();

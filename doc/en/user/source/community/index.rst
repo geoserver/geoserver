@@ -33,6 +33,7 @@ officially part of the GeoServer releases. They are however built along with the
    features-templating/index
    flatgeobuf/index
    gdal/index
+   geoparquet/index
    geopkg/index
    acl/index
    geostyler/index

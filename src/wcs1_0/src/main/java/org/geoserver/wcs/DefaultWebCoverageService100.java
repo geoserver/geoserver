@@ -140,7 +140,8 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
         final String version = request.getVersion();
         if ("1.0.0".equals(version)) {
             WCSInfo wcs = getServiceInfo();
-            Wcs10DescribeCoverageTransformer describeTransformer = new Wcs10DescribeCoverageTransformer(wcs, catalog);
+            Wcs10DescribeCoverageTransformer describeTransformer =
+                    new Wcs10DescribeCoverageTransformer(wcs, catalog, responseFactory);
             describeTransformer.setEncoding(
                     Charset.forName((wcs.getGeoServer().getSettings().getCharset())));
             return describeTransformer;

@@ -10,23 +10,23 @@ import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.jdbc.config.JDBCUserGroupServiceConfig;
 import org.junit.ClassRule;
 
-public class H2JNDIUserGroupServiceTest extends JDBCUserGroupServiceTest {
+public class HSQLJNDIUserGroupServiceTest extends JDBCUserGroupServiceTest {
 
     @ClassRule
-    public static final H2JNDITestConfig jndiConfig = new H2JNDITestConfig();
+    public static final HSQLJNDITestConfig jndiConfig = new HSQLJNDITestConfig();
 
     @Override
     protected String getFixtureId() {
-        return "h2";
+        return "hsql";
     }
 
     @Override
     protected JDBCUserGroupServiceConfig createConfigObject(String serviceName) {
-        return JDBCTestSupport.createConfigObjectH2Jndi(serviceName, getSecurityManager());
+        return JDBCTestSupport.createConfigObjectHSQLJNDI(serviceName, getSecurityManager());
     }
 
     @Override
     public GeoServerUserGroupService createUserGroupService(String serviceName) throws Exception {
-        return JDBCTestSupport.createH2UserGroupServiceFromJNDI(getFixtureId(), getSecurityManager());
+        return JDBCTestSupport.createHSQLUserGroupServiceFromJNDI(getFixtureId(), getSecurityManager());
     }
 }

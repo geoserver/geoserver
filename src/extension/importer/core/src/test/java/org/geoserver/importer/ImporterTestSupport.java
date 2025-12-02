@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import net.sf.json.JSONObject;
 import net.sf.json.util.JSONBuilder;
 import org.apache.commons.io.FileUtils;
@@ -166,7 +167,7 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
 
     protected void runChecks(String layerName) throws Exception {
         LayerInfo layer = getCatalog().getLayerByName(layerName);
-        assertNotNull(layer);
+        assertNotNull(getCatalog().getLayers().stream().map(l -> l.getName()).collect(Collectors.joining(", ")), layer);
         assertNotNull(layer.getDefaultStyle());
         assertNotNull(layer.getResource().getProjectionPolicy());
 
@@ -189,7 +190,7 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
         assertEquals("image/png", response.getContentType());
     }
 
-    protected DataStoreInfo createH2DataStore(String wsName, String dsName) {
+    protected DataStoreInfo creatGeopkgDataStore(String wsName, String dsName) {
         // create a datastore to import into
         Catalog cat = getCatalog();
 
@@ -197,11 +198,11 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
         DataStoreInfo ds = cat.getFactory().createDataStore();
         ds.setWorkspace(ws);
         ds.setName(dsName);
-        ds.setType("H2");
+        ds.setType("GeoPackage");
 
         Map<String, Serializable> params = new HashMap<>();
-        params.put("database", getTestData().getDataDirectoryRoot().getPath() + "/" + dsName);
-        params.put("dbtype", "h2");
+        params.put("database", getTestData().getDataDirectoryRoot().getPath() + "/" + dsName + ".gpkg");
+        params.put("dbtype", "geopkg");
         ds.getConnectionParameters().putAll(params);
         ds.setEnabled(true);
         cat.add(ds);
@@ -221,7 +222,7 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
         // store the database location in case it's a H2 store
         Map<String, Serializable> params = store.getConnectionParameters();
         String databaseLocation = null;
-        if ("h2".equals(params.get("dbtype"))) {
+        if ("geopkg".equals(params.get("dbtype"))) {
             databaseLocation = (String) params.get("database");
         }
 

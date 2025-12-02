@@ -3,7 +3,7 @@ package org.geoserver.security.jdbc;
 import org.junit.rules.ExternalResource;
 
 /**
- * A JUnit4 {@link org.junit.ClassRule} to configure JNDI properties for H2 database testing.
+ * A JUnit4 {@link org.junit.ClassRule} to configure JNDI properties for HSQL database testing.
  *
  * <p>This rule sets up the required JNDI system properties before test execution and clears them afterward, ensuring a
  * clean test environment.
@@ -12,10 +12,10 @@ import org.junit.rules.ExternalResource;
  *
  * <pre>
  * &#64;ClassRule
- * public static final H2JNDITestConfig jndiConfig = new H2JNDITestConfig();
+ * public static final HSQLJNDITestConfig jndiConfig = new HSQLJNDITestConfig();
  * </pre>
  */
-class H2JNDITestConfig extends ExternalResource {
+class HSQLJNDITestConfig extends ExternalResource {
 
     /** Configures the system properties required for JNDI setup before test execution. */
     @Override

@@ -39,6 +39,7 @@ import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.ows.ClientStreamAbortedException;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.wcs.WCSInfo;
+import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geotools.api.coverage.grid.GridEnvelope;
 import org.geotools.api.coverage.grid.GridGeometry;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
@@ -86,14 +87,17 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
         METHOD_NAME_MAP.put("bicubic", "cubic");
     }
 
+    private final CoverageResponseDelegateFinder responseFactory;
     private Catalog catalog;
 
     /** Creates a new WFSCapsTransformer object. */
-    public Wcs10DescribeCoverageTransformer(WCSInfo wcs, Catalog catalog) {
+    public Wcs10DescribeCoverageTransformer(
+            WCSInfo wcs, Catalog catalog, CoverageResponseDelegateFinder responseFactory) {
         super();
         this.catalog = catalog;
         this.skipMisconfigured = ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS.equals(
                 wcs.getGeoServer().getGlobal().getResourceErrorHandling());
+        this.responseFactory = responseFactory;
         setNamespaceDeclarationEnabled(false);
     }
 
@@ -592,7 +596,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
             // gather all the formats for this coverage
             Set<String> formats = new HashSet<>();
             for (String format : ci.getSupportedFormats()) {
-                formats.add(format);
+                if (responseFactory.encoderFor(format) != null) formats.add(format);
             }
             // sort them
             start("wcs:supportedFormats", attributes);

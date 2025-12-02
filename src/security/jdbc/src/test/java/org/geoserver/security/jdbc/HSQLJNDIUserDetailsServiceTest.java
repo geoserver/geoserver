@@ -8,33 +8,25 @@ package org.geoserver.security.jdbc;
 
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerUserGroupService;
-import org.junit.Assume;
-import org.junit.BeforeClass;
 import org.junit.ClassRule;
 
-public class H2JNDIUserDetailsServiceTest extends JDBCUserDetailsServiceTest {
+public class HSQLJNDIUserDetailsServiceTest extends JDBCUserDetailsServiceTest {
 
     @ClassRule
-    public static final H2JNDITestConfig jndiConfig = new H2JNDITestConfig();
-
-    @BeforeClass
-    public static void checkGithub() {
-        // on Github this test randomly fails with a H2 lock issue
-        Assume.assumeFalse(System.getProperty("github-build") != null);
-    }
+    public static final HSQLJNDITestConfig jndiConfig = new HSQLJNDITestConfig();
 
     @Override
     protected String getFixtureId() {
-        return "h2";
+        return "hsql";
     }
 
     @Override
     public GeoServerRoleService createRoleService(String serviceName) throws Exception {
-        return JDBCTestSupport.createH2RoleServiceFromJNDI(getFixtureId(), getSecurityManager());
+        return JDBCTestSupport.createHSQLRoleServiceFromJNDI(getFixtureId(), getSecurityManager());
     }
 
     @Override
     public GeoServerUserGroupService createUserGroupService(String serviceName) throws Exception {
-        return JDBCTestSupport.createH2UserGroupServiceFromJNDI(getFixtureId(), getSecurityManager());
+        return JDBCTestSupport.createHSQLUserGroupServiceFromJNDI(getFixtureId(), getSecurityManager());
     }
 }

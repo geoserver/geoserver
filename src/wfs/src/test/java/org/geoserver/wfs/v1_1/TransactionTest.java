@@ -35,6 +35,7 @@ import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.gml3.GML;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.NumberRange;
 import org.junit.Before;
 import org.junit.Test;
@@ -884,15 +885,16 @@ public class TransactionTest extends WFSTestSupport {
         ds.setEnabled(true);
 
         Map<String, Serializable> params = ds.getConnectionParameters();
-        params.put("dbtype", "h2");
-        params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath());
+        params.put("dbtype", "geopkg");
+        params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath() + "/foo.gpkg");
+        params.put("read_only", false);
         cat.add(ds);
 
         DataStore store = (DataStore) ds.getDataStore(null);
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.setName("baz");
         tb.add("name", String.class);
-        tb.add("geom", Point.class);
+        tb.add("geom", Point.class, DefaultGeographicCRS.WGS84);
 
         store.createSchema(tb.buildFeatureType());
 
@@ -1261,8 +1263,9 @@ public class TransactionTest extends WFSTestSupport {
         dataStoreInfo.setWorkspace(catalog.getDefaultWorkspace());
         dataStoreInfo.setEnabled(true);
         Map<String, Serializable> params = dataStoreInfo.getConnectionParameters();
-        params.put("dbtype", "h2");
-        params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath());
+        params.put("dbtype", "geopkg");
+        params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath() + "/foo.gpkg");
+        params.put("read_only", false);
         catalog.add(dataStoreInfo);
 
         DataStore store = (DataStore) dataStoreInfo.getDataStore(null);
@@ -1276,7 +1279,7 @@ public class TransactionTest extends WFSTestSupport {
         SimpleFeatureTypeBuilder featureTypeBuilder = new SimpleFeatureTypeBuilder();
         featureTypeBuilder.setName("bar");
         featureTypeBuilder.add("name", String.class);
-        featureTypeBuilder.add("geom", Point.class);
+        featureTypeBuilder.add("geom", Point.class, DefaultGeographicCRS.WGS84);
         featureTypeBuilder.add("radius", Double.class);
 
         store.createSchema(featureTypeBuilder.buildFeatureType());

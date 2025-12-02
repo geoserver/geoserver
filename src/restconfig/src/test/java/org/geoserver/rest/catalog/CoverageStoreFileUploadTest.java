@@ -22,9 +22,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.TimeZone;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.apache.commons.io.FileUtils;
@@ -78,11 +81,11 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         super.onSetUp(testData);
 
         CatalogBuilder cb = new CatalogBuilder(getCatalog());
-        DataStoreInfo store = cb.buildDataStore("h2test");
-        store.getConnectionParameters().put("dbtype", "h2");
+        DataStoreInfo store = cb.buildDataStore("gpkg_test");
+        store.getConnectionParameters().put("dbtype", "geopkg");
         store.getConnectionParameters()
                 .put("database", new File(getDataDirectory().findOrCreateDir("data"), "h2_test").getAbsolutePath());
-        store.getConnectionParameters().put("MVCC", true);
+        store.getConnectionParameters().put("read_only", false);
         catalog.save(store);
     }
 
@@ -178,7 +181,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         assertEquals(storeInfo, ci.getStore());
 
         // check harvesting happened as expected
-        DataStore ds = (DataStore) getCatalog().getDataStoreByName("h2test").getDataStore(null);
+        DataStore ds = (DataStore) getCatalog().getDataStoreByName("gpkg_test").getDataStore(null);
         assertNotNull(ds);
         SimpleFeatureSource fs = ds.getFeatureSource("watertemp-repo");
         assertNotNull(fs);
@@ -387,7 +390,8 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
             assertNotNull(metadataNames);
             assertEquals("true", reader2.getMetadataValue("HAS_TIME_DOMAIN"));
             assertEquals(
-                    "2008-10-31T00:00:00.000Z,2008-11-01T00:00:00.000Z,2008-11-02T00:00:00.000Z",
+                    adjustExpectedForCurrentTimezone(
+                            "2008-10-31T00:00:00.000Z,2008-11-01T00:00:00.000Z,2008-11-02T00:00:00.000Z"),
                     reader2.getMetadataValue(metadataNames[0]));
             // Removal of all the data associated to the mosaic
             reader2.delete(true);
@@ -512,10 +516,29 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         String[] metadataNames = reader2.getMetadataNames();
         assertNotNull(metadataNames);
         assertEquals("true", reader2.getMetadataValue("HAS_TIME_DOMAIN"));
-        assertEquals(
-                "2008-10-31T00:00:00.000Z,2008-11-01T00:00:00.000Z,2008-11-02T00:00:00.000Z",
-                reader2.getMetadataValue(metadataNames[0]));
+        String expectedNormalized = adjustExpectedForCurrentTimezone(
+                "2008-10-31T00:00:00.000Z,2008-11-01T00:00:00.000Z,2008-11-02T00:00:00.000Z");
+        assertEquals(expectedNormalized, reader2.getMetadataValue(metadataNames[0]));
+
         return reader2;
+    }
+
+    /**
+     * Once sqlite is initialized (geopackage) changing the jvm timezone does nothing, this adapts the expected value to
+     * the current timezone instead of GMT
+     */
+    private String adjustExpectedForCurrentTimezone(String expectedGMT) {
+        TimeZone tz = TimeZone.getDefault();
+        int offsetHours = tz.getOffset(System.currentTimeMillis()) / (1000 * 60 * 60);
+
+        return Arrays.stream(expectedGMT.split(","))
+                .map(String::trim)
+                .map(ts -> {
+                    Instant instant = Instant.parse(ts);
+                    // Adjust by the offset
+                    return instant.minusSeconds(offsetHours * 3600).toString().replace("Z", ".000Z");
+                })
+                .collect(Collectors.joining(","));
     }
 
     private Resource readMosaic() throws FactoryException, IOException {

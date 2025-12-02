@@ -475,7 +475,7 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
 
     @Test
     public void testPutTargetExisting() throws Exception {
-        createH2DataStore(getCatalog().getDefaultWorkspace().getName(), "foo");
+        creatGeopkgDataStore(getCatalog().getDefaultWorkspace().getName(), "foo");
 
         int id = lastId();
         String update = "{\"dataStore\": { \"name\": \"foo\" }}";
@@ -486,12 +486,12 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
 
         JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/" + id + "/tasks/0/target");
         assertEquals("foo", json.getJSONObject("dataStore").getString("name"));
-        assertEquals("H2", json.getJSONObject("dataStore").getString("type"));
+        assertEquals("GeoPackage", json.getJSONObject("dataStore").getString("type"));
     }
 
     @Test
     public void testUpdateMode() throws Exception {
-        createH2DataStore(getCatalog().getDefaultWorkspace().getName(), "foo");
+        creatGeopkgDataStore(getCatalog().getDefaultWorkspace().getName(), "foo");
 
         int id = lastId();
         ImportContext session = importer.getContext(id);
@@ -577,7 +577,7 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
     public void testRenameLayerAndImportIntoH2() throws Exception {
         // create H2 store to act as a target
         DataStoreInfo h2Store =
-                createH2DataStore(getCatalog().getDefaultWorkspace().getName(), "testTarget");
+                creatGeopkgDataStore(getCatalog().getDefaultWorkspace().getName(), "testTarget");
 
         // create context with default name
         File dir = unpack("shape/archsites_epsg_prj.zip");

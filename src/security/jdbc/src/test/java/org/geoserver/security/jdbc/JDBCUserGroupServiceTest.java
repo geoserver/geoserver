@@ -98,7 +98,7 @@ public abstract class JDBCUserGroupServiceTest extends AbstractUserGroupServiceT
 
     @Override
     protected SystemTestData createTestData() throws Exception {
-        if ("h2".equalsIgnoreCase(getFixtureId())) return super.createTestData();
+        if ("hsql".equalsIgnoreCase(getFixtureId())) return super.createTestData();
         return new LiveDbmsDataSecurity(getFixtureId());
     }
 

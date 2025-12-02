@@ -14,6 +14,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import javax.naming.NamingException;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.impl.GeoServerRole;
@@ -26,6 +27,8 @@ import org.geoserver.security.password.GeoServerPBEPasswordEncoder;
 import org.geoserver.security.password.GeoServerPlainTextPasswordEncoder;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.util.URLs;
+import org.geotools.util.factory.GeoTools;
+import org.junit.BeforeClass;
 
 /**
  * Base test class
@@ -37,6 +40,11 @@ public abstract class AbstractSecurityServiceTest extends GeoServerSystemTestSup
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         testData.setUpSecurity();
+    }
+
+    @BeforeClass
+    public static void clearJNDI() throws NamingException {
+        GeoTools.clearInitialContext();
     }
 
     public GeoServerUserGroupService createUserGroupService(String name) throws Exception {

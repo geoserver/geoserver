@@ -35,8 +35,8 @@ public class JDBCConnectAuthProviderTest extends AbstractAuthenticationProviderT
         config.setName(name);
         config.setClassName(JDBCConnectAuthProvider.class.getName());
         config.setUserGroupServiceName(userGroupServiceName);
-        config.setConnectURL("jdbc:h2:target/h2/security");
-        config.setDriverClassName("org.h2.Driver");
+        config.setConnectURL("jdbc:hsqldb:file:target/hsql/security");
+        config.setDriverClassName("org.hsqldb.jdbc.JDBCDriver");
         return config;
     }
 

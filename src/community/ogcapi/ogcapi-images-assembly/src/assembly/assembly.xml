@@ -23,11 +23,6 @@
         <include>snakeyaml-*.jar</include>
         <include>commons-lang3*.jar</include>
         <include>validation-api*.jar</include>
-        <!-- to include H2 -->
-        <include>gt-jdbc-h2-*.jar</include>
-        <include>h2-*.jar</include>
-        <include>geodb-*.jar</include>
-        <include>hatbox-*.jar</include>
         <include>gs-web-images-*.jar</include>
       </includes>
     </fileSet>

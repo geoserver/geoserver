@@ -7,6 +7,8 @@ package org.geoserver.importer;
 
 import com.google.common.collect.Iterators;
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.SingleValueConverter;
+import com.thoughtworks.xstream.converters.extended.AtomicIntegerConverter;
 import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -101,6 +103,7 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.geopkg.GeoPkgDialect;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
@@ -1378,6 +1381,8 @@ public class Importer implements DisposableBean, ApplicationListener {
             FeatureDataConverter featureDataConverter = FeatureDataConverter.DEFAULT;
             if (isShapefileDataStore(dataStore)) {
                 featureDataConverter = FeatureDataConverter.TO_SHAPEFILE;
+            } else if (isGeoPackageDataStore(dataStore)) {
+                featureDataConverter = FeatureDataConverter.TO_GEOPACKAGE;
             } else if (isOracleDataStore(dataStore)) {
                 featureDataConverter = FeatureDataConverter.TO_ORACLE;
             } else if (isPostGISDataStore(dataStore)) {
@@ -1426,7 +1431,7 @@ public class Importer implements DisposableBean, ApplicationListener {
                 // @todo HACK remove this at some point when timezone issues are fixed
                 // this will force postgis to create timezone w/ timestamp fields
                 if (dataStore instanceof JDBCDataStore ds) {
-                    // sniff for postgis (h2 is used in tests and will cause failure if this occurs)
+                    // sniff for postgis
                     if (ds.getSqlTypeNameToClassMappings().containsKey("timestamptz")) {
                         ds.getSqlTypeToSqlTypeNameOverrides().put(java.sql.Types.TIMESTAMP, "timestamptz");
                     }
@@ -1578,7 +1583,8 @@ public class Importer implements DisposableBean, ApplicationListener {
             ImportTask task, CoverageStoreInfo store, GridCoverageReader reader, boolean isStructured)
             throws IOException {
         final String errorMessage =
-                "Indirect raster import can only work against a structured grid coverage store (e.g., mosaic), this one is not: ";
+                "Indirect raster import can only work against a structured grid coverage store (e.g., mosaic), this"
+                        + " one is not: ";
         if (!(isStructured)) {
             throw new IllegalArgumentException(errorMessage + store);
         }
@@ -2050,6 +2056,11 @@ public class Importer implements DisposableBean, ApplicationListener {
         return dataStore instanceof ShapefileDataStore || dataStore instanceof DirectoryDataStore;
     }
 
+    boolean isGeoPackageDataStore(DataStore dataStore) {
+        return dataStore instanceof JDBCDataStore
+                && ((JDBCDataStore) dataStore).getSQLDialect() instanceof GeoPkgDialect;
+    }
+
     boolean isOracleDataStore(DataStore dataStore) {
         return dataStore instanceof JDBCDataStore jdbcds
                 && "org.geotools.data.oracle.OracleDialect"
@@ -2195,6 +2206,7 @@ public class Importer implements DisposableBean, ApplicationListener {
         xs.allowTypeHierarchy(Exception.class);
         xs.allowTypeHierarchy(StackTraceElement.class);
         xs.allowTypeHierarchy(Class.class);
+        xs.registerConverter((SingleValueConverter) new AtomicIntegerConverter());
 
         // normal serialization handles only references in the catalog, the importer
         // is playing with objects that are not persisted in the catalog yet instead

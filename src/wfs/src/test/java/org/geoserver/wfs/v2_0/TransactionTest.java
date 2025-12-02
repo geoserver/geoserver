@@ -35,6 +35,7 @@ import org.geotools.api.data.SimpleFeatureStore;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.filter.v2_0.FES;
 import org.geotools.gml3.v3_2.GML;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.wfs.v2_0.WFS;
 import org.junit.Before;
 import org.junit.Test;
@@ -1006,15 +1007,16 @@ public class TransactionTest extends WFS20TestSupport {
         ds.setEnabled(true);
 
         Map<String, Serializable> params = ds.getConnectionParameters();
-        params.put("dbtype", "h2");
-        params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath());
+        params.put("dbtype", "geopkg");
+        params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath() + "/foo.gpkg");
+        params.put("read_only", false);
         cat.add(ds);
 
         DataStore store = (DataStore) ds.getDataStore(null);
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.setName("bar");
         tb.add("name", String.class);
-        tb.add("geom", Point.class);
+        tb.add("geom", Point.class, DefaultGeographicCRS.WGS84);
 
         store.createSchema(tb.buildFeatureType());
 

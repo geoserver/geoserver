@@ -22,9 +22,10 @@ import org.geoserver.importer.Database;
 import org.geoserver.importer.Directory;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImporterTestSupport;
+import org.geoserver.importer.ImporterTestUtils;
 import org.geoserver.importer.SpatialFile;
 import org.geoserver.rest.RestBaseController;
-import org.geotools.data.h2.H2DataStoreFactory;
+import org.geotools.geopkg.GeoPkgDataStoreFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -182,11 +183,11 @@ public class ImportControllerTest extends ImporterTestSupport {
 
     @Test
     public void testGetImportDatabase() throws Exception {
-        File dir = unpack("h2/cookbook.zip");
+        File cookbook = ImporterTestUtils.file("gpkg/cookbook.gpkg");
 
         Map<String, Serializable> params = new HashMap<>();
-        params.put(H2DataStoreFactory.DBTYPE.key, "h2");
-        params.put(H2DataStoreFactory.DATABASE.key, new File(dir, "cookbook").getAbsolutePath());
+        params.put(GeoPkgDataStoreFactory.DBTYPE.key, "geopkg");
+        params.put(GeoPkgDataStoreFactory.DATABASE.key, cookbook.getAbsolutePath());
         importer.createContext(new Database(params));
 
         JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/imports/" + lastId() + "?expand=2");
@@ -195,7 +196,7 @@ public class ImportControllerTest extends ImporterTestSupport {
 
         JSONObject source = json.getJSONObject("import").getJSONObject("data");
         assertEquals("database", source.getString("type"));
-        assertEquals("H2", source.getString("format"));
+        assertEquals("GeoPackage", source.getString("format"));
 
         JSONArray tables = source.getJSONArray("tables");
         assertTrue(tables.contains("point"));
@@ -271,7 +272,7 @@ public class ImportControllerTest extends ImporterTestSupport {
 
     @Test
     public void testPostWithTarget() throws Exception {
-        createH2DataStore("sf", "skunkworks");
+        creatGeopkgDataStore("sf", "skunkworks");
 
         String json = "{"
                 + "\"import\": { "
@@ -377,10 +378,10 @@ public class ImportControllerTest extends ImporterTestSupport {
 
     @Test
     public void testPostTargetWithSameStoreNameTwoWs() throws Exception {
-        createH2DataStore("sf", "skunkworks");
+        creatGeopkgDataStore("sf", "skunkworks");
         // same store name in different ws, to check later that workspace is
         // properly checked
-        createH2DataStore("gs", "skunkworks");
+        creatGeopkgDataStore("gs", "skunkworks");
 
         String json = "{"
                 + "\"import\": { "

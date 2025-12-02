@@ -101,10 +101,10 @@ public class DataStoreFileController extends AbstractStoreUploadController {
 
     static {
         Map<String, Serializable> map = new HashMap<>();
-        map.put("database", "@DATA_DIR@/@NAME@");
-        map.put("dbtype", "h2");
+        map.put("database", "@DATA_DIR@/@NAME@.gpkg");
+        map.put("dbtype", "geopkg");
 
-        dataStoreFactoryToDefaultParams.put("org.geotools.data.h2.H2DataStoreFactory", map);
+        dataStoreFactoryToDefaultParams.put("org.geotools.geopkg.GeoPkgDataStoreFactory", map);
     }
 
     public static DataAccessFactory lookupDataStoreFactory(String format) {
@@ -594,10 +594,10 @@ public class DataStoreFileController extends AbstractStoreUploadController {
 
     @Override
     protected Resource findPrimaryFile(Resource directory, String format) {
-        if ("shp".equalsIgnoreCase(format) || "h2".equalsIgnoreCase(format)) {
+        if ("shp".equalsIgnoreCase(format)) {
             // special case for shapefiles, since shapefile datastore can handle directories just
             // return the directory, this handles the case of a user uploading a zip with multiple
-            // shapefiles in it and the same happens for H2
+            // shapefiles in it
             return directory;
         } else {
             return super.findPrimaryFile(directory, format);

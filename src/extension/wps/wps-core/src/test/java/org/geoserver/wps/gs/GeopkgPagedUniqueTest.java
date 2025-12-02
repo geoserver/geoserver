@@ -30,7 +30,7 @@ import org.geotools.api.data.SimpleFeatureStore;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.junit.Test;
 
-public class H2PagedUniqueTest extends WPSTestSupport {
+public class GeopkgPagedUniqueTest extends WPSTestSupport {
 
     static final String FIELD_NAME = "NAME";
 
@@ -40,19 +40,19 @@ public class H2PagedUniqueTest extends WPSTestSupport {
 
         Catalog cat = getCatalog();
         WorkspaceInfo ws = cat.getWorkspaceByName(CiteTestData.CITE_PREFIX);
-        // 1) create H2 datastore in the 'cite' workspace
-        DataStoreInfo h2 = cat.getFactory().createDataStore();
-        h2.setName("h2forests");
-        h2.setWorkspace(ws);
-        h2.setEnabled(true);
+        // 1) create GeoPackage datastore in the 'cite' workspace
+        DataStoreInfo geopkg = cat.getFactory().createDataStore();
+        geopkg.setName("gpkgforests");
+        geopkg.setWorkspace(ws);
+        geopkg.setEnabled(true);
 
-        Map<String, Serializable> params = h2.getConnectionParameters();
-        params.put("dbtype", "h2");
-        params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath() + "/h2forests");
-        cat.add(h2);
+        Map<String, Serializable> params = geopkg.getConnectionParameters();
+        params.put("dbtype", "geopkg");
+        params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath() + "/forests.gpkg");
+        cat.add(geopkg);
 
         // 2) create schema + load SystemTestData.FORESTS
-        DataStore ds = (DataStore) h2.getDataStore(null);
+        DataStore ds = (DataStore) geopkg.getDataStore(null);
         SimpleFeatureSource src = getFeatureSource(SystemTestData.FORESTS);
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.init(src.getSchema());
@@ -64,7 +64,7 @@ public class H2PagedUniqueTest extends WPSTestSupport {
         // 3) publish the new layer under the 'cite' workspace
         CatalogBuilder cb = new CatalogBuilder(cat);
         cb.setWorkspace(ws);
-        cb.setStore(h2);
+        cb.setStore(geopkg);
         FeatureTypeInfo ft = cb.buildFeatureType(store);
         ft.setEnabled(true);
         cat.add(ft);
@@ -76,7 +76,7 @@ public class H2PagedUniqueTest extends WPSTestSupport {
     }
 
     @Test
-    public void testH2DescOrder() throws Exception {
+    public void testDescOrder() throws Exception {
         // build WPS request, referencing the WFS endpoint directly
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 + "<wps:Execute service=\"WPS\" version=\"1.0.0\"\n"

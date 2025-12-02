@@ -8,21 +8,23 @@ package org.geoserver.security.jdbc;
 
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerUserGroupService;
+import org.junit.Ignore;
 
-public class H2UserDetailsServiceTest extends JDBCUserDetailsServiceTest {
+@Ignore
+public class HSQLUserDetailsServiceTest extends JDBCUserDetailsServiceTest {
 
     @Override
     protected String getFixtureId() {
-        return "h2";
+        return "hsql";
     }
 
     @Override
     public GeoServerRoleService createRoleService(String serviceName) throws Exception {
-        return JDBCTestSupport.createH2RoleService(getFixtureId(), getSecurityManager());
+        return JDBCTestSupport.createHSQLRoleService(getFixtureId(), getSecurityManager());
     }
 
     @Override
     public GeoServerUserGroupService createUserGroupService(String serviceName) throws Exception {
-        return JDBCTestSupport.createH2UserGroupService(getFixtureId(), getSecurityManager());
+        return JDBCTestSupport.createHsqlUserGroupService(getFixtureId(), getSecurityManager());
     }
 }

@@ -8,15 +8,15 @@ package org.geoserver.security.jdbc;
 
 import org.geoserver.security.GeoServerRoleService;
 
-public class H2RoleServiceTest extends JDBCRoleServiceTest {
+public class HSQLRoleServiceTest extends JDBCRoleServiceTest {
 
     @Override
     protected String getFixtureId() {
-        return "h2";
+        return "hsql";
     }
 
     @Override
     public GeoServerRoleService createRoleService(String serviceName) throws Exception {
-        return JDBCTestSupport.createH2RoleService(getFixtureId(), getSecurityManager());
+        return JDBCTestSupport.createHSQLRoleService(getFixtureId(), getSecurityManager());
     }
 }

@@ -9,18 +9,18 @@ package org.geoserver.security.jdbc;
 import org.geoserver.security.GeoServerRoleService;
 import org.junit.ClassRule;
 
-public class H2JNDIRoleServiceTest extends JDBCRoleServiceTest {
+public class HSQLJNDIRoleServiceTest extends JDBCRoleServiceTest {
 
     @ClassRule
-    public static final H2JNDITestConfig jndiConfig = new H2JNDITestConfig();
+    public static final HSQLJNDITestConfig jndiConfig = new HSQLJNDITestConfig();
 
     @Override
     protected String getFixtureId() {
-        return "h2";
+        return "hsql";
     }
 
     @Override
     public GeoServerRoleService createRoleService(String serviceName) throws Exception {
-        return JDBCTestSupport.createH2RoleServiceFromJNDI(getFixtureId(), getSecurityManager());
+        return JDBCTestSupport.createHSQLRoleServiceFromJNDI(getFixtureId(), getSecurityManager());
     }
 }

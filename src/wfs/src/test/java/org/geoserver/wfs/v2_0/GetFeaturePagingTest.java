@@ -48,7 +48,7 @@ public class GetFeaturePagingTest extends WFS20TestSupport {
 
     @Override
     protected void setUpInternal(SystemTestData data) throws Exception {
-        // run all the tests against a store that can do native paging (h2) and one that
+        // run all the tests against a store that can do native paging (geopkg) and one that
         // can't (property)
         Catalog cat = getCatalog();
         DataStoreInfo ds = cat.getFactory().createDataStore();
@@ -57,8 +57,9 @@ public class GetFeaturePagingTest extends WFS20TestSupport {
         ds.setEnabled(true);
 
         Map<String, Serializable> params = ds.getConnectionParameters();
-        params.put("dbtype", "h2");
-        params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath());
+        params.put("dbtype", "geopkg");
+        params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath() + "/foo.gpkg");
+        params.put("read_only", false);
         cat.add(ds);
 
         SimpleFeatureSource fs1 = getFeatureSource(SystemTestData.FIFTEEN);

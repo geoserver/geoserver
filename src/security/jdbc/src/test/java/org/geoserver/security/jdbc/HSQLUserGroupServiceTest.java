@@ -9,20 +9,20 @@ package org.geoserver.security.jdbc;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.jdbc.config.JDBCUserGroupServiceConfig;
 
-public class H2UserGroupServiceTest extends JDBCUserGroupServiceTest {
+public class HSQLUserGroupServiceTest extends JDBCUserGroupServiceTest {
 
     @Override
     protected String getFixtureId() {
-        return "h2";
+        return "hsql";
     }
 
     @Override
     protected JDBCUserGroupServiceConfig createConfigObject(String serviceName) {
-        return JDBCTestSupport.createConfigObjectH2(serviceName, getSecurityManager());
+        return JDBCTestSupport.createConfigObjectHSQL(serviceName, getSecurityManager());
     }
 
     @Override
     public GeoServerUserGroupService createUserGroupService(String serviceName) throws Exception {
-        return JDBCTestSupport.createH2UserGroupService(getFixtureId(), getSecurityManager());
+        return JDBCTestSupport.createHsqlUserGroupService(getFixtureId(), getSecurityManager());
     }
 }

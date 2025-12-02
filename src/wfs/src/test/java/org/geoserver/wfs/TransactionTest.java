@@ -34,6 +34,7 @@ import org.geotools.api.data.SimpleFeatureStore;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.jdbc.JDBCDataStore;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.Point;
@@ -54,6 +55,8 @@ import org.w3c.dom.NodeList;
  * @author Justin Deoliveira, The Open Planning Project
  */
 public class TransactionTest extends WFSTestSupport {
+
+    public static final String STATIC_CAUSE = "Unit test expected: Trigger is not happy with data conditions";
 
     @Before
     public void revert() throws Exception {
@@ -362,27 +365,28 @@ public class TransactionTest extends WFSTestSupport {
         // perform a delete
         String delete =
                 """
-                <wfs:Transaction service="WFS" version="1.0.0" \
-                xmlns:cite="http://www.opengis.net/cite" \
-                xmlns:ogc="http://www.opengis.net/ogc" \
-                xmlns:wfs="http://www.opengis.net/wfs"> \
-                <wfs:Delete typeName="cite:NamedPlaces"> \
-                <ogc:Filter> \
-                <ogc:PropertyIsEqualTo>
-                        <ogc:PropertyName>cite:NAME</ogc:PropertyName>
-                        <ogc:Literal>ASHTON</ogc:Literal>
-                </ogc:PropertyIsEqualTo>\
-                </ogc:Filter> \
-                </wfs:Delete> \
-                <wfs:Delete typeName="cite:Buildings"> \
-                <ogc:Filter> \
-                <ogc:PropertyIsEqualTo>
-                        <ogc:PropertyName>cite:ADDRESS</ogc:PropertyName>
-                        <ogc:Literal>123 Main Street</ogc:Literal>
-                </ogc:PropertyIsEqualTo>\
-                </ogc:Filter> \
-                </wfs:Delete> \
-                </wfs:Transaction>""";
+            <wfs:Transaction service="WFS" version="1.0.0" \
+            xmlns:cite="http://www.opengis.net/cite" \
+            xmlns:ogc="http://www.opengis.net/ogc" \
+            xmlns:wfs="http://www.opengis.net/wfs"> \
+            <wfs:Delete typeName="cite:NamedPlaces"> \
+            <ogc:Filter> \
+            <ogc:PropertyIsEqualTo>
+                    <ogc:PropertyName>cite:NAME</ogc:PropertyName>
+                    <ogc:Literal>ASHTON</ogc:Literal>
+            </ogc:PropertyIsEqualTo>\
+            </ogc:Filter> \
+            </wfs:Delete> \
+            <wfs:Delete typeName="cite:Buildings"> \
+            <ogc:Filter> \
+            <ogc:PropertyIsEqualTo>
+                    <ogc:PropertyName>cite:ADDRESS</ogc:PropertyName>
+                    <ogc:Literal>123 Main Street</ogc:Literal>
+            </ogc:PropertyIsEqualTo>\
+            </ogc:Filter> \
+            </wfs:Delete> \
+            </wfs:Transaction>\
+            """;
 
         dom = postAsDOM("wfs", delete);
         assertEquals("WFS_TransactionResponse", dom.getDocumentElement().getLocalName());
@@ -1004,31 +1008,32 @@ public class TransactionTest extends WFSTestSupport {
 
     private String xmlEntityExpansionLimitBody() {
         return """
-                <?xml version="1.0" encoding="utf-8"?><!DOCTYPE convert [ <!ENTITY lol "lol"><!ENTITY lol1 "&lol;&lol;&lol;&lol;&lol;&lol;&lol;"> ]>
-                <Transaction xmlns="http://www.opengis.net/wfs" service="WFS" xmlns:xxx="https://www.be/cbb" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" version="1.0.0" xsi:schemaLocation="">
-                   <Insert xmlns="http://www.opengis.net/wfs">
-                    <xxx_all_service_city xmlns="https://www.be/cbb">
-                      <NAME xmlns="https://www.be/cbb">GENT PTEST1</NAME>
-                      <DESCRIPTION xmlns="https://www.be/cbb">ptest1</DESCRIPTION>
-                      <STATUS xmlns="https://www.be/cbb">default</STATUS>
-                      <CREATED_BY xmlns="https://www.be/cbb">upload service</CREATED_BY>
-                      <CREATED_DT xmlns="https://www.be/cbb">2019-04-04Z</CREATED_DT>
-                      <EXTERNAL_ID xmlns="https://www.be/cbb">City1ptest1</EXTERNAL_ID>
-                      <EXTERNAL_SOURCE xmlns="https://www.be/cbb">RIAN</EXTERNAL_SOURCE>
-                      <TYPE xmlns="https://www.be/cbb">TYPE.CITY</TYPE>
-                      <WAVE xmlns="https://www.be/cbb">3</WAVE>
-                      <GEOM xmlns="https://www.be/cbb">
-                        <gml:Polygon srsName="EPSG:31370">
-                          <gml:outerBoundaryIs>
-                            <gml:LinearRing>
-                              <gml:coordinates cs="," ts=" ">&lol1;</gml:coordinates>
-                            </gml:LinearRing>
-                          </gml:outerBoundaryIs>
-                        </gml:Polygon>
-                      </GEOM>
-                    </xxx_all_service_city>
-                  </Insert>
-                </Transaction>""";
+            <?xml version="1.0" encoding="utf-8"?><!DOCTYPE convert [ <!ENTITY lol "lol"><!ENTITY lol1 "&lol;&lol;&lol;&lol;&lol;&lol;&lol;"> ]>
+            <Transaction xmlns="http://www.opengis.net/wfs" service="WFS" xmlns:xxx="https://www.be/cbb" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" version="1.0.0" xsi:schemaLocation="">
+               <Insert xmlns="http://www.opengis.net/wfs">
+                <xxx_all_service_city xmlns="https://www.be/cbb">
+                  <NAME xmlns="https://www.be/cbb">GENT PTEST1</NAME>
+                  <DESCRIPTION xmlns="https://www.be/cbb">ptest1</DESCRIPTION>
+                  <STATUS xmlns="https://www.be/cbb">default</STATUS>
+                  <CREATED_BY xmlns="https://www.be/cbb">upload service</CREATED_BY>
+                  <CREATED_DT xmlns="https://www.be/cbb">2019-04-04Z</CREATED_DT>
+                  <EXTERNAL_ID xmlns="https://www.be/cbb">City1ptest1</EXTERNAL_ID>
+                  <EXTERNAL_SOURCE xmlns="https://www.be/cbb">RIAN</EXTERNAL_SOURCE>
+                  <TYPE xmlns="https://www.be/cbb">TYPE.CITY</TYPE>
+                  <WAVE xmlns="https://www.be/cbb">3</WAVE>
+                  <GEOM xmlns="https://www.be/cbb">
+                    <gml:Polygon srsName="EPSG:31370">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," ts=" ">&lol1;</gml:coordinates>
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </GEOM>
+                </xxx_all_service_city>
+              </Insert>
+            </Transaction>\
+            """;
     }
 
     @Test
@@ -1148,9 +1153,8 @@ public class TransactionTest extends WFSTestSupport {
         try (Connection conn = ((JDBCDataStore) store).getConnection(org.geotools.api.data.Transaction.AUTO_COMMIT);
                 Statement stmt = conn.createStatement()) {
             // Create the trigger
-            stmt.execute("CREATE TRIGGER IF NOT EXISTS my_trigger BEFORE INSERT ON \"bar\" FOR EACH ROW CALL \""
-                    + ExceptionThrowingTrigger.class.getName()
-                    + "\"");
+            stmt.execute("CREATE TRIGGER IF NOT EXISTS my_trigger BEFORE INSERT ON \"bar\" BEGIN SELECT RAISE(ABORT, '"
+                    + STATIC_CAUSE + "'); END;");
             String insert = "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
                     + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
                     + " xmlns:gml=\"http://www.opengis.net/gml\" "
@@ -1164,7 +1168,7 @@ public class TransactionTest extends WFSTestSupport {
                     + "</wfs:Insert>"
                     + "</wfs:Transaction>";
 
-            assertWfs10TransactionFailureContainsText(insert, ExceptionThrowingTrigger.STATIC_CAUSE, false);
+            assertWfs10TransactionFailureContainsText(insert, STATIC_CAUSE, false);
         } finally {
             dispose(cat, ds, store, ft);
         }
@@ -1192,9 +1196,8 @@ public class TransactionTest extends WFSTestSupport {
         try (Connection conn = ((JDBCDataStore) store).getConnection(org.geotools.api.data.Transaction.AUTO_COMMIT);
                 Statement stmt = conn.createStatement()) {
             // Create the trigger
-            stmt.execute("CREATE TRIGGER IF NOT EXISTS my_trigger BEFORE INSERT ON \"bar\" FOR EACH ROW CALL \""
-                    + ExceptionThrowingTrigger.class.getName()
-                    + "\"");
+            stmt.execute("CREATE TRIGGER IF NOT EXISTS my_trigger BEFORE INSERT ON \"bar\" BEGIN SELECT RAISE(ABORT, '"
+                    + STATIC_CAUSE + "'); END;");
 
             String insert = "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
                     + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
@@ -1209,7 +1212,7 @@ public class TransactionTest extends WFSTestSupport {
                     + "</wfs:Insert>"
                     + "</wfs:Transaction>";
 
-            assertWfs10TransactionFailureContainsText(insert, ExceptionThrowingTrigger.STATIC_CAUSE, true);
+            assertWfs10TransactionFailureContainsText(insert, STATIC_CAUSE, true);
         } finally {
             dispose(cat, ds, store, ft);
         }
@@ -1236,18 +1239,16 @@ public class TransactionTest extends WFSTestSupport {
         ds.setEnabled(true);
 
         Map<String, Serializable> params = ds.getConnectionParameters();
-        params.put("dbtype", "h2");
-        params.put(
-                "database", getTestData().getDataDirectoryRoot().getAbsolutePath()
-                // For optional H2 SQL console trace: + ";TRACE_LEVEL_SYSTEM_OUT=3"
-                );
+        params.put("dbtype", "geopkg");
+        params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath() + "/foo.gpkg");
+        params.put("read_only", false);
         cat.add(ds);
 
         DataStore store = (DataStore) ds.getDataStore(null);
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.setName("bar");
         tb.add("name", String.class);
-        tb.add("geom", Point.class);
+        tb.add("geom", Point.class, DefaultGeographicCRS.WGS84);
 
         store.createSchema(tb.buildFeatureType());
 

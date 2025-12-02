@@ -5,8 +5,8 @@
  */
 package org.geoserver.security.web.jdbc.role;
 
-import org.geoserver.security.jdbc.H2RoleServiceTest;
-import org.geoserver.security.jdbc.H2UserGroupServiceTest;
+import org.geoserver.security.jdbc.HSQLRoleServiceTest;
+import org.geoserver.security.jdbc.HSQLUserGroupServiceTest;
 import org.geoserver.security.web.role.EditRolePageTest;
 import org.junit.Test;
 
@@ -30,16 +30,16 @@ public class JDBCEditRolePageTest extends EditRolePageTest {
     }
 
     void initializeForJDBC() throws Exception {
-        initialize(new H2UserGroupServiceTest(), new H2RoleServiceTest());
+        initialize(new HSQLUserGroupServiceTest(), new HSQLRoleServiceTest());
     }
 
     @Override
     public String getRoleServiceName() {
-        return "h2";
+        return "hsql";
     }
 
     @Override
     public String getUserGroupServiceName() {
-        return "h2";
+        return "hsql";
     }
 }

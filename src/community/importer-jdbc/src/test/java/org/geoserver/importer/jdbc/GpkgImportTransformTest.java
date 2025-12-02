@@ -6,11 +6,11 @@ package org.geoserver.importer.jdbc;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.geoserver.importer.ImporterDataTest;
+import org.geoserver.importer.rest.ImportTransformTest;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
-public class H2ImporterDataTest extends ImporterDataTest {
+public class GpkgImportTransformTest extends ImportTransformTest {
 
     @Test
     public void testJdbcImportStore() {

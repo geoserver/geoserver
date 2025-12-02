@@ -51,6 +51,11 @@
       <artifactId>gt-brewer</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-geopkg</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>
       <version>${gs.version}</version>
@@ -69,11 +74,6 @@
       <artifactId>gs-restconfig</artifactId>
       <version>${gs.version}</version>
       <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.geotools.jdbc</groupId>
-      <artifactId>gt-jdbc-h2</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

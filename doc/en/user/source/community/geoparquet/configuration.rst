@@ -19,9 +19,6 @@ To create a new GeoParquet data store:
 
    *GeoParquet data store configuration panel*
 
-.. note::
-   **TODO**: Add screenshot of the GeoParquet data store configuration panel showing all parameters including the new AWS authentication options.
-
 Connection Parameters
 ---------------------
 

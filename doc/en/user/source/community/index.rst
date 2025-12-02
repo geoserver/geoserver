@@ -47,6 +47,7 @@ Community modules are provided "as is" alongside the `nightly builds <https://bu
    features-templating/index
    flatgeobuf/index
    gdal/index
+   geoparquet/index
    geopkg/index
    acl/index
    geostyler/index

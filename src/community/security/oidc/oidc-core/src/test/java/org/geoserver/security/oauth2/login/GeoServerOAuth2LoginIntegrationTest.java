@@ -14,6 +14,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.extension.ResponseTransformerV2;
@@ -118,6 +122,56 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
         }
     }
 
+    private static class TokenSignatureBreakerTransformer implements ResponseTransformerV2 {
+        @Override
+        public String getName() {
+            return "break-signature";
+        }
+
+        @Override
+        public Response transform(Response response, ServeEvent serveEvent) {
+            String responseBody = new String(response.getBody(), StandardCharsets.UTF_8);
+            try {
+                return breakSignature(responseBody);
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Error in wiremock.", e);
+                throw new RuntimeException(e);
+            }
+        }
+
+        /**
+         * Change first character of signature to break it
+         *
+         * @param responseBody
+         * @return
+         * @throws JsonProcessingException
+         */
+        private Response breakSignature(String responseBody) throws JsonProcessingException {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(responseBody);
+            String idToken = jsonNode.get("id_token").toPrettyString();
+            String[] tokenParts = idToken.split("\\.");
+            String signature = tokenParts[2];
+
+            char c = signature.charAt(0);
+            char substitution = c == 'A' ? 'B' : 'A';
+            signature = substitution + signature.substring(1);
+            idToken = tokenParts[0] + "." + tokenParts[1] + "." + signature;
+            idToken = idToken.replaceAll("\"", "");
+            ((ObjectNode) jsonNode).put("id_token", idToken);
+            String modifiedResponse = objectMapper.writeValueAsString(jsonNode);
+            return Response.response()
+                    .body(modifiedResponse)
+                    .headers(new HttpHeaders(HttpHeader.httpHeader("Content-Type", "application/json")))
+                    .build();
+        }
+
+        @Override
+        public boolean applyGlobally() {
+            return false;
+        }
+    }
+
     private static final String CLIENT_ID = "kbyuFDidLLm280LIwVFiazOqjO3ty8KH";
     private static final String CLIENT_SECRET = "60Op4HFM0I8ajz0WdiStAbziZ-VFQttXuxixHHs2R7r7-CW8GR79l-mmLqMhc-Sa";
     private static final String CODE = "R-2CqM7H1agwc7Cx";
@@ -130,8 +184,9 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
     public void setupWireMock() throws Exception {
         System.setProperty(GeoServerOAuth2LoginFilterConfig.OPENID_TEST_GS_PROXY_BASE, "http://localhost/geoserver");
 
-        openIdService =
-                new WireMockServer(wireMockConfig().dynamicPort().extensions(new TokenEndpointBasicTransformer()));
+        openIdService = new WireMockServer(wireMockConfig()
+                .dynamicPort()
+                .extensions(new TokenEndpointBasicTransformer(), new TokenSignatureBreakerTransformer()));
         // uncomment the following to get wiremock logging
         // .notifier(new ConsoleNotifier(true)));
         openIdService.start();
@@ -184,7 +239,6 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
         filterConfig.setOidcUserInfoUri(authService + "/userinfo");
         filterConfig.setOidcLogoutUri(authService + "/endSession");
         filterConfig.setOidcJwkSetUri(authService + "/.well-known/jwks.json");
-        filterConfig.setOidcEnforceTokenValidation(false);
         filterConfig.setOidcScopes("openid profile email phone address");
         filterConfig.setEnableRedirectAuthenticationEntryPoint(true);
         filterConfig.setOidcUserNameAttribute("email");
@@ -261,6 +315,84 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
                         .withTransformers("token-endpoint")));
 
         verifyLoginLogout();
+    }
+
+    @Test
+    public void testNoSignatureValidation() throws Exception {
+
+        GeoServerSecurityManager manager = getSecurityManager();
+        GeoServerOAuth2LoginFilterConfig config =
+                (GeoServerOAuth2LoginFilterConfig) manager.loadFilterConfig("openidconnect", true);
+        config.setOidcAuthenticationMethodPostSecret(true);
+        config.setDisableSignatureValidation(true);
+        manager.saveFilter(config);
+
+        // request token with secret in post body
+        openIdService.stubFor(WireMock.post(urlPathEqualTo("/token"))
+                .withRequestBody(containing("grant_type=authorization_code"))
+                .withRequestBody(containing("client_id=" + CLIENT_ID))
+                .withRequestBody(containing("client_secret=" + CLIENT_SECRET))
+                .withRequestBody(containing("code=" + CODE))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                        .withTransformers("token-endpoint", "break-signature")));
+
+        verifyLogin();
+    }
+
+    private void verifyLogin() throws IOException, ServletException {
+        // given: request a protected URL
+        MockHttpServletRequest webRequest = createRequest("web/");
+
+        // when: execute request
+        MockHttpServletResponse webResponse = executeOnSecurityFilters(webRequest);
+        HttpSession lSession = webRequest.getSession();
+
+        // then: "skip login dialog"/AEP is enabled -> spring's initiate login endpoint
+        assertEquals(302, webResponse.getStatus());
+        String location = webResponse.getHeader("Location");
+        String authStartPath = "web/oauth2/authorizationoidc";
+        assertEquals(baseRedirectUri + authStartPath, location);
+
+        // when: request to spring's initiate login endpoint is issued on same session
+        webRequest = createRequest("/" + authStartPath);
+        webRequest.setSession(lSession);
+        webResponse = executeOnSecurityFilters(webRequest);
+
+        // then: response is forward to auth server login
+        location = webResponse.getHeader("Location");
+        assertNotNull(location);
+        assertThat(location, CoreMatchers.startsWith(baseRedirectUri));
+
+        Map<String, Object> kvp = KvpUtils.parseQueryString(location);
+        if (!kvp.isEmpty()) {
+            assertThat(kvp, Matchers.hasEntry("client_id", CLIENT_ID));
+            assertThat(
+                    kvp,
+                    Matchers.hasEntry("redirect_uri", "http://localhost:8080/geoserver/web/login/oauth2/code/oidc"));
+            assertThat(kvp, Matchers.hasEntry("scope", "openid profile email phone address"));
+            assertThat(kvp, Matchers.hasEntry("response_type", "code"));
+
+            Object state = kvp.get("state");
+            assertNotNull(state);
+            Object lNonce = kvp.get("nonce");
+            assertNotNull(lNonce);
+            reqParamNonce = lNonce.toString();
+
+            // make believe we authenticated and got the redirect back, with the code
+            MockHttpServletRequest codeRequest =
+                    createRequest("web/login/oauth2/code/oidc?code=" + CODE + "&state=" + state);
+            codeRequest.setSession(lSession);
+            executeOnSecurityFilters(codeRequest);
+
+            // should have authenticated and given roles, and they have been saved in the session
+            SecurityContext context = new HttpSessionSecurityContextRepository()
+                    .loadDeferredContext(codeRequest)
+                    .get();
+            Authentication auth = context.getAuthentication();
+            assertNotNull(auth);
+        }
     }
 
     private void verifyLoginLogout() throws IOException, ServletException {

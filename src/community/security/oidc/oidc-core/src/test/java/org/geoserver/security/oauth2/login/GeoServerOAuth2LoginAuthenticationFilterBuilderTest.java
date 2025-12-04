@@ -31,7 +31,6 @@ import java.util.List;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.oauth2.common.ConfidentialLogger;
 import org.geoserver.security.oauth2.spring.GeoServerAuthorizationRequestCustomizer;
-import org.geoserver.security.oauth2.spring.GeoServerOidcConfigurableTokenValidator;
 import org.geoserver.security.oauth2.spring.GeoServerOidcIdTokenDecoderFactory;
 import org.junit.Assert;
 import org.junit.Before;
@@ -265,7 +264,6 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilderTest {
         configuration.setOidcJwkSetUri("https://myJwkSetUri");
         configuration.setOidcLogoutUri("myLogoutUri");
 
-        configuration.setOidcEnforceTokenValidation(false);
         configuration.setOidcUsePKCE(true);
         configuration.setOidcResponseMode("query");
         configuration.setOidcAuthenticationMethodPostSecret(true);
@@ -316,11 +314,6 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilderTest {
         JwtDecoder lDecoder = lTokenDecoderFactory.createDecoder(lReg);
         Object lValidatorObject = readField(lDecoder, "jwtValidator", true);
         assertNotNull(lValidatorObject);
-        assertEquals(GeoServerOidcConfigurableTokenValidator.class, lValidatorObject.getClass());
-        GeoServerOidcConfigurableTokenValidator lValidator = (GeoServerOidcConfigurableTokenValidator) lValidatorObject;
-
-        // * enforceTokenValidation is addressed by validator
-        Assert.assertSame(configuration, lValidator.getConfiguration());
 
         // * PKCE, extra request parameters (response mode)
         DefaultOAuth2AuthorizationRequestResolver lResolver = sut.getAuthorizationRequestResolver();

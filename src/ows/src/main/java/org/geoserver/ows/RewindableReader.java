@@ -37,7 +37,7 @@ public class RewindableReader extends Reader {
                 buffer.append(cbuf, off, result);
             }
             return result;
-        } else if (!buffer.isEmpty()) {
+        } else if (buffer.length() > 0) {
             // Second pass.  Use the buffer and delete
             int bufLen = buffer.length();
             int bufReadLen = Math.min(len, bufLen);
@@ -70,7 +70,7 @@ public class RewindableReader extends Reader {
 
     @Override
     public boolean ready() throws IOException {
-        if (!isFirstPhase && !buffer.isEmpty()) {
+        if (!isFirstPhase && buffer.length() > 0) {
             // We're replaying the buffer
             return true;
         }

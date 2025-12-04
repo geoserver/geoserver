@@ -3,6 +3,10 @@
 Overview
 ========
 
+.. note::
+
+   The KML functionality described here is provided by the optional **KML extension**. Install the KML plugin before following these instructions.
+
 Why use GeoServer with Google Earth?
 ------------------------------------
 
@@ -18,4 +22,3 @@ GeoServer supports Google Earth by providing KML as a `Web Map Service <http://e
 
 See the next section (:ref:`google_earth_quickstart`) to view GeoServer and Google 
 Earth in action. 
-

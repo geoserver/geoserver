@@ -1,5 +1,5 @@
 <assembly>
-  <id>wps-plugin</id>
+  <id>kml-plugin</id>
   <formats>
     <format>zip</format>
   </formats>
@@ -9,20 +9,10 @@
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
-        <include>gs-wps-core*</include>
-        <include>gs-web-wps*</include>
-        <include>gt-process-geometry*</include>
-        <include>gt-xsd-wps*</include>
-        <include>net.opengis.wps*</include>
-        <include>gt-csv*</include>
-        <include>opencsv*</include>
-        <!-- kmlppio dependencies -->
-        <include>gs-wps-kml-ppio*</include>
-        <include>gs-kml*</include>
-        <include>javaapiforkml*</include>
-        <include>jaxb-runtime*</include>
-        <include>jakarta.xml.bind-api*</include>
-        <include>gt-xsd-kml*</include>
+        <include>gs-kml-*.jar</include>
+        <include>javaapiforkml-*.jar</include>
+        <include>jaxb-runtime-*.jar</include>
+        <include>jakarta.xml.bind-api-*.jar</include>
       </includes>
     </fileSet>
     <fileSet>
@@ -44,4 +34,21 @@
       </includes>
     </fileSet>
   </fileSets>
+  <files>
+     <file>
+       <source>release/extensions/README.md</source>
+       <outputDirectory></outputDirectory>
+       <destName>README.txt</destName>
+     </file>
+     <file>
+       <source>release/target/html/extensions/LICENSE.html</source>
+       <outputDirectory></outputDirectory>
+       <destName>LICENSE.html</destName>
+     </file>
+     <file>
+       <source>release/target/html/extensions/README.html</source>
+       <outputDirectory></outputDirectory>
+       <destName>README.html</destName>
+     </file>
+  </files>
 </assembly>

@@ -37,7 +37,6 @@
     <module>wfs</module>
     <module>wms</module>
     <module>wms-gml</module>
-    <module>kml</module>
     <module>ows</module>
     <module>gwc</module>
     <module>gwc-rest</module>
@@ -330,7 +329,7 @@
         <version>${gs.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.geoserver</groupId>
+        <groupId>org.geoserver.extension</groupId>
         <artifactId>gs-kml</artifactId>
         <version>${gs.version}</version>
       </dependency>
@@ -1357,6 +1356,7 @@
             <descriptor>release/ext-inspire.xml</descriptor>
             <descriptor>release/ext-jp2k.xml</descriptor>
             <descriptor>release/ext-libjpeg-turbo.xml</descriptor>
+            <descriptor>release/ext-kml.xml</descriptor>
             <descriptor>release/ext-mapml.xml</descriptor>
             <descriptor>release/ext-mbstyle.xml</descriptor>
             <descriptor>release/ext-metadata.xml</descriptor>

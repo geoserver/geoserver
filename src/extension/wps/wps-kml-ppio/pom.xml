@@ -25,7 +25,7 @@
       <version>${gs.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.geoserver</groupId>
+      <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-kml</artifactId>
       <version>${gs.version}</version>
     </dependency>

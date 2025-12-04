@@ -120,11 +120,6 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-kml</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver</groupId>
       <artifactId>gs-gwc</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -898,6 +893,20 @@
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-netcdf-out</artifactId>
           <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>kml-out</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-kml</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geowebcache</groupId>
+          <artifactId>gwc-kml</artifactId>
         </dependency>
       </dependencies>
     </profile>

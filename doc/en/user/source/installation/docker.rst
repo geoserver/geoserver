@@ -151,7 +151,7 @@ Here is a list of available extensions (taken from the `build server <https://bu
     control-flow             importer                 pyramid                  
     css                      inspire                  querylayer               
     csw-iso                  jp2k                     rat                      
-    csw                      libjpeg-turbo            sldservice               
+    csw                      libjpeg-turbo            sldservice
     datadir-catalog-loader   mapml                    sqlserver
     db2                      mbstyle                  vectortiles
     dxf                      metadata                 wcs2_0-eo
@@ -162,6 +162,7 @@ Here is a list of available extensions (taken from the `build server <https://bu
     geofence-server-h2       netcdf                   wps-jdbc
     geofence-server-postgres ogcapi-features          wps
     geofence-wps             ogr-wfs                  ysld
+    kml
 
 
 Testing Geoserver Community modules

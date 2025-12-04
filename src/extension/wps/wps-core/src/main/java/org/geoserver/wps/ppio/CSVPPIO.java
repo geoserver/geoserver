@@ -78,7 +78,7 @@ public class CSVPPIO extends CDataPPIO {
         SimpleFeatureCollection collection = (SimpleFeatureCollection) value;
         HashMap<String, Object> params = new HashMap<>();
         params.put(CSVDataStoreFactory.FILE_PARAM.key, tmp.file().getAbsoluteFile());
-        params.put(CSVDataStoreFactory.STRATEGYP.key, CSVDataStoreFactory.ATTRIBUTES_ONLY_STRATEGY);
+        params.put(CSVDataStoreFactory.STRATEGYP.key, CSVDataStoreFactory.WKT_STRATEGY);
         CSVDataStore store = (CSVDataStore) DataStoreFinder.getDataStore(params);
         store.createSchema(collection.getSchema());
         String name = store.getTypeName().getLocalPart();

@@ -37,27 +37,39 @@ public class DAPATest extends OGCApiTestSupport {
     private static final String DATASTORE = "h3props";
     private static final String H3_DGGS_STORE_NAME = "h3dggs";
     private static final String H3_FEATURE_TYPE = "h3temps"; // from h3temps.properties
+
+    private static final String LONG_SUFFIX = "Long";
+    private static final String DATASTORE_LONG = DATASTORE + LONG_SUFFIX;
+    private static final String H3_DGGS_STORE_NAME_LONG = H3_DGGS_STORE_NAME + LONG_SUFFIX;
+    private static final String H3_FEATURE_TYPE_LONG = H3_FEATURE_TYPE + LONG_SUFFIX;
+
     public static final double DELTA = 1E-6;
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
-        setUpH3PropertiesStore(testData);
-        setUpH3DggsStore();
-        setUpH3DggsLayer();
+        // Setup a h3 store that has the zone identifier column as String
+        setupDelegatePropertyStore(DATASTORE, H3_FEATURE_TYPE + ".properties", testData);
+        setUpH3DggsStore(H3_DGGS_STORE_NAME, DATASTORE, "h3indexstr");
+        setUpH3DggsLayer(H3_DGGS_STORE_NAME, H3_FEATURE_TYPE);
+
+        // Setup a h3 store that has the zone identifier column as a Number (Long)
+        setupDelegatePropertyStore(DATASTORE_LONG, H3_FEATURE_TYPE_LONG + ".properties", testData);
+        setUpH3DggsStore(H3_DGGS_STORE_NAME_LONG, DATASTORE_LONG, "h3index");
+        setUpH3DggsLayer(H3_DGGS_STORE_NAME_LONG, H3_FEATURE_TYPE_LONG);
     }
 
-    private void setUpH3DggsLayer() throws Exception {
+    private void setUpH3DggsLayer(String h3DggsStoreName, String h3FeatureType) throws Exception {
         Catalog catalog = getCatalog();
-        DataStoreInfo dggsStore = catalog.getDataStoreByName(H3_DGGS_STORE_NAME);
+        DataStoreInfo dggsStore = catalog.getDataStoreByName(h3DggsStoreName);
         if (dggsStore == null) {
-            throw new IllegalStateException("DGGS store " + H3_DGGS_STORE_NAME + " was not found in the catalog");
+            throw new IllegalStateException("DGGS store " + h3DggsStoreName + " was not found in the catalog");
         }
 
         CatalogBuilder cb = new CatalogBuilder(catalog);
         cb.setWorkspace(catalog.getDefaultWorkspace());
         cb.setStore(dggsStore);
-        FeatureTypeInfo ft = cb.buildFeatureType(new NameImpl(H3_FEATURE_TYPE));
+        FeatureTypeInfo ft = cb.buildFeatureType(new NameImpl(h3FeatureType));
         cb.setupBounds(ft);
         DimensionInfoImpl time = new DimensionInfoImpl();
         time.setAttribute("time");
@@ -74,37 +86,36 @@ public class DAPATest extends OGCApiTestSupport {
         gs.save(wfs);
     }
 
-    private void setUpH3PropertiesStore(SystemTestData testData) throws IOException {
+    private void setupDelegatePropertyStore(String delegateStoreName, String propertyFile, SystemTestData testData)
+            throws IOException {
         File dataRoot = testData.getDataDirectoryRoot();
-        File dir = new File(dataRoot, "h3props");
+        File dir = new File(dataRoot, delegateStoreName);
         if (!dir.exists() && !dir.mkdirs()) {
             throw new IOException("Failed to create directory " + dir);
         }
 
-        String fileName = "h3temps.properties";
-        File propsFile = new File(dir, fileName);
-        getCatalog().getResourceLoader().copyFromClassPath(fileName, propsFile, getClass());
+        File propsFile = new File(dir, propertyFile);
+        getCatalog().getResourceLoader().copyFromClassPath(propertyFile, propsFile, getClass());
 
         Catalog catalog = getCatalog();
         WorkspaceInfo ws = catalog.getDefaultWorkspace();
 
         DataStoreInfo store = catalog.getFactory().createDataStore();
-        store.setName(DATASTORE);
+        store.setName(delegateStoreName);
         store.setWorkspace(ws);
         store.setEnabled(true);
         store.setType("Property");
 
         Map<String, Serializable> params = store.getConnectionParameters();
-        // PropertyDataStore expects a directory; each .properties file is a feature type
         params.put("directory", dir.getAbsolutePath());
         catalog.add(store);
     }
 
-    private void setUpH3DggsStore() {
+    private void setUpH3DggsStore(String storeName, String delegateDatastoreName, String zoneIdAttribute) {
         Catalog catalog = getCatalog();
         WorkspaceInfo ws = catalog.getDefaultWorkspace();
         DataStoreInfo dggs = catalog.getFactory().createDataStore();
-        dggs.setName(H3_DGGS_STORE_NAME);
+        dggs.setName(storeName);
         dggs.setWorkspace(ws);
         dggs.setEnabled(true);
         dggs.setType("DGGS Datastore");
@@ -112,8 +123,8 @@ public class DAPATest extends OGCApiTestSupport {
         Map<String, Serializable> params = dggs.getConnectionParameters();
         // These parameter names will depend on your DGGSDataStoreFactory
         params.put(DGGSStoreFactory.DGGS_FACTORY_ID.key, "H3");
-        params.put(DGGSStoreFactory.STORE_NAME.key, DATASTORE);
-        params.put(DGGSStoreFactory.ZONE_ID_COLUMN_NAME.key, "h3indexstr");
+        params.put(DGGSStoreFactory.STORE_NAME.key, delegateDatastoreName);
+        params.put(DGGSStoreFactory.ZONE_ID_COLUMN_NAME.key, zoneIdAttribute);
         catalog.add(dggs);
     }
 
@@ -136,9 +147,14 @@ public class DAPATest extends OGCApiTestSupport {
     }
 
     @Test
-    public void testAggregateSpaceTime() throws Exception {
+    public void testAreaAggregateSpaceTime() throws Exception {
+        testAreaAggregateSpaceTime(LONG_SUFFIX);
+        testAreaAggregateSpaceTime("");
+    }
+
+    private void testAreaAggregateSpaceTime(String zoneIdType) throws Exception {
         DocumentContext doc = getAsJSONPath(
-                "ogc/dggs/v1/collections/h3temps/processes/area:aggregate-space-time?bbox=-100,-100,100,"
+                getBasePath(zoneIdType) + "processes/area:aggregate-space-time?bbox=-100,-100,100,"
                         + "100&datetime=2025-01-01/2025-01-05&functions=min,max&variables=temperature&resolution=2",
                 200);
         // geometry is the aggregation one
@@ -155,8 +171,13 @@ public class DAPATest extends OGCApiTestSupport {
 
     @Test
     public void testAreaAggregateSpace() throws Exception {
+        testAreaAggregateSpace(LONG_SUFFIX);
+        testAreaAggregateSpace("");
+    }
+
+    private void testAreaAggregateSpace(String zoneIdType) throws Exception {
         DocumentContext doc = getAsJSONPath(
-                "ogc/dggs/v1/collections/h3temps/processes/area:aggregate-space?bbox=-100,-100,100,"
+                getBasePath(zoneIdType) + "processes/area:aggregate-space?bbox=-100,-100,100,"
                         + "100&functions=mean&variables=temperature&resolution=3",
                 200);
         // geometry is the aggregation one
@@ -173,8 +194,13 @@ public class DAPATest extends OGCApiTestSupport {
 
     @Test
     public void testAreaAggregateTime() throws Exception {
+        testAreaAggregateTime(LONG_SUFFIX);
+        testAreaAggregateTime("");
+    }
+
+    private void testAreaAggregateTime(String zoneIdType) throws Exception {
         DocumentContext doc = getAsJSONPath(
-                "ogc/dggs/v1/collections/h3temps/processes/area:aggregate-time?bbox=-100,-100,100,"
+                getBasePath(zoneIdType) + "processes/area:aggregate-time?bbox=-100,-100,100,"
                         + "100&functions=mean&variables=temperature&resolution=3",
                 200);
         // geometry is the aggregation one
@@ -191,10 +217,13 @@ public class DAPATest extends OGCApiTestSupport {
 
     @Test
     public void testRetrieveInArea() throws Exception {
-        // uses a fake datetime, h3 does not really have it, right now there is no test store
-        // that has time information
+        testRetrieveInArea(LONG_SUFFIX);
+        testRetrieveInArea("");
+    }
+
+    private void testRetrieveInArea(String zoneIdType) throws Exception {
         DocumentContext json = getAsJSONPath(
-                "ogc/dggs/v1/collections/h3temps/processes/area:retrieve?bbox=4,35,24,"
+                getBasePath(zoneIdType) + "processes/area:retrieve?bbox=4,35,24,"
                         + "48&datetime=2025-01-01/2025-01-02&resolution=3",
                 200);
         List<?> features = json.read("$.features");
@@ -203,13 +232,13 @@ public class DAPATest extends OGCApiTestSupport {
         // Basic feature schema checks
         assertEquals("Feature", json.read("$.features[0].type"));
         // Properties presence
-        assertEquals("831e84fffffffff", json.read("$.features[0].properties.h3indexstr"));
+        assertEqualsZoneId(json, "831e84fffffffff", 0, zoneIdType);
+        assertEqualsZoneId(json, "831e84fffffffff", 1, zoneIdType);
+        assertEqualsZoneId(json, "831e85fffffffff", 2, zoneIdType);
+        assertEqualsZoneId(json, "831e85fffffffff", 3, zoneIdType);
         assertEquals("id_r3_t1", json.read("$.features[0].properties.identifier"));
-        assertEquals("831e84fffffffff", json.read("$.features[1].properties.h3indexstr"));
         assertEquals("id_r3_t2", json.read("$.features[1].properties.identifier"));
-        assertEquals("831e85fffffffff", json.read("$.features[2].properties.h3indexstr"));
         assertEquals("id_r3_t1_2", json.read("$.features[2].properties.identifier"));
-        assertEquals("831e85fffffffff", json.read("$.features[3].properties.h3indexstr"));
         assertEquals("id_r3_t2_2", json.read("$.features[3].properties.identifier"));
 
         assertEquals(
@@ -218,11 +247,15 @@ public class DAPATest extends OGCApiTestSupport {
     }
 
     @Test
-    public void testDapaPosition() throws Exception {
-        // uses a fake datetime, h3 does not really have it, right now there is no test store
-        // that has time information
+    public void testRetrievePosition() throws Exception {
+        testRetrievePosition(LONG_SUFFIX);
+        testRetrievePosition("");
+    }
+
+    private void testRetrievePosition(String zoneIdType) throws Exception {
         DocumentContext json = getAsJSONPath(
-                "ogc/dggs/v1/collections/h3temps/processes/position:retrieve?resolution=3&geom=POINT(43.1 12.4)&datetime=2025-01-01",
+                getBasePath(zoneIdType)
+                        + "processes/position:retrieve?resolution=3&geom=POINT(43.1 12.4)&datetime=2025-01-01",
                 200);
         List<?> features = json.read("$.features");
         assertThat(features, hasSize(1));
@@ -230,7 +263,7 @@ public class DAPATest extends OGCApiTestSupport {
         // Basic feature schema checks
         assertEquals("Feature", json.read("$.features[0].type"));
         // Properties presence
-        assertEquals("831e84fffffffff", json.read("$.features[0].properties.h3indexstr"));
+        assertEqualsZoneId(json, "831e84fffffffff", 0, zoneIdType);
         assertEquals("id_r3_t1", json.read("$.features[0].properties.identifier"));
         assertEquals(
                 3,
@@ -238,11 +271,15 @@ public class DAPATest extends OGCApiTestSupport {
     }
 
     @Test
-    public void testDapaPositionAggregateTime() throws Exception {
-        // uses a fake datetime, h3 does not really have it, right now there is no test store
-        // that has time information
+    public void testPositionAggregateTime() throws Exception {
+        testPositionAggregateTime(LONG_SUFFIX);
+        testPositionAggregateTime("");
+    }
+
+    private void testPositionAggregateTime(String zoneIdType) throws Exception {
         DocumentContext json = getAsJSONPath(
-                "ogc/dggs/v1/collections/h3temps/processes/position:aggregate-time?resolution=3&geom=POINT(43.1 12.4)&datetime=2025-01-01/2025-01-04",
+                getBasePath(zoneIdType)
+                        + "processes/position:aggregate-time?resolution=3&geom=POINT(43.1 12.4)&datetime=2025-01-01/2025-01-04",
                 200);
         List<?> features = json.read("$.features");
         assertThat(features, hasSize(1));
@@ -250,7 +287,7 @@ public class DAPATest extends OGCApiTestSupport {
         // Basic feature schema checks
         assertEquals("Feature", json.read("$.features[0].type"));
         // Properties presence
-        assertEquals("831e84fffffffff", json.read("$.features[0].properties.h3indexstr"));
+        assertEqualsZoneId(json, "831e84fffffffff", 0, zoneIdType);
         assertEquals("id_r3_t1", json.read("$.features[0].properties.identifier_min"));
         assertEquals("id_r3_t4", json.read("$.features[0].properties.identifier_max"));
         assertEquals(13.4, json.read("$.features[0].properties.temperature_max", Double.class), DELTA);
@@ -260,5 +297,23 @@ public class DAPATest extends OGCApiTestSupport {
                 8,
                 json.read("$.features[0].properties.temperature_count", Integer.class)
                         .intValue());
+    }
+
+    private void assertEqualsZoneId(DocumentContext json, String zoneId, int i, String zoneIdType) {
+        assertEquals(
+                getExpectedValue(zoneIdType, zoneId),
+                json.read("$.features[" + i + "].properties." + getExpectedAttribute(zoneIdType)));
+    }
+
+    private String getBasePath(String zoneIdType) {
+        return "ogc/dggs/v1/collections/h3temps" + zoneIdType + "/";
+    }
+
+    private String getExpectedAttribute(String zoneIdType) {
+        return LONG_SUFFIX.equals(zoneIdType) ? "h3index" : "h3indexstr";
+    }
+
+    private Object getExpectedValue(String zoneIdType, String expectedZoneId) {
+        return LONG_SUFFIX.equals(zoneIdType) ? Long.parseUnsignedLong(expectedZoneId, 16) : expectedZoneId;
     }
 }

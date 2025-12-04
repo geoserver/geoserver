@@ -16,7 +16,7 @@ Using the GeoWebCache plug in with super-overlays
 
 To access GWC from GeoServer go to http://localhost:8080/geoserver/gwc/demo/. This should return a layer list of similar to below.
 
-.. figure:: ../../../../geowebcache/webadmin/img/demopage.png
+.. figure:: ../../../geowebcache/webadmin/img/demopage.png
 
 To use a super-overlay in GeoWebCache select the KML (vector) option display for each layer. Lets select topp:states.The url would be http://localhost:8080/geoserver/gwc/service/kml/topp:states.kml.kmz
 After doing so you will be presented with a open option dialog, choose Google Earth.

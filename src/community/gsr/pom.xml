@@ -32,7 +32,7 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.geoserver</groupId>
+      <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-kml</artifactId>
       <version>${project.version}</version>
     </dependency>

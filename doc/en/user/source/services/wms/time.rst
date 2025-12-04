@@ -89,7 +89,7 @@ One end of the interval must be a time value, but the other may be a duration va
 
 .. note::
    
-   The final example could be paired with the KML service to provide a :ref:`google_earth` network link which is always updated with the last 36 hours of data.
+   The final example could be paired with the KML service to provide a :ref:`kml_extension` network link which is always updated with the last 36 hours of data.
 
 Reduced accuracy times
 ----------------------
@@ -219,4 +219,3 @@ For example, the multiple representations listed below are all equivalent.
         P18M
 
   .. note:: ``P1.25Y3M`` would not be acceptable, because fractional values are only permitted in the most specific value given, which in this case would be months. 
-

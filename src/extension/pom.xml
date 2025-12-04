@@ -70,6 +70,7 @@
       <id>app-schema</id>
       <modules>
         <module>app-schema</module>
+        <module>kml</module>
       </modules>
     </profile>
 
@@ -154,6 +155,7 @@
       <id>wps</id>
       <modules>
         <module>wps</module>
+        <module>kml</module>
       </modules>
     </profile>
 
@@ -236,6 +238,13 @@
       <id>libjpeg-turbo</id>
       <modules>
         <module>libjpeg-turbo</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>kml</id>
+      <modules>
+        <module>kml</module>
       </modules>
     </profile>
 
@@ -361,6 +370,7 @@
       <id>wps-download</id>
       <modules>
         <module>wps-download</module>
+        <module>kml</module>
       </modules>
     </profile>
     <profile>
@@ -460,6 +470,7 @@
         <module>metadata</module>
         <module>rat</module>
         <module>ogcapi</module>
+        <module>kml</module>
       </modules>
     </profile>
 
@@ -514,6 +525,7 @@
         <module>metadata</module>
         <module>rat</module>
         <module>ogcapi</module>
+        <module>kml</module>
       </modules>
     </profile>
   </profiles>

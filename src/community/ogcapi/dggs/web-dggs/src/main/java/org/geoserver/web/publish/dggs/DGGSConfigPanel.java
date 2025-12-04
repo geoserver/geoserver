@@ -48,7 +48,7 @@ public class DGGSConfigPanel extends PublishedConfigurationPanel<LayerInfo> {
 
         // Adding the min and max resolution editors
         @SuppressWarnings("PMD.CloseResource") // owned by the store
-        DGGSInstance dggs = getDGGS(model);
+        DGGSInstance<?> dggs = getDGGS(model);
         int[] resolutions = dggs.getResolutions();
         int minDggsRes = Arrays.stream(resolutions).min().orElse(0);
         int maxDggsRes = Arrays.stream(resolutions).max().orElse(Integer.MAX_VALUE);
@@ -81,13 +81,13 @@ public class DGGSConfigPanel extends PublishedConfigurationPanel<LayerInfo> {
         minResolution.getForm().add(new MinMaxValidator(minResolution, maxResolution));
     }
 
-    private static DGGSInstance getDGGS(IModel<LayerInfo> model) throws IOException {
+    private static DGGSInstance<?> getDGGS(IModel<LayerInfo> model) throws IOException {
         FeatureTypeInfo fti = (FeatureTypeInfo) model.getObject().getResource();
         FeatureSource fs = fti.getFeatureSource(null, null);
         if (fs instanceof Wrapper wrapper) {
             fs = wrapper.unwrap(DGGSFeatureSource.class);
         }
-        return ((DGGSFeatureSource) fs).getDGGS();
+        return ((DGGSFeatureSource<?>) fs).getDGGS();
     }
 
     public class MinMaxValidator implements IFormValidator {

@@ -37,22 +37,22 @@ class DGGSGeometryFilterParser {
     Filter filter = Filter.INCLUDE;
     Geometry geometry;
     FilterFactory ff;
-    DGGSInstance dggs;
+    DGGSInstance<?> dggs;
     AttributeDescriptor zoneIdAttribute;
     Class<? extends Geometry> geometryType = Polygon.class;
 
-    public DGGSGeometryFilterParser(FilterFactory ff, DGGSInstance dggs) {
+    public DGGSGeometryFilterParser(FilterFactory ff, DGGSInstance<?> dggs) {
         this.ff = ff;
         this.dggs = dggs;
     }
 
-    public DGGSGeometryFilterParser(FilterFactory ff, DGGSInstance dggs, AttributeDescriptor zoneIdAttribute) {
+    public DGGSGeometryFilterParser(FilterFactory ff, DGGSInstance<?> dggs, AttributeDescriptor zoneIdAttribute) {
         this(ff, dggs, null, zoneIdAttribute);
     }
 
     public DGGSGeometryFilterParser(
             FilterFactory ff,
-            DGGSInstance dggs,
+            DGGSInstance<?> dggs,
             Class<? extends Geometry> geometryType,
             AttributeDescriptor zoneIdAttribute) {
         this.ff = ff;
@@ -108,11 +108,12 @@ class DGGSGeometryFilterParser {
         if (zoneIds != null && !zoneIds.isEmpty()) {
             String[] identifiers = zoneIds.split("\\s*,\\s*");
             this.geometry = null;
-            Iterator<Zone> zoneIterator =
-                    Arrays.stream(identifiers).map(id -> dggs.getZone(id)).iterator();
+            Iterator<Zone> zoneIterator = Arrays.stream(identifiers)
+                    .map(id -> dggs.getZoneFromString(id))
+                    .iterator();
             this.filter = DGGSFilterTransformer.getFilterFrom(dggs, zoneIterator, resolution, null, zoneIdAttribute);
             this.geometry = CascadedPolygonUnion.union(Arrays.stream(identifiers)
-                    .map(id -> dggs.getZone(id).getBoundary())
+                    .map(id -> dggs.getZoneFromString(id).getBoundary())
                     .collect(Collectors.toList()));
         }
     }

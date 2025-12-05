@@ -17,7 +17,7 @@
             <outputDirectory/>
             <includes>
                 <include>gt-vector-mosaic*.jar</include>
-                <include>gs-vector-mosaic*.jar</include>
+                <include>gs-*vector-mosaic*.jar</include>
             </includes>
         </fileSet>
     </fileSets>

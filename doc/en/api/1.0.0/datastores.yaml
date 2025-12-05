@@ -357,6 +357,48 @@ paths:
       responses:
         405:
           description: Method Not Allowed
+          
+  /workspaces/{workspaceName}/datastores/{storeName}/mosaic/{method}.{format}:
+    post:
+      operationId: postVectorDataStoreUpload
+      tags:
+        - "DataStores"
+      summary: Ingest vector data into a Vector Mosaic.
+      description: This operation is used to ingest new vector datasets into a vector mosaic. 
+      parameters:
+        - name: workspaceName
+          in: path
+          type: string
+          required: true
+          description: The name of the workspace containing the data store.
+        - name: storeName
+          in: path
+          required: true
+          description: The name of the vector data store to be retrieved.
+          type: string
+        - name: method
+          in: path
+          required: true
+          description: The upload method. Can be "url", "file", "external", "remote". 
+                       "file" uploads a file from a local source. The body of the request is the file itself.
+                       "url" uploads a file from a remote source. The body of the request is a URL pointing to the file to upload. This URL must be visible from the server.
+                       "external" uses an existing file on the server. The body of the request is the absolute path to the existing file. No data copy will occur.
+                       "remote" uses a direct reference to a remote url, i.e. a file on a cloud storage. No data copy will occur. The body of the request is a URL pointing to the remote dataset.
+          type: string
+        - name: format
+          in: path
+          required: true
+          description: The type of file being uploaded (e.g., "parquet")
+          type: string
+        - name: filename
+          in: query
+          required: false
+          description: The filename parameter specifies the target file name for a file that needs to be ingested as part of a vector mosaic. This is important to avoid clashes. Only used if method="file".
+          type: string
+      responses:
+        202:
+          description: OK          
+          
   /workspaces/{workspaceName}/appschemastores/{storeName}/cleanSchemas:
     post:
       operationId: cleanAllMongoSchemas

@@ -12,4 +12,5 @@ Vector Mosaic datastore layers will have a feature type that incorporates the in
    installing
    configuration
    delegate
+   restingestion
 

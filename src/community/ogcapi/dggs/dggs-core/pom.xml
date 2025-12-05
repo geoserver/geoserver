@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~  (c) 2019 Open Source Geospatial Foundation - all rights reserved
+  ~  (c) 2025 Open Source Geospatial Foundation - all rights reserved
   ~  This code is licensed under the GPL 2.0 license, available at the root
   ~  application directory.
   ~  
@@ -9,20 +9,24 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.geoserver.community</groupId>
-    <artifactId>gs-ogcapi</artifactId>
+    <artifactId>gs-dggs</artifactId>
     <version>3.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.community</groupId>
-  <artifactId>gs-dggs</artifactId>
-  <packaging>pom</packaging>
+  <artifactId>gs-dggs-core</artifactId>
 
-  <modules>
-    <module>dggs-core</module>
-    <module>dggs-rhealpix</module>
-    <module>web-dggs</module>
-    <module>ogcapi-dggs</module>
-    <module>ogcapi-dggs-assembly</module>
-  </modules>
+  <dependencies>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-dggs-core</artifactId>
+      <version>${gt.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-restconfig</artifactId>
+      <version>${gs.version}</version>
+    </dependency>
+  </dependencies>
 
 </project>

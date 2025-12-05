@@ -5,36 +5,27 @@
  application directory.
  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.geoserver</groupId>
-    <artifactId>community</artifactId>
+    <groupId>org.geoserver.community</groupId>
+    <artifactId>gs-vector-mosaic</artifactId>
     <version>3.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.community</groupId>
-  <artifactId>gs-vector-mosaic</artifactId>
-  <packaging>pom</packaging>
-  <name>Vector mosaic datastore community module</name>
-
-  <modules>
-    <module>vector-mosaic-rest</module>
-    <module>web-vector-mosaic</module>
-    <module>vector-mosaic-assembly</module>
-  </modules>
-
-  <!-- For reliable tests -->
-  <properties>
-    <user.timezone>UTC</user.timezone>
-  </properties>
+  <artifactId>gs-web-vector-mosaic</artifactId>
+  <packaging>jar</packaging>
+  <name>Vector mosaic web UI</name>
 
   <dependencies>
     <dependency>
-      <groupId>com.jayway.jsonpath</groupId>
-      <artifactId>json-path</artifactId>
-      <scope>test</scope>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-vector-mosaic</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.web</groupId>
+      <artifactId>gs-web-core</artifactId>
     </dependency>
   </dependencies>
 </project>

@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -29,10 +30,14 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wps.WPSTestSupport;
 import org.geoserver.wps.resource.WPSResourceManager;
+import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.api.filter.Filter;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.feature.DefaultFeatureCollection;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.filter.text.cql2.CQL;
+import org.geotools.geometry.jts.WKTReader2;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -110,5 +115,53 @@ public class CSVPPIOTest extends WPSTestSupport {
             lines++;
         }
         assertEquals("Wrong number of lines", 52, lines);
+    }
+
+    @Test
+    public void testEncodeOutputStreamWithGeometries() throws Exception {
+
+        SimpleFeatureType type = DataUtilities.createType(
+                "Locations",
+                "geom:Point:srid=4326,area:MultiPolygon:srid=4326,path:LineString:srid=4326,name:String,population:Integer,last_census_date:Date,density:Double,visited:Boolean,null_field:Float");
+
+        DefaultFeatureCollection fc = new DefaultFeatureCollection("locations", type);
+
+        WKTReader2 wktReader = new WKTReader2();
+        fc.add(SimpleFeatureBuilder.build(
+                type,
+                new Object[] {
+                    wktReader.read("POINT (9.19 45.46)"),
+                    wktReader.read("MULTIPOLYGON (((9.13 45.52, 9.13 45.42, 9.30 45.42, 9.30 45.52, 9.13 45.52)))"),
+                    wktReader.read("LINESTRING (9.18 45.48, 9.19 45.47, 9.20 45.46)"),
+                    "Milan",
+                    1378000,
+                    "2025-01-01T00:00:00",
+                    Double.MAX_VALUE,
+                    true,
+                    null
+                },
+                null));
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream(1024);
+        new CSVPPIO(resourceManager).encode(fc, os);
+
+        try (FileOutputStream fos = new FileOutputStream("file.csv")) {
+            fos.write(os.toByteArray());
+        }
+
+        String csv = os.toString();
+
+        BufferedReader r = new BufferedReader(new StringReader(csv));
+
+        String header = r.readLine();
+        assertEquals("geom,area,path,name,population,last_census_date,density,visited,null_field", header);
+
+        String firstLine = r.readLine();
+        assertEquals(
+                "POINT (9.19 45.46),"
+                        + "\"MULTIPOLYGON (((9.13 45.52, 9.13 45.42, 9.3 45.42, 9.3 45.52, 9.13 45.52)))\","
+                        + "\"LINESTRING (9.18 45.48, 9.19 45.47, 9.2 45.46)\","
+                        + "Milan,1378000,2025-01-01T00:00:00Z,1.7976931348623157E308,true,",
+                firstLine);
     }
 }

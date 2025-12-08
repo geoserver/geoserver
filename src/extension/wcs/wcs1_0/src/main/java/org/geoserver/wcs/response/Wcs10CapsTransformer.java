@@ -186,7 +186,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
                 section = CapabilitiesSectionType.get("/");
             } else {
                 section = request.getSection();
-                allSections = (section.get("/").equals(section));
+                allSections = section.get("/").equals(section);
             }
             final Set<String> knownSections = new HashSet<>(Arrays.asList(
                     "/",
@@ -309,7 +309,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
 
             if (contact != null
                     && (StringUtils.isNotBlank(contact.getContactPerson())
-                            || (StringUtils.isNotBlank(contact.getContactOrganization())))) {
+                            || StringUtils.isNotBlank(contact.getContactOrganization()))) {
                 start("wcs:responsibleParty");
 
                 tmp = contact.getContactPerson();

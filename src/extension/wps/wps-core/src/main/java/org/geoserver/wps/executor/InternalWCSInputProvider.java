@@ -4,11 +4,11 @@
  */
 package org.geoserver.wps.executor;
 
+import java.lang.reflect.Method;
 import net.opengis.wps10.InputReferenceType;
 import net.opengis.wps10.InputType;
 import net.opengis.wps10.MethodType;
 import org.geoserver.ows.KvpRequestReader;
-import org.geoserver.wcs.WebCoverageService100;
 import org.geoserver.wcs.WebCoverageService111;
 import org.geoserver.wcs2_0.WebCoverageService20;
 import org.geoserver.wps.WPSException;
@@ -57,8 +57,10 @@ public class InternalWCSInputProvider extends AbstractInputProvider {
             WebCoverageService111 wcs = (WebCoverageService111) context.getBean("wcs111ServiceTarget");
             return wcs.getCoverage(type2)[0];
         } else if (getCoverage instanceof net.opengis.wcs10.GetCoverageType type1) {
-            WebCoverageService100 wcs = (WebCoverageService100) context.getBean("wcs100ServiceTarget");
-            return wcs.getCoverage(type1)[0];
+            Object wcs = context.getBean("wcs100ServiceTarget");
+            Method getCoverageMethod = wcs.getClass().getMethod("getCoverage", net.opengis.wcs10.GetCoverageType.class);
+            Object[] result = (Object[]) getCoverageMethod.invoke(wcs, type1);
+            return result[0];
         } else if (getCoverage instanceof net.opengis.wcs20.GetCoverageType type) {
             WebCoverageService20 wcs = (WebCoverageService20) context.getBean("wcs20ServiceTarget");
             return wcs.getCoverage(type);

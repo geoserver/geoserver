@@ -90,16 +90,6 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-wcs1_0</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-wcs1_1</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver</groupId>
       <artifactId>gs-wcs2_0</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -1965,6 +1955,26 @@
           <groupId>org.geoserver.community</groupId>
           <artifactId>wps-openai</artifactId>
           <version>${gs.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>wcs10</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-wcs1_0</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>wcs11</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver</groupId>
+          <artifactId>gs-wcs1_1</artifactId>
+          <version>${project.version}</version>
         </dependency>
       </dependencies>
     </profile>

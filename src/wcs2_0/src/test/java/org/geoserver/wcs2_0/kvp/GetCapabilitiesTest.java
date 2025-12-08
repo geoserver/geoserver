@@ -136,22 +136,6 @@ public class GetCapabilitiesTest extends WCSTestSupport {
     }
 
     @Test
-    public void testAcceptVersions10() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse("wcs?request=GetCapabilities&service=WCS&acceptversions=1.0.0");
-        assertEquals("application/xml", response.getContentType());
-
-        // xmlunit is not setup to parse WCS 1.0.0 XML, use string checks
-        assertThat(
-                response.getContentAsString(),
-                allOf(
-                        containsString("<wcs:WCS_Capabilities"),
-                        containsString("version=\"1.0.0\""),
-                        containsString("xmlns:ows=\"http://www.opengis.net/ows/1.1\""),
-                        containsString("<wcs:CoverageOfferingBrief")));
-    }
-
-    @Test
     public void testMetadata() throws Exception {
         GeoServerInfo global = getGeoServer().getGlobal();
         global.getSettings().setProxyBaseUrl("src/test/resources/geoserver");

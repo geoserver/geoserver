@@ -57,7 +57,6 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 import org.vfny.geoserver.wcs.WcsException;
-import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
 
 /**
  * GetCoverage request reader for WCS 1.0.0
@@ -87,11 +86,11 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
         }
         // if not specified, throw a resounding exception (by spec)
         if (!getCoverage.isSetVersion())
-            throw new WcsException("Version has not been specified", WcsExceptionCode.MissingParameterValue, "version");
+            throw new WcsException("Version has not been specified", MissingParameterValue, "version");
 
         // do the version negotiation dance
         List<String> provided = new ArrayList<>();
-        provided.add(Wcs10GetCoverageRequestReader.VERSION);
+        provided.add(VERSION);
         List<String> accepted = null;
         if (getCoverage.getVersion() != null) {
             accepted = new ArrayList<>();
@@ -99,11 +98,10 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
         }
         String version = RequestUtils.getVersionPreOws(provided, accepted);
 
-        if (!Wcs10GetCoverageRequestReader.VERSION.equals(version)) {
-            throw new WcsException(
-                    "An invalid version number has been specified", WcsExceptionCode.InvalidParameterValue, "version");
+        if (!VERSION.equals(version)) {
+            throw new WcsException("An invalid version number has been specified", InvalidParameterValue, "version");
         }
-        getCoverage.setVersion(Wcs10GetCoverageRequestReader.VERSION);
+        getCoverage.setVersion(VERSION);
 
         // build interpolation
         if (!getCoverage.isSetInterpolationMethod()) {
@@ -191,9 +189,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
         }
         if (timeSequence == null && bbox == null)
             throw new WcsException(
-                    "Bounding box cannot be null, TIME has not been specified",
-                    WcsExceptionCode.MissingParameterValue,
-                    "BBOX");
+                    "Bounding box cannot be null, TIME has not been specified", MissingParameterValue, "BBOX");
 
         //
         // GRID management
@@ -443,7 +439,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
                         throw new WcsException(
                                 "Requested axis subset contains wrong number of values (should have at least 1): "
                                         + unparsed.size(),
-                                WcsExceptionCode.InvalidParameterValue,
+                                InvalidParameterValue,
                                 "band");
                     }
 

@@ -55,41 +55,21 @@
 		<property name="contentType" value="application/vnd.ogc.se_xml"/>
 		<!-- property name="schemaLocation" value="wcs/1.0.0/OGC-exception.xsd"/ -->
 	</bean>
- 
 
   <!-- kvp parsers -->
-
   <bean id="wcs100AxisSubsetKvpParser" class="org.geoserver.wcs.kvp.AxisSubsetKvpParser" />
-
-
-
   <bean id="wcs100BBoxKvpParser" class="org.geoserver.wcs.kvp.BBoxKvpParser" />
-  
   <bean id="wcs100InterpolationKvpParser" class="org.geoserver.wcs.kvp.InterpolationMethodKvpParser" >
       <property name="service" value="WCS" />
       <property name="version" value="1.0.0" />
    </bean>
-
-
-
   <bean id="wcs100CoverageKvpParser" class="org.geoserver.wcs.kvp.CoverageKvpParser">
-
     <constructor-arg ref="catalog" />
-
   </bean>
-
-
-
   <bean id="wcs100SourceCoverageKvpParser" class="org.geoserver.wcs.kvp.SourceCoverageKvpParser">
-
     <constructor-arg ref="catalog" />
-
   </bean>
-
-
-
   <bean id="wcs100SectionKvpParser" class="org.geoserver.wcs.kvp.SectionKvpParser" />
-  
   <bean id="wcs100TimeKvpParser" class="org.geoserver.wcs.kvp.TimeKvpParser">
     <constructor-arg value="TIME"/>
     <constructor-arg ref="geoServer"/>
@@ -102,98 +82,50 @@
     <property name="service" value="WCS"/>
   </bean>
 
-
   <!-- kvp request readers -->
-
   <bean id="wcs100GetCapabilitiesKvpReader"
-
     class="org.geoserver.wcs.kvp.Wcs10GetCapabilitiesRequestReader" />
-
-
-
   <bean id="wcs100DescribeCoverageKvpReader"
     class="org.geoserver.wcs.kvp.Wcs10DescribeCoverageKvpRequestReader">
   </bean>
-
-
-
   <bean id="wcs100GetCoverageRequestReader"
-
     class="org.geoserver.wcs.kvp.Wcs10GetCoverageRequestReader">
-
     <constructor-arg index="0" ref="catalog" />
-
   </bean>
-
-  
 
   <!-- the xml configuration -->
-
   <bean id="wcs-1.0.0-configuration" class="org.geotools.wcs.WCSConfiguration" />
 
-
-
   <!--  xml request readers -->
-
   <bean id="wcs100CapabilitiesRequestReader" class="org.geoserver.wcs.xml.v1_0_0.WcsXmlReader">
-
     <constructor-arg value="GetCapabilities" />
-
     <constructor-arg value="1.0.0" />
-
     <constructor-arg ref="wcs-1.0.0-configuration" />
     <constructor-arg ref="entityResolverProvider" />
-
   </bean>
-
-
 
   <bean id="wcs100DescribeCoverageRequestReader"
-
     class="org.geoserver.wcs.xml.v1_0_0.WcsXmlReader">
-
     <constructor-arg value="DescribeCoverage" />
-
     <constructor-arg value="1.0.0" />
-
     <constructor-arg ref="wcs-1.0.0-configuration" />
     <constructor-arg ref="entityResolverProvider" />
-
   </bean>
-
-
 
   <bean id="wcs100GetCoverageRequestXMLReader" class="org.geoserver.wcs.xml.v1_0_0.WcsXmlReader">
-
     <constructor-arg value="GetCoverage" />
-
     <constructor-arg value="1.0.0" />
-
     <constructor-arg ref="wcs-1.0.0-configuration" />
     <constructor-arg ref="entityResolverProvider" />
-
   </bean>
 
-
-
   <!-- responses -->
-
   <bean id="wcs100GetCapabilitiesResponse"
-
     class="org.geoserver.wcs.response.Wcs10GetCapabilitiesResponse" scope="prototype" />
-
-
-
   <bean id="wcs100DescribeCoverageResponse"
-
     class="org.geoserver.wcs.response.Wcs10DescribeCoverageResponse" scope="prototype"/>
-
-
-
-  <bean id="wcs100GetCoverageResponse" 
-
-	class="org.geoserver.wcs.response.Wcs10GetCoverageResponse" scope="prototype"> 
-
+  <bean id="wcs100GetCoverageResponse"
+	class="org.geoserver.wcs.response.Wcs10GetCoverageResponse" scope="prototype">
     <constructor-arg ref="catalog" />
     <constructor-arg ref="coverageResponseDelegateFactory" />
   </bean>

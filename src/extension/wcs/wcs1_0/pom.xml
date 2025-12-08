@@ -8,15 +8,15 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.geoserver</groupId>
-    <artifactId>geoserver</artifactId>
+    <groupId>org.geoserver.extension</groupId>
+    <artifactId>gs-wcs</artifactId>
     <version>3.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.geoserver</groupId>
+  <groupId>org.geoserver.extension</groupId>
   <artifactId>gs-wcs1_0</artifactId>
   <packaging>jar</packaging>
-  <name>Web Coverage Service 1.0 Module</name>
+  <name>Web Coverage Service 1.0 Extension Module</name>
 
   <dependencies>
     <dependency>

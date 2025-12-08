@@ -65,12 +65,6 @@ application directory.
       <artifactId>gt-iau-wkt</artifactId>
       <scope>test</scope>
     </dependency>
-
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-wcs1_0</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <build>

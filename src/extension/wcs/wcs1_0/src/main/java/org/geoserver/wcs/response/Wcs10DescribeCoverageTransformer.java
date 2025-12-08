@@ -586,9 +586,9 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
         /** @param ci */
         private void handleSupportedFormats(CoverageInfo ci) throws Exception {
             final String nativeFormat =
-                    (((ci.getNativeFormat() != null) && ci.getNativeFormat().equalsIgnoreCase("GEOTIFF"))
+                    (ci.getNativeFormat() != null) && ci.getNativeFormat().equalsIgnoreCase("GEOTIFF")
                             ? "GeoTIFF"
-                            : ci.getNativeFormat());
+                            : ci.getNativeFormat();
 
             final AttributesImpl attributes = new AttributesImpl();
             attributes.addAttribute("", "nativeFormat", "nativeFormat", "", nativeFormat);

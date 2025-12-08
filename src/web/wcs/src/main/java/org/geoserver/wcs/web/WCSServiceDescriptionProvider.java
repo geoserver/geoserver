@@ -1,11 +1,12 @@
 /* (c) 2022 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
- */ package org.geoserver.wcs.web;
+ */
+package org.geoserver.wcs.web;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
@@ -16,21 +17,19 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Service;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.WCSResourceVoter;
-import org.geoserver.wcs.WebCoverageService100;
-import org.geoserver.wcs.WebCoverageService111;
-import org.geoserver.wcs2_0.WebCoverageService20;
 import org.geoserver.web.ServiceDescription;
 import org.geoserver.web.ServiceDescriptionProvider;
 import org.geoserver.web.ServiceLinkDescription;
-import org.geotools.util.logging.Logging;
+import org.geotools.util.Version;
 
 /** Provide description of WMS services for welcome page. */
 public class WCSServiceDescriptionProvider extends ServiceDescriptionProvider {
 
-    static final Logger LOGGER = Logging.getLogger(WCSServiceDescriptionProvider.class);
-
     /** Service type to cross-link between service description and service link description. */
-    public static final String SERVICE_TYPE = "WCS";
+    private static final String SERVICE_TYPE = "WCS";
+
+    private static final List<Version> SUPPORTED_VERSIONS =
+            Arrays.asList(new Version("1.0.0"), new Version("1.1.1"), new Version("2.0.1"));
 
     GeoServer geoserver;
     Catalog catalog;
@@ -101,10 +100,7 @@ public class WCSServiceDescriptionProvider extends ServiceDescriptionProvider {
         List<Service> extensions = GeoServerExtensions.extensions(Service.class);
 
         for (Service service : extensions) {
-            if ((service.getService() instanceof WebCoverageService111)
-                    || (service.getService() instanceof WebCoverageService100)
-                    || (service.getService() instanceof WebCoverageService20)) {
-
+            if (SERVICE_TYPE.equalsIgnoreCase(service.getId()) && SUPPORTED_VERSIONS.contains(service.getVersion())) {
                 String link = null;
                 if (service.getOperations().contains("GetCapabilities")) {
                     link = getCapabilitiesURL(workspaceInfo, layerInfo, service);

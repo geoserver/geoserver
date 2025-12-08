@@ -54,7 +54,7 @@ public class SourceCoverageKvpParser extends KvpParser {
         if (coverages.size() > 1) {
             throw new WcsException(
                     "Wrong parameter, sourcecoverage, more than one identifier was specified",
-                    WcsExceptionCode.InvalidParameterValue,
+                    InvalidParameterValue,
                     "sourcecoverage");
         }
 

@@ -143,7 +143,7 @@ public class LegacyServiceExceptionHandler extends ServiceExceptionHandler {
         sb.append(">");
 
         // message
-        if ((exception.getMessage() != null)) {
+        if (exception.getMessage() != null) {
             sb.append("\n" + tab + tab);
             OwsUtils.dumpExceptionMessages(exception, sb, true);
 

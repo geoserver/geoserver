@@ -127,7 +127,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
         if ("1.0.0".equals(version)) {
             Wcs10CapsTransformer capsTransformer = new Wcs10CapsTransformer(geoServer);
             capsTransformer.setEncoding(Charset.forName(
-                    (getServiceInfo().getGeoServer().getSettings().getCharset())));
+                    getServiceInfo().getGeoServer().getSettings().getCharset()));
             return capsTransformer;
         }
 
@@ -143,7 +143,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             Wcs10DescribeCoverageTransformer describeTransformer =
                     new Wcs10DescribeCoverageTransformer(wcs, catalog, responseFactory);
             describeTransformer.setEncoding(
-                    Charset.forName((wcs.getGeoServer().getSettings().getCharset())));
+                    Charset.forName(wcs.getGeoServer().getSettings().getCharset()));
             return describeTransformer;
         }
 
@@ -352,7 +352,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             }
 
             // Check we're not going to read too much data
-            WCSUtils.checkInputLimits(wcs, meta, reader, requestedGridGeometry);
+            checkInputLimits(wcs, meta, reader, requestedGridGeometry);
 
             //
             // Checking for supported Interpolation Methods
@@ -413,7 +413,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             }
 
             // double check what we have loaded
-            WCSUtils.checkInputLimits(wcs, coverage);
+            checkInputLimits(wcs, coverage);
 
             //
             // Band Select (works on just one field)
@@ -485,12 +485,12 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                                     (IntervalType) axis.getInterval().get(0);
                             int min = Integer.parseInt(interval.getMin().getValue());
                             int max = Integer.parseInt(interval.getMax().getValue());
-                            int res = (interval.getRes() != null
+                            int res = interval.getRes() != null
                                     ? Integer.parseInt(interval.getRes().getValue())
-                                    : 1);
+                                    : 1;
 
                             bands = new int[(int) (Math.floor(max - min) / res + 1)];
-                            for (int b = 0; b < bands.length; b++) bands[b] = (min + b * res) - 1;
+                            for (int b = 0; b < bands.length; b++) bands[b] = min + b * res - 1;
                         }
 
                         // finally execute the band select
@@ -912,9 +912,9 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                             (IntervalType) axisSubset.getInterval().get(0);
                     int min = Integer.parseInt(interval.getMin().getValue());
                     int max = Integer.parseInt(interval.getMax().getValue());
-                    int res = (interval.getRes() != null
+                    int res = interval.getRes() != null
                             ? Integer.parseInt(interval.getRes().getValue())
-                            : 1);
+                            : 1;
 
                     bands = new int[(max - min) / res];
                     for (int b = 0; b < bands.length; b++) bands[b] = min + (b * res);

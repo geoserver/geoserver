@@ -20,12 +20,14 @@ import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.store.DefaultDataStoreEditPanel;
 import org.geoserver.web.data.store.ParamInfo;
 import org.geoserver.web.data.store.panel.DropDownChoiceParamPanel;
+import org.geoserver.web.data.store.panel.TextAreaParamPanel;
 import org.geoserver.web.util.MapModel;
 import org.geotools.api.data.DataStoreFactorySpi;
 import org.geotools.api.data.DataStoreFinder;
 
 public class VectorMosaicDataStoreEditPanel extends DefaultDataStoreEditPanel {
     private static final String SPI_PARAM_NAME = "preferredDataStoreSPI";
+    private static final String COMMON_PARAMETERS_PARAM_NAME = "commonParameters";
     private static final String DELEGATE_STORE_PARAM_NAME = "delegateStoreName";
     private static final String VECTOR_MOSAIC_DATASTORE_SPI = "org.geotools.vectormosaic.VectorMosaicStoreFactory";
     private static final String VECTOR_MOSAIC_DATASTORE_TYPE = "Vector Mosaic Data Store";
@@ -69,6 +71,11 @@ public class VectorMosaicDataStoreEditPanel extends DefaultDataStoreEditPanel {
             IModel<Serializable> mapModel = new MapModel<>(paramsModel, DELEGATE_STORE_PARAM_NAME);
             ResourceModel labelModel = new ResourceModel(componentId, DELEGATE_STORE_PARAM_NAME);
             return new DropDownChoiceParamPanel(componentId, mapModel, labelModel, storeNames, true);
+        } else if (paramMetadata.getName().equals(COMMON_PARAMETERS_PARAM_NAME)) {
+            // multiline textbox for properties-like content
+            IModel<String> mapModel = new MapModel<>(paramsModel, COMMON_PARAMETERS_PARAM_NAME);
+            ResourceModel labelModel = new ResourceModel(componentId, COMMON_PARAMETERS_PARAM_NAME);
+            return new TextAreaParamPanel(componentId, mapModel, labelModel, false);
         } else {
             return super.getInputComponent(componentId, paramsModel, paramMetadata);
         }

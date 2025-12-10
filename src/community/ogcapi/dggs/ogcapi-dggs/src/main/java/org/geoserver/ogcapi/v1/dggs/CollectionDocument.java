@@ -49,7 +49,7 @@ import org.springframework.http.MediaType;
 @JsonPropertyOrder({"id", "title", "description", "extent", "dggs-id", "resolutions", "links"})
 public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeInfo> {
     static final Logger LOGGER = Logging.getLogger(CollectionDocument.class);
-    private final DGGSFeatureSource fs;
+    private final DGGSFeatureSource<?> fs;
 
     FeatureTypeInfo featureType;
     String mapPreviewURL;
@@ -126,7 +126,7 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
         }
 
         // setup resolutions
-        DGGSStore dggsStore = (DGGSStore) featureType.getStore().getDataStore(null);
+        DGGSStore<?> dggsStore = (DGGSStore<?>) featureType.getStore().getDataStore(null);
         this.fs = dggsStore.getDGGSFeatureSource(featureType.getNativeName());
     }
 
@@ -164,7 +164,7 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
             return list.stream().mapToInt(v -> v).toArray();
         } else {
             DataAccess<SimpleFeatureType, SimpleFeature> datastore = (fs.getDataStore());
-            if (datastore instanceof DGGSDataStore ds) {
+            if (datastore instanceof DGGSDataStore<?> ds) {
                 DGGSResolutionCalculator calculator = ds.getResolutions();
                 Integer resolution = calculator.getFixedResolution();
                 if (resolution != null) {

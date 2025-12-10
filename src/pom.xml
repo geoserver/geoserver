@@ -31,7 +31,6 @@
     <module>main</module>
     <module>security</module>
     <module>wcs</module>
-    <module>wcs1_1</module>
     <module>wcs2_0</module>
     <module>wfs</module>
     <module>wms</module>
@@ -271,7 +270,7 @@
         <version>${gs.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.geoserver</groupId>
+        <groupId>org.geoserver.extension</groupId>
         <artifactId>gs-wcs1_1</artifactId>
         <version>${gs.version}</version>
       </dependency>
@@ -1374,8 +1373,9 @@
             <descriptor>release/ext-sldservice.xml</descriptor>
             <descriptor>release/ext-sqlserver.xml</descriptor>
             <descriptor>release/ext-vectortiles.xml</descriptor>
-            <descriptor>release/ext-wcs2_0-eo.xml</descriptor>
             <descriptor>release/ext-wcs1_0.xml</descriptor>
+            <descriptor>release/ext-wcs1_1.xml</descriptor>
+            <descriptor>release/ext-wcs2_0-eo.xml</descriptor>
             <descriptor>release/ext-web-resource.xml</descriptor>
             <descriptor>release/ext-wmts-multi-dimensional.xml</descriptor>
             <descriptor>release/ext-wps-download.xml</descriptor>

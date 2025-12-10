@@ -1,0 +1,34 @@
+<assembly>
+  <id>wcs1_1-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>*wcs1_1*</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>release/target/html/licenses</directory>
+      <outputDirectory>licenses</outputDirectory>
+      <includes>
+        <include>LGPL.html</include>
+        <include>GEOTOOLS_NOTICE.html</include>
+        <include>GPL.html</include>
+        <include>NOTICE.html</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>release/target/html/extensions</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>README.html</include>
+        <include>LICENSE.html</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

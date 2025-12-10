@@ -6,9 +6,6 @@ package org.geoserver.wcs2_0.kvp;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.geoserver.data.test.MockData.TASMANIA_DEM;
-import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -24,7 +21,6 @@ import org.geoserver.wcs2_0.WCSTestSupport;
 import org.geotools.util.GrowableInternationalString;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -117,22 +113,6 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         assertXpathEvaluatesTo(
                 "0", "count(//ows:ExceptionReport//ows:Exception[@exceptionCode='InvalidParameterValue'])", dom);
         assertXpathEvaluatesTo("0", "count(//ows:ExceptionReport//ows:Exception[@locator='wCS'])", dom);
-    }
-
-    @Test
-    public void testAcceptVersions11() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse("wcs?request=GetCapabilities&service=WCS&acceptversions=1.1.0");
-        assertEquals("text/xml", response.getContentType());
-
-        // xmlunit is not setup to parse WCS 1.1.1 XML, use string checks
-        assertThat(
-                response.getContentAsString(),
-                allOf(
-                        containsString("<wcs:Capabilities"),
-                        containsString("version=\"1.1.1\""),
-                        containsString("xmlns:ows=\"http://www.opengis.net/ows/1.1\""),
-                        containsString("<wcs:CoverageSummary")));
     }
 
     @Test

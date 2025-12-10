@@ -46,6 +46,7 @@
     <module>app-schema-core</module>
     <module>app-schema-test</module>
     <module>sample-data-access-test</module>
+    <module>app-schema-assembly</module>
   </modules>
 
   <properties>

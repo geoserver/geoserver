@@ -18,6 +18,7 @@
 
   <modules>
     <module>core</module>
+    <module>monitor-assembly</module>
   </modules>
 
   <dependencies>

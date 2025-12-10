@@ -22,5 +22,6 @@
     <module>core</module>
     <module>wms</module>
     <module>wfs</module>
+    <module>geopkg-output-assembly</module>
   </modules>
 </project>

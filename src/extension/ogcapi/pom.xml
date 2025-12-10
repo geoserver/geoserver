@@ -22,6 +22,7 @@
     <module>ogcapi-features</module>
     <module>web-ogcapi</module>
     <module>web-features</module>
+    <module>ogcapi-features-assembly</module>
   </modules>
 
   <dependencies>

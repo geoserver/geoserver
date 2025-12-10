@@ -18,6 +18,7 @@
 
   <modules>
     <module>wcs1_0</module>
+    <module>wcs1_1</module>
     <module>wcs-integration</module>
   </modules>
 

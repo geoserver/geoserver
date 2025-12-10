@@ -244,7 +244,7 @@
     <profile>
       <id>wcs10</id>
       <modules>
-        <module>wcs</module>
+        <module>wcs/wcs1_0</module>
       </modules>
     </profile>
 
@@ -432,6 +432,12 @@
         <module>ogcapi/web-features</module>
       </modules>
     </profile>
+    <profile>
+      <id>wcs11</id>
+      <modules>
+        <module>wcs/wcs1_1</module>
+      </modules>
+    </profile>
 
     <!-- allExtensions profile, includes all modules -->
     <profile>
@@ -461,7 +467,8 @@
         <module>dxf</module>
         <module>printing</module>
         <module>wcs2_0-eo</module>
-        <module>wcs</module>
+        <module>wcs/wcs1_1</module>
+        <module>wcs/wcs1_0</module>
         <module>libjpeg-turbo</module>
         <module>importer</module>
         <module>grib</module>
@@ -517,7 +524,8 @@
         <module>dxf</module>
         <module>printing</module>
         <module>wcs2_0-eo</module>
-        <module>wcs</module>
+        <module>wcs/wcs1_1</module>
+        <module>wcs/wcs1_0</module>
         <module>libjpeg-turbo</module>
         <module>importer</module>
         <module>grib</module>

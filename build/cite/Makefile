@@ -274,10 +274,10 @@ build-war:
 	# a single mvn package -pl :gs-web-app -am should work but it seems it doesn't take into account test dependencies
 	# so it fails when the version number changes (e.g. 2.28-SNAPSHOT -> 3.0-SNAPSHOT)
 	@mvn clean install -f ../../src/pom.xml \
-	-Pogcapi-features,ogcapi-tiles,geopkg-output,app-schema,wcs10 \
+	-Pogcapi-features,ogcapi-tiles,geopkg-output,app-schema,wcs10,wcs11 \
 	-DskipTests  -B -ntp -U -T1C
 	@mvn package -f ../../src/pom.xml \
-	-Pogcapi-features,ogcapi-tiles,geopkg-output,wcs10 \
+	-Pogcapi-features,ogcapi-tiles,geopkg-output,wcs10,wcs11 \
 	-DskipTests -B -nsu -ntp -T1C -pl :gs-web-app -am
 
 .PHONY: copy-war

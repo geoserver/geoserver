@@ -31,11 +31,6 @@
       <version>${gs.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-wcs1_1</artifactId>
-      <version>${gs.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.geotools.ogc</groupId>
       <artifactId>net.opengis.wps</artifactId>
     </dependency>
@@ -149,6 +144,12 @@
     <dependency>
       <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-wcs1_0</artifactId>
+      <version>${gs.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.extension</groupId>
+      <artifactId>gs-wcs1_1</artifactId>
       <version>${gs.version}</version>
       <scope>test</scope>
     </dependency>

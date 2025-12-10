@@ -1977,7 +1977,7 @@
       <id>wcs11</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-wcs1_1</artifactId>
           <version>${project.version}</version>
         </dependency>

@@ -44,7 +44,7 @@ Docker use of OGC API Features extension
    
       .. parsed-literal::
       
-         docker run -it -p8080:8080 \\
+         docker run -it -p 8080:8080 \\
            --env INSTALL_EXTENSIONS=true \\
            --env STABLE_EXTENSIONS="ogcapi-features" \\
            docker.osgeo.org/geoserver:|release|
@@ -53,7 +53,7 @@ Docker use of OGC API Features extension
    
       .. parsed-literal::
    
-         docker run -it -p8080:8080 \\
+         docker run -it -p 8080:8080 \\
            --env INSTALL_EXTENSIONS=true \\
            --env STABLE_EXTENSIONS="ogcapi-features" \\
            docker.osgeo.org/geoserver:|version|.x

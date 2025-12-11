@@ -41,7 +41,7 @@ To run the GeoServer Docker image with the Monitor Micrometer extension installe
 
 .. parsed-literal::
 
-   docker run -it -p8080:8080 \\
+   docker run -it -p 8080:8080 \\
      --env INSTALL_EXTENSIONS=true \\
      --env STABLE_EXTENSIONS="monitor" \\
      --env COMMUNITY_EXTENSIONS="monitor-micrometer" \\
@@ -51,7 +51,7 @@ To run the GeoServer Docker image with the Monitor Micrometer extension installe
 
 .. parsed-literal::
 
-   docker run -it -p8080:8080 \\
+   docker run -it -p 8080:8080 \\
      --env INSTALL_EXTENSIONS=true \\
      --env STABLE_EXTENSIONS="monitor" \\
      --env COMMUNITY_EXTENSIONS="monitor-micrometer" \\

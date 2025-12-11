@@ -35,13 +35,18 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.smartdataloader.data.store.ExclusionsDomainModelVisitor;
 import org.geoserver.smartdataloader.data.store.ExpressionOverridesDomainModelVisitor;
 import org.geoserver.smartdataloader.data.store.SmartOverrideRulesParser;
+import org.geoserver.smartdataloader.data.store.virtualfk.Relationships;
+import org.geoserver.smartdataloader.data.store.virtualfk.RelationshipsXmlParser;
 import org.geoserver.smartdataloader.domain.DomainModelBuilder;
 import org.geoserver.smartdataloader.domain.DomainModelConfig;
 import org.geoserver.smartdataloader.domain.entities.DomainModel;
 import org.geoserver.smartdataloader.metadata.DataStoreMetadata;
 import org.geoserver.smartdataloader.metadata.DataStoreMetadataConfig;
 import org.geoserver.smartdataloader.metadata.DataStoreMetadataFactory;
+import org.geoserver.smartdataloader.metadata.jdbc.DefaultJdbcHelper;
 import org.geoserver.smartdataloader.metadata.jdbc.JdbcDataStoreMetadataConfig;
+import org.geoserver.smartdataloader.metadata.jdbc.JdbcHelper;
+import org.geoserver.smartdataloader.metadata.jdbc.VirtualFkJdbcHelper;
 import org.geoserver.smartdataloader.visitors.appschema.AppSchemaVisitor;
 import org.geoserver.smartdataloader.visitors.gml.GmlSchemaVisitor;
 import org.geotools.api.data.DataAccess;
@@ -96,6 +101,8 @@ public class SmartDataLoaderDataAccessFactory implements DataAccessFactory {
             false,
             "",
             Collections.emptyMap());
+    public static final Param VIRTUAL_RELATIONSHIPS =
+            new Param("virtual-relationships", String.class, "Virtual relationships", false);
 
     @Override
     public String getDisplayName() {
@@ -148,6 +155,7 @@ public class SmartDataLoaderDataAccessFactory implements DataAccessFactory {
         parameters.put(DOMAIN_MODEL_EXCLUSIONS.key, DOMAIN_MODEL_EXCLUSIONS);
         parameters.put(SMART_OVERRIDE_PARAM.key, SMART_OVERRIDE_PARAM);
         parameters.put(ENTITIES_PREFIX.key, ENTITIES_PREFIX);
+        parameters.put(VIRTUAL_RELATIONSHIPS.key, VIRTUAL_RELATIONSHIPS);
     }
 
     private String getFilenamePrefix(Map<String, Serializable> params) throws IOException {
@@ -242,7 +250,18 @@ public class SmartDataLoaderDataAccessFactory implements DataAccessFactory {
             jdbcDataStore = factory.createDataStore(connectionParameters);
             DataStoreMetadataConfig config = new JdbcDataStoreMetadataConfig(
                     jdbcDataStore, connectionParameters.get("passwd").toString());
-            dsm = (new DataStoreMetadataFactory()).getDataStoreMetadata(config);
+            Relationships relationships = new Relationships();
+            String relationshipsXml = lookup(VIRTUAL_RELATIONSHIPS, params, String.class);
+            if (relationshipsXml != null && !relationshipsXml.isBlank()) {
+                try {
+                    relationships = RelationshipsXmlParser.parse(relationshipsXml);
+                } catch (Exception e) {
+                    throw new RuntimeException("Error parsing virtual relationships configuration.", e);
+                }
+            }
+            JdbcHelper jdbcHelper = new VirtualFkJdbcHelper(new DefaultJdbcHelper(), relationships);
+            validateVirtualRelationships(jdbcHelper, jdbcDataStore, relationships);
+            dsm = (new DataStoreMetadataFactory()).getDataStoreMetadata(config, jdbcHelper);
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Sql exception while retrieving metadata from the DB " + e.getMessage());
             StringBuilder sb = new StringBuilder("Error while acquiring JDBC connection");
@@ -309,6 +328,17 @@ public class SmartDataLoaderDataAccessFactory implements DataAccessFactory {
             throw new RuntimeException("Cannot save generated mapping in the workspace related folder.");
         }
         return file;
+    }
+
+    private void validateVirtualRelationships(
+            JdbcHelper jdbcHelper, JDBCDataStore jdbcDataStore, Relationships relationships) throws Exception {
+        if (!(jdbcHelper instanceof VirtualFkJdbcHelper)) {
+            return;
+        }
+        String allowedSchema = jdbcDataStore.getDatabaseSchema();
+        try (java.sql.Connection connection = jdbcDataStore.getDataSource().getConnection()) {
+            ((VirtualFkJdbcHelper) jdbcHelper).validateVirtualRelationships(connection.getMetaData(), allowedSchema);
+        }
     }
 
     /** Method that allows to get a DataStoreInfo based on a set of parameters. */

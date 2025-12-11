@@ -3,7 +3,7 @@
 WFS basics
 ==========
 
-GeoServer provides support for the `Open Geospatial Consortium (OGC) <http://www.opengeospatial.org>`_ `Web Feature Service (WFS) <http://www.opengeospatial.org/standards/wms>`_ specification, versions **1.0.0**, **1.1.0**, and **2.0.0**. WFS defines a standard for exchanging vector data over the Internet. With a compliant WFS, clients can query both the data structure and the source data. Advanced WFS operations also support feature locking and edit operations.  
+GeoServer provides support for the `Open Geospatial Consortium (OGC) <https://www.ogc.org/>`_ `Web Feature Service (WFS) <https://www.ogc.org/standards/wfs/>`_ specification, versions **1.0.0**, **1.1.0**, and **2.0.0**. WFS defines a standard for exchanging vector data over the Internet. With a compliant WFS, clients can query both the data structure and the source data. Advanced WFS operations also support feature locking and edit operations.  
 
 GeoServer is the reference implementation of all three versions of the standard, completely implementing every part of the protocol. This includes the basic operations of :ref:`wfs_getcap`, :ref:`wfs_dft`, and :ref:`wfs_getfeature`, as well as more advanced options such as :ref:`wfs_wfst`. GeoServer WFS is also integrated with its :ref:`security` system to limit access to data and transactions, and supports a variety of :ref:`wfs_output_formats`, making the raw data more widely available.
 

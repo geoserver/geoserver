@@ -73,6 +73,7 @@ import org.geoserver.data.test.TestData;
 import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.test.PostGISTestResource;
 import org.geoserver.test.RunTestSetup;
 import org.geoserver.test.SystemTest;
 import org.geotools.api.coverage.grid.GridCoverageReader;
@@ -135,6 +136,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.locationtech.jts.geom.Point;
@@ -149,6 +151,9 @@ import org.xml.sax.SAXException;
  */
 @Category(SystemTest.class)
 public class ResourcePoolTest extends GeoServerSystemTestSupport {
+
+    @ClassRule
+    public static final PostGISTestResource postgis = new PostGISTestResource();
 
     private static final String SQLVIEW_DATASTORE = "sqlviews";
 
@@ -782,9 +787,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         ds.setEnabled(true);
 
         Map<String, Serializable> params = ds.getConnectionParameters();
-        params.put("dbtype", "h2");
-        File dbFile = new File(getTestData().getDataDirectoryRoot().getAbsolutePath(), "data/h2test");
-        params.put("database", dbFile.getAbsolutePath());
+        params.putAll(postgis.getConnectionParameters());
         cat.add(ds);
 
         SimpleFeatureSource fsp = getFeatureSource(SystemTestData.PRIMITIVEGEOFEATURE);
@@ -1268,9 +1271,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         ds.setEnabled(true);
 
         Map<String, Serializable> params = ds.getConnectionParameters();
-        params.put("dbtype", "h2");
-        File dbFile = new File(getTestData().getDataDirectoryRoot().getAbsolutePath(), "data/h2test");
-        params.put("database", dbFile.getAbsolutePath());
+        params.putAll(postgis.getConnectionParameters());
         catalog.add(ds);
         return ds;
     }
@@ -1317,10 +1318,11 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         ds.setWorkspace(ws);
         ds.setEnabled(true);
         ds.setDisableOnConnFailure(true);
-        ds.setType("H2");
+        ds.setType("PostGIS");
         Map<String, Serializable> params = ds.getConnectionParameters();
-        params.put("dbtype", "h2");
-        params.put("database", "");
+        params.putAll(postgis.getConnectionParameters());
+        // Make the connection invalid to test error handling
+        params.put("database", "nonexistent_database");
         cat.add(ds);
 
         DataStoreInfo dsi = cat.getDataStoreByName(ds.getName());

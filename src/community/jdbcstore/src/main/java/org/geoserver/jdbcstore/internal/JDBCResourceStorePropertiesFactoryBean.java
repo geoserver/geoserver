@@ -28,9 +28,11 @@ public class JDBCResourceStorePropertiesFactoryBean extends JDBCLoaderProperties
     private static final String PREFIX = "jdbcstore";
 
     /** DDL scripts copied to <data dir>/jdbcstore/scripts/ on first startup */
-    private static final String[] SCRIPTS = {"drop.h2.sql", "drop.postgres.sql", "init.h2.sql", "init.postgres.sql"};
+    private static final String[] SCRIPTS = {
+        "drop.hsqldb.sql", "drop.postgres.sql", "init.hsqldb.sql", "init.postgres.sql"
+    };
 
-    private static final String[] SAMPLE_CONFIGS = {"jdbcstore.properties.h2", "jdbcstore.properties.postgres"};
+    private static final String[] SAMPLE_CONFIGS = {"jdbcstore.properties.hsqldb", "jdbcstore.properties.postgres"};
 
     public JDBCResourceStorePropertiesFactoryBean(ResourceStore resourceStore) {
         super(resourceStore, PREFIX);

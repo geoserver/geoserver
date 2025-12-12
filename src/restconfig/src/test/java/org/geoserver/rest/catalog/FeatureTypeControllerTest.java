@@ -47,6 +47,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.RestBaseController;
+import org.geoserver.test.PostGISTestResource;
 import org.geotools.api.data.DataAccess;
 import org.geotools.api.data.SimpleFeatureSource;
 import org.geotools.api.data.SimpleFeatureStore;
@@ -65,6 +66,7 @@ import org.geotools.jdbc.VirtualTable;
 import org.geotools.referencing.CRS;
 import org.geotools.util.GrowableInternationalString;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.MultiPolygon;
@@ -74,6 +76,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
+
+    @ClassRule
+    public static final PostGISTestResource postgis = new PostGISTestResource();
 
     private static String BASEPATH = RestBaseController.ROOT_PATH;
 
@@ -88,16 +93,15 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
         // new workspace for virtual table tests
         testData.addWorkspace(VT_PREFIX, VT_URI, getCatalog());
 
-        // set up a H2 datastore that we can run virtual table tests against
+        // set up a PostGIS datastore that we can run virtual table tests against
         Catalog cat = getCatalog();
         DataStoreInfo ds = cat.getFactory().createDataStore();
-        ds.setName("h2");
+        ds.setName("postgis");
         ds.setWorkspace(cat.getWorkspaceByName(VT_PREFIX));
         ds.setEnabled(true);
 
         Map<String, Serializable> params = ds.getConnectionParameters();
-        params.put("dbtype", "h2");
-        params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath());
+        params.putAll(postgis.getConnectionParameters());
         cat.add(ds);
 
         SimpleFeatureSource geSource = getFeatureSource(ROAD_SEGMENTS);

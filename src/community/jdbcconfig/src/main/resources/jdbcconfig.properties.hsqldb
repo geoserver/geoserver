@@ -1,9 +1,9 @@
-# This is a sample configuration file for running the GeoServer Catalog against a H2 database.
+# This is a sample configuration file for running the GeoServer Catalog against an HSQLDB database.
 # Adapt the url, user, password, and other configuration options to your set up and rename this
 # file as jdbcconfig.properties
 #
-# Note the initialization DDL script for H2 will be automatically run at startup.
-# The initialization script is located in the jdbcconfig_scripts directory, named initdb.h2.sql
+# Note the initialization DDL script for HSQLDB will be automatically run at startup.
+# The initialization script is located in the jdbcconfig_scripts directory, named initdb.hsqldb.sql
 # The importCatalog configuration option tells GeoServer whether to import the current catalog from the file system
 # to the database or not. If set to true, it will be imported and the config option will be set the value 'false'
 # for the next start up to avoid trying to re-import the catalog configuration.
@@ -11,7 +11,7 @@
 enabled=true
 
 initdb=true
-initScript=jdbcconfig/scripts/initdb.h2.sql
+initScript=jdbcconfig/scripts/initdb.hsqldb.sql
 import=true
 
 # Flag controlling whether to add comments and some pretty-printing to SQL queries to
@@ -19,8 +19,8 @@ import=true
 # advantage of prepared statement caching.
 debugMode=false
 
-jdbcUrl=jdbc:h2:file:${GEOSERVER_DATA_DIR}/jdbcconfig/catalog;AUTO_SERVER=TRUE
-driverClassName=org.h2.Driver
+jdbcUrl=jdbc:hsqldb:file:${GEOSERVER_DATA_DIR}/jdbcconfig/catalog
+driverClassName=org.hsqldb.jdbc.JDBCDriver
 username=sa
 password=
 
@@ -28,7 +28,7 @@ password=
 # connection pooling/management parameters
 #
 
-# minimum connections in pool  
+# minimum connections in pool
 pool.minIdle=4
 
 # maximum connections in pool
@@ -37,18 +37,18 @@ pool.maxActive=10
 # whether to pool prepared statements
 pool.poolPreparedStatements=true
 
-# size of prepared statement cache, only used if pool.poolPreparedStatements = true 
+# size of prepared statement cache, only used if pool.poolPreparedStatements = true
 pool.maxOpenPreparedStatements=50
 
 # whether to validate connections when obtaining from the pool
 pool.testOnBorrow=true
 
 # validation query for connections from pool, must be set when pool.testOnBorrow = true
-pool.validationQuery=SELECT now()
+pool.validationQuery=SELECT 1 FROM INFORMATION_SCHEMA.SYSTEM_USERS
 
 
-# The indication of whether objects will be validated by the idle object evictor (if any). If an object fails to validate, it will be dropped from the pool. 
+# The indication of whether objects will be validated by the idle object evictor (if any). If an object fails to validate, it will be dropped from the pool.
 pool.testWhileIdle=false
 
-# The number of milliseconds to sleep between runs of the idle object evictor thread. When non-positive, no idle object evictor thread will be run. 
+# The number of milliseconds to sleep between runs of the idle object evictor thread. When non-positive, no idle object evictor thread will be run.
 pool.timeBetweenEvictionRunsMillis=-1L

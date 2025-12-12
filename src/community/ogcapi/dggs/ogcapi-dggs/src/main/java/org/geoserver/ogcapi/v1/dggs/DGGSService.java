@@ -11,6 +11,7 @@ import static org.geotools.dggs.gstore.DGGSStore.RESOLUTION;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import java.io.IOException;
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,6 +62,7 @@ import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.filter.PropertyIsEqualTo;
 import org.geotools.dggs.DGGSInstance;
 import org.geotools.dggs.Zone;
+import org.geotools.dggs.datastore.DGGSStoreFactory;
 import org.geotools.dggs.gstore.DGGSFeatureSource;
 import org.geotools.dggs.gstore.DGGSStore;
 import org.geotools.factory.CommonFactoryFinder;
@@ -245,6 +247,8 @@ public class DGGSService {
         geometryParser.setGeometry(wkt);
         geometryParser.setZoneIds(zones, resolution);
 
+        FeatureTypeInfo ft = getFeatureType(collectionId);
+        Integer imposedResolution = getImposedResolution(ft);
         // build the request in a way core WFS machinery can understand it
         return runGetFeature(
                 collectionId,
@@ -255,17 +259,39 @@ public class DGGSService {
                 format,
                 request -> {
                     // add the resolution hint
-                    request.setViewParams(Collections.singletonList(
-                            Collections.singletonMap(DGGSStore.VP_RESOLUTION, String.valueOf(resolution))));
-                    Filter resolutionFilter = FF.equals(FF.property(RESOLUTION), FF.literal(resolution));
-                    mixFilter(request, resolutionFilter);
-
+                    if (imposedResolution != null) {
+                        boolean sameRes = imposedResolution.equals(resolution);
+                        if (!sameRes) {
+                            LOGGER.warning("The underlying datastore has a fixed resolution of "
+                                    + imposedResolution
+                                    + ", excluding the requested resolution of "
+                                    + resolution);
+                        }
+                        Filter resolutionFilter = sameRes ? Filter.INCLUDE : Filter.EXCLUDE;
+                        mixFilter(request, resolutionFilter);
+                    } else {
+                        request.setViewParams(Collections.singletonList(
+                                Collections.singletonMap(DGGSStore.VP_RESOLUTION, String.valueOf(resolution))));
+                        Filter resolutionFilter = FF.equals(FF.property(RESOLUTION), FF.literal(resolution));
+                        mixFilter(request, resolutionFilter);
+                    }
                     Filter geometryFilter = geometryParser.getFilter();
                     if (geometryFilter != null && geometryFilter != Filter.INCLUDE) {
                         mixFilter(request, geometryFilter);
                     }
                 },
                 collectionName -> "ogc/dggs/v1/collections/" + ResponseUtils.urlEncode(collectionName) + "/zones");
+    }
+
+    private static Integer getImposedResolution(FeatureTypeInfo ft) {
+        Map<String, Serializable> connectionParams = ft.getStore().getConnectionParameters();
+        Object fixedResolution;
+        Integer imposedResolution = null;
+        if (connectionParams.containsKey(DGGSStoreFactory.RESOLUTION.key)
+                && ((fixedResolution = connectionParams.get(DGGSStoreFactory.RESOLUTION.key)) != null)) {
+            imposedResolution = Integer.parseInt(fixedResolution.toString());
+        }
+        return imposedResolution;
     }
 
     void mixFilter(GetFeatureRequest request, Filter mix) {

@@ -1,7 +1,3 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
- * This code is licensed under the GPL 2.0 license, available at the root
- * application directory.
- */
 package org.geoserver.jdbcstore;
 
 import static org.easymock.EasyMock.*;
@@ -19,41 +15,42 @@ import javax.sql.DataSource;
 import org.geoserver.jdbcconfig.internal.Util;
 import org.geoserver.jdbcstore.internal.JDBCResourceStoreProperties;
 import org.geoserver.platform.resource.URIs;
-import org.h2.jdbcx.JdbcDataSource;
+import org.hsqldb.jdbc.JDBCDataSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 /**
  * @author Kevin Smith, Boundless
  * @author Niels Charlier
  */
-public class H2TestSupport implements DatabaseTestSupport {
+public class HSQLDBTestSupport implements DatabaseTestSupport {
 
     JDBCResourceStore store;
-    JdbcDataSource ds;
+    JDBCDataSource ds;
     Connection conn;
     PreparedStatement insert;
 
-    public H2TestSupport() throws Exception {
-        ds = new JdbcDataSource();
-        ds.setURL("jdbc:h2:mem:test");
+    public HSQLDBTestSupport() throws Exception {
+        ds = new JDBCDataSource();
+        ds.setUrl("jdbc:hsqldb:mem:test");
         conn = ds.getConnection();
     }
 
     @Override
     public void stubConfig(JDBCResourceStoreProperties config) {
         expect(config.getInitScript())
-                .andStubReturn(URIs.asResource(JDBCResourceStoreProperties.class.getResource("init.h2.sql")));
-        expect(config.getJdbcUrl()).andStubReturn(Optional.of("jdbc:h2:mem:test"));
+                .andStubReturn(URIs.asResource(JDBCResourceStoreProperties.class.getResource("init.hsqldb.sql")));
+        expect(config.getJdbcUrl()).andStubReturn(Optional.of("jdbc:hsqldb:mem:test"));
         expect(config.getJndiName()).andStubReturn(Optional.<String>absent());
-        expect(config.getProperty(eq("driverClassName"))).andStubReturn("org.h2.Driver");
-        expect(config.getProperty(eq("driverClassName"), (String) anyObject())).andStubReturn("org.h2.Driver");
+        expect(config.getProperty(eq("driverClassName"))).andStubReturn("org.hsqldb.jdbc.JDBCDriver");
+        expect(config.getProperty(eq("driverClassName"), (String) anyObject()))
+                .andStubReturn("org.hsqldb.jdbc.JDBCDriver");
     }
 
     @Override
     public void initialize() throws Exception {
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(ds);
 
-        try (InputStream in = JDBCResourceStoreProperties.class.getResourceAsStream("init.h2.sql")) {
+        try (InputStream in = JDBCResourceStoreProperties.class.getResourceAsStream("init.hsqldb.sql")) {
             Util.runScript(in, template.getJdbcOperations(), null);
         }
     }
@@ -110,18 +107,16 @@ public class H2TestSupport implements DatabaseTestSupport {
 
     @Override
     public void close() throws SQLException {
+        conn.createStatement().execute("SHUTDOWN");
         conn.close();
 
-        // Verify that all the connections are closed by opening a new one and checking if the
-        // database is empty.
-        JdbcDataSource ds = new JdbcDataSource();
-        ds.setURL("jdbc:h2:mem:test");
+        JDBCDataSource ds = new JDBCDataSource();
+        ds.setUrl("jdbc:hsqldb:mem:test");
         try (Connection testConn = ds.getConnection()) {
             try (ResultSet rs = testConn.getMetaData().getTables(null, null, null, new String[] {"TABLE"})) {
                 boolean result = false;
                 while (rs.next()) {
                     result = true;
-                    // System.out.printf("%s\n", rs.getString("TABLE_NAME"));
                 }
                 assertThat(result, describedAs("connection closed", is(false)));
             }

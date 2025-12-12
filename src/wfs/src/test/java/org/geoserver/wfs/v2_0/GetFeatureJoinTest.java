@@ -26,6 +26,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.PostGISTestResource;
 import org.geotools.api.data.DataStore;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.api.data.SimpleFeatureSource;
@@ -37,6 +38,7 @@ import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.filter.v2_0.FES;
 import org.geotools.wfs.v2_0.WFS;
+import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.locationtech.jts.io.WKTReader;
@@ -46,12 +48,14 @@ import org.w3c.dom.Document;
 public class GetFeatureJoinTest extends WFS20TestSupport {
     private static final String CSV = "text/csv";
 
+    @ClassRule
+    public static final PostGISTestResource postgis = new PostGISTestResource();
+
     @Override
     protected void setUpInternal(SystemTestData data) throws Exception {
 
-        // setup an H2 datastore for the purpose of doing joins
-        // run all the tests against a store that can do native paging (h2) and one that
-        // can't (property)
+        // setup a PostGIS datastore for the purpose of doing joins
+        // run all the tests against a store that can do native paging (PostGIS)
         Catalog cat = getCatalog();
         DataStoreInfo ds = cat.getFactory().createDataStore();
         ds.setName("foo");
@@ -59,8 +63,7 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         ds.setEnabled(true);
 
         Map<String, Serializable> params = ds.getConnectionParameters();
-        params.put("dbtype", "h2");
-        params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath() + "/foo");
+        params.putAll(postgis.getConnectionParameters());
         cat.add(ds);
 
         SimpleFeatureSource fs1 = getFeatureSource(SystemTestData.FORESTS);

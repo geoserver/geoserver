@@ -39,6 +39,7 @@ import org.geotools.filter.SortByImpl;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 import org.locationtech.jts.geom.Geometry;
@@ -337,8 +338,7 @@ public class WCSDefaultValuesHelper {
             try {
                 nativeCRSPolygon = JTS.transform(
                         polygon,
-                        CRS.findMathTransform(
-                                envelopeSubset.getCoordinateReferenceSystem(), reader.getCoordinateReferenceSystem()));
+                        CRS.findMathTransform(DefaultGeographicCRS.WGS84, reader.getCoordinateReferenceSystem()));
                 Literal polygonLiteral = FF.literal(nativeCRSPolygon);
                 // TODO: Check that geom operation. Should I do intersection or containment check?
                 envelopeFilter = FF.intersects(geometryProperty, polygonLiteral);

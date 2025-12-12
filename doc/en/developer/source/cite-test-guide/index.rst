@@ -34,7 +34,7 @@ How to run the CITE Test suites with
 
 Requirements:
 
-- Running the tests requires a Linux system with `docker <https://www.docker.com>`_, `docker-compose <https://docs.docker.com/compose/install>`_, and Git installed on it.
+- Running the tests requires a Linux system with `Docker <https://www.docker.com>`_, `Docker Compose <https://docs.docker.com/compose/install>`_, and Git installed on it.
 
 .. note::
 
@@ -758,7 +758,7 @@ Shortly before a major (2.xx.0) release, the following process should be followe
    .. code-block:: shell
 
     rm -rf /home/cite/postgis-data/wfs
-    docker-compose -f docker-compose.yml up
+    docker compose -f docker-compose.yml up
 
 This will spin up a PostgreSQL service which will be populated with 3 different WFS databases if the database is empty (using the cite init-scripts in build/cite/wfsxx/).
 

@@ -20,7 +20,6 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-pmtiles</artifactId>
-      <version>${gt.version}</version>
     </dependency>
     <dependency>
       <!--
@@ -36,7 +35,10 @@
       <artifactId>gs-web-core</artifactId>
       <scope>provided</scope>
     </dependency>
-
+    <dependency>
+      <groupId>org.wicketstuff</groupId>
+      <artifactId>wicketstuff-select2</artifactId>
+    </dependency>
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.geoserver.web</groupId>

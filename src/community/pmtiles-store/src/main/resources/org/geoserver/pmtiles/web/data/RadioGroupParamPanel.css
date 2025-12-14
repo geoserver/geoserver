@@ -1,0 +1,96 @@
+/* 
+ * Hide <ul><li data-wicket-placeholder></li></ul> elements when setVisible(false) on their components
+ * Otherwise they'll take vertical screen space
+ * Note: :has() has good but not universal browser support as of late 2024
+ */
+ul:has(li[data-wicket-placeholder]) {
+    display: none;
+}
+
+/*
+ * Radio buttons as toggle buttons
+ * inspiration: codepen.io 
+ */
+
+/* Container Flexbox setup */
+.radio-group-param {
+    display: flex;
+    margin-bottom: 0px;
+    overflow: hidden;
+}
+
+.radio-group-param ul{
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Hide the actual radio input visually */
+.radio-group-param ul li input[type="radio"] {
+    position: absolute !important;
+    clip: rect(0, 0, 0, 0);
+    height: 1px;
+    width: 1px;
+    border: 0;
+    overflow: hidden;
+}
+
+/* Default state for the custom 'button' label */
+.radio-group-param ul li label {
+    background-color: var(--gs-table-bg-even, #f0f0f0); /* Added fallback color */
+    color: rgba(0, 0, 0, 0.6);
+    line-height: 1;
+    text-align: center;
+    padding: 2px 16px;
+    margin-right: -1px; /* Overlap borders slightly for smooth appearance */
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    box-shadow: none;
+    transition: all 0.1s ease-in-out;
+    display: inline-block; /* Ensures padding and margin work correctly */
+}
+
+.radio-group-param ul li label:hover {
+    cursor: pointer;
+    background-color: var(--gs-table-bg-hover, #e1e1e1); /* hover style */
+}
+
+/* The core fix: Style the label immediately after the checked input */
+.radio-group-param ul li input[type="radio"]:checked + label {
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px rgba(255, 255, 255, 0.1);
+    font-weight: bold;
+    background-color: #a5dc86; /* Default checked color */
+    color: #fff; /* change text color when selected */
+}
+
+/* Styles for disabled state */
+.radio-group-param ul li input[type="radio"]:disabled + label {
+    box-shadow: none;
+    font-style: italic;
+    background-color: #e4e4e4;
+    cursor: not-allowed;
+    color: rgba(0, 0, 0, 0.4);
+}
+
+/* Specific colors based on dynamic classes added to the INPUT element */
+/* Assuming your input element gets a class 'none', 'ro', or 'rw' dynamically in Wicket */
+input[type="radio"]:checked[class~="none"] + label  {
+    background-color: #f78871;
+}
+
+input[type="radio"]:checked[class~="ro"] + label  {
+    background-color: #0092c8;
+}
+
+input[type="radio"]:checked[class~="rw"] + label  {
+    background-color: #a5dc86;
+}
+
+/* Rounded corners for the first and last items in the group */
+.radio-group-param ul li:first-child label {
+    border-radius: 4px 0 0 4px;
+}
+
+.radio-group-param ul li:last-child label {
+    border-radius: 0 4px 4px 0;
+}

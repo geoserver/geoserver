@@ -46,7 +46,6 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSInfoImpl;
 import org.geoserver.wms.WMSTestSupport;
-import org.geoserver.wms.wms_1_1_1.GetFeatureInfoTest;
 import org.geotools.xml.transform.TransformerBase;
 import org.junit.Before;
 import org.junit.Test;
@@ -112,7 +111,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         // create legendsamples folder
         new File(dataDirRoot.getAbsolutePath() + File.separator + LegendSampleImpl.LEGEND_SAMPLES_FOLDER).mkdir();
 
-        testData.addStyle("squares", "squares.sld", GetFeatureInfoTest.class, catalog);
+        testData.addStyle("squares", "squares.sld", GetCapabilitiesLegendURLTest.class, catalog);
         testData.addVectorLayer(
                 SQUARES, Collections.emptyMap(), "squares.properties", GetCapabilitiesLegendURLTest.class, catalog);
         WorkspaceInfo workspaceInfo = catalog.getWorkspaceByName(MockData.CITE_PREFIX);

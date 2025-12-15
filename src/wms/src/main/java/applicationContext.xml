@@ -131,56 +131,6 @@
     </bean>
     <alias name="wmsService2" alias="webMapService"/>
 
- 	<bean id="wms-1_1_1-ServiceDescriptor" class="org.geoserver.platform.Service">
-		<constructor-arg index="0" value="wms"/>
-		<constructor-arg index="1" ref="wmsService2"/>
-		<constructor-arg index="2" value="1.1.1"/>
-	    <constructor-arg index="3">
-          <list>
-            <value>Capabilities</value>
-            <value>GetCapabilities</value>
-            <value>DescribeLayer</value>
-            <value>GetFeatureInfo</value>
-            <value>GetLegendGraphic</value>
-            <value>GetMap</value>
-            <value>Map</value>
-            <value>reflect</value>
-            <value>kml</value>
-            <value>GetStyles</value>
-          </list>
-        </constructor-arg>
- 	</bean>
-
- 	<!-- service exception handler -->
-	<bean id="wmsExceptionHandler" class="org.geoserver.wms.WMSServiceExceptionHandler">
-		<constructor-arg>
-		  <list>
-		    <ref bean="wms-1_1_1-ServiceDescriptor"/>
-		    <ref bean="wms-1_3_0-ServiceDescriptor"/>
-		  </list>
-		</constructor-arg>
-		<constructor-arg ref="geoServer"/>
-	</bean>
- 	
-    <bean id="wms-1_3_0-ServiceDescriptor" class="org.geoserver.platform.Service">
-      <constructor-arg index="0" value="wms"/>
-      <constructor-arg index="1" ref="wmsService2"/>
-      <constructor-arg index="2" value="1.3.0"/>
-        <constructor-arg index="3">
-            <list>
-              <value>GetCapabilities</value>
-              <value>Capabilities</value>
-              <value>GetMap</value>
-              <value>Map</value>
-              <value>DescribeLayer</value>
-              <value>GetFeatureInfo</value>
-              <value>GetLegendGraphic</value>
-              <value>reflect</value>
-              <value>kml</value>
-            </list>
-          </constructor-arg>
-    </bean>
-
     <!-- kvp parsers -->
   
     <!-- 
@@ -330,15 +280,6 @@
    	<bean id="sldXmlReader"
    		class="org.geoserver.sld.SLDXmlRequestReader">
       <constructor-arg ref="wms"/>
-    </bean>
-   		
-	<!--  responses -->
-	<bean id="wms_1_1_1_GetCapabilitiesResponse"
-		class="org.geoserver.wms.capabilities.GetCapabilitiesResponse">
-      <constructor-arg ref="wms"/>
-	</bean>
-    <bean id="wms_1_3_0_GetCapabilitiesResponse"
-      class="org.geoserver.wms.capabilities.Capabilities_1_3_0_Response">
     </bean>
     
     <!-- DescribeLayer output formats -->

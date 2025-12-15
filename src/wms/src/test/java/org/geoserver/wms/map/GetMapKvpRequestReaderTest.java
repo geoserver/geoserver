@@ -935,15 +935,6 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
                 ff.equals(ff.property("ID"), ff.literal("xyz")), layer.getLayerFeatureConstraints()[0].getFilter());
     }
 
-    /** One of the cite tests ensures that WMTVER is recognized as VERSION and the server does not complain */
-    @Test
-    public void testWmtVer() throws Exception {
-        dispatcher.setCiteCompliant(true);
-        String request =
-                "wms?SERVICE=WMS&&WiDtH=200&FoRmAt=image/png&LaYeRs=cite:Lakes&StYlEs=&BbOx=0,-0.0020,0.0040,0&ReQuEsT=GetMap&HeIgHt=100&SrS=EPSG:4326&WmTvEr=1.1.1";
-        assertEquals("image/png", getAsServletResponse(request).getContentType());
-    }
-
     @Test
     public void testRemoteWFS() throws Exception {
         if (!RemoteOWSTestSupport.isRemoteWFSStatesAvailable(LOGGER)) return;

@@ -112,8 +112,6 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
                 } else {
                     LOGGER.log(Level.INFO, "DataLayerEditTabPanel is not present, cannot refresh the attribute panel");
                 }
-
-                modal.close(target);
             }
         });
         return new ElasticConfigurationPage(panelId, model, isRefresh) {

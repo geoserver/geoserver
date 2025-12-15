@@ -21,13 +21,32 @@ import jakarta.persistence.UniqueConstraint;
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.BatchElement;
 import org.geoserver.taskmanager.data.Run;
 import org.geoserver.taskmanager.data.Task;
 
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"task", "batch"})})
+@Table(
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"task", "batch"})},
+        indexes = {
+            @Index(name = "idx_batchelementimpl_batch", columnList = "batch", unique = false),
+            @Index(name = "idx_batchelementimpl_task", columnList = "task", unique = false)
+        })
 public class BatchElementImpl extends BaseImpl implements BatchElement {
 
     @Serial

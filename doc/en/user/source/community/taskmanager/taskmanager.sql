@@ -122,7 +122,7 @@ CREATE INDEX idx_batchrunimpl_batch ON taskmanager.batchrunimpl USING btree (bat
 CREATE INDEX idx_parameterimpl_task ON taskmanager.parameterimpl USING btree (task);
 CREATE INDEX idx_runimpl_batchrun ON taskmanager.runimpl USING btree (batchrun);
 CREATE INDEX idx_taskimpl_configuration ON taskmanager.taskimpl USING btree (configuration);
-
+CREATE INDEX schedulerreferenceindex ON public.batchrunimpl USING btree (schedulerreference);
 
 ALTER TABLE ONLY taskmanager.parameterimpl
     ADD CONSTRAINT fkParameterTask FOREIGN KEY (task) REFERENCES taskmanager.taskimpl(id);

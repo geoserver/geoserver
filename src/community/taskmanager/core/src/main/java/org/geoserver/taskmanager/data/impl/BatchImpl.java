@@ -22,6 +22,21 @@ import jakarta.persistence.UniqueConstraint;
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.BatchElement;
 import org.geoserver.taskmanager.data.BatchRun;
@@ -36,7 +51,8 @@ import org.hibernate.annotations.FilterDef;
         uniqueConstraints = {
             @UniqueConstraint(columnNames = {"name", "configuration", "removeStamp"}),
             @UniqueConstraint(columnNames = {"nameNoConfig", "removeStamp"})
-        })
+        },
+        indexes = {@Index(name = "idx_batchimpl_configuration", columnList = "configuration", unique = false)})
 @FilterDef(name = "activeElementFilter", defaultCondition = "removeStamp = 0")
 public class BatchImpl extends BaseImpl implements Batch {
 

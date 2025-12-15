@@ -45,3 +45,5 @@ This section describes most of the extensions available for GeoServer. Other dat
    metadata/index
    iau/index
    rat/index
+   arcgrid/index
+   image/index

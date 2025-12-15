@@ -51,11 +51,16 @@
       <artifactId>gs-wfs2_x</artifactId>
     </dependency>
     <dependency>
-      <!--
-                //NC - wms package required for wms support
-            -->
       <groupId>org.geoserver</groupId>
       <artifactId>gs-wms</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wms1_3</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wms-gml</artifactId>
     </dependency>
     <dependency>
       <groupId>org.geoserver.extension</groupId>

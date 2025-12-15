@@ -49,6 +49,8 @@
     <module>web</module>
     <module>community</module>
     <module>extension</module>
+    <module>wms1_1</module>
+    <module>wms1_3</module>
   </modules>
 
   <scm>
@@ -331,12 +333,34 @@
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
+        <artifactId>gs-wms1_1</artifactId>
+        <version>${gs.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver</groupId>
+        <artifactId>gs-wms1_3</artifactId>
+        <version>${gs.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver</groupId>
         <artifactId>gs-wms-gml</artifactId>
         <version>${gs.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-wms</artifactId>
+        <version>${gs.version}</version>
+        <classifier>tests</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver</groupId>
+        <artifactId>gs-wms1_1</artifactId>
+        <version>${gs.version}</version>
+        <classifier>tests</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver</groupId>
+        <artifactId>gs-wms1_3</artifactId>
         <version>${gs.version}</version>
         <classifier>tests</classifier>
       </dependency>

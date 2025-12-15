@@ -10,6 +10,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +21,7 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.wms.GetMapTest;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.junit.After;
@@ -57,9 +59,9 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
 
         testData.addStyle("box-offset", "box-offset.sld", this.getClass(), getCatalog());
         testData.addStyle("transparent-fill", "transparent-fill.sld", this.getClass(), getCatalog());
-        File styles = new File(testData.getDataDirectoryRoot(), "styles");
-        File symbol = new File("../wms/src/test/resources/org/geoserver/wms/featureinfo/box-offset.png");
-        FileUtils.copyFileToDirectory(symbol, styles);
+        try (InputStream is = GetMapTest.class.getResourceAsStream("featureinfo/box-offset.png")) {
+            FileUtils.copyInputStreamToFile(is, new File(testData.getDataDirectoryRoot(), "styles/box-offset.png"));
+        }
 
         testData.addVectorLayer(
                 GRID, Collections.emptyMap(), "grid.properties", RenderingBasedFeatureInfoTest.class, getCatalog());

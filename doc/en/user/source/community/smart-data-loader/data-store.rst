@@ -14,6 +14,36 @@ In addition to the parameters common to each ``DataStore`` configuration such as
 
 Once selected the root entity a diagram of the entities available will appear. Uncheck the attributes that should not be included in the XSD and the mapping file.
 
+Virtual relationships
+---------------------
+
+PostgreSQL views and other virtual layers do not expose foreign key metadata, so Smart Data Loader cannot discover their relationships automatically. A **Virtual relationships** panel is available underneath the entity tree to capture those links manually and keep feature chaining intact.
+
+The panel presents a grid with the following columns:
+
+* **Name**: Logical identifier of the relationship (must be unique).
+* **Cardinality**: Allows ``1:1``, ``1:n`` and ``n:1``. The complementary direction is generated automatically.
+* **Source** and **Target**: Schema, table or view, and the key column used in the join. Both sides can point to tables or views, even across different schemas.
+
+Selecting **Add** opens a modal dialog where the relationship can be created or edited. The dialog validates that all referenced entities belong to the selected PostGIS datastore and that the key is a single column. Relationships can be removed from the grid at any time; each change triggers an immediate refresh of the preview tree so the virtual links can be verified visually.
+
+Virtual relationships are persisted in GeoServer's ``datastore.xml`` alongside the other connection parameters. They are stored as XML in the ``virtual-relationships`` entry, for example::
+
+  <entry key="virtual-relationships"><![CDATA[
+    <relationships version="1">
+      <relationship name="stations_to_view" cardinality="1:n">
+        <source schema="smartappschematest" entity="meteo_stations" kind="TABLE">
+          <key column="id"/>
+        </source>
+        <target schema="smartschema2" entity="v_meteo_observations_parameters" kind="VIEW">
+          <key column="station_id"/>
+        </target>
+      </relationship>
+    </relationships>
+  ]]></entry>
+
+During metadata loading the helper merges these virtual links with the relationships discovered directly from the database. Any referenced schema or table is automatically added to the in-memory model, allowing Smart Data Loader to build App-Schema mappings that traverse tables and views without requiring database-side constraints.
+
 
 Meteo Stations example 
 ----------------------

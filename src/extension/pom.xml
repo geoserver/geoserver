@@ -424,6 +424,19 @@
       </modules>
     </profile>
     <profile>
+      <id>arcgrid</id>
+      <modules>
+        <module>arcgrid</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>image</id>
+      <modules>
+        <module>image</module>
+      </modules>
+    </profile>
+
+    <profile>
       <id>ogcapi-features</id>
       <modules>
         <module>ogcapi/ogcapi-core</module>
@@ -493,6 +506,8 @@
         <module>rat</module>
         <module>ogcapi</module>
         <module>kml</module>
+        <module>arcgrid</module>
+        <module>image</module>
       </modules>
     </profile>
 
@@ -550,6 +565,8 @@
         <module>rat</module>
         <module>ogcapi</module>
         <module>kml</module>
+        <module>arcgrid</module>
+        <module>image</module>
       </modules>
     </profile>
   </profiles>

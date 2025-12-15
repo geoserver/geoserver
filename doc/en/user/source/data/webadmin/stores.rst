@@ -32,7 +32,7 @@ While there are many potential formats for data sources, there are only four kin
 Edit a Store
 ------------
 
-To view or edit a store, click the store name. A store configuration page will be displayed.  The exact contents of this page depend on the specific format of the store. See the sections :ref:`data_vector`, :ref:`data_raster`, and :ref:`data_database` for information about specific data formats. The example shows the configuration for the ``nurc:ArcGridSample`` store.
+To view or edit a store, click the store name. A store configuration page will be displayed.  The exact contents of this page depend on the specific format of the store. See the sections :ref:`data_vector`, :ref:`data_raster`, and :ref:`data_database` for information about specific data formats. The example shows the configuration for the ``nurc:GeoTIFFSample`` store.
 
 .. figure:: img/data_stores_edit.png
 
@@ -72,11 +72,11 @@ To add a store, select the :guilabel:`Add new Store` button. You will be prompte
    Choosing the data source for a new store
 
 The next page configures the store. Since connection parameters differ across data sources, the exact contents of this page depend on the store's specific format. See the sections :ref:`data_vector`, :ref:`data_raster`, and :ref:`data_database` for information on specific data formats.
-The example below shows the ArcGrid raster configuration page.
+The example below shows the GeoTIFF raster configuration page.
 
 .. figure:: img/data_stores_add.png
 
-   Configuration page for an ArcGrid raster data source
+   Configuration page for an GeoTIFF raster data source
 
 Remove a Store
 --------------

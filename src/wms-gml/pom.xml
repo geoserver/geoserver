@@ -25,7 +25,7 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-wfs</artifactId>
+      <artifactId>gs-wfs-core</artifactId>
     </dependency>
     <dependency>
       <groupId>jakarta.servlet</groupId>

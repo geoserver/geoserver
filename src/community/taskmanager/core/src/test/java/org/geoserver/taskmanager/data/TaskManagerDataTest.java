@@ -108,7 +108,7 @@ public class TaskManagerDataTest extends AbstractTaskManagerTest {
         config = dao.init(config);
         task = config.getTasks().get("task");
         assertEquals(1, task.getBatchElements().size());
-        assertEquals(dao.reload(el), task.getBatchElements().get(0));
+        assertEquals(el, task.getBatchElements().get(0));
 
         Configuration config2 = dao.copyConfiguration("my_config");
         config2.setName("my_config2");
@@ -137,6 +137,7 @@ public class TaskManagerDataTest extends AbstractTaskManagerTest {
         run.setStart(new Date(3000));
         run.setEnd(new Date(4000));
         run.setStatus(Status.COMMITTED);
+        run.setBatchElement(el);
         br.getRuns().add(run);
         dao.save(br);
         batch = dao.initHistory(dao.getBatch(batch.getId()));

@@ -11,6 +11,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.NumberTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -50,23 +51,26 @@ public class BulkRunPanel extends Panel {
         add(dialog);
         dialog.setInitialHeight(100);
 
+        Form<?> form = new Form<Object>("form");
+        add(form);
+
         TextField<String> workspace = new TextField<>("workspace", workspaceModel);
-        add(workspace);
+        form.add(workspace);
 
         TextField<String> configuration = new TextField<>("configuration", configurationModel);
-        add(configuration);
+        form.add(configuration);
 
         TextField<String> name = new TextField<>("name", nameModel);
-        add(name.setRequired(true));
+        form.add(name.setRequired(true));
 
         NumberTextField<Integer> startDelay = new NumberTextField<>("startDelay", new Model<Integer>(0), Integer.class);
         startDelay.setMinimum(0);
-        add(startDelay);
+        form.add(startDelay);
 
         NumberTextField<Integer> betweenDelay =
                 new NumberTextField<>("betweenDelay", new Model<Integer>(0), Integer.class);
         betweenDelay.setMinimum(0);
-        add(betweenDelay);
+        form.add(betweenDelay);
 
         Label batchesFound =
                 new Label("batchesFound", new ParamResourceModel("batchesFound", this, new IModel<String>() {
@@ -84,7 +88,7 @@ public class BulkRunPanel extends Panel {
                     @Override
                     public void detach() {}
                 }));
-        add(batchesFound.setOutputMarkupId(true));
+        form.add(batchesFound.setOutputMarkupId(true));
 
         AjaxSubmitLink run = new AjaxSubmitLink("run") {
             @Serial
@@ -134,7 +138,7 @@ public class BulkRunPanel extends Panel {
                 ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
             }
         };
-        add(run);
+        form.add(run);
 
         workspace.add(new AjaxFormSubmitBehavior("change") {
             @Serial

@@ -254,6 +254,7 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         Batch dummyBatch = dummyBatch1();
         dummyBatch.setEnabled(true);
         dummyBatch = dao.save(dummyBatch);
+        configModel.setObject(dummyBatch.getConfiguration());
 
         ConfigurationPage page = new ConfigurationPage(configModel);
         tester.startPage(page);
@@ -471,7 +472,7 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         final List<FeedbackMessage> renderedMessages = model.getObject();
         boolean found = false;
         for (FeedbackMessage actual : renderedMessages) {
-            if (actual.getMessage().toString().contains(partOfMessage)) {
+            if (actual.getMessage().toString().toUpperCase().contains(partOfMessage.toUpperCase())) {
                 found = true;
                 break;
             }

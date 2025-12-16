@@ -202,4 +202,12 @@ public class BatchImpl extends BaseImpl implements Batch {
     public void setLatestBatchRun(LatestBatchRun latestBatchRun) {
         this.latestBatchRun = latestBatchRun;
     }
+
+    public void setBatchRuns(ArrayList<BatchRun> batchRuns) {
+        this.batchRuns = batchRuns;
+    }
+
+    public void setElements(List<BatchElement> batchElements) {
+        this.elements = batchElements;
+    }
 }

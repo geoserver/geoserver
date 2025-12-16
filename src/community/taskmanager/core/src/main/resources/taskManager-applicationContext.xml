@@ -56,7 +56,7 @@
         <prop key="defaultFileService.rootFolder">${GEOSERVER_DATA_DIR}/data</prop>
         
         <!-- this makes it possible to configure db inside data directory -->
-        <prop key="tmDataSource.url">jdbc:h2:${GEOSERVER_DATA_DIR}/taskmanager/taskmanager</prop>
+        <prop key="tmDataSource.url">jdbc:h2:${GEOSERVER_DATA_DIR}/taskmanager/taskmanager;CASE_INSENSITIVE_IDENTIFIERS=TRUE</prop>
       </props>
     </property>    
     <property name="locations">

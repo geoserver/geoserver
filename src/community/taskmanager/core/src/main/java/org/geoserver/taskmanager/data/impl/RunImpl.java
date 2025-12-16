@@ -22,7 +22,7 @@ import org.geoserver.taskmanager.data.BatchRun;
 import org.geoserver.taskmanager.data.Run;
 
 @Entity
-@Table(indexes = {@Index(name = "idx_runimpl_batchrun", columnList = "batchrun", unique = false)})
+@Table(indexes = {@Index(name = "idx_runimpl_batchrun", columnList = "batchRun", unique = false)})
 public class RunImpl extends BaseImpl implements Run {
 
     @Serial

@@ -26,7 +26,6 @@
           <value>
             hibernate.hbm2ddl.auto=update
             hibernate.show_sql=false
-            hibernate.globally_quoted_identifiers=true
           </value>
         </property>
     </bean>

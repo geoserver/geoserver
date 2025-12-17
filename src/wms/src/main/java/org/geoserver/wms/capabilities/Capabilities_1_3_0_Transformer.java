@@ -777,7 +777,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 try {
                     handleLayerGroups(layerGroups, false);
                 } catch (Exception e) {
-                    throw new RuntimeException("Can't obtain Envelope of Layer-Groups: " + e.getMessage(), e);
+                    throw new RuntimeException(
+                            "Can't obtain Envelope of Layer-Groups: " + describeLayerGroups(layerGroups), e);
                 }
 
                 // now encode each layer individually
@@ -792,7 +793,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                     try {
                         handleLayerGroups(new ArrayList<>(layerGroups), true);
                     } catch (Exception e) {
-                        throw new RuntimeException("Can't obtain Envelope of Layer-Groups: " + e.getMessage(), e);
+                        throw new RuntimeException(
+                                "Can't obtain Envelope of Layer-Groups: " + describeLayerGroups(layerGroups), e);
                     }
                 }
             }
@@ -958,7 +960,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             }
 
             handleGeographicBoundingBox(latlonBbox);
-            handleBBox(latlonBbox, "CRS:84");
+            handleBBox(latlonBbox, "CRS:84", null);
             handleAdditionalBBox(new ReferencedEnvelope(latlonBbox, DefaultGeographicCRS.WGS84), null, null);
         }
 
@@ -1026,21 +1028,33 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         }
 
         private void doHandleLayer(LayerInfo layer, boolean isRoot) {
+            boolean loggable = LOGGER.isLoggable(Level.FINE);
+            String layerName = getPublishedName(layer.prefixedName(), layer.getName());
+            if (loggable) {
+                LOGGER.fine("Starting capabilities processing for layer " + layerLabel(layerName, isRoot));
+            }
             try {
                 mark();
                 handleLayer(layer, isRoot);
                 commit();
+                if (loggable) {
+                    LOGGER.fine("Finished capabilities processing for layer " + layerLabel(layerName, isRoot));
+                }
             } catch (Exception e) {
                 // abort processing if the user closed the connection
                 ClientStreamAbortedException.rethrowUncheked(e);
                 // report what layer we failed on to help the admin locate and fix it
 
                 if (skipping) {
-                    LOGGER.log(Level.WARNING, "Error writing metadata; skipping layer: " + layer.getName(), e);
+                    LOGGER.log(
+                            Level.WARNING,
+                            "Error writing metadata; skipping layer: " + layerLabel(layerName, isRoot),
+                            e);
                     reset();
                 } else {
                     throw new ServiceException(
-                            "Error occurred trying to write out metadata for layer: " + layer.getName(), e);
+                            "Error occurred trying to write out metadata for layer: " + layerLabel(layerName, isRoot),
+                            e);
                 }
             }
         }
@@ -1054,6 +1068,40 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
             boolean wmsExposable = WMS.isWmsExposable(layer);
             return wmsExposable;
+        }
+
+        private String layerLabel(String name, boolean isRoot) {
+            return isRoot ? name + " (root)" : name;
+        }
+
+        private String getPublishedName(String prefixedName, String fallback) {
+            return prefixedName == null ? fallback : prefixedName;
+        }
+
+        private String getPublishedName(PublishedInfo published) {
+            if (published == null) {
+                return "null";
+            }
+            String prefixed = published.prefixedName();
+            String name = published.getName();
+            return prefixed == null ? name : prefixed;
+        }
+
+        private String getLayerGroupName(LayerGroupInfo group) {
+            if (group == null) {
+                return "null";
+            }
+            String prefixed = group.prefixedName();
+            String name = group.getName();
+            String result = prefixed == null ? name : prefixed;
+            return result == null ? "null" : result;
+        }
+
+        private String describeLayerGroups(List<LayerGroupInfo> groups) {
+            if (groups == null || groups.isEmpty()) {
+                return "[]";
+            }
+            return groups.stream().map(this::getLayerGroupName).collect(Collectors.joining(", ", "[", "]"));
         }
 
         /** */
@@ -1088,7 +1136,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
             ReferencedEnvelope llbbox = layer.getResource().getLatLonBoundingBox();
             handleGeographicBoundingBox(llbbox);
-            handleBBox(llbbox, "CRS:84");
+            handleBBox(llbbox, "CRS:84", layer);
 
             ReferencedEnvelope bbox;
             try {
@@ -1098,7 +1146,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             }
             // the native bbox might be null
             if (bbox != null) {
-                handleBBox(bbox, crs);
+                handleBBox(bbox, crs, layer);
                 handleAdditionalBBox(bbox, crs, layer);
             }
 
@@ -1165,7 +1213,13 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 }
 
             } catch (IOException e) {
-                LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
+                LOGGER.log(
+                        Level.WARNING,
+                        "Error handling scale denominators for "
+                                + getPublishedName(layer)
+                                + ": "
+                                + e.getLocalizedMessage(),
+                        e);
             }
         }
 
@@ -1177,29 +1231,55 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
          * @param styles the list of styles for the layer
          */
         private void handleLayerStyles(String layerName, StyleInfo defaultStyle, Set<StyleInfo> styles) {
+            boolean loggable = LOGGER.isLoggable(Level.FINE);
+            if (loggable) {
+                LOGGER.fine("Starting capabilities styles for layer " + layerName);
+            }
             // if WMSLayerInfo do nothing for the moment, we may want to list the set of cascaded
             // named styles
             // in the future (when we add support for that)
             // support added :GEOS-9312
 
             if (defaultStyle == null) {
-                throw new NullPointerException("Layer " + layerName + " has no default style");
+                throw new ServiceException(
+                        "Layer " + layerName + " has no default style", new NullPointerException("defaultStyle"));
             }
 
             // add the default style
-            start("Style");
-            handleCommonStyleElements(defaultStyle);
-            handleLegendURL(layerName, defaultStyle.getLegend(), null, defaultStyle);
-            end("Style");
+            try {
+                if (loggable) {
+                    LOGGER.fine("Adding default style " + defaultStyle.getName() + " to layer " + layerName);
+                }
+                start("Style");
+                handleCommonStyleElements(defaultStyle);
+                handleLegendURL(layerName, defaultStyle.getLegend(), null, defaultStyle);
+                end("Style");
+            } catch (Exception e) {
+                throw new ServiceException(
+                        "Error occurred handling default style " + defaultStyle.getName() + " for layer: " + layerName,
+                        e);
+            }
 
             // add all the styles
             if (styles != null) {
                 for (StyleInfo styleInfo : styles) {
-                    start("Style");
-                    handleCommonStyleElements(styleInfo);
-                    handleLegendURL(layerName, styleInfo.getLegend(), styleInfo, styleInfo);
-                    end("Style");
+                    try {
+                        if (loggable) {
+                            LOGGER.fine("Adding style " + styleInfo.getName() + " to layer " + layerName);
+                        }
+                        start("Style");
+                        handleCommonStyleElements(styleInfo);
+                        handleLegendURL(layerName, styleInfo.getLegend(), styleInfo, styleInfo);
+                        end("Style");
+                    } catch (Exception e) {
+                        String styleName = styleInfo != null ? styleInfo.getName() : "null";
+                        throw new ServiceException(
+                                "Error occurred handling style " + styleName + " for layer: " + layerName, e);
+                    }
                 }
+            }
+            if (loggable) {
+                LOGGER.fine("Finished capabilities styles for layer " + layerName);
             }
         }
 
@@ -1237,7 +1317,9 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 ftStyle = defaultStyle.getStyle();
                 handleStyleTitleAndAbstract(defaultStyle.prefixedName(), ftStyle);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                String styleName = defaultStyle.prefixedName();
+                throw new ServiceException(
+                        "Error occurred loading style content for: " + (styleName == null ? "null" : styleName), e);
             }
         }
 
@@ -1317,10 +1399,20 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 List<LayerGroupInfo> topLevelGroups = filterNestedGroups(layerGroups);
 
                 for (LayerGroupInfo group : topLevelGroups) {
+                    boolean loggable = LOGGER.isLoggable(Level.FINE);
+                    String groupName = getLayerGroupName(group);
+                    if (loggable) {
+                        LOGGER.fine(
+                                "Starting capabilities processing for layer group " + layerLabel(groupName, isRoot));
+                    }
                     try {
                         mark();
                         handleLayerGroup(group, isRoot);
                         commit();
+                        if (loggable) {
+                            LOGGER.fine("Finished capabilities processing for layer group "
+                                    + layerLabel(groupName, isRoot));
+                        }
                     } catch (Exception e) {
                         // abort processing if the user closed the connection
                         ClientStreamAbortedException.rethrowUncheked(e);
@@ -1330,7 +1422,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                                 LOGGER.log(
                                         Level.WARNING,
                                         "Skipping layer group "
-                                                + group.getName()
+                                                + layerLabel(groupName, isRoot)
                                                 + " as its caps document element failed to generate",
                                         e);
                             } else {
@@ -1343,7 +1435,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                             reset();
                         } else {
                             throw new ServiceException(
-                                    "Error occurred trying to write out metadata for layer group: " + group.getName(),
+                                    "Error occurred trying to write out metadata for layer group: "
+                                            + layerLabel(groupName, isRoot),
                                     e);
                         }
                     }
@@ -1400,8 +1493,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             }
 
             handleGeographicBoundingBox(latLonBounds);
-            handleBBox(latLonBounds, "CRS:84");
-            handleBBox(layerGroupBounds, authority);
+            handleBBox(latLonBounds, "CRS:84", layerGroup);
+            handleBBox(layerGroupBounds, authority, layerGroup);
             handleAdditionalBBox(layerGroupBounds, authority, layerGroup);
 
             if (LayerGroupInfo.Mode.EO.equals(layerGroup.getMode())) {
@@ -1556,7 +1649,13 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                         legendHeight = (int) dimension.getHeight();
                     }
                 } catch (Exception e) {
-                    LOGGER.log(Level.WARNING, "Error getting LegendURL dimensions from sample", e);
+                    StringBuilder message = new StringBuilder(
+                                    "Error getting LegendURL dimensions from sample for layer ")
+                            .append(layerName);
+                    if (sampleStyle != null && sampleStyle.getName() != null) {
+                        message.append(" and style ").append(sampleStyle.getName());
+                    }
+                    LOGGER.log(Level.WARNING, message.toString(), e);
                 }
             }
 
@@ -1627,8 +1726,14 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             end("EX_GeographicBoundingBox");
         }
 
-        /** Encodes a BoundingBox for the given Envelope. */
-        private void handleBBox(Envelope bbox, String srs) {
+        /**
+         * Encodes a BoundingBox for the given Envelope.
+         *
+         * @param bbox envelope to encode (not null)
+         * @param srs CRS code to use for the bounding box (not null)
+         * @param published published layer or group owning the bbox (nullable, null when handling root)
+         */
+        private void handleBBox(Envelope bbox, String srs, PublishedInfo published) {
             String minx = String.valueOf(bbox.getMinX());
             String miny = String.valueOf(bbox.getMinY());
             String maxx = String.valueOf(bbox.getMaxX());
@@ -1639,7 +1744,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             try {
                 crs = CRS.decode(WMS.toInternalSRS(srs, WMS.VERSION_1_3_0));
             } catch (Exception e) {
-                LOGGER.log(Level.WARNING, "Unable to decode " + srs, e);
+                String label = published == null ? "root" : getPublishedName(published);
+                LOGGER.log(Level.WARNING, "Unable to decode " + srs + " while handling bbox for " + label, e);
             }
 
             if (crs != null && CRS.getAxisOrder(crs) == AxisOrder.NORTH_EAST) {
@@ -1674,7 +1780,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                     try {
                         targetCrs = CRS.decode(srs);
                         ReferencedEnvelope tbbox = bbox.transform(targetCrs, true);
-                        handleBBox(tbbox, srs);
+                        handleBBox(tbbox, srs, layer);
                     } catch (Exception e) {
                         // An exception is occurred during transformation. Try using a
                         // ProjectionHandler
@@ -1693,7 +1799,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                                 }
                             } else {
                                 ReferencedEnvelope tbbox = handler.transformEnvelope(bbox, targetCrs);
-                                handleBBox(tbbox, srs);
+                                handleBBox(tbbox, srs, layer);
                             }
                         } catch (FactoryException | TransformException e1) {
                             LOGGER.warning(String.format(

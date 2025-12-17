@@ -498,22 +498,18 @@ Run WCS 1.0 tests
 
    #. ``Update Sequence Values``:
 
-      * "2" for ``value that is lexically higher``
+      * "99" for ``value that is lexically higher``
       * "0" for ``value that is lexically lower``
 
    #. ``Grid Resolutions``:
 
-      * "0.1" for ``RESX``
-      * "0.1" for ``RESY``
+      * "16" for ``RESX``
+      * "16" for ``RESY``
 
    #. ``Options``:
 
       * Ensure ``Verify that the server supports XML encoding`` is *checked*
       * Ensure ``Verify that the server supports range set axis`` is *checked*
-
-   #. ``Schemas``:
-
-      * Ensure that ``The server implements the original schemas from the WCS 1.0.0 specification (OGC 03-065`` is selected
 
    #. Click ``OK``
 
@@ -738,14 +734,14 @@ Shortly before a major (2.xx.0) release, the following process should be followe
 
     cd /home/cite
 
-#. Create a local docker image tagged ``geoserver-docker.osgeo.org/geoserver:2.27.x`` from the latest nightly build at https://build.geoserver.org/geoserver/2.27.x using the build steps from https://github.com/geoserver/docker.git
+#. If the certification is being done prior to the release: create a local docker image tagged ``geoserver-docker.osgeo.org/geoserver:2.27.x`` from the latest nightly build at https://build.geoserver.org/geoserver/2.27.x using the build steps from https://github.com/geoserver/docker.git
 
    .. code-block:: shell
 
     cd geoserver-docker/build && git pull && ./release.sh build 2.27-SNAPSHOT
     docker image ls
 
-#. Checkout the latest CITE tests from https://github.com/geoserver/geoserver.git and change the GeoServer Admin password
+#. Checkout the latest CITE tests from https://github.com/geoserver/geoserver.git, update the GeoServer version and change the GeoServer Admin password
 
    .. code-block:: shell
 
@@ -764,7 +760,7 @@ This will spin up a PostgreSQL service which will be populated with 3 different 
 
 It will also spin up 7 GeoServer services, typically 1 data directory per CITE test (e.g. wfs20), although it is noted that features10, wmts10, wms11 and wms13 all run off the same wms13 data directory, and wcs20 and geotiff11 use the wcs11 data directory.
 
-#. Log into https://cite.opengeospatial.org/teamengine and if necessary create Test Sessions for all the tests that GeoServer should pass:
+#. Log into https://cite.opengeospatial.org/teamengine and create Test Sessions for all the tests that GeoServer should pass:
 
     #. OGC API - Features	1.0	https://g1.cite.geoserver.org/geoserver/cite/ogc/features/v1
     #. Web Map Tile Service (WMTS)	1.0.0	https://g1.cite.geoserver.org/geoserver/gwc/service/wmts?service=WMTS&request=GetCapabilities&AcceptVersions=1.0.0 `**`
@@ -776,12 +772,12 @@ It will also spin up 7 GeoServer services, typically 1 data directory per CITE t
     #. Web Coverage Service (WCS)	2.0.1	https://g5.cite.geoserver.org/geoserver/wcs?service=WCS&request=GetCapabilities&version=2.0.1 (yes, uppercase WCS is needed) `**`
     #. Web Coverage Service (WCS)	1.1.1	https://g5.cite.geoserver.org/geoserver/wcs?service=wcs&request=GetCapabilities&version=1.1.1
     #. Web Coverage Service (WCS)	1.0.0	https://g6.cite.geoserver.org/geoserver/wcs?service=wcs&request=GetCapabilities&version=1.0.0
-    #. GeoPackage	1.2	https://g7.cite.geoserver.org/geoserver/topp/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=topp:states&outputFormat=application/geopackage%2bsqlite3
+    #. GeoPackage	1.2	https://g7.cite.geoserver.org/geoserver/topp/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=topp:states&outputFormat=application/geopackage%2bsqlite3 (upload, not URL `**`)
     #. GeoTiff	1.1	https://g5.cite.geoserver.org/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=topp:tazbm&bbox=146.49999999999477,-44.49999999999785,147.99999999999474,-42.99999999999787&width=767&height=768&srs=EPSG:4326&styles=&format=image/geotiff
     
-    Follow the Run xxx tests instructions above for all the tests settings.  Run them one at a time, it should take less than 1 hour to complete, sometimes with manual visual checks (WMS).
+    Follow the Run xxx tests instructions above for all the tests settings.  Run them one at a time, it should take less than 2 hours to complete, sometimes with manual visual checks (WMS).
 	
-	`**` These ones are currently still failing.
+	`**` These ones are currently still failing.  See `previous test results <https://docs.google.com/spreadsheets/d/1FzsQE_WX0RdnXek1bJSIuO2AkRdmq__6JUJHEjSEoQ4>`_.
 
 #. Note all the test sessions that passed (hopefully all of them!) and provide these to our OSGeo contact (currently kalxas), along with your TE username and password (yes, ridiculous!)
 

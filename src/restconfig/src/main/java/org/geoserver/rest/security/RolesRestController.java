@@ -6,6 +6,8 @@ package org.geoserver.rest.security;
 
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.catalog.SequentialExecutionController;
 import org.geoserver.rest.security.xml.JaxbRoleList;
@@ -13,6 +15,7 @@ import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.impl.GeoServerRole;
+import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,6 +31,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/security/roles")
 public class RolesRestController implements SequentialExecutionController {
 
+    private static final Logger LOGGER = Logging.getLogger(RolesRestController.class);
+
     protected GeoServerSecurityManager securityManager;
 
     public RolesRestController(GeoServerSecurityManager securityManager) {
@@ -35,8 +40,10 @@ public class RolesRestController implements SequentialExecutionController {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public void somethingNotFound(IllegalArgumentException exception, HttpServletResponse response) throws IOException {
-        response.sendError(404, exception.getMessage());
+    public void somethingNotFound(IllegalArgumentException e, HttpServletResponse response) throws IOException {
+        String prefix = "Role Rest Request failed with IllegalArgumentException:\n";
+        LOGGER.log(Level.WARNING, prefix + e.getMessage(), e);
+        response.sendError(400, prefix + "Check the logs for further details");
     }
 
     @GetMapping(

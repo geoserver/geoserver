@@ -30,6 +30,8 @@ public class AuthFilterChain {
     private Set<String> httpMethods;
     private String roleFilterName;
 
+    private static final AllowedAuthFilterChainClasses ALLOWED = AllowedAuthFilterChainClasses.load();
+
     // Property that is not available in RequestFilterChain
     private int position;
 
@@ -68,8 +70,15 @@ public class AuthFilterChain {
     }
 
     private RequestFilterChain createInstance(List<String> patterns) {
+        // Fail closed before any reflective class loading
+        if (!ALLOWED.isAllowed(className)) {
+            throw new AuthenticationFilterChainRestController.CannotMakeChain(
+                    className, new InstantiationException("Unsupported AuthFilterChain class (not in allow-list)"));
+        }
+
         try {
-            Class<?> clazz = Class.forName(className);
+            Class<? extends RequestFilterChain> clazz = Class.forName(className).asSubclass(RequestFilterChain.class);
+
             Optional<Constructor<?>> possibleConstructor = Arrays.stream(clazz.getDeclaredConstructors())
                     .filter(matchesStringArrayConstructor())
                     .findFirst();

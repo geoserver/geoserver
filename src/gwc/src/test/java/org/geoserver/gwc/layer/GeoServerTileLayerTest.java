@@ -1479,4 +1479,24 @@ public class GeoServerTileLayerTest {
         }
         pool.shutdown();
     }
+
+    @Test
+    public void testGetPublishedInfoMissingEntryDoesNotThrow() throws Exception {
+        // Prepare: pick an id that is not present in the mocked catalog
+        final String missingId = "missing layer id";
+        // Create a GeoServerTileLayer that references an id the catalog doesn't contain.
+        GeoServerTileLayer missingTileLayer = new GeoServerTileLayer(
+                catalog, missingId, gridSetBroker, TileLayerInfoUtil.loadOrCreate(layerInfo, defaults));
+
+        // When calling getPublishedInfo we used to throw; now we should not.
+        PublishedInfo publishedInfo = missingTileLayer.getPublishedInfo();
+        assertNotNull(publishedInfo);
+        assertEquals(missingId, publishedInfo.getId());
+
+        // The layer should be considered not enabled and an error message should be set on the layer
+        assertFalse(missingTileLayer.isEnabled());
+        assertNotNull(missingTileLayer.getConfigErrorMessage());
+        assertTrue(missingTileLayer.getConfigErrorMessage().contains("GWC tile layer reference not found"));
+        assertTrue(missingTileLayer.getConfigErrorMessage().contains(missingId));
+    }
 }

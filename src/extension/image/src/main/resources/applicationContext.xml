@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (C) 2025 - Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>  
+  <bean id="imageExtension" class="org.geoserver.platform.ModuleStatusImpl">
+    <property name="module" value="gs-image" />
+    <property name="name" value="WorldImage datasource module"/>
+    <property name="component" value="WorldImage datasource module"/>
+    <property name="documentation" value="extensions/image/index.html"/>
+    <property name="available" value="true"/>
+    <property name="enabled" value="true"/>
+    <property name="category" value="EXTENSION"/>
+  </bean>
+
+  <bean id="worldImageStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
+    <property name="id" value="worldImageRaster" />
+    <property name="factoryClass" value="org.geotools.gce.image.WorldImageFormat" />
+    <property name="iconBase" value="org.geoserver.web.GeoServerApplication" />
+    <property name="icon" value="img/icons/geosilk/page_white_raster.png" />
+    <property name="componentClass"
+              value="org.geoserver.web.data.store.raster.WorldImageEditPanel" />
+  </bean>
+
+</beans>

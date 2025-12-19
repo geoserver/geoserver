@@ -18,7 +18,7 @@ import net.opengis.wfs.TransactionType;
 import net.opengis.wfs.UpdateElementType;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.WFSTestSupport;
-import org.geoserver.wfs.xml.v1_1_0.WFSConfiguration;
+import org.geoserver.wfs.xml.WFSXmlConfiguration;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.xsd.Parser;
 import org.junit.Test;
@@ -33,7 +33,7 @@ public class XMLParsingTest extends WFSTestSupport {
 
     @Test
     public void testNativeType() throws Exception {
-        Parser p = new Parser(getXmlConfiguration11());
+        Parser p = new Parser((org.geotools.xsd.Configuration) getXmlConfiguration11());
         NativeType nativ = (NativeType) p.parse(new ByteArrayInputStream(
                 "<wfs:Native safeToIgnore='true' xmlns:wfs='http://www.opengis.net/wfs'>here is some text</wfs:Native>"
                         .getBytes()));
@@ -43,7 +43,7 @@ public class XMLParsingTest extends WFSTestSupport {
 
     @Test
     public void testGetFeatureWithLock() throws Exception {
-        Parser p = new Parser(getXmlConfiguration11());
+        Parser p = new Parser((org.geotools.xsd.Configuration) getXmlConfiguration11());
 
         String request =
                 """
@@ -67,8 +67,8 @@ public class XMLParsingTest extends WFSTestSupport {
 
     @Test
     public void testUpdate() throws Exception {
-        WFSConfiguration xmlConfiguration11 = getXmlConfiguration11();
-        Parser p = new Parser(xmlConfiguration11);
+        WFSXmlConfiguration xmlConfiguration11 = getXmlConfiguration11();
+        Parser p = new Parser((org.geotools.xsd.Configuration) xmlConfiguration11);
         p.setHandleMixedContent(true);
 
         String request =
@@ -100,8 +100,8 @@ public class XMLParsingTest extends WFSTestSupport {
 
     @Test
     public void testInsert() throws Exception {
-        WFSConfiguration xmlConfiguration11 = getXmlConfiguration11();
-        Parser p = new Parser(xmlConfiguration11);
+        WFSXmlConfiguration xmlConfiguration11 = getXmlConfiguration11();
+        Parser p = new Parser((org.geotools.xsd.Configuration) xmlConfiguration11);
         p.setHandleMixedContent(true);
 
         String request =

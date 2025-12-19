@@ -20,8 +20,7 @@ import org.geoserver.wfs.StoredQuery;
 import org.geoserver.wfs.StoredQueryProvider;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSInfo;
-import org.geoserver.wfs.xml.FeatureTypeSchemaBuilder;
-import org.geoserver.wfs.xml.v1_1_0.WFSConfiguration;
+import org.geoserver.wfs.xml.v2_0.WFSConfiguration;
 import org.geotools.filter.v2_0.FES;
 import org.geotools.gml3.v3_2.GML;
 import org.geotools.wfs.v2_0.WFS;
@@ -47,10 +46,9 @@ public class StoredQueryTest extends WFS20TestSupport {
         XMLAssert.assertXpathExists("//wfs:StoredQuery[@id = '" + StoredQuery.DEFAULT.getName() + "']", dom);
 
         // schema validate the response
-        FeatureTypeSchemaBuilder sb = new FeatureTypeSchemaBuilder.GML3(getGeoServer());
-        WFSConfiguration configuration =
-                new WFSConfiguration(getGeoServer(), sb, new org.geoserver.wfs.xml.v1_1_0.WFS(sb));
+        WFSConfiguration configuration = new WFSConfiguration();
         Parser parser = new Parser(configuration);
+        parser.setValidating(true);
         parser.parse(new ByteArrayInputStream(response.getContentAsByteArray()));
 
         assertEquals(0, parser.getValidationErrors().size());

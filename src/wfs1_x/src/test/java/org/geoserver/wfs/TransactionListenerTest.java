@@ -5,10 +5,6 @@
  */
 package org.geoserver.wfs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
 import net.opengis.wfs.DeleteElementType;
 import net.opengis.wfs.InsertElementType;
 import net.opengis.wfs.UpdateElementType;
@@ -18,6 +14,11 @@ import org.geotools.data.DataUtilities;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
+
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * This test must be run with the server configured with the wfs 1.0 cite configuration, with data initialized.

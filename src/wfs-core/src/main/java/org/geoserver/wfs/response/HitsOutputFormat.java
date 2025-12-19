@@ -17,9 +17,10 @@ import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wfs.FeatureTypeUtils;
+import org.geoserver.wfs.WFSConstants;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
-import org.geoserver.wfs.xml.GML3OutputFormat;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.Encoder;
@@ -65,7 +66,7 @@ public class HitsOutputFormat extends WFSResponse {
 
         // create a new feautre collcetion type with just the numbers
         FeatureCollectionResponse hits = featureCollection.create();
-        if (GML3OutputFormat.isComplexFeature(featureCollection)) {
+        if (FeatureTypeUtils.isComplexFeature(featureCollection)) {
             // we have to count the number of features here manually because complex feature
             // collection size() now returns 0. In order to count the number of features,
             // we have to build the features to count them and this has great performance
@@ -108,9 +109,8 @@ public class HitsOutputFormat extends WFSResponse {
         Encoder encoder = new Encoder(configuration, result);
         encoder.setEncoding(Charset.forName(wfs.getGeoServer().getSettings().getCharset()));
         encoder.setSchemaLocation(
-                org.geoserver.wfs.xml.v1_1_0.WFS.NAMESPACE,
-                ResponseUtils.appendPath(wfs.getSchemaBaseURL(), "wfs/1.1.0/wfs.xsd"));
+                WFSConstants.NAMESPACE_1_1_0, ResponseUtils.appendPath(wfs.getSchemaBaseURL(), "wfs/1.1.0/wfs.xsd"));
 
-        encoder.encode(hits.getAdaptee(), org.geoserver.wfs.xml.v1_1_0.WFS.FEATURECOLLECTION, output);
+        encoder.encode(hits.getAdaptee(), WFSConstants.FEATURECOLLECTION_1_1, output);
     }
 }

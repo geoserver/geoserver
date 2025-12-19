@@ -30,6 +30,7 @@ import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.GMLInfo;
+import org.geoserver.wfs.WFSConstants;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
@@ -251,7 +252,7 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat implements Compl
     }
 
     protected String wfsCanonicalSchemaLocation() {
-        return org.geoserver.wfs.xml.v1_0_0.WFS.CANONICAL_SCHEMA_LOCATION_BASIC;
+        return WFSConstants.CANONICAL_SCHEMA_LOCATION_BASIC_1_0;
     }
 
     protected String typeSchemaLocation(GeoServerInfo global, FeatureTypeInfo meta, String baseUrl) {

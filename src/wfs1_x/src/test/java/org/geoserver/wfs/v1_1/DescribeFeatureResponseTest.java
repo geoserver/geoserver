@@ -17,7 +17,7 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.util.ReaderUtils;
 import org.geoserver.wfs.WFSTestSupport;
-import org.geoserver.wfs.xml.v1_1_0.XmlSchemaEncoder;
+import org.geoserver.wfs.xml.XmlSchemaEncoder;
 import org.junit.Test;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;

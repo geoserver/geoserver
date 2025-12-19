@@ -87,7 +87,7 @@ public class DescribeFeatureType {
             for (QName name : names) {
                 String nsUri = name.getNamespaceURI();
                 if (XMLConstants.NULL_NS_URI.equals(nsUri)
-                        || org.geoserver.wfs.xml.v1_1_0.WFS.NAMESPACE.equals(nsUri)
+                        || WFSConstants.NAMESPACE_1_1_0.equals(nsUri)
                         || org.geotools.wfs.v2_0.WFS.NAMESPACE.equals(nsUri)) {
                     // for this one we need to assign the default geoserver
                     // namespace

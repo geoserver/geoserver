@@ -26,7 +26,7 @@ import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
-import org.geoserver.wfs.xml.v1_1_0.WFSConfiguration;
+import org.geoserver.wfs.xml.v2_0.WFSConfiguration;
 import org.geotools.api.feature.Feature;
 import org.geotools.api.feature.type.FeatureType;
 import org.geotools.data.DataUtilities;

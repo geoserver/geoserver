@@ -37,7 +37,6 @@ import org.geoserver.wfs.DescribeFeatureType;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.kvp.DescribeFeatureTypeKvpRequestReader;
 import org.geoserver.wfs.request.DescribeFeatureTypeRequest;
-import org.geoserver.wfs.xml.v1_1_0.XmlSchemaEncoder;
 import org.geotools.util.logging.Logging;
 import org.geotools.xsd.Parser;
 
@@ -227,7 +226,7 @@ public class WFSURIHandler extends URIHandlerImpl {
                     dftReqReader = new DescribeFeatureTypeKvpRequestReader(catalog);
                     break;
                 default:
-                    dftReqReader = new org.geoserver.wfs.kvp.v2_0.DescribeFeatureTypeKvpRequestReader(catalog);
+                    dftReqReader = new DescribeFeatureTypeKvpRequestReader(catalog);
             }
 
             // parse the key value pairs

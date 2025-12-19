@@ -1,4 +1,5 @@
 /* (c) 2014 -2015 Open Source Geospatial Foundation - all rights reserved
+import org.geoserver.wfs.WFSConstants;
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -48,6 +49,8 @@ import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wfs.FeatureTypeUtils;
+import org.geoserver.wfs.WFSConstants;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
@@ -55,13 +58,10 @@ import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.Query;
 import org.geoserver.wfs.response.ComplexFeatureAwareFormat;
-import org.geoserver.wfs.xml.v1_1_0.WFS;
-import org.geoserver.wfs.xml.v1_1_0.WFSConfiguration;
 import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.feature.type.Name;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
-import org.geotools.feature.simple.SimpleFeatureTypeImpl;
 import org.geotools.gml3.GMLConfiguration;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.Encoder;
@@ -75,7 +75,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat implements Compl
 
     GeoServer geoServer;
     Catalog catalog;
-    WFSConfiguration configuration;
+    WFSXmlConfiguration configuration;
     protected static DOMSource xslt;
 
     static {
@@ -93,11 +93,11 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat implements Compl
         }
     }
 
-    public GML3OutputFormat(GeoServer geoServer, WFSConfiguration configuration) {
+    public GML3OutputFormat(GeoServer geoServer, WFSXmlConfiguration configuration) {
         this(new HashSet<>(Arrays.asList("gml3", "text/xml; subtype=gml/3.1.1")), geoServer, configuration);
     }
 
-    public GML3OutputFormat(Set<String> outputFormats, GeoServer geoServer, WFSConfiguration configuration) {
+    public GML3OutputFormat(Set<String> outputFormats, GeoServer geoServer, WFSXmlConfiguration configuration) {
         super(geoServer, outputFormats);
 
         this.geoServer = geoServer;
@@ -180,30 +180,31 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat implements Compl
         }
 
         WFSInfo wfs = getInfo();
+        Configuration config = (Configuration) configuration;
 
         // set feature bounding parameter
         // JD: this is quite bad as its not at all thread-safe, once we remove the configuration
         // as being a singleton on trunk/2.0.x this should not be an issue
         if (wfs.isFeatureBounding()) {
-            configuration.getProperties().remove(GMLConfiguration.NO_FEATURE_BOUNDS);
+            config.getProperties().remove(GMLConfiguration.NO_FEATURE_BOUNDS);
         } else {
-            configuration.getProperties().add(GMLConfiguration.NO_FEATURE_BOUNDS);
+            config.getProperties().add(GMLConfiguration.NO_FEATURE_BOUNDS);
         }
 
         if (wfs.isCiteCompliant()) {
             // cite compliance forces us to forgo srsDimension attribute
-            configuration.getProperties().add(GMLConfiguration.NO_SRS_DIMENSION);
+            config.getProperties().add(GMLConfiguration.NO_SRS_DIMENSION);
         } else {
-            configuration.getProperties().remove(GMLConfiguration.NO_SRS_DIMENSION);
+            config.getProperties().remove(GMLConfiguration.NO_SRS_DIMENSION);
         }
 
         if (OPTIMIZED_ENCODING) {
-            configuration.getProperties().add(GMLConfiguration.OPTIMIZED_ENCODING);
+            config.getProperties().add(GMLConfiguration.OPTIMIZED_ENCODING);
         } else {
-            configuration.getProperties().remove(GMLConfiguration.OPTIMIZED_ENCODING);
+            config.getProperties().remove(GMLConfiguration.OPTIMIZED_ENCODING);
         }
 
-        // set up the srsname syntax
+        // set up the srsname syntax (calls version-specific method if supported)
         configuration.setSrsSyntax(
                 wfs.getGML().get(WFSInfo.Version.V_11).getSrsNameStyle().toSrsSyntax());
 
@@ -212,15 +213,15 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat implements Compl
          *
          */
         if (wfs.isEncodeFeatureMember()) {
-            configuration.getProperties().add(GMLConfiguration.ENCODE_FEATURE_MEMBER);
+            config.getProperties().add(GMLConfiguration.ENCODE_FEATURE_MEMBER);
         } else {
-            configuration.getProperties().remove(GMLConfiguration.ENCODE_FEATURE_MEMBER);
+            config.getProperties().remove(GMLConfiguration.ENCODE_FEATURE_MEMBER);
         }
 
         // declare wfs schema location
         Object gft = getFeature.getParameters()[0];
 
-        Configuration configuration = customizeConfiguration(this.configuration, ns2metas, gft);
+        Configuration configuration = customizeConfiguration((Configuration) this.configuration, ns2metas, gft);
         boolean encodeMeasures = encodeMeasures(featureCollections, catalog);
         updateConfiguration(configuration, numDecimals, padWithZeros, forcedDecimal, encodeMeasures);
         Encoder encoder = createEncoder(configuration, ns2metas, gft);
@@ -331,10 +332,8 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat implements Compl
     protected Encoder createEncoder(
             Configuration configuration, Map<String, Set<ResourceInfo>> resources, Object request) {
         // reuse the WFS configuration feature builder, otherwise build a new one
-        FeatureTypeSchemaBuilder schemaBuilder;
-        if (configuration instanceof WFSConfiguration sConfiguration) {
-            schemaBuilder = sConfiguration.getSchemaBuilder();
-        } else {
+        FeatureTypeSchemaBuilder schemaBuilder = this.configuration.getSchemaBuilder();
+        if (schemaBuilder == null) {
             schemaBuilder = new FeatureTypeSchemaBuilder.GML3(geoServer);
         }
         // create this request specific schema
@@ -364,10 +363,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat implements Compl
     }
 
     protected void encode(FeatureCollectionResponse results, OutputStream output, Encoder encoder) throws IOException {
-        encoder.encode(
-                results.unadapt(FeatureCollectionType.class),
-                org.geoserver.wfs.xml.v1_1_0.WFS.FEATURECOLLECTION,
-                output);
+        encoder.encode(results.unadapt(FeatureCollectionType.class), WFSConstants.FEATURECOLLECTION_1_1, output);
     }
 
     protected DOMSource getXSLT() {
@@ -398,11 +394,11 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat implements Compl
     }
 
     protected String getWfsNamespace() {
-        return org.geoserver.wfs.xml.v1_1_0.WFS.NAMESPACE;
+        return WFSConstants.NAMESPACE_1_1_0;
     }
 
     protected String getCanonicalWfsSchemaLocation() {
-        return WFS.CANONICAL_SCHEMA_LOCATION;
+        return WFSConstants.CANONICAL_SCHEMA_LOCATION_1_1;
     }
 
     protected String getRelativeWfsSchemaLocation() {
@@ -410,14 +406,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat implements Compl
     }
 
     public static boolean isComplexFeature(FeatureCollectionResponse results) {
-        boolean hasComplex = false;
-        for (int fcIndex = 0; fcIndex < results.getFeature().size(); fcIndex++) {
-            if (!(results.getFeature().get(fcIndex).getSchema() instanceof SimpleFeatureTypeImpl)) {
-                hasComplex = true;
-                break;
-            }
-        }
-        return hasComplex;
+        return FeatureTypeUtils.isComplexFeature(results);
     }
 
     public void transform(InputStream in, DOMSource xslt, OutputStream out) throws TransformerException {

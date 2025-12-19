@@ -12,7 +12,7 @@ import net.opengis.wfs.QueryType;
 import net.opengis.wfs.ResultTypeType;
 import net.opengis.wfs.WfsFactory;
 import org.eclipse.emf.common.util.EList;
-import org.geoserver.wfs.xml.SqlViewParamsExtractor;
+import org.geoserver.wfs.xml.WFS1XSqlViewParamsHelper;
 import org.geotools.util.Converters;
 import org.geotools.xsd.AbstractComplexBinding;
 import org.geotools.xsd.ElementInstance;
@@ -219,7 +219,7 @@ public class GetFeatureTypeBinding extends AbstractComplexBinding {
         }
 
         // viewParams
-        SqlViewParamsExtractor.viewParams(getFeature, node);
+        WFS1XSqlViewParamsHelper.viewParams(getFeature, node);
 
         return getFeature;
     }

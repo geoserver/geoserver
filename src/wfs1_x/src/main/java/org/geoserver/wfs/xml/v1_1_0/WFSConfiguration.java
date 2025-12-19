@@ -15,6 +15,7 @@ import org.geoserver.wfs.CatalogFeatureTypeCache;
 import org.geoserver.wfs.xml.FeatureTypeSchemaBuilder;
 import org.geoserver.wfs.xml.PropertyTypePropertyExtractor;
 import org.geoserver.wfs.xml.WFSHandlerFactory;
+import org.geoserver.wfs.xml.WFSXmlConfiguration;
 import org.geoserver.wfs.xml.WFSXmlUtils;
 import org.geoserver.wfs.xml.XSQNameBinding;
 import org.geoserver.wfs.xml.filter.v1_1.FilterTypeBinding;
@@ -37,7 +38,7 @@ import org.picocontainer.MutablePicoContainer;
 import org.picocontainer.Parameter;
 import org.picocontainer.defaults.SetterInjectionComponentAdapter;
 
-public class WFSConfiguration extends Configuration {
+public class WFSConfiguration extends Configuration implements WFSXmlConfiguration {
     /** logger */
     static Logger LOGGER = Logging.getLogger("org.geoserver.wfs");
 

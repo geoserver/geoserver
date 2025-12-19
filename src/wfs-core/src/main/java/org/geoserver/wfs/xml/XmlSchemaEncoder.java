@@ -3,7 +3,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.wfs.xml.v1_1_0;
+package org.geoserver.wfs.xml;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -22,7 +22,6 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSDescribeFeatureTypeOutputFormat;
 import org.geoserver.wfs.request.DescribeFeatureTypeRequest;
-import org.geoserver.wfs.xml.FeatureTypeSchemaBuilder;
 
 public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
 
@@ -60,7 +59,7 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
     }
 
     protected String getWFSNamespaceURI() {
-        return WFS.NAMESPACE;
+        return "http://www.opengis.net/wfs";
     }
 
     @Override

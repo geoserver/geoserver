@@ -28,6 +28,7 @@ import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wfs.WFSConstants;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
@@ -104,8 +105,7 @@ public class GML2OutputFormat2 extends WFSGetFeatureOutputFormat implements Comp
         // encoder.setEncoding(wfs.getCharSet());
 
         encoder.setSchemaLocation(
-                org.geoserver.wfs.xml.v1_1_0.WFS.NAMESPACE,
-                buildSchemaURL(gft.getBaseUrl(), "wfs/1.0.0/WFS-basic.xsd"));
+                WFSConstants.NAMESPACE_1_1_0, buildSchemaURL(gft.getBaseUrl(), "wfs/1.0.0/WFS-basic.xsd"));
 
         // declare application schema namespaces
         Map<String, String> params = params("service", "WFS", "version", "1.0.0", "request", "DescribeFeatureType");

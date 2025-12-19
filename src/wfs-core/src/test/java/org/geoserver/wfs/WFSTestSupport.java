@@ -19,7 +19,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Service;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geoserver.wfs.xml.v1_0_0.WFSConfiguration;
+import org.geoserver.wfs.xml.WFSXmlConfiguration;
 import org.junit.After;
 
 /**
@@ -46,13 +46,13 @@ public abstract class WFSTestSupport extends GeoServerSystemTestSupport {
     }
 
     /** @return The 1.0 xml configuration. */
-    protected WFSConfiguration getXmlConfiguration10() {
-        return (WFSConfiguration) applicationContext.getBean("wfsXmlConfiguration-1.0");
+    protected WFSXmlConfiguration getXmlConfiguration10() {
+        return (WFSXmlConfiguration) applicationContext.getBean("wfsXmlConfiguration-1.0");
     }
 
     /** @return The 1.1 xml configuration. */
-    protected org.geoserver.wfs.xml.v1_1_0.WFSConfiguration getXmlConfiguration11() {
-        return (org.geoserver.wfs.xml.v1_1_0.WFSConfiguration) applicationContext.getBean("wfsXmlConfiguration-1.1");
+    protected WFSXmlConfiguration getXmlConfiguration11() {
+        return (WFSXmlConfiguration) applicationContext.getBean("wfsXmlConfiguration-1.1");
     }
 
     @Override

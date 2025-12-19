@@ -382,7 +382,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 String locationDef = WFS_URI
                         + " "
                         + (wfs.isCanonicalSchemaLocation()
-                                ? org.geoserver.wfs.xml.v1_0_0.WFS.CANONICAL_SCHEMA_LOCATION_CAPABILITIES
+                                ? WFSConstants.CANONICAL_SCHEMA_LOCATION_CAPABILITIES_1_0
                                 : buildSchemaURL(request.getBaseUrl(), "wfs/1.0.0/WFS-capabilities.xsd"));
                 attributes.addAttribute("", locationAtt, locationAtt, "", locationDef);
 
@@ -1022,10 +1022,10 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 verifyUpdateSequence(request);
 
                 StringBuilder schemaLocation = new StringBuilder();
-                schemaLocation.append(org.geoserver.wfs.xml.v1_1_0.WFS.NAMESPACE);
+                schemaLocation.append(WFSConstants.NAMESPACE_1_1_0);
                 schemaLocation.append(" ");
                 if (wfs.isCanonicalSchemaLocation()) {
-                    schemaLocation.append(org.geoserver.wfs.xml.v1_1_0.WFS.CANONICAL_SCHEMA_LOCATION);
+                    schemaLocation.append(WFSConstants.CANONICAL_SCHEMA_LOCATION_1_1);
                 } else {
                     schemaLocation.append(buildSchemaURL(request.getBaseUrl(), "wfs/1.1.0/wfs.xsd"));
                 }

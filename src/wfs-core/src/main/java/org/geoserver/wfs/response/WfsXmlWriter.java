@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.ows.xml.v1_0.OWS;
+import org.geoserver.wfs.WFSConstants;
 import org.geoserver.wfs.WFSInfo;
 import org.geotools.filter.v1_0.OGC;
 import org.geotools.gml2.GML;
@@ -87,8 +88,8 @@ public abstract class WfsXmlWriter {
         namespaceSupport.declarePrefix("ogc", OGC.NAMESPACE);
         namespaceSupport.declarePrefix("gml", GML.NAMESPACE);
 
-        namespaceSupport.declarePrefix("wfs", org.geoserver.wfs.xml.v1_0_0.WFS.NAMESPACE);
-        namespaceSupport.declarePrefix("", org.geoserver.wfs.xml.v1_0_0.WFS.NAMESPACE);
+        namespaceSupport.declarePrefix("wfs", WFSConstants.NAMESPACE_1_0_0);
+        namespaceSupport.declarePrefix("", WFSConstants.NAMESPACE_1_0_0);
     }
 
     public void setCharSetEncoding(String charSetEncoding) {
@@ -198,7 +199,7 @@ public abstract class WfsXmlWriter {
 
             // set the schema location
             schemaLocations.put(
-                    org.geoserver.wfs.xml.v1_0_0.WFS.NAMESPACE,
+                    WFSConstants.NAMESPACE_1_0_0,
                     ResponseUtils.appendPath(wfs.getSchemaBaseURL(), "wfs/1.0.0/WFS-transaction.xsd"));
 
             version = "1.0.0";
@@ -214,7 +215,7 @@ public abstract class WfsXmlWriter {
 
             // set the schema location
             schemaLocations.put(
-                    org.geoserver.wfs.xml.v1_1_0.WFS.NAMESPACE,
+                    WFSConstants.NAMESPACE_1_1_0,
                     ResponseUtils.appendPath(wfs.getSchemaBaseURL(), "wfs/1.1.0/wfs.xsd"));
 
             version = "1.1.0";

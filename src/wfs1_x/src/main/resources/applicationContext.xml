@@ -1,10 +1,206 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
+ Copyright (C) 2014 - 2016 Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
 <beans>
-  <!-- Placeholder for WFS 1.x beans -->
+    <!-- WFS 1.x Module Status -->
+    <bean class="org.geoserver.platform.ModuleStatusImpl">
+      <constructor-arg index="0" value="gs-wfs1_x"/>
+      <constructor-arg index="1" value="GeoServer Web Feature Service 1.x"/>
+      <property name="category" value="CORE"/>
+    </bean>
+
+    <!-- WFS 1.x Service Implementation -->
+    <bean id="wfsServiceTarget" class="org.geoserver.wfs.DefaultWebFeatureService">
+        <constructor-arg ref="geoServer"/>
+        <property name="filterFactory" ref="filterFactory"/>
+    </bean>
+
+    <bean id="wfsLogger" class="org.geoserver.ows.util.EMFLogger">
+      <constructor-arg type="java.lang.String" value="org.geoserver.wfs"/>
+    </bean>
+
+    <bean id="wfsService" class="org.springframework.aop.framework.ProxyFactoryBean">
+      <property name="proxyInterfaces">
+        <value>org.geoserver.wfs.WebFeatureService</value>
+      </property>
+      <property name="interceptorNames">
+        <list>
+            <value>wfsLogger</value>
+            <value>wfsServiceInterceptor*</value>
+            <value>wfsServiceTarget</value>
+        </list>
+      </property>
+    </bean>
+
+    <!-- WFS 1.0 and 1.1 Service Descriptors -->
+    <bean id="wfsService-1.0.0" class="org.geoserver.platform.Service">
+        <constructor-arg index="0" value="wfs"/>
+        <constructor-arg index="1" value="http://www.opengis.net/wfs"/>
+        <constructor-arg index="2" ref="wfsService"/>
+        <constructor-arg index="3" value="1.0.0"/>
+        <constructor-arg index="4">
+          <list>
+            <value>GetCapabilities</value>
+            <value>DescribeFeatureType</value>
+            <value>GetFeature</value>
+            <value>GetFeatureWithLock</value>
+            <value>LockFeature</value>
+            <value>Transaction</value>
+          </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="wfsService-1.1.0" class="org.geoserver.platform.Service">
+        <constructor-arg index="0" value="wfs"/>
+        <constructor-arg index="1" value="http://www.opengis.net/wfs"/>
+        <constructor-arg index="2" ref="wfsService"/>
+        <constructor-arg index="3" value="1.1.0"/>
+        <constructor-arg index="4">
+          <list>
+            <value>GetCapabilities</value>
+            <value>DescribeFeatureType</value>
+            <value>GetGmlObject</value>
+            <value>GetFeature</value>
+            <value>GetFeatureWithLock</value>
+            <value>LockFeature</value>
+            <value>Transaction</value>
+          </list>
+        </constructor-arg>
+    </bean>
+
+    <!-- WFS 1.x Exception Handler -->
+    <bean id="wfsExceptionHandler" class="org.geoserver.wfs.response.WfsExceptionHandler">
+        <constructor-arg>
+            <list>
+                <ref bean="wfsService-1.0.0"/>
+                <ref bean="wfsService-1.1.0"/>
+            </list>
+        </constructor-arg>
+        <constructor-arg ref="geoServer"/>
+    </bean>
+
+    <!-- GML Schema Builders -->
+    <bean id="gml2SchemaBuilder" class="org.geoserver.wfs.xml.FeatureTypeSchemaBuilder$GML2">
+        <constructor-arg ref="geoServer"/>
+    </bean>
+    <bean id="gml3SchemaBuilder" class="org.geoserver.wfs.xml.FeatureTypeSchemaBuilder$GML3">
+        <constructor-arg ref="geoServer"/>
+    </bean>
+
+    <!-- WFS 1.0 XML Configuration -->
+    <bean id="wfsXsd-1.0" class="org.geoserver.wfs.xml.v1_0_0.WFS">
+        <constructor-arg ref="gml2SchemaBuilder"/>
+    </bean>
+    <bean id="xmlConfiguration-1.0" class="org.geoserver.wfs.xml.v1_0_0.WFSConfiguration" lazy-init="false">
+        <constructor-arg ref="catalog"/>
+        <constructor-arg ref="gml2SchemaBuilder"/>
+        <constructor-arg ref="wfsXsd-1.0"/>
+    </bean>
+    <alias name="xmlConfiguration-1.0" alias="wfsXmlConfiguration-1.0"/>
+
+    <!-- WFS 1.1 XML Configuration -->
+    <bean id="wfsXsd-1.1" class="org.geoserver.wfs.xml.v1_1_0.WFS">
+        <constructor-arg ref="gml3SchemaBuilder"/>
+    </bean>
+    <bean id="xmlConfiguration-1.1" class="org.geoserver.wfs.xml.v1_1_0.WFSConfiguration" lazy-init="false">
+        <constructor-arg ref="geoServer"/>
+        <constructor-arg ref="gml3SchemaBuilder"/>
+        <constructor-arg ref="wfsXsd-1.1"/>
+    </bean>
+    <alias name="xmlConfiguration-1.1" alias="wfsXmlConfiguration-1.1"/>
+
+    <!-- WFS 1.x Response Beans -->
+    <bean id="lockFeatureResponse"
+        class="org.geoserver.wfs.response.LockFeatureTypeResponse" scope="prototype">
+        <constructor-arg ref="geoServer"/>
+        <constructor-arg ref="xmlConfiguration-1.1"/>
+    </bean>
+    <bean id="transactionResponse-1.0.0"
+        class="org.geoserver.wfs.response.TransactionResponse" scope="prototype">
+        <constructor-arg ref="geoServer"/>
+        <constructor-arg ref="xmlConfiguration-1.1"/>
+    </bean>
+    <bean id="featureResponse"
+        class="org.geoserver.wfs.response.FeatureResponse">
+        <constructor-arg ref="geoServer"/>
+        <constructor-arg ref="xmlConfiguration-1.1"/>
+    </bean>
+
+    <!-- WFS 1.0 XML Readers -->
+    <bean id="xmlReader-1.0.0" class="org.geoserver.wfs.xml.v1_0_0.WfsXmlReader" abstract="true">
+        <constructor-arg index="1" ref="xmlConfiguration-1.0"/>
+        <constructor-arg index="2" ref="geoServer"/>
+    </bean>
+    <bean id="wfsGetCapabilitiesXmlReader"
+        class="org.geoserver.wfs.xml.v1_0_0.WfsXmlReader" parent="xmlReader-1.0.0">
+        <constructor-arg value="GetCapabilities"/>
+    </bean>
+    <bean id="describeFetureTypeXmlReader"
+        class="org.geoserver.wfs.xml.v1_0_0.WfsXmlReader" parent="xmlReader-1.0.0">
+        <constructor-arg value="DescribeFeatureType"/>
+    </bean>
+    <bean id="getFeatureXmlReader"
+        class="org.geoserver.wfs.xml.v1_0_0.WfsXmlReader" parent="xmlReader-1.0.0">
+        <constructor-arg value="GetFeature"/>
+    </bean>
+    <bean id="getFeatureWithLockXmlReader"
+        class="org.geoserver.wfs.xml.v1_0_0.WfsXmlReader" parent="xmlReader-1.0.0">
+        <constructor-arg value="GetFeatureWithLock"/>
+    </bean>
+    <bean id="lockFeatureXmlReader"
+        class="org.geoserver.wfs.xml.v1_0_0.WfsXmlReader" parent="xmlReader-1.0.0">
+        <constructor-arg value="LockFeature"/>
+    </bean>
+    <bean id="transactionXmlReader"
+        class="org.geoserver.wfs.xml.v1_0_0.WfsXmlReader" parent="xmlReader-1.0.0">
+        <constructor-arg value="Transaction"/>
+    </bean>
+
+    <!-- WFS 1.1 XML Readers -->
+    <bean id="xmlReader-1.1.0" class="org.geoserver.wfs.xml.v1_1_0.WfsXmlReader" abstract="true">
+        <constructor-arg ref="geoServer"/>
+        <constructor-arg ref="xmlConfiguration-1.1"/>
+    </bean>
+    <bean id="wfsGetCapabilitiesXmlReader-1.1.0" parent="xmlReader-1.1.0">
+        <constructor-arg type="java.lang.String" value="GetCapabilities"/>
+    </bean>
+    <bean id="describeFeatureTypeXmlReader-1.1.0" parent="xmlReader-1.1.0">
+        <constructor-arg value="DescribeFeatureType"/>
+    </bean>
+    <bean id="getFeatureTypeXmlReader-1.1.0" parent="xmlReader-1.1.0">
+        <constructor-arg value="GetFeature"/>
+    </bean>
+    <bean id="getFeatureWithLockXmlReader-1.1.0" parent="xmlReader-1.1.0">
+        <constructor-arg value="GetFeatureWithLock"/>
+    </bean>
+    <bean id="lockFeatureXmlReader-1.1.0" parent="xmlReader-1.1.0">
+        <constructor-arg value="LockFeature"/>
+    </bean>
+    <bean id="transactionXmlReader-1.1.0" parent="xmlReader-1.1.0">
+        <constructor-arg value="Transaction"/>
+    </bean>
+    <bean id="getGmlObjectXmlReader-1.1.0" parent="xmlReader-1.1.0">
+        <constructor-arg value="GetGmlObject"/>
+    </bean>
+
+    <!-- WFS 1.x Feature Type Encoders -->
+    <bean id="gml2FeatureTypeEncoder"
+        class="org.geoserver.wfs.xml.XmlSchemaEncoder$V10">
+        <constructor-arg ref="geoServer"/>
+    </bean>
+    <bean id="gml3FeatureTypeEncoder"
+        class="org.geoserver.wfs.xml.XmlSchemaEncoder$V11">
+        <constructor-arg ref="geoServer"/>
+    </bean>
+
+    <!-- WFS 1.x GML Output Formats -->
+    <bean id="gml3OutputFormat" class="org.geoserver.wfs.xml.GML3OutputFormat">
+        <constructor-arg ref="geoServer"/>
+        <constructor-arg ref="xmlConfiguration-1.1"/>
+    </bean>
 </beans>

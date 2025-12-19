@@ -1,10 +1,192 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
+ Copyright (C) 2014 - 2016 Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
 <beans>
-  <!-- Placeholder for WFS 2.x beans -->
+    <!-- WFS 2.0 Module Status -->
+    <bean class="org.geoserver.platform.ModuleStatusImpl">
+      <constructor-arg index="0" value="gs-wfs2_x"/>
+      <constructor-arg index="1" value="GeoServer Web Feature Service 2.0"/>
+      <property name="category" value="CORE"/>
+    </bean>
+
+    <!-- WFS 2.0 Service Implementation -->
+    <bean id="wfsService20Target" class="org.geoserver.wfs.DefaultWebFeatureService20">
+        <constructor-arg ref="geoServer"/>
+        <property name="filterFactory" ref="filterFactory"/>
+    </bean>
+
+    <bean id="wfsLogger" class="org.geoserver.ows.util.EMFLogger">
+      <constructor-arg type="java.lang.String" value="org.geoserver.wfs"/>
+    </bean>
+
+    <bean id="wfsService20" class="org.springframework.aop.framework.ProxyFactoryBean">
+      <property name="proxyInterfaces">
+        <value>org.geoserver.wfs.WebFeatureService20</value>
+      </property>
+      <property name="interceptorNames">
+        <list>
+            <value>wfsLogger</value>
+            <value>wfsService20Target</value>
+        </list>
+      </property>
+    </bean>
+
+    <!-- WFS 2.0 Service Descriptor -->
+    <bean id="wfsService-2.0" class="org.geoserver.platform.Service">
+        <constructor-arg index="0" value="wfs"/>
+        <constructor-arg index="1" value="http://www.opengis.net/wfs/2.0"/>
+        <constructor-arg index="2" ref="wfsService20"/>
+        <constructor-arg index="3" value="2.0.0"/>
+        <constructor-arg index="4">
+          <list>
+            <value>GetCapabilities</value>
+            <value>DescribeFeatureType</value>
+            <value>GetFeature</value>
+            <value>GetFeatureWithLock</value>
+            <value>GetPropertyValue</value>
+            <value>LockFeature</value>
+            <value>Transaction</value>
+            <value>ListStoredQueries</value>
+            <value>DescribeStoredQueries</value>
+            <value>CreateStoredQuery</value>
+            <value>DropStoredQuery</value>
+          </list>
+        </constructor-arg>
+    </bean>
+
+    <!-- WFS 2.0 Exception Handler -->
+    <bean id="wfs20ExceptionHandler" class="org.geoserver.wfs.response.Wfs2ExceptionHandler">
+        <constructor-arg>
+            <ref bean="wfsService-2.0"/>
+        </constructor-arg>
+        <constructor-arg ref="geoServer"/>
+        <property name="useServiceVersion" value="true"/>
+    </bean>
+
+    <!-- WFS 2.0 KVP Parsers -->
+    <bean id="acceptVersionsKvpParser" class="org.geoserver.wfs.kvp.v2_0.AcceptVersionsKvpParser"/>
+    <bean id="acceptFormatsKvpParser" class="org.geoserver.wfs.kvp.v2_0.AcceptFormatsKvpParser"/>
+    <bean id="resultType20KvpParser" class="org.geoserver.wfs.kvp.v2_0.ResultTypeKvpParser"/>
+    <bean id="sectionsKvpParser20" class="org.geoserver.wfs.kvp.v2_0.SectionsKvpParser"/>
+
+    <!-- WFS 2.0 KVP Request Readers -->
+    <bean id="wfs20GetCapabilitiesKvpReader"
+        class="org.geoserver.wfs.kvp.v2_0.GetCapabilitiesKvpRequestReader"/>
+
+    <bean id="describeFeature20TypeKvpReader" class="org.geoserver.wfs.kvp.v2_0.DescribeFeatureTypeKvpRequestReader">
+        <constructor-arg ref="catalog" />
+    </bean>
+
+    <bean id="getFeature20KvpReader" class="org.geoserver.wfs.kvp.v2_0.GetFeatureKvpRequestReader">
+        <constructor-arg value="net.opengis.wfs20.GetFeatureType"/>
+        <constructor-arg ref="geoServer"/>
+        <constructor-arg ref="filterFactory"/>
+    </bean>
+
+    <bean id="lockFeatureKvp20Reader" class="org.geoserver.wfs.kvp.v2_0.LockFeatureKvpRequestReader">
+        <constructor-arg ref="geoServer"/>
+        <constructor-arg ref="filterFactory"/>
+    </bean>
+
+    <bean id="listStoredQueries20KvpReader"
+       class="org.geoserver.wfs.kvp.v2_0.ListStoredQueriesKvpRequestReader"/>
+
+    <bean id="describeStoredQueries20KvpReader"
+       class="org.geoserver.wfs.kvp.v2_0.DescribeStoredQueriesKvpRequestReader"/>
+
+    <bean id="dropStoredQuery20KvpReader"
+       class="org.geoserver.wfs.kvp.v2_0.DropStoredQueryKvpRequestReader"/>
+
+    <bean id="getPropertyValue20KvpReader" class="org.geoserver.wfs.kvp.v2_0.GetPropertyValueKvpRequestReader">
+        <constructor-arg ref="geoServer"/>
+        <constructor-arg ref="filterFactory"/>
+    </bean>
+
+    <!-- WFS 2.0 XML Readers -->
+    <bean id="xmlReader-2.0" class="org.geoserver.wfs.xml.v2_0.WfsXmlReader" abstract="true">
+        <constructor-arg ref="geoServer"/>
+    </bean>
+    <bean id="wfsGetCapabilitiesXmlReader-2.0" parent="xmlReader-2.0">
+        <constructor-arg type="java.lang.String" value="GetCapabilities"/>
+    </bean>
+    <bean id="describeFeatureTypeXmlReader-2.0" parent="xmlReader-2.0">
+        <constructor-arg value="DescribeFeatureType"/>
+    </bean>
+    <bean id="getFeatureXmlReader-2.0" parent="xmlReader-2.0">
+        <constructor-arg value="GetFeature"/>
+    </bean>
+    <bean id="getFeatureWithLockXmlReader-2.0" parent="xmlReader-2.0">
+        <constructor-arg value="GetFeatureWithLock"/>
+    </bean>
+    <bean id="lockFeatureXmlReader-2.0" parent="xmlReader-2.0">
+        <constructor-arg value="LockFeature"/>
+    </bean>
+    <bean id="transactionXmlReader-2.0" parent="xmlReader-2.0">
+        <constructor-arg value="Transaction"/>
+    </bean>
+    <bean id="listStoredQueriesXmlReader-2.0" parent="xmlReader-2.0">
+        <constructor-arg value="ListStoredQueries"/>
+    </bean>
+    <bean id="describeStoredQueriesXmlReader-2.0" parent="xmlReader-2.0">
+        <constructor-arg value="DescribeStoredQueries"/>
+    </bean>
+    <bean id="createStoredQueryXmlReader-2.0" parent="xmlReader-2.0">
+        <constructor-arg value="CreateStoredQuery"/>
+    </bean>
+    <bean id="dropStoredQueryXmlReader-2.0" parent="xmlReader-2.0">
+        <constructor-arg value="DropStoredQuery"/>
+    </bean>
+    <bean id="getPropertyValueXmlReader-2.0" parent="xmlReader-2.0">
+        <constructor-arg value="GetPropertyValue"/>
+    </bean>
+
+    <!-- WFS 2.0 Response Beans -->
+    <bean id="lockFeatureResponse-2.0"
+        class="org.geoserver.wfs.response.v2_0.LockFeatureTypeResponse" scope="prototype">
+        <constructor-arg ref="geoServer"/>
+    </bean>
+    <bean id="transactionResponse-2.0"
+        class="org.geoserver.wfs.response.v2_0.TransactionResponse" scope="prototype">
+        <constructor-arg ref="geoServer"/>
+    </bean>
+    <bean id="listStoredQueriesResponse-2.0"
+       class="org.geoserver.wfs.response.v2_0.ListStoredQueriesResponse">
+        <constructor-arg ref="geoServer"/>
+    </bean>
+    <bean id="describeStoredQueriesResponse-2.0"
+       class="org.geoserver.wfs.response.v2_0.DescribeStoredQueriesResponse">
+        <constructor-arg ref="geoServer"/>
+    </bean>
+    <bean id="createStoredQueryResponse-2.0"
+       class="org.geoserver.wfs.response.v2_0.CreateStoredQueryResponse">
+        <constructor-arg ref="geoServer"/>
+    </bean>
+    <bean id="dropStoredQueryResponse-2.0"
+       class="org.geoserver.wfs.response.v2_0.DropStoredQueryResponse">
+        <constructor-arg ref="geoServer"/>
+    </bean>
+    <bean id="getPropertyValueResponse-2.0"
+       class="org.geoserver.wfs.response.v2_0.GetPropertyValueResponse">
+        <constructor-arg ref="geoServer"/>
+    </bean>
+    <bean id="hits20OutputFormat" class="org.geoserver.wfs.response.v2_0.HitsOutputFormat">
+        <constructor-arg ref="geoServer"/>
+    </bean>
+
+    <!-- WFS 2.0 Feature Type Encoder -->
+    <bean id="gml32FeatureTypeEncoder"
+        class="org.geoserver.wfs.xml.XmlSchemaEncoder$V20">
+        <constructor-arg ref="geoServer"/>
+    </bean>
+
+    <!-- WFS 2.0 GML Output Format -->
+    <bean id="gml32OutputFormat" class="org.geoserver.wfs.xml.GML32OutputFormat">
+        <constructor-arg ref="geoServer"/>
+        <constructor-arg ref="xmlConfiguration-1.1"/>
+    </bean>
 </beans>

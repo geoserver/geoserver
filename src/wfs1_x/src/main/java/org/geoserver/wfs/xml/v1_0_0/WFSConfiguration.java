@@ -24,6 +24,7 @@ import org.geoserver.wfs.CatalogFeatureTypeCache;
 import org.geoserver.wfs.xml.FeatureTypeSchemaBuilder;
 import org.geoserver.wfs.xml.PropertyTypePropertyExtractor;
 import org.geoserver.wfs.xml.WFSHandlerFactory;
+import org.geoserver.wfs.xml.WFSXmlConfiguration;
 import org.geoserver.wfs.xml.WFSXmlUtils;
 import org.geoserver.wfs.xml.gml2.GMLBoxTypeBinding;
 import org.geotools.api.coverage.grid.GridCoverageReader;
@@ -49,7 +50,7 @@ import org.picocontainer.defaults.SetterInjectionComponentAdapter;
  * @author Justin Deoliveira, The Open Planning Project TODO: this class duplicates a lot of what is is in the 1.1
  *     configuration, merge them
  */
-public class WFSConfiguration extends Configuration {
+public class WFSConfiguration extends Configuration implements WFSXmlConfiguration {
     /** logger */
     static Logger LOGGER = Logging.getLogger("org.geoserver.wfs");
 

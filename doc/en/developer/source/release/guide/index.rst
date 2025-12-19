@@ -315,8 +315,8 @@ This job will checkout the specified branch/revision and build the GeoServer
 release artifacts against the GeoTools/GeoWebCache versions specified. When
 successfully complete all release artifacts will be listed under artifacts in the job summary.
 
-Additionally, when the job completes it fires off a job for a windows worker. When this job
-completes it will list the ``.exe`` artifacts.
+Additionally, when the job completes, it fires off another job for a windows worker (on Azure, provided by GeoCat). When this job
+completes (est. 30 min) it will add the ``.exe`` artifacts.  If the ``.exe`` artifacts do not appear, ask GeoCat to investigate the Azure worker.
 
 Test the Artifacts
 ------------------

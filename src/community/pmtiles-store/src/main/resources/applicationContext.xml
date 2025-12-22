@@ -14,15 +14,16 @@
   -->
 
    <!-- load from PMTilesStoreConfiguration -->
+  <context:component-scan base-package="org.geoserver.pmtiles.data"/>
   <context:component-scan base-package="org.geoserver.pmtiles.web.data"/>
 
-  <bean id="pmtilesExtension"
-    class="org.geoserver.platform.ModuleStatusImpl">
-    <property name="module" value="gs-pmtiles-store" />
-    <property name="name" value="PMTiles Store Extension" />
-    <property name="component" value="PMTiles Store Extension" />
-    <property name="available" value="true" />
-    <property name="enabled" value="true" />
-    <property name="category" value="COMMUNITY" />
-    </bean>
+  <bean id="pmtilesStoreExtension"
+        class="org.geoserver.platform.ModuleStatusImpl">
+        <property name="module" value="gs-pmtiles-store" />
+        <property name="name" value="PMTiles Store Extension" />
+        <property name="component" value="PMTiles Plugin" />
+        <property name="available" value="true" />
+        <property name="enabled" value="true" />
+        <property name="category" value="COMMUNITY"/>
+  </bean>
 </beans>

@@ -14,8 +14,24 @@ import org.geoserver.web.data.store.StoreEditPanel;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Spring configuration for the GeoServer PMTiles plugin.
+ *
+ * <p>This configuration class defines the beans required for PMTiles integration with GeoServer:
+ *
+ * <ul>
+ *   <li>{@link DataStorePanelInfo} {@code pmtilesDataStorePanel}: data store edit panel metadata for
+ *       {@link PMTilesDataStoreEditPanel}
+ *   <li>{@link HeaderContribution} {@code ratioGroupParamPanelCssContribution}:
+ *   CSS contribution ({@code RadioGroupParamPanel.css) to use radio buttons
+ *       as toggle buttons for {@link RadioGroupParamPanel} on {@link PMTilesDataStoreEditPanel}
+ * </ul>
+ *
+ * @see PMTilesPluginConfiguration
+ * @see PMTilesWmsIntegrationConfiguration
+ */
 @Configuration(proxyBeanMethods = false)
-public class PMTilesStoreConfiguration {
+public class PMTilesWebUIConfiguration {
 
     @Bean
     @SuppressWarnings("unchecked")
@@ -32,7 +48,7 @@ public class PMTilesStoreConfiguration {
 
     /** Contributes {@code RadioGroupParamPanel.css} to {@link PMTilesDataStoreEditPanel} */
     @Bean
-    HeaderContribution aclSwitchFieldCssContribution() {
+    HeaderContribution radioGroupParamPanelCssContribution() {
         return new CssContribution("RadioGroupParamPanel.css", DataAccessEditPage.class, DataAccessNewPage.class);
     }
 

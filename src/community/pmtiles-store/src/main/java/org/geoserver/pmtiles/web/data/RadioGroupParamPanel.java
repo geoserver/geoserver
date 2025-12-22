@@ -57,8 +57,7 @@ public class RadioGroupParamPanel<T extends Serializable> extends Panel implemen
 
         @Override
         protected void populateItem(ListItem<I> item) {
-            // Add a Radio component to the group, using the item's model object as the
-            // value
+            // Add a Radio component to the group, using the item's model object as the value
             item.add(new Radio<>("paramValue", item.getModel()));
             // Add a Label for the radio button
             IModel<String> labelModel = labelModel(item.getModelObject());

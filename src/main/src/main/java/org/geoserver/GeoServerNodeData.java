@@ -198,7 +198,11 @@ public class GeoServerNodeData {
                     Level.FINE,
                     "Resolving git branch from " + gitHead.toAbsolutePath().toString());
 
-            String first = Files.readAllLines(gitHead).get(0).trim();
+            List<String> lines = Files.readAllLines(gitHead);
+            if (lines.isEmpty()) {
+                return null;
+            }
+            String first = lines.get(0).trim();
             if (first.startsWith("ref: ")) {
                 String ref = first.substring("ref: ".length()).trim();
                 if (ref.startsWith("refs/heads/")) {

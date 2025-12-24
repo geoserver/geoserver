@@ -160,10 +160,6 @@ public class GeoServerNodeData {
         overrideGitHeadPath = null;
     }
 
-    private static String defaultString(String s) {
-        return s == null ? "" : s;
-    }
-
     private static String resolveGitBranch() {
         try {
             // 1) test override (fast path for unit tests)

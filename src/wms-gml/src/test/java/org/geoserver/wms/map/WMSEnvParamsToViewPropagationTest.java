@@ -7,7 +7,6 @@ package org.geoserver.wms.map;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +18,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.PostGISTestResource;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.api.data.DataStore;
 import org.geotools.api.data.SimpleFeatureSource;
@@ -29,11 +29,15 @@ import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.VirtualTable;
 import org.geotools.jdbc.VirtualTableParameter;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.w3c.dom.Document;
 
 public class WMSEnvParamsToViewPropagationTest extends WMSTestSupport {
+
+    @ClassRule
+    public static final PostGISTestResource postgis = new PostGISTestResource();
 
     @Override
     protected void onSetUp(SystemTestData data) throws Exception {
@@ -47,9 +51,7 @@ public class WMSEnvParamsToViewPropagationTest extends WMSTestSupport {
         ds.setEnabled(true);
 
         Map<String, Serializable> params = ds.getConnectionParameters();
-        params.put("dbtype", "h2");
-        File dbFile = new File(getTestData().getDataDirectoryRoot().getAbsolutePath(), "data/h2test");
-        params.put("database", dbFile.getAbsolutePath());
+        params.putAll(postgis.getConnectionParameters());
         cat.add(ds);
 
         SimpleFeatureSource fsp = getFeatureSource(SystemTestData.LAKES);
@@ -113,14 +115,14 @@ public class WMSEnvParamsToViewPropagationTest extends WMSTestSupport {
                         + "feature_count=10&x=50&y=50&width=100&height=101&bbox=-0.0017300248146057129,0.0016710162162780762,-0.0011882185935974121,0.002212822437286377");
 
         assertXpathEvaluatesTo(
-                "-0.001730,0.001671,-0.001188,0.002213", "//gml:featureMember/gs:lakes_view/gs:BBOX", dom);
+                "-0.001730,0.001671,-0.001188,0.002213", "//gml:featureMember/gs:lakes_view/gs:bbox", dom);
 
-        assertXpathEvaluatesTo("urn:ogc:def:crs:EPSG::4326", "//gml:featureMember/gs:lakes_view/gs:SRS", dom);
+        assertXpathEvaluatesTo("urn:ogc:def:crs:EPSG::4326", "//gml:featureMember/gs:lakes_view/gs:srs", dom);
 
-        assertXpathEvaluatesTo("100", "//gml:featureMember/gs:lakes_view/gs:WIDTH", dom);
+        assertXpathEvaluatesTo("100", "//gml:featureMember/gs:lakes_view/gs:width", dom);
 
-        assertXpathEvaluatesTo("101", "//gml:featureMember/gs:lakes_view/gs:HEIGHT", dom);
+        assertXpathEvaluatesTo("101", "//gml:featureMember/gs:lakes_view/gs:height", dom);
 
-        assertXpathExists("//gml:featureMember/gs:lakes_view/gs:SCALE", dom);
+        assertXpathExists("//gml:featureMember/gs:lakes_view/gs:scale", dom);
     }
 }

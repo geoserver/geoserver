@@ -12,6 +12,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -27,7 +28,12 @@ import org.geoserver.taskmanager.data.Run;
 import org.geoserver.taskmanager.data.Task;
 
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"task", "batch"})})
+@Table(
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"task", "batch"})},
+        indexes = {
+            @Index(name = "idx_batchelementimpl_batch", columnList = "batch", unique = false),
+            @Index(name = "idx_batchelementimpl_task", columnList = "task", unique = false)
+        })
 public class BatchElementImpl extends BaseImpl implements BatchElement {
 
     @Serial
@@ -115,5 +121,10 @@ public class BatchElementImpl extends BaseImpl implements BatchElement {
     @Override
     public long getRemoveStamp() {
         return removeStamp;
+    }
+
+    @Override
+    public void setRuns(ArrayList<Run> runs) {
+        this.runs = runs;
     }
 }

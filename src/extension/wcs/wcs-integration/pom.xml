@@ -34,7 +34,7 @@
 
     <!-- update these later as we gradually migrate these versions -->
     <dependency>
-      <groupId>org.geoserver</groupId>
+      <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-wcs1_1</artifactId>
       <scope>test</scope>
     </dependency>

@@ -198,8 +198,10 @@ public class ImporterMosaicTest extends ImporterTestSupport {
         }
         mosaicRoot.mkdirs();
         Properties props = new Properties();
-        props.put("SPI", "org.geotools.data.h2.H2DataStoreFactory");
-        props.put("database", "empty");
+        props.put("SPI", "org.geotools.geopkg.GeoPkgDataStoreFactory");
+        props.put("database", "empty.gpkg");
+        props.put("dbtype", "geopkg");
+        props.put("read_only", "false");
         try (FileOutputStream fos = new FileOutputStream(new File(mosaicRoot, "datastore.properties"))) {
             props.store(fos, null);
         }

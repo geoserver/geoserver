@@ -1,6 +1,6 @@
 # Testing
 
-By default, the tests will run against an H2 database.
+By default, the tests will run against an HSQLDB database.
 
 To test against another database, activate the appropriate profile and provide
 the following system properties prefixed by `jdbcconfig`.`database`.

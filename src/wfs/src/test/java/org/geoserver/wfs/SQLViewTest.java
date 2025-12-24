@@ -10,7 +10,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.Map;
 import net.sf.json.JSON;
@@ -22,6 +21,7 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.PostGISTestResource;
 import org.geotools.api.data.DataStore;
 import org.geotools.api.data.Query;
 import org.geotools.api.data.SimpleFeatureSource;
@@ -31,6 +31,7 @@ import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.VirtualTable;
 import org.geotools.jdbc.VirtualTableParameter;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.locationtech.jts.geom.Point;
 import org.w3c.dom.Document;
@@ -41,9 +42,12 @@ public class SQLViewTest extends WFSTestSupport {
     static final String tableTypeName = "gs:pgeo";
     static final String viewTypeName = "gs:pgeo_view";
 
+    @ClassRule
+    public static final PostGISTestResource postgis = new PostGISTestResource();
+
     @Override
     protected void setUpInternal(SystemTestData data) throws Exception {
-        // run all the tests against a store that can do sql views
+        // run all the tests against a store that can do sql views (PostGIS)
         Catalog cat = getCatalog();
         DataStoreInfo ds = cat.getFactory().createDataStore();
         ds.setName("sqlviews");
@@ -52,9 +56,7 @@ public class SQLViewTest extends WFSTestSupport {
         ds.setEnabled(true);
 
         Map<String, Serializable> params = ds.getConnectionParameters();
-        params.put("dbtype", "h2");
-        File dbFile = new File(getTestData().getDataDirectoryRoot().getAbsolutePath(), "data/h2test");
-        params.put("database", dbFile.getAbsolutePath());
+        params.putAll(postgis.getConnectionParameters());
         cat.add(ds);
 
         SimpleFeatureSource fsp = getFeatureSource(SystemTestData.PRIMITIVEGEOFEATURE);

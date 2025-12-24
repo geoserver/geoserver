@@ -135,6 +135,17 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
             }
         }
         if (upload && locationKey == null) { // simple upload
+            String format;
+            if (storeType == StoreType.COVERAGESTORES) {
+                format = store.getType().toLowerCase();
+            } else {
+                format = FilenameUtils.getExtension(
+                                processedResources.get(0).file().getName())
+                        .toLowerCase();
+                if ("xml".equals(format)) {
+                    format = "appschema";
+                }
+            }
             return restManager
                     .getPublisher()
                     .createStore(
@@ -142,7 +153,7 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
                             storeType,
                             name,
                             UploadMethod.FILE,
-                            store.getType().toLowerCase(),
+                            format,
                             Files.probeContentType(
                                     processedResources.get(0).file().toPath()),
                             processedResources.get(0).file().toURI(),

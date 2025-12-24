@@ -412,7 +412,7 @@ public class QueryBuilderTest {
                     type_id = 14 /* isInstanceOf org.geoserver.catalog.LayerInfo */
                     AND
                     0 = 1 /* EXCLUDE */
-                ) """;
+                )\s""";
         Filter filter = Predicates.and(Predicates.isInstanceOf(LayerInfo.class), Predicates.isInstanceOf(String.class));
         verifyForIds(expected, true, filter);
     }
@@ -452,7 +452,7 @@ public class QueryBuilderTest {
                     type_id = 14 /* isInstanceOf org.geoserver.catalog.LayerInfo */
                     OR
                     0 = 1 /* EXCLUDE */
-                ) """;
+                )\s""";
         Filter filter = Predicates.or(Predicates.isInstanceOf(LayerInfo.class), Predicates.isInstanceOf(String.class));
         verifyForIds(expected, true, filter);
     }
@@ -597,7 +597,7 @@ public class QueryBuilderTest {
                 """
                 NOT (oid IN (SELECT oid FROM object_property WHERE property_type \
                 IN (:ptype0) AND value = :value0) /* [ name = quux ] */
-                ) """;
+                )\s""";
         Filter filter = FACTORY.notEqual(FACTORY.property("name"), FACTORY.literal("quux"), true);
         verifyForIds(expected, true, filter);
     }
@@ -608,7 +608,7 @@ public class QueryBuilderTest {
                 """
                 NOT (oid IN (SELECT oid FROM object_property WHERE property_type \
                 IN (:ptype0) AND value = :value0) /* [ name = FOO*\\/BAR ] */
-                ) """;
+                )\s""";
         Filter filter = FACTORY.notEqual(FACTORY.property("name"), FACTORY.literal("FOO*/BAR"), true);
         verifyForIds(expected, true, filter);
     }
@@ -657,7 +657,7 @@ public class QueryBuilderTest {
                 """
                 NOT (oid IN (SELECT oid FROM object_property WHERE property_type \
                 IN (:ptype0) AND UPPER(value) = :value0) /* [ name = quux ] */
-                ) """;
+                )\s""";
         Filter filter = FACTORY.notEqual(FACTORY.property("name"), FACTORY.literal("quux"), false);
         verifyForIds(expected, true, filter);
     }
@@ -668,7 +668,7 @@ public class QueryBuilderTest {
                 """
                 NOT (oid IN (SELECT oid FROM object_property WHERE property_type \
                 IN (:ptype0) AND UPPER(value) = :value0) /* [ name = FOO*\\/BAR ] */
-                ) """;
+                )\s""";
         Filter filter = FACTORY.notEqual(FACTORY.property("name"), FACTORY.literal("FOO*/BAR"), false);
         verifyForIds(expected, true, filter);
     }

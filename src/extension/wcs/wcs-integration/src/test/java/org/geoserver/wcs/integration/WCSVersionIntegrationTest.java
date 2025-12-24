@@ -49,4 +49,20 @@ public class WCSVersionIntegrationTest extends GeoServerSystemTestSupport {
                         containsString("xmlns:ows=\"http://www.opengis.net/ows/1.1\""),
                         containsString("<wcs:CoverageOfferingBrief")));
     }
+
+    @Test
+    public void testAcceptVersions11() throws Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse("wcs?request=GetCapabilities&service=WCS&acceptversions=1.1.0");
+        assertEquals("text/xml", response.getContentType());
+
+        // xmlunit is not setup to parse WCS 1.1.1 XML, use string checks
+        assertThat(
+                response.getContentAsString(),
+                allOf(
+                        containsString("<wcs:Capabilities"),
+                        containsString("version=\"1.1.1\""),
+                        containsString("xmlns:ows=\"http://www.opengis.net/ows/1.1\""),
+                        containsString("<wcs:CoverageSummary")));
+    }
 }

@@ -35,6 +35,8 @@ public class CogRasterEditPanel extends StoreEditPanel {
 
     private static final String[] EXTENSIONS = {".tiff", ".tif"};
 
+    private boolean isCog;
+
     @SuppressWarnings("rawtypes")
     public CogRasterEditPanel(String componentId, Form storeEditForm) {
         super(componentId, storeEditForm);
@@ -68,7 +70,7 @@ public class CogRasterEditPanel extends StoreEditPanel {
                 new MetadataMapModel<>(metadata, CogSettings.COG_SETTINGS_KEY, CogSettings.class);
         if (metadataObject != null && metadataObject.containsKey(CogSettings.COG_SETTINGS_KEY)) {
             cogSettingsModel.setObject((CogSettings) metadataObject.get(CogSettings.COG_SETTINGS_KEY));
-            boolean isCog = true;
+            isCog = true;
             checkBox.setModelObject(isCog);
         }
 

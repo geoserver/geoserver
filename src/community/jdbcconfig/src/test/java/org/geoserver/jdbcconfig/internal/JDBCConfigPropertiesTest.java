@@ -130,7 +130,7 @@ public class JDBCConfigPropertiesTest {
 
     @Test
     public void testLoadFromSysProps() throws Exception {
-        System.setProperty(JDBCURL_SYSPROP, "jdbc:h2:nofile");
+        System.setProperty(JDBCURL_SYSPROP, "jdbc:hsqldb:mem:testdb");
         System.setProperty(INITDB_SYSPROP, "false");
         System.setProperty(IMPORT_SYSPROP, "false");
 
@@ -138,7 +138,7 @@ public class JDBCConfigPropertiesTest {
             JDBCLoaderPropertiesFactoryBean factory = new JDBCConfigPropertiesFactoryBean(loader);
             JDBCConfigProperties props = (JDBCConfigProperties) factory.createProperties();
 
-            assertEquals("jdbc:h2:nofile", props.getJdbcUrl().get());
+            assertEquals("jdbc:hsqldb:mem:testdb", props.getJdbcUrl().get());
             assertFalse(props.isInitDb());
             assertFalse(props.isImport());
         } finally {
@@ -152,7 +152,7 @@ public class JDBCConfigPropertiesTest {
     public void testDataDirPlaceholder() throws Exception {
         JDBCConfigPropertiesFactoryBean factory = new JDBCConfigPropertiesFactoryBean(loader);
         JDBCConfigProperties props = (JDBCConfigProperties) factory.createProperties();
-        props.setJdbcUrl("jdbc:h2:file:${GEOSERVER_DATA_DIR}");
+        props.setJdbcUrl("jdbc:hsqldb:file:${GEOSERVER_DATA_DIR}/testdb");
 
         assertThat(
                 props.getJdbcUrl().get(),

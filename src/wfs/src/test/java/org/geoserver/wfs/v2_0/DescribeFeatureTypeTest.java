@@ -18,7 +18,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.Serializable;
 import java.net.URLEncoder;
 import java.sql.Connection;
@@ -45,6 +44,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.PostGISTestResource;
 import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.WFSInfo;
 import org.geotools.api.data.DataStore;
@@ -58,6 +58,7 @@ import org.geotools.util.SimpleInternationalString;
 import org.geotools.wfs.v2_0.WFS;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -68,24 +69,24 @@ import org.w3c.dom.NodeList;
 
 public class DescribeFeatureTypeTest extends WFS20TestSupport {
 
+    @ClassRule
+    public static final PostGISTestResource postgis = new PostGISTestResource();
+
     @Override
     protected void setUpInternal(SystemTestData dataDirectory) throws Exception {
         DataStoreInfo di = getCatalog().getDataStoreByName(CiteTestData.CITE_PREFIX);
         di.setEnabled(false);
         getCatalog().save(di);
 
-        // prepare to run a test against a real database
         Catalog cat = getCatalog();
         DataStoreInfo ds = cat.getFactory().createDataStore();
-        ds.setName("h2");
+        ds.setName("postgis");
         WorkspaceInfo ws = cat.getDefaultWorkspace();
         ds.setWorkspace(ws);
         ds.setEnabled(true);
 
         Map<String, Serializable> params = ds.getConnectionParameters();
-        params.put("dbtype", "h2");
-        File dbFile = new File(getTestData().getDataDirectoryRoot().getAbsolutePath(), "data/h2");
-        params.put("database", dbFile.getAbsolutePath());
+        params.putAll(postgis.getConnectionParameters());
         cat.add(ds);
 
         SimpleFeatureSource fsp = getFeatureSource(LAKES);
@@ -659,7 +660,7 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
     }
 
     @Test
-    public void describeH2Table() throws Exception {
+    public void describePostGISTable() throws Exception {
         String layerId = getCatalog().getDefaultWorkspace().getName() + ":" + LAKES.getLocalPart();
         String path = "ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName=" + layerId;
         Document doc = getAsDOM(path);

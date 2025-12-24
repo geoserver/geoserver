@@ -161,13 +161,13 @@ public class ExtTypesTest extends AbstractTaskManagerTest {
     public void testInternalLayer() {
         // without workspace
         List<String> domain = extTypes.internalLayer.getDomain(Collections.emptyList());
-        assertEquals(6, domain.size());
+        assertEquals(9, domain.size());
         assertEquals("Tazbyte", domain.get(0));
         assertEquals("gs:Tazbyte", domain.get(1));
         assertEquals("wcs:BlueMarble", domain.get(2));
         assertEquals("wcs:DEM", domain.get(3));
-        assertEquals("wcs:RotatedCad", domain.get(4));
-        assertEquals("wcs:World", domain.get(5));
+        assertEquals("wcs:RotatedCad", domain.get(6));
+        assertEquals("wcs:World", domain.get(7));
         assertTrue(extTypes.internalLayer.validate("Tazbyte", Collections.emptyList()));
         assertTrue(extTypes.internalLayer.validate("gs:Tazbyte", Collections.emptyList()));
         assertTrue(extTypes.internalLayer.validate("wcs:BlueMarble", Collections.emptyList()));

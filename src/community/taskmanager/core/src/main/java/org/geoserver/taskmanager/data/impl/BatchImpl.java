@@ -12,6 +12,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -36,7 +37,8 @@ import org.hibernate.annotations.FilterDef;
         uniqueConstraints = {
             @UniqueConstraint(columnNames = {"name", "configuration", "removeStamp"}),
             @UniqueConstraint(columnNames = {"nameNoConfig", "removeStamp"})
-        })
+        },
+        indexes = {@Index(name = "idx_batchimpl_configuration", columnList = "configuration", unique = false)})
 @FilterDef(name = "activeElementFilter", defaultCondition = "removeStamp = 0")
 public class BatchImpl extends BaseImpl implements Batch {
 
@@ -199,5 +201,13 @@ public class BatchImpl extends BaseImpl implements Batch {
 
     public void setLatestBatchRun(LatestBatchRun latestBatchRun) {
         this.latestBatchRun = latestBatchRun;
+    }
+
+    public void setBatchRuns(ArrayList<BatchRun> batchRuns) {
+        this.batchRuns = batchRuns;
+    }
+
+    public void setElements(List<BatchElement> batchElements) {
+        this.elements = batchElements;
     }
 }

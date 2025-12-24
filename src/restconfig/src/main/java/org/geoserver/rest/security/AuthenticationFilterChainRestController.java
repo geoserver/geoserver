@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
@@ -57,6 +58,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/security/filterchain")
 public class AuthenticationFilterChainRestController extends RestBaseController {
+
+    private static final Pattern SAFE_CHAIN_NAME = Pattern.compile("^[A-Za-z0-9_.-]{1,64}$");
 
     private static final Set<String> RESERVED = Set.of("order");
 
@@ -267,6 +270,7 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
         checkAuthorised();
         try {
             AuthFilterChainFilters dto = parseFiltersFromRequest(request);
+            validateChainName(dto.getName());
             ensureNotReserved(dto.getName());
             RequestFilterChain model = toModel(dto);
 
@@ -286,8 +290,10 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
 
             HttpHeaders headers = new HttpHeaders();
             UriComponentsBuilder ub = (builder != null ? builder : UriComponentsBuilder.newInstance());
-            headers.setLocation(ub.path("/security/filterchain/{name}")
-                    .buildAndExpand(model.getName())
+            headers.setLocation(ub.path("/security/filterchain")
+                    .pathSegment(model.getName())
+                    .build()
+                    .encode()
                     .toUri());
 
             return new ResponseEntity<>(wrapObject(dto, AuthFilterChainFilters.class), headers, HttpStatus.CREATED);
@@ -725,6 +731,12 @@ public class AuthenticationFilterChainRestController extends RestBaseController 
     private void checkAuthorised() {
         if (!securityManager.checkAuthenticationForAdminRole()) {
             throw new NotAuthorised();
+        }
+    }
+
+    private static void validateChainName(String name) {
+        if (name == null || !SAFE_CHAIN_NAME.matcher(name).matches()) {
+            throw new IllegalArgumentException("Invalid chain name");
         }
     }
 

@@ -39,12 +39,6 @@ application directory.
     </dependency>
 
     <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-wcs1_1</artifactId>
-      <type>jar</type>
-    </dependency>
-
-    <dependency>
       <groupId>org.geotools.ogc</groupId>
       <artifactId>net.opengis.wcs</artifactId>
     </dependency>

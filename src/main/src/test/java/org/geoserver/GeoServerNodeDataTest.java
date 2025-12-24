@@ -11,6 +11,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,47 +74,59 @@ public class GeoServerNodeDataTest {
     @Test
     public void testGitBranchToken() throws Exception {
         Path tmp = Files.createTempDirectory("githead");
-        Path head = tmp.resolve(".git").resolve("HEAD");
-        Files.createDirectories(head.getParent());
-        Files.writeString(head, "ref: refs/heads/feature/test\n");
+        try {
+            Path head = tmp.resolve(".git").resolve("HEAD");
+            Files.createDirectories(head.getParent());
+            Files.writeString(head, "ref: refs/heads/feature/test\n");
 
-        GeoServerNodeData.setOverrideGitHeadPath(head);
-        GeoServerNodeData data = GeoServerNodeData.createFromString("id:$git_branch");
-        assertEquals("feature/test", data.getId());
+            GeoServerNodeData.setOverrideGitHeadPath(head);
+            GeoServerNodeData data = GeoServerNodeData.createFromString("id:$git_branch");
+            assertEquals("feature/test", data.getId());
+        } finally {
+            FileUtils.deleteDirectory(tmp.toFile());
+        }
     }
 
     @Test
     public void testGitBranchFromDataDir() throws Exception {
         Path tmp = Files.createTempDirectory("data-dir");
-        Path head = tmp.resolve(".git").resolve("HEAD");
-        Files.createDirectories(head.getParent());
-        Files.writeString(head, "ref: refs/heads/data-branch\n");
-
-        System.setProperty("GEOSERVER_DATA_DIR", tmp.toAbsolutePath().toString());
         try {
-            GeoServerNodeData data = GeoServerNodeData.createFromString("id:$git_branch");
-            assertEquals("data-branch", data.getId());
+            Path head = tmp.resolve(".git").resolve("HEAD");
+            Files.createDirectories(head.getParent());
+            Files.writeString(head, "ref: refs/heads/data-branch\n");
+
+            System.setProperty("GEOSERVER_DATA_DIR", tmp.toAbsolutePath().toString());
+            try {
+                GeoServerNodeData data = GeoServerNodeData.createFromString("id:$git_branch");
+                assertEquals("data-branch", data.getId());
+            } finally {
+                System.clearProperty("GEOSERVER_DATA_DIR");
+            }
         } finally {
-            System.clearProperty("GEOSERVER_DATA_DIR");
+            FileUtils.deleteDirectory(tmp.toFile());
         }
     }
 
     @Test
     public void testGitBranchFromParentOfDataDir() throws Exception {
         Path parent = Files.createTempDirectory("parent-dir");
-        Path child = parent.resolve("child-data");
-        Files.createDirectories(child);
-
-        Path head = parent.resolve(".git").resolve("HEAD");
-        Files.createDirectories(head.getParent());
-        Files.writeString(head, "ref: refs/heads/parent-branch\n");
-
-        System.setProperty("GEOSERVER_DATA_DIR", child.toAbsolutePath().toString());
         try {
-            GeoServerNodeData data = GeoServerNodeData.createFromString("id:$git_branch");
-            assertEquals("parent-branch", data.getId());
+            Path child = parent.resolve("child-data");
+            Files.createDirectories(child);
+
+            Path head = parent.resolve(".git").resolve("HEAD");
+            Files.createDirectories(head.getParent());
+            Files.writeString(head, "ref: refs/heads/parent-branch\n");
+
+            System.setProperty("GEOSERVER_DATA_DIR", child.toAbsolutePath().toString());
+            try {
+                GeoServerNodeData data = GeoServerNodeData.createFromString("id:$git_branch");
+                assertEquals("parent-branch", data.getId());
+            } finally {
+                System.clearProperty("GEOSERVER_DATA_DIR");
+            }
         } finally {
-            System.clearProperty("GEOSERVER_DATA_DIR");
+            FileUtils.deleteDirectory(parent.toFile());
         }
     }
 }

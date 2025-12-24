@@ -95,7 +95,10 @@ public class GeoServerNodeData {
                     // now handle simple tokens like $git_branch (only)
                     try {
                         if (id.contains("$git_branch")) {
-                            id = id.replace("$git_branch", defaultString(resolveGitBranch()));
+                            String gitBranch = resolveGitBranch();
+                            if (gitBranch != null) {
+                                id = id.replace("$git_branch", gitBranch);
+                            }
                         }
                     } catch (Exception e) {
                         LOGGER.log(Level.FINE, "Failed to resolve extended tokens", e);

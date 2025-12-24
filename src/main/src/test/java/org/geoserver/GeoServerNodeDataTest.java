@@ -28,6 +28,7 @@ public class GeoServerNodeDataTest {
     @After
     public void cleanUp() {
         GeoServerNodeData.clearMockAddress();
+        GeoServerNodeData.clearOverrideGitHeadPath();
     }
 
     @Test
@@ -63,11 +64,6 @@ public class GeoServerNodeDataTest {
         GeoServerNodeData data = GeoServerNodeData.createFromString("id:$host_compact_name");
         assertEquals("test.l", data.getId());
         assertNotNull(data.getIdStyle());
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        GeoServerNodeData.clearOverrideGitHeadPath();
     }
 
     @Test

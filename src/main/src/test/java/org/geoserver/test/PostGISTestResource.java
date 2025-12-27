@@ -28,7 +28,10 @@ public class PostGISTestResource extends ExternalResource {
 
         DockerImageName image =
                 DockerImageName.parse("postgis/postgis:18-3.6-alpine").asCompatibleSubstituteFor("postgres");
-        postgisContainer = new PostgreSQLContainer(image);
+        // since it's a lightweight image used only for tests, we disable some durability features in exchange for speed
+        postgisContainer = new PostgreSQLContainer(image)
+                .withCommand(
+                        "postgres", "-c", "fsync=off", "-c", "synchronous_commit=off", "-c", "full_page_writes=off");
         postgisContainer.start();
     }
 

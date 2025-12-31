@@ -14,8 +14,6 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.sld.GetStyles;
 import org.geoserver.sld.GetStylesRequest;
-import org.geoserver.wms.capabilities.Capabilities_1_3_0_Transformer;
-import org.geoserver.wms.capabilities.GetCapabilitiesTransformer;
 import org.geoserver.wms.describelayer.DescribeLayerModel;
 import org.geotools.api.style.Style;
 import org.geotools.api.style.StyledLayerDescriptor;
@@ -205,11 +203,7 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
         return !BYPASS_DIRECT;
     }
 
-    /**
-     * @see WebMapService#getCapabilities(GetCapabilitiesRequest)
-     * @see GetCapabilitiesTransformer
-     * @see Capabilities_1_3_0_Transformer
-     */
+    /** @see WebMapService#getCapabilities(GetCapabilitiesRequest) */
     @Override
     public TransformerBase getCapabilities(GetCapabilitiesRequest request) {
         if (null == getCapabilities) {

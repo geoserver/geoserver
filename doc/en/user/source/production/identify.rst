@@ -7,12 +7,15 @@ When running one or more clusters of GeoServer installations it is useful to ide
 cluster (and eventually which node of the cluster) one is working against by just glancing at
 the web administration UI.
 
-This is possible by setting one variable, ``GEOSERVER_NODE_OPTS``, with one of the supported
-mechanisms:
+It can also be used to display the Git branch the node is running from, which can be useful
+when testing new features or bug fixes.
 
-  * as a system variable
-  * as an environment variable
-  * as a servlet context parameter
+This is possible by setting one variable, ``GEOSERVER_NODE_OPTS``, with one of the supported
+mechanisms (in order of priority):
+
+  1. Java System Properties
+  2. Web Application context parameters
+  3. System Environmental Variables
 
 ``GEOSERVER_NODE_OPTS`` is a semicolon separated list of key/value pairs and it can contain the following keys:
 
@@ -22,6 +25,7 @@ mechanisms:
     * ``$host_name``: the hostname of the node
     * ``$host_short_name``: the hostname truncated to not include the domain (``foo.local`` becomes ``foo``)
     * ``$host_compact_name``: the hostname with all domain parts shortened to their first character (``foo.local`` becomes ``foo.l``)
+    * ``$git_branch``: the Git branch name (requires the ``.git`` folder to be present in the GEOSERVER_DATA_DIR, its immediate parent or the current working directory)
 
   * ``color``: the label color, as a CSS color
   * ``background``: the background color, as a CSS color

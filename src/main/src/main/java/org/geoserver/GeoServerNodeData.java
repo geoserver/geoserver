@@ -9,6 +9,8 @@ import com.google.common.collect.Streams;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -80,6 +82,7 @@ public class GeoServerNodeData {
                 Map<String, String> options = parseProperties(nodeOpts);
                 String id = options.get("id");
                 if (id != null) {
+                    // first handle the host-based substitutions ($host_ip, $host_name, etc.)
                     if (SUBSTITUTIONS.keySet().stream().anyMatch(id::contains)) {
                         final InetAddress address = getLocalHostLANAddress();
                         for (Entry<String, Function<InetAddress, String>> e : SUBSTITUTIONS.entrySet()) {
@@ -87,6 +90,18 @@ public class GeoServerNodeData {
                             final String value = e.getValue().apply(address);
                             id = id.replace(token, value);
                         }
+                    }
+
+                    // now handle simple tokens like $git_branch
+                    try {
+                        if (id.contains("$git_branch")) {
+                            String gitBranch = resolveGitBranch();
+                            if (gitBranch != null) {
+                                id = id.replace("$git_branch", gitBranch);
+                            }
+                        }
+                    } catch (Exception e) {
+                        LOGGER.log(Level.FINE, "Failed to resolve extended tokens", e);
                     }
                 }
 
@@ -130,6 +145,75 @@ public class GeoServerNodeData {
     @VisibleForTesting
     static void clearMockAddress() {
         GeoServerNodeData.mockAddress = null;
+    }
+
+    // --- Testing hooks and extended token helpers ---
+    private static Path overrideGitHeadPath = null;
+
+    @VisibleForTesting
+    static void setOverrideGitHeadPath(Path path) {
+        overrideGitHeadPath = path;
+    }
+
+    @VisibleForTesting
+    static void clearOverrideGitHeadPath() {
+        overrideGitHeadPath = null;
+    }
+
+    private static String resolveGitBranch() {
+        try {
+            // 1) test override (fast path for unit tests)
+            Path gitHead = overrideGitHeadPath;
+
+            // 2) check GEOSERVER_DATA_DIR (system property then context then env) and its parent
+            if (gitHead == null) {
+                String dataDir = GeoServerExtensions.getProperty("GEOSERVER_DATA_DIR");
+                if (dataDir != null && !dataDir.isEmpty()) {
+                    Path dataGit = Path.of(dataDir).resolve(".git").resolve("HEAD");
+                    if (Files.exists(dataGit)) {
+                        gitHead = dataGit;
+                    } else {
+                        Path parent = Path.of(dataDir).getParent();
+                        if (parent != null) {
+                            Path parentGit = parent.resolve(".git").resolve("HEAD");
+                            if (Files.exists(parentGit)) {
+                                gitHead = parentGit;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 3) fall back to repo-local .git/HEAD
+            if (gitHead == null) {
+                gitHead = Path.of(".git", "HEAD");
+            }
+
+            if (!Files.exists(gitHead)) {
+                return null;
+            }
+
+            LOGGER.log(
+                    Level.FINE,
+                    "Resolving git branch from " + gitHead.toAbsolutePath().toString());
+
+            List<String> lines = Files.readAllLines(gitHead);
+            if (lines.isEmpty()) {
+                return null;
+            }
+            String first = lines.get(0).trim();
+            if (first.startsWith("ref: ")) {
+                String ref = first.substring("ref: ".length()).trim();
+                if (ref.startsWith("refs/heads/")) {
+                    return ref.substring("refs/heads/".length());
+                }
+                return ref;
+            }
+            return first;
+        } catch (Exception ex) {
+            LOGGER.log(Level.INFO, "Error resolving git branch", ex);
+            return null;
+        }
     }
 
     static InetAddress getLocalHostLANAddress() throws UnknownHostException {

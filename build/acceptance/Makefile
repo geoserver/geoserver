@@ -19,9 +19,9 @@ build-war:
 	# a single mvn package -pl :gs-web-app -am should work but it seems it doesn't take into account test dependencies
 	# so it fails when the version number changes (e.g. 2.28-SNAPSHOT -> 3.0-SNAPSHOT)
 	@mvn clean install -f ../../src/pom.xml \
-	-DskipTests -Dspotless.apply.skip=true -B -ntp -U -T2C
+	-DskipTests -Dspotless.apply.skip=true -Parcgrid,image -B -ntp -U -T2C
 	@mvn package -f ../../src/pom.xml \
-	-DskipTests -Dspotless.apply.skip=true -B -nsu -ntp -T2C -pl :gs-web-app -am
+	-DskipTests -Dspotless.apply.skip=true -Parcgrid,image -B -nsu -ntp -T2C -pl :gs-web-app -am
 
 .PHONY: copy-war
 copy-war:

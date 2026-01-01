@@ -388,6 +388,10 @@
             <artifactId>jai_imageio</artifactId>
             <groupId>javax.media</groupId>
           </exclusion>
+          <exclusion>
+            <artifactId>gt-image</artifactId>
+            <groupId>org.geotools</groupId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -1386,6 +1390,8 @@
             <descriptor>release/ext-ysld.xml</descriptor>
             <descriptor>release/ext-rat.xml</descriptor>
             <descriptor>release/ext-ogcapi-features.xml</descriptor>
+            <descriptor>release/ext-arcgrid.xml</descriptor>
+            <descriptor>release/ext-image.xml</descriptor>
           </descriptors>
           <outputDirectory>${project.build.directory}/release</outputDirectory>
         </configuration>

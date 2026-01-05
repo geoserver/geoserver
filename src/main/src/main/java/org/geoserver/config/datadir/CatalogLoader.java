@@ -254,21 +254,9 @@ class CatalogLoader {
      * @param stream stream of paths to style files
      */
     private void loadStyles(@Nullable WorkspaceInfo targetWorkspace, Stream<Path> stream) {
-        boolean loggable = LOGGER.isLoggable(Level.FINE);
         Stream<StyleInfo> styles =
                 depersist(stream, StyleInfo.class, targetWorkspace == null ? null : targetWorkspace.getName());
-        styles.filter(s -> sanitizer.validate(targetWorkspace, s))
-                .peek(style -> {
-                    if (loggable) {
-                        LOGGER.fine("Starting load for style " + style.prefixedName());
-                    }
-                })
-                .forEach(style -> {
-                    addToCatalog(style);
-                    if (loggable) {
-                        LOGGER.fine("Finished load for style " + style.prefixedName());
-                    }
-                });
+        styles.filter(s -> sanitizer.validate(targetWorkspace, s)).forEach(this::addToCatalog);
     }
 
     /**
@@ -286,17 +274,10 @@ class CatalogLoader {
      * @param storeDir the directory containing the store configuration
      */
     private void loadStore(StoreDirectory storeDir) {
-        boolean loggable = LOGGER.isLoggable(Level.FINE);
         Optional<StoreInfo> store = depersist(storeDir.storeFile, pathContext(storeDir.storeFile));
         if (store.isPresent()) {
-            if (loggable) {
-                LOGGER.fine("Starting load for store " + storeDir.storeFile);
-            }
             addToCatalog(store.orElseThrow());
             loadLayers(storeDir.layers());
-            if (loggable) {
-                LOGGER.fine("Finished load for store " + storeDir.storeFile);
-            }
         }
     }
 
@@ -315,22 +296,11 @@ class CatalogLoader {
      * @param layerDir the directory containing the resource and layer configuration
      */
     private void loadResourceAndLayer(LayerDirectory layerDir) {
-        boolean loggable = LOGGER.isLoggable(Level.FINE);
         Optional<ResourceInfo> resource = depersist(layerDir.resourceFile, pathContext(layerDir.resourceFile));
         Optional<LayerInfo> layer = depersist(layerDir.layerFile, pathContext(layerDir.layerFile));
         if (resource.isPresent() && layer.isPresent()) {
-            if (loggable) {
-                LOGGER.fine(String.format(
-                        "Starting load for layer %s from resource %s",
-                        layerDir.layerFile.getFileName(), layerDir.resourceFile));
-            }
             addToCatalog(resource.orElseThrow());
             addToCatalog(layer.orElseThrow());
-            if (loggable) {
-                LOGGER.fine(String.format(
-                        "Finished load for layer %s from resource %s",
-                        layerDir.layerFile.getFileName(), layerDir.resourceFile));
-            }
         }
     }
 
@@ -340,19 +310,7 @@ class CatalogLoader {
      * @param stream stream of paths to layer group files
      */
     private void loadLayerGroups(Stream<Path> stream) {
-        boolean loggable = LOGGER.isLoggable(Level.FINE);
-        depersist(stream, LayerGroupInfo.class, null)
-                .peek(group -> {
-                    if (loggable) {
-                        LOGGER.fine("Starting load for layer group " + group.getName());
-                    }
-                })
-                .forEach(group -> {
-                    addToCatalog(group);
-                    if (loggable) {
-                        LOGGER.fine("Finished load for layer group " + group.getName());
-                    }
-                });
+        depersist(stream, LayerGroupInfo.class, null).forEach(this::addToCatalog);
     }
 
     /**
@@ -434,6 +392,9 @@ class CatalogLoader {
      * @return an Optional containing the added object, or empty if addition failed
      */
     private <I extends CatalogInfo> Optional<I> doAddToCatalog(I info, Consumer<I> saver, Function<I, String> name) {
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine("Starting load for %s %s".formatted(sanitizer.typeOf(info), describe(info, name)));
+        }
         try {
             saver.accept(info);
             LOGGER.log(Level.CONFIG, () -> "Loaded %s %s".formatted(sanitizer.typeOf(info), describe(info, name)));
@@ -441,6 +402,9 @@ class CatalogLoader {
             LOGGER.log(Level.SEVERE, e, () -> "Failed to load %s %s"
                     .formatted(sanitizer.typeOf(info), describe(info, name)));
             return Optional.empty();
+        }
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine("Finished load for %s %s".formatted(sanitizer.typeOf(info), describe(info, name)));
         }
         return Optional.of(info);
     }

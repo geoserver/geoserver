@@ -126,6 +126,7 @@
     <postgis.jdbc.version>1.3.3</postgis.jdbc.version>
     <servlet-api.version>6.1.0</servlet-api.version>
     <xalan.version>2.7.3</xalan.version>
+    <protobuf.version>4.33.2</protobuf.version>
 
     <!-- ================================ -->
     <!-- Maven plugin configuration      -->
@@ -606,6 +607,11 @@
         <version>5.13.4</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-java</artifactId>
+        <version>${protobuf.version}</version>
       </dependency>
 
       <!-- logging dependencies managed by platform-dependencies BOM -->

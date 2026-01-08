@@ -255,7 +255,8 @@ class CatalogLoader {
      * @param stream stream of paths to style files
      */
     private void loadStyles(@Nullable WorkspaceInfo targetWorkspace, Stream<Path> stream) {
-        Stream<StyleInfo> styles = depersist(stream, StyleInfo.class);
+        Stream<StyleInfo> styles =
+                depersist(stream, StyleInfo.class, targetWorkspace == null ? null : targetWorkspace.getName());
         styles.filter(s -> sanitizer.validate(targetWorkspace, s)).forEach(this::addToCatalog);
     }
 
@@ -274,7 +275,7 @@ class CatalogLoader {
      * @param storeDir the directory containing the store configuration
      */
     private void loadStore(StoreDirectory storeDir) {
-        Optional<StoreInfo> store = depersist(storeDir.storeFile);
+        Optional<StoreInfo> store = depersist(storeDir.storeFile, pathContext(storeDir.storeFile));
         if (store.isPresent()) {
             addToCatalog(store.orElseThrow());
             loadLayers(storeDir.layers());
@@ -296,8 +297,8 @@ class CatalogLoader {
      * @param layerDir the directory containing the resource and layer configuration
      */
     private void loadResourceAndLayer(LayerDirectory layerDir) {
-        Optional<ResourceInfo> resource = depersist(layerDir.resourceFile);
-        Optional<LayerInfo> layer = depersist(layerDir.layerFile);
+        Optional<ResourceInfo> resource = depersist(layerDir.resourceFile, pathContext(layerDir.resourceFile));
+        Optional<LayerInfo> layer = depersist(layerDir.layerFile, pathContext(layerDir.layerFile));
         if (resource.isPresent() && layer.isPresent()) {
             addToCatalog(resource.orElseThrow());
             addToCatalog(layer.orElseThrow());
@@ -310,7 +311,7 @@ class CatalogLoader {
      * @param stream stream of paths to layer group files
      */
     private void loadLayerGroups(Stream<Path> stream) {
-        depersist(stream, LayerGroupInfo.class).forEach(this::addToCatalog);
+        depersist(stream, LayerGroupInfo.class, null).forEach(this::addToCatalog);
     }
 
     /**
@@ -367,6 +368,14 @@ class CatalogLoader {
         return r.getName() + ", " + (r.isEnabled() ? "enabled" : "disabled");
     }
 
+    private String pathContext(Path path) {
+        if (path == null) {
+            return null;
+        }
+        Path parent = path.getParent();
+        return parent == null ? path.toString() : parent.toString();
+    }
+
     /**
      * Performs the actual addition of a catalog info object to the catalog.
      *
@@ -383,14 +392,48 @@ class CatalogLoader {
      * @return an Optional containing the added object, or empty if addition failed
      */
     private <I extends CatalogInfo> Optional<I> doAddToCatalog(I info, Consumer<I> saver, Function<I, String> name) {
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine(format("Starting load for %s %s", sanitizer.typeOf(info), describe(info, name)));
+        }
         try {
             saver.accept(info);
-            LOGGER.log(Level.CONFIG, () -> format("Loaded %s %s", sanitizer.typeOf(info), name.apply(info)));
+            LOGGER.log(Level.CONFIG, () -> format("Loaded %s %s", sanitizer.typeOf(info), describe(info, name)));
+
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, e, () -> format("Failed to load %s %s", sanitizer.typeOf(info), info.getId()));
+            LOGGER.log(
+                    Level.SEVERE,
+                    e,
+                    () -> format("Failed to load %s %s", sanitizer.typeOf(info), describe(info, name)));
             return Optional.empty();
         }
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine(format("Finished load for %s %s", sanitizer.typeOf(info), describe(info, name)));
+        }
         return Optional.of(info);
+    }
+
+    private <I extends CatalogInfo> String describe(I info, Function<I, String> name) {
+        String baseName = name.apply(info);
+        String parent = null;
+        if (info instanceof LayerInfo) {
+            LayerInfo layer = (LayerInfo) info;
+            parent = layer.getResource() != null ? layer.getResource().prefixedName() : null;
+        } else if (info instanceof ResourceInfo) {
+            ResourceInfo resource = (ResourceInfo) info;
+            StoreInfo store = resource.getStore();
+            parent = store != null ? store.getWorkspace().getName() + "/" + store.getName() : null;
+        } else if (info instanceof StoreInfo) {
+            StoreInfo store = (StoreInfo) info;
+            parent = store.getWorkspace() != null ? store.getWorkspace().getName() : null;
+        } else if (info instanceof StyleInfo) {
+            StyleInfo style = (StyleInfo) info;
+            parent = style.getWorkspace() != null ? style.getWorkspace().getName() : "global";
+        }
+        StringBuilder sb = new StringBuilder(baseName == null ? "null" : baseName);
+        if (parent != null) {
+            sb.append(" (parent=").append(parent).append(")");
+        }
+        return sb.toString();
     }
 
     /**
@@ -403,25 +446,54 @@ class CatalogLoader {
      * @return an Optional containing the deserialized object, or empty if deserialization failed
      */
     <C extends CatalogInfo> Optional<C> depersist(Path file) {
-        return fileWalk.getXStreamLoader().depersist(file);
+        try {
+            return fileWalk.getXStreamLoader().depersist(file);
+        } catch (Exception e) {
+            String message = "Failed to parse catalog file " + file;
+            LOGGER.log(Level.SEVERE, message, e);
+            throw new IllegalStateException(message, e);
+        }
     }
 
     /**
-     * Converts a stream of file paths to a stream of catalog info objects.
+     * Deserializes a catalog info object from a file, logging failures with optional context.
      *
-     * <p>This method maps each file path to a catalog info object, filters out failed deserializations, and casts the
-     * results to the specified type.
+     * <p>Delegates to the XStreamLoader to parse the file; on failure, logs at SEVERE with the source file path and the
+     * provided context (e.g., workspace or store name) and rethrows as {@link IllegalStateException}.
      *
      * @param <C> the type of catalog info
-     * @param stream the stream of file paths to deserialize
-     * @param type the class to cast the deserialized objects to
-     * @return a stream of deserialized catalog info objects
+     * @param file the file to deserialize (not null)
+     * @param context optional label (nullable) included in error logs to identify the parent workspace/store
+     * @return the deserialized object wrapped in an Optional if successful
+     * @throws IllegalStateException if parsing fails
      */
-    private <C extends CatalogInfo> Stream<C> depersist(Stream<Path> stream, Class<C> type) {
-        return stream.map(this::depersist)
-                .filter(Optional::isPresent)
-                .map(Optional::orElseThrow)
-                .map(type::cast);
+    <C extends CatalogInfo> Optional<C> depersist(Path file, @Nullable String context) {
+        try {
+            return fileWalk.getXStreamLoader().depersist(file);
+        } catch (Exception e) {
+            String prefix = context == null ? "" : context + " - ";
+            String message = "Failed to parse catalog file " + prefix + file;
+            LOGGER.log(Level.SEVERE, message, e);
+            throw new IllegalStateException(message, e);
+        }
+    }
+
+    /**
+     * Converts a stream of file paths to a stream of catalog info objects with contextual error logging.
+     *
+     * <p>Each path is deserialized with {@link #depersist(Path, String)}, which logs failures at SEVERE level,
+     * including the provided context (e.g., workspace or store name) and the source file path. Failed deserializations
+     * are skipped, so the returned stream only contains successfully parsed objects.
+     *
+     * @param <C> the type of catalog info
+     * @param stream the stream of file paths to deserialize (not null)
+     * @param type the class to cast the deserialized objects to (not null)
+     * @param context optional contextual label (nullable), such as workspace/store, included in error logs
+     * @return a stream of deserialized catalog info objects; empty for entries that failed to parse
+     */
+    private <C extends CatalogInfo> Stream<C> depersist(Stream<Path> stream, Class<C> type, @Nullable String context) {
+        return stream.flatMap(
+                file -> depersist(file, context).map(type::cast).map(Stream::of).orElseGet(Stream::empty));
     }
 
     /**

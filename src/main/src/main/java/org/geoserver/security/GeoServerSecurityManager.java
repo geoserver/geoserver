@@ -395,7 +395,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             final Version securityVersion = getSecurityVersion();
 
             if (securityVersion.compareTo(CURR_VERSION) < 0) {
-                LOGGER.info(format("Start security migration from version %s to %s", securityVersion, CURR_VERSION));
+                LOGGER.log(Level.CONFIG,format("Start security migration from version %s to %s", securityVersion, CURR_VERSION));
             }
             boolean migratedFrom21 = false;
             if (securityVersion.compareTo(VERSION_2_2) < 0) {
@@ -417,7 +417,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             if (securityVersion.compareTo(CURR_VERSION) < 0) {
                 writeCurrentVersion();
             }
-            LOGGER.info(format(
+            LOGGER.log(Level.CONFIG,format(
                     "End security migration check, current version is %s (previous was %s)",
                     CURR_VERSION, securityVersion));
         } catch (Exception e1) {

@@ -5,7 +5,6 @@
  */
 package org.geoserver.security;
 
-import static java.lang.String.format;
 import static org.geoserver.config.util.XStreamUtils.xStreamPersist;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -395,7 +394,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             final Version securityVersion = getSecurityVersion();
 
             if (securityVersion.compareTo(CURR_VERSION) < 0) {
-                LOGGER.log(Level.CONFIG,format("Start security migration from version %s to %s", securityVersion, CURR_VERSION));
+                LOGGER.log(Level.CONFIG,"Start security migration from version %s to %s".formatted(securityVersion, CURR_VERSION));
             }
             boolean migratedFrom21 = false;
             if (securityVersion.compareTo(VERSION_2_2) < 0) {
@@ -417,9 +416,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             if (securityVersion.compareTo(CURR_VERSION) < 0) {
                 writeCurrentVersion();
             }
-            LOGGER.log(Level.CONFIG,format(
-                    "End security migration check, current version is %s (previous was %s)",
-                    CURR_VERSION, securityVersion));
+            LOGGER.log(Level.CONFIG, "End security migration check, current version is %s (previous was %s)".formatted(CURR_VERSION, securityVersion));
         } catch (Exception e1) {
             throw new RuntimeException(e1);
         }

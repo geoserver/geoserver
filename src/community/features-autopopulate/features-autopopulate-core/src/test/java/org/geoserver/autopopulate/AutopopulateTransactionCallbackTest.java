@@ -11,17 +11,21 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 import net.opengis.wfs.PropertyType;
@@ -34,6 +38,7 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerExtensionsHelper;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.SystemTest;
 import org.geoserver.test.TestSetup;
@@ -44,6 +49,7 @@ import org.geoserver.wfs.request.TransactionElement;
 import org.geoserver.wfs.request.TransactionRequest;
 import org.geoserver.wfs.request.TransactionResponse;
 import org.geoserver.wfs.request.Update;
+import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.util.logging.Logging;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,19 +80,16 @@ public class AutopopulateTransactionCallbackTest extends GeoServerSystemTestSupp
 
     @Before
     public void setUp() throws Exception {
-        listener = new AutopopulateTransactionCallback(getCatalog());
-        File f = new File(
-                this.getTestData().getDataDirectoryRoot() + "\\workspaces\\cite\\cite\\NamedPlaces\\",
-                "transactionCustomizer.properties");
-        f.deleteOnExit();
-        try (FileOutputStream fout = new FileOutputStream(f)) {
+        listener = spy(new AutopopulateTransactionCallback(getCatalog()));
+        Resource f = getDataDirectory().get("workspaces/cite/cite/NamedPlaces/transactionCustomizer.properties");
+        try (FileOutputStream fout = new FileOutputStream(f.file())) {
             IOUtils.copy(this.getClass().getResourceAsStream("test-data/transactionCustomizer.properties"), fout);
         }
-        template =
-                new AutopopulateTemplate(getDataDirectory().get("cite/NamedPlaces/transactionCustomizer.properties"));
+        template = new AutopopulateTemplate(f);
         Map templateCache = mock(Map.class);
         when(templateCache.get(any())).thenReturn(template);
         listener.setTemplateCache(templateCache);
+        doReturn(template).when(listener).lookupTemplate(any(SimpleFeatureType.class), anyString());
     }
 
     @Test
@@ -184,6 +187,35 @@ public class AutopopulateTransactionCallbackTest extends GeoServerSystemTestSupp
                 break;
             }
         }
+    }
+
+    @Test
+    public void testUpdateDoesNotAddUninvolvedAttributes() throws Exception {
+        Update element = mock(Update.class);
+        List<Property> properties = new ArrayList<>();
+        when(element.getUpdateProperties()).thenReturn(properties);
+        when(element.createProperty())
+                .thenAnswer(invocation -> new Property.WFS11(WfsFactory.eINSTANCE.createPropertyType()));
+        when(element.getTypeName()).thenReturn(new QName("NamedPlaces"));
+
+        TransactionRequest request = mock(TransactionRequest.class);
+        List<TransactionElement> transactionElements = new ArrayList<>();
+        transactionElements.add(element);
+        when(request.getElements()).thenReturn(transactionElements);
+        when(request.getVersion()).thenReturn("1.1.0");
+
+        String explicitNotUpdateProperty = "the_geom";
+
+        listener.beforeTransaction(request);
+
+        Set<String> updatePropertyNames = new HashSet<>();
+        for (Property property : properties) {
+            updatePropertyNames.add(property.getName().getLocalPart());
+        }
+
+        assertFalse(
+                "Unexpected attribute updated: " + explicitNotUpdateProperty,
+                updatePropertyNames.contains(explicitNotUpdateProperty));
     }
 
     protected JSON getJson(String path) throws Exception {

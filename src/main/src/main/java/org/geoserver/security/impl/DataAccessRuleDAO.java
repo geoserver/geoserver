@@ -53,6 +53,9 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
 
     String filesystemSandbox;
 
+    // set to true once rules have been validated against a populated catalog
+    private volatile boolean rulesValidated = false; 
+
     /** Returns the instanced contained in the Spring context for the UI to use */
     public static DataAccessRuleDAO get() {
         return GeoServerExtensions.bean(DataAccessRuleDAO.class);
@@ -62,12 +65,14 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
     public DataAccessRuleDAO(GeoServerDataDirectory dd, Catalog rawCatalog) throws IOException {
         super(dd, LAYERS);
         this.rawCatalog = rawCatalog;
+        registerCatalogListener();
     }
 
     /** Builds a new dao with a custom security dir. Used mostly for testing purposes */
     DataAccessRuleDAO(Catalog rawCatalog, Resource securityDir) {
         super(securityDir, LAYERS);
         this.rawCatalog = rawCatalog;
+        registerCatalogListener();
     }
 
     /** The way the catalog should react to unauthorized access */
@@ -117,6 +122,8 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
 
         this.catalogMode = catalogMode;
         this.rules = result;
+        // rules changed, validation needs to be re-run against the catalog
+        this.rulesValidated = false; 
     }
 
     /** Parses a single layer.properties line into a {@link DataAccessRule}, returns false if the rule is not valid */
@@ -149,16 +156,18 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
         // people might be editing the catalog structure and will edit the access rule
         // file afterwards
         if (layerName != null) {
-            if (!ANY.equals(root) && rawCatalog.getWorkspaceByName(root) == null)
-                LOGGER.warning("Namespace/Workspace " + root + " is unknown in rule " + rule);
+            // defer true validation to a catalog-ready validation pass; during startup the catalog may
+            // not be fully populated yet and queries may return null spuriously.
+            if (!ANY.equals(root) && (rawCatalog == null || rawCatalog.getWorkspaceByName(root) == null))
+                LOGGER.fine("Namespace/Workspace " + root + " is unknown in rule " + rule + " (validation deferred)");
             if (LOGGER.isLoggable(Level.FINE)
                     && !ANY.equals(layerName)
-                    && rawCatalog.getLayerByName(new NameImpl(root, layerName)) == null
-                    && rawCatalog.getLayerGroupByName(root, layerName) == null)
+                    && (rawCatalog == null || rawCatalog.getLayerByName(new NameImpl(root, layerName)) == null)
+                    && (rawCatalog == null || rawCatalog.getLayerGroupByName(root, layerName) == null))
                 LOGGER.fine("Layer " + root + ":" + layerName + " is unknown in rule: " + rule);
         } else {
-            if (!ANY.equals(root) && rawCatalog.getLayerGroupByName(root) == null)
-                LOGGER.warning("Global layer group " + root + " is unknown in rule " + rule);
+            if (!ANY.equals(root) && (rawCatalog == null || rawCatalog.getLayerGroupByName(root) == null))
+                LOGGER.fine("Global layer group " + root + " is unknown in rule " + rule + " (validation deferred)");
         }
 
         // check the access mode sanity
@@ -268,5 +277,87 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
         if (filesystemSandbox != null && filesystemSandbox.startsWith("file://"))
             filesystemSandbox = filesystemSandbox.substring("file://".length());
         this.filesystemSandbox = filesystemSandbox;
+    }
+
+    /**
+     * Registers a catalog listener to trigger rule validation once the catalog is (re)loaded.
+     */
+    private void registerCatalogListener() {
+        if (rawCatalog == null) return;
+        rawCatalog.addListener(
+                new org.geoserver.catalog.event.CatalogListener() {
+                    @Override
+                    public void handleAddEvent(org.geoserver.catalog.event.CatalogAddEvent event)
+                            throws org.geoserver.catalog.CatalogException {}
+
+                    @Override
+                    public void handleRemoveEvent(org.geoserver.catalog.event.CatalogRemoveEvent event)
+                            throws org.geoserver.catalog.CatalogException {}
+
+                    @Override
+                    public void handleModifyEvent(org.geoserver.catalog.event.CatalogModifyEvent event)
+                            throws org.geoserver.catalog.CatalogException {}
+
+                    @Override
+                    public void handlePostModifyEvent(
+                            org.geoserver.catalog.event.CatalogPostModifyEvent event)
+                            throws org.geoserver.catalog.CatalogException {}
+
+                    @Override
+                    public void reloaded() {
+                        validateRulesAgainstCatalog();
+                    }
+                });
+
+        // if the catalog already appears populated, run validation immediately
+        try {
+            if (rawCatalog.getWorkspaces() != null && !rawCatalog.getWorkspaces().isEmpty()) {
+                validateRulesAgainstCatalog();
+            }
+        } catch (Exception e) {
+            // be defensive, ignore any catalog access issues during registration
+        }
+    }
+
+    /**
+     * Validates parsed rules against the current catalog and emits warnings for truly missing references. This method
+     * should be called once the catalog has been initialized or reloaded.
+     */
+    public synchronized void validateRulesAgainstCatalog() {
+        if (rulesValidated) return;
+        if (rules == null || rawCatalog == null) return;
+
+        for (DataAccessRule rule : rules) {
+            String root = rule.getRoot();
+            String layerName = rule.getLayer();
+
+            String ruleText;
+            if (layerName != null) {
+                ruleText =
+                        root
+                                + "."
+                                + layerName
+                                + "."
+                                + rule.getAccessMode().getAlias()
+                                + "="
+                                + rule.getValue();
+                if (!ANY.equals(root) && rawCatalog.getWorkspaceByName(root) == null) {
+                    LOGGER.warning("Namespace/Workspace " + root + " is unknown in rule " + ruleText);
+                }
+                if (LOGGER.isLoggable(Level.FINE)
+                        && !ANY.equals(layerName)
+                        && rawCatalog.getLayerByName(new NameImpl(root, layerName)) == null
+                        && rawCatalog.getLayerGroupByName(root, layerName) == null) {
+                    LOGGER.fine("Layer " + root + ":" + layerName + " is unknown in rule: " + ruleText);
+                }
+            } else {
+                ruleText = root + "." + rule.getAccessMode().getAlias() + "=" + rule.getValue();
+                if (!ANY.equals(root) && rawCatalog.getLayerGroupByName(root) == null) {
+                    LOGGER.warning("Global layer group " + root + " is unknown in rule " + ruleText);
+                }
+            }
+        }
+
+        rulesValidated = true;
     }
 }

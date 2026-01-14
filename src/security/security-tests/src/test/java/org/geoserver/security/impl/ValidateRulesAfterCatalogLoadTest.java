@@ -56,7 +56,7 @@ public class ValidateRulesAfterCatalogLoadTest {
         }
 
         // construct the DAO (this will parse rules but should not emit WARNINGs yet)
-        MemoryDataAccessRuleDAO dao = new MemoryDataAccessRuleDAO(rawCatalog, props);
+        new MemoryDataAccessRuleDAO(rawCatalog, props);
 
         // ensure no WARNING logged during parsing (spurious startup warnings suppressed)
         boolean sawWarningAtParse = log.records().stream()
@@ -73,7 +73,7 @@ public class ValidateRulesAfterCatalogLoadTest {
         l.reloaded();
 
         // now a WARNING should be logged for at least one of the rules
-        log.assertLogged(new BaseMatcher<LogRecord>() {
+        log.assertLogged(new BaseMatcher<>() {
             @Override
             public boolean matches(Object item) {
                 if (!(item instanceof LogRecord)) return false;
@@ -113,7 +113,7 @@ public class ValidateRulesAfterCatalogLoadTest {
         }
 
         // construct DAO (parsing occurs, no warnings expected)
-        MemoryDataAccessRuleDAO dao = new MemoryDataAccessRuleDAO(rawCatalog, props);
+        new MemoryDataAccessRuleDAO(rawCatalog, props);
         boolean sawWarningAtParse = log.records().stream()
                 .anyMatch(r -> r.getLevel().intValue() >= Level.WARNING.intValue()
                         && r.getMessage().contains("Namespace/Workspace"));

@@ -18,16 +18,17 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.util.LoggerRule;
 import org.geotools.util.logging.Logging;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
 
 /** Integration test that demonstrates rule validation is deferred until the catalog is reloaded. */
 public class ValidateRulesAfterCatalogLoadTest {
 
-    @Rule public LoggerRule log = new LoggerRule(Logging.getLogger(DataAccessRuleDAO.class), Level.ALL);
+    @Rule
+    public LoggerRule log = new LoggerRule(Logging.getLogger(DataAccessRuleDAO.class), Level.ALL);
 
     @Test
     public void testValidationDeferredUntilCatalogReloaded() throws Exception {
@@ -40,10 +41,10 @@ public class ValidateRulesAfterCatalogLoadTest {
         // capture the registered CatalogListener
         AtomicReference<CatalogListener> listenerRef = new AtomicReference<>();
         doAnswer(invocation -> {
-            CatalogListener l = (CatalogListener) invocation.getArguments()[0];
-            listenerRef.set(l);
-            return null;
-        })
+                    CatalogListener l = (CatalogListener) invocation.getArguments()[0];
+                    listenerRef.set(l);
+                    return null;
+                })
                 .when(rawCatalog)
                 .addListener(any(CatalogListener.class));
 
@@ -72,19 +73,18 @@ public class ValidateRulesAfterCatalogLoadTest {
         l.reloaded();
 
         // now a WARNING should be logged for at least one of the rules
-        log.assertLogged(
-                new BaseMatcher<LogRecord>() {
-                    @Override
-                    public boolean matches(Object item) {
-                        if (!(item instanceof LogRecord)) return false;
-                        LogRecord r = (LogRecord) item;
-                        return r.getLevel().intValue() >= Level.WARNING.intValue()
-                                && r.getMessage().contains("Namespace/Workspace");
-                    }
+        log.assertLogged(new BaseMatcher<LogRecord>() {
+            @Override
+            public boolean matches(Object item) {
+                if (!(item instanceof LogRecord)) return false;
+                LogRecord r = (LogRecord) item;
+                return r.getLevel().intValue() >= Level.WARNING.intValue()
+                        && r.getMessage().contains("Namespace/Workspace");
+            }
 
-                    @Override
-                    public void describeTo(Description description) {}
-                });
+            @Override
+            public void describeTo(Description description) {}
+        });
     }
 
     @Test
@@ -98,10 +98,10 @@ public class ValidateRulesAfterCatalogLoadTest {
         // capture the registered CatalogListener
         AtomicReference<CatalogListener> listenerRef = new AtomicReference<>();
         doAnswer(invocation -> {
-            CatalogListener l = (CatalogListener) invocation.getArguments()[0];
-            listenerRef.set(l);
-            return null;
-        })
+                    CatalogListener l = (CatalogListener) invocation.getArguments()[0];
+                    listenerRef.set(l);
+                    return null;
+                })
                 .when(rawCatalog)
                 .addListener(any(CatalogListener.class));
 
@@ -120,8 +120,10 @@ public class ValidateRulesAfterCatalogLoadTest {
         Assert.assertFalse("No WARNING should be logged during parse (validation deferred)", sawWarningAtParse);
 
         // now simulate that workspaces were added before the catalog reload
-        when(rawCatalog.getWorkspaceByName(any(String.class))).thenReturn(mock(org.geoserver.catalog.WorkspaceInfo.class));
-        when(rawCatalog.getWorkspaces()).thenReturn(Collections.singletonList(mock(org.geoserver.catalog.WorkspaceInfo.class)));
+        when(rawCatalog.getWorkspaceByName(any(String.class)))
+                .thenReturn(mock(org.geoserver.catalog.WorkspaceInfo.class));
+        when(rawCatalog.getWorkspaces())
+                .thenReturn(Collections.singletonList(mock(org.geoserver.catalog.WorkspaceInfo.class)));
 
         // trigger reload and ensure NO WARNINGs are logged as the workspaces exist
         CatalogListener l = listenerRef.get();
@@ -132,6 +134,7 @@ public class ValidateRulesAfterCatalogLoadTest {
         boolean sawWarningAfterReload = log.records().stream()
                 .anyMatch(r -> r.getLevel().intValue() >= Level.WARNING.intValue()
                         && r.getMessage().contains("Namespace/Workspace"));
-        Assert.assertFalse("No WARNING should be logged after reload when workspaces are present", sawWarningAfterReload);
+        Assert.assertFalse(
+                "No WARNING should be logged after reload when workspaces are present", sawWarningAfterReload);
     }
 }

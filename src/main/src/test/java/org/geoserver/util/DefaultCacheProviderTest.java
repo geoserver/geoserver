@@ -31,7 +31,7 @@ public class DefaultCacheProviderTest {
     public ExtensionsHelperRule extensions = new ExtensionsHelperRule();
 
     @Rule
-    public LoggerRule logging = new LoggerRule(Logging.getLogger(DefaultCacheProvider.class), Level.WARNING);
+    public  LoggerRule logging = new LoggerRule(Logging.getLogger(DefaultCacheProvider.class), Level.WARNING);
 
     @Test
     public void testDefault() {

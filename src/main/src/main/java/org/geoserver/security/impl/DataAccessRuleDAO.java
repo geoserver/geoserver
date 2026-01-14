@@ -54,7 +54,7 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
     String filesystemSandbox;
 
     // set to true once rules have been validated against a populated catalog
-    private volatile boolean rulesValidated = false;
+    private volatile boolean rulesValidated = false; 
 
     /** Returns the instanced contained in the Spring context for the UI to use */
     public static DataAccessRuleDAO get() {
@@ -123,7 +123,7 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
         this.catalogMode = catalogMode;
         this.rules = result;
         // rules changed, validation needs to be re-run against the catalog
-        this.rulesValidated = false;
+        this.rulesValidated = false; 
     }
 
     /** Parses a single layer.properties line into a {@link DataAccessRule}, returns false if the rule is not valid */
@@ -279,36 +279,39 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
         this.filesystemSandbox = filesystemSandbox;
     }
 
-    /** Registers a catalog listener to trigger rule validation once the catalog is (re)loaded. */
+    /**
+     * Registers a catalog listener to trigger rule validation once the catalog is (re)loaded.
+     */
     private void registerCatalogListener() {
         if (rawCatalog == null) return;
-        rawCatalog.addListener(new org.geoserver.catalog.event.CatalogListener() {
-            @Override
-            public void handleAddEvent(org.geoserver.catalog.event.CatalogAddEvent event)
-                    throws org.geoserver.catalog.CatalogException {}
+        rawCatalog.addListener(
+                new org.geoserver.catalog.event.CatalogListener() {
+                    @Override
+                    public void handleAddEvent(org.geoserver.catalog.event.CatalogAddEvent event)
+                            throws org.geoserver.catalog.CatalogException {}
 
-            @Override
-            public void handleRemoveEvent(org.geoserver.catalog.event.CatalogRemoveEvent event)
-                    throws org.geoserver.catalog.CatalogException {}
+                    @Override
+                    public void handleRemoveEvent(org.geoserver.catalog.event.CatalogRemoveEvent event)
+                            throws org.geoserver.catalog.CatalogException {}
 
-            @Override
-            public void handleModifyEvent(org.geoserver.catalog.event.CatalogModifyEvent event)
-                    throws org.geoserver.catalog.CatalogException {}
+                    @Override
+                    public void handleModifyEvent(org.geoserver.catalog.event.CatalogModifyEvent event)
+                            throws org.geoserver.catalog.CatalogException {}
 
-            @Override
-            public void handlePostModifyEvent(org.geoserver.catalog.event.CatalogPostModifyEvent event)
-                    throws org.geoserver.catalog.CatalogException {}
+                    @Override
+                    public void handlePostModifyEvent(
+                            org.geoserver.catalog.event.CatalogPostModifyEvent event)
+                            throws org.geoserver.catalog.CatalogException {}
 
-            @Override
-            public void reloaded() {
-                validateRulesAgainstCatalog();
-            }
-        });
+                    @Override
+                    public void reloaded() {
+                        validateRulesAgainstCatalog();
+                    }
+                });
 
         // if the catalog already appears populated, run validation immediately
         try {
-            if (rawCatalog.getWorkspaces() != null
-                    && !rawCatalog.getWorkspaces().isEmpty()) {
+            if (rawCatalog.getWorkspaces() != null && !rawCatalog.getWorkspaces().isEmpty()) {
                 validateRulesAgainstCatalog();
             }
         } catch (Exception e) {
@@ -330,7 +333,14 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
 
             String ruleText;
             if (layerName != null) {
-                ruleText = root + "." + layerName + "." + rule.getAccessMode().getAlias() + "=" + rule.getValue();
+                ruleText =
+                        root
+                                + "."
+                                + layerName
+                                + "."
+                                + rule.getAccessMode().getAlias()
+                                + "="
+                                + rule.getValue();
                 if (!ANY.equals(root) && rawCatalog.getWorkspaceByName(root) == null) {
                     LOGGER.warning("Namespace/Workspace " + root + " is unknown in rule " + ruleText);
                 }

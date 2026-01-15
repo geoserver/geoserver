@@ -359,3 +359,35 @@ Affine 2D transform operating directly in projected coordinates::
     PARAMETER["elt_1_2", -208.185]]
     
 Each operation can be described in a single line, or can be split in several lines for readability, adding a backslash "\\" at the end of each line, as in the former examples.
+
+Coordinate Operations with custom authorities
+---------------------------------------------
+
+In case you have defined a custom authority, you might want to define custom coordinate operations either
+between CRS in that same authority, or across different authorities. In that case, use the following syntax in the
+:file:`epsg_operations.properties` file::
+
+  <authority>\:<source crs code>,<authority>\:<target crs code>=<WKT math transform>
+
+.. note:: It's important to escape the colon ":" with a backslash "\", to avoid confusing the property file parser.
+    Failing to do so will make the parser interpret the authority name the key, and whatever is after the first colon
+    as the value (which would make for an invalid WKT specification).
+
+The authority prefix can be omitted in case it's EPSG, allowing to mix custom CRSs and EPSG CRSs
+in the same configuration file.
+
+For example, if you have defined a custom authority named "MYAUTH", you could define a custom coordinate operation like this::
+
+    MYAUTH\:1000,4326=PARAM_MT["Molodenski", \
+        PARAMETER["dim", 2], \
+        PARAMETER["dx", 1.0], \
+        PARAMETER["dy", 2.0], \
+        PARAMETER["dz", 3.0], \
+        PARAMETER["src_semi_major", 6378137.0], \
+        PARAMETER["src_semi_minor", 6356752.314140356], \
+        PARAMETER["tgt_semi_major", 6378137.0], \
+        PARAMETER["tgt_semi_minor", 6356752.314245179]]
+
+If the above files are modified at runtime, GeoServer won't notice the changes right away.
+To force a reload of the definitions, issue a "reset" of the configuration,
+e.g., from the UI go into "Server Status" and click on the "Reset" button.

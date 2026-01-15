@@ -7,23 +7,27 @@ package org.vfny.geoserver.crs;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Properties;
 import java.util.logging.Level;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
-import org.geotools.api.referencing.operation.CoordinateOperationAuthorityFactory;
-import org.geotools.referencing.factory.epsg.CoordinateOperationFactoryUsingWKT;
+import org.geotools.referencing.operation.PropertyCoordinateOperationFactory;
 import org.geotools.util.URLs;
 import org.geotools.util.factory.Hints;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Authority allowing users to define their own CoordinateOperations in a separate file. Will override EPSG definitions.
  *
  * @author Oscar Fonts
  */
-public class GeoserverWKTOperationFactory extends CoordinateOperationFactoryUsingWKT
-        implements CoordinateOperationAuthorityFactory {
+public class GeoserverWKTOperationFactory extends PropertyCoordinateOperationFactory {
+
+    private static final String FILENAME = "epsg_operations.properties";
+
+    private volatile Properties processedDefinitions;
 
     public GeoserverWKTOperationFactory() {
         super(null, MAXIMUM_PRIORITY);
@@ -31,6 +35,40 @@ public class GeoserverWKTOperationFactory extends CoordinateOperationFactoryUsin
 
     public GeoserverWKTOperationFactory(Hints userHints) {
         super(userHints, MAXIMUM_PRIORITY);
+    }
+
+    @Override
+    protected Properties getDefinitions() {
+        if (processedDefinitions == null) {
+            Properties definitions = super.getDefinitions();
+            if (definitions == null) return null;
+
+            // post-process the definitions for backwards compatibility, if the key contains just numbers assume it's
+            // an EPSG code
+            Properties processed = new Properties();
+            for (String key : definitions.stringPropertyNames()) {
+                String[] split = key.split("\\s*,\\s*");
+                if (split.length == 2) {
+                    String source = split[0];
+                    String target = split[1];
+                    source = qualifyCode(source);
+                    target = qualifyCode(target);
+                    String newKey = source + "," + target;
+                    processed.put(newKey, definitions.getProperty(key));
+                } else {
+                    processed.put(key, definitions.getProperty(key));
+                }
+            }
+            this.processedDefinitions = processed;
+        }
+        return processedDefinitions;
+    }
+
+    private static @NonNull String qualifyCode(String code) {
+        if (!code.contains(":")) {
+            code = "EPSG:" + code;
+        }
+        return code;
     }
 
     /**

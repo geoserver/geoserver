@@ -40,7 +40,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(
         path = RestBaseController.ROOT_PATH + "/about",
         produces = {MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-@ControllerAdvice
 public class AboutController extends RestBaseController {
 
     @GetMapping(value = "/manifest")

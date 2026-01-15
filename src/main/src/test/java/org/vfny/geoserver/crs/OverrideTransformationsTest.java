@@ -20,7 +20,7 @@ import org.geotools.referencing.factory.epsg.CoordinateOperationFactoryUsingWKT;
 import org.junit.AfterClass;
 import org.junit.Test;
 
-public class OvverideTransformationsTest extends GeoServerSystemTestSupport {
+public class OverrideTransformationsTest extends GeoServerSystemTestSupport {
 
     private static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
     private static final String SOURCE_CRS = "EPSG:TEST1";
@@ -49,17 +49,24 @@ public class OvverideTransformationsTest extends GeoServerSystemTestSupport {
         // setup the grid file, the definitions and the tx overrides
         new File(testData.getDataDirectoryRoot(), "user_projections").mkdir();
         testData.copyTo(
-                OvverideTransformationsTest.class.getResourceAsStream("test_epsg.properties"),
+                OverrideTransformationsTest.class.getResourceAsStream("authorities.properties"),
+                "user_projections/authorities.properties");
+        testData.copyTo(
+                OverrideTransformationsTest.class.getResourceAsStream("test_epsg.properties"),
                 "user_projections/epsg.properties");
         testData.copyTo(
-                OvverideTransformationsTest.class.getResourceAsStream("test_epsg_operations.properties"),
+                OverrideTransformationsTest.class.getResourceAsStream("custom.properties"),
+                "user_projections/CUSTOM.properties");
+        testData.copyTo(
+                OverrideTransformationsTest.class.getResourceAsStream("test_epsg_operations.properties"),
                 "user_projections/epsg_operations.properties");
         testData.copyTo(
-                OvverideTransformationsTest.class.getResourceAsStream("stgeorge.las"), "user_projections/stgeorge.las");
+                OverrideTransformationsTest.class.getResourceAsStream("stgeorge.las"), "user_projections/stgeorge.las");
         testData.copyTo(
-                OvverideTransformationsTest.class.getResourceAsStream("stgeorge.los"), "user_projections/stgeorge.los");
+                OverrideTransformationsTest.class.getResourceAsStream("stgeorge.los"), "user_projections/stgeorge.los");
 
-        CRS.reset("all");
+        // force reloading the custom authorities too
+        getGeoServer().reset();
     }
 
     /** Test method for {@link CoordinateOperationFactoryUsingWKT#createCoordinateOperation}. */
@@ -68,6 +75,21 @@ public class OvverideTransformationsTest extends GeoServerSystemTestSupport {
         // Test CRSs
         CoordinateReferenceSystem source = CRS.decode(SOURCE_CRS);
         CoordinateReferenceSystem target = CRS.decode(TARGET_CRS);
+        MathTransform mt = CRS.findMathTransform(source, target, true);
+
+        // Test MathTransform
+        double[] p = new double[2];
+        mt.transform(SRC_TEST_POINT, 0, p, 0, 1);
+        assertEquals(p[0], DST_TEST_POINT[0], 1e-8);
+        assertEquals(p[1], DST_TEST_POINT[1], 1e-8);
+    }
+
+    /** Test method for {@link CoordinateOperationFactoryUsingWKT#createCoordinateOperation}. */
+    @Test
+    public void testCreateOperationCrossAuthority() throws Exception {
+        // Test CRSs
+        CoordinateReferenceSystem source = CRS.decode("CUSTOM:1");
+        CoordinateReferenceSystem target = CRS.decode("EPSG:4326");
         MathTransform mt = CRS.findMathTransform(source, target, true);
 
         // Test MathTransform

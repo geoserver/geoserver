@@ -9,6 +9,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -24,6 +25,7 @@ import org.geoserver.config.GeoServerPropertyConfigurer;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
+import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.config.GWCConfigPersister;
 import org.geoserver.gwc.config.GWCInitializer;
@@ -171,8 +173,13 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                             dd.get(Paths.path("workspaces", ws.getName())).dir());
                     backupRestoreAdditionalResources(wsDd.getResourceStore(), targetWorkspacesFolder.get(ws.getName()));
 
-                    // Backup Style SLDs
+                    // Backup Workspace Style XMLs and SLDs
                     for (StyleInfo sty : getCatalog().getStylesByWorkspace(ws)) {
+                        // Write the style.xml metadata file
+                        Resource wsStyleFolder = BackupUtils.dir(targetWorkspacesFolder.get(ws.getName()), "styles");
+                        doWrite(sty, wsStyleFolder, sty.getName() + ".xml");
+
+                        // Copy the SLD file
                         Resource styResource = wsDd.get(Paths.path("styles", sty.getFilename()));
                         if (Resources.exists(styResource)) {
                             Resources.copy(
@@ -687,7 +694,8 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                     sty.setWorkspace(ws);
                     Resource wsLocalStyleFolder =
                             BackupUtils.dir(dd.get(Paths.path("workspaces", ws.getName())), "styles");
-                    doWrite(sty, wsLocalStyleFolder, sty.getName() + ".xml");
+                    // Use referenceByName=false so GeoServer can load the style from disk
+                    doWriteStyleForRestore(sty, wsLocalStyleFolder, sty.getName() + ".xml");
 
                     Resource styResource = sourceRestoreFolder.get(
                             Paths.path("workspaces", ws.getName(), "styles", sty.getFilename()));
@@ -1213,6 +1221,32 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                 throw new IllegalArgumentException(
                         "TileLayer with same name already exists: " + layerName + ": <" + layerID + ">");
             }
+        }
+    }
+
+    /**
+     * Write a StyleInfo to disk with referenceByName=false.
+     *
+     * <p>This is needed because GeoServer's catalog loader expects workspace references to be written as
+     * <workspace><id>...</id></workspace> rather than <workspace><name>...</name></workspace>.
+     *
+     * <p>The standard doWrite() method uses referenceByName=true (set in BackupRestoreItem) which is correct for
+     * portable backups, but not for writing styles that need to be loaded by GeoServer's catalog.
+     */
+    private void doWriteStyleForRestore(StyleInfo style, Resource directory, String fileName) throws Exception {
+        try {
+            OutputStream out = Resources.fromPath(fileName, directory).out();
+            try {
+                XStreamPersister xp = getxStreamPersisterFactory().createXMLPersister();
+                xp.setCatalog(getCatalog());
+                xp.setReferenceByName(false); // Use ID references, not name references
+                Object item = xp.unwrapProxies(style);
+                xp.getXStream().toXML(item, out);
+            } finally {
+                out.close();
+            }
+        } catch (Exception e) {
+            logValidationExceptions(style, e);
         }
     }
 }

@@ -41,4 +41,9 @@
     <bean id="schemaCacheReloader" class="org.geoserver.featurestemplating.configuration.schema.SchemaReloader">
         <constructor-arg ref="schemaConfiguration"/>
     </bean>
+
+    <bean id="schemaXStreamConfigurationMigration" class="org.geoserver.featurestemplating.configuration.schema.SchemaXStreamConfigurationMigration">
+        <constructor-arg ref="resourceLoader"/>
+    </bean>
+
 </beans>

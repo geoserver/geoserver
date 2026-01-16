@@ -79,6 +79,71 @@ For this tutorial, we'll be using the layer ``opengeo:countries`` to show off th
 
 Our layer is now ready to be served.
 
+Vector Tiles Metatiling Support in Tile Layers
+--------------------------------------------------------
+
+GeoServer supports **metatiling for Vector Tiles**, extending a well-known raster tiles optimization technique to vector tiles as well.
+This feature can significantly improve performance and database efficiency.
+
+Overview
+^^^^^^^^
+
+Metatiling groups multiple vector tiles into a single **metatile** that is generated in one operation and then split into individual tiles on disk.
+
+For example, with a 4x4 metatile:
+
+* One request produces **16 vector tiles**
+* Data is queried **once** instead of 16 times
+* Geometry processing and encoding are shared
+
+This approach is particularly beneficial for complex vector datasets or slow data sources (e.g. expensive database views), especially when seeding tiles.
+Advantages of Vector Tile Metatiling
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Reduced Database Load
+~~~~~~~~~~~~~~~~~~~~~
+Without metatiling, GeoServer typically performs
+
+* one database query per vector tile 
+* repeated spatial filtering and geometry decoding
+
+With metatiling enabled:
+
+* a **single database query** retrieves all features for the entire metatile extent
+* the same result set is reused to generate multiple tiles
+
+Example::
+  
+  2x2 metatile → 1 query instead of 4
+  4x4 metatile → 1 query instead of 16
+  8x8 metatile → 1 query instead of 64
+
+Lower Latency and Better Throughput
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Expensive operations such as database access, geometry clipping and simplification are performed once per metatile. 
+Overall request latency is reduced and server throughput increases under load.
+
+Notes on memory Constraints and Safety Limits
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Note that vector metatiling increases the amount of data processed **at once**, which has direct implications for memory usage.
+Although the final vector tile files (``.pbf``) are typically small, the **in-memory data structures** used during generation are much larger:
+
+* some buffering is applied before the geometries are clipped
+* intermediate command buffers are built for vector tiles encoding (note that there is 1 tileEncoder for each subtile of a metatile)
+
+To ensure stability, vector tile metatiling in GeoServer is governed by the same memory constraints used for WMS rendering:
+
+* the **WMS maximum rendering memory** setting acts as a hard limit
+* metatile generation is monitored for memory growth
+* processing is aborted if the estimated memory usage for the metatile exceeds the configured threshold
+
+This guarantees that vector tile metatiling cannot exhaust heap memory or destabilize the server.
+When configuring vector tile metatiling:
+
+* larger metatile sizes increase efficiency but also memory usage
+* complex polygon layers require more memory than point or line layers
+* administrators may need to adjust the WMS rendering memory limit to accommodate metatiling
+
 Create OpenLayers application - TMS Vector Tiles
 ------------------------------------------------
 

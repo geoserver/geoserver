@@ -117,6 +117,17 @@
         <property name="order" value="220" />
     </bean>
 
+    <!-- Control CORS page -->
+    <bean id="corsConfigurationPage" class="org.geoserver.web.MenuPageInfo">
+        <property name="id" value="security.cors"/>
+        <property name="titleKey" value="security.cors.title"/>
+        <property name="descriptionKey" value="security.cors.description"/>
+        <property name="componentClass" value="org.geoserver.security.web.cors.CORSConfigurationPage"/>
+        <property name="icon" value="../img/icons/silk/shield.png"/>
+        <property name="category" ref="securityCategory"/>
+        <property name="order" value="221"/>
+    </bean>
+
     <!-- password policy panel infos -->
     <bean id="passwordPolicyPanelInfo" class="org.geoserver.security.web.passwd.PasswordPolicyPanelInfo">
         <property name="id" value="security.passwordPolicy" />

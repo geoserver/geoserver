@@ -75,38 +75,50 @@ The server status page shows which renderer is being used.
 Enable CORS
 -----------
 
-`Enable Cross-Origin Resource Sharing (CORS) <https://enable-cors.org/>`_ to allow JavaScript applications outside of your own domain, or web browsers, to use GeoServer.
+`Enable Cross-Origin Resource Sharing (CORS) <https://enable-cors.org/>`_ allows JavaScript applications (such as OpenLayers or Leaflet) running on different domains to make requests to your GeoServer.
 
-Enable CORS for Tomcat
-''''''''''''''''''''''
+GeoServer provides a built-in configuration interface to enable CORS. This is the preferred method for both the standalone (embedded Jetty) and WAR (Tomcat) distributions, as it eliminates the need to manually edit configuration files.
 
-The web archive distribution of GeoServer is tested with Tomcat.  Use the following steps to enable CORS for Tomcat,  more information on what this does and other options see the `Tomcat CORS Filter documentation <https://tomcat.apache.org/tomcat-9.0-doc/config/filter.html#CORS_Filter>`_.
+Using the GeoServer Web Administration Interface
+''''''''''''''''''''''''''''''''''''''''''''''''
 
 
-1. Uncomment the following ``<filter>`` in :file:`webapps/geoserver/WEB-INF/web.xml`:
+.. figure:: images/cors.png
+   :align: center
+
+1. Log in to the GeoServer Web Admin interface as an administrator.
+2. Navigate to :menuselection:`Settings --> Global`.
+3. Locate the **CORS Settings** section.
+
+.. figure:: images/cors_settings.png
+   :align: center
+
+4. Check the **Enabled** box.
+5. Configure the following options as needed:
    
-   .. literalinclude:: /../../../../src/web/app/src/main/webapp/WEB-INF/web.xml
-      :start-at: <!-- Uncomment following filter to enable CORS in Tomcat.
-      :end-at: -->
+   * **Allowed Origin Patterns**: A comma-separated list of origins (e.g., ``http://example.com, https://myapp.org``). Wildcards (``*``) can be used to allow all origins.
+   * **Allowed Methods**: Select the HTTP methods permitted (usually GET, POST, OPTIONS).
+   * **Allowed Headers**: Specify which headers can be used during the actual request.
+   * **Max Age**: How long the results of a preflight request can be cached by the browser (in seconds).
+   * **Supports Credentials**: Whether the request can include user credentials (cookies, HTTP authentication).
 
-2. Uncomment the following ``<filter-mapping>``:
+6. Click **Save** at the bottom of the page.
 
-   .. literalinclude:: /../../../../src/web/app/src/main/webapp/WEB-INF/web.xml
-      :start-after: <!-- Uncomment following filter-mapping to enable CORS
-      :end-before: -->
+.. warning::
+   GeoServer must be restarted for these changes to take effect.
 
-3. Restart
+Manual Configuration (Tomcat only)
+''''''''''''''''''''''''''''''''''
 
-Enable CORS for Jetty / binary installer
-''''''''''''''''''''''''''''''''''''''''
-
-The standalone distributions of GeoServer include the Jetty application server.  Use the following steps to enable CORS for Jetty, for more information on what this does and other options see the `Jetty Cross Origin Filter documentation <https://eclipse.dev/jetty/documentation/jetty-9/index.html#cross-origin-filter>`_ 
+While the UI method above is recommended, administrators using Tomcat may still configure CORS manually via :file:`web.xml` if desired. Please note that enabling the manual configuration is not compatible with the built-in configuration.  Running them simultaneously will result in multiple allow origin values and will cause browser CORS failures.  For detailed options, see the `Tomcat CORS Filter documentation <https://tomcat.apache.org/tomcat-9.0-doc/config/filter.html#CORS_Filter>`_.
 
 1. Uncomment the following ``<filter>`` in :file:`webapps/geoserver/WEB-INF/web.xml`:
 
    .. literalinclude:: /../../../../src/web/app/src/main/webapp/WEB-INF/web.xml
-      :start-at:    <!-- Uncomment following filter to enable CORS in Jetty. 
+      :start-at:    <!-- Uncomment following filter to enable CORS in Tomcat. 
       :end-at: -->
+
+   Note that in some cases you may have to replace the asterisk (*) param-value for cors.allowed.methods with an explicit list: Content-Type,X-Requested-With,accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Authorization
 
 2. Uncomment the following ``<filter-mapping>``:
 

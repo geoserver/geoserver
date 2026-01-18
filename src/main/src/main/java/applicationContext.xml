@@ -172,6 +172,10 @@
     <property name="resourceLoader" ref="resourceLoader"/>
     <property name="geoServer" ref="geoServer"/>
   </bean>
+
+  <!-- cors initializer -->
+  <bean id="corsInitializer" class="org.geoserver.security.cors.CORSInitializer">
+  </bean>
   
   <!-- resource pool initializer -->
   <bean id="resourcePoolInitializer" class="org.geoserver.catalog.ResourcePoolInitializer">

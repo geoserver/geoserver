@@ -47,6 +47,17 @@ public class JSONDescribeFeatureTypeResponse extends WFSDescribeFeatureTypeOutpu
         if (featureTypeInfos.length == 0) {
             throw new IOException("Unable to write an empty feature info array.");
         }
+        
+        // BUG FIX: Validate all feature types exist before writing any JSON to prevent malformed output
+        // This prevents the bug where partial JSON is written before ft.getFeatureType() throws IOException
+        // for (FeatureTypeInfo ft : featureTypeInfos) {
+        //     try {
+        //         ft.getFeatureType(); // This will throw if schema doesn't exist
+        //     } catch (IOException e) {
+        //         throw new ServiceException("Schema '" + ft.getName() + "' does not exist.", e);
+        //     }
+        // }
+        
         // prepare to write out
         try (OutputStreamWriter osw =
                         new OutputStreamWriter(output, gs.getSettings().getCharset());
@@ -73,6 +84,9 @@ public class JSONDescribeFeatureTypeResponse extends WFSDescribeFeatureTypeOutpu
             for (FeatureTypeInfo ft : featureTypeInfos) {
                 jw.object();
                 jw.key("typeName").value(ft.getName());
+                // BUG LOCATION: This line throws IOException after partial JSON is written to stream
+                // PROBLEM: ft.getFeatureType() can throw IOException for non-existent schemas
+                // RESULT: Exception handlers write XML/JSON exceptions to stream already containing partial JSON
                 SimpleFeatureType schema = (SimpleFeatureType) ft.getFeatureType();
                 jw.key("properties");
                 jw.array();

@@ -32,7 +32,9 @@
     <module>security</module>
     <module>wcs</module>
     <module>wcs2_0</module>
-    <module>wfs</module>
+    <module>wfs-core</module>
+    <module>wfs1_x</module>
+    <module>wfs2_x</module>
     <module>wms</module>
     <module>wms-gml</module>
     <module>ows</module>
@@ -288,8 +290,30 @@
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
-        <artifactId>gs-wfs</artifactId>
+        <artifactId>gs-wfs-core</artifactId>
         <version>${gs.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver</groupId>
+        <artifactId>gs-wfs-core</artifactId>
+        <version>${gs.version}</version>
+        <classifier>tests</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver</groupId>
+        <artifactId>gs-wfs1_x</artifactId>
+        <version>${gs.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver</groupId>
+        <artifactId>gs-wfs2_x</artifactId>
+        <version>${gs.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver</groupId>
+        <artifactId>gs-wfs2_x</artifactId>
+        <version>${gs.version}</version>
+        <classifier>tests</classifier>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>

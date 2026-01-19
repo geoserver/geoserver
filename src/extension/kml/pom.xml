@@ -24,7 +24,11 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-wfs</artifactId>
+      <artifactId>gs-wfs-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wfs1_x</artifactId>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/uk.m0nom/javaapiforkml -->
@@ -80,7 +84,13 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-wfs</artifactId>
+      <artifactId>gs-wfs-core</artifactId>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wfs1_x</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>

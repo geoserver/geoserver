@@ -31,7 +31,7 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-wfs</artifactId>
+      <artifactId>gs-wfs-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -43,6 +43,11 @@
       <groupId>org.geoserver</groupId>
       <artifactId>gs-ows</artifactId>
       <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wfs1_x</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -20,7 +20,12 @@
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-wfs</artifactId>
+      <artifactId>gs-wfs-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wfs1_x</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.extension</groupId>
@@ -35,7 +40,14 @@
 
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-wfs</artifactId>
+      <artifactId>gs-wfs-core</artifactId>
+      <version>${project.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wfs1_x</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>

@@ -21,7 +21,7 @@ import org.apache.commons.io.FileUtils;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.geopkg.GeoPkg;
 import org.geoserver.platform.Operation;
-import org.geoserver.wfs.WFSTestSupport;
+import org.geoserver.wfs.WFS1XTestSupport;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.api.data.SimpleFeatureReader;
@@ -47,7 +47,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
  *
  * @author Niels Charlier
  */
-public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
+public class GeoPackageGetFeatureOutputFormatTest extends WFS1XTestSupport {
 
     protected static FilterFactory ff = CommonFactoryFinder.getFilterFactory();
 

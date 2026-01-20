@@ -74,11 +74,5 @@
       <groupId>org.eclipse.angus</groupId>
       <artifactId>angus-activation</artifactId>
     </dependency>
-    <dependency>
-      <groupId>jakarta.mail</groupId>
-      <artifactId>jakarta.mail-api</artifactId>
-      <scope>test</scope>
-    </dependency>
-
   </dependencies>
 </project>

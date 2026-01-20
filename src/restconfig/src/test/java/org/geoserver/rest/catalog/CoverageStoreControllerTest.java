@@ -7,7 +7,6 @@ package org.geoserver.rest.catalog;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.geoserver.rest.RestBaseController.ROOT_PATH;
-import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -468,7 +467,8 @@ public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
         final File storeDir = Resources.find(
                 Resources.fromURL(Files.asResource(loader.getBaseDirectory()), "data/wcs/mosaicfordelete"), true);
         File[] content = storeDir.listFiles();
-        assertThat(content.length, anyOf(equalTo(9), equalTo(10), equalTo(11)));
+        // the various config files, the image, and the geopackage index file
+        assertThat(content.length, equalTo(8));
 
         assertEquals(
                 200,

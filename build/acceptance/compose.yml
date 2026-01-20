@@ -1,0 +1,26 @@
+services:
+  geoserver:
+    image: geoserveracceptance/geoserver:${GEOSERVER_TAG:-latest}
+    build:
+      context: .
+      dockerfile: ./geoserver/Dockerfile
+      args:
+        JAVA_VERSION: ${JAVA_VERSION:-17}
+    ports:
+      - 19090:8080
+    environment:
+      JAVA_OPTS: >-
+        -Xms${HEAP_SIZE_MIN:-1024m}
+        -Xmx${HEAP_SIZE_MAX:-1024m}
+  geodatabase:
+    #image with arm/64 support:
+    image: imresamu/postgis:15-3.4
+    environment:
+      POSTGRES_DB: acceptance
+      POSTGRES_USER: geoserver
+      POSTGRES_PASSWORD: geoserver
+    volumes:
+      - ./geodatabase:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "6432:5432"
+

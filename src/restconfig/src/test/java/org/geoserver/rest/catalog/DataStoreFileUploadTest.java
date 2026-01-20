@@ -43,8 +43,6 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.FileAccessManager;
 import org.geoserver.security.impl.DefaultFileAccessManager;
 import org.geotools.util.URLs;
-import org.h2.tools.DeleteDbFiles;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Ignore;
@@ -88,14 +86,6 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         removeStore("gs", "pds");
         removeStore("gs", "store with spaces");
         removeStore("gs", "san_andres_y_providencia");
-    }
-
-    @After
-    public void cleanUpDbFiles() throws Exception {
-        DeleteDbFiles.execute("target", "foo", true);
-        DeleteDbFiles.execute("target", "pds", true);
-        DeleteDbFiles.execute("target", "chinese_poly", true);
-        DeleteDbFiles.execute("target", "san_andres_y_providencia", true);
     }
 
     byte[] propertyFile() throws IOException {

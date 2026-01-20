@@ -27,7 +27,7 @@ public class DGGSSecuredObjectFactory implements SecuredObjectFactory {
     public Object secure(Object object, WrapperPolicy policy) {
         // mimicking DefaultSecureDataFactory
         if (object instanceof DataStore store) {
-            return new ReadOnlyDGGSStore(store, policy);
+            return new ReadOnlyDGGSStore<>(store, policy);
         }
 
         return null;

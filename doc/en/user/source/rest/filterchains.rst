@@ -164,3 +164,65 @@ List all Authentication Filters
         </filterChain>
     </filterChains>
 
+
+Configuring Allowed Authentication Filter Chain Classes
+========================================================
+
+GeoServer uses reflection to instantiate authentication filter chain
+implementations defined in the security configuration.
+To reduce the risk of loading unexpected or unsupported classes,
+GeoServer enforces an allow-list of authentication filter chain classes.
+
+Default behavior
+----------------
+
+By default, GeoServer allows the built-in authentication filter chain
+implementations shipped with the platform, including:
+
+* ``org.geoserver.security.HtmlLoginFilterChain``
+* ``org.geoserver.security.ConstantFilterChain``
+* ``org.geoserver.security.LogoutFilterChain``
+* ``org.geoserver.security.ServiceLoginFilterChain``
+* ``org.geoserver.security.VariableFilterChain``
+
+These default classes are always permitted.
+
+Extending the allow-list
+------------------------
+
+Installations that provide custom authentication filter chain
+implementations can extend the allow-list using either a system property
+or an environment variable.
+
+The configured values are **merged** with the built-in allow-list.
+
+**System property**
+
+::
+
+  -Dgeoserver.security.allowedAuthFilterChainClasses=\
+  com.example.geoserver.security.CustomChain,\
+  com.example.geoserver.security.*
+
+**Environment variable**
+
+::
+
+  GEOSERVER_SECURITY_ALLOWED_AUTH_FILTERCHAIN_CLASSES=\
+  com.example.geoserver.security.CustomChain,\
+  com.example.geoserver.security.*
+
+The value is a comma-separated list of:
+
+* Fully qualified class names, or
+* Package prefixes ending in ``.*``
+
+Security notes
+--------------
+
+If a class name is not present in the allow-list, GeoServer will reject
+the configuration and fail to instantiate the filter chain.
+
+This mechanism prevents the reflective construction of unexpected classes
+and mitigates risks associated with unsafe reflection, while
+preserving extensibility for custom deployments.

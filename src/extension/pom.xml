@@ -70,6 +70,7 @@
       <id>app-schema</id>
       <modules>
         <module>app-schema</module>
+        <module>kml</module>
       </modules>
     </profile>
 
@@ -154,6 +155,7 @@
       <id>wps</id>
       <modules>
         <module>wps</module>
+        <module>kml</module>
       </modules>
     </profile>
 
@@ -233,9 +235,30 @@
     </profile>
 
     <profile>
+      <id>wcs</id>
+      <modules>
+        <module>wcs</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>wcs10</id>
+      <modules>
+        <module>wcs/wcs1_0</module>
+      </modules>
+    </profile>
+
+    <profile>
       <id>libjpeg-turbo</id>
       <modules>
         <module>libjpeg-turbo</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>kml</id>
+      <modules>
+        <module>kml</module>
       </modules>
     </profile>
 
@@ -361,6 +384,7 @@
       <id>wps-download</id>
       <modules>
         <module>wps-download</module>
+        <module>kml</module>
       </modules>
     </profile>
     <profile>
@@ -400,12 +424,31 @@
       </modules>
     </profile>
     <profile>
+      <id>arcgrid</id>
+      <modules>
+        <module>arcgrid</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>image</id>
+      <modules>
+        <module>image</module>
+      </modules>
+    </profile>
+
+    <profile>
       <id>ogcapi-features</id>
       <modules>
         <module>ogcapi/ogcapi-core</module>
         <module>ogcapi/ogcapi-features</module>
         <module>ogcapi/web-ogcapi</module>
         <module>ogcapi/web-features</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>wcs11</id>
+      <modules>
+        <module>wcs/wcs1_1</module>
       </modules>
     </profile>
 
@@ -437,6 +480,7 @@
         <module>dxf</module>
         <module>printing</module>
         <module>wcs2_0-eo</module>
+        <module>wcs</module>
         <module>libjpeg-turbo</module>
         <module>importer</module>
         <module>grib</module>
@@ -460,6 +504,9 @@
         <module>metadata</module>
         <module>rat</module>
         <module>ogcapi</module>
+        <module>kml</module>
+        <module>arcgrid</module>
+        <module>image</module>
       </modules>
     </profile>
 
@@ -491,6 +538,7 @@
         <module>dxf</module>
         <module>printing</module>
         <module>wcs2_0-eo</module>
+        <module>wcs</module>
         <module>libjpeg-turbo</module>
         <module>importer</module>
         <module>grib</module>
@@ -514,6 +562,9 @@
         <module>metadata</module>
         <module>rat</module>
         <module>ogcapi</module>
+        <module>kml</module>
+        <module>arcgrid</module>
+        <module>image</module>
       </modules>
     </profile>
   </profiles>

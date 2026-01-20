@@ -248,9 +248,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.geotools.jdbc</groupId>
-      <artifactId>gt-jdbc-h2</artifactId>
-      <scope>test</scope>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-geopkg</artifactId>
     </dependency>
     <dependency>
       <groupId>org.codehaus.jettison</groupId>
@@ -275,6 +274,16 @@
       <!-- used for tests that require environment variables -->
       <groupId>com.github.stefanbirkner</groupId>
       <artifactId>system-rules</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers-postgresql</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

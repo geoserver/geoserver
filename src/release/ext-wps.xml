@@ -18,6 +18,10 @@
         <include>opencsv*</include>
         <!-- kmlppio dependencies -->
         <include>gs-wps-kml-ppio*</include>
+        <include>gs-kml*</include>
+        <include>javaapiforkml*</include>
+        <include>jaxb-runtime*</include>
+        <include>jakarta.xml.bind-api*</include>
         <include>gt-xsd-kml*</include>
       </includes>
     </fileSet>

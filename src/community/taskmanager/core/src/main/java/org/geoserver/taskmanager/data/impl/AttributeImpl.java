@@ -10,6 +10,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -19,7 +20,9 @@ import org.geoserver.taskmanager.data.Attribute;
 import org.geoserver.taskmanager.data.Configuration;
 
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "configuration"})})
+@Table(
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "configuration"})},
+        indexes = {@Index(name = "idx_attributeimpl_configuration", columnList = "configuration", unique = false)})
 public class AttributeImpl extends BaseImpl implements Attribute {
 
     @Serial

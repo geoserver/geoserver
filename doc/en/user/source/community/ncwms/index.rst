@@ -140,7 +140,7 @@ from the ncWMS manual, with GeoServer specific annotations):
 * ANIMATION: "true" or "false" - whether to generate an animation. The ncWMS documentation states that TIME has to be of the form ``starttime/endtime``,
   but currently TIME needs to be a list of discrete times instead. Animation requires using the "image/gif" as the response format (as the only format supporting animation) 
 
-Here are a few examples based on the "ArcSample" arcgrid sample layer, containing annual precipitation data. The one band provided by this layer has been configured with a default range of 0 to 6000.
+Here are a few examples based on the "GeoTIFFSample" geotiff sample layer, containing annual precipitation data. The one band provided by this layer has been configured with a default range of 0 to 6000.
 
 * Default output with the "redblue" palette:
   

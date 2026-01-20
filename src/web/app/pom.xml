@@ -90,22 +90,22 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-wcs1_0</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-wcs1_1</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver</groupId>
       <artifactId>gs-wcs2_0</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-wfs</artifactId>
+      <artifactId>gs-wfs-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wfs1_x</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wfs2_x</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -116,11 +116,6 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-wms-gml</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-kml</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -191,15 +186,13 @@
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
-      <artifactId>gt-arcgrid</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.geotools</groupId>
       <artifactId>gt-imagemosaic</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.geotools</groupId>
-      <artifactId>gt-image</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>gt-image</artifactId>
+          <groupId>org.geotools</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents.client5</groupId>
@@ -902,6 +895,20 @@
       </dependencies>
     </profile>
     <profile>
+      <id>kml-out</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-kml</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geowebcache</groupId>
+          <artifactId>gwc-kml</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>geopkg</id>
       <dependencies>
         <dependency>
@@ -1036,77 +1043,6 @@
         </dependency>
       </dependencies>
     </profile>
-    <!-- profile>
-      <id>geofence</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.extension</groupId>
-          <artifactId>gs-geofence</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>geofence-server-h2</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.extension</groupId>
-          <artifactId>gs-geofence-server</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-        <! Older versions of h2 fail in drop/create tables    >
-        <! This version may break netcdf/grib modules         >
-        <dependency>
-          <groupId>com.h2database</groupId>
-          <artifactId>h2</artifactId>
-          <version>2.3.232</version>
-        </dependency>
-        <dependency>
-          <groupId>org.opengeo</groupId>
-          <artifactId>geodb</artifactId>
-          <version>${opengeo-geodb.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>geofence-server-postgres</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.extension</groupId>
-          <artifactId>gs-geofence-server</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.postgresql</groupId>
-          <artifactId>postgresql</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>org.postgis</groupId>
-          <artifactId>postgis-jdbc</artifactId>
-          <version>${postgis.jdbc.version}</version>
-          <exclusions>
-            <exclusion>
-              <artifactId>postgis-stubs</artifactId>
-              <groupId>org.postgis</groupId>
-            </exclusion>
-            <exclusion>
-              <artifactId>postgresql</artifactId>
-              <groupId>postgresql</groupId>
-            </exclusion>
-          </exclusions>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>geofence-wps</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.extension</groupId>
-          <artifactId>gs-geofence-wps</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile -->
     <profile>
       <id>sldService</id>
       <dependencies>
@@ -1401,6 +1337,11 @@
           <artifactId>gs-taskmanager-core</artifactId>
           <version>${project.version}</version>
         </dependency>
+        <dependency>
+          <groupId>com.h2database</groupId>
+          <artifactId>h2</artifactId>
+          <version>2.1.214</version>
+        </dependency>
       </dependencies>
     </profile>
     <profile>
@@ -1530,6 +1471,11 @@
         </dependency>
         <dependency>
           <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-dggs-core</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
           <artifactId>gs-web-dggs</artifactId>
           <version>${project.version}</version>
         </dependency>
@@ -1544,7 +1490,12 @@
           <version>${project.version}</version>
         </dependency>
         <dependency>
-          <groupId>org.geoserver.extension</groupId>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-web-3d-geovolumes</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
           <artifactId>gs-web-ogcapi</artifactId>
           <version>${project.version}</version>
         </dependency>
@@ -1584,7 +1535,11 @@
           <artifactId>gs-web-processes</artifactId>
           <version>${project.version}</version>
         </dependency>
-
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-web-3d-geovolumes</artifactId>
+          <version>${project.version}</version>
+        </dependency>
       </dependencies>
     </profile>
     <profile>
@@ -1844,8 +1799,14 @@
       <id>vector-mosaic</id>
       <dependencies>
         <dependency>
-          <groupId>org.geotools</groupId>
-          <artifactId>gt-vector-mosaic</artifactId>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-vector-mosaic-rest</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-web-vector-mosaic</artifactId>
+          <version>${project.version}</version>
         </dependency>
       </dependencies>
     </profile>
@@ -1945,6 +1906,46 @@
           <groupId>org.geoserver.community</groupId>
           <artifactId>wps-openai</artifactId>
           <version>${gs.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>wcs10</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-wcs1_0</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>wcs11</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-wcs1_1</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>arcgrid</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-arcgrid</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>image</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-image</artifactId>
+          <version>${project.version}</version>
         </dependency>
       </dependencies>
     </profile>

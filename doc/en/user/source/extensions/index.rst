@@ -19,6 +19,7 @@ This section describes most of the extensions available for GeoServer. Other dat
    importer/index
    inspire/index
    jp2k/index
+   kml/index
    libjpeg-turbo/index
    monitoring/index
    netcdf/netcdf
@@ -44,3 +45,5 @@ This section describes most of the extensions available for GeoServer. Other dat
    metadata/index
    iau/index
    rat/index
+   arcgrid/index
+   image/index

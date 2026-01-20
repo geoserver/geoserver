@@ -88,10 +88,10 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
     }
 
     @Before
-    public void createH2Store() throws Exception {
+    public void createGeopkgStore() throws Exception {
         // create the store for the indirect imports
         String wsName = getCatalog().getDefaultWorkspace().getName();
-        createH2DataStore(wsName, "h2");
+        creatGeopkgDataStore(wsName, "gpkg");
         // remove any callback set to check the request spring context
         RequestContextListener listener = applicationContext.getBean(RequestContextListener.class);
         listener.setCallBack(null);
@@ -135,7 +135,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                 + "      },"
                 + "      targetStore: {\n"
                 + "        dataStore: {\n"
-                + "        name: \"h2\",\n"
+                + "        name: \"gpkg\",\n"
                 + "        }\n"
                 + "      }\n"
                 + "   }\n"
@@ -192,7 +192,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                 + "      },"
                 + "      targetStore: {\n"
                 + "        dataStore: {\n"
-                + "        name: \"h2\",\n"
+                + "        name: \"gpkg\",\n"
                 + "        }\n"
                 + "      }\n"
                 + "   }\n"
@@ -231,7 +231,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                 + "      },\n"
                 + "      targetStore: {\n"
                 + "        dataStore: {\n"
-                + "        name: \"h2\",\n"
+                + "        name: \"gpkg\",\n"
                 + "        }\n"
                 + "      },\n"
                 + "      \"transforms\": [\n"
@@ -272,7 +272,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                 + "      },\n"
                 + "      targetStore: {\n"
                 + "        dataStore: {\n"
-                + "        name: \"h2\",\n"
+                + "        name: \"gpkg\",\n"
                 + "        }\n"
                 + "      },\n"
                 + "      \"transforms\": [\n"
@@ -322,7 +322,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                 + "      },\n"
                 + "      targetStore: {\n"
                 + "        dataStore: {\n"
-                + "        name: \"h2\",\n"
+                + "        name: \"gpkg\",\n"
                 + "        }\n"
                 + "      },\n"
                 + "      \"transforms\": [\n"
@@ -450,7 +450,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                 + "      },"
                 + "      targetStore: {\n"
                 + "        dataStore: {\n"
-                + "        name: \"h2\",\n"
+                + "        name: \"gpkg\",\n"
                 + "        }\n"
                 + "      }\n"
                 + "   }\n"
@@ -527,7 +527,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                 + "      },"
                 + "      targetStore: {\n"
                 + "        dataStore: {\n"
-                + "        name: \"h2\",\n"
+                + "        name: \"gpkg\",\n"
                 + "        }\n"
                 + "      }\n"
                 + "   }\n"
@@ -620,7 +620,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         File granulesRoot = new File(root, mosaicName + "_granules");
         ensureClean(granulesRoot);
         Properties props = new Properties();
-        props.put("SPI", "org.geotools.data.h2.H2DataStoreFactory");
+        props.put("SPI", "org.geotools.geopkg.GeoPkgDataStoreFactory");
         props.put("database", "empty");
         try (FileOutputStream fos = new FileOutputStream(new File(mosaicRoot, "datastore.properties"))) {
             props.store(fos, null);
@@ -686,14 +686,14 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
     /** Attribute computation integration test */
     @Test
     public void testAttributeCompute() throws Exception {
-        // create H2 store to act as a target
-        DataStoreInfo h2Store =
-                createH2DataStore(getCatalog().getDefaultWorkspace().getName(), "computeDB");
+        // create geopkg store to act as a target
+        DataStoreInfo geopkg =
+                creatGeopkgDataStore(getCatalog().getDefaultWorkspace().getName(), "computeDB");
 
         // create context with default name
         File dir = unpack("shape/archsites_epsg_prj.zip");
         ImportContext context = importer.createContext(0l);
-        context.setTargetStore(h2Store);
+        context.setTargetStore(geopkg);
         importer.changed(context);
         importer.update(context, new SpatialFile(new File(dir, "archsites.shp")));
 
@@ -719,7 +719,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         importer.run(context);
 
         // check created type, layer and database table
-        DataStore store = (DataStore) h2Store.getDataStore(null);
+        DataStore store = (DataStore) geopkg.getDataStore(null);
         SimpleFeatureSource fs = store.getFeatureSource("archsites");
         assertNotNull(fs.getSchema().getType("label"));
         SimpleFeature first = DataUtilities.first(fs.getFeatures());
@@ -879,7 +879,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
     public void testRunWithTimeDimension() throws Exception {
         Catalog cat = getCatalog();
 
-        DataStoreInfo ds = createH2DataStore(cat.getDefaultWorkspace().getName(), "ming");
+        DataStoreInfo ds = creatGeopkgDataStore(cat.getDefaultWorkspace().getName(), "ming");
 
         // the target layer is not there
         assertNull(getCatalog().getLayerByName("ming_time"));
@@ -968,7 +968,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                 + "      },\n"
                 + "      targetStore: {\n"
                 + "        dataStore: {\n"
-                + "        name: \"h2\",\n"
+                + "        name: \"gpkg\",\n"
                 + "        }\n"
                 + "      }\n"
                 + "   }\n"

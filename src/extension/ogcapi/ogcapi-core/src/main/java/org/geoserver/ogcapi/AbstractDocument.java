@@ -25,6 +25,15 @@ public class AbstractDocument {
     protected String htmlTitle;
     protected final List<Link> links = new ArrayList<>();
 
+    protected AbstractDocument() {}
+
+    /** Copy constructor */
+    public AbstractDocument(AbstractDocument other) {
+        this.id = other.id;
+        this.htmlTitle = other.htmlTitle;
+        this.links.addAll(other.links.stream().map(Link::new).collect(Collectors.toList()));
+    }
+
     /** Adds a link to the document */
     public void addLink(Link link) {
         links.add(link);

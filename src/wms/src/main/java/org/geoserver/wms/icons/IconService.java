@@ -90,9 +90,9 @@ public class IconService extends AbstractController {
             ImageIO.write(image, "PNG", response.getOutputStream());
             response.getOutputStream().flush();
         } catch (IOException e) {
-            String msg = "Failed to load style: " + workspace + " " + styleName;
-            response.sendError(500, msg + ", " + e.getMessage());
-            LOG.log(Level.WARNING, msg, e);
+            String prefix = "Failed to load style: " + workspace + " " + styleName + "\n";
+            LOG.log(Level.WARNING, prefix + e.getMessage(), e);
+            response.sendError(500, prefix + "Check the logs for further details");
         }
 
         return null;

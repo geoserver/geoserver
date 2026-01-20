@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (C) 2014 - 2016 Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  <bean id="wcs10Extension" class="org.geoserver.platform.ModuleStatusImpl">
+    <constructor-arg index="0" value="gs-wcs1_0"/>
+    <constructor-arg index="1" value="GeoServer Web Coverage Service 1.0"/>
+    <property name="category" value="CORE"/>
+  </bean>
+  <!-- wcs service setup, with loggin as an interceptor -->
+  <bean id="wcs100ServiceTarget" class="org.geoserver.wcs.DefaultWebCoverageService100">
+    <constructor-arg ref="geoServer" />
+    <constructor-arg ref="coverageResponseDelegateFactory"/>
+  </bean>
+  <bean id="wcs100Logger" class="org.geoserver.ows.util.EMFLogger">
+    <constructor-arg type="java.lang.String" value="org.geoserver.wcs" />
+  </bean>
+  <bean id="wcs100Service" class="org.springframework.aop.framework.ProxyFactoryBean">
+    <property name="proxyInterfaces">
+      <value>org.geoserver.wcs.WebCoverageService100</value>
+    </property>
+    <property name="interceptorNames">
+      <list>
+        <value>wcs100Logger</value>
+        <value>wcs100ServiceInterceptor*</value>
+        <value>wcs100ServiceTarget</value>
+      </list>
+    </property>
+  </bean>
+
+  <!-- service descriptors -->
+  <bean id="wcsService-1.0.0" class="org.geoserver.platform.Service">
+    <constructor-arg index="0" value="wcs" />
+    <constructor-arg index="1" value="http://www.opengis.net/wcs"/>
+    <constructor-arg index="2" ref="wcs100Service" />
+    <constructor-arg index="3" value="1.0.0" />
+    <constructor-arg index="4">
+       <list>
+          <value>GetCapabilities</value>
+          <value>DescribeCoverage</value>
+          <value>GetCoverage</value>
+       </list>
+    </constructor-arg>
+  </bean>
+
+    <!-- Exception handler, we need to output ows 1.1 exceptions -->
+	<bean id="wcs100ExceptionHandler" class="org.geoserver.wcs.response.LegacyServiceExceptionHandler">
+		<constructor-arg ref="wcsService-1.0.0"/>
+	       <constructor-arg ref="geoServer"/>
+		<property name="contentType" value="application/vnd.ogc.se_xml"/>
+		<!-- property name="schemaLocation" value="wcs/1.0.0/OGC-exception.xsd"/ -->
+	</bean>
+
+  <!-- kvp parsers -->
+  <bean id="wcs100AxisSubsetKvpParser" class="org.geoserver.wcs.kvp.AxisSubsetKvpParser" />
+  <bean id="wcs100BBoxKvpParser" class="org.geoserver.wcs.kvp.BBoxKvpParser" />
+  <bean id="wcs100InterpolationKvpParser" class="org.geoserver.wcs.kvp.InterpolationMethodKvpParser" >
+      <property name="service" value="WCS" />
+      <property name="version" value="1.0.0" />
+   </bean>
+  <bean id="wcs100CoverageKvpParser" class="org.geoserver.wcs.kvp.CoverageKvpParser">
+    <constructor-arg ref="catalog" />
+  </bean>
+  <bean id="wcs100SourceCoverageKvpParser" class="org.geoserver.wcs.kvp.SourceCoverageKvpParser">
+    <constructor-arg ref="catalog" />
+  </bean>
+  <bean id="wcs100SectionKvpParser" class="org.geoserver.wcs.kvp.SectionKvpParser" />
+  <bean id="wcs100TimeKvpParser" class="org.geoserver.wcs.kvp.TimeKvpParser">
+    <constructor-arg value="TIME"/>
+    <constructor-arg ref="geoServer"/>
+    <property name="service" value="WCS"/>
+  </bean>
+
+  <bean id="wcs100ElevationKvpParser" class="org.geoserver.wcs.kvp.ElevationKvpParser">
+    <constructor-arg value="ELEVATION"/>
+    <constructor-arg ref="geoServer"/>
+    <property name="service" value="WCS"/>
+  </bean>
+
+  <!-- kvp request readers -->
+  <bean id="wcs100GetCapabilitiesKvpReader"
+    class="org.geoserver.wcs.kvp.Wcs10GetCapabilitiesRequestReader" />
+  <bean id="wcs100DescribeCoverageKvpReader"
+    class="org.geoserver.wcs.kvp.Wcs10DescribeCoverageKvpRequestReader">
+  </bean>
+  <bean id="wcs100GetCoverageRequestReader"
+    class="org.geoserver.wcs.kvp.Wcs10GetCoverageRequestReader">
+    <constructor-arg index="0" ref="catalog" />
+  </bean>
+
+  <!-- the xml configuration -->
+  <bean id="wcs-1.0.0-configuration" class="org.geotools.wcs.WCSConfiguration" />
+
+  <!--  xml request readers -->
+  <bean id="wcs100CapabilitiesRequestReader" class="org.geoserver.wcs.xml.v1_0_0.WcsXmlReader">
+    <constructor-arg value="GetCapabilities" />
+    <constructor-arg value="1.0.0" />
+    <constructor-arg ref="wcs-1.0.0-configuration" />
+    <constructor-arg ref="entityResolverProvider" />
+  </bean>
+
+  <bean id="wcs100DescribeCoverageRequestReader"
+    class="org.geoserver.wcs.xml.v1_0_0.WcsXmlReader">
+    <constructor-arg value="DescribeCoverage" />
+    <constructor-arg value="1.0.0" />
+    <constructor-arg ref="wcs-1.0.0-configuration" />
+    <constructor-arg ref="entityResolverProvider" />
+  </bean>
+
+  <bean id="wcs100GetCoverageRequestXMLReader" class="org.geoserver.wcs.xml.v1_0_0.WcsXmlReader">
+    <constructor-arg value="GetCoverage" />
+    <constructor-arg value="1.0.0" />
+    <constructor-arg ref="wcs-1.0.0-configuration" />
+    <constructor-arg ref="entityResolverProvider" />
+  </bean>
+
+  <!-- responses -->
+  <bean id="wcs100GetCapabilitiesResponse"
+    class="org.geoserver.wcs.response.Wcs10GetCapabilitiesResponse" scope="prototype" />
+  <bean id="wcs100DescribeCoverageResponse"
+    class="org.geoserver.wcs.response.Wcs10DescribeCoverageResponse" scope="prototype"/>
+  <bean id="wcs100GetCoverageResponse"
+	class="org.geoserver.wcs.response.Wcs10GetCoverageResponse" scope="prototype">
+    <constructor-arg ref="catalog" />
+    <constructor-arg ref="coverageResponseDelegateFactory" />
+  </bean>
+  
+  <bean id="workspaceQualifier" class="org.geoserver.wcs.WCS10WorkspaceQualifier">
+      <constructor-arg ref="catalog"/>
+  </bean>
+
+  <bean id="wcs10ExceptionHandler" class="org.geoserver.wcs.WCS10ServiceExceptionHandler">
+    <constructor-arg ref="wcsService-1.0.0"/>
+    <constructor-arg ref="geoServer"/>
+  </bean>
+</beans>

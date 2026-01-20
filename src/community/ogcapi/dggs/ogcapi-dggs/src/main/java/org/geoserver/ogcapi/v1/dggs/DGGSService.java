@@ -11,6 +11,7 @@ import static org.geotools.dggs.gstore.DGGSStore.RESOLUTION;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import java.io.IOException;
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,7 +53,6 @@ import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.Query;
 import org.geoserver.wms.WMS;
 import org.geotools.api.data.DataAccess;
-import org.geotools.api.data.FeatureSource;
 import org.geotools.api.feature.Feature;
 import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.api.feature.type.AttributeDescriptor;
@@ -62,6 +62,7 @@ import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.filter.PropertyIsEqualTo;
 import org.geotools.dggs.DGGSInstance;
 import org.geotools.dggs.Zone;
+import org.geotools.dggs.datastore.DGGSStoreFactory;
 import org.geotools.dggs.gstore.DGGSFeatureSource;
 import org.geotools.dggs.gstore.DGGSStore;
 import org.geotools.factory.CommonFactoryFinder;
@@ -197,9 +198,9 @@ public class DGGSService {
     protected AttributeDescriptor getZoneColumnDescriptor(String collectionId) throws IOException {
         FeatureTypeInfo featureType = getFeatureType(collectionId);
         // At this point we know it's a DGGS store
-        DGGSStore dggsStore = (DGGSStore) featureType.getStore().getDataStore(null);
-        FeatureSource source = dggsStore.getDGGSFeatureSource(featureType.getNativeName());
-        return ((DGGSFeatureSource) source).getZoneIdAttribute();
+        DGGSStore<?> dggsStore = (DGGSStore<?>) featureType.getStore().getDataStore(null);
+        DGGSFeatureSource<?> source = dggsStore.getDGGSFeatureSource(featureType.getNativeName());
+        return source.getZoneIdAttribute();
     }
 
     /**
@@ -246,6 +247,8 @@ public class DGGSService {
         geometryParser.setGeometry(wkt);
         geometryParser.setZoneIds(zones, resolution);
 
+        FeatureTypeInfo ft = getFeatureType(collectionId);
+        Integer imposedResolution = getImposedResolution(ft);
         // build the request in a way core WFS machinery can understand it
         return runGetFeature(
                 collectionId,
@@ -256,17 +259,39 @@ public class DGGSService {
                 format,
                 request -> {
                     // add the resolution hint
-                    request.setViewParams(Collections.singletonList(
-                            Collections.singletonMap(DGGSStore.VP_RESOLUTION, String.valueOf(resolution))));
-                    Filter resolutionFilter = FF.equals(FF.property(RESOLUTION), FF.literal(resolution));
-                    mixFilter(request, resolutionFilter);
-
+                    if (imposedResolution != null) {
+                        boolean sameRes = imposedResolution.equals(resolution);
+                        if (!sameRes) {
+                            LOGGER.warning("The underlying datastore has a fixed resolution of "
+                                    + imposedResolution
+                                    + ", excluding the requested resolution of "
+                                    + resolution);
+                        }
+                        Filter resolutionFilter = sameRes ? Filter.INCLUDE : Filter.EXCLUDE;
+                        mixFilter(request, resolutionFilter);
+                    } else {
+                        request.setViewParams(Collections.singletonList(
+                                Collections.singletonMap(DGGSStore.VP_RESOLUTION, String.valueOf(resolution))));
+                        Filter resolutionFilter = FF.equals(FF.property(RESOLUTION), FF.literal(resolution));
+                        mixFilter(request, resolutionFilter);
+                    }
                     Filter geometryFilter = geometryParser.getFilter();
                     if (geometryFilter != null && geometryFilter != Filter.INCLUDE) {
                         mixFilter(request, geometryFilter);
                     }
                 },
                 collectionName -> "ogc/dggs/v1/collections/" + ResponseUtils.urlEncode(collectionName) + "/zones");
+    }
+
+    private static Integer getImposedResolution(FeatureTypeInfo ft) {
+        Map<String, Serializable> connectionParams = ft.getStore().getConnectionParameters();
+        Object fixedResolution;
+        Integer imposedResolution = null;
+        if (connectionParams.containsKey(DGGSStoreFactory.RESOLUTION.key)
+                && ((fixedResolution = connectionParams.get(DGGSStoreFactory.RESOLUTION.key)) != null)) {
+            imposedResolution = Integer.parseInt(fixedResolution.toString());
+        }
+        return imposedResolution;
     }
 
     void mixFilter(GetFeatureRequest request, Filter mix) {
@@ -296,6 +321,7 @@ public class DGGSService {
     @GetMapping(path = "collections/{collectionId}/neighbors", name = "getNeighbors")
     @ResponseBody
     @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
+    @SuppressWarnings("PMD.CloseResource") // managed by the store
     public FeaturesResponse neighbors(
             @PathVariable(name = "collectionId") String collectionId,
             @RequestParam(name = "zone_id") String zoneId,
@@ -318,9 +344,15 @@ public class DGGSService {
                     "Neighboring distance exceeds maximum value: " + maxNeighborDistance,
                     HttpStatus.BAD_REQUEST);
         }
-        String zoneIdColumn = getZoneColumnName(collectionId);
+        AttributeDescriptor zoneDescriptor = getZoneColumnDescriptor(collectionId);
+        String zoneIdColumn = zoneDescriptor.getLocalName();
+        DGGSInstance<?> dggs = getDGGSInstance(collectionId);
         PropertyIsEqualTo neighborFilter = FF.equals(
-                FF.function("neighbor", FF.property(zoneIdColumn), FF.literal(zoneId), FF.literal(distance)),
+                FF.function(
+                        "neighbor",
+                        FF.property(zoneIdColumn),
+                        dggs.getZoneLiteral(zoneDescriptor, zoneId),
+                        FF.literal(distance)),
                 FF.literal(true));
         return runGetFeature(
                 collectionId,
@@ -339,6 +371,7 @@ public class DGGSService {
     @ResponseBody
     @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     @HTMLResponseBody(templateName = "zone.ftl", fileName = "zone.html")
+    @SuppressWarnings("PMD.CloseResource") // managed by the store
     public FeaturesResponse zone(
             @PathVariable(name = "collectionId") String collectionId,
             @RequestParam(name = "zone_id") String zoneId,
@@ -346,7 +379,9 @@ public class DGGSService {
             @RequestParam(name = "properties", required = false) String properties,
             @RequestParam(name = "f", required = false, defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE) String format)
             throws Exception {
-        String zoneIdColumn = getZoneColumnName(collectionId);
+        AttributeDescriptor zoneDescriptor = getZoneColumnDescriptor(collectionId);
+        String zoneIdColumn = zoneDescriptor.getLocalName();
+        DGGSInstance<?> dggs = getDGGSInstance(collectionId);
         FeaturesResponse response = runGetFeature(
                 collectionId,
                 datetime,
@@ -355,7 +390,8 @@ public class DGGSService {
                 null,
                 format,
                 request -> {
-                    mixFilter(request, FF.equals(FF.property(zoneIdColumn), FF.literal(zoneId)));
+                    mixFilter(
+                            request, FF.equals(FF.property(zoneIdColumn), dggs.getZoneLiteral(zoneDescriptor, zoneId)));
                 },
                 collectionName -> "ogc/dggs/v1/collections/"
                         + ResponseUtils.urlEncode(collectionName)
@@ -399,7 +435,8 @@ public class DGGSService {
         reflectDatetime(params);
         params.put(
                 "resolution",
-                String.valueOf(getDGGSInstance(collectionId).getZone(zoneId).getResolution() + 1));
+                String.valueOf(
+                        getDGGSInstance(collectionId).getZoneFromString(zoneId).getResolution() + 1));
         String url = buildURL(
                 APIRequestInfo.get().getBaseURL(),
                 "ogc/dggs/v1/collections/" + ResponseUtils.urlEncode(collectionId) + "/children",
@@ -426,15 +463,16 @@ public class DGGSService {
         return link;
     }
 
-    DGGSInstance getDGGSInstance(String collectionId) throws IOException {
+    DGGSInstance<?> getDGGSInstance(String collectionId) throws IOException {
         FeatureTypeInfo featureType = getFeatureType(collectionId);
-        DGGSStore dggsStore = (DGGSStore) featureType.getStore().getDataStore(null);
+        DGGSStore<?> dggsStore = (DGGSStore<?>) featureType.getStore().getDataStore(null);
         return dggsStore.getDGGSFeatureSource(featureType.getNativeName()).getDGGS();
     }
 
     @GetMapping(path = "collections/{collectionId}/children", name = "getChildren")
     @ResponseBody
     @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
+    @SuppressWarnings("PMD.CloseResource") // managed by the store
     public FeaturesResponse children(
             @PathVariable(name = "collectionId") String collectionId,
             @RequestParam(name = "zone_id") String zoneId,
@@ -445,9 +483,15 @@ public class DGGSService {
             @RequestParam(name = "datetime", required = false) DateTimeList datetime,
             @RequestParam(name = "f", required = false, defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE) String format)
             throws Exception {
-        String zoneIdColumn = getZoneColumnName(collectionId);
+        AttributeDescriptor zoneDescriptor = getZoneColumnDescriptor(collectionId);
+        String zoneIdColumn = zoneDescriptor.getLocalName();
+        DGGSInstance<?> dggs = getDGGSInstance(collectionId);
         PropertyIsEqualTo childFilter = FF.equals(
-                FF.function("children", FF.property(zoneIdColumn), FF.literal(zoneId), FF.literal(resolution)),
+                FF.function(
+                        "children",
+                        FF.property(zoneIdColumn),
+                        dggs.getZoneLiteral(zoneDescriptor, zoneId),
+                        FF.literal(resolution)),
                 FF.literal(true));
         return runGetFeature(
                 collectionId,
@@ -465,6 +509,7 @@ public class DGGSService {
     @GetMapping(path = "collections/{collectionId}/parents", name = "getParents")
     @ResponseBody
     @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
+    @SuppressWarnings("PMD.CloseResource") // managed by the store
     public FeaturesResponse parents(
             @PathVariable(name = "collectionId") String collectionId,
             @RequestParam(name = "zone_id") String zoneId,
@@ -474,9 +519,12 @@ public class DGGSService {
             @RequestParam(name = "limit", required = false) BigInteger limit,
             @RequestParam(name = "f", required = false, defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE) String format)
             throws Exception {
-        String zoneIdColumn = getZoneColumnName(collectionId);
-        PropertyIsEqualTo parentFilter =
-                FF.equals(FF.function("parents", FF.property(zoneIdColumn), FF.literal(zoneId)), FF.literal(true));
+        AttributeDescriptor zoneDescriptor = getZoneColumnDescriptor(collectionId);
+        String zoneIdColumn = zoneDescriptor.getLocalName();
+        DGGSInstance<?> dggs = getDGGSInstance(collectionId);
+        PropertyIsEqualTo parentFilter = FF.equals(
+                FF.function("parents", FF.property(zoneIdColumn), dggs.getZoneLiteral(zoneDescriptor, zoneId)),
+                FF.literal(true));
         // another filter to help implementation that cannot optimize out the above call
         return runGetFeature(
                 collectionId,
@@ -553,6 +601,7 @@ public class DGGSService {
     @ResponseBody
     @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     @HTMLResponseBody(templateName = "zone.ftl", fileName = "zone.html")
+    @SuppressWarnings("PMD.CloseResource") // managed by the store
     public FeaturesResponse point(
             @PathVariable(name = "collectionId") String collectionId,
             @RequestParam(name = "point") String pointSpec,
@@ -562,9 +611,9 @@ public class DGGSService {
             @RequestParam(name = "f", required = false, defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE) String format)
             throws Exception {
         Point point = getPoint(pointSpec);
-        @SuppressWarnings("PMD.CloseResource") // managed by the store
-        DGGSInstance dggs = getDGGSInstance(collectionId);
-        String zoneIdColumn = getZoneColumnName(collectionId);
+        AttributeDescriptor zoneDescriptor = getZoneColumnDescriptor(collectionId);
+        String zoneIdColumn = zoneDescriptor.getLocalName();
+        DGGSInstance<?> dggs = getDGGSInstance(collectionId);
         Zone zone = dggs.point(point, resolution);
         String zoneId = zone.getId();
         // we have the zoneId, now to and access the data for it
@@ -576,7 +625,8 @@ public class DGGSService {
                 null,
                 format,
                 request -> {
-                    mixFilter(request, FF.equals(FF.property(zoneIdColumn), FF.literal(zone.getId())));
+                    mixFilter(
+                            request, FF.equals(FF.property(zoneIdColumn), dggs.getZoneLiteral(zoneDescriptor, zoneId)));
                 },
                 collectionName -> "ogc/dggs/v1/collections/"
                         + ResponseUtils.urlEncode(collectionName)
@@ -605,7 +655,8 @@ public class DGGSService {
             @RequestParam(name = "f", required = false, defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE) String format)
             throws Exception {
         Polygon polygon = getPolygon(polygonWKT);
-        String zoneIdColumn = getZoneColumnName(collectionId);
+        AttributeDescriptor zoneAttribute = getZoneColumnDescriptor(collectionId);
+        String zoneIdColumn = zoneAttribute.getLocalName();
         // Filter resolutionFilter = FF.lessOrEqual(FF.property(RESOLUTION),
         // FF.literal(resolution));
         PropertyIsEqualTo polygonFilter = FF.equals(

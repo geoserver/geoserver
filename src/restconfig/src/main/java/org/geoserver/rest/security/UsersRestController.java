@@ -7,6 +7,8 @@ package org.geoserver.rest.security;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.SortedSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.catalog.SequentialExecutionController;
@@ -19,6 +21,7 @@ import org.geoserver.security.GeoServerUserGroupStore;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.validation.PasswordPolicyException;
+import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,6 +38,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/security/usergroup")
 public class UsersRestController implements SequentialExecutionController {
 
+    private static final Logger LOGGER = Logging.getLogger(UsersRestController.class);
+
     protected GeoServerSecurityManager securityManager;
 
     private static final String DEFAULT_ROLE_SERVICE_NAME = "default";
@@ -49,8 +54,10 @@ public class UsersRestController implements SequentialExecutionController {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public void somethingNotFound(IllegalArgumentException exception, HttpServletResponse response) throws IOException {
-        response.sendError(404, exception.getMessage());
+    public void somethingNotFound(IllegalArgumentException e, HttpServletResponse response) throws IOException {
+        String prefix = "User Rest Request failed with IllegalArgumentException:\n";
+        LOGGER.log(Level.WARNING, prefix + e.getMessage(), e);
+        response.sendError(400, prefix + "Check the logs for further details");
     }
 
     @GetMapping(

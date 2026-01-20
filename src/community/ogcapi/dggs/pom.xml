@@ -18,6 +18,7 @@
   <packaging>pom</packaging>
 
   <modules>
+    <module>dggs-core</module>
     <module>dggs-rhealpix</module>
     <module>web-dggs</module>
     <module>ogcapi-dggs</module>

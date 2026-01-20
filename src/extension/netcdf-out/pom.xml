@@ -84,7 +84,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.geoserver</groupId>
+      <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-wcs1_1</artifactId>
       <scope>test</scope>
     </dependency>
@@ -122,7 +122,11 @@
       <artifactId>gt-imagemosaic</artifactId>
       <scope>test</scope>
     </dependency>
-
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-geopkg</artifactId>
+      <scope>test</scope>
+    </dependency>
     <!-- TODO: relax this dependency: just need to depends on NetCDF java library from Unidata -->
     <dependency>
       <groupId>edu.ucar</groupId>

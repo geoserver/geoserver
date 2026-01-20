@@ -71,13 +71,13 @@ import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.feature.type.GeometryDescriptor;
 import org.geotools.api.style.Style;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.h2.H2DataStoreFactory;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.geopkg.GeoPkgDataStoreFactory;
 import org.geotools.jdbc.Index;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.referencing.CRS;
@@ -390,8 +390,7 @@ public class ImporterDataTest extends ImporterTestSupport {
 
     @Test
     public void testImportUnknownFileIndirect() throws Exception {
-
-        DataStoreInfo ds = createH2DataStore(null, "foo");
+        DataStoreInfo ds = creatGeopkgDataStore(null, "foo");
         File randomDir = setupRandomFileData();
         ImportContext context = importer.createContext(new Directory(randomDir), ds);
         assertEquals(1, context.getTasks().size());
@@ -414,11 +413,11 @@ public class ImporterDataTest extends ImporterTestSupport {
 
     @Test
     public void testImportDatabase() throws Exception {
-        File dir = unpack("h2/cookbook.zip");
+        File cookbook = ImporterTestUtils.file("gpkg/cookbook.gpkg");
 
         Map<String, Serializable> params = new HashMap<>();
-        params.put(H2DataStoreFactory.DBTYPE.key, "h2");
-        params.put(H2DataStoreFactory.DATABASE.key, new File(dir, "cookbook").getAbsolutePath());
+        params.put(GeoPkgDataStoreFactory.DBTYPE.key, "geopkg");
+        params.put(GeoPkgDataStoreFactory.DATABASE.key, cookbook.getAbsolutePath());
 
         ImportContext context = importer.createContext(new Database(params));
         assertEquals(3, context.getTasks().size());
@@ -457,7 +456,7 @@ public class ImporterDataTest extends ImporterTestSupport {
     public void testImportIntoDatabase() throws Exception {
         Catalog cat = getCatalog();
 
-        DataStoreInfo ds = createH2DataStore(cat.getDefaultWorkspace().getName(), "spearfish");
+        DataStoreInfo ds = creatGeopkgDataStore(cat.getDefaultWorkspace().getName(), "spearfish");
 
         File dir = tmpDir();
         unpack("shape/archsites_epsg_prj.zip", dir);
@@ -499,7 +498,7 @@ public class ImporterDataTest extends ImporterTestSupport {
     public void testImportIntoDatabaseWithEncoding() throws Exception {
         Catalog cat = getCatalog();
 
-        DataStoreInfo ds = createH2DataStore(cat.getDefaultWorkspace().getName(), "ming");
+        DataStoreInfo ds = creatGeopkgDataStore(cat.getDefaultWorkspace().getName(), "ming");
 
         File dir = tmpDir();
         unpack("shape/ming_time.zip", dir);
@@ -594,7 +593,7 @@ public class ImporterDataTest extends ImporterTestSupport {
     public void testImportIntoDatabaseDuplicateKey() throws Exception {
         Catalog cat = getCatalog();
 
-        DataStoreInfo ds = createH2DataStore(cat.getDefaultWorkspace().getName(), "spearfish");
+        DataStoreInfo ds = creatGeopkgDataStore(cat.getDefaultWorkspace().getName(), "spearfish");
 
         File dir = tmpDir();
         unpack("shape/archsites_epsg_prj.zip", dir);
@@ -622,7 +621,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         assertEquals(State.ERROR, task.getState());
         assertThat(
                 task.getError().getCause().getMessage(),
-                CoreMatchers.containsString("Unique index or primary key violation: archsites_cat_ids"));
+                CoreMatchers.containsString("A UNIQUE constraint failed (UNIQUE constraint failed: archsites.CAT_ID)"));
     }
 
     @Test
@@ -722,7 +721,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         File dir = unpack("shape/archsites_epsg_prj.zip");
         assertTrue(dir.exists());
 
-        DataStoreInfo ds = createH2DataStore(null, "foo");
+        DataStoreInfo ds = creatGeopkgDataStore(null, "foo");
 
         ImportContext context = importer.createContext(new SpatialFile(new File(dir, "archsites.shp")), ds);
         context.setArchive(true);
@@ -745,13 +744,13 @@ public class ImporterDataTest extends ImporterTestSupport {
 
     @Test
     public void testImportDatabaseIntoDatabase() throws Exception {
-        File dir = unpack("h2/cookbook.zip");
+        File cookbook = ImporterTestUtils.file("gpkg/cookbook.gpkg");
 
-        DataStoreInfo ds = createH2DataStore("gs", "cookbook");
+        DataStoreInfo ds = creatGeopkgDataStore("gs", "cookbook");
 
         Map<String, Serializable> params = new HashMap<>();
-        params.put(H2DataStoreFactory.DBTYPE.key, "h2");
-        params.put(H2DataStoreFactory.DATABASE.key, new File(dir, "cookbook").getAbsolutePath());
+        params.put(GeoPkgDataStoreFactory.DBTYPE.key, "geopkg");
+        params.put(GeoPkgDataStoreFactory.DATABASE.key, cookbook.getAbsolutePath());
 
         ImportContext context = importer.createContext(new Database(params), ds);
         assertEquals(3, context.getTasks().size());
@@ -815,16 +814,16 @@ public class ImporterDataTest extends ImporterTestSupport {
     public void testImportGML2Poi() throws Exception {
         File gmlFile = file("gml/poi.gml2.gml");
         String wsName = getCatalog().getDefaultWorkspace().getName();
-        DataStoreInfo h2DataStore = createH2DataStore(wsName, "gml2poi");
-        checkGMLPoiImport(gmlFile, h2DataStore);
+        DataStoreInfo geopkgDataStore = creatGeopkgDataStore(wsName, "gml2poi");
+        checkGMLPoiImport(gmlFile, geopkgDataStore);
     }
 
     @Test
     public void testImportGML3Poi() throws Exception {
         File gmlFile = file("gml/poi.gml3.gml");
         String wsName = getCatalog().getDefaultWorkspace().getName();
-        DataStoreInfo h2DataStore = createH2DataStore(wsName, "gml3poi");
-        checkGMLPoiImport(gmlFile, h2DataStore);
+        DataStoreInfo geopkgDataStore = creatGeopkgDataStore(wsName, "gml3poi");
+        checkGMLPoiImport(gmlFile, geopkgDataStore);
     }
 
     /**
@@ -836,8 +835,8 @@ public class ImporterDataTest extends ImporterTestSupport {
         // initial import
         File gmlFile = file("gml/poi.gml3.gml");
         String wsName = getCatalog().getDefaultWorkspace().getName();
-        DataStoreInfo h2DataStore = createH2DataStore(wsName, "gml3poi");
-        checkGMLPoiImport(gmlFile, h2DataStore);
+        DataStoreInfo geopkgDataStore = creatGeopkgDataStore(wsName, "gml3poi");
+        checkGMLPoiImport(gmlFile, geopkgDataStore);
 
         // count how many features at the beginning
         LayerInfo layer = getCatalog().getLayerByName("poi");
@@ -850,7 +849,7 @@ public class ImporterDataTest extends ImporterTestSupport {
 
         // run import a second time
         SpatialFile importData = new SpatialFile(gmlFile);
-        ImportContext context = importer.createContext(importData, h2DataStore);
+        ImportContext context = importer.createContext(importData, geopkgDataStore);
         ImportTask task = context.getTasks().get(0);
         task.setUpdateMode(UpdateMode.APPEND);
         task.setLayer(layer);
@@ -884,8 +883,8 @@ public class ImporterDataTest extends ImporterTestSupport {
         }
 
         String wsName = getCatalog().getDefaultWorkspace().getName();
-        DataStoreInfo h2DataStore = createH2DataStore(wsName, "gml2States");
-        checkGMLStatesImport(gmlFile, h2DataStore);
+        DataStoreInfo geopkgDataStore = creatGeopkgDataStore(wsName, "gml2States");
+        checkGMLStatesImport(gmlFile, geopkgDataStore);
     }
 
     @Test
@@ -904,13 +903,13 @@ public class ImporterDataTest extends ImporterTestSupport {
         }
 
         String wsName = getCatalog().getDefaultWorkspace().getName();
-        DataStoreInfo h2DataStore = createH2DataStore(wsName, "gml2States");
-        checkGMLStatesImport(gmlFile, h2DataStore);
+        DataStoreInfo geopkgDataStore = creatGeopkgDataStore(wsName, "gml2States");
+        checkGMLStatesImport(gmlFile, geopkgDataStore);
     }
 
-    private void checkGMLStatesImport(File gmlFile, DataStoreInfo h2DataStore) throws IOException, CQLException {
+    private void checkGMLStatesImport(File gmlFile, DataStoreInfo geopkgDataStore) throws IOException, CQLException {
         SpatialFile importData = new SpatialFile(gmlFile);
-        ImportContext context = importer.createContext(importData, h2DataStore);
+        ImportContext context = importer.createContext(importData, geopkgDataStore);
         assertEquals(1, context.getTasks().size());
 
         ImportTask task = context.getTasks().get(0);
@@ -979,10 +978,10 @@ public class ImporterDataTest extends ImporterTestSupport {
         File dir = unpack("csv/locations.zip");
         String wsName = getCatalog().getDefaultWorkspace().getName();
 
-        DataStoreInfo h2DataStore = createH2DataStore(wsName, "csvindirecttest");
+        DataStoreInfo geopkgDataStore = creatGeopkgDataStore(wsName, "csvindirecttest");
         SpatialFile importData = new SpatialFile(new File(dir, "locations.csv"));
 
-        ImportContext context = importer.createContext(importData, h2DataStore);
+        ImportContext context = importer.createContext(importData, geopkgDataStore);
         assertEquals(1, context.getTasks().size());
         ImportTask task = context.getTasks().get(0);
 
@@ -1028,7 +1027,7 @@ public class ImporterDataTest extends ImporterTestSupport {
     /** This is a test of a indirect import from a store (the CSV store) */
     @Test
     public void testCSVExceptionsDoNotDropTable() throws Exception {
-        // import and create a H2 database
+        // import and create a geopkg database
         testImportCSVIndirect();
 
         // count how many features at the beginning
@@ -1066,9 +1065,9 @@ public class ImporterDataTest extends ImporterTestSupport {
     public void testImportKMLIndirect() throws Exception {
         File dir = unpack("kml/sample.zip");
         String wsName = getCatalog().getDefaultWorkspace().getName();
-        DataStoreInfo h2DataStore = createH2DataStore(wsName, "kmltest");
+        DataStoreInfo geopkgDataStore = creatGeopkgDataStore(wsName, "kmltest");
         SpatialFile importData = new SpatialFile(new File(dir, "sample.kml"));
-        ImportContext context = importer.createContext(importData, h2DataStore);
+        ImportContext context = importer.createContext(importData, geopkgDataStore);
         assertEquals(1, context.getTasks().size());
         ImportTask task = context.getTasks().get(0);
 
@@ -1097,7 +1096,8 @@ public class ImporterDataTest extends ImporterTestSupport {
     @Test
     public void testImportDirectoryWithRasterIndirect() throws Exception {
 
-        DataStoreInfo ds = createH2DataStore(getCatalog().getDefaultWorkspace().getName(), "shapes");
+        DataStoreInfo ds =
+                creatGeopkgDataStore(getCatalog().getDefaultWorkspace().getName(), "shapes");
 
         File dir = tmpDir();
         unpack("shape/archsites_epsg_prj.zip", dir);
@@ -1160,7 +1160,8 @@ public class ImporterDataTest extends ImporterTestSupport {
 
     @Test
     public void testGeoJSONImport() throws Exception {
-        DataStoreInfo h2 = createH2DataStore(getCatalog().getDefaultWorkspace().getName(), "jsontest");
+        DataStoreInfo h2 =
+                creatGeopkgDataStore(getCatalog().getDefaultWorkspace().getName(), "jsontest");
 
         File dir = unpack("geojson/point.json.zip");
         ImportContext imp = importer.createContext(new SpatialFile(new File(dir, "point.json")), h2);
@@ -1202,7 +1203,8 @@ public class ImporterDataTest extends ImporterTestSupport {
 
     @Test
     public void testGeoJSONImportDirectory() throws Exception {
-        DataStoreInfo h2 = createH2DataStore(getCatalog().getDefaultWorkspace().getName(), "jsontest");
+        DataStoreInfo h2 =
+                creatGeopkgDataStore(getCatalog().getDefaultWorkspace().getName(), "jsontest");
 
         File dir = unpack("geojson/point.json.zip");
         unpack("geojson/line.json.zip", dir);
@@ -1338,7 +1340,7 @@ public class ImporterDataTest extends ImporterTestSupport {
     @Test
     public void testImportSpaceInNames() throws Exception {
         File dir = unpack("shape/spaceInNames.zip");
-        DataStoreInfo ds = createH2DataStore(null, "spaceInNamesContainer");
+        DataStoreInfo ds = creatGeopkgDataStore(null, "spaceInNamesContainer");
 
         ImportContext context = importer.createContext(new SpatialFile(new File(dir, "spaceInNames.shp")), ds);
         assertEquals(1, context.getTasks().size());

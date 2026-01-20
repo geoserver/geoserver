@@ -93,7 +93,7 @@ public class DGGSGeoJSONResponse extends RFCGeoJSONFeaturesResponse {
                 jw.writeLink(jw, linkTitle, format.toString(), linkType, href);
             }
             // backpointer to the collection
-            if (response.getFeatures().get(0) instanceof TypeInfoCollectionWrapper wrapper) {
+            if (response != null && response.getFeatures().get(0) instanceof TypeInfoCollectionWrapper wrapper) {
                 FeatureTypeInfo featureType = wrapper.getFeatureTypeInfo();
                 if (featureType != null) {
                     String basePath = "ogc/dggs/v1/collections/" + ResponseUtils.urlEncode(featureType.prefixedName());

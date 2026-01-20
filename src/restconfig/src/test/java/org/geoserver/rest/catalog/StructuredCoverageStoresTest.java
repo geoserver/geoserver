@@ -50,9 +50,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.util.IOUtils;
 import org.geotools.util.URLs;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -73,20 +71,9 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
 
     private File mosaic;
 
-    @BeforeClass
-    public static void setupTimeZone() {
-        System.setProperty("user.timezone", "GMT");
-        System.setProperty("gt2.jdbc.trace", "true");
-    }
-
     @Before
     public void prepare() {
         xpath = XMLUnit.newXpathEngine();
-    }
-
-    @AfterClass
-    public static void cleanupTimeZone() {
-        System.clearProperty("user.timezone");
     }
 
     @Before

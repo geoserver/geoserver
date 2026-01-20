@@ -1,0 +1,109 @@
+name: Run Acceptance Tests
+
+on:
+  pull_request:
+    paths-ignore:
+      - '**/src/main/resources/GeoServerApplication_*.properties'
+      - '!**/src/main/resources/GeoServerApplication_fr.properties'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-war:
+    runs-on: ubuntu-latest
+    name: Build GeoServer WAR
+    steps:
+      - name: Checkout repository (shallow clone)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'        # only build the oldest Java version, but below run against the matrix of LTS versions
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: 3.9.8
+      - name: Maven repository caching
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: gs-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            gs-${{ runner.os }}-maven-
+
+      - name: Build geoserver.war
+        working-directory: build/acceptance
+        run: make war
+
+      - name: Upload geoserver.war as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: geoserver-war
+          path: build/acceptance/geoserver/geoserver.war
+
+  run-acceptance-tests:
+    needs: build-war
+    runs-on: ubuntu-latest
+    name: acceptance
+    env:
+      GEOSERVER_ACCEPTANCE_FAILED_TESTS_DIR: ${{ github.workspace }}/failed_tests
+    strategy:
+      fail-fast: false  # Prevents other matrix jobs from being cancelled if one fails
+      matrix:
+       java-version: [17, 21, 25]
+    steps:
+      - name: Checkout repository (shallow clone)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Download geoserver.war artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: geoserver-war
+          path: build/acceptance/geoserver/
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Build acceptance/geoserver:${{ matrix.suite }} docker image
+        working-directory: build/acceptance
+        run: make build-geoserver-image java-version=${{ matrix.java-version }}
+
+      - name: Start the acceptance docker composition
+        working-directory: build/acceptance
+        run: make up java-version=${{ matrix.java-version }}
+
+      - name: Run acceptance tests
+        working-directory: build/acceptance
+        run: make test java-version=${{ matrix.java-version }}
+
+      - name: Upload failed test files
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failed-test-files-java-${{ matrix.java-version }}
+          path: ${{ env.GEOSERVER_ACCEPTANCE_FAILED_TESTS_DIR }}
+
+      - name: Print GeoServer full version
+        if: always()
+        working-directory: build/acceptance
+        run: make geoserver-version
+
+      - name: Print logs
+        if: always()
+        working-directory: build/acceptance
+        run: docker compose logs
+
+      - name: Shutdown containers
+        if: always()
+        working-directory: build/acceptance
+        run: make down

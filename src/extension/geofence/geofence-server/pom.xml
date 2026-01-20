@@ -165,7 +165,7 @@
 
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-wfs</artifactId>
+      <artifactId>gs-wfs1_x</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

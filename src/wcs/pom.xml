@@ -33,15 +33,7 @@
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
-      <artifactId>gt-arcgrid</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.geotools</groupId>
       <artifactId>gt-geotiff</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.geotools</groupId>
-      <artifactId>gt-image</artifactId>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>

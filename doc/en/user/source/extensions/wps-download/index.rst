@@ -57,7 +57,7 @@ Where the available limits are:
 
  * Maximum features : maximum number of features to download
  * Raster size limits : maximum pixel size of the Raster to read (in square pixels, width by height)
- * Write limits : maximum raw raster size in bytes (a limit of how much space can a raster take in memory). For a given raster, its raw size in bytes is calculated by multiplying pixel number (raster_width x raster_height) with the accumulated sum of each band's pixel sample_type size in bytes, for all bands
+ * Write limits : maximum raw raster size in bytes (a limit of how much disk space a raster can take). For a given raster, its raw size in bytes is calculated by multiplying pixel number (raster_width x raster_height) with the accumulated sum of each band's pixel sample_type size in bytes, for all bands
  * Hard output limit : maximum file size to download (will be checked while writing the output, post compression)
  * ZIP compresion level : compression level for the output zip file
  * Maximum frames in animation : maximum number of frames allowed (if no limit, the maximum execution time limits will still apply and stop the process in case there are too many)

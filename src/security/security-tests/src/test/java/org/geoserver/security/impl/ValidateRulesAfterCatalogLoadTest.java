@@ -76,10 +76,11 @@ public class ValidateRulesAfterCatalogLoadTest {
         log.assertLogged(new BaseMatcher<>() {
             @Override
             public boolean matches(Object item) {
-                if (!(item instanceof LogRecord)) return false;
-                LogRecord r = (LogRecord) item;
-                return r.getLevel().intValue() >= Level.WARNING.intValue()
-                        && r.getMessage().contains("Namespace/Workspace");
+                if (item instanceof LogRecord r) {
+                    return r.getLevel().intValue() >= Level.WARNING.intValue()
+                            && r.getMessage().contains("Namespace/Workspace");
+                }
+                return false;
             }
 
             @Override

@@ -65,4 +65,8 @@ public class GeoServerOAuth2FilterConfigException extends FilterConfigException 
     public static final String ROLE_SOURCE_USER_INFO_URI_REQUIRED = "ROLE_SOURCE_USER_INFO_URI_REQUIRED";
 
     public static final String OAUTH2_JWK_SET_URI_REQUIRED = "OAUTH2_JWK_SET_URI_REQUIRED";
+
+    public static final String OAUTH2_AUDIENCE_CLAIM_NAME_REQUIRED = "OAUTH2_AUDIENCE_CLAIM_NAME_REQUIRED";
+
+    public static final String OAUTH2_AUDIENCE_CLAIM_VALUE_REQUIRED = "OAUTH2_AUDIENCE_CLAIM_VALUE_REQUIRED";
 }

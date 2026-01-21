@@ -45,8 +45,8 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
     }
 
     /**
-     * Constant used to setup the proxy base in tests that are running without a GeoServer instance or an actual HTTP
-     * request context. The value of the variable is set-up in the pom.xml, as a system property for surefire, in order
+     * Constant used to set up the proxy base in tests that are running without a GeoServer instance or an actual HTTP
+     * request context. The value of the variable is set up in the pom.xml, as a system property for surefire, in order
      * to avoid hard-coding the value in the code.
      */
     public static final String OPENID_TEST_GS_PROXY_BASE = "OPENID_TEST_GS_PROXY_BASE";
@@ -113,6 +113,19 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
     private String postLogoutRedirectUri;
     private boolean enableRedirectAuthenticationEntryPoint;
 
+    /**
+     * Hybrid mode: accept machine-to-machine requests via Authorization: Bearer <JWT> and validate them using the same
+     * provider configuration already stored in this filter.
+     *
+     * <p>Enabled by default.
+     */
+    private boolean enableResourceServerMode = true;
+
+    // Resource Server (Bearer JWT) optional validations
+    private boolean validateTokenAudience = false;
+    private String validateTokenAudienceClaimName = "aud";
+    private String validateTokenAudienceClaimValue;
+
     // MSGraph
 
     /** true -> get roles from MSGraph's memberOf endpoint (usually for groups) */
@@ -153,7 +166,7 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
         return lBase;
     }
 
-    /** @return an URI ending with "/" */
+    /** @return a URI ending with "/" */
     private String baseRedirectUriNormalized() {
         return ofNullable(baseRedirectUri)
                 .map(s -> s.endsWith("/") ? s : s + "/")
@@ -306,6 +319,21 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
     /** @param enableRedirectAuthenticationEntryPoint the enableRedirectAuthenticationEntryPoint to set */
     public void setEnableRedirectAuthenticationEntryPoint(boolean enableRedirectAuthenticationEntryPoint) {
         this.enableRedirectAuthenticationEntryPoint = enableRedirectAuthenticationEntryPoint;
+    }
+
+    /** whether hybrid resource-server mode is enabled (Authorization: Bearer <JWT>) */
+    public boolean isEnableResourceServerMode() {
+        return enableResourceServerMode;
+    }
+
+    /** whether hybrid resource-server mode is enabled (Authorization: Bearer <JWT>) */
+    public boolean getEnableResourceServerMode() {
+        return enableResourceServerMode;
+    }
+
+    /** enableResourceServerMode enable/disable hybrid resource-server mode */
+    public void setEnableResourceServerMode(boolean enableResourceServerMode) {
+        this.enableResourceServerMode = enableResourceServerMode;
     }
 
     public boolean getOidcForceTokenUriHttps() {
@@ -632,5 +660,32 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
 
     public void setMsGraphAppRoleAssignmentsObjectId(String msGraphAppRoleAssignmentsObjectId) {
         this.msGraphAppRoleAssignmentsObjectId = msGraphAppRoleAssignmentsObjectId;
+    }
+    /**
+     * When enabled, the resource server (Bearer JWT) validator will require the configured audience claim to match the
+     * expected value.
+     */
+    public boolean isValidateTokenAudience() {
+        return validateTokenAudience;
+    }
+
+    public void setValidateTokenAudience(boolean validateTokenAudience) {
+        this.validateTokenAudience = validateTokenAudience;
+    }
+
+    public String getValidateTokenAudienceClaimName() {
+        return validateTokenAudienceClaimName;
+    }
+
+    public void setValidateTokenAudienceClaimName(String validateTokenAudienceClaimName) {
+        this.validateTokenAudienceClaimName = validateTokenAudienceClaimName;
+    }
+
+    public String getValidateTokenAudienceClaimValue() {
+        return validateTokenAudienceClaimValue;
+    }
+
+    public void setValidateTokenAudienceClaimValue(String validateTokenAudienceClaimValue) {
+        this.validateTokenAudienceClaimValue = validateTokenAudienceClaimValue;
     }
 }

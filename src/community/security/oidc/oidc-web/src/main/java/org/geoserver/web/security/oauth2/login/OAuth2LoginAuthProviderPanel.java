@@ -264,6 +264,9 @@ public class OAuth2LoginAuthProviderPanel
         add(new HelpLink("enableRedirectAuthenticationEntryPointHelp", this).setDialog(dialog));
         add(new CheckBox("enableRedirectAuthenticationEntryPoint"));
 
+        add(new HelpLink("enableResourceServerModeHelp", this).setDialog(dialog));
+        add(new CheckBox("enableResourceServerMode"));
+
         add(new HelpLink("connectionParametersHelp", this).setDialog(dialog));
 
         add(new HelpLink("postLogoutRedirectUriHelp", this).setDialog(dialog));

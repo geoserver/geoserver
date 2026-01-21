@@ -25,6 +25,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.oauth2.core.ClientAuthenticationMethod.CLIENT_SECRET_POST;
 
 import jakarta.servlet.Filter;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,6 +39,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.stubbing.Answer;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationManagerResolver;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2LoginConfigurer;
@@ -51,6 +54,7 @@ import org.springframework.security.oauth2.client.web.DefaultOAuth2Authorization
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -124,6 +128,10 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilderTest {
             callback.customize(mockOAuth2LoginConfigurer);
             return mockHttp;
         });
+
+        // Resource server (Bearer) configurer is enabled in hybrid mode; stub for builder chaining
+        when(mockHttp.oauth2ResourceServer(any())).thenReturn(mockHttp);
+        when(mockHttp.securityContext(any())).thenReturn(mockHttp);
     }
 
     private void assignDependencies() {
@@ -179,9 +187,10 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilderTest {
         Filter f0 = mock(Filter.class);
         Filter f1 = new OAuth2AuthorizationRequestRedirectFilter(lRepo);
         Filter f2 = new OAuth2LoginAuthenticationFilter(lRepo, lService);
+        Filter fBearer = createBearerFilter();
         Filter f3 = new RequestCacheAwareFilter();
         Filter f4 = mock(Filter.class);
-        List<Filter> lFilters = Arrays.asList(f0, f1, f2, f3, f4);
+        List<Filter> lFilters = Arrays.asList(f0, f1, f2, fBearer, f3, f4);
 
         // * http returns a "complete" spring chain, here with some mock filters
         when(mockHttp.build()).thenReturn(new DefaultSecurityFilterChain(mock(RequestMatcher.class), lFilters));
@@ -206,17 +215,20 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilderTest {
         assertNotNull(lFilter.getLogoutSuccessHandler());
 
         // * relevant filters are extracted
-        assertEquals(4, lFilter.getNestedFilters().size());
+        assertEquals(5, lFilter.getNestedFilters().size());
         assertNotNull(sut.getRedirectToProviderFilter());
         Assert.assertSame(f1, lFilter.getNestedFilters().get(0));
         Assert.assertSame(f2, lFilter.getNestedFilters().get(1));
-        Assert.assertSame(f3, lFilter.getNestedFilters().get(2));
+        Assert.assertSame(fBearer, lFilter.getNestedFilters().get(2));
+        Assert.assertSame(f3, lFilter.getNestedFilters().get(3));
         Assert.assertSame(
-                sut.getRedirectToProviderFilter(), lFilter.getNestedFilters().get(3));
+                sut.getRedirectToProviderFilter(), lFilter.getNestedFilters().get(4));
 
         // * configuration API has been called, and entire build process is through without nulls
         verify(mockTokenDecoderFactory, times(1)).setGeoServerOAuth2LoginFilterConfig(isNotNull());
         verify(mockHttp, times(1)).build();
+        verify(mockHttp, times(1)).oauth2ResourceServer(any());
+        verify(mockHttp, times(1)).securityContext(any());
         verify(mockOAuth2LoginConfigurer, times(1)).clientRegistrationRepository(isNotNull());
         verify(mockOAuth2LoginConfigurer, times(1)).authorizedClientRepository(isNotNull());
         verify(mockOAuth2LoginConfigurer, times(1)).authorizedClientService(isNotNull());
@@ -237,6 +249,45 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilderTest {
         assertEquals("myClientSecret", lGoogleReg.getClientSecret());
 
         assertTrue(ConfidentialLogger.isEnabled());
+    }
+
+    @Test
+    public void testFilterConstructionWithGoogleResourceServerDisabled() throws Exception {
+        // given
+        assignDependencies();
+
+        ClientRegistrationRepository lRepo = mock(ClientRegistrationRepository.class);
+        OAuth2AuthorizedClientService lService = mock(OAuth2AuthorizedClientService.class);
+        Filter f0 = mock(Filter.class);
+        Filter f1 = new OAuth2AuthorizationRequestRedirectFilter(lRepo);
+        Filter f2 = new OAuth2LoginAuthenticationFilter(lRepo, lService);
+        // Note: no BearerTokenAuthenticationFilter in the chain when RS mode is disabled
+        Filter f3 = new RequestCacheAwareFilter();
+        Filter f4 = mock(Filter.class);
+        List<Filter> lFilters = Arrays.asList(f0, f1, f2, f3, f4);
+
+        when(mockHttp.build()).thenReturn(new DefaultSecurityFilterChain(mock(RequestMatcher.class), lFilters));
+
+        configuration.setGoogleEnabled(true);
+        configuration.setGoogleClientId("myClientId");
+        configuration.setGoogleClientSecret("myClientSecret");
+        configuration.setEnableRedirectAuthenticationEntryPoint(true);
+        configuration.setEnableResourceServerMode(false);
+
+        // when
+        GeoServerOAuth2LoginAuthenticationFilter lFilter = sut.build();
+
+        // then
+        assertNotNull(lFilter);
+        assertEquals(4, lFilter.getNestedFilters().size());
+        Assert.assertSame(f1, lFilter.getNestedFilters().get(0));
+        Assert.assertSame(f2, lFilter.getNestedFilters().get(1));
+        Assert.assertSame(f3, lFilter.getNestedFilters().get(2));
+        Assert.assertSame(
+                sut.getRedirectToProviderFilter(), lFilter.getNestedFilters().get(3));
+
+        verify(mockHttp, times(0)).oauth2ResourceServer(any());
+        verify(mockHttp, times(0)).securityContext(any());
     }
 
     /**
@@ -352,9 +403,10 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilderTest {
         Filter f0 = mock(Filter.class);
         Filter f1 = new OAuth2AuthorizationRequestRedirectFilter(lRepo);
         Filter f2 = new OAuth2LoginAuthenticationFilter(lRepo, lService);
+        Filter fBearer = createBearerFilter();
         Filter f3 = new RequestCacheAwareFilter();
         Filter f4 = mock(Filter.class);
-        List<Filter> lFilters = Arrays.asList(f0, f1, f2, f3, f4);
+        List<Filter> lFilters = Arrays.asList(f0, f1, f2, fBearer, f3, f4);
 
         // * http returns a "complete" spring chain, here with some mock filters
         when(mockHttp.build()).thenReturn(new DefaultSecurityFilterChain(mock(RequestMatcher.class), lFilters));
@@ -384,5 +436,23 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilderTest {
         assertNotNull(lClientReg);
         assertEquals("msClientId", lClientReg.getClientId());
         assertEquals("msClientSecret", lClientReg.getClientSecret());
+    }
+
+    private static Filter createBearerFilter() {
+        try {
+            AuthenticationManagerResolver<HttpServletRequest> resolver = request -> authentication -> authentication;
+            try {
+                return BearerTokenAuthenticationFilter.class
+                        .getConstructor(AuthenticationManagerResolver.class)
+                        .newInstance(resolver);
+            } catch (NoSuchMethodException e) {
+                AuthenticationManager manager = authentication -> authentication;
+                return BearerTokenAuthenticationFilter.class
+                        .getConstructor(AuthenticationManager.class)
+                        .newInstance(manager);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

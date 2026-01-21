@@ -87,6 +87,16 @@ To setup for troubleshooting OIDC activity:
       DEBUG  [security.oauth2] - OIDC: Geoserver Roles: ROLE_ADMINISTRATOR
 
 
+Resource Server (Bearer JWT)
+----------------------------
+
+.. figure:: images/resource_server.png
+   
+   Proof Key of Code Exchange
+
+When enabled, the same OAuth2 / OpenID Connect login filter also accepts machine-to-machine requests that provide an Authorization: Bearer <JWT> header. The token is validated using the provider's JWK Set URI configured in this panel.
+
+Disable this option if you only want browser-based login, and you do not want this filter chain to accept bearer tokens.
 
 
 Proof Key of Code Exchange (PKCE) 

@@ -8,12 +8,12 @@ PostGIS
 Adding a PostGIS database
 -------------------------
 
-As with all formats, adding a shapefile to GeoServer involves adding a new store to the existing :ref:`data_webadmin_stores`  through the :ref:`web_admin`.
+As with all formats, adding a PostGIS connection to GeoServer involves adding a new store to the existing :ref:`data_webadmin_stores`  through the :ref:`web_admin`.
 
 Using default connection
 ````````````````````````
 
-To begin, navigate to :menuselection:`Stores --> Add a new store --> PostGIS NG`.
+To begin, navigate to :menuselection:`Stores --> Add a new store --> PostGIS`.
 
 Fill in the *Basic Store Info* used to identify the database when managing layers.
 
@@ -151,7 +151,7 @@ Using JNDI
 
 GeoServer can also connect to a PostGIS database using `JNDI <https://docs.oracle.com/javase/tutorial/jndi/overview/index.html>`_ (Java Naming and Directory Interface). This is used to allow a PostGIS DataStore to share a named connection pool of PostGIS connections configured in your application server.
 
-To begin, navigate to :menuselection:`Stores --> Add a new store --> PostGIS NG (JNDI)`.
+To begin, navigate to :menuselection:`Stores --> Add a new store --> PostGIS (JNDI)`.
 
 .. figure:: images/postgisjndi.png
    :align: center

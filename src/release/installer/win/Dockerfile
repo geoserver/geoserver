@@ -1,5 +1,5 @@
 # Note: image must be built on Azure (use Azure build context)!
-FROM mcr.microsoft.com/windows/servercore:ltsc2019-amd64
+FROM mcr.microsoft.com/windows/servercore:ltsc2025-amd64
 
 LABEL maintainer="sander.schaminee@geocat.net"
 

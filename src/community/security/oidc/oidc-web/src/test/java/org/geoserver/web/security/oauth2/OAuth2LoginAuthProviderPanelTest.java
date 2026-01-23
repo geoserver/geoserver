@@ -97,7 +97,7 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
 
         formTester.setValue(prefix + "displayOnOidc:oidcForceAuthorizationUriHttps", true);
         formTester.setValue(prefix + "displayOnOidc:oidcForceTokenUriHttps", true);
-        formTester.setValue(prefix + "displayOnOidc:oidcEnforceTokenValidation", true);
+        formTester.setValue(prefix + "displayOnOidc:disableSignatureValidation", true);
         formTester.setValue(prefix + "displayOnOidc:oidcUsePKCE", true);
         formTester.setValue(prefix + "displayOnOidc:oidcAllowUnSecureLogging", true);
 
@@ -157,7 +157,7 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
         assertEquals("https://localhost:9090/geoserver/web/login/oauth2/code/oidc", lConfig.getOidcRedirectUri());
 
         assertTrue(lConfig.getOidcForceAuthorizationUriHttps());
-        assertTrue(lConfig.isOidcEnforceTokenValidation());
+        assertTrue(lConfig.isDisableSignatureValidation());
         assertTrue(lConfig.isOidcUsePKCE());
         assertTrue(lConfig.isOidcAllowUnSecureLogging());
         assertEquals("query", lConfig.getOidcResponseMode());
@@ -169,7 +169,7 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
         prefix = "panel:pfv:4:settings:";
 
         formTester.setValue(prefix + "displayOnOidc:oidcForceAuthorizationUriHttps", false);
-        formTester.setValue(prefix + "displayOnOidc:oidcEnforceTokenValidation", false);
+        formTester.setValue(prefix + "displayOnOidc:disableSignatureValidation", false);
         formTester.setValue(prefix + "displayOnOidc:oidcUsePKCE", false);
         formTester.setValue(prefix + "displayOnOidc:oidcAllowUnSecureLogging", false);
         formTester.setValue(prefix + "displayOnOidc:oidcResponseMode", "");
@@ -191,7 +191,7 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
         lConfig = lOauthPanel.getConfigModel().getObject();
 
         assertFalse(lConfig.getOidcForceAuthorizationUriHttps());
-        assertFalse(lConfig.isOidcEnforceTokenValidation());
+        assertFalse(lConfig.isDisableSignatureValidation());
         assertFalse(lConfig.isOidcUsePKCE());
         assertFalse(lConfig.isOidcAllowUnSecureLogging());
         assertNull(lConfig.getOidcResponseMode());

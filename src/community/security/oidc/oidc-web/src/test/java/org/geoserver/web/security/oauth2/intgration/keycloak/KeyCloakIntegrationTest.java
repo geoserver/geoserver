@@ -399,7 +399,6 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
         filterConfig.setOidcUserInfoUri(baseKeycloakUrl + "/userinfo");
         filterConfig.setOidcLogoutUri(baseKeycloakUrl + "/endSession");
         filterConfig.setOidcJwkSetUri(baseKeycloakUrl + "/certs");
-        filterConfig.setOidcEnforceTokenValidation(false);
         filterConfig.setOidcScopes("openid profile email phone address");
         filterConfig.setEnableRedirectAuthenticationEntryPoint(false);
         filterConfig.setOidcUserNameAttribute("email");

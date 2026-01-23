@@ -18,6 +18,7 @@ import java.text.MessageFormat;
 import org.eclipse.imagen.PlanarImage;
 import org.geoserver.gwc.GWC;
 import org.geoserver.ows.Response;
+import org.geoserver.wms.TiledWebMap;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.RawMap;
@@ -72,6 +73,15 @@ public class GeoServerMetaTile extends MetaTile {
         if (metaTileMap instanceof RawMap map) {
             try (OutputStream outStream = target.getOutputStream()) {
                 map.writeTo(outStream);
+            }
+            return true;
+        }
+        if (metaTileMap instanceof TiledWebMap twm) {
+            int tileX = tileIdx % metaX;
+            int tileY = tileIdx / metaX;
+            byte[] tileData = twm.getTile(tileX, tileY);
+            try (OutputStream outStream = target.getOutputStream()) {
+                outStream.write(tileData);
             }
             return true;
         }

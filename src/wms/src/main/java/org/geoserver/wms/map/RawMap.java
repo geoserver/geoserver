@@ -57,6 +57,16 @@ public class RawMap extends WebMap {
         }
     }
 
+    /**
+     * Returns the raw map contents as a byte array, or {@code null} if the contents are held in a different way. Note
+     * that the byte array is returned as is, without copying, so care must be taken to not modify its contents.
+     *
+     * @return the raw map contents as a byte array, or {@code null} of the contents are held in a different way.
+     */
+    public byte[] getMapContents() {
+        return mapContents;
+    }
+
     @Override
     public void disposeInternal() {
         buffer = null;

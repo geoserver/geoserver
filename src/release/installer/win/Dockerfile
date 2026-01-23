@@ -1,10 +1,10 @@
 # Note: image must be built on Azure (use Azure build context)!
-FROM mcr.microsoft.com/windows/servercore:ltsc2025-amd64
+FROM mcr.microsoft.com/windows/servercore:ltsc2022-amd64
 
 LABEL maintainer="sander.schaminee@geocat.net"
 
 # Install Chocolately and NSIS
-RUN @powershell.exe -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[System.Net.ServicePointManager]::SecurityProtocol = 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
+RUN @powershell.exe -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
 RUN choco install -y nsis
 
 # Install Pandoc to convert Markdown to RTF (for installer license page)

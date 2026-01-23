@@ -88,6 +88,20 @@ public class GeoServerOAuth2LoginFilterConfigValidator extends FilterConfigValid
         validateRoleSourceMsGraph(filterConfig);
         validateRoleSourceIdToken(filterConfig);
         validateRoleSourceUserInfo(filterConfig);
+        validateTokenAudience(filterConfig);
+    }
+
+    private void validateTokenAudience(GeoServerOAuth2LoginFilterConfig filterConfig)
+            throws GeoServerOAuth2FilterConfigException {
+        if (!filterConfig.isValidateTokenAudience()) {
+            return;
+        }
+        if (!StringUtils.hasLength(filterConfig.getValidateTokenAudienceClaimName())) {
+            throw createFilterException(GeoServerOAuth2FilterConfigException.OAUTH2_AUDIENCE_CLAIM_NAME_REQUIRED);
+        }
+        if (!StringUtils.hasLength(filterConfig.getValidateTokenAudienceClaimValue())) {
+            throw createFilterException(GeoServerOAuth2FilterConfigException.OAUTH2_AUDIENCE_CLAIM_VALUE_REQUIRED);
+        }
     }
 
     private void validateRoleSourceUserInfo(GeoServerOAuth2LoginFilterConfig filterConfig)

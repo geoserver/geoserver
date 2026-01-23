@@ -13,6 +13,7 @@ import static org.apache.commons.io.IOUtils.resourceToString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
@@ -28,16 +29,28 @@ import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.Payload;
 import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.RSASSASigner;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.jwk.gen.RSAKeyGenerator;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import jakarta.servlet.Filter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequestEvent;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.geoserver.data.test.SystemTestData;
@@ -49,6 +62,7 @@ import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.RequestFilterChain;
 import org.geoserver.security.VariableFilterChain;
 import org.geoserver.security.config.SecurityManagerConfig;
+import org.geoserver.security.validation.SecurityConfigException;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.TestSetup;
 import org.geoserver.test.TestSetupFrequency;
@@ -65,6 +79,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.jose.jws.JwsAlgorithms;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.RequestContextListener;
@@ -140,7 +155,7 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                        .withBodyFile("jwks.json")));
+                        .withBodyFile("jkws.json")));
 
         openIdService.stubFor(WireMock.get(WireMock.urlMatching(".*/userinfo")) // disallow query
                 // parameters
@@ -220,6 +235,155 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
             }
         }
         return result;
+    }
+
+    @Test
+    public void testBearerJwtAuthenticatesNoRedirect() throws Exception {
+        RSAKey rsa = new RSAKeyGenerator(2048).keyID("kid-1").generate();
+        String jwksPath = "/jwks-rs.json";
+        repointJwkSetUri(jwksPath);
+        stubJwks(jwksPath, rsa.toPublicJWK());
+
+        String token = signJwt(rsa, "m2m@example.com", List.of("R1", "R2"), List.of());
+
+        MockHttpServletRequest req = createRequest("web/");
+        req.addHeader("Authorization", "Bearer " + token);
+
+        AtomicReference<Authentication> authRef = new AtomicReference<>();
+        MockHttpServletResponse resp = executeOnSecurityFiltersCapturingAuth(req, authRef);
+
+        assertEquals(200, resp.getStatus());
+        assertNull(resp.getHeader("Location"));
+
+        Authentication auth = authRef.get();
+        assertNotNull(auth);
+        assertThat(auth, CoreMatchers.instanceOf(JwtAuthenticationToken.class));
+
+        assertThat(
+                auth.getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.toList()),
+                CoreMatchers.hasItems("R1", "R2", "ROLE_AUTHENTICATED"));
+    }
+
+    @Test
+    public void testBearerJwtIsStatelessNotSavedInSession() throws Exception {
+        RSAKey rsa = new RSAKeyGenerator(2048).keyID("kid-1").generate();
+        String jwksPath = "/jwks-rs.json";
+        repointJwkSetUri(jwksPath);
+        stubJwks(jwksPath, rsa.toPublicJWK());
+
+        String token = signJwt(rsa, "m2m@example.com", List.of("R1"), List.of());
+
+        // Force session creation before request to prove we are not persisting bearer auth into it.
+        MockHttpServletRequest req1 = createRequest("web/");
+        HttpSession session = req1.getSession(true);
+        req1.addHeader("Authorization", "Bearer " + token);
+
+        AtomicReference<Authentication> authRef = new AtomicReference<>();
+        MockHttpServletResponse resp1 = executeOnSecurityFiltersCapturingAuth(req1, authRef);
+        assertEquals(200, resp1.getStatus());
+        assertNull(resp1.getHeader("Location"));
+
+        // Ensure nothing was stored in the session
+        assertNull(session.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY));
+
+        // Second request: same session, no Authorization header -> must trigger login redirect (not authenticated)
+        MockHttpServletRequest req2 = createRequest("web/");
+        req2.setSession(session);
+        MockHttpServletResponse resp2 = executeOnSecurityFilters(req2);
+
+        assertEquals(302, resp2.getStatus());
+        assertEquals(baseRedirectUri + "web/oauth2/authorizationoidc", resp2.getHeader("Location"));
+    }
+
+    @Test
+    public void testBearerJwtInvalidSignatureNoRedirect() throws Exception {
+        RSAKey jwksKey = new RSAKeyGenerator(2048).keyID("kid-1").generate();
+        String jwksPath = "/jwks-rs.json";
+        repointJwkSetUri(jwksPath);
+        stubJwks(jwksPath, jwksKey.toPublicJWK());
+
+        // Sign with a different key, so signature verification must fail.
+        RSAKey signerKey = new RSAKeyGenerator(2048).keyID("kid-2").generate();
+        String token = signJwt(signerKey, "m2m@example.com", List.of("R1"), List.of());
+
+        MockHttpServletRequest req = createRequest("web/");
+        req.addHeader("Authorization", "Bearer " + token);
+
+        AtomicReference<Authentication> authRef = new AtomicReference<>();
+        MockHttpServletResponse resp = executeOnSecurityFiltersCapturingAuth(req, authRef);
+
+        assertNull(resp.getHeader("Location"));
+        assertThat(resp.getStatus(), Matchers.anyOf(Matchers.is(401), Matchers.is(403)));
+        assertNull(authRef.get());
+    }
+
+    @Test
+    public void testBearerJwtAudienceValidationRejectsWrongAudience() throws Exception {
+        // Enable audience validation in the same OIDC filter config
+        GeoServerSecurityManager manager = getSecurityManager();
+        GeoServerOAuth2LoginFilterConfig cfg =
+                (GeoServerOAuth2LoginFilterConfig) manager.loadFilterConfig("openidconnect", true);
+        cfg.setValidateTokenAudience(true);
+        cfg.setValidateTokenAudienceClaimName("aud");
+        cfg.setValidateTokenAudienceClaimValue("geoserver");
+        manager.saveFilter(cfg);
+
+        RSAKey rsa = new RSAKeyGenerator(2048).keyID("kid-1").generate();
+        String jwksPath = "/jwks-rs.json";
+        repointJwkSetUri(jwksPath);
+        stubJwks(jwksPath, rsa.toPublicJWK());
+
+        // aud does NOT contain "geoserver"
+        String token = signJwt(rsa, "m2m@example.com", List.of("R1"), List.of("other-aud"));
+
+        MockHttpServletRequest req = createRequest("web/");
+        req.addHeader("Authorization", "Bearer " + token);
+
+        AtomicReference<Authentication> authRef = new AtomicReference<>();
+        MockHttpServletResponse resp = executeOnSecurityFiltersCapturingAuth(req, authRef);
+
+        assertNull(resp.getHeader("Location"));
+        assertThat(resp.getStatus(), Matchers.anyOf(Matchers.is(401), Matchers.is(403)));
+        assertNull(authRef.get());
+    }
+
+    @Test
+    public void testBearerJwtWhenResourceServerModeDisabledRedirectsToProvider() throws Exception {
+        GeoServerSecurityManager manager = getSecurityManager();
+        GeoServerOAuth2LoginFilterConfig cfg =
+                (GeoServerOAuth2LoginFilterConfig) manager.loadFilterConfig("openidconnect", true);
+
+        boolean prev = cfg.isEnableResourceServerMode();
+        boolean prevSkip = cfg.getEnableRedirectAuthenticationEntryPoint();
+        cfg.setEnableResourceServerMode(false);
+        cfg.setEnableRedirectAuthenticationEntryPoint(true);
+        manager.saveFilter(cfg);
+
+        try {
+            // Prepare JWKS + JWT (even though RS mode is disabled; token must be ignored)
+            RSAKey rsa = new RSAKeyGenerator(2048).keyID("kid-1").generate();
+            String jwksPath = "/jwks-disabled.json";
+            repointJwkSetUri(jwksPath);
+            stubJwks(jwksPath, rsa.toPublicJWK());
+            String token = signJwt(rsa, "m2m@example.com", List.of("R1"), List.of());
+
+            MockHttpServletRequest req = createRequest("web/");
+            req.addHeader("Authorization", "Bearer " + token);
+
+            AtomicReference<Authentication> authRef = new AtomicReference<>();
+            MockHttpServletResponse resp = executeOnSecurityFiltersCapturingAuth(req, authRef);
+
+            // With RS mode disabled, Bearer requests fall back to the login entrypoint behavior
+            assertEquals(302, resp.getStatus());
+            assertEquals(baseRedirectUri + "web/oauth2/authorizationoidc", resp.getHeader("Location"));
+            assertNull(authRef.get());
+        } finally {
+            GeoServerOAuth2LoginFilterConfig restore =
+                    (GeoServerOAuth2LoginFilterConfig) manager.loadFilterConfig("openidconnect", true);
+            restore.setEnableResourceServerMode(prev);
+            restore.setEnableRedirectAuthenticationEntryPoint(prevSkip);
+            manager.saveFilter(restore);
+        }
     }
 
     @Test
@@ -338,6 +502,72 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
             kvp = KvpUtils.parseQueryString(location);
             assertThat(kvp, Matchers.hasEntry("id_token_hint", lIdTokenValue));
         }
+    }
+
+    private void repointJwkSetUri(String jwksPath) throws IOException, SecurityConfigException {
+        GeoServerSecurityManager manager = getSecurityManager();
+        GeoServerOAuth2LoginFilterConfig cfg =
+                (GeoServerOAuth2LoginFilterConfig) manager.loadFilterConfig("openidconnect", true);
+        cfg.setOidcJwkSetUri(authService + jwksPath);
+        manager.saveFilter(cfg);
+    }
+
+    private void stubJwks(String jwksPath, RSAKey publicKey) {
+        Map<String, Object> json = new JWKSet(publicKey).toJSONObject(true);
+        openIdService.stubFor(WireMock.get(urlPathEqualTo(jwksPath))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                        .withBody(json.toString())));
+    }
+
+    private String signJwt(RSAKey signingKey, String email, List<String> roles, List<String> audiences)
+            throws Exception {
+        Instant now = Instant.now();
+        JWTClaimsSet.Builder b = new JWTClaimsSet.Builder()
+                .subject("m2m-client")
+                .issueTime(Date.from(now))
+                .expirationTime(Date.from(now.plusSeconds(120)))
+                .claim("email", email)
+                .claim("roles", roles);
+
+        if (audiences != null && !audiences.isEmpty()) {
+            for (String aud : audiences) {
+                b.audience(aud);
+            }
+        } else {
+            b.audience("geoserver");
+        }
+
+        SignedJWT jwt = new SignedJWT(
+                new JWSHeader.Builder(JWSAlgorithm.RS256)
+                        .keyID(signingKey.getKeyID())
+                        .build(),
+                b.build());
+        jwt.sign(new RSASSASigner(signingKey.toPrivateKey()));
+        return jwt.serialize();
+    }
+
+    private MockHttpServletResponse executeOnSecurityFiltersCapturingAuth(
+            MockHttpServletRequest request, AtomicReference<Authentication> authRef)
+            throws IOException, ServletException {
+
+        new RequestContextListener().requestInitialized(new ServletRequestEvent(request.getServletContext(), request));
+
+        HttpServlet terminal = new HttpServlet() {
+            @Override
+            protected void service(HttpServletRequest req, HttpServletResponse resp) {
+                authRef.set(SecurityContextHolder.getContext().getAuthentication());
+            }
+        };
+
+        MockFilterChain chain = new MockFilterChain(terminal);
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        GeoServerSecurityFilterChainProxy filterChainProxy =
+                GeoServerExtensions.bean(GeoServerSecurityFilterChainProxy.class);
+        filterChainProxy.doFilter(request, response, chain);
+
+        return response;
     }
 
     private MockHttpServletResponse executeOnSecurityFilters(MockHttpServletRequest request)

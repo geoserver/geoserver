@@ -407,7 +407,7 @@ Create the OIDC Filter
         :align: center
 
 
-Configure Role Role Source 
+Configure Role Source
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 

@@ -67,7 +67,9 @@ import org.geoserver.util.DimensionWarning;
 import org.geoserver.util.HTTPWarningAppender;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.MetatileContextHolder;
 import org.geoserver.wms.RasterCleaner;
+import org.geoserver.wms.TiledWebMap;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.capabilities.CapabilityUtil;
@@ -533,7 +535,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
 
         int metaX;
         int metaY;
-        if (mime.supportsTiling()) {
+        if (GWC.supportsMetaTiling(mime)) {
             metaX = info.getMetaTilingX();
             metaY = info.getMetaTilingY();
         } else {
@@ -659,18 +661,23 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
             throws Exception {
         WebMap map;
         long requestTime = System.currentTimeMillis();
+        final GridSubset gridSubset = getGridSubset(conveyorTile.getGridSetId());
 
-        // Actually fetch the metatile data
-        map = dispatchGetMap(conveyorTile, metaTile);
+        try {
+            MetatileContextHolder.set(buildMetaInfo(metaTile, gridSubset));
+            // Actually fetch the metatile data
+            map = dispatchGetMap(conveyorTile, metaTile);
+        } finally {
+            MetatileContextHolder.clear();
+        }
 
         checkNotNull(map, "Did not obtain a WebMap from GeoServer's Dispatcher");
         metaTile.setWebMap(map);
-
         setupCachingStrategy(conveyorTile);
-
+        final TiledWebMap twm = map instanceof TiledWebMap ? (TiledWebMap) map : null;
         final long[][] gridPositions = metaTile.getTilesGridPositions();
         final long[] gridLoc = conveyorTile.getTileIndex();
-        final GridSubset gridSubset = getGridSubset(conveyorTile.getGridSetId());
+
         final int numberOfTiles = gridPositions.length;
 
         final int zoomLevel = (int) gridLoc[2];
@@ -693,14 +700,15 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                     tileLockLatch.countDown();
                     continue;
                 }
-
-                Supplier<Resource> encodeTileTask = encodeTileTask(metaTile, tileIndex);
+                final Supplier<Resource> tileResourceSupplier = twm != null
+                        ? () -> getPreTiledResource(twm, finalTileIndex)
+                        : encodeTileTask(metaTile, finalTileIndex);
 
                 if (isConveyorTile) {
                     // Always encode the conveyor tile on the main thread, and set a tentative
                     // creation time for it (the actual save time will be later, the first
                     // time modification check from the client will re-fetch the tile
-                    Resource resource = encodeTileTask.get();
+                    Resource resource = tileResourceSupplier.get();
                     conveyorTile.setBlob(resource);
                     conveyorTile.getStorageObject().setCreated(requestTime);
 
@@ -722,7 +730,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                     // For all other tiles, either encode/save fully asynchronously or
                     // fully on the main thread
                     Runnable tileSaver = () -> {
-                        Resource resource = encodeTileTask.get();
+                        Resource resource = tileResourceSupplier.get();
                         saveTileTask(metaTile, finalTileIndex, conveyorTile, resource, requestTime)
                                 .run();
                     };
@@ -753,6 +761,12 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
             // so we can dispose of the meta-tile right away
             metaTile.dispose();
         }
+    }
+
+    /** Retrieves a pre-tiled Byte Array resource from a TiledWebMap by tileIndex */
+    private Resource getPreTiledResource(TiledWebMap tiledWebMap, int tileIndex) {
+        byte[] tileData = tiledWebMap.getTile(tileIndex);
+        return new ByteArrayResource(tileData);
     }
 
     private void runAsyncAfterAllFuturesComplete(
@@ -1079,7 +1093,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
 
         int metaX = info.getMetaTilingX();
         int metaY = info.getMetaTilingY();
-        if (!tile.getMimeType().supportsTiling()) {
+        if (!GWC.supportsMetaTiling(tile.getMimeType())) {
             metaX = metaY = 1;
         }
         getMetatilingResponse(tile, tryCache, metaX, metaY);
@@ -1844,5 +1858,31 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
         if (metadata != null) {
             metadataLayers.add(metadata);
         }
+    }
+
+    private static MetatileContextHolder.MetaInfo buildMetaInfo(GeoServerMetaTile metaTile, GridSubset gridSubset) {
+        // tile size in pixels (GridSet is square tiles)
+        int tileSize = gridSubset.getGridSet().getTileWidth();
+
+        // metaX/metaY = number of unique columns/rows in this metatile
+        long[][] tiles = metaTile.getTilesGridPositions();
+        if (tiles.length == 1) {
+            // Avoid setting up meta-tiling machinery for single tiles
+            return null;
+        }
+        java.util.HashSet<Long> cols = new java.util.HashSet<>();
+        java.util.HashSet<Long> rows = new java.util.HashSet<>();
+        for (long[] p : tiles) {
+            cols.add(p[0]);
+            rows.add(p[1]);
+        }
+
+        int metaX = cols.size();
+        int metaY = rows.size();
+
+        int widthPx = metaX * tileSize;
+        int heightPx = metaY * tileSize;
+
+        return new MetatileContextHolder.MetaInfo(widthPx, heightPx, tileSize);
     }
 }

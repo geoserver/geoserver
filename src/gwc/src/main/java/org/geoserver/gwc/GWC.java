@@ -86,8 +86,10 @@ import org.geoserver.security.decorators.SecuredLayerInfo;
 import org.geoserver.threadlocals.ThreadLocalsTransfer;
 import org.geoserver.util.HTTPWarningAppender;
 import org.geoserver.wfs.kvp.BBoxKvpParser;
+import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
+import org.geoserver.wms.map.MetaTilingOutputFormat;
 import org.geoserver.wms.map.RenderedImageMap;
 import org.geoserver.wms.map.RenderedImageMapResponse;
 import org.geotools.api.filter.Filter;
@@ -222,6 +224,9 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
     // list of GeoServer contributed grid sets that should not be editable by the user
     private final Set<String> geoserverEmbeddedGridSets = new HashSet<>();
+
+    // list of mime types that support meta-tiling in GeoServer
+    private static Set<String> METATILING_MIME_TYPES = Collections.emptySet();
 
     private BlobStoreAggregator blobStoreAggregator;
 
@@ -2281,7 +2286,20 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         this.gwcEnvironment = GeoServerExtensions.bean(GeoWebCacheEnvironment.class);
         GWC.INSTANCE = GeoServerExtensions.bean(GWC.class);
 
+        // Build once: all GetMapOutputFormats that explicitly support meta-tiling
+        METATILING_MIME_TYPES =
+                GeoServerExtensions.extensions(MetaTilingOutputFormat.class, applicationContext).stream()
+                        .map(GetMapOutputFormat::getMimeType)
+                        .filter(java.util.Objects::nonNull)
+                        .peek(mime -> log.log(Level.INFO, "Registered meta-tiling MIME type: " + mime))
+                        .collect(java.util.stream.Collectors.toUnmodifiableSet());
+
         GWC.INSTANCE.gwcSynchEnv.syncEnv();
+    }
+
+    public static boolean supportsMetaTiling(MimeType mime) {
+        if (mime.supportsTiling()) return true;
+        return METATILING_MIME_TYPES.contains(mime.getFormat());
     }
 
     /**

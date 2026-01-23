@@ -337,6 +337,8 @@ public class OAuth2LoginAuthProviderPanel
             lOidcContainer.add(new TextField<>("oidcJwkSetUri"));
             lOidcContainer.add(new HelpLink("oidcResponseModeHelp", this).setDialog(dialog));
             lOidcContainer.add(new TextField<>("oidcResponseMode"));
+            lOidcContainer.add(new HelpLink("oidcIntrospectionUrlHelp", this).setDialog(dialog));
+            lOidcContainer.add(new TextField<>("oidcIntrospectionUrl"));
             lOidcContainer.add(new HelpLink("disableSignatureValidationHelp", this).setDialog(dialog));
             lOidcContainer.add(new CheckBox("disableSignatureValidation"));
 

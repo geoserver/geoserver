@@ -5,19 +5,30 @@
 package org.geoserver.security.oauth2.login;
 
 import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.Instant;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.security.filter.GeoServerAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerCompositeFilter;
+import org.geoserver.security.oauth2.common.TokenIntrospector;
 import org.geotools.util.logging.Logging;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
 /**
  * {@link Filter} supports OpenID Connect and OAuth2 based logins by delegating to the nested Spring filter
@@ -43,8 +54,17 @@ public class GeoServerOAuth2LoginAuthenticationFilter extends GeoServerComposite
 
     private LogoutSuccessHandler logoutSuccessHandler;
 
+    private TokenIntrospector tokenIntrospector;
+
+    static final String ACCESS_TOKEN_EXPIRATION = "OpenIdConnect-AccessTokenExpiration";
+
     public GeoServerOAuth2LoginAuthenticationFilter() {
         super();
+    }
+
+    public GeoServerOAuth2LoginAuthenticationFilter(TokenIntrospector introspector) {
+        super();
+        this.tokenIntrospector = introspector;
     }
 
     @Override
@@ -55,6 +75,44 @@ public class GeoServerOAuth2LoginAuthenticationFilter extends GeoServerComposite
     @Override
     public boolean applicableForServices() {
         return true;
+    }
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+        String authorization = ((HttpServletRequest) request).getHeader("Authorization");
+
+        if (authorization != null && authorization.startsWith("Bearer ")) {
+            String token = authorization.substring(7);
+            Map<String, Object> responseMap = tokenIntrospector.introspectToken(token);
+            validateIntrospectedToken(request, responseMap);
+            String name =
+                    (String) responseMap.getOrDefault("sub", responseMap.getOrDefault("username", "introspected"));
+            List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_AUTHENTICATED"));
+
+            Authentication auth = new PreAuthenticatedAuthenticationToken(name, "N/A", authorities);
+            auth.setAuthenticated(true);
+            SecurityContextHolder.getContext().setAuthentication(auth);
+        }
+        super.doFilter(request, response, chain);
+    }
+
+    private void validateIntrospectedToken(ServletRequest servletRequest, Map<String, Object> responseMap)
+            throws ServletException {
+        if (!Boolean.TRUE.equals(responseMap.get("active"))) {
+            throw new ServletException("Bearer token is not active");
+        }
+        collectExpiration(servletRequest, responseMap);
+    }
+
+    /** If an expiration attribute is set, we can use it to cache the access token */
+    private static void collectExpiration(ServletRequest req, Map<String, Object> properties) {
+        if (properties.get("exp") instanceof Number) {
+            long exp = ((Number) properties.get("exp")).longValue();
+            if (exp > Instant.now().getEpochSecond()) { // epoch is guaranteed to be in UTC like exp
+                req.setAttribute(ACCESS_TOKEN_EXPIRATION, exp);
+            }
+        }
     }
 
     @Override

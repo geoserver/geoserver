@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import org.apache.commons.lang3.StringUtils;
 import org.geoserver.security.GeoServerRoleConverter;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
@@ -31,6 +32,7 @@ import org.geoserver.security.filter.GeoServerRoleResolvers;
 import org.geoserver.security.filter.GeoServerRoleResolvers.ResolverContext;
 import org.geoserver.security.oauth2.common.ConfidentialLogger;
 import org.geoserver.security.oauth2.common.HttpServletRequestSupplier;
+import org.geoserver.security.oauth2.common.TokenIntrospector;
 import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginCustomizers.ClientRegistrationCustomizer;
 import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginCustomizers.HttpSecurityCustomizer;
 import org.geoserver.security.oauth2.spring.GeoServerAuthorizationRequestCustomizer;
@@ -76,7 +78,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.util.StringUtils;
 
 /**
  * Builder for {@link GeoServerOAuth2LoginAuthenticationFilter}.
@@ -135,7 +136,15 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
     public GeoServerOAuth2LoginAuthenticationFilter build() {
         validate();
 
-        GeoServerOAuth2LoginAuthenticationFilter filter = new GeoServerOAuth2LoginAuthenticationFilter();
+        GeoServerOAuth2LoginAuthenticationFilter filter;
+        String oidcIntrospectionUrl = configuration.getOidcIntrospectionUrl();
+        if (StringUtils.isNotBlank(oidcIntrospectionUrl)) {
+            TokenIntrospector tokenIntrospector = new TokenIntrospector(
+                    oidcIntrospectionUrl, configuration.getOidcClientId(), configuration.getOidcClientSecret());
+            filter = new GeoServerOAuth2LoginAuthenticationFilter(tokenIntrospector);
+        } else {
+            filter = new GeoServerOAuth2LoginAuthenticationFilter();
+        }
 
         if (0 < configuration.getActiveProviderCount()) {
             filter.setLogoutSuccessHandler(getLogoutSuccessHandler());
@@ -544,7 +553,7 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
             return null;
         }
 
-        if (!StringUtils.hasText(jwkSetUri)) {
+        if (!StringUtils.isNotBlank(jwkSetUri)) {
             return null;
         }
 

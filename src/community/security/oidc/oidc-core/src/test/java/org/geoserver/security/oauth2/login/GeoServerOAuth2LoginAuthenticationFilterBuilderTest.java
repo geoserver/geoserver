@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.oauth2.common.ConfidentialLogger;
+import org.geoserver.security.oauth2.common.TokenIntrospector;
 import org.geoserver.security.oauth2.spring.GeoServerAuthorizationRequestCustomizer;
 import org.geoserver.security.oauth2.spring.GeoServerOidcIdTokenDecoderFactory;
 import org.junit.Assert;
@@ -314,6 +315,7 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilderTest {
         configuration.setOidcUserInfoUri("myUserInfoUri");
         configuration.setOidcJwkSetUri("https://myJwkSetUri");
         configuration.setOidcLogoutUri("myLogoutUri");
+        configuration.setOidcIntrospectionUrl("myIntrospectionUrl");
 
         configuration.setOidcUsePKCE(true);
         configuration.setOidcResponseMode("query");
@@ -365,6 +367,11 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilderTest {
         JwtDecoder lDecoder = lTokenDecoderFactory.createDecoder(lReg);
         Object lValidatorObject = readField(lDecoder, "jwtValidator", true);
         assertNotNull(lValidatorObject);
+
+        TokenIntrospector lTokenIntrospector = (TokenIntrospector) readField(lFilter, "tokenIntrospector", true);
+        assertNotNull(lTokenIntrospector);
+        Object introspectionUrl = readField(lTokenIntrospector, "introspectionEndpointUrl", true);
+        assertEquals("myIntrospectionUrl", introspectionUrl);
 
         // * PKCE, extra request parameters (response mode)
         DefaultOAuth2AuthorizationRequestResolver lResolver = sut.getAuthorizationRequestResolver();

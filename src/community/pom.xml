@@ -167,6 +167,7 @@
         <module>singlestore</module>
         <module>pmtiles-store</module>
         <module>wps-openai</module>
+        <module>security-common</module>
       </modules>
     </profile>
     <profile>
@@ -372,6 +373,7 @@
       <id>oidc</id>
       <modules>
         <module>security</module>
+        <module>security-common</module>
       </modules>
     </profile>
     <profile>

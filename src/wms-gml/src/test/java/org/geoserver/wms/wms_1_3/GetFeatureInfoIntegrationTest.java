@@ -29,13 +29,13 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
+import org.geoserver.wms.GetMapTest;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.featureinfo.GML3FeatureInfoOutputFormat;
 import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
 import org.geoserver.wms.featureinfo.TextFeatureInfoOutputFormat;
 import org.geoserver.wms.featureinfo.XML311FeatureInfoOutputFormat;
-import org.geoserver.wms.wms_1_1_1.CapabilitiesTest;
 import org.geotools.filter.v1_1.OGC;
 import org.geotools.util.logging.Logging;
 import org.junit.Test;
@@ -94,18 +94,18 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
 
         Catalog catalog = getCatalog();
 
-        testData.addStyle("thickStroke", "thickStroke.sld", CapabilitiesTest.class, catalog);
-        testData.addStyle("raster", "raster.sld", CapabilitiesTest.class, catalog);
-        testData.addStyle("rasterScales", "rasterScales.sld", CapabilitiesTest.class, catalog);
-        testData.addStyle("squares", "squares.sld", CapabilitiesTest.class, catalog);
-        testData.addStyle("forestsManyRules", "ForestsManyRules.sld", CapabilitiesTest.class, catalog);
-        testData.addVectorLayer(SQUARES, Collections.emptyMap(), "squares.properties", CapabilitiesTest.class, catalog);
+        testData.addStyle("thickStroke", "thickStroke.sld", GetMapTest.class, catalog);
+        testData.addStyle("raster", "raster.sld", GetMapTest.class, catalog);
+        testData.addStyle("rasterScales", "rasterScales.sld", GetMapTest.class, catalog);
+        testData.addStyle("squares", "squares.sld", GetMapTest.class, catalog);
+        testData.addStyle("forestsManyRules", "ForestsManyRules.sld", GetMapTest.class, catalog);
+        testData.addVectorLayer(SQUARES, Collections.emptyMap(), "squares.properties", GetMapTest.class, catalog);
         Map<LayerProperty, Object> propertyMap = new HashMap<>();
         propertyMap.put(LayerProperty.STYLE, "raster");
         testData.addRasterLayer(TASMANIA_BM, "tazbm.tiff", "tiff", propertyMap, SystemTestData.class, catalog);
         testData.addRasterLayer(
                 SAMPLEGRIB, "sampleGrib.tif", null, propertyMap, GetFeatureInfoIntegrationTest.class, catalog);
-        testData.addRasterLayer(CUSTOM, "custom.zip", null, propertyMap, CapabilitiesTest.class, catalog);
+        testData.addRasterLayer(CUSTOM, "custom.zip", null, propertyMap, GetMapTest.class, catalog);
 
         // this data set contain lines strings but with geometry type set as geometry
         testData.addVectorLayer(
@@ -113,8 +113,8 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         testData.addStyle("genericLinesStyle", "genericLines.sld", getClass(), getCatalog());
 
         // set up a non-querable layer.
-        testData.addStyle("Population", "Population.sld", CapabilitiesTest.class, catalog);
-        testData.addVectorLayer(STATES, Collections.emptyMap(), "states.properties", CapabilitiesTest.class, catalog);
+        testData.addStyle("Population", "Population.sld", GetMapTest.class, catalog);
+        testData.addVectorLayer(STATES, Collections.emptyMap(), "states.properties", GetMapTest.class, catalog);
         LayerInfo layer = catalog.getLayerByName(getLayerId(STATES));
         layer.setQueryable(false);
         catalog.save(layer);
@@ -132,46 +132,6 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
                 null,
                 null);
     }
-
-    //    @Override
-    //    protected void setUpInternal() throws Exception {
-    //        super.setUpInternal();
-    //
-    //        Map<String, String> namespaces = new HashMap<String, String>();
-    //        namespaces.put("xlink", "http://www.w3.org/1999/xlink");
-    //        namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
-    //        namespaces.put("wms", "http://www.opengis.net/wms");
-    //        namespaces.put("ows", "http://www.opengis.net/ows");
-    //        namespaces.put("ogc", "http://www.opengis.net/ogc");
-    //        namespaces.put("wfs", "http://www.opengis.net/wfs");
-    //        namespaces.put("gml", "http://www.opengis.net/gml");
-    //        namespaces.put(WCS_PREFIX, WCS_URI);
-    //
-    //        NamespaceContext ctx = new SimpleNamespaceContext(namespaces);
-    //        XMLUnit.setXpathNamespaceContext(ctx);
-    //
-    //        Logging.getLogger("org.geoserver.ows").setLevel(Level.OFF);
-    //        WMSInfo wmsInfo = getGeoServer().getService(WMSInfo.class);
-    //        wmsInfo.setMaxBuffer(50);
-    //        getGeoServer().save(wmsInfo);
-    //    }
-
-    //    @Override
-    //    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-    //        super.populateDataDirectory(dataDirectory);
-    //        dataDirectory.addWcs10Coverages();
-    //        dataDirectory.addStyle("thickStroke", getClass()
-    //                .getResource("../wms_1_1_1/thickStroke.sld"));
-    //        dataDirectory.addStyle("raster", getClass().getResource("../wms_1_1_1/raster.sld"));
-    //        dataDirectory.addStyle("rasterScales",
-    //                getClass().getResource("../wms_1_1_1/rasterScales.sld"));
-    //        dataDirectory.addCoverage(TASMANIA_BM,
-    // getClass().getResource("../wms_1_1_1/tazbm.tiff"),
-    //                "tiff", "raster");
-    //        dataDirectory.addStyle("squares", getClass().getResource("../wms_1_1_1/squares.sld"));
-    //        dataDirectory.addPropertiesType(SQUARES,
-    //                getClass().getResource("../wms_1_1_1/squares.properties"), null);
-    //    }
 
     @Test
     public void testAllowedMimeTypes() throws Exception {

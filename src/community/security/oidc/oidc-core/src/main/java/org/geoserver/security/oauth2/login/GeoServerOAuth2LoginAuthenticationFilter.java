@@ -80,21 +80,40 @@ public class GeoServerOAuth2LoginAuthenticationFilter extends GeoServerComposite
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        String authorization = ((HttpServletRequest) request).getHeader("Authorization");
+
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        String authorization = httpRequest.getHeader("Authorization");
 
         if (authorization != null && authorization.startsWith("Bearer ")) {
             String token = authorization.substring(7);
-            Map<String, Object> responseMap = tokenIntrospector.introspectToken(token);
+
+            // Prefer a properly typed API: Map<String, Object>.
+            // If TokenIntrospector still returns a raw Map, update its signature accordingly.
+            @SuppressWarnings("unchecked")
+            Map<String, Object> responseMap = (Map<String, Object>) tokenIntrospector.introspectToken(token);
+
             validateIntrospectedToken(request, responseMap);
-            String name =
-                    (String) responseMap.getOrDefault("sub", responseMap.getOrDefault("username", "introspected"));
+
+            String name = resolveSubject(responseMap);
             List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_AUTHENTICATED"));
 
             Authentication auth = new PreAuthenticatedAuthenticationToken(name, "N/A", authorities);
-            auth.setAuthenticated(true);
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
+
         super.doFilter(request, response, chain);
+    }
+
+    private static String resolveSubject(Map<String, Object> responseMap) {
+        Object sub = responseMap.get("sub");
+        if (sub instanceof String s && !s.isBlank()) {
+            return s;
+        }
+        Object username = responseMap.get("username");
+        if (username instanceof String u && !u.isBlank()) {
+            return u;
+        }
+        return "introspected";
     }
 
     private void validateIntrospectedToken(ServletRequest servletRequest, Map<String, Object> responseMap)

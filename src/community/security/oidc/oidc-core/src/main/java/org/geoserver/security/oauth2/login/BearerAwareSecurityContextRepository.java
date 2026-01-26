@@ -6,6 +6,7 @@ package org.geoserver.security.oauth2.login;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.core.context.DeferredSecurityContext;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.web.context.HttpRequestResponseHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
@@ -24,12 +25,20 @@ public final class BearerAwareSecurityContextRepository implements SecurityConte
     private final SecurityContextRepository sessionRepo = new HttpSessionSecurityContextRepository();
     private final SecurityContextRepository bearerRepo = new RequestAttributeSecurityContextRepository();
 
+    /** Preferred API (Spring Security 5.8+): return a DeferredSecurityContext and let the framework load it lazily. */
     @Override
+    public DeferredSecurityContext loadDeferredContext(HttpServletRequest request) {
+        return isBearerRequest(request)
+                ? bearerRepo.loadDeferredContext(request)
+                : sessionRepo.loadDeferredContext(request);
+    }
+
+    /** Deprecated API: keep only as an adapter so we don't call the delegates' deprecated loadContext methods. */
+    @Override
+    @Deprecated
     public SecurityContext loadContext(HttpRequestResponseHolder requestResponseHolder) {
         HttpServletRequest request = requestResponseHolder.getRequest();
-        return isBearerRequest(request)
-                ? bearerRepo.loadContext(requestResponseHolder)
-                : sessionRepo.loadContext(requestResponseHolder);
+        return loadDeferredContext(request).get(); // DeferredSecurityContext is a Supplier<SecurityContext>
     }
 
     @Override

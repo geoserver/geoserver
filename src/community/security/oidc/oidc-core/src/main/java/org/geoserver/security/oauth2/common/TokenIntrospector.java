@@ -33,7 +33,7 @@ public class TokenIntrospector {
      * Runs the introspection endpoint against an opaque token for validation and check. See
      * https://datatracker.ietf.org/doc/html/rfc7662
      */
-    public Map<String, Object> introspectToken(String accessToken) {
+    public Map introspectToken(String accessToken) {
         if (introspectionEndpointUrl == null)
             throw new RuntimeException("Cannot introspect JWE token, the introspection endpoint URL is not set");
 

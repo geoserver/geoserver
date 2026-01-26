@@ -534,6 +534,10 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
             return null;
         }
 
+        if (configuration == null) {
+            return null;
+        }
+
         if (configuration.getActiveProviderCount() != 1) {
             return null;
         }

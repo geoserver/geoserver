@@ -84,24 +84,45 @@ public class GeoServerOAuth2LoginAuthenticationFilter extends GeoServerComposite
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String authorization = httpRequest.getHeader("Authorization");
 
-        if (authorization != null && authorization.startsWith("Bearer ")) {
-            String token = authorization.substring(7);
-
-            // Prefer a properly typed API: Map<String, Object>.
-            // If TokenIntrospector still returns a raw Map, update its signature accordingly.
-            @SuppressWarnings("unchecked")
-            Map<String, Object> responseMap = (Map<String, Object>) tokenIntrospector.introspectToken(token);
-
-            validateIntrospectedToken(request, responseMap);
-
-            String name = resolveSubject(responseMap);
-            List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_AUTHENTICATED"));
-
-            Authentication auth = new PreAuthenticatedAuthenticationToken(name, "N/A", authorities);
-            SecurityContextHolder.getContext().setAuthentication(auth);
+        if (canIntrospect(authorization)) {
+            applyIntrospection(request, authorization);
         }
 
         super.doFilter(request, response, chain);
+    }
+
+    /**
+     * Check if introspection can be applied to token
+     *
+     * @param authorization
+     * @return
+     */
+    private boolean canIntrospect(String authorization) {
+        return authorization != null && authorization.startsWith("Bearer ") && tokenIntrospector != null;
+    }
+
+    /**
+     * Apply token introspection using external URL
+     *
+     * @param request
+     * @param authorization
+     * @throws ServletException
+     */
+    private void applyIntrospection(ServletRequest request, String authorization) throws ServletException {
+        String token = authorization.substring(7);
+
+        // Prefer a properly typed API: Map<String, Object>.
+        // If TokenIntrospector still returns a raw Map, update its signature accordingly.
+        @SuppressWarnings("unchecked")
+        Map<String, Object> responseMap = (Map<String, Object>) tokenIntrospector.introspectToken(token);
+
+        validateIntrospectedToken(request, responseMap);
+
+        String name = resolveSubject(responseMap);
+        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_AUTHENTICATED"));
+
+        Authentication auth = new PreAuthenticatedAuthenticationToken(name, "N/A", authorities);
+        SecurityContextHolder.getContext().setAuthentication(auth);
     }
 
     private static String resolveSubject(Map<String, Object> responseMap) {

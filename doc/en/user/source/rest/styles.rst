@@ -35,7 +35,7 @@ Listing all styles
 
    ::
 
-     curl -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/cite/styles.xml
+     curl -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/workspaces/cite/styles.xml
 
 *Response*
 

@@ -33,7 +33,7 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
  * server chain (e.g. {@code BearerTokenAuthenticationFilter} + {@code OpaqueTokenAuthenticationProvider}). This filter
  * intentionally does not attempt to introspect or set authentication manually.
  *
- * <p>Documentation: Diagrams exist in gs-sec-oidc/doc/diagrams, showing how to pieces belong together.
+ * <p>Documentation: Diagrams exist in gs-sec-oidc/doc/diagrams, showing how to piece belong together.
  *
  * <p>Spring OAuth2 feature matrix: https://github.com/spring-projects/spring-security/wiki/OAuth-2.0-Features-Matrix
  *

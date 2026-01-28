@@ -97,6 +97,8 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
     /** currently no UI counterpart */
     private String oidcJwsAlgorithmName;
 
+    private String oidcIntrospectionUrl;
+
     private boolean oidcForceAuthorizationUriHttps = true;
     private boolean oidcForceTokenUriHttps = true;
     private boolean oidcUsePKCE = false;
@@ -620,6 +622,14 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
     /** @param pJwsAlgorithmName the jwsAlgorithmName to set */
     public void setOidcJwsAlgorithmName(String pJwsAlgorithmName) {
         oidcJwsAlgorithmName = pJwsAlgorithmName;
+    }
+
+    public String getOidcIntrospectionUrl() {
+        return oidcIntrospectionUrl;
+    }
+
+    public void setOidcIntrospectionUrl(String oidcIntrospectionUrl) {
+        this.oidcIntrospectionUrl = oidcIntrospectionUrl;
     }
 
     public String getRoleConverterString() {

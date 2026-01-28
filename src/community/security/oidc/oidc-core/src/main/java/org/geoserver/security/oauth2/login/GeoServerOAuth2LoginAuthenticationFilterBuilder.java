@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import org.apache.commons.lang3.StringUtils;
 import org.geoserver.security.GeoServerRoleConverter;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
@@ -31,6 +32,7 @@ import org.geoserver.security.filter.GeoServerRoleResolvers;
 import org.geoserver.security.filter.GeoServerRoleResolvers.ResolverContext;
 import org.geoserver.security.oauth2.common.ConfidentialLogger;
 import org.geoserver.security.oauth2.common.HttpServletRequestSupplier;
+import org.geoserver.security.oauth2.common.TokenIntrospector;
 import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginCustomizers.ClientRegistrationCustomizer;
 import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginCustomizers.HttpSecurityCustomizer;
 import org.geoserver.security.oauth2.spring.GeoServerAuthorizationRequestCustomizer;
@@ -69,6 +71,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.RequestMatcherRedirectFilter;
@@ -76,7 +79,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.util.StringUtils;
 
 /**
  * Builder for {@link GeoServerOAuth2LoginAuthenticationFilter}.
@@ -187,11 +189,21 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
             oauthConfig.loginProcessingUrl("/web/login/oauth2/code/*");
         });
 
-        // Hybrid mode: accept machine-to-machine requests via Authorization: Bearer <JWT>
+        // Hybrid mode: accept machine-to-machine requests via Authorization: Bearer <token>
         // using the same provider configuration already stored in this filter.
         // For safety, this is only auto-enabled when exactly one provider is enabled.
-        JwtDecoder resourceServerJwtDecoder = createResourceServerJwtDecoderIfApplicable();
-        if (resourceServerJwtDecoder != null) {
+        //
+        // If an introspection endpoint is configured, we enable opaque-token support (RFC 7662).
+        // Otherwise we fall back to JWT validation via JWKS.
+        OpaqueTokenIntrospector opaqueIntrospector = createResourceServerOpaqueTokenIntrospectorIfApplicable();
+        JwtDecoder resourceServerJwtDecoder =
+                (opaqueIntrospector == null) ? createResourceServerJwtDecoderIfApplicable() : null;
+
+        if (opaqueIntrospector != null) {
+            // Bearer-token requests must remain stateless even if a UI login session exists.
+            http.securityContext(sc -> sc.securityContextRepository(new BearerAwareSecurityContextRepository()));
+            http.oauth2ResourceServer(oauth -> oauth.opaqueToken(ot -> ot.introspector(opaqueIntrospector)));
+        } else if (resourceServerJwtDecoder != null) {
             // Bearer-token requests must remain stateless even if a UI login session exists.
             http.securityContext(sc -> sc.securityContextRepository(new BearerAwareSecurityContextRepository()));
             GeoServerOAuth2JwtAuthenticationConverter converter =
@@ -525,6 +537,10 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
             return null;
         }
 
+        if (configuration == null) {
+            return null;
+        }
+
         if (configuration.getActiveProviderCount() != 1) {
             return null;
         }
@@ -544,7 +560,7 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
             return null;
         }
 
-        if (!StringUtils.hasText(jwkSetUri)) {
+        if (!StringUtils.isNotBlank(jwkSetUri)) {
             return null;
         }
 
@@ -558,6 +574,45 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
         }
         decoder.setJwtValidator(validator);
         return decoder;
+    }
+
+    /**
+     * Creates an {@link OpaqueTokenIntrospector} for resource-server mode (opaque tokens) using the same provider
+     * configuration already stored in this filter.
+     *
+     * <p>To keep configuration simple (no additional auth filter config), this method only enables opaque-token support
+     * when exactly one provider is enabled and an introspection endpoint URL is configured.
+     */
+    private OpaqueTokenIntrospector createResourceServerOpaqueTokenIntrospectorIfApplicable() {
+        if (configuration != null && !configuration.isEnableResourceServerMode()) {
+            return null;
+        }
+
+        if (configuration == null) {
+            return null;
+        }
+
+        if (configuration.getActiveProviderCount() != 1) {
+            return null;
+        }
+
+        // For now we only support opaque introspection for the custom OIDC provider.
+        if (!configuration.isOidcEnabled()) {
+            return null;
+        }
+
+        String introspectionUrl = configuration.getOidcIntrospectionUrl();
+        if (!StringUtils.isNotBlank(introspectionUrl)) {
+            return null;
+        }
+
+        TokenIntrospector delegate = new TokenIntrospector(
+                introspectionUrl,
+                configuration.getOidcClientId(),
+                configuration.getOidcClientSecret(),
+                configuration.isOidcAuthenticationMethodPostSecret());
+
+        return new GeoServerOAuth2OpaqueTokenIntrospector(delegate, securityManager, configuration);
     }
 
     /** @return the redirectToProviderFilter */

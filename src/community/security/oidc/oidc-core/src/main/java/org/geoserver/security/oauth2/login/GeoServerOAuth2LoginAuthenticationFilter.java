@@ -5,10 +5,14 @@
 package org.geoserver.security.oauth2.login;
 
 import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.security.filter.GeoServerAuthenticationFilter;
@@ -20,16 +24,17 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 /**
- * {@link Filter} supports OpenID Connect and OAuth2 based logins by delegating to the nested Spring filter
+ * {@link Filter} supports OpenID Connect and OAuth2 based logins by delegating to the nested Spring Security filter
  * implementations.
  *
- * <p>The OAuth 2.0 Login feature provides an application with the capability to have users log in to the application by
- * using their existing account at an OAuth 2.0 Provider (e.g. GitHub) or OpenID Connect 1.0 Provider (such as Google).
- * OAuth 2.0 Login implements the use cases: "Login with Google" or "Login with GitHub". OAuth 2.0 Login is implemented
- * by using the Authorization Code Grant, as specified in the OAuth 2.0 Authorization Framework and OpenID Connect Core
- * 1.0.
+ * <p>Interactive browser logins are handled via Spring Security's {@code oauth2Login()} configuration.
  *
- * <p>Documentation: Diagrams exist in gs-sec-oidc/doc/diagrams, showing how to pieces belong together.
+ * <p>Machine-to-machine requests using {@code Authorization: Bearer <token>} are handled via Spring Security's
+ * {@code oauth2ResourceServer()} configuration. In particular, opaque token introspection is performed by the resource
+ * server chain (e.g. {@code BearerTokenAuthenticationFilter} + {@code OpaqueTokenAuthenticationProvider}). This filter
+ * intentionally does not attempt to introspect or set authentication manually.
+ *
+ * <p>Documentation: Diagrams exist in gs-sec-oidc/doc/diagrams, showing how to piece belong together.
  *
  * <p>Spring OAuth2 feature matrix: https://github.com/spring-projects/spring-security/wiki/OAuth-2.0-Features-Matrix
  *
@@ -58,11 +63,27 @@ public class GeoServerOAuth2LoginAuthenticationFilter extends GeoServerComposite
     }
 
     @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+
+        // Minimal guard: if no nested filters are configured, behave like a no-op filter.
+        // This can happen when no providers are enabled (or in unusual bootstrap/test situations).
+        List<Filter> nested = getNestedFilters();
+        if (nested == null || nested.isEmpty()) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+        // Delegation-only: interactive login and bearer token authentication are handled by the nested Spring filters.
+        super.doFilter(request, response, chain);
+    }
+
+    @Override
     public void logout(HttpServletRequest pRequest, HttpServletResponse pResponse, Authentication pAuthentication) {
 
         // Note: The spring handler for logout is by design a logout *success* handler rather than
         // a logout handler. Here it is treated as one of potentially many GS logoutHandlers.
-        // Reason: GeoServers logout handler determination is not so flexible yet. However GS
+        // Reason: GeoServers logout handler determination is not so flexible yet. However, GS
         // OIDC logout both work, so this seems acceptable for now. The actual GS
         // logoutSuccessHandler tolerates that something else might have committed the response
         // already.

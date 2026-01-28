@@ -146,7 +146,6 @@
             <value>Map</value>
             <value>reflect</value>
             <value>kml</value>
-            <value>animate</value>
             <value>GetStyles</value>
           </list>
         </constructor-arg>
@@ -178,7 +177,6 @@
               <value>GetLegendGraphic</value>
               <value>reflect</value>
               <value>kml</value>
-              <value>animate</value>
             </list>
           </constructor-arg>
     </bean>

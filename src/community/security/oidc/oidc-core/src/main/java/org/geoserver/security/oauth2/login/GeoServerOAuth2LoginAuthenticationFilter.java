@@ -12,6 +12,7 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.security.filter.GeoServerAuthenticationFilter;
@@ -64,6 +65,15 @@ public class GeoServerOAuth2LoginAuthenticationFilter extends GeoServerComposite
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
+
+        // Minimal guard: if no nested filters are configured, behave like a no-op filter.
+        // This can happen when no providers are enabled (or in unusual bootstrap/test situations).
+        List<Filter> nested = getNestedFilters();
+        if (nested == null || nested.isEmpty()) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         // Delegation-only: interactive login and bearer token authentication are handled by the nested Spring filters.
         super.doFilter(request, response, chain);
     }

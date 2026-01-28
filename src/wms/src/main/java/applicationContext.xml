@@ -678,19 +678,7 @@
       <value>wms</value>
     </constructor-arg>
   </bean>
- 		
-	<bean id="animateURLMapping" 
-		class="org.geoserver.ows.OWSHandlerMapping">
-		<constructor-arg ref="catalog"/>
-		<property name="alwaysUseFullPath" value="true"/>
-		<property name="mappings">
-			<props>
-				<prop key="/animate">dispatcher</prop>
-				<prop key="/animate/*">dispatcher</prop>
-			</props>
-		</property>
-	</bean>
-	
+ 			
     <!-- the meta tile cache, registered here because it's also a WFS transaction listener -->
     <bean id="metaTileCache" class="org.geoserver.wms.map.QuickTileCache">
       <constructor-arg ref="geoServer"/>

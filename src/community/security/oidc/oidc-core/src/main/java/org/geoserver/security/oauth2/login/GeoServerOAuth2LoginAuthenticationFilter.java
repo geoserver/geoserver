@@ -12,33 +12,26 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.Instant;
-import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.security.filter.GeoServerAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerCompositeFilter;
-import org.geoserver.security.oauth2.common.TokenIntrospector;
 import org.geotools.util.logging.Logging;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
 /**
- * {@link Filter} supports OpenID Connect and OAuth2 based logins by delegating to the nested Spring filter
+ * {@link Filter} supports OpenID Connect and OAuth2 based logins by delegating to the nested Spring Security filter
  * implementations.
  *
- * <p>The OAuth 2.0 Login feature provides an application with the capability to have users log in to the application by
- * using their existing account at an OAuth 2.0 Provider (e.g. GitHub) or OpenID Connect 1.0 Provider (such as Google).
- * OAuth 2.0 Login implements the use cases: "Login with Google" or "Login with GitHub". OAuth 2.0 Login is implemented
- * by using the Authorization Code Grant, as specified in the OAuth 2.0 Authorization Framework and OpenID Connect Core
- * 1.0.
+ * <p>Interactive browser logins are handled via Spring Security's {@code oauth2Login()} configuration.
+ *
+ * <p>Machine-to-machine requests using {@code Authorization: Bearer <token>} are handled via Spring Security's
+ * {@code oauth2ResourceServer()} configuration. In particular, opaque token introspection is performed by the resource
+ * server chain (e.g. {@code BearerTokenAuthenticationFilter} + {@code OpaqueTokenAuthenticationProvider}). This filter
+ * intentionally does not attempt to introspect or set authentication manually.
  *
  * <p>Documentation: Diagrams exist in gs-sec-oidc/doc/diagrams, showing how to pieces belong together.
  *
@@ -54,17 +47,8 @@ public class GeoServerOAuth2LoginAuthenticationFilter extends GeoServerComposite
 
     private LogoutSuccessHandler logoutSuccessHandler;
 
-    private TokenIntrospector tokenIntrospector;
-
-    static final String ACCESS_TOKEN_EXPIRATION = "OpenIdConnect-AccessTokenExpiration";
-
     public GeoServerOAuth2LoginAuthenticationFilter() {
         super();
-    }
-
-    public GeoServerOAuth2LoginAuthenticationFilter(TokenIntrospector introspector) {
-        super();
-        this.tokenIntrospector = introspector;
     }
 
     @Override
@@ -80,79 +64,8 @@ public class GeoServerOAuth2LoginAuthenticationFilter extends GeoServerComposite
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        String authorization = httpRequest.getHeader("Authorization");
-
-        if (canIntrospect(authorization)) {
-            applyIntrospection(request, authorization);
-        }
-
+        // Delegation-only: interactive login and bearer token authentication are handled by the nested Spring filters.
         super.doFilter(request, response, chain);
-    }
-
-    /**
-     * Check if introspection can be applied to token
-     *
-     * @param authorization
-     * @return
-     */
-    private boolean canIntrospect(String authorization) {
-        return authorization != null && authorization.startsWith("Bearer ") && tokenIntrospector != null;
-    }
-
-    /**
-     * Apply token introspection using external URL
-     *
-     * @param request
-     * @param authorization
-     * @throws ServletException
-     */
-    private void applyIntrospection(ServletRequest request, String authorization) throws ServletException {
-        String token = authorization.substring(7);
-
-        // Prefer a properly typed API: Map<String, Object>.
-        // If TokenIntrospector still returns a raw Map, update its signature accordingly.
-        @SuppressWarnings("unchecked")
-        Map<String, Object> responseMap = (Map<String, Object>) tokenIntrospector.introspectToken(token);
-
-        validateIntrospectedToken(request, responseMap);
-
-        String name = resolveSubject(responseMap);
-        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_AUTHENTICATED"));
-
-        Authentication auth = new PreAuthenticatedAuthenticationToken(name, "N/A", authorities);
-        SecurityContextHolder.getContext().setAuthentication(auth);
-    }
-
-    private static String resolveSubject(Map<String, Object> responseMap) {
-        Object sub = responseMap.get("sub");
-        if (sub instanceof String s && !s.isBlank()) {
-            return s;
-        }
-        Object username = responseMap.get("username");
-        if (username instanceof String u && !u.isBlank()) {
-            return u;
-        }
-        return "introspected";
-    }
-
-    private void validateIntrospectedToken(ServletRequest servletRequest, Map<String, Object> responseMap)
-            throws ServletException {
-        if (!Boolean.TRUE.equals(responseMap.get("active"))) {
-            throw new ServletException("Bearer token is not active");
-        }
-        collectExpiration(servletRequest, responseMap);
-    }
-
-    /** If an expiration attribute is set, we can use it to cache the access token */
-    private static void collectExpiration(ServletRequest req, Map<String, Object> properties) {
-        if (properties.get("exp") instanceof Number) {
-            long exp = ((Number) properties.get("exp")).longValue();
-            if (exp > Instant.now().getEpochSecond()) { // epoch is guaranteed to be in UTC like exp
-                req.setAttribute(ACCESS_TOKEN_EXPIRATION, exp);
-            }
-        }
     }
 
     @Override
@@ -160,7 +73,7 @@ public class GeoServerOAuth2LoginAuthenticationFilter extends GeoServerComposite
 
         // Note: The spring handler for logout is by design a logout *success* handler rather than
         // a logout handler. Here it is treated as one of potentially many GS logoutHandlers.
-        // Reason: GeoServers logout handler determination is not so flexible yet. However GS
+        // Reason: GeoServers logout handler determination is not so flexible yet. However, GS
         // OIDC logout both work, so this seems acceptable for now. The actual GS
         // logoutSuccessHandler tolerates that something else might have committed the response
         // already.

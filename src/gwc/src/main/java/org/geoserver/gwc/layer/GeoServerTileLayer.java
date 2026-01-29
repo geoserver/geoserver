@@ -364,10 +364,23 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                 catalogLayer = catalog.getLayerGroup(publishedInfoId);
             }
             if (catalogLayer == null) {
-                throw new IllegalStateException("Could not locate a layer or layer group with id "
-                        + publishedInfoId
-                        + " within GeoServer configuration, the GWC configuration seems to be out of "
-                        + "synch");
+                // Instead of throwing an exception (which would bubble up to the UI and break pages),
+                // create a lightweight PublishedInfo stub that keeps the layer disabled and logs a
+                // helpful message for the administrator to resolve the mismatch (usually by
+                // deleting the stale file under <GEOSERVER_DATA_DIR>/gwc-layers/).
+                String shortId = publishedInfoId == null ? "null" : publishedInfoId;
+                String msg = "Could not locate a layer or layer group with id "
+                        + shortId
+                        + " within GeoServer configuration; the GWC configuration seems to be out of sync.\n"
+                        + "You can find the stale tile-layer file by grepping your GeoServer data dir: "
+                        + "grep -R '" + shortId + "' <GEOSERVER_DATA_DIR>/gwc-layers -n ;\n"
+                        + "Once found, you can remove it with: rm <GEOSERVER_DATA_DIR>/gwc-layers/<file.xml>";
+                LOGGER.warning(msg);
+                // mark the tile layer info as errored in memory so GWC doesn't try to use it further
+                setConfigErrorMessage("GWC tile layer reference not found in catalog (id: " + shortId
+                        + ") - check your data dir and delete stale gwc-layers file");
+                // create a minimal PublishedInfo stub instance so we don't keep throwing exceptions
+                catalogLayer = new MissingPublishedInfo(shortId, info == null ? null : info.getName());
             } else {
                 TileLayerInfoUtil.checkAutomaticStyles(catalogLayer, info);
             }

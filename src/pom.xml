@@ -95,7 +95,7 @@
     <gt.version>35-SNAPSHOT</gt.version>
     <gwc.version>2.0-SNAPSHOT</gwc.version>
     <spring.version>7.0.2</spring.version>
-    <spring.security.version>6.5.5</spring.security.version>
+    <spring.security.version>7.0.2</spring.security.version>
     <spring.security.oauth2.version>2.5.2.RELEASE</spring.security.oauth2.version>
     <spring-integration.version>5.5.18</spring-integration.version>
     <wicket.version>10.7.0</wicket.version>
@@ -184,6 +184,12 @@
         Provides managed versions for several libraries across projects, such as jackson, commons-logging/pool/lang3/cli/text/dbcp,
         JTS, guava, imageio-ext, imageN, and more.
       -->
+      <dependency>
+        <groupId>jakarta.xml.bind</groupId>
+        <artifactId>jakarta.xml.bind-api</artifactId>
+        <version>4.0.4</version>
+        <scope>compile</scope>
+      </dependency>
       <dependency>
         <groupId>org.geotools</groupId>
         <artifactId>gt-platform-dependencies</artifactId>

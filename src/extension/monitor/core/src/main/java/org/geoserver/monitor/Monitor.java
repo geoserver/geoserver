@@ -146,4 +146,13 @@ public class Monitor implements ApplicationListener<ApplicationEvent> {
             listeners = GeoServerExtensions.extensions(RequestDataListener.class);
         }
     }
+
+    /**
+     * Adds a RequestDataListener to the monitor, that is not registered in the application context already
+     *
+     * @param listener The listener to add
+     */
+    public void addRequestDataListener(RequestDataListener listener) {
+        this.listeners.add(listener);
+    }
 }

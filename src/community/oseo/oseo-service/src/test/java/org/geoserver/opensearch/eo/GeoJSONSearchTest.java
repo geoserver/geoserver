@@ -197,7 +197,7 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
         assertEquals(featureId, sp.getString("identifier"));
         assertEquals("SENTINEL2", sp.getString("parentIdentifier"));
         assertEquals("2016-09-29T10:20:22.026Z/2016-09-29T10:23:44.107Z", sp.getString("date"));
-        assertEquals("2016-09-29T18:59:02.000+00:00", sp.getString("created"));
+        assertEquals("2016-09-29T18:59:02.000Z", sp.getString("created"));
 
         // check properties derived from the collection
         JSONObject ai = sp.getJSONArray("acquisitionInformation").getJSONObject(0);
@@ -299,7 +299,7 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
         JSONObject sp = sample.getJSONObject("properties");
 
         assertEquals(featureId, sp.getString("identifier"));
-        assertEquals("2018-02-27T10:20:21.000+00:00", sp.getString("date"));
+        assertEquals("2018-02-27T10:20:21.000Z", sp.getString("date"));
         JSONObject acquisition = sp.getJSONObject("acquisitionInformation").getJSONObject("acquisitionParameters");
         assertEquals("DESCENDING", acquisition.getString("orbitDirection"));
         assertEquals(65, acquisition.getInt("orbitNumber"));

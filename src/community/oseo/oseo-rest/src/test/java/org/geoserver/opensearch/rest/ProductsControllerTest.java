@@ -477,6 +477,11 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         assertEquals("6881text", json.read("$.links[0].varcharTest").toString());
     }
 
+    @Override
+    protected String getLogConfiguration() {
+        return "DEFAULT_LOGGING";
+    }
+
     @Test
     public void testPutProductLinks() throws Exception {
         testCreateProductPost();
@@ -496,6 +501,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         DocumentContext json = getAsJSONPath(
                 "/rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04/ogcLinks",
                 200);
+
         assertEquals("http://www.opengis.net/spec/owc/1.0/req/atom/wms", json.read("$.links[0].offering"));
         assertEquals("GET", json.read("$.links[0].method"));
         assertEquals("GetCapabilities", json.read("$.links[0].code"));

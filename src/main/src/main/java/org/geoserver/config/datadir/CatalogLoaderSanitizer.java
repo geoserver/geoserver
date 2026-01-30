@@ -42,7 +42,7 @@ import org.geoserver.platform.resource.Resources;
 import org.geoserver.util.IOUtils;
 import org.geotools.api.filter.sort.SortBy;
 import org.geotools.util.logging.Logging;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Helper class for {@link CatalogLoader} that sanitizes and validates various catalog operations before objects can be

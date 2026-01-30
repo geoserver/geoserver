@@ -4,11 +4,11 @@
  */
 package org.geoserver.ogcapi.v1.stac;
 
-import com.fasterxml.jackson.core.JsonGenerator;
 import java.io.IOException;
 import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.featurestemplating.writers.GeoJSONWriter;
+import tools.jackson.core.JsonGenerator;
 
 /** A writer for the collections */
 public class STACCollectionWriter extends GeoJSONWriter {
@@ -24,7 +24,7 @@ public class STACCollectionWriter extends GeoJSONWriter {
     @Override
     public void startTemplateOutput(EncodingHints encodingHints) throws IOException {
         writeStartObject();
-        generator.writeFieldName("collections");
+        generator.writeName("collections");
         writeStartArray();
     }
 

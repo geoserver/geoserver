@@ -80,6 +80,10 @@ public abstract class OSEORestTestSupport extends OSEOTestSupport {
         assertEquals(expectedHttpCode, response.getStatus());
         // allow application/json, application/geo+json, application/schema+json, ...
         assertThat(response.getContentType(), allOf(startsWith("application/"), endsWith("json")));
+        if (!isQuietTests()) {
+            print(json(response));
+        }
+
         return JsonPath.parse(response.getContentAsString());
     }
 

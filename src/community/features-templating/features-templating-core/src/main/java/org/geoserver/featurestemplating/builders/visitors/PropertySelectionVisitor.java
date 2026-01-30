@@ -6,7 +6,6 @@ package org.geoserver.featurestemplating.builders.visitors;
 
 import static org.geoserver.featurestemplating.builders.TemplateBuilderUtils.hasSelectableKey;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -39,6 +38,7 @@ import org.geotools.api.filter.expression.Expression;
 import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.filter.FilterAttributeExtractor;
 import org.geotools.util.logging.Logging;
+import tools.jackson.databind.JsonNode;
 
 /**
  * A DuplicatingVisitor performing a selection of TemplateBuilders based on selected attributes/keys. This visitor is

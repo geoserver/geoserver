@@ -8,10 +8,6 @@ import static org.geoserver.featurestemplating.builders.EncodingHints.CONTEXT;
 import static org.geoserver.featurestemplating.builders.VendorOptions.COLLECTION_NAME;
 import static org.geoserver.featurestemplating.builders.VendorOptions.JSONLD_TYPE;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +29,10 @@ import org.geotools.api.feature.Feature;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.util.logging.Logging;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /** This class provides methods to handle a JSON-LD output writing outside of WFS Response class. */
 public class JSONLDOutputHelper {
@@ -112,19 +112,19 @@ public class JSONLDOutputHelper {
         JsonNode result = node1;
         if (!node1.equals(node2)) {
             if (node1.isObject() && node2.isObject()) {
-                ObjectNode copy = node1.deepCopy();
+                ObjectNode copy = (ObjectNode) node1.deepCopy();
                 copy.setAll((ObjectNode) node2);
                 result = copy;
             } else if (node1.isArray() && node2.isArray()) {
-                ArrayNode copy = node1.deepCopy();
+                ArrayNode copy = (ArrayNode) node1.deepCopy();
                 copy.addAll((ArrayNode) node2);
                 result = copy;
             } else if (node2.isArray()) {
-                ArrayNode copy = node2.deepCopy();
+                ArrayNode copy = (ArrayNode) node2.deepCopy();
                 copy.add(node1);
                 result = copy;
             } else if (node1.isArray()) {
-                ArrayNode copy = node1.deepCopy();
+                ArrayNode copy = (ArrayNode) node1.deepCopy();
                 copy.add(node2);
                 result = copy;
             } else {

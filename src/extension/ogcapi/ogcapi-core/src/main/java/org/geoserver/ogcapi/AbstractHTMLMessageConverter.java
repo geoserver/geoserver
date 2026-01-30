@@ -6,7 +6,6 @@ package org.geoserver.ogcapi;
 
 import static org.geoserver.ows.URLMangler.URLType.RESOURCE;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
@@ -34,6 +33,7 @@ import org.springframework.http.HttpInputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Base class for {@link org.springframework.http.converter.HttpMessageConverter} that encode a HTML document based on a

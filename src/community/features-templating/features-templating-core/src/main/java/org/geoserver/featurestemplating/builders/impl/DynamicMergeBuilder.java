@@ -4,8 +4,6 @@
  */
 package org.geoserver.featurestemplating.builders.impl;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.logging.Logger;
@@ -14,6 +12,8 @@ import org.geoserver.featurestemplating.readers.JSONMerger;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 import org.geotools.util.logging.Logging;
 import org.xml.sax.helpers.NamespaceSupport;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /** Responsible for merging 2 nodes if one of the evaluates to either ${ or ${{ */
 public class DynamicMergeBuilder extends DynamicJsonBuilder {

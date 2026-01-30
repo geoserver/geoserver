@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
@@ -51,6 +50,12 @@ public class IndexController extends RestBaseController {
         return wrapObject(model, SimpleHash.class);
     }
 
+    /**
+     * Extracts all registered GET links from the RequestMappingHandlerMapping, excluding templated ones.
+     *
+     * @return A sorted set of unique link paths.
+     */
+    @SuppressWarnings("deprecation")
     protected Set<String> getLinks() {
 
         // Ensure sorted, unique keys
@@ -62,24 +67,22 @@ public class IndexController extends RestBaseController {
             RequestMappingInfo mapping = item.getKey();
 
             // Only list "get" endpoints
-            if (mapping.getMethodsCondition().getMethods().contains(RequestMethod.GET)) {
-                PatternsRequestCondition patternsRequestCondition = mapping.getPatternsCondition();
-                if (patternsRequestCondition != null && patternsRequestCondition.getPatterns() != null) {
-                    for (String pattern : patternsRequestCondition.getPatterns()) {
-                        if (!pattern.contains("{")) {
-                            String path = pattern;
-                            // exclude other rest apis, like gwc/rest
-                            final int rootSize = RestBaseController.ROOT_PATH.length() + 1;
-                            if (path.startsWith(RestBaseController.ROOT_PATH) && path.length() > rootSize) {
-                                // trim root path
-                                path = path.substring(rootSize);
+            if (mapping.getMethodsCondition().getMethods().contains(RequestMethod.GET)
+                    && mapping.getPatternValues() != null) {
+                for (String pattern : mapping.getPatternValues()) {
+                    if (!pattern.contains("{")) {
+                        String path = pattern;
+                        // exclude other rest apis, like gwc/rest
+                        final int rootSize = RestBaseController.ROOT_PATH.length() + 1;
+                        if (path.startsWith(RestBaseController.ROOT_PATH) && path.length() > rootSize) {
+                            // trim root path
+                            path = path.substring(rootSize);
 
-                                if (path.endsWith("/**")) {
-                                    path = path.substring(0, path.length() - 3);
-                                }
-                                if (!path.isEmpty()) {
-                                    s.add(path);
-                                }
+                            if (path.endsWith("/**")) {
+                                path = path.substring(0, path.length() - 3);
+                            }
+                            if (!path.isEmpty()) {
+                                s.add(path);
                             }
                         }
                     }

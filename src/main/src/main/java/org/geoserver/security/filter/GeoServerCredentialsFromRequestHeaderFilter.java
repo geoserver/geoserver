@@ -148,7 +148,7 @@ public class GeoServerCredentialsFromRequestHeaderFilter extends GeoServerSecuri
         LOGGER.log(Level.FINER, "logged in as {0}", us);
         Collection<GeoServerRole> roles = new ArrayList<>();
         for (GrantedAuthority grauth : auth.getAuthorities()) {
-            roles.add((GeoServerRole) grauth);
+            if (grauth instanceof GeoServerRole gsRole) roles.add(gsRole);
         }
         if (!roles.contains(GeoServerRole.AUTHENTICATED_ROLE)) {
             roles.add(GeoServerRole.AUTHENTICATED_ROLE);

@@ -7,10 +7,10 @@ package org.geoserver.mapml;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import org.geoserver.rest.converters.BaseMessageConverter;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
-import org.springframework.lang.Nullable;
 
 /**
  * @author Chris Hodgson

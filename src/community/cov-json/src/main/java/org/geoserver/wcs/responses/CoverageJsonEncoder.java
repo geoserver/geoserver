@@ -5,12 +5,13 @@
 package org.geoserver.wcs.responses;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.OutputStream;
 import org.geoserver.wcs.responses.covjson.Coverage;
 import org.geoserver.wcs.responses.covjson.CoverageJson;
 import org.geotools.coverage.grid.GridCoverage2D;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /** Writes out a CoverageJSON (the write parameters are provided during construction */
 public class CoverageJsonEncoder {
@@ -25,9 +26,9 @@ public class CoverageJsonEncoder {
     void write(OutputStream stream) throws IOException {
 
         CoverageJson covJson = new Coverage(source);
-
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        ObjectMapper mapper = JsonMapper.builder()
+                .changeDefaultPropertyInclusion(incl -> incl.withValueInclusion(JsonInclude.Include.NON_NULL))
+                .build();
         mapper.writeValue(stream, covJson);
     }
 }

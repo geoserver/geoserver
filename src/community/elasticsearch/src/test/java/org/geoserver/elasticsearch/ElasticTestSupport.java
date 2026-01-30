@@ -5,8 +5,6 @@
 
 package org.geoserver.elasticsearch;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
@@ -44,6 +42,8 @@ import org.geotools.temporal.object.DefaultPosition;
 import org.junit.After;
 import org.junit.Before;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectReader;
 
 /** ElasticSearch integration test support */
 public class ElasticTestSupport extends GeoServerWicketTestSupport {
@@ -116,7 +116,7 @@ public class ElasticTestSupport extends GeoServerWicketTestSupport {
         port = elasticsearch.getFirstMappedPort();
         indexName = "gt_integ_test_" + System.nanoTime();
         client = new RestElasticClient(
-                RestClient.builder(new HttpHost(host, port, "http")).build());
+                RestClient.builder(new HttpHost(host, port)).build());
         Map<String, Serializable> params = createConnectionParams();
         ElasticDataStoreFactory factory = new ElasticDataStoreFactory();
         dataStore = (ElasticDataStore) factory.createDataStore(params);

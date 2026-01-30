@@ -4,8 +4,6 @@
  */
 package org.geoserver.ogcapi.v1.stac;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import java.math.BigInteger;
 import java.util.List;
 import org.geoserver.ogcapi.APISearchQuery;
@@ -16,6 +14,8 @@ import org.geotools.api.filter.sort.SortOrder;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.SortByImpl;
 import org.locationtech.jts.geom.Geometry;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
 
 /** Represents a STAC query used in POST requests */
 public class STACSearchQuery extends APISearchQuery {
@@ -69,12 +69,15 @@ public class STACSearchQuery extends APISearchQuery {
                 if (arrayNode.get(i).isObject()
                         && arrayNode.get(i).has(STAC_SORTBY_FIELD)
                         && arrayNode.get(i).has(STAC_SORTBY_DIRECTION)) {
-                    SortOrder direction =
-                            arrayNode.get(i).get(STAC_SORTBY_DIRECTION).asText().equalsIgnoreCase(STAC_SORTBY_ASC)
-                                    ? SortOrder.ASCENDING
-                                    : SortOrder.DESCENDING;
+                    SortOrder direction = arrayNode
+                                    .get(i)
+                                    .get(STAC_SORTBY_DIRECTION)
+                                    .asString()
+                                    .equalsIgnoreCase(STAC_SORTBY_ASC)
+                            ? SortOrder.ASCENDING
+                            : SortOrder.DESCENDING;
                     PropertyName field =
-                            FF.property(arrayNode.get(i).get(STAC_SORTBY_FIELD).asText());
+                            FF.property(arrayNode.get(i).get(STAC_SORTBY_FIELD).asString());
                     SortBy sortBy = new SortByImpl(field, direction);
                     sortBIES[i] = sortBy;
                 } else {

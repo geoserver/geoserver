@@ -44,7 +44,6 @@
   <bean id="apiURLMapping" class="org.geoserver.ows.OWSHandlerMapping">
     <constructor-arg ref="catalog"/>
     <property name="alwaysUseFullPath" value="true"/>
-    <property name="useTrailingSlashMatch" value="true"/>
     <property name="order" value="0"/>
 
     <property name="mappings">

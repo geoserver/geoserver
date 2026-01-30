@@ -4,10 +4,10 @@
  */
 package org.geoserver.wps.ppio;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.InputStream;
 import java.io.OutputStream;
 import org.geoserver.wps.gs.GetCoveragesValue;
+import tools.jackson.databind.ObjectMapper;
 
 /** A PPIO that handles the ValuesAtPoint process, which returns wrapped values from a coverage at a given location. */
 public class ValuesAtPointPPIO extends CDataPPIO {

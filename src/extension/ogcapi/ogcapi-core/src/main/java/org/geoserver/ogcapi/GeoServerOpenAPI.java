@@ -31,7 +31,7 @@ public class GeoServerOpenAPI extends OpenAPI {
         return ResponseUtils.buildURL(
                 baseURL,
                 serviceBase + (serviceBase.endsWith("/") ? "openapi" : "/openapi"),
-                Collections.singletonMap("f", OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE),
+                Collections.singletonMap("f", SwaggerJSONAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE),
                 URLMangler.URLType.SERVICE);
     }
 }

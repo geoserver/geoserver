@@ -9,8 +9,10 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 
 import jakarta.servlet.Filter;
+import jakarta.servlet.ServletException;
 import java.util.List;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.filters.SpringDelegatingFilter;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityFilterChainProxy;
 import org.geoserver.test.GeoServerSystemTestSupport;
@@ -27,7 +29,13 @@ public class IndexControllerTest extends GeoServerSystemTestSupport {
 
     @Override
     protected List<Filter> getFilters() {
-        return List.of(GeoServerExtensions.bean(GeoServerSecurityFilterChainProxy.class));
+        try {
+            SpringDelegatingFilter filter = new SpringDelegatingFilter();
+            filter.init(null);
+            return List.of(filter, GeoServerExtensions.bean(GeoServerSecurityFilterChainProxy.class));
+        } catch (ServletException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test

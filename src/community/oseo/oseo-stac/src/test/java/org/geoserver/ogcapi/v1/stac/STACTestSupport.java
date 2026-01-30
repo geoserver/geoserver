@@ -181,8 +181,8 @@ public class STACTestSupport extends OGCApiTestSupport {
         assertThat(instruments, Matchers.containsInAnyOrder("OLI", "TIRS"));
         assertEquals("landsat8", l8_02.read("properties.constellation"));
         // creation and modification
-        assertEquals("2017-02-26T10:24:58.000+00:00", l8_02.read("properties.created"));
-        assertEquals("2017-02-28T10:24:58.000+00:00", l8_02.read("properties.updated"));
+        assertEquals("2017-02-26T10:24:58.000Z", l8_02.read("properties.created"));
+        assertEquals("2017-02-28T10:24:58.000Z", l8_02.read("properties.updated"));
 
         // check bits unique to the LS8 template
         assertEquals(Integer.valueOf(30), l8_02.read("properties.gsd"));
@@ -228,7 +228,7 @@ public class STACTestSupport extends OGCApiTestSupport {
         assertEquals(-117.969376, s2Sample.read("bbox[2]", Double.class), EPS);
         assertEquals(34.337738, s2Sample.read("bbox[3]", Double.class), EPS);
         // ... time range (single value)
-        assertEquals("2017-03-08T18:54:21.026+00:00", s2Sample.read("properties.datetime"));
+        assertEquals("2017-03-08T18:54:21.026Z", s2Sample.read("properties.datetime"));
         // ... instrument related
         assertEquals("sentinel-2a", s2Sample.read("properties.platform"));
         assertEquals("sentinel2", s2Sample.read("properties.constellation"));

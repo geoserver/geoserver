@@ -8,7 +8,6 @@ import static org.geoserver.catalog.util.CloseableIteratorAdapter.filter;
 import static org.geoserver.catalog.util.CloseableIteratorAdapter.transform;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -46,7 +45,6 @@ public class CollectionsDocument extends AbstractDocument {
                 geoServer.getGlobal().getResourceErrorHandling() == ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS;
     }
 
-    @JacksonXmlProperty(localName = "Links")
     @Override
     public List<Link> getLinks() {
         return links;
@@ -57,7 +55,6 @@ public class CollectionsDocument extends AbstractDocument {
      *     {@code org.geoserver.ogcapi.CloseableIteratorSerializer} for JSON output or
      *     {@code org.geoserver.ogcapi.AutoCloseableTracker} for HTML output
      */
-    @JacksonXmlProperty(localName = "Collection")
     @SuppressWarnings("PMD.CloseResource")
     public CloseableIterator<CollectionDocument> getCollections() {
         CloseableIterator<PublishedInfo> publisheds = geoServer.getCatalog().list(PublishedInfo.class, Filter.INCLUDE);

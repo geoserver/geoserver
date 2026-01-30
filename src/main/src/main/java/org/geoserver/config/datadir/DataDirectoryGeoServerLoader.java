@@ -33,8 +33,8 @@ import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.password.ConfigurationPasswordEncryptionHelper;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.util.logging.Logging;
+import org.jspecify.annotations.Nullable;
 import org.springframework.context.ApplicationContext;
-import org.springframework.lang.Nullable;
 import org.vfny.geoserver.util.DataStoreUtils;
 
 /**

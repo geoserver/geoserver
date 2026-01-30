@@ -5,15 +5,15 @@
 package org.geoserver.ogcapi;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.geotools.api.filter.sort.SortBy;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /** Represents a search query used in POST requests */
 public class APISearchQuery {
@@ -73,7 +73,7 @@ public class APISearchQuery {
         if (node instanceof ArrayNode arrayNode) {
             this.bbox = arrayNodeToString(arrayNode);
         } else {
-            this.bbox = node.textValue();
+            this.bbox = node.asString();
         }
     }
 
@@ -103,7 +103,7 @@ public class APISearchQuery {
             return;
         }
 
-        String value = node.textValue();
+        String value = node.asString();
         if (value == null) {
             return;
         }
@@ -120,7 +120,7 @@ public class APISearchQuery {
             this.sortBy = SortByConverter.convertList(sortBy);
             return;
         }
-        this.sortBy = SortByConverter.convertString(node.textValue());
+        this.sortBy = SortByConverter.convertString(node.asString());
     }
 
     public String getFilter() {
@@ -133,7 +133,7 @@ public class APISearchQuery {
             this.filter = node.toString();
             return;
         }
-        this.filter = node.textValue();
+        this.filter = node.asString();
     }
 
     public String getFilterLang() {
@@ -155,8 +155,8 @@ public class APISearchQuery {
     protected List<String> arrayNodeToStringList(ArrayNode node) {
         final List<String> values = new ArrayList<>(node.size());
         node.forEach(childNode -> {
-            if (childNode.isTextual()) {
-                values.add(childNode.textValue());
+            if (childNode.isString()) {
+                values.add(childNode.asString());
             } else {
                 values.add(childNode.toString());
             }

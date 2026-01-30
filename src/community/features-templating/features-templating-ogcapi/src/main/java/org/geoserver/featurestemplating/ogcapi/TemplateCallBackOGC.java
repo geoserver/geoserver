@@ -118,6 +118,7 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
     private void setEnvParameter(String env) {
         if (env != null) {
             try {
+                @SuppressWarnings("unchecked")
                 Map<String, Object> localEnvVars = (Map<String, Object>) PARSER.parse(env);
                 EnvFunction.setLocalValues(localEnvVars);
             } catch (Exception e) {

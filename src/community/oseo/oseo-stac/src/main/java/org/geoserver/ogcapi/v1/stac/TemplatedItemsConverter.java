@@ -10,8 +10,6 @@ import static org.geoserver.ogcapi.Link.REL_SELF;
 import static org.geoserver.ogcapi.OGCAPIMediaTypes.GEOJSON_VALUE;
 import static org.springframework.http.HttpMethod.POST;
 
-import com.fasterxml.jackson.core.JsonEncoding;
-import com.fasterxml.jackson.core.JsonFactory;
 import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -28,6 +26,7 @@ import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.json.JsonMapper;
 
 /** Converter for the {@link ItemsResponse} that will encode STAC items using a feature template */
 @Component
@@ -58,7 +57,7 @@ public class TemplatedItemsConverter extends AbstractHttpMessageConverter<Abstra
             throws IOException {
 
         try (STACGeoJSONWriter writer = new STACGeoJSONWriter(
-                new JsonFactory().createGenerator(httpOutputMessage.getBody(), JsonEncoding.UTF8),
+                JsonMapper.builder().build().createGenerator(httpOutputMessage.getBody()),
                 TemplateIdentifier.GEOJSON)) {
             writer.startTemplateOutput(null);
             FeatureCollection collection = itemsResponse.getItems();

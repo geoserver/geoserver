@@ -4,11 +4,11 @@
  */
 package org.geoserver.ogcapi.v1.stac;
 
-import com.fasterxml.jackson.core.JsonGenerator;
 import java.io.IOException;
 import java.util.Map;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.featurestemplating.writers.GeoJSONWriter;
+import tools.jackson.core.JsonGenerator;
 
 public class STACGeoJSONWriter extends GeoJSONWriter {
 
@@ -42,35 +42,35 @@ public class STACGeoJSONWriter extends GeoJSONWriter {
         if (href != null) {
             writeStartObject();
             if (title != null) {
-                generator.writeFieldName("title");
+                generator.writeName("title");
                 writeValue(title);
             }
             if (mimeType != null) {
-                generator.writeFieldName("type");
+                generator.writeName("type");
                 writeValue(mimeType);
             }
             if (rel != null) {
-                generator.writeFieldName("rel");
+                generator.writeName("rel");
                 writeValue(rel);
             }
             if (method != null) {
-                generator.writeFieldName("method");
+                generator.writeName("method");
                 writeValue(method);
             }
             if (body != null) {
-                generator.writeFieldName("body");
+                generator.writeName("body");
                 writeStartObject();
                 for (Map.Entry<String, Object> e : body.entrySet()) {
-                    generator.writeFieldName(e.getKey());
-                    generator.writeObject(e.getValue());
+                    generator.writeName(e.getKey());
+                    generator.writePOJO(e.getValue());
                 }
                 writeEndObject();
             }
             if (merge) {
-                generator.writeFieldName("merge");
+                generator.writeName("merge");
                 generator.writeBoolean(true);
             }
-            generator.writeFieldName("href");
+            generator.writeName("href");
             writeValue(href);
             writeEndObject();
         }

@@ -87,7 +87,7 @@ public class CatalogModeController {
             }
         }
 
-        if (modeValue == null) throw new RestException("Not a valid mode: " + mode, HttpStatus.UNPROCESSABLE_ENTITY);
+        if (modeValue == null) throw new RestException("Not a valid mode: " + mode, HttpStatus.UNPROCESSABLE_CONTENT);
 
         ruleDAO.setCatalogMode(modeValue);
         ruleDAO.storeRules();

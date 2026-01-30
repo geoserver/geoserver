@@ -502,6 +502,11 @@ public class GetFeatureInfoGroupTest extends WMSTestSupport {
         assertEquals(6, result.size());
     }
 
+    @Override
+    protected String getLogConfiguration() {
+        return "GEOSERVER_DEVELOPER_LOGGING";
+    }
+
     @Test
     public void testHTMLWithJSONLD() throws Exception {
         String url = "wms?service=wms&version=1.1.1"

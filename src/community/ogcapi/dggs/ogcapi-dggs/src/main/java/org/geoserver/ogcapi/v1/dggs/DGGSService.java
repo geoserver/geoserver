@@ -4,10 +4,10 @@
  */
 package org.geoserver.ogcapi.v1.dggs;
 
-import static org.geoserver.ogcapi.MappingJackson2YAMLMessageConverter.APPLICATION_YAML_VALUE;
-import static org.geoserver.ogcapi.OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE;
+import static org.geoserver.ogcapi.SwaggerJSONAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 import static org.geotools.dggs.gstore.DGGSStore.RESOLUTION;
+import static org.springframework.http.MediaType.APPLICATION_YAML_VALUE;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import java.io.IOException;

@@ -57,8 +57,9 @@
     </dependency>
     <!-- XML binding support for view params -->
     <dependency>
-      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <groupId>tools.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-xml</artifactId>
+      <version>3.0.2</version>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>

@@ -171,6 +171,7 @@ public class ExecutionGetTest extends AbstractExecutionTest {
         assertEquals("application/json", response.getContentType());
         // here we have a raw bbox response, not wrapped in a document (1 output -> raw)
         JSONObject json = (JSONObject) json(response);
+        print(json);
         assertArrayEquals(
                 new Object[] {0d, 0d, 5d, 5d}, json.getJSONArray("bbox").toArray());
         assertEquals("http://www.opengis.net/def/crs/EPSG/0/4326", json.getString("crs"));
@@ -329,6 +330,7 @@ public class ExecutionGetTest extends AbstractExecutionTest {
         do {
             statusObject = (JSONObject) getAsJSON(jobStatusRef);
             assertEquals("gs:Monkey", statusObject.getString("processID"));
+            print(statusObject);
             int progress = statusObject.getInt("progress");
             assertThat(progress, allOf(lessThanOrEqualTo(100), greaterThanOrEqualTo(0)));
             status = statusObject.getString("status");

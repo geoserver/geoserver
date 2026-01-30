@@ -8,8 +8,6 @@ import static org.geoserver.opensearch.eo.store.JDBCOpenSearchAccess.FF;
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.COLLECTION_PROPERTY_NAME;
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.EO_IDENTIFIER;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +36,8 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.AttributeBuilder;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.util.logging.Logging;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
 
 /**
  * Maps joined simple features up to a complex Collection feature
@@ -184,7 +184,7 @@ public class JDBCProductFeatureStore extends AbstractMappingStore {
             JsonNode sortedJsonNode = JSONFieldSupport.SORT_BY_KEY_MAPPER.readTree((String) fi.getAttribute(n));
             // convert back to string and set the attribute
             fi.setAttribute(n, sortedJsonNode.toString());
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             LOGGER.log(
                     java.util.logging.Level.WARNING,
                     "Error sorting JSONB field, could not parse JSON from field: " + n,

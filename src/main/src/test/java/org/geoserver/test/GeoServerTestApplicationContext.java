@@ -18,7 +18,6 @@ import org.springframework.beans.factory.xml.DefaultBeanDefinitionDocumentReader
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.beans.factory.xml.XmlReaderContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.ui.context.Theme;
 import org.springframework.web.context.ServletConfigAware;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.WebApplicationContext;
@@ -54,10 +53,6 @@ public class GeoServerTestApplicationContext extends ClassPathXmlApplicationCont
     @Override
     public ServletContext getServletContext() {
         return servletContext;
-    }
-
-    public Theme getTheme(String themeName) {
-        return null;
     }
 
     public void setUseLegacyGeoServerLoader(boolean useLegacyGeoServerLoader) {

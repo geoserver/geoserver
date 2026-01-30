@@ -11,23 +11,28 @@ import static org.geoserver.ogcapi.v1.processes.InputValue.InlineFileInputValue;
 import static org.geoserver.ogcapi.v1.processes.InputValue.LiteralInputValue;
 import static org.geoserver.ogcapi.v1.processes.InputValue.ReferenceInputValue;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
 import java.util.Arrays;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.exc.JacksonIOException;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ValueDeserializer;
 
-public class InputValueDeserializer extends JsonDeserializer<InputValue> {
+public class InputValueDeserializer extends ValueDeserializer<InputValue> {
 
     static final String CRS84 = "http://www.opengis.net/def/crs/OGC/1.3/CRS84";
     static final String CRS84H = "http://www.opengis.net/def/crs/OGC/0/CRS84h";
 
     @Override
-    public InputValue deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-        JsonNode node = p.getCodec().readTree(p);
+    public InputValue deserialize(JsonParser p, DeserializationContext ctxt) {
+        JsonNode node = p.objectReadContext().readTree(p);
 
-        return getInputValue(node);
+        try {
+            return getInputValue(node);
+        } catch (IOException e) {
+            throw JacksonIOException.construct(e);
+        }
     }
 
     public InputValue getInputValue(JsonNode node) throws IOException {
@@ -51,8 +56,8 @@ public class InputValueDeserializer extends JsonDeserializer<InputValue> {
             if (node.has("value")) {
                 if (node.has("mediaType")) {
                     InlineFileInputValue file = new InlineFileInputValue();
-                    file.value = node.get("value").asText();
-                    file.mediaType = node.get("mediaType").asText();
+                    file.value = node.get("value").asString();
+                    file.mediaType = node.get("mediaType").asString();
                     return file;
                 } else {
                     ComplexJSONInputValue complex = new ComplexJSONInputValue();
@@ -63,8 +68,8 @@ public class InputValueDeserializer extends JsonDeserializer<InputValue> {
 
             if (node.has("href")) {
                 ReferenceInputValue ref = new ReferenceInputValue();
-                ref.href = node.get("href").asText();
-                ref.type = node.has("type") ? node.get("type").asText() : null;
+                ref.href = node.get("href").asString();
+                ref.type = node.has("type") ? node.get("type").asString() : null;
                 return ref;
             }
 
@@ -88,7 +93,7 @@ public class InputValueDeserializer extends JsonDeserializer<InputValue> {
         for (int i = 0; i < array.size(); i++) {
             coords[i] = array.get(i).asDouble();
         }
-        String crsSpec = node.has("crs") ? node.get("crs").asText() : null;
+        String crsSpec = node.has("crs") ? node.get("crs").asString() : null;
         if (coords.length == 4) {
             bbox.lowerCorner = Arrays.asList(coords[0], coords[1]);
             bbox.upperCorner = Arrays.asList(coords[2], coords[3]);
@@ -104,8 +109,8 @@ public class InputValueDeserializer extends JsonDeserializer<InputValue> {
     }
 
     private Object extractPrimitive(JsonNode node) {
-        if (node.isTextual()) {
-            return node.textValue();
+        if (node.isString()) {
+            return node.asString();
         } else if (node.isNumber()) {
             if (node.isInt()) return node.intValue();
             if (node.isLong()) return node.longValue();

@@ -4,8 +4,8 @@
  */
 package org.geoserver.ogcapi.v1.features;
 
-import static org.geoserver.ogcapi.MappingJackson2YAMLMessageConverter.APPLICATION_YAML_VALUE;
-import static org.geoserver.ogcapi.OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE;
+import static org.geoserver.ogcapi.SwaggerJSONAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_YAML_VALUE;
 
 import com.google.common.collect.ImmutableList;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -44,10 +44,10 @@ import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.DefaultContentType;
 import org.geoserver.ogcapi.FunctionsDocument;
 import org.geoserver.ogcapi.HTMLResponseBody;
-import org.geoserver.ogcapi.JSONSchemaMessageConverter;
 import org.geoserver.ogcapi.OGCAPIMediaTypes;
 import org.geoserver.ogcapi.Queryables;
 import org.geoserver.ogcapi.QueryablesBuilder;
+import org.geoserver.ogcapi.SwaggerJSONSchemaMessageConverter;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.ows.util.ResponseUtils;
@@ -267,7 +267,7 @@ public class FeatureService {
     @GetMapping(
             path = "collections/{collectionId}/queryables",
             name = "getQueryables",
-            produces = JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE)
+            produces = SwaggerJSONSchemaMessageConverter.SCHEMA_TYPE_VALUE)
     @ResponseBody
     @HTMLResponseBody(templateName = "queryables.ftl", fileName = "queryables.html")
     public Queryables queryables(@PathVariable(name = "collectionId") String collectionId) throws IOException {
@@ -285,7 +285,7 @@ public class FeatureService {
     @GetMapping(
             path = "collections/{collectionId}/schemas/fg/{schemaId}.json",
             name = "getJSONFGSchemas",
-            produces = JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE)
+            produces = SwaggerJSONSchemaMessageConverter.SCHEMA_TYPE_VALUE)
     public void getJSONFGSchemas(
             @PathVariable(name = "collectionId") String collectionId,
             @PathVariable(name = "schemaId") String schemaId,
@@ -294,7 +294,7 @@ public class FeatureService {
         FeatureTypeInfo ft = getFeatureType(collectionId);
         FeatureType featureType = ft.getFeatureType();
         String schema = new JSONFGSchemaBuilder(featureType, schemaId).build();
-        response.setContentType(JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE);
+        response.setContentType(SwaggerJSONSchemaMessageConverter.SCHEMA_TYPE_VALUE);
         IOUtils.write(schema, response.getOutputStream(), StandardCharsets.UTF_8);
     }
 

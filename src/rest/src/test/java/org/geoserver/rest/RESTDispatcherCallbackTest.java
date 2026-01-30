@@ -11,8 +11,12 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertEquals;
 
+import jakarta.servlet.Filter;
+import jakarta.servlet.ServletException;
+import java.util.List;
 import org.easymock.EasyMock;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.filters.SpringDelegatingFilter;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Before;
@@ -26,6 +30,17 @@ public class RESTDispatcherCallbackTest extends GeoServerSystemTestSupport {
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         // no data needed for this test
+    }
+
+    @Override
+    protected List<Filter> getFilters() {
+        try {
+            SpringDelegatingFilter filter = new SpringDelegatingFilter();
+            filter.init(null);
+            return List.of(filter);
+        } catch (ServletException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Before

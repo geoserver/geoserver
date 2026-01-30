@@ -95,6 +95,11 @@ public class OseoSettingsControllerTest extends OSEORestTestSupport {
                 oseoinfo.getJSONObject("globalQueryables").getJSONArray("string"));
     }
 
+    @Override
+    protected String getLogConfiguration() {
+        return "DEFAULT_LOGGING";
+    }
+
     @Test
     public void testPutAsXML() throws Exception {
         String xml = "<oseo>"

@@ -4,7 +4,6 @@
  */
 package org.geoserver.ogcapi;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.LinkedHashMap;
@@ -13,6 +12,7 @@ import java.util.logging.Level;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ExtensionPriority;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.ObjectMapper;
 
 /** Handles all exceptions encoding them as a JSON response as indicated by OGC API - Commons */
 @Component

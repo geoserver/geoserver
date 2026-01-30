@@ -15,7 +15,6 @@ import static org.geoserver.ogcapi.ConformanceClass.CQL2_TEXT;
 import static org.geoserver.ogcapi.ConformanceClass.ECQL_TEXT;
 import static org.geoserver.ogcapi.ConformanceClass.FEATURES_FILTER;
 import static org.geoserver.ogcapi.ConformanceClass.FILTER;
-import static org.geoserver.ogcapi.MappingJackson2YAMLMessageConverter.APPLICATION_YAML_VALUE;
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.EO_IDENTIFIER;
 import static org.geoserver.opensearch.eo.store.OpenSearchQueries.getProductProperties;
 import static org.geoserver.ows.URLMangler.URLType.RESOURCE;
@@ -46,12 +45,12 @@ import org.geoserver.ogcapi.APIService;
 import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.DefaultContentType;
 import org.geoserver.ogcapi.HTMLResponseBody;
-import org.geoserver.ogcapi.JSONSchemaMessageConverter;
 import org.geoserver.ogcapi.OGCAPIMediaTypes;
-import org.geoserver.ogcapi.OpenAPIMessageConverter;
 import org.geoserver.ogcapi.PaginationLinksBuilder;
 import org.geoserver.ogcapi.Queryables;
 import org.geoserver.ogcapi.Sortables;
+import org.geoserver.ogcapi.SwaggerJSONAPIMessageConverter;
+import org.geoserver.ogcapi.SwaggerJSONSchemaMessageConverter;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
@@ -202,11 +201,7 @@ public class STACService {
     @GetMapping(
             path = {"openapi", "openapi.json", "openapi.yaml"},
             name = "getApi",
-            produces = {
-                OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE,
-                APPLICATION_YAML_VALUE,
-                MediaType.TEXT_XML_VALUE
-            })
+            produces = {SwaggerJSONAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE, MediaType.APPLICATION_YAML_VALUE})
     @ResponseBody
     @HTMLResponseBody(templateName = "api.ftl", fileName = "api.html")
     public OpenAPI api() throws IOException {
@@ -523,7 +518,7 @@ public class STACService {
     @GetMapping(
             path = "collections/{collectionId}/queryables",
             name = "getCollectionQueryables",
-            produces = JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE)
+            produces = SwaggerJSONSchemaMessageConverter.SCHEMA_TYPE_VALUE)
     @ResponseBody
     @HTMLResponseBody(templateName = "queryables-collection.ftl", fileName = "queryables.html")
     public Queryables collectionQueryables(@PathVariable(name = "collectionId") String collectionId)
@@ -550,7 +545,7 @@ public class STACService {
     @GetMapping(
             path = "collections/{collectionId}/sortables",
             name = "getCollectionSortables",
-            produces = JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE)
+            produces = SwaggerJSONSchemaMessageConverter.SCHEMA_TYPE_VALUE)
     @ResponseBody
     @HTMLResponseBody(templateName = "sortables-collection.ftl", fileName = "sortables.html")
     public Sortables collectionSortables(@PathVariable(name = "collectionId") String collectionId) throws IOException {
@@ -574,7 +569,7 @@ public class STACService {
     @GetMapping(
             path = "queryables",
             name = "getSearchQueryables",
-            produces = JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE)
+            produces = SwaggerJSONSchemaMessageConverter.SCHEMA_TYPE_VALUE)
     @ResponseBody
     @HTMLResponseBody(templateName = "queryables-global.ftl", fileName = "queryables.html")
     public Queryables searchQueryables() throws IOException {
@@ -596,7 +591,7 @@ public class STACService {
     @GetMapping(
             path = "sortables",
             name = "getSearchSortables",
-            produces = JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE)
+            produces = SwaggerJSONSchemaMessageConverter.SCHEMA_TYPE_VALUE)
     @ResponseBody
     @HTMLResponseBody(templateName = "sortables-global.ftl", fileName = "sortables.html")
     public Sortables searchSortables() throws IOException {

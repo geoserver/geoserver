@@ -295,6 +295,11 @@ public class StyleMetadataTest extends StylesTestSupport {
                 readSingle(json, "stylesheets[?(@.title =~ /.*CSS.*/)].link.type"));
     }
 
+    @Override
+    protected String getLogConfiguration() {
+        return "DEFAULT_LOGGING";
+    }
+
     @Test
     public void testPutStyleMetadata() throws Exception {
         String metadataJson = IOUtils.toString(StyleTest.class.getResourceAsStream("polygonStyleMetadata.json"));

@@ -1,14 +1,13 @@
 package org.geoserver.featurestemplating.readers;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.JsonNodeType;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Predicate;
-import org.apache.commons.collections4.IteratorUtils;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.JsonNodeType;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * This class is responsible for merging 2 JsonNodes, base and overlay. JsonNode overlay contains keyword $merge. If
@@ -48,7 +47,7 @@ public class JSONMerger {
      * @return merge result of base and overlay
      */
     private ObjectNode mergeTrees(ObjectNode base, ObjectNode overlay) {
-        Set<String> baseNames = new LinkedHashSet<>(IteratorUtils.toList(base.fieldNames()));
+        Set<String> baseNames = new LinkedHashSet<>(base.propertyNames());
 
         // add/override missing
         ObjectNode merged = JsonNodeFactory.instance.objectNode();
@@ -74,7 +73,7 @@ public class JSONMerger {
             }
         }
         // add the extra bits
-        Set<String> overlayNames = new LinkedHashSet<>(IteratorUtils.toList(overlay.fieldNames()));
+        Set<String> overlayNames = new LinkedHashSet<>(overlay.propertyNames());
         overlayNames.removeAll(baseNames);
         for (String name : overlayNames) {
             JsonNode ov = overlay.get(name);
@@ -85,8 +84,8 @@ public class JSONMerger {
     }
 
     private boolean isDynamicMerge(JsonNode ov, JsonNode bv) {
-        Predicate<JsonNode> isDynamic = node -> node.isTextual()
-                && (node.asText().startsWith("${") || node.asText().startsWith("$${"));
+        Predicate<JsonNode> isDynamic = node -> node.isString()
+                && (node.asString().startsWith("${") || node.asString().startsWith("$${"));
         Predicate<JsonNode> isObject = node -> node.getNodeType() == JsonNodeType.OBJECT;
         return (isDynamic.test(ov) && isObject.test(bv)) || (isDynamic.test(bv) && isObject.test(ov));
     }
@@ -97,9 +96,9 @@ public class JSONMerger {
         String key = DYNAMIC_MERGE_KEY.concat(name);
         // set empty node to create DYNAMIC_MERGE_KEY as parent
         merged.set(key, emptyNode);
-        merged.with(key).set(name, emptyNode2);
-        merged.with(key).with(name).set(DYNAMIC_MERGE_OVERLAY, ov);
-        merged.with(key).with(name).set(DYNAMIC_MERGE_BASE, bv);
+        merged.withObject(key).set(name, emptyNode2);
+        merged.withObject(key).withObject(name).set(DYNAMIC_MERGE_OVERLAY, ov);
+        merged.withObject(key).withObject(name).set(DYNAMIC_MERGE_BASE, bv);
     }
 
     private boolean isRootCollectionArray(String name, JsonNode bv, JsonNode ov) {

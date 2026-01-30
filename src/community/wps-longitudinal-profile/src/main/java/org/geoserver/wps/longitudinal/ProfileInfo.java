@@ -7,15 +7,15 @@ package org.geoserver.wps.longitudinal;
 public class ProfileInfo {
 
     double totalDistanceToThisPoint;
-    double X;
-    double Y;
+    double x;
+    double y;
     double altitude;
     double slope;
 
     public ProfileInfo(double totalDistance, double x, double y, double altitude, double slope) {
         this.totalDistanceToThisPoint = totalDistance;
-        X = x;
-        Y = y;
+        this.x = x;
+        this.y = y;
         this.altitude = altitude;
         this.slope = slope;
     }
@@ -25,11 +25,11 @@ public class ProfileInfo {
     }
 
     public double getX() {
-        return X;
+        return x;
     }
 
     public double getY() {
-        return Y;
+        return y;
     }
 
     public double getAltitude() {

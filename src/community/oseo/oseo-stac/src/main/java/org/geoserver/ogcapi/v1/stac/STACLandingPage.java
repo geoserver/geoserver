@@ -4,7 +4,7 @@
  */
 package org.geoserver.ogcapi.v1.stac;
 
-import static org.geoserver.ogcapi.JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE;
+import static org.geoserver.ogcapi.SwaggerJSONSchemaMessageConverter.SCHEMA_TYPE_VALUE;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;

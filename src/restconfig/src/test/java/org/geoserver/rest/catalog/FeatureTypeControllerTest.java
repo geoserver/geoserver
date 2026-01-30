@@ -278,7 +278,11 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
         zout.close();
 
         String q = "configure=first";
-        put(BASEPATH + "/workspaces/gs/datastores/pds/file.properties?" + q, zbytes.toByteArray(), "application/zip");
+        MockHttpServletResponse response = putAsServletResponse(
+                BASEPATH + "/workspaces/gs/datastores/pds/file.properties?" + q,
+                zbytes.toByteArray(),
+                "application/zip");
+        assertEquals(201, response.getStatus());
     }
 
     @Test
@@ -684,30 +688,31 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
     public void testCreateFeatureType() throws Exception {
         String xml =
                 """
-                <featureType>
-                  <name>states</name>
-                  <nativeName>states</nativeName>
-                  <namespace>
-                    <name>cite</name>
-                  </namespace>
-                  <title>USA Population</title>
-                  <srs>EPSG:4326</srs>
-                  <attributes>
-                    <attribute>
-                      <name>the_geom</name>
-                      <binding>org.locationtech.jts.geom.MultiPolygon</binding>
-                    </attribute>
-                    <attribute>
-                      <name>STATE_NAME</name>
-                      <binding>java.lang.String</binding>
-                      <length>25</length>
-                    </attribute>
-                    <attribute>
-                      <name>LAND_KM</name>
-                      <binding>java.lang.Double</binding>
-                    </attribute>
-                  </attributes>
-                </featureType>""";
+            <featureType>
+              <name>states</name>
+              <nativeName>states</nativeName>
+              <namespace>
+                <name>cite</name>
+              </namespace>
+              <title>USA Population</title>
+              <srs>EPSG:4326</srs>
+              <attributes>
+                <attribute>
+                  <name>the_geom</name>
+                  <binding>org.locationtech.jts.geom.MultiPolygon</binding>
+                </attribute>
+                <attribute>
+                  <name>STATE_NAME</name>
+                  <binding>java.lang.String</binding>
+                  <length>25</length>
+                </attribute>
+                <attribute>
+                  <name>LAND_KM</name>
+                  <binding>java.lang.Double</binding>
+                </attribute>
+              </attributes>
+            </featureType>\
+            """;
 
         MockHttpServletResponse response =
                 postAsServletResponse(BASEPATH + "/workspaces/cite/datastores/default/featuretypes", xml, "text/xml");
@@ -966,7 +971,8 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
                         <int>1</int>
                         <int>2</int>
                         <int>3</int>
-                    </options>""")
+                    </options>\
+                    """)
                 .replace(
                         "<name>decimalProperty</name>",
                         """
@@ -974,7 +980,8 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
                     <range>
                         <min>3.14</min>
                         <max>99.99</max>
-                    </range>""");
+                    </range>\
+                    """);
 
         MockHttpServletResponse sr =
                 postAsServletResponse(BASEPATH + "/workspaces/sf/featuretypes", xmlWithRestrictedAttributes);
@@ -1002,12 +1009,13 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
         String xmlWithRestrictedAttributes = xml.replace(
                         "<name>intProperty</name>",
                         """
-                    <name>intProperty</name>
-                    <options>
-                        <int>1</int>
-                        <int>2</int>
-                        <int>3</int>
-                    </options>""")
+            <name>intProperty</name>
+            <options>
+                <int>1</int>
+                <int>2</int>
+                <int>3</int>
+            </options>\
+            """)
                 .replace(
                         "<name>decimalProperty</name>",
                         """
@@ -1015,7 +1023,8 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
                     <range>
                         <min>3.14</min>
                         <max>99.99</max>
-                    </range>""")
+                    </range>\
+                    """)
                 .replace(
                         "</attributes>",
                         """
@@ -1029,7 +1038,8 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
                             </options>
                             <source>name</source>
                         </attribute>
-                    </attributes>""");
+                    </attributes>\
+                    """);
 
         MockHttpServletResponse sr = putAsServletResponse(
                 BASEPATH + "/workspaces/sf/featuretypes/PrimitiveGeoFeature", xmlWithRestrictedAttributes, "text/xml");

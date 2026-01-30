@@ -7,10 +7,10 @@ package org.geoserver.ogcapi;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import io.swagger.v3.oas.models.media.Schema;
 import java.util.List;
+import tools.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 /*
  * A Queryables document is a schema, with a couple of additional properties
@@ -81,7 +81,7 @@ public class Queryables extends Schema<Object> {
                 .rel(Link.REL_ALTERNATE)
                 .title("This document as ")
                 .updater((mt, l) -> {
-                    if (requestInfo.isFormatRequested(mt, JSONSchemaMessageConverter.SCHEMA_TYPE)) {
+                    if (requestInfo.isFormatRequested(mt, SwaggerJSONSchemaMessageConverter.SCHEMA_TYPE)) {
                         l.setRel(Link.REL_SELF);
                         l.setClassification(Link.REL_SELF);
                         l.setTitle("This document");

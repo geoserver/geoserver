@@ -158,8 +158,24 @@ class LoggingUtilsDelegate {
             }
         }
 
+        suppressSpringPostProcessingWarnings();
+
         LoggingStartupContextListener.getLogger()
                 .fine("FINISHED CONFIGURING GEOSERVER LOGGING -------------------------");
+    }
+
+    /** Suppress the Spring BeanPostProcessorChecker warnings about infrastructure beans. */
+    private static void suppressSpringPostProcessingWarnings() {
+        @SuppressWarnings({"PMD.CloseResource"}) // current context, no need to enforce AutoClosable
+        LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
+        Configuration configuration = loggerContext.getConfiguration();
+
+        // Suppress the BeanPostProcessorChecker warnings about infrastructure beans
+        org.apache.logging.log4j.core.config.LoggerConfig loggerConfig = configuration.getLoggerConfig(
+                "org.springframework.beans.factory.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker");
+        loggerConfig.setLevel(org.apache.logging.log4j.Level.ERROR);
+
+        loggerContext.updateLoggers();
     }
 
     /**

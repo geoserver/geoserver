@@ -27,6 +27,7 @@ import org.geoserver.platform.resource.Resource.Lock;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.security.PropertyFileWatcher;
 import org.geoserver.util.IOUtils;
+import org.geoserver.util.LinkedProperties;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -132,8 +133,14 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
 
     /** Writes the rules back to file system */
     public synchronized void storeRules() throws IOException {
-        // turn back the users into a users map
+        // turn back the rules into a properties map
         Properties p = toProperties();
+
+        // For order-dependent DAOs (like REST), preserve order
+        // For others, allow alphabetical sorting (default behavior)
+        if (p instanceof LinkedProperties && preservePropertyOrder()) {
+            ((LinkedProperties) p).preserveOrder();
+        }
 
         // write out to the data dir
         Resource propFile = securityDir.get(propertyFileName);
@@ -146,6 +153,16 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
             if (e instanceof IOException) throw (IOException) e;
             else throw new IOException("Could not write rules to " + propertyFileName, e);
         }
+    }
+
+    /**
+     * Indicates whether the order of properties in the file matters. When true, properties are written in insertion
+     * order. When false (default), properties are sorted alphabetically for easier diff/merge.
+     *
+     * @return true if property order has semantic meaning, false otherwise
+     */
+    protected boolean preservePropertyOrder() {
+        return false; // Default: allow alphabetical sorting
     }
 
     /** Checks the property file is up-to-date, eventually rebuilds the tree */

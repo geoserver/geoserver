@@ -77,6 +77,16 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wfs-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wms1_1</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-iau-wkt</artifactId>
       <scope>test</scope>

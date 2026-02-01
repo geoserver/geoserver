@@ -19,6 +19,7 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.security.impl.GeoServerUser;
+import org.geoserver.util.LinkedProperties;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.util.StringUtils;
 
@@ -103,8 +104,8 @@ public class PropertyAuthenticationKeyMapper extends AbstractAuthenticationKeyMa
 
         // Clear the local cache
         resetUserCache();
-        authKeyProps = new Properties();
-        Properties oldProps = new Properties();
+        authKeyProps = new LinkedProperties();
+        Properties oldProps = new LinkedProperties();
 
         // check if a property file exists and reload
         if (propFile.exists()) {

@@ -20,6 +20,7 @@ import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.util.LinkedProperties;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.util.Filter;
 
@@ -89,7 +90,7 @@ public class ImageMosaicAdditionalResourceWriter extends ImageMosaicAdditionalRe
         // Populate "Name=<mosaicName>" property into the indexer
         final File indexerFile = new File(targetMosaicBaseFolder.dir(), "indexer.properties");
 
-        Properties indexerProperties = new Properties();
+        LinkedProperties indexerProperties = new LinkedProperties();
 
         if (indexerFile.exists() && indexerFile.canRead()) {
             indexerProperties.load(new FileInputStream(indexerFile));

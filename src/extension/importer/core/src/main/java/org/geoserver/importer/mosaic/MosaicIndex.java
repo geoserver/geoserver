@@ -31,6 +31,7 @@ import org.geotools.gce.imagemosaic.Utils;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
+import org.geoserver.util.LinkedProperties;
 import org.locationtech.jts.geom.Polygon;
 
 /**
@@ -117,7 +118,7 @@ public class MosaicIndex {
 
         // tell image mosaic to use the index file we are creating
         File indexerFile = new File(mosaic.getFile(), "indexer.properties");
-        Properties indexer = new Properties();
+        LinkedProperties indexer = new LinkedProperties();
         indexer.put(Utils.Prop.NAME, mosaic.getName());
         indexer.put(Utils.Prop.INDEX_NAME, mosaic.getName());
         indexer.put(Utils.Prop.USE_EXISTING_SCHEMA, "true");
@@ -164,7 +165,7 @@ public class MosaicIndex {
         // if we have to add the time, do so now
         if (mosaic.getTimeMode() != TimeMode.NONE) {
             File propertyFile = new File(mosaic.getFile(), mosaic.getName() + ".properties");
-            Properties props = new Properties();
+            LinkedProperties props = new LinkedProperties();
             try (FileInputStream fis = new FileInputStream(propertyFile)) {
                 props.load(fis);
             }

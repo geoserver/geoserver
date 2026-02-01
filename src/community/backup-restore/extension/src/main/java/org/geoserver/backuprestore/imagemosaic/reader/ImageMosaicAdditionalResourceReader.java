@@ -11,7 +11,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Properties;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.backuprestore.imagemosaic.ImageMosaicAdditionalResource;
@@ -22,8 +21,8 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
-import org.geoserver.util.LinkedProperties;
 import org.geoserver.platform.resource.Resources;
+import org.geoserver.util.LinkedProperties;
 
 /** @author Alessio Fabiani, GeoSolutions */
 public class ImageMosaicAdditionalResourceReader extends ImageMosaicAdditionalResource

@@ -13,9 +13,9 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Properties;
 import java.util.logging.Logger;
 import org.apache.commons.io.FilenameUtils;
+import org.geoserver.util.LinkedProperties;
 import org.geotools.api.data.FeatureWriter;
 import org.geotools.api.data.Transaction;
 import org.geotools.api.feature.simple.SimpleFeature;
@@ -31,7 +31,6 @@ import org.geotools.gce.imagemosaic.Utils;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
-import org.geoserver.util.LinkedProperties;
 import org.locationtech.jts.geom.Polygon;
 
 /**

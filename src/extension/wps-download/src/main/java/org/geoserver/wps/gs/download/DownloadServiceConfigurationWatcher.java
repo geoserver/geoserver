@@ -31,6 +31,7 @@ import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.PropertyFileWatcher;
+import org.geoserver.util.LinkedProperties;
 import org.geoserver.util.IOUtils;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
@@ -284,7 +285,9 @@ public class DownloadServiceConfigurationWatcher extends TimerTask implements Do
         Properties props = configurationToProperties(configuration);
         Resource resource = watcher.getResource();
         try (OutputStream os = resource.out()) {
-            props.store(os, null);
+            LinkedProperties sortedProps = new LinkedProperties();
+            sortedProps.putAll(props);
+            sortedProps.store(os, null);
         }
         reloadConfiguration();
     }

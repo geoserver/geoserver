@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.util.LinkedProperties;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 
@@ -90,7 +91,7 @@ public class ImporterInfoDAO {
 
     /** Writes the importer configuration form the specified resource */
     void write(ImporterInfo configuration, Resource resource) throws IOException {
-        Properties props = new Properties();
+        LinkedProperties props = new LinkedProperties();
         if (configuration.getUploadRoot() != null) {
             props.setProperty(UPLOAD_ROOT_KEY, configuration.getUploadRoot());
         }

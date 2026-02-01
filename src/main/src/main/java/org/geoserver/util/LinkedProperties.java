@@ -18,8 +18,8 @@ import java.util.TreeSet;
 
 /**
  * A Properties subclass that maintains insertion order using a LinkedHashMap. By default, properties are sorted
- * alphabetically when stored to make diffs easier. Call {@link #preserveOrder()} before {@link #store()} to maintain
- * insertion order instead.
+ * alphabetically when stored to make diffs easier. Call {@link #preserveOrder()} before {@link #store(OutputStream,
+ * String)} or {@link #store(Writer, String)} to maintain insertion order instead.
  *
  * <p>Examples:
  *
@@ -42,7 +42,7 @@ public class LinkedProperties extends Properties {
     private static final long serialVersionUID = 1L;
 
     private Map<Object, Object> linkMap = new LinkedHashMap<>();
-    private boolean sortOnStore = true; // Default: sort alphabetically
+    private volatile boolean sortOnStore = true; // Default: sort alphabetically
 
     public LinkedProperties() {}
 

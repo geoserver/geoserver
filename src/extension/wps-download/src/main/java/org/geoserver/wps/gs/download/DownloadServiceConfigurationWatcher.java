@@ -31,8 +31,8 @@ import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.PropertyFileWatcher;
-import org.geoserver.util.LinkedProperties;
 import org.geoserver.util.IOUtils;
+import org.geoserver.util.LinkedProperties;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
 

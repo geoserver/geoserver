@@ -97,6 +97,7 @@
     <spring.version>7.0.2</spring.version>
     <spring.security.version>7.0.2</spring.security.version>
     <spring.security.oauth2.version>2.5.2.RELEASE</spring.security.oauth2.version>
+    <spring.ldap.version>4.0.1</spring.ldap.version>
     <spring-integration.version>5.5.18</spring-integration.version>
     <wicket.version>10.7.0</wicket.version>
 
@@ -104,6 +105,7 @@
     <!-- Dependency version management    -->
     <!-- ================================ -->
     <ant.version>1.10.11</ant.version>
+    <apacheds.version>2.0.0.AM27</apacheds.version>
     <compress-lzf.version>1.0.3</compress-lzf.version>
     <eclipse.emf.version>2.15.0</eclipse.emf.version>
     <errorProne.version>2.31.0</errorProne.version>
@@ -650,8 +652,14 @@
       <!-- springframework -->
       <dependency>
         <groupId>org.springframework.ldap</groupId>
+        <artifactId>spring-ldap-core</artifactId>
+        <version>${spring.ldap.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.ldap</groupId>
         <artifactId>spring-ldap-test</artifactId>
-        <version>2.3.2.RELEASE</version>
+        <version>${spring.ldap.version}</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.springframework.security.oauth</groupId>
@@ -949,8 +957,33 @@
       </dependency>
       <dependency>
         <groupId>org.apache.directory.server</groupId>
-        <artifactId>apacheds-all</artifactId>
-        <version>2.0.0-M24</version>
+        <artifactId>apacheds-core</artifactId>
+        <version>${apacheds.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.directory.server</groupId>
+        <artifactId>apacheds-protocol-ldap</artifactId>
+        <version>${apacheds.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.directory.server</groupId>
+        <artifactId>apacheds-jdbm-partition</artifactId>
+        <version>${apacheds.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.directory.server</groupId>
+        <artifactId>apacheds-core-integ</artifactId>
+        <version>${apacheds.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.directory.server</groupId>
+        <artifactId>apacheds-server-annotations</artifactId>
+        <version>${apacheds.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.directory.server</groupId>
+        <artifactId>apacheds-test-framework</artifactId>
+        <version>${apacheds.version}</version>
       </dependency>
       <dependency>
         <groupId>jakarta.annotation</groupId>

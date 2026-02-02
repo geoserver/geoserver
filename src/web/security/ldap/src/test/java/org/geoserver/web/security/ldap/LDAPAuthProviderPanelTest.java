@@ -7,12 +7,6 @@ package org.geoserver.web.security.ldap;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.directory.server.annotations.CreateLdapServer;
-import org.apache.directory.server.annotations.CreateTransport;
-import org.apache.directory.server.core.annotations.ApplyLdifFiles;
-import org.apache.directory.server.core.annotations.CreateDS;
-import org.apache.directory.server.core.annotations.CreatePartition;
-import org.apache.directory.server.core.integ.CreateLdapServerRule;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
@@ -20,26 +14,13 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.model.util.MapModel;
-import org.geoserver.data.test.SystemTestData;
-import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.ldap.LDAPSecurityServiceConfig;
-import org.geoserver.security.ldap.LDAPTestUtils;
-import org.geoserver.security.web.AbstractSecurityWicketTestSupport;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.FormTestPage;
-import org.junit.After;
-import org.junit.ClassRule;
 import org.junit.Test;
 
 /** @author "Mauro Bartolomeoli - mauro.bartolomeoli@geo-solutions.it" */
-@CreateLdapServer(
-        transports = {@CreateTransport(protocol = "LDAP", address = "localhost")},
-        allowAnonymousAccess = true)
-@CreateDS(
-        name = "myDS",
-        partitions = {@CreatePartition(name = "test", suffix = LDAPTestUtils.LDAP_BASE_PATH)})
-@ApplyLdifFiles({"data.ldif"})
-public class LDAPAuthProviderPanelTest extends AbstractSecurityWicketTestSupport {
+public class LDAPAuthProviderPanelTest extends LDAPWicketTestSupport {
 
     private static final String USER_FORMAT = "uid={0},ou=People,dc=example,dc=com";
 
@@ -56,15 +37,6 @@ public class LDAPAuthProviderPanelTest extends AbstractSecurityWicketTestSupport
 
     FeedbackPanel feedbackPanel = null;
 
-    private static final String ldapServerUrl = LDAPTestUtils.LDAP_SERVER_URL;
-    private static final String basePath = LDAPTestUtils.LDAP_BASE_PATH;
-
-    @ClassRule
-    public static CreateLdapServerRule serverRule = new CreateLdapServerRule();
-
-    @After
-    public void tearDown() throws Exception {}
-
     protected void setupPanel(
             final String userDnPattern, String userFilter, String userFormat, String userGroupService) {
         config = new LDAPSecurityServiceConfig();
@@ -75,19 +47,6 @@ public class LDAPAuthProviderPanelTest extends AbstractSecurityWicketTestSupport
         config.setUserFormat(userFormat);
         config.setUserGroupServiceName(userGroupService);
         setupPanel(config);
-    }
-
-    private String getServerURL() {
-        return ldapServerUrl + ":" + serverRule.getLdapServer().getPort() + "/" + basePath;
-    }
-
-    @Override
-    protected void onSetUp(SystemTestData testData) throws Exception {
-        super.onSetUp(testData);
-        // disable url parameter encoding for these tests
-        SecurityManagerConfig config = getSecurityManager().getSecurityConfig();
-        config.setEncryptingUrlParams(false);
-        getSecurityManager().saveSecurityConfig(config);
     }
 
     protected void setupPanel(LDAPSecurityServiceConfig theConfig) {
@@ -107,35 +66,35 @@ public class LDAPAuthProviderPanelTest extends AbstractSecurityWicketTestSupport
 
     @Test
     public void testTestConnectionWithDnLookup() throws Exception {
-        serverRule.getDirectoryService().setAllowAnonymousAccess(true);
+        directoryService.setAllowAnonymousAccess(true);
         setupPanel(USER_DN_PATTERN, null, null, null);
         testSuccessfulConnection();
     }
 
     @Test
     public void testTestConnectionWitUserGroupService() throws Exception {
-        serverRule.getDirectoryService().setAllowAnonymousAccess(true);
+        directoryService.setAllowAnonymousAccess(true);
         setupPanel(USER_DN_PATTERN, null, null, "default");
         testSuccessfulConnection();
     }
 
     @Test
     public void testTestConnectionWithUserFilter() throws Exception {
-        serverRule.getDirectoryService().setAllowAnonymousAccess(true);
+        directoryService.setAllowAnonymousAccess(true);
         setupPanel(null, USER_FILTER, USER_FORMAT, null);
         testSuccessfulConnection();
     }
 
     @Test
     public void testTestConnectionFailedWithDnLookup() throws Exception {
-        serverRule.getDirectoryService().setAllowAnonymousAccess(true);
+        directoryService.setAllowAnonymousAccess(true);
         setupPanel(USER_DN_PATTERN, null, null, null);
         testFailedConnection();
     }
 
     @Test
     public void testTestConnectionFailedWithUserFilter() throws Exception {
-        serverRule.getDirectoryService().setAllowAnonymousAccess(true);
+        directoryService.setAllowAnonymousAccess(true);
         setupPanel(null, USER_FILTER, USER_FORMAT, null);
         testFailedConnection();
     }

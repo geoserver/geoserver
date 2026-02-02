@@ -110,7 +110,6 @@ public class HTMLGetComplexFeatureResponseTest extends TemplateComplexTestSuppor
                 getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature"
                         + "&outputFormat=text/html"
                         + MF_HTML_PARAM_JSONLD);
-        System.out.println(resp.getContentAsString());
         assertTrue(resp.getContentAsString().contains("Unable to find a JSON-LD template"));
     }
 

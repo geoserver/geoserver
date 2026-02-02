@@ -35,8 +35,9 @@ public abstract class JDBCDataStoreMetadataTest extends AbstractJDBCSmartDataLoa
     @Test
     public void testMeteoObservationsEntityAttributes() throws Exception {
         DatabaseMetaData metaData = this.dataSource.getConnection().getMetaData();
-        EntityMetadata entity =
-                new JdbcTableMetadata(metaData.getConnection(), null, ONLINE_DB_SCHEMA, "meteo_observations");
+        JdbcHelper jdbcHelper = new DefaultJdbcHelper();
+        EntityMetadata entity = new JdbcTableMetadata(
+                metaData.getConnection(), null, ONLINE_DB_SCHEMA, "meteo_observations", jdbcHelper);
 
         assertEquals(6, entity.getAttributes().size());
 
@@ -46,8 +47,9 @@ public abstract class JDBCDataStoreMetadataTest extends AbstractJDBCSmartDataLoa
     @Test
     public void testMeteoObservationsEntityRelations() throws Exception {
         DatabaseMetaData metaData = this.dataSource.getConnection().getMetaData();
-        EntityMetadata entity =
-                new JdbcTableMetadata(metaData.getConnection(), null, ONLINE_DB_SCHEMA, "meteo_observations");
+        JdbcHelper jdbcHelper = new DefaultJdbcHelper();
+        EntityMetadata entity = new JdbcTableMetadata(
+                metaData.getConnection(), null, ONLINE_DB_SCHEMA, "meteo_observations", jdbcHelper);
         assertEquals(4, entity.getRelations().size());
 
         metaData.getConnection().close();

@@ -48,14 +48,12 @@
     <dependency>
       <groupId>tools.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
-      <version>3.0.2</version>
       <scope>provided</scope>
       <!-- already provided by gs-main -->
     </dependency>
     <dependency>
       <groupId>tools.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>3.0.2</version>
       <scope>provided</scope>
       <!-- already provided by gs-main -->
     </dependency>
@@ -63,7 +61,6 @@
       <!-- Match jackson version used by GeoServer -->
       <groupId>tools.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-smile</artifactId>
-      <version>3.0.2</version>
     </dependency>
     <dependency>
       <groupId>org.locationtech.jts</groupId>

@@ -88,7 +88,6 @@
     <dependency>
       <groupId>tools.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
-      <version>3.0.2</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

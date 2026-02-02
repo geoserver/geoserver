@@ -59,7 +59,6 @@
     <dependency>
       <groupId>tools.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-xml</artifactId>
-      <version>3.0.2</version>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>

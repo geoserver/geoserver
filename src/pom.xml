@@ -670,10 +670,9 @@
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
-        <artifactId>bcprov-jdk18on</artifactId>
-        <version>1.79</version>
+        <artifactId>bcprov-lts8on</artifactId>
+        <version>2.73.10</version>
       </dependency>
-
       <!-- wicket framework -->
       <dependency>
         <groupId>org.apache.wicket</groupId>

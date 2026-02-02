@@ -4,9 +4,9 @@
  */
 package org.geoserver.wps;
 
-import com.fasterxml.jackson.core.JsonGenerator;
 import java.io.IOException;
 import org.xml.sax.SAXException;
+import tools.jackson.core.JsonGenerator;
 
 /** */
 public interface JSONEncoderDelegate {

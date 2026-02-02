@@ -15,10 +15,10 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInitializer;
 import org.geoserver.config.SettingsInfo;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.lang.NonNull;
 import org.springframework.web.context.WebApplicationContext;
 
 /** Use stored configuration to implement CORS headers */

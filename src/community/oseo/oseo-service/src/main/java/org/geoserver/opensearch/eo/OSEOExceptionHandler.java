@@ -4,7 +4,6 @@
  */
 package org.geoserver.opensearch.eo;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -20,6 +19,7 @@ import org.geoserver.ows.ServiceExceptionHandler;
 import org.geoserver.platform.OWS20Exception;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Returns exceptions as a RSS feed, as suggested in the OpenSearch EO developer guide at

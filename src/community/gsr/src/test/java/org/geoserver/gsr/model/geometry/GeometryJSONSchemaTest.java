@@ -11,7 +11,6 @@ package org.geoserver.gsr.model.geometry;
 
 import static org.junit.Assert.assertTrue;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.geoserver.gsr.JsonSchemaTest;
 import org.geoserver.gsr.api.GeoServicesJacksonJsonConverter;
 import org.geoserver.gsr.translate.geometry.GeometryEncoder;
@@ -19,6 +18,7 @@ import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.impl.CoordinateArraySequence;
+import tools.jackson.core.JacksonException;
 
 /**
  * JSON Schema validation class. Validation is possible with local files, with the following modifications: - All $ref
@@ -130,7 +130,7 @@ public class GeometryJSONSchemaTest extends JsonSchemaTest {
         //        assertFalse(validateJSON(json, "gsr/1.0/envelope.json"));
     }
 
-    private String representationToJson(Object obj) throws JsonProcessingException {
+    private String representationToJson(Object obj) throws JacksonException {
         return new GeoServicesJacksonJsonConverter().getMapper().writeValueAsString(obj);
     }
 }

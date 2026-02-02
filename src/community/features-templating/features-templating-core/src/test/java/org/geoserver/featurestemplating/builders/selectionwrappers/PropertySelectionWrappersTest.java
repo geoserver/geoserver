@@ -7,12 +7,6 @@ package org.geoserver.featurestemplating.builders.selectionwrappers;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-import com.fasterxml.jackson.core.JsonEncoding;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
@@ -35,6 +29,13 @@ import org.geotools.jdbc.JDBCDataStore;
 import org.junit.Before;
 import org.junit.Test;
 import org.xml.sax.helpers.NamespaceSupport;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonEncoding;
+import tools.jackson.core.ObjectWriteContext;
+import tools.jackson.core.json.JsonFactory;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 public class PropertySelectionWrappersTest extends DataTestCase {
 
@@ -110,15 +111,15 @@ public class PropertySelectionWrappersTest extends DataTestCase {
         String result = encodeTemplateToString(wrapper);
         JsonNode node = readJsonString(result);
         ObjectNode object = (ObjectNode) node;
-        assertEquals("attr1Value", object.get("attr1").asText());
+        assertEquals("attr1Value", object.get("attr1").asString());
         assertEquals(0.2, object.get("attr2").asDouble(), 0d);
         // overrided attr
-        assertEquals("e", object.get("attrE").asText());
-        assertEquals("attr4 value", object.get("attr3").get("attr4").asText());
+        assertEquals("e", object.get("attrE").asString());
+        assertEquals("attr4 value", object.get("attr3").get("attr4").asString());
         ObjectNode childB = (ObjectNode) object.get("attrB");
         // this was not selected.
         assertFalse(childB.has("attrC"));
-        assertEquals("d", childB.get("attrD").asText());
+        assertEquals("d", childB.get("attrD").asString());
     }
 
     @Test
@@ -143,14 +144,14 @@ public class PropertySelectionWrappersTest extends DataTestCase {
         String result = encodeTemplateToString(wrapper);
         JsonNode node = readJsonString(result);
         ObjectNode object = (ObjectNode) node.get("nestedAttr");
-        assertEquals("attr1Value", object.get("attr1").asText());
+        assertEquals("attr1Value", object.get("attr1").asString());
         assertEquals(0.2, object.get("attr2").asDouble(), 0d);
         // overrided attr
-        assertEquals("e", object.get("attrE").asText());
-        assertEquals("attr4 value", object.get("attr3").get("attr4").asText());
+        assertEquals("e", object.get("attrE").asString());
+        assertEquals("attr4 value", object.get("attr3").get("attr4").asString());
         ObjectNode childB = (ObjectNode) object.get("attrB");
         assertFalse(childB.has("attrD"));
-        assertEquals("c", childB.get("attrC").asText());
+        assertEquals("c", childB.get("attrC").asString());
     }
 
     @Test
@@ -176,8 +177,8 @@ public class PropertySelectionWrappersTest extends DataTestCase {
         JsonNode node = readJsonString(result);
         ObjectNode object = (ObjectNode) node.get("staticBuilder");
         assertEquals(2, object.size());
-        assertEquals("a", object.get("attrA").asText());
-        assertEquals("e", object.get("attrE").asText());
+        assertEquals("a", object.get("attrA").asString());
+        assertEquals("e", object.get("attrE").asString());
     }
 
     @Test
@@ -215,15 +216,16 @@ public class PropertySelectionWrappersTest extends DataTestCase {
         assertFalse(object.has("attr1Value"));
     }
 
-    private JsonNode readJsonString(String json) throws JsonProcessingException {
+    private JsonNode readJsonString(String json) throws JacksonException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readTree(json);
     }
 
     private String encodeTemplateToString(TemplateBuilder builder) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        GeoJSONWriter writer =
-                new GeoJSONWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8), TemplateIdentifier.JSON);
+        GeoJSONWriter writer = new GeoJSONWriter(
+                JsonFactory.builder().build().createGenerator(ObjectWriteContext.empty(), baos, JsonEncoding.UTF8),
+                TemplateIdentifier.JSON);
         writer.writeStartObject();
         builder.evaluate(writer, new TemplateBuilderContext(feature));
         writer.writeEndObject();

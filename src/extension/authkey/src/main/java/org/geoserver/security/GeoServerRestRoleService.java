@@ -452,8 +452,10 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService i
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
         // Manual migration to `SocketConfig.Builder.setSoTimeout(Timeout)` necessary; see:
         // https://docs.spring.io/spring-framework/docs/6.0.0/javadoc-api/org/springframework/http/client/HttpComponentsClientHttpRequestFactory.html#setReadTimeout(int)
+        // Manual migration to `SocketConfig.Builder.setSoTimeout(Timeout)` necessary; see:
+        // https://docs.spring.io/spring-framework/docs/6.0.0/javadoc-api/org/springframework/http/client/HttpComponentsClientHttpRequestFactory.html#setReadTimeout(int)
         factory.setReadTimeout(READ_TIMEOUT);
-        factory.setConnectTimeout(CONN_TIMEOUT);
+        factory.setConnectionRequestTimeout(CONN_TIMEOUT);
         return factory;
     }
 

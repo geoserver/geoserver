@@ -24,6 +24,7 @@ package org.geoserver.backuprestore.writer;
 import java.io.File;
 import java.io.IOException;
 import org.geoserver.backuprestore.Backup;
+import org.jspecify.annotations.NonNull;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ExecutionContext;
@@ -35,7 +36,6 @@ import org.springframework.batch.item.file.SimpleResourceSuffixCreator;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
-import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 /**

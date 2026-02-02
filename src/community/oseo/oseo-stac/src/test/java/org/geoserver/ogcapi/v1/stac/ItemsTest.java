@@ -53,11 +53,6 @@ public class ItemsTest extends STACTestSupport {
         copyTemplate("/parentLink.json");
     }
 
-    @Override
-    protected String getLogConfiguration() {
-        return "GEOTOOLS_DEVELOPER_LOGGING";
-    }
-
     @Test
     public void testSentinelItemsJSON() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/stac/v1/collections/SENTINEL2/items?limit=50", 200);
@@ -99,8 +94,8 @@ public class ItemsTest extends STACTestSupport {
         // a sample image that does have an actual time range
         DocumentContext s2Range = readSingleContext(
                 json, "features[?(@.id == 'S2A_OPER_MSI_L1C_TL_SGS__20170226T171842_A008785_T32TPN_N02.04')]");
-        assertEquals("2017-02-26T10:20:21.026+00:00", s2Range.read("properties.start_datetime"));
-        assertEquals("2017-02-26T10:30:00.031+00:00", s2Range.read("properties.end_datetime"));
+        assertEquals("2017-02-26T10:20:21.026Z", s2Range.read("properties.start_datetime"));
+        assertEquals("2017-02-26T10:30:00.031Z", s2Range.read("properties.end_datetime"));
     }
 
     @Test

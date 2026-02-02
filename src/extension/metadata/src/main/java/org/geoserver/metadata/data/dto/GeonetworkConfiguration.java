@@ -4,9 +4,9 @@
  */
 package org.geoserver.metadata.data.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.io.Serializable;
 import org.geoserver.metadata.data.dto.impl.GeonetworkConfigurationImpl;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 /**
  * Object that matches yaml structure.

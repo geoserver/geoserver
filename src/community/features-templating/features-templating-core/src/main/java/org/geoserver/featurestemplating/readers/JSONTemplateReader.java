@@ -14,12 +14,7 @@ import static org.geoserver.featurestemplating.readers.RecursiveJSONParser.INCLU
 import static org.geoserver.featurestemplating.readers.RecursiveJSONParser.INCLUDE_FLAT_KEY;
 import static org.geoserver.featurestemplating.readers.RecursiveJSONParser.INCLUDING_NODE;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
@@ -32,6 +27,10 @@ import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
 import org.geoserver.platform.FileWatcher;
 import org.geotools.api.filter.expression.Expression;
 import org.geotools.filter.LiteralExpressionImpl;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
 
 /** Produce the builder tree starting from the evaluation of json-ld template file * */
 public class JSONTemplateReader implements TemplateReader {
@@ -91,26 +90,24 @@ public class JSONTemplateReader implements TemplateReader {
         // check special node at beginning of arrays, controlling the array contents
         if (isArrayControlNode(node)) {
             if (node.has(SOURCEKEY)) {
-                String source = node.get(SOURCEKEY).asText();
+                String source = node.get(SOURCEKEY).asString();
                 ((SourceBuilder) currentBuilder).setSource(source);
             }
             if (node.has(FILTERKEY)) {
                 setFilterToBuilder(currentBuilder, node);
             }
         } else {
-            Iterator<Map.Entry<String, JsonNode>> iterator = node.fields();
-            while (iterator.hasNext()) {
-                Map.Entry<String, JsonNode> nodEntry = iterator.next();
-                String entryName = nodEntry.getKey();
-                JsonNode valueNode = nodEntry.getValue();
+            for (Map.Entry<String, JsonNode> nodeEntry : node.properties()) {
+                String entryName = nodeEntry.getKey();
+                JsonNode valueNode = nodeEntry.getValue();
                 String strValueNode = valueNode.toString();
                 // These fields have to be jumped cause they got writed
                 // before feature evaluation starts
                 boolean jumpField = (entryName.equalsIgnoreCase("type")
-                                && valueNode.asText().equals("FeatureCollection"))
+                                && valueNode.asString().equals("FeatureCollection"))
                         || entryName.equalsIgnoreCase("features");
                 if (entryName.equals(SOURCEKEY)) {
-                    String source = valueNode.asText();
+                    String source = valueNode.asString();
                     currentBuilder = createCompositeIfNeeded(currentBuilder, maker);
                     if (currentBuilder instanceof SourceBuilder builder) {
                         builder.setSource(source);
@@ -138,15 +135,16 @@ public class JSONTemplateReader implements TemplateReader {
                     currentBuilder.addChild(maker.jsonNode(valueNode)
                             .dynamicIncludeFlatBuilder(true)
                             .baseNode(includingNode)
-                            .textContent(exprNode.asText())
+                            .textContent(exprNode.asString())
                             .build());
                 } else {
                     if (valueNode.isObject()) {
                         if (entryName.startsWith(DYNAMIC_MERGE_KEY)) {
-                            if (valueNode.fields().hasNext()) {
+                            if (!valueNode.properties().isEmpty()) {
                                 currentBuilder = createCompositeIfNeeded(currentBuilder, maker);
-                                Map.Entry<String, JsonNode> fieldNode =
-                                        valueNode.fields().next();
+                                Map.Entry<String, JsonNode> fieldNode = valueNode.properties().stream()
+                                        .findFirst()
+                                        .get();
                                 String key = fieldNode.getKey();
                                 JsonNode innerNode = fieldNode.getValue();
                                 JsonNode overlay = innerNode.get(DYNAMIC_MERGE_OVERLAY);
@@ -204,9 +202,7 @@ public class JSONTemplateReader implements TemplateReader {
                 .topLevelFeature(isRootOrHasNotOwnOutput(currentBuilder))
                 .build();
         currentBuilder.addChild(iteratingBuilder);
-        Iterator<JsonNode> arrayIterator = node.elements();
-        while (arrayIterator.hasNext()) {
-            JsonNode childNode = arrayIterator.next();
+        for (JsonNode childNode : node.elements()) {
             if (childNode.isObject()) {
                 String childJSON = childNode.toString();
                 if (isArrayControlNode(childNode)) {
@@ -250,7 +246,7 @@ public class JSONTemplateReader implements TemplateReader {
         // here we add the actual expression of the includeFlat directive as children.
         for (JsonNode jsonNode : expressionNodes) {
             if (jsonNode.isValueNode()) {
-                String text = jsonNode.asText();
+                String text = jsonNode.asString();
                 if (text.startsWith(INCLUDE_FLAT_KEY + "{") && text.endsWith("}")) {
                     text = text.substring(INCLUDE_FLAT_KEY.length() + 1, text.length() - 1);
                     arrayIncludeFlat.addChild(maker.textContent(text).build());
@@ -260,11 +256,9 @@ public class JSONTemplateReader implements TemplateReader {
     }
 
     private ArrayNode cleanFromExpressionNodes(ArrayNode arrNode, List<JsonNode> nodes) {
-        Iterator<JsonNode> elements = arrNode.elements();
         ArrayNode arrayNode = null;
-        while (elements.hasNext()) {
-            JsonNode next = elements.next();
-            if (next.isValueNode() && next.asText().startsWith(INCLUDE_FLAT_KEY)) {
+        for (JsonNode next : arrNode.elements()) {
+            if (next.isValueNode() && next.asString().startsWith(INCLUDE_FLAT_KEY)) {
                 nodes.add(next);
             } else {
                 if (arrayNode == null) arrayNode = JsonNodeFactory.instance.arrayNode();
@@ -281,8 +275,8 @@ public class JSONTemplateReader implements TemplateReader {
 
     private void getBuilderFromJsonAttribute(
             String nodeName, JsonNode node, TemplateBuilder currentBuilder, TemplateBuilderMaker maker) {
-        String strNode = node.asText();
-        if (!node.asText().contains("FeatureCollection")) {
+        String strNode = node.asString();
+        if (!node.asString().contains("FeatureCollection")) {
             maker.name(nodeName).contentAndFilter(strNode);
             TemplateBuilder builder = maker.build();
             currentBuilder.addChild(builder);
@@ -290,7 +284,7 @@ public class JSONTemplateReader implements TemplateReader {
     }
 
     private void setFilterToBuilder(TemplateBuilder builder, JsonNode node) {
-        String filter = node.get(FILTERKEY).asText();
+        String filter = node.get(FILTERKEY).asString();
         ((AbstractTemplateBuilder) builder).setFilter(filter);
     }
 
@@ -317,7 +311,7 @@ public class JSONTemplateReader implements TemplateReader {
     private void addOptionIfPresent(RootBuilder builder, String optionName, JsonNode node) {
         if (node.has(optionName)) {
             TemplateCQLManager cqlManager =
-                    new TemplateCQLManager(node.get(optionName).asText(), null);
+                    new TemplateCQLManager(node.get(optionName).asString(), null);
             builder.addVendorOption(optionName, cqlManager.getExpressionFromString());
         }
     }

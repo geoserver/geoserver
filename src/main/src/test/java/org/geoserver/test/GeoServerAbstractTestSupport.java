@@ -60,6 +60,7 @@ import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.GeoServerLoader;
 import org.geoserver.config.GeoServerLoaderProxy;
 import org.geoserver.data.test.TestData;
+import org.geoserver.filters.SpringDelegatingFilter;
 import org.geoserver.logging.LoggingUtils;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.ResponseUtils;
@@ -1111,10 +1112,16 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
 
     /**
      * Subclasses needed to do integration tests with servlet filters can override this method and return the list of
-     * filters to be used during mocked requests
+     * filters to be used during mocked requests. By default it returns a list with a single SpringDelegatingFilter
      */
     protected List<Filter> getFilters() {
-        return null;
+        try {
+            SpringDelegatingFilter filter = new SpringDelegatingFilter();
+            filter.init(null);
+            return List.of(filter);
+        } catch (ServletException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

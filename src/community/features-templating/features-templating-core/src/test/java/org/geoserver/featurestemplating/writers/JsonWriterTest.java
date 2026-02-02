@@ -4,10 +4,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.fasterxml.jackson.core.JsonEncoding;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,6 +30,12 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.xml.sax.helpers.NamespaceSupport;
+import tools.jackson.core.JsonEncoding;
+import tools.jackson.core.ObjectWriteContext;
+import tools.jackson.core.json.JsonFactoryBuilder;
+import tools.jackson.core.json.JsonReadFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 public class JsonWriterTest {
 
@@ -65,7 +67,8 @@ public class JsonWriterTest {
         // test that values of URL types are correctly encoded
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         SimpleFeature f = createSimpleFeature();
-        JSONLDWriter writer = new JSONLDWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8));
+        JSONLDWriter writer = new JSONLDWriter(
+                new JsonFactoryBuilder().build().createGenerator(ObjectWriteContext.empty(), baos, JsonEncoding.UTF8));
         writer.writeStartObject();
         for (Property prop : f.getProperties()) {
             writer.writeElementName(prop.getName().toString(), null);
@@ -84,7 +87,8 @@ public class JsonWriterTest {
         // test that values of URL types are correctly encoded
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         SimpleFeature f = createSimpleFeature();
-        GeoJSONWriter writer = new GeoJSONWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8));
+        GeoJSONWriter writer = new GeoJSONWriter(
+                new JsonFactoryBuilder().build().createGenerator(ObjectWriteContext.empty(), baos, JsonEncoding.UTF8));
         writer.writeStartObject();
         for (Property prop : f.getProperties()) {
             writer.writeElementName(prop.getName().toString(), null);
@@ -108,14 +112,16 @@ public class JsonWriterTest {
         NamespaceSupport namespaceSuport = new NamespaceSupport();
         namespaceSuport.declarePrefix("", "http://www.geoserver.org");
         InputStream is = getClass().getResource("arrayTemplate.json").openStream();
-        ObjectMapper mapper = new ObjectMapper(new JsonFactory().enable(JsonParser.Feature.ALLOW_COMMENTS));
+        ObjectMapper mapper =
+                JsonMapper.builder().enable(JsonReadFeature.ALLOW_JAVA_COMMENTS).build();
         JSONTemplateReader templateReader = new JSONTemplateReader(
                 mapper.readTree(is), new TemplateReaderConfiguration(namespaceSuport), Collections.emptyList());
         RootBuilder builder = templateReader.getRootBuilder();
 
         // write the output
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        GeoJSONWriter writer = new GeoJSONWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8));
+        GeoJSONWriter writer = new GeoJSONWriter(
+                new JsonFactoryBuilder().build().createGenerator(ObjectWriteContext.empty(), baos, JsonEncoding.UTF8));
         SimpleFeature sf = createSimpleFeature();
         builder.evaluate(writer, new TemplateBuilderContext(sf));
         writer.close();
@@ -155,8 +161,9 @@ public class JsonWriterTest {
     @Test
     public void testStaticArray() throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        GeoJSONWriter writer =
-                new GeoJSONWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8), TemplateIdentifier.JSON);
+        GeoJSONWriter writer = new GeoJSONWriter(
+                new JsonFactoryBuilder().build().createGenerator(ObjectWriteContext.empty(), baos, JsonEncoding.UTF8),
+                TemplateIdentifier.JSON);
         writer.startArray(null, null);
         writer.writeStaticContent(null, "abc", new EncodingHints());
         writer.writeStaticContent(null, 5, new EncodingHints());
@@ -173,7 +180,8 @@ public class JsonWriterTest {
         // test that values of URL types are correctly encoded
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         SimpleFeature f = createSimpleFeature();
-        JSONLDWriter writer = new JSONLDWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8));
+        JSONLDWriter writer = new JSONLDWriter(
+                new JsonFactoryBuilder().build().createGenerator(ObjectWriteContext.empty(), baos, JsonEncoding.UTF8));
         writer.writeStartObject();
         for (Property prop : f.getProperties()) {
             writer.writeElementName(prop.getName().toString(), null);

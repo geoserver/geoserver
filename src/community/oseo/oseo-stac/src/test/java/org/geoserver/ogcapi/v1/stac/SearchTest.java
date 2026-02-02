@@ -641,6 +641,11 @@ public class SearchTest extends STACTestSupport {
         assertTextContains(s2Body, "[data-tid='ccover']", "7");
     }
 
+    @Override
+    protected String getLogConfiguration() {
+        return "DEFAULT_LOGGING";
+    }
+
     @Test
     public void testSearchAllMixedTemplates() throws Exception {
         DocumentContext doc = getAsJSONPath("ogc/stac/v1/search?f=json", 200);

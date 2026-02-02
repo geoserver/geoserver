@@ -9,8 +9,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
@@ -30,6 +28,8 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * End-to-end marshaling tests for UserGroupService REST API (XML & JSON). Uses header-based content negotiation (no
@@ -197,7 +197,7 @@ public class UserGroupServiceControllerMarshallingTest extends GeoServerSystemTe
                     n.forEach(dq::addLast);
                 }
                 // pick up any objects with a "name"
-                if (n.isObject() && n.has("name")) names.add(n.get("name").asText());
+                if (n.isObject() && n.has("name")) names.add(n.get("name").asString());
             }
             assertTrue("Expected list to contain " + name, names.contains(name));
         } finally {
@@ -234,11 +234,11 @@ public class UserGroupServiceControllerMarshallingTest extends GeoServerSystemTe
             assertEquals(200, r.getStatus());
             JsonNode found = findFirstService(MAPPER.readTree(r.getContentAsByteArray()));
             assertNotNull("Could not locate service object", found);
-            assertEquals(name, found.get("name").asText());
+            assertEquals(name, found.get("name").asString());
             assertEquals(
                     "org.geoserver.security.xml.XMLUserGroupService",
-                    found.get("className").asText());
-            assertEquals(name + ".xml", found.get("fileName").asText());
+                    found.get("className").asString());
+            assertEquals(name + ".xml", found.get("fileName").asString());
         } finally {
             doDelete(BASE + "/" + name, CT_JSON);
         }
@@ -277,7 +277,7 @@ public class UserGroupServiceControllerMarshallingTest extends GeoServerSystemTe
             assertEquals(200, view.getStatus());
             JsonNode found = findFirstService(MAPPER.readTree(view.getContentAsByteArray()));
             assertNotNull(found);
-            assertEquals(name, found.get("name").asText());
+            assertEquals(name, found.get("name").asString());
         } finally {
             doDelete(BASE + "/" + name, CT_JSON);
         }
@@ -357,7 +357,7 @@ public class UserGroupServiceControllerMarshallingTest extends GeoServerSystemTe
                     MAPPER.readTree(doGet(BASE + "/" + name, CT_JSON).getContentAsByteArray()));
             assertNotNull(found);
             assertEquals(
-                    "plainTextPasswordEncoder", found.get("passwordEncoderName").asText());
+                    "plainTextPasswordEncoder", found.get("passwordEncoderName").asString());
         } finally {
             doDelete(BASE + "/" + name, CT_JSON);
         }

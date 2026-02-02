@@ -4,7 +4,6 @@
  */
 package org.geoserver.llm.process;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.models.ChatModel;
@@ -62,6 +61,7 @@ import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.DisposableBean;
+import tools.jackson.databind.ObjectMapper;
 
 /** WPS Process to call OpenAI API with Catalog for Context */
 @DescribeProcess(

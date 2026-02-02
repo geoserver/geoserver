@@ -15,10 +15,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.extension.ResponseTransformerV2;
@@ -87,6 +83,11 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.RequestContextListener;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ObjectNode;
+import wiremock.com.fasterxml.jackson.core.JsonProcessingException;
 
 @TestSetup(run = TestSetupFrequency.REPEAT)
 public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupport {
@@ -162,7 +163,7 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
          * @throws JsonProcessingException
          */
         private Response breakSignature(String responseBody) throws JsonProcessingException {
-            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectMapper objectMapper = new JsonMapper();
             JsonNode jsonNode = objectMapper.readTree(responseBody);
             String idToken = jsonNode.get("id_token").toPrettyString();
             String[] tokenParts = idToken.split("\\.");

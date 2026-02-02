@@ -5,9 +5,9 @@
  */
 package org.geoserver.security.ldap;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import org.apache.directory.server.annotations.CreateLdapServer;
@@ -15,12 +15,12 @@ import org.apache.directory.server.annotations.CreateTransport;
 import org.apache.directory.server.core.annotations.ApplyLdifFiles;
 import org.apache.directory.server.core.annotations.CreateDS;
 import org.apache.directory.server.core.annotations.CreatePartition;
-import org.apache.directory.server.core.integ.FrameworkRunner;
+import org.apache.directory.server.core.integ.ApacheDSTestExtension;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.MemoryRoleService;
 import org.geoserver.security.impl.MemoryRoleStore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -39,7 +39,7 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
         authProvider = (LDAPAuthenticationProvider) securityProvider.createAuthenticationProvider(config);
     }
 
-    @RunWith(FrameworkRunner.class)
+    @ExtendWith(ApacheDSTestExtension.class)
     @CreateLdapServer(
             transports = {@CreateTransport(protocol = "LDAP", address = "localhost")},
             allowAnonymousAccess = true)
@@ -264,7 +264,7 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
         }
     }
 
-    @RunWith(FrameworkRunner.class)
+    @ExtendWith(ApacheDSTestExtension.class)
     @CreateLdapServer(
             transports = {@CreateTransport(protocol = "LDAP", address = "localhost")},
             allowAnonymousAccess = true)

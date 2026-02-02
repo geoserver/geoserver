@@ -28,6 +28,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.wfs.WFSInfo;
+import org.geoserver.wms.GetMapTest;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.featureinfo.GML2FeatureInfoOutputFormat;
@@ -36,7 +37,6 @@ import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
 import org.geoserver.wms.featureinfo.TextFeatureInfoOutputFormat;
 import org.geoserver.wms.featureinfo.XML2FeatureInfoOutputFormat;
 import org.geoserver.wms.featureinfo.XML311FeatureInfoOutputFormat;
-import org.geoserver.wms.wms_1_3.GetMapIntegrationTest;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.style.FeatureTypeStyle;
@@ -128,7 +128,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
                 propertyMap,
                 SystemTestData.class,
                 catalog);
-        testData.addRasterLayer(CUSTOM, "custom.zip", null, propertyMap, GetFeatureInfoTest.class, catalog);
+        testData.addRasterLayer(CUSTOM, "custom.zip", null, propertyMap, GetMapTest.class, catalog);
         testData.addRasterLayer(TIMESERIES, "timeseries.zip", null, null, SystemTestData.class, catalog);
         setupRasterDimension(TIMESERIES, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
 
@@ -186,7 +186,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
 
         // add global rain and style
         testData.addRasterLayer(RAIN, "rain.zip", "asc", getCatalog());
-        testData.addStyle(RAIN_RT_STYLE, "filteredRain.sld", GetMapIntegrationTest.class, catalog);
+        testData.addStyle(RAIN_RT_STYLE, "filteredRain.sld", GetMapTest.class, catalog);
         testData.addStyle(RAIN_RT_2_STYLE, "filteredRain2.sld", GetFeatureInfoTest.class, catalog);
         testData.addStyle(RAIN_RT_3_STYLE, "filteredRain3.sld", GetFeatureInfoTest.class, catalog);
         testData.addStyle(RAIN_CONTOUR_STYLE, "rainContour.sld", GetFeatureInfoTest.class, catalog);

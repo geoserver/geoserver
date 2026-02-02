@@ -97,6 +97,17 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wms1_3</artifactId>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wfs1_x</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-iau-wkt</artifactId>
       <scope>test</scope>
@@ -133,6 +144,16 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wms1_1</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wms1_3</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

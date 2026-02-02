@@ -1,0 +1,48 @@
+<!--
+Copyright (C) 2025 Open Source Geospatial Foundation. All rights reserved.
+This code is licensed under the GPL 2.0 license, available at the root
+application directory.
+-->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+    <bean id="wms-1_1_1-ServiceDescriptor" class="org.geoserver.platform.Service">
+        <constructor-arg index="0" value="wms"/>
+        <constructor-arg index="1" ref="wmsService2"/>
+        <constructor-arg index="2" value="1.1.1"/>
+        <constructor-arg index="3">
+            <list>
+                <value>Capabilities</value>
+                <value>GetCapabilities</value>
+                <value>DescribeLayer</value>
+                <value>GetFeatureInfo</value>
+                <value>GetLegendGraphic</value>
+                <value>GetMap</value>
+                <value>Map</value>
+                <value>reflect</value>
+                <value>kml</value>
+                <value>GetStyles</value>
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <!-- service exception handler -->
+    <bean id="wms11ExceptionHandler" class="org.geoserver.wms.WMSServiceExceptionHandler">
+        <constructor-arg>
+            <list>
+                <ref bean="wms-1_1_1-ServiceDescriptor"/>
+            </list>
+        </constructor-arg>
+        <constructor-arg ref="geoServer"/>
+    </bean>
+
+    <bean id="wms_1_1_1_GetCapabilitiesResponse"
+          class="org.geoserver.wms.capabilities.GetCapabilitiesResponse">
+        <constructor-arg ref="wms"/>
+    </bean>
+
+    <bean id="wms_1_1_1_capabilitiesTransformerFactory"
+          class="org.geoserver.wms.capabilities.GetCapabilitiesTransformerFactory11">
+        <constructor-arg ref="wms"/>
+    </bean>
+</beans>

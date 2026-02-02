@@ -82,8 +82,7 @@ public class RasterAttributeTableVisitorTest {
 
     @Test
     public void testNoPAMDataset() throws Exception {
-        GeoTiffReader reader =
-                new GeoTiffReader(new File("./src/test/resources/org/geoserver/wms/wms_1_1_1/tazbm.tiff"));
+        GeoTiffReader reader = new GeoTiffReader(new File("./src/test/resources/org/geoserver/wms/tazbm.tiff"));
         try {
             RasterAttributeTableVisitor visitor = new RasterAttributeTableVisitor(1000, "tazbm", reader);
             getRatStyle().accept(visitor);

@@ -113,7 +113,7 @@ public class ServiceAccessRuleDAO extends AbstractAccessRuleDAO<ServiceAccessRul
     /** Turns the rules list into a property bag */
     @Override
     protected Properties toProperties() {
-        LinkedProperties props = new LinkedProperties();
+        SortedProperties props = new SortedProperties();
         for (ServiceAccessRule rule : rules) {
             props.put(rule.getKey(), rule.getValue());
         }

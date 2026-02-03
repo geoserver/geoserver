@@ -26,7 +26,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.CatalogMode;
-import org.geoserver.util.LinkedProperties;
+import org.geoserver.util.SortedProperties;
 import org.geotools.feature.NameImpl;
 import org.geotools.util.logging.Logging;
 
@@ -198,7 +198,7 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
     /** Turns the rules list into a property bag */
     @Override
     protected Properties toProperties() {
-        LinkedProperties props = new LinkedProperties();
+        SortedProperties props = new SortedProperties();
         props.put(KEY_MODE, catalogMode.toString());
         if (filesystemSandbox != null) {
             props.put(KEY_SANDBOX, filesystemSandbox);

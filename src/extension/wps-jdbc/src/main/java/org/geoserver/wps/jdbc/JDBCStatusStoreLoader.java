@@ -16,7 +16,7 @@ import org.apache.commons.io.IOUtils;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
-import org.geoserver.util.LinkedProperties;
+import org.geoserver.util.SortedProperties;
 import org.geotools.api.data.DataStore;
 import org.geotools.api.data.DataStoreFinder;
 import org.geotools.data.DataUtilities;
@@ -81,7 +81,7 @@ public class JDBCStatusStoreLoader implements DisposableBean {
         }
 
         try (OutputStream os = resource.out()) {
-            LinkedProperties sortedProps = new LinkedProperties();
+            SortedProperties sortedProps = new SortedProperties();
             sortedProps.putAll(props);
             sortedProps.store(os, "saved by GeoServer @" + new Date());
         }

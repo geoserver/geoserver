@@ -116,9 +116,17 @@ public abstract class AbstractSortedProperties extends Properties {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        AbstractSortedProperties that = (AbstractSortedProperties) o;
-        return linkMap.equals(that.linkMap);
+        if (o == null) return false;
+        if (!(o instanceof java.util.Properties props)) return false;
+        // compare as property key/value pairs regardless of concrete implementation
+        if (props.size() != this.size()) return false;
+        for (Map.Entry<Object, Object> e : linkMap.entrySet()) {
+            Object key = e.getKey();
+            Object val = e.getValue();
+            Object otherVal = props.get(key);
+            if (!java.util.Objects.equals(val, otherVal)) return false;
+        }
+        return true;
     }
 
     @Override

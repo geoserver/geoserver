@@ -26,7 +26,6 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.PropertyFileWatcher;
 import org.geoserver.util.IOUtils;
-import org.geoserver.util.SortedProperties;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.referencing.CRS;
@@ -71,7 +70,7 @@ public class MonitorConfig implements GeoServerPluginConfigurator, ApplicationCo
     static final String DNS_CACHE_DEFAULT = "expireAfterWrite=15m,maximumSize=1000";
 
     public MonitorConfig() {
-        props = new SortedProperties();
+        props = new org.geoserver.util.LinkedProperties();
         props.put("storage", "memory");
         props.put("mode", "history");
         props.put("maxBodySize", "1024");

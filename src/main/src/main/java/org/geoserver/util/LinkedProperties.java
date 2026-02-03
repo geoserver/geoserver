@@ -127,14 +127,11 @@ public class LinkedProperties extends AbstractSortedProperties {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        LinkedProperties that = (LinkedProperties) o;
-        return Objects.equals(linkMap, that.linkMap);
+        return super.equals(o);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), linkMap);
+        return super.hashCode();
     }
 }

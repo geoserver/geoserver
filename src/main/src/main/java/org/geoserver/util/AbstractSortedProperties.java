@@ -1,4 +1,4 @@
-/* (c) 2025 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2026 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -6,43 +6,31 @@ package org.geoserver.util;
 
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 
 /**
- * A Properties subclass that maintains insertion order using a {@link java.util.LinkedHashMap}. LinkedProperties is
- * insertion-order in-memory and will write properties in insertion order when stored. Use {@link SortedProperties} when
- * deterministic alphabetical ordering is required (written alphabetically).
- *
- * <p>Examples:
- *
- * <pre>
- * // Insertion-order: LinkedProperties
- * LinkedProperties props = new LinkedProperties();
- * props.setProperty("zebra", "last");
- * props.setProperty("alpha", "first");
- * props.store(out, null);  // Writes: zebra=last, alpha=first (in insertion order)
- *
- * // Alphabetical: SortedProperties
- * SortedProperties sorted = new SortedProperties();
- * sorted.setProperty("zebra", "last");
- * sorted.setProperty("alpha", "first");
- * sorted.store(out, null);  // Writes: alpha=first, zebra=last (alphabetical)
- * </pre>
+ * Base class encapsulating common behavior for properties implementations that control in-memory ordering and
+ * write-time sorting.
  */
-public class LinkedProperties extends AbstractSortedProperties {
+public abstract class AbstractSortedProperties extends Properties {
 
     private static final long serialVersionUID = 1L;
 
-    public LinkedProperties() {
-        super(new LinkedHashMap<>());
+    protected final Map<Object, Object> linkMap;
+
+    protected AbstractSortedProperties(Map<Object, Object> backing) {
+        super();
+        this.linkMap = backing;
     }
 
-    public LinkedProperties(Properties defaults) {
-        super(new LinkedHashMap<>(), defaults);
+    protected AbstractSortedProperties(Map<Object, Object> backing, Properties defaults) {
+        super(defaults);
+        this.linkMap = backing;
+        if (defaults != null) {
+            this.linkMap.putAll(defaults);
+        }
     }
 
     @Override
@@ -129,12 +117,12 @@ public class LinkedProperties extends AbstractSortedProperties {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        LinkedProperties that = (LinkedProperties) o;
-        return Objects.equals(linkMap, that.linkMap);
+        AbstractSortedProperties that = (AbstractSortedProperties) o;
+        return linkMap.equals(that.linkMap);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), linkMap);
+        return linkMap.hashCode();
     }
 }

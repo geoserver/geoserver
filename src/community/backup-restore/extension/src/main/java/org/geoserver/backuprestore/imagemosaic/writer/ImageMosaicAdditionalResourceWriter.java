@@ -21,7 +21,7 @@ import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.util.Filter;
-import org.geoserver.util.LinkedProperties;
+import org.geoserver.util.SortedProperties;
 
 /** @author Alessio Fabiani, GeoSolutions */
 public class ImageMosaicAdditionalResourceWriter extends ImageMosaicAdditionalResource
@@ -89,7 +89,7 @@ public class ImageMosaicAdditionalResourceWriter extends ImageMosaicAdditionalRe
         // Populate "Name=<mosaicName>" property into the indexer
         final File indexerFile = new File(targetMosaicBaseFolder.dir(), "indexer.properties");
 
-        LinkedProperties indexerProperties = new LinkedProperties();
+        SortedProperties indexerProperties = new SortedProperties();
 
         if (indexerFile.exists() && indexerFile.canRead()) {
             indexerProperties.load(new FileInputStream(indexerFile));

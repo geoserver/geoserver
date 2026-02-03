@@ -15,7 +15,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Logger;
 import org.apache.commons.io.FilenameUtils;
-import org.geoserver.util.LinkedProperties;
+import org.geoserver.util.SortedProperties;
 import org.geotools.api.data.FeatureWriter;
 import org.geotools.api.data.Transaction;
 import org.geotools.api.feature.simple.SimpleFeature;
@@ -117,7 +117,7 @@ public class MosaicIndex {
 
         // tell image mosaic to use the index file we are creating
         File indexerFile = new File(mosaic.getFile(), "indexer.properties");
-        LinkedProperties indexer = new LinkedProperties();
+        SortedProperties indexer = new SortedProperties();
         indexer.put(Utils.Prop.NAME, mosaic.getName());
         indexer.put(Utils.Prop.INDEX_NAME, mosaic.getName());
         indexer.put(Utils.Prop.USE_EXISTING_SCHEMA, "true");
@@ -164,7 +164,7 @@ public class MosaicIndex {
         // if we have to add the time, do so now
         if (mosaic.getTimeMode() != TimeMode.NONE) {
             File propertyFile = new File(mosaic.getFile(), mosaic.getName() + ".properties");
-            LinkedProperties props = new LinkedProperties();
+            SortedProperties props = new SortedProperties();
             try (FileInputStream fis = new FileInputStream(propertyFile)) {
                 props.load(fis);
             }

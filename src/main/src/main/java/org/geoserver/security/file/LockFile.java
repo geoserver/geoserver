@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.impl.Util;
-import org.geoserver.util.LinkedProperties;
+import org.geoserver.util.SortedProperties;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -90,7 +90,7 @@ public class LockFile {
     /** Write some info into the lock file hostname, ip, user and lock file path */
     protected void writeLockFileContent(Resource lockFile) throws IOException {
 
-        LinkedProperties props = new LinkedProperties();
+        SortedProperties props = new SortedProperties();
         try (OutputStream out = lockFile.out()) {
             props.store(out, "Locking info");
 

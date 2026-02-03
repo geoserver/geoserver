@@ -19,7 +19,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
-import org.geoserver.util.LinkedProperties;
+import org.geoserver.util.SortedProperties;
 import org.geotools.util.logging.Logging;
 
 /**

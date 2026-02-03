@@ -22,7 +22,7 @@ import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
-import org.geoserver.util.LinkedProperties;
+import org.geoserver.util.SortedProperties;
 
 /** @author Alessio Fabiani, GeoSolutions */
 public class ImageMosaicAdditionalResourceReader extends ImageMosaicAdditionalResource
@@ -90,7 +90,7 @@ public class ImageMosaicAdditionalResourceReader extends ImageMosaicAdditionalRe
             // "indexer.properties"
             final File indexerFile = new File(mosaicIndexBase.dir(), "indexer.properties");
 
-            LinkedProperties indexerProperties = new LinkedProperties();
+            SortedProperties indexerProperties = new SortedProperties();
 
             if (indexerFile.exists() && indexerFile.canRead()) {
                 indexerProperties.load(new FileInputStream(indexerFile));
@@ -106,10 +106,10 @@ public class ImageMosaicAdditionalResourceReader extends ImageMosaicAdditionalRe
     private void resolveTemplate(final Resource sourceBackupFolder, final Resource mosaicIndexBase, Resource res)
             throws IOException, FileNotFoundException {
         // Overwrite target .properties file by resolving template placeholders
-        LinkedProperties templateProperties = new LinkedProperties();
+        SortedProperties templateProperties = new SortedProperties();
         templateProperties.load(res.in());
 
-        LinkedProperties resolvedProperties = new LinkedProperties();
+        SortedProperties resolvedProperties = new SortedProperties();
         for (Entry<Object, Object> propEntry : templateProperties.entrySet()) {
             String value = (String) propEntry.getValue();
 

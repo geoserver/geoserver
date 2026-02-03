@@ -64,7 +64,7 @@ public class RESTAccessRuleDAOOrderTest {
     public void testRuleOrderPreservedInProperties() throws IOException {
         // Create LinkedProperties with insertion order
         LinkedProperties props = new LinkedProperties();
-        props.preserveOrder(); // Ensure no sorting
+        // LinkedProperties preserves insertion order; no additional call required
         props.put("/z-last/**;GET", "ROLE_Z");
         props.put("/a-first/**;GET", "ROLE_A");
         props.put("/m-middle/**;GET", "ROLE_M");

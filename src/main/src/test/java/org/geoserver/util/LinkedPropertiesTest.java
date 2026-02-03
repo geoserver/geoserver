@@ -20,7 +20,8 @@ public class LinkedPropertiesTest {
 
     @Test
     public void testDefaultSorting() throws IOException {
-        LinkedProperties props = new LinkedProperties();
+        // SortedProperties is the explicit class for alphabetically-sorted output
+        SortedProperties props = new SortedProperties();
         props.setProperty("zebra", "last");
         props.setProperty("alpha", "first");
         props.setProperty("beta", "second");
@@ -50,7 +51,8 @@ public class LinkedPropertiesTest {
         props.setProperty("beta", "second");
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        props.preserveOrder().store(out, null);
+        // LinkedProperties preserves insertion order by default
+        props.store(out, null);
 
         String content = out.toString(StandardCharsets.ISO_8859_1);
 
@@ -143,15 +145,21 @@ public class LinkedPropertiesTest {
         props.setProperty("z", "1");
         props.setProperty("a", "2");
 
-        // First store: sorted
+        // First store: use SortedProperties for alphabetical sorting
         ByteArrayOutputStream out1 = new ByteArrayOutputStream();
-        props.store(out1, null);
+        SortedProperties sp = new SortedProperties();
+        sp.setProperty("z", "1");
+        sp.setProperty("a", "2");
+        sp.store(out1, null);
         String sorted = out1.toString(StandardCharsets.ISO_8859_1);
         assertTrue(sorted.indexOf("a=") < sorted.indexOf("z="));
 
-        // Second store: preserve order
+        // Second store: insertion-order is the default for LinkedProperties
         ByteArrayOutputStream out2 = new ByteArrayOutputStream();
-        props.preserveOrder().store(out2, null);
+        LinkedProperties lp = new LinkedProperties();
+        lp.setProperty("z", "1");
+        lp.setProperty("a", "2");
+        lp.store(out2, null);
         String ordered = out2.toString(StandardCharsets.ISO_8859_1);
         assertTrue(ordered.indexOf("z=") < ordered.indexOf("a="));
     }
@@ -199,7 +207,7 @@ public class LinkedPropertiesTest {
         props.setProperty("mrule", "VALUE_M");
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        props.preserveOrder().store(out, "Test Order");
+        props.store(out, "Test Order");
 
         String content = out.toString(StandardCharsets.ISO_8859_1);
 

@@ -71,6 +71,8 @@ public class KeyCloakIntegrationTestSupport extends GeoServerWicketTestSupport {
         LOGGER.info("Docker available - starting Keycloak container");
 
         // Construct the container only after the assumption passes
+        // Note: Do NOT use .useTls() as the self-signed certificate will cause
+        // SSL validation failures when GeoServer tries to exchange tokens or fetch JWKS
         keycloakContainer = new KeycloakContainer("quay.io/keycloak/keycloak:26.1")
                 // Import realms into the default Keycloak import directory
                 .withCopyToContainer(

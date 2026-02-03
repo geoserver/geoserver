@@ -38,11 +38,10 @@ import org.junit.Test;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.context.request.RequestContextListener;
 
 /**
@@ -296,18 +295,18 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
         String shortenedRedirectCodeToGS = redirectCodeToGS.substring("http://localhost:8080/geoserver/".length());
         MockHttpServletRequest webRequest = createRequest(shortenedRedirectCodeToGS);
         webRequest.setSession(session);
-        // execute on security filters (response result is unused)
-        executeOnSecurityFilters(webRequest);
 
-        // get security context (Spring Security 6 style)
-        HttpSessionSecurityContextRepository repo = new HttpSessionSecurityContextRepository();
-        SecurityContext securityContext = repo.loadDeferredContext(webRequest).get(); // lazily resolves from session
+        // Capture authentication during filter chain execution (Spring Security 6 requirement)
+        // The SecurityContext is only in SecurityContextHolder during request processing
+        java.util.concurrent.atomic.AtomicReference<Authentication> authRef =
+                new java.util.concurrent.atomic.AtomicReference<>();
+        executeOnSecurityFiltersCapturingAuth(webRequest, authRef);
 
-        assertNotNull(securityContext);
-        assertNotNull(securityContext.getAuthentication());
-        assertTrue(securityContext.getAuthentication() instanceof OAuth2AuthenticationToken);
+        Authentication auth = authRef.get();
+        assertNotNull(auth);
+        assertTrue(auth instanceof OAuth2AuthenticationToken);
 
-        return (OAuth2AuthenticationToken) securityContext.getAuthentication();
+        return (OAuth2AuthenticationToken) auth;
     }
 
     /**
@@ -365,6 +364,43 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
         new RequestContextListener().requestInitialized(new ServletRequestEvent(request.getServletContext(), request));
 
         MockFilterChain chain = new MockFilterChain();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        GeoServerSecurityFilterChainProxy filterChainProxy =
+                GeoServerExtensions.bean(GeoServerSecurityFilterChainProxy.class);
+        filterChainProxy.doFilter(request, response, chain);
+
+        return response;
+    }
+
+    /**
+     * Execute a web request on the security filters, capturing the Authentication during filter chain execution. In
+     * Spring Security 6, the SecurityContext is only in SecurityContextHolder during request processing and may not be
+     * saved to the session automatically. This method captures it during execution using a terminal servlet.
+     *
+     * @param request request to execute
+     * @param authRef AtomicReference to store the captured Authentication
+     * @return response from GS
+     * @throws IOException error occurred
+     * @throws jakarta.servlet.ServletException error occurred
+     */
+    private MockHttpServletResponse executeOnSecurityFiltersCapturingAuth(
+            MockHttpServletRequest request, java.util.concurrent.atomic.AtomicReference<Authentication> authRef)
+            throws IOException, jakarta.servlet.ServletException {
+        // for session local support in Spring
+        new RequestContextListener().requestInitialized(new ServletRequestEvent(request.getServletContext(), request));
+
+        // Use a terminal servlet to capture the authentication from SecurityContextHolder
+        // during filter chain execution (before it gets cleared)
+        jakarta.servlet.http.HttpServlet terminal = new jakarta.servlet.http.HttpServlet() {
+            @Override
+            protected void service(
+                    jakarta.servlet.http.HttpServletRequest req, jakarta.servlet.http.HttpServletResponse resp) {
+                authRef.set(org.springframework.security.core.context.SecurityContextHolder.getContext()
+                        .getAuthentication());
+            }
+        };
+
+        MockFilterChain chain = new MockFilterChain(terminal);
         MockHttpServletResponse response = new MockHttpServletResponse();
         GeoServerSecurityFilterChainProxy filterChainProxy =
                 GeoServerExtensions.bean(GeoServerSecurityFilterChainProxy.class);

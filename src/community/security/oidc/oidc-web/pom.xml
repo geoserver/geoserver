@@ -68,7 +68,7 @@
     <dependency>
       <groupId>com.github.dasniko</groupId>
       <artifactId>testcontainers-keycloak</artifactId>
-      <version>3.8.0</version>
+      <version>4.1.1</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>

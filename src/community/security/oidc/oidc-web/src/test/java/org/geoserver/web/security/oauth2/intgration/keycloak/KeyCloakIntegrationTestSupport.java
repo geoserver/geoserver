@@ -6,7 +6,9 @@ package org.geoserver.web.security.oauth2.intgration.keycloak;
 
 import dasniko.testcontainers.keycloak.KeycloakContainer;
 import java.io.IOException;
+import java.util.logging.Logger;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geotools.util.logging.Logging;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assume;
@@ -32,6 +34,8 @@ import org.testcontainers.utility.MountableFile;
  */
 public class KeyCloakIntegrationTestSupport extends GeoServerWicketTestSupport {
 
+    private static final Logger LOGGER = Logging.getLogger(KeyCloakIntegrationTestSupport.class);
+
     /** Base URL for the Keycloak container (e.g., http://localhost:RANDOM_PORT). */
     static String authServerUrl;
 
@@ -56,10 +60,15 @@ public class KeyCloakIntegrationTestSupport extends GeoServerWicketTestSupport {
 
     @BeforeClass
     public static void beforeAll() throws IOException, InterruptedException {
+        LOGGER.info("KeyCloakIntegrationTestSupport.beforeAll() STARTING");
+
         // Skip entire class when Docker/Testcontainers is not usable
         if (!dockerAvailable()) {
+            LOGGER.info("Docker NOT available - skipping tests");
             Assume.assumeTrue("Skipping Keycloak integration tests: Docker not available", false);
         }
+
+        LOGGER.info("Docker available - starting Keycloak container");
 
         // Construct the container only after the assumption passes
         keycloakContainer = new KeycloakContainer("quay.io/keycloak/keycloak:26.1")
@@ -76,8 +85,10 @@ public class KeyCloakIntegrationTestSupport extends GeoServerWicketTestSupport {
                 // Keep debug logging (use `docker logs <container>` for details)
                 .withCustomCommand("--log-level=DEBUG");
 
+        LOGGER.info("Calling keycloakContainer.start()");
         keycloakContainer.start();
         authServerUrl = keycloakContainer.getAuthServerUrl();
+        LOGGER.info("Keycloak started at: " + authServerUrl);
     }
 
     @AfterClass

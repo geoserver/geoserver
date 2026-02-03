@@ -140,11 +140,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
 
         // If callers return a concrete LinkedProperties or SortedProperties, preserve that behavior.
         // Otherwise default to alphabetical ordering (SortedProperties) for deterministic diffs/merges.
-        if (p instanceof LinkedProperties) {
-            // insertion-order preserved as provided
-        } else if (p instanceof SortedProperties) {
-            // alphabetical ordering preserved as provided
-        } else {
+        if (!(p instanceof LinkedProperties) && !(p instanceof SortedProperties)) {
             SortedProperties sp = new SortedProperties();
             sp.putAll(p);
             p = sp;

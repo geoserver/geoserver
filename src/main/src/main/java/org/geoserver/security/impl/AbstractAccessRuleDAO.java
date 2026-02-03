@@ -29,6 +29,7 @@ import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.security.PropertyFileWatcher;
 import org.geoserver.util.IOUtils;
 import org.geoserver.util.LinkedProperties;
+import org.geoserver.util.SortedProperties;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -137,10 +138,21 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
         // turn back the rules into a properties map
         Properties p = toProperties();
 
-        // For order-dependent DAOs (like REST), preserve order
-        // For others, allow alphabetical sorting (default behavior)
-        if (p instanceof LinkedProperties && preservePropertyOrder()) {
-            ((LinkedProperties) p).preserveOrder();
+        // Normalize properties according to preservePropertyOrder():
+        // - If order must be preserved, ensure we use LinkedProperties (insertion-order backing)
+        // - Otherwise, ensure SortedProperties so we write alphabetically
+        if (preservePropertyOrder()) {
+            if (!(p instanceof LinkedProperties)) {
+                LinkedProperties lp = new LinkedProperties();
+                lp.putAll(p);
+                p = lp;
+            }
+        } else {
+            if (!(p instanceof SortedProperties)) {
+                SortedProperties sp = new SortedProperties();
+                sp.putAll(p);
+                p = sp;
+            }
         }
 
         // write out to the data dir

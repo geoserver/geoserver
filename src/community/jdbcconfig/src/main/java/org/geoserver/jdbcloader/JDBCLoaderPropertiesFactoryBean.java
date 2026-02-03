@@ -211,7 +211,7 @@ public abstract class JDBCLoaderPropertiesFactoryBean extends PropertiesFactoryB
         try {
             OutputStream out = propFile.out();
             try {
-                org.geoserver.util.LinkedProperties sortedConfig = new org.geoserver.util.LinkedProperties();
+                org.geoserver.util.SortedProperties sortedConfig = new org.geoserver.util.SortedProperties();
                 sortedConfig.putAll(config);
                 sortedConfig.store(out, comment);
             } finally {

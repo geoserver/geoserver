@@ -51,16 +51,6 @@ public class RESTAccessRuleDAOOrderTest {
     }
 
     @Test
-    public void testPreserveOrderFlagIsTrue() throws IOException {
-        GeoServerDataDirectory dd = EasyMock.mock(GeoServerDataDirectory.class);
-        Properties props = new Properties();
-        MemoryRESTAccessRuleDAO dao = new MemoryRESTAccessRuleDAO(dd, props);
-
-        // Verify that RESTAccessRuleDAO has preservePropertyOrder set to true
-        assertTrue("RESTAccessRuleDAO should preserve property order", dao.preservePropertyOrder());
-    }
-
-    @Test
     public void testRuleOrderPreservedInProperties() throws IOException {
         // Create LinkedProperties with insertion order
         LinkedProperties props = new LinkedProperties();

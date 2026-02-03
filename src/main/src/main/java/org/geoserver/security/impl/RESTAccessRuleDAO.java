@@ -57,11 +57,6 @@ public class RESTAccessRuleDAO extends AbstractAccessRuleDAO<String> {
     }
 
     @Override
-    protected boolean preservePropertyOrder() {
-        return true; // REST rules are order-dependent
-    }
-
-    @Override
     protected LinkedProperties toProperties() {
         LinkedProperties props = new LinkedProperties();
         for (String rule : rules) {

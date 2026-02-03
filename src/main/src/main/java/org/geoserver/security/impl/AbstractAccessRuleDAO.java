@@ -137,21 +137,16 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
         // turn back the rules into a properties map
         Properties p = toProperties();
 
-        // Normalize properties according to preservePropertyOrder():
-        // - If order must be preserved, ensure we use LinkedProperties (insertion-order backing)
-        // - Otherwise, ensure SortedProperties so we write alphabetically
-        if (preservePropertyOrder()) {
-            if (!(p instanceof LinkedProperties)) {
-                LinkedProperties lp = new LinkedProperties();
-                lp.putAll(p);
-                p = lp;
-            }
+        // If callers return a concrete LinkedProperties or SortedProperties, preserve that behavior.
+        // Otherwise default to alphabetical ordering (SortedProperties) for deterministic diffs/merges.
+        if (p instanceof LinkedProperties) {
+            // insertion-order preserved as provided
+        } else if (p instanceof SortedProperties) {
+            // alphabetical ordering preserved as provided
         } else {
-            if (!(p instanceof SortedProperties)) {
-                SortedProperties sp = new SortedProperties();
-                sp.putAll(p);
-                p = sp;
-            }
+            SortedProperties sp = new SortedProperties();
+            sp.putAll(p);
+            p = sp;
         }
 
         // write out to the data dir
@@ -165,16 +160,6 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
             if (e instanceof IOException) throw (IOException) e;
             else throw new IOException("Could not write rules to " + propertyFileName, e);
         }
-    }
-
-    /**
-     * Indicates whether the order of properties in the file matters. When true, properties are written in insertion
-     * order. When false (default), properties are sorted alphabetically for easier diff/merge.
-     *
-     * @return true if property order has semantic meaning, false otherwise
-     */
-    protected boolean preservePropertyOrder() {
-        return false; // Default: allow alphabetical sorting
     }
 
     /** Checks the property file is up-to-date, eventually rebuilds the tree */

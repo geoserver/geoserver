@@ -17,6 +17,8 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -33,6 +35,7 @@ import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginAuthenticationFilter;
 import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig;
 import org.geoserver.web.GeoServerHomePage;
+import org.geotools.util.logging.Logging;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.mock.web.MockFilterChain;
@@ -78,6 +81,8 @@ import org.springframework.web.context.request.RequestContextListener;
  * more information on how to change the keycloak configuration.
  */
 public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
+
+    private static final Logger LOGGER = Logging.getLogger(KeyCloakIntegrationTest.class);
 
     // these are what's expected in the GS->OIDC IDP redirect URL
     String oidcLogin_responseType = "code";
@@ -186,13 +191,13 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
     public OAuth2AuthenticationToken login(String keycloakUserName, String keycloakPassword) throws Exception {
         // First verify Keycloak is accessible
         String discoveryUrl = authServerUrl + "/realms/gs-realm/.well-known/openid-configuration";
-        System.err.println("DEBUG: Verifying Keycloak accessible at: " + discoveryUrl);
+        LOGGER.fine("Verifying Keycloak accessible at: " + discoveryUrl);
         WebRequests.WebResponse discoveryResponse = WebRequests.webRequestGET(discoveryUrl);
-        System.err.println("DEBUG: Discovery endpoint status: " + discoveryResponse.statusCode);
+        LOGGER.fine("Discovery endpoint status: " + discoveryResponse.statusCode);
         if (discoveryResponse.statusCode != 200) {
-            System.err.println("DEBUG: Discovery response body: " + discoveryResponse.body);
-            System.err.println("DEBUG: authServerUrl = " + authServerUrl);
-            System.err.println("DEBUG: keycloakContainer running = " + (keycloakContainer != null && keycloakContainer.isRunning()));
+            LOGGER.warning("Discovery response body: " + discoveryResponse.body);
+            LOGGER.warning("authServerUrl = " + authServerUrl);
+            LOGGER.warning("keycloakContainer running = " + (keycloakContainer != null && keycloakContainer.isRunning()));
         }
         assertEquals("Keycloak discovery endpoint should be accessible", 200, discoveryResponse.statusCode);
 
@@ -211,9 +216,9 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
         // Debug: Check if OAuth2AuthorizationRequest was stored in session
         Object storedAuthRequest = session.getAttribute(
                 "org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository.AUTHORIZATION_REQUEST");
-        System.err.println("DEBUG: After initial redirect - stored OAuth2AuthorizationRequest: " + storedAuthRequest);
-        System.err.println("DEBUG: Session ID: " + session.getId());
-        System.err.println("DEBUG: Redirect Location: " + webResponse.getHeader("Location"));
+        LOGGER.fine("After initial redirect - stored OAuth2AuthorizationRequest: " + storedAuthRequest);
+        LOGGER.fine("Session ID: " + session.getId());
+        LOGGER.fine("Redirect Location: " + webResponse.getHeader("Location"));
 
         // should be a 302 redirect to keycloak to start the login process
         // Extract state, nonce, and PKCE code_challenge from the redirect URL
@@ -325,9 +330,9 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
         // send request to keycloak using the manually-built URL with PKCE support
         WebRequests.WebResponse startKeyCloakResponse = executeKeycloakStartUrl(
                 oidcLoginState, oidcLoginNonce, codeChallenge, codeChallengeMethod);
-        System.err.println("DEBUG: Keycloak response status: " + startKeyCloakResponse.statusCode);
+        LOGGER.fine("Keycloak response status: " + startKeyCloakResponse.statusCode);
         if (startKeyCloakResponse.statusCode != 200) {
-            System.err.println("DEBUG: Keycloak response body: " + startKeyCloakResponse.body);
+            LOGGER.warning("Keycloak response body: " + startKeyCloakResponse.body);
         }
         assertEquals(200, startKeyCloakResponse.statusCode);
 
@@ -357,10 +362,10 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
         webRequest.setSession(session);
 
         // Debug: Check session state before code exchange
-        System.err.println("DEBUG: Before code exchange - Session ID: " + session.getId());
+        LOGGER.fine("Before code exchange - Session ID: " + session.getId());
         Object storedAuthRequestBefore = session.getAttribute(
                 "org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository.AUTHORIZATION_REQUEST");
-        System.err.println("DEBUG: Before code exchange - stored OAuth2AuthorizationRequest: " + storedAuthRequestBefore);
+        LOGGER.fine("Before code exchange - stored OAuth2AuthorizationRequest: " + storedAuthRequestBefore);
 
         // Set the query string and parse parameters
         if (queryString != null) {
@@ -402,28 +407,28 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
 
         // Debug output if still failing
         if (auth == null) {
-            System.err.println("DEBUG: Authentication is NULL after code exchange");
-            System.err.println("DEBUG: Response status: " + codeResponse.getStatus());
-            System.err.println("DEBUG: Response location: " + codeResponse.getHeader("Location"));
+            LOGGER.warning("Authentication is NULL after code exchange");
+            LOGGER.warning("Response status: " + codeResponse.getStatus());
+            LOGGER.warning("Response location: " + codeResponse.getHeader("Location"));
 
             // Check for OAuth2 authentication exception stored in session
             Object authException = session.getAttribute(
                     "SPRING_SECURITY_LAST_EXCEPTION");
             if (authException != null) {
-                System.err.println("DEBUG: Authentication Exception: " + authException);
+                LOGGER.warning("Authentication Exception: " + authException);
                 if (authException instanceof Throwable) {
-                    ((Throwable) authException).printStackTrace(System.err);
+                    LOGGER.log(Level.WARNING, "Authentication exception details", (Throwable) authException);
                 }
             }
 
             // Also check for OAuth2AuthorizationRequest to verify state was stored
             Object authRequest = session.getAttribute(
                     "org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository.AUTHORIZATION_REQUEST");
-            System.err.println("DEBUG: Stored OAuth2AuthorizationRequest: " + authRequest);
+            LOGGER.warning("Stored OAuth2AuthorizationRequest: " + authRequest);
         } else if (!(auth instanceof OAuth2AuthenticationToken)) {
-            System.err.println("DEBUG: Authentication type: " + auth.getClass().getName());
-            System.err.println("DEBUG: Authentication principal: " + auth.getPrincipal());
-            System.err.println("DEBUG: Is authenticated: " + auth.isAuthenticated());
+            LOGGER.fine("Authentication type: " + auth.getClass().getName());
+            LOGGER.fine("Authentication principal: " + auth.getPrincipal());
+            LOGGER.fine("Is authenticated: " + auth.isAuthenticated());
         }
 
         assertNotNull("Authentication should not be null after OAuth2 code exchange", auth);
@@ -479,7 +484,7 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
             startUrl += "&code_challenge=" + codeChallenge;
             startUrl += "&code_challenge_method=" + (codeChallengeMethod != null ? codeChallengeMethod : "S256");
         }
-        System.err.println("DEBUG: Calling Keycloak URL: " + startUrl);
+        LOGGER.fine("Calling Keycloak URL: " + startUrl);
         return WebRequests.webRequestGET(startUrl);
     }
 

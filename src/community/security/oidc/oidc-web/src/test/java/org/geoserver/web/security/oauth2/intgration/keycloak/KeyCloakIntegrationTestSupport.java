@@ -84,9 +84,8 @@ public class KeyCloakIntegrationTestSupport extends GeoServerWicketTestSupport {
                             MountableFile.forClasspathResource(
                                     "org/geoserver/web/security/oauth2/login/keycloak/gs-realm-realm.json"),
                             "/opt/keycloak/data/import/gs-realm-realm.json")
-                    .withVerboseOutput()
-                    // Keep debug logging (use `docker logs <container>` for details)
-                    .withCustomCommand("--log-level=DEBUG");
+                    // Use INFO logging level to avoid memory issues from verbose output
+                    .withCustomCommand("--log-level=INFO");
 
             LOGGER.info("Calling keycloakContainer.start()");
             keycloakContainer.start();

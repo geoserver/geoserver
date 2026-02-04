@@ -197,7 +197,8 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
         if (discoveryResponse.statusCode != 200) {
             LOGGER.warning("Discovery response body: " + discoveryResponse.body);
             LOGGER.warning("authServerUrl = " + authServerUrl);
-            LOGGER.warning("keycloakContainer running = " + (keycloakContainer != null && keycloakContainer.isRunning()));
+            LOGGER.warning(
+                    "keycloakContainer running = " + (keycloakContainer != null && keycloakContainer.isRunning()));
         }
         assertEquals("Keycloak discovery endpoint should be accessible", 200, discoveryResponse.statusCode);
 
@@ -244,8 +245,14 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
                     .orElse(null);
         }
 
-        return keycloakLogin(session, oidcLogin_state, oidcLogin_nonce, codeChallenge, codeChallengeMethod,
-                keycloakUserName, keycloakPassword);
+        return keycloakLogin(
+                session,
+                oidcLogin_state,
+                oidcLogin_nonce,
+                codeChallenge,
+                codeChallengeMethod,
+                keycloakUserName,
+                keycloakPassword);
     }
 
     /**
@@ -323,13 +330,17 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
      * @throws Exception error occurred
      */
     private OAuth2AuthenticationToken keycloakLogin(
-            HttpSession session, String oidcLoginState, String oidcLoginNonce,
-            String codeChallenge, String codeChallengeMethod,
-            String username, String password)
+            HttpSession session,
+            String oidcLoginState,
+            String oidcLoginNonce,
+            String codeChallenge,
+            String codeChallengeMethod,
+            String username,
+            String password)
             throws Exception {
         // send request to keycloak using the manually-built URL with PKCE support
-        WebRequests.WebResponse startKeyCloakResponse = executeKeycloakStartUrl(
-                oidcLoginState, oidcLoginNonce, codeChallenge, codeChallengeMethod);
+        WebRequests.WebResponse startKeyCloakResponse =
+                executeKeycloakStartUrl(oidcLoginState, oidcLoginNonce, codeChallenge, codeChallengeMethod);
         LOGGER.fine("Keycloak response status: " + startKeyCloakResponse.statusCode);
         if (startKeyCloakResponse.statusCode != 200) {
             LOGGER.warning("Keycloak response body: " + startKeyCloakResponse.body);
@@ -412,8 +423,7 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
             LOGGER.warning("Response location: " + codeResponse.getHeader("Location"));
 
             // Check for OAuth2 authentication exception stored in session
-            Object authException = session.getAttribute(
-                    "SPRING_SECURITY_LAST_EXCEPTION");
+            Object authException = session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION");
             if (authException != null) {
                 LOGGER.warning("Authentication Exception: " + authException);
                 if (authException instanceof Throwable) {
@@ -432,7 +442,9 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
         }
 
         assertNotNull("Authentication should not be null after OAuth2 code exchange", auth);
-        assertTrue("Should be OAuth2AuthenticationToken but was: " + (auth != null ? auth.getClass().getName() : "null"),
+        assertTrue(
+                "Should be OAuth2AuthenticationToken but was: "
+                        + (auth != null ? auth.getClass().getName() : "null"),
                 auth instanceof OAuth2AuthenticationToken);
 
         return (OAuth2AuthenticationToken) auth;
@@ -469,8 +481,8 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
      * @return response from keycloak (i.e. the login form)
      * @throws Exception error occurred
      */
-    public WebRequests.WebResponse executeKeycloakStartUrl(String oidcLoginState, String oidcLoginNonce,
-            String codeChallenge, String codeChallengeMethod)
+    public WebRequests.WebResponse executeKeycloakStartUrl(
+            String oidcLoginState, String oidcLoginNonce, String codeChallenge, String codeChallengeMethod)
             throws Exception {
         String startUrl = authServerUrl + "/realms/gs-realm/protocol/openid-connect/auth?";
         startUrl += "client_id=" + oidcLogin_client_id;

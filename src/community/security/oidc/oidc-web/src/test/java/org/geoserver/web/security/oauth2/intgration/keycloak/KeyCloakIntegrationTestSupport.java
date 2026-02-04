@@ -94,8 +94,10 @@ public class KeyCloakIntegrationTestSupport extends GeoServerWicketTestSupport {
         } catch (Exception e) {
             // Handle Docker API version mismatch or other container startup failures
             String message = e.getMessage();
-            if (message != null && (message.contains("API version") || message.contains("too old")
-                    || message.contains("client version"))) {
+            if (message != null
+                    && (message.contains("API version")
+                            || message.contains("too old")
+                            || message.contains("client version"))) {
                 LOGGER.warning("Docker API version mismatch - skipping tests: " + message);
                 Assume.assumeTrue("Skipping Keycloak tests: Docker API version incompatible", false);
             }

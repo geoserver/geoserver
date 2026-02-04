@@ -98,8 +98,8 @@
         </exclusion>
         <!-- Exclude old testcontainers to use our explicit version -->
         <exclusion>
-          <groupId>org.testcontainers</groupId>
           <artifactId>testcontainers</artifactId>
+          <groupId>org.testcontainers</groupId>
         </exclusion>
       </exclusions>
     </dependency>

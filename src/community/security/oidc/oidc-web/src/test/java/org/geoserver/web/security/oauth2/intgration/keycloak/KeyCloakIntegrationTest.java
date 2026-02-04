@@ -196,6 +196,13 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
         MockHttpServletResponse webResponse = executeOnSecurityFilters(webRequest);
         HttpSession session = webRequest.getSession();
 
+        // Debug: Check if OAuth2AuthorizationRequest was stored in session
+        Object storedAuthRequest = session.getAttribute(
+                "org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository.AUTHORIZATION_REQUEST");
+        System.err.println("DEBUG: After initial redirect - stored OAuth2AuthorizationRequest: " + storedAuthRequest);
+        System.err.println("DEBUG: Session ID: " + session.getId());
+        System.err.println("DEBUG: Redirect Location: " + webResponse.getHeader("Location"));
+
         // should be a 302 redirect to keycloak to start the login process
         Pair<String, String> state_nonce = validateRedirectToKeyCloak(webResponse);
         String oidcLogin_state = state_nonce.getLeft();
@@ -307,6 +314,12 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
 
         MockHttpServletRequest webRequest = createRequest(path);
         webRequest.setSession(session);
+
+        // Debug: Check session state before code exchange
+        System.err.println("DEBUG: Before code exchange - Session ID: " + session.getId());
+        Object storedAuthRequestBefore = session.getAttribute(
+                "org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository.AUTHORIZATION_REQUEST");
+        System.err.println("DEBUG: Before code exchange - stored OAuth2AuthorizationRequest: " + storedAuthRequestBefore);
 
         // Set the query string and parse parameters
         if (queryString != null) {
@@ -519,6 +532,9 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
 
         filterConfig.setOidcForceAuthorizationUriHttps(false);
         filterConfig.setOidcForceTokenUriHttps(false);
+        // Disable PKCE for testing - the test bypasses GeoServer's authorization redirect
+        // and talks directly to Keycloak, so PKCE code_challenge is never sent
+        filterConfig.setOidcUsePKCE(false);
         // filterConfig.setOidcJwsAlgorithmName(JwsAlgorithms.HS256);
         manager.saveFilter(filterConfig);
 

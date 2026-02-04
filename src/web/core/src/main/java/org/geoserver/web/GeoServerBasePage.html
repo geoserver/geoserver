@@ -10,57 +10,70 @@
 <body>
   <div id="header">
     <div class="wrap">
-      <h2><a wicket:id="home" class="pngfix" href="#"></a></h2>
-      <div class="button-group selfclear">
-
-	      <span wicket:id="loginforms">
-	      	<form class="d-inline-block" wicket:id="loginform" method="post" action="../j_spring_security_check">
-	      		<span wicket:id="login.include"></span>
-	      		<button class="positive icon" type="submit">
-	      			<div><img src="#" wicket:id="link.icon"/><span wicket:id="link.label"></span></div>
-	      		</button>
-	      	</form>
-	      </span>
-
-        <span wicket:id="loginExternalLinks">
-           <a class="d-inline-block" wicket:id="loginform" >
-              <div><img src="#" wicket:id="link.icon"/><span wicket:id="link.label"></span></div>
-           </a>
-	      </span>
-
-	      
-	      <span wicket:id="loggedinasform" class="username"><wicket:message key="loggedInAs">Logged in as</wicket:message> <span wicket:id="loggedInUsername">User von Testenheimer</span>.</span>
-            <a class="d-inline-block" wicket:id="logoutform">
-                    <div><img src="#" wicket:id="link.icon"/><span wicket:id="link.label"></span></div>
-            </a>
-        <span id="localeSwitcher"><wicket:link><img src="img/icons/globe.png"/></wicket:link> <select  wicket:id="localeSwitcher"></select></span>
-      </div>
     </div><!-- /.wrap -->
   </div><!-- /#header -->
   <div id="main">
     <div class="wrap selfclear">
     <div id="sidebar">
-      <div wicket:id="nodeIdContainer"><center wicket:id="nodeId">192.168.1.4</center></div>
-      <ul id="navigation">
-        <li class="navigation-tab" wicket:id="category">
-          <div class="navigation-tab-header">
-            <span wicket:id="category.header">[Category Header]</span>
+      <div id="brand">
+          <a wicket:id="home" id="logo" href="#"></a>
+          <button id="navigation-menu">
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'>
+              <path stroke='currentColor' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22' />
+            </svg>
+          </button>
+      </div>
+      <div id="sidebar-content">
+        <div wicket:id="nodeIdContainer"><center wicket:id="nodeId">192.168.1.4</center></div>
+        <div id="authentication-panel">
+          <div wicket:id="loginforms">
+            <form wicket:id="loginform" method="post" action="../j_spring_security_check">
+              <div wicket:id="login.include" class="authentication-form"></div>
+              <button type="submit">
+                <span wicket:id="link.label"></span>
+              </button>
+            </form>
           </div>
-          <ul class="navigation-tab-content plain">
-            <li class="nav-administer-service" wicket:id="category.links">
-              <a wicket:id="link">
-                <img src="#" wicket:id="link.icon"/><span wicket:id="link.label"></span>
-              </a>
-            </li>
-          </ul>
-        </li>
-        <li class="navigation-tab" wicket:id="standalone">
-          <div class="navigation-tab-single">
-             <a wicket:id="link" href="#"><span wicket:id="link.label">[Link]</span></a>
+          <div wicket:id="loginExternalLinks">
+            <a wicket:id="loginform" >
+                <div><img src="#" wicket:id="link.icon"/><span wicket:id="link.label"></span></div>
+            </a>
           </div>
-        </li>
-      </ul>
-      <div class="devtoolbar" wicket:id="devButtons" title="Developer helper actions. This bar must not be available in releases"></div>
+          <div wicket:id="loggedinasform" class="username">
+            <wicket:message key="loggedInAs">Logged in as</wicket:message>
+            <span wicket:id="loggedInUsername">User von Testenheimer</span>.
+          </div>
+           <a wicket:id="logoutform" class="button outline-primary">
+              <span wicket:id="link.label"></span>
+              <!-- <div><img src="#" wicket:id="link.icon"/><span wicket:id="link.label"></span></div> -->
+            </a>
+        </div>
+        <ul id="navigation">
+          <div id="localeSwitcher">
+            <!-- <wicket:link><img src="img/icons/globe.png"/></wicket:link> -->
+            <select  wicket:id="localeSwitcher"></select>
+          </div>
+          <li class="navigation-tab" wicket:id="category">
+            <div class="navigation-tab-header">
+              <span wicket:id="category.header">[Category Header]</span>
+            </div>
+            <ul class="navigation-tab-content plain">
+              <li class="nav-administer-service" wicket:id="category.links">
+                <a wicket:id="link">
+                  <img src="#" wicket:id="link.icon"/><span wicket:id="link.label"></span>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li class="navigation-tab" wicket:id="standalone">
+            <div class="navigation-tab-single">
+              <a wicket:id="link" href="#"><span wicket:id="link.label">[Link]</span></a>
+            </div>
+          </li>
+        </ul>
+        <div class="devtoolbar" wicket:id="devButtons" title="Developer helper actions. This bar must not be available in releases"></div>
+      </div>
+      
     </div><!-- /#sidebar -->
     <div id="page" class="selfclear">
       <div class="page-header">

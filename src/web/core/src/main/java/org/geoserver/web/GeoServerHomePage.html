@@ -41,12 +41,12 @@
   <h3 wicket:id="serviceCapabilities" />
 
   <div wicket:id="providedCaps">
-    <div wicket:id="capsList" class="flex-display"/>
+    <div wicket:id="capsList" class="service-links"/>
   </div>
 </div>
 
 <wicket:fragment wicket:id="catalogLinksFragment">
-	<table>
+	<!-- <table>
 	 <thead>
 	 <tr>
 	   <th colspan="2"></th>
@@ -76,7 +76,62 @@
 	   </td>
 	   <td><a class="add-link" wicket:id="addWorkspaceLink"><wicket:message key="addWorkspaces">Add new workspaces</wicket:message></a></td>
 	 </tr>
-	</table>
+	</table> -->
+	<div class="catalog-links">
+
+		<div class="catalog-link">
+			<div class="catalog-link-content">
+				<h5>
+					<a wicket:id="layersLink">
+						<span wicket:id="nlayers"></span> <wicket:message key="layers">layers</wicket:message>
+					</a>
+				</h5>
+				<a wicket:id="addLayerLink" class="button outline-primary">
+					<wicket:message key="addLayers">Add new layer</wicket:message>
+				</a>
+			</div>
+		</div>
+
+		<div class="catalog-link">
+			<div class="catalog-link-content">
+				<h5>
+					<a wicket:id="groupsLink">
+						<span wicket:id="ngroups"></span> <wicket:message key="groups">groups</wicket:message>
+					</a>
+				</h5>
+				<a wicket:id="addGroupLink" class="button outline-primary">
+					<wicket:message key="addGroups">Add new layer group</wicket:message>
+				</a>
+			</div>
+		</div>
+
+		<div class="catalog-link">
+			<div class="catalog-link-content">
+				<h5>
+					<a wicket:id="storesLink">
+						<span wicket:id="nstores"></span> <wicket:message key="stores">stores</wicket:message>
+					</a>
+				</h5>
+				<a wicket:id="addStoreLink" class="button outline-primary">
+					<wicket:message key="addStores">Add new store</wicket:message>
+				</a>
+			</div>
+		</div>
+
+		<div class="catalog-link">
+			<div class="catalog-link-content">
+				<h5>
+					<a wicket:id="workspacesLink">
+						<span wicket:id="nworkspaces"></span> <wicket:message key="workspaces">workspaces</wicket:message>
+					</a>
+				</h5>
+				<a wicket:id="addWorkspaceLink" class="button outline-primary">
+					<wicket:message key="addWorkspaces">Add new workspaces</wicket:message>
+				</a>
+			</div>
+		</div>
+
+	</div>
 </wicket:fragment>
 
 <p>

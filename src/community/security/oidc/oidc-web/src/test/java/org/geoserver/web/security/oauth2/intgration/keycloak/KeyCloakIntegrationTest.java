@@ -184,6 +184,18 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
      * @throws Exception error occurred
      */
     public OAuth2AuthenticationToken login(String keycloakUserName, String keycloakPassword) throws Exception {
+        // First verify Keycloak is accessible
+        String discoveryUrl = authServerUrl + "/realms/gs-realm/.well-known/openid-configuration";
+        System.err.println("DEBUG: Verifying Keycloak accessible at: " + discoveryUrl);
+        WebRequests.WebResponse discoveryResponse = WebRequests.webRequestGET(discoveryUrl);
+        System.err.println("DEBUG: Discovery endpoint status: " + discoveryResponse.statusCode);
+        if (discoveryResponse.statusCode != 200) {
+            System.err.println("DEBUG: Discovery response body: " + discoveryResponse.body);
+            System.err.println("DEBUG: authServerUrl = " + authServerUrl);
+            System.err.println("DEBUG: keycloakContainer running = " + (keycloakContainer != null && keycloakContainer.isRunning()));
+        }
+        assertEquals("Keycloak discovery endpoint should be accessible", 200, discoveryResponse.statusCode);
+
         tester.startPage(new GeoServerHomePage());
         String html = tester.getLastResponseAsString();
 
@@ -289,7 +301,12 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
             throws Exception {
         // send request to keycloak using the FULL redirect URL from GeoServer
         // This includes code_challenge for PKCE support
+        System.err.println("DEBUG: Calling Keycloak URL: " + keycloakRedirectUrl);
         WebRequests.WebResponse startKeyCloakResponse = WebRequests.webRequestGET(keycloakRedirectUrl);
+        System.err.println("DEBUG: Keycloak response status: " + startKeyCloakResponse.statusCode);
+        if (startKeyCloakResponse.statusCode != 200) {
+            System.err.println("DEBUG: Keycloak response body: " + startKeyCloakResponse.body);
+        }
         assertEquals(200, startKeyCloakResponse.statusCode);
 
         // send keycloak the completed username/password form

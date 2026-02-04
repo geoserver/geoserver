@@ -293,18 +293,56 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
         assertTrue(redirectCodeToGS.startsWith("http://localhost:8080/geoserver/web/login/oauth2/code/oidc"));
 
         String shortenedRedirectCodeToGS = redirectCodeToGS.substring("http://localhost:8080/geoserver/".length());
-        MockHttpServletRequest webRequest = createRequest(shortenedRedirectCodeToGS);
+
+        // Parse the URL to extract path and query parameters separately
+        String path;
+        String queryString = null;
+        int queryIndex = shortenedRedirectCodeToGS.indexOf('?');
+        if (queryIndex > 0) {
+            path = shortenedRedirectCodeToGS.substring(0, queryIndex);
+            queryString = shortenedRedirectCodeToGS.substring(queryIndex + 1);
+        } else {
+            path = shortenedRedirectCodeToGS;
+        }
+
+        MockHttpServletRequest webRequest = createRequest(path);
         webRequest.setSession(session);
 
-        // Capture authentication during filter chain execution (Spring Security 6 requirement)
-        // The SecurityContext is only in SecurityContextHolder during request processing
+        // Set the query string and parse parameters
+        if (queryString != null) {
+            webRequest.setQueryString(queryString);
+            // Parse query parameters and add them to the request
+            for (String param : queryString.split("&")) {
+                String[] keyValue = param.split("=", 2);
+                if (keyValue.length == 2) {
+                    webRequest.setParameter(
+                            keyValue[0], java.net.URLDecoder.decode(keyValue[1], StandardCharsets.UTF_8));
+                } else if (keyValue.length == 1) {
+                    webRequest.setParameter(keyValue[0], "");
+                }
+            }
+        }
+
+        // Execute the OAuth2 code callback - this will exchange the code for tokens
+        // and save the authentication to the session, then redirect to success URL
+        MockHttpServletResponse codeResponse = executeOnSecurityFilters(webRequest);
+
+        // After successful OAuth2 login, Spring Security redirects to the success URL
+        // The authentication is saved to the session via SecurityContextRepository
+        assertEquals("OAuth2 code exchange should redirect to success URL", 302, codeResponse.getStatus());
+
+        // Now make a follow-up request to verify authentication was saved to session
+        // Use the same session to retrieve the authentication
+        MockHttpServletRequest followUpRequest = createRequest("web/");
+        followUpRequest.setSession(session);
+
         java.util.concurrent.atomic.AtomicReference<Authentication> authRef =
                 new java.util.concurrent.atomic.AtomicReference<>();
-        executeOnSecurityFiltersCapturingAuth(webRequest, authRef);
+        executeOnSecurityFiltersCapturingAuth(followUpRequest, authRef);
 
         Authentication auth = authRef.get();
-        assertNotNull(auth);
-        assertTrue(auth instanceof OAuth2AuthenticationToken);
+        assertNotNull("Authentication should be loaded from session on follow-up request", auth);
+        assertTrue("Should be OAuth2AuthenticationToken", auth instanceof OAuth2AuthenticationToken);
 
         return (OAuth2AuthenticationToken) auth;
     }

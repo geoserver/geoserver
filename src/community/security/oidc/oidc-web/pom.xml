@@ -68,7 +68,7 @@
     <dependency>
       <groupId>com.github.dasniko</groupId>
       <artifactId>testcontainers-keycloak</artifactId>
-      <version>4.1.1</version>
+      <version>4.1.2</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>
@@ -85,6 +85,20 @@
           <groupId>org.keycloak</groupId>
         </exclusion>
       </exclusions>
+    </dependency>
+
+    <!-- Explicit docker-java dependencies for newer Docker API support (1.44+) -->
+    <dependency>
+      <groupId>com.github.docker-java</groupId>
+      <artifactId>docker-java-api</artifactId>
+      <version>3.4.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.docker-java</groupId>
+      <artifactId>docker-java-transport-zerodep</artifactId>
+      <version>3.4.1</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.wicket</groupId>

@@ -351,6 +351,21 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
             System.err.println("DEBUG: Authentication is NULL after code exchange");
             System.err.println("DEBUG: Response status: " + codeResponse.getStatus());
             System.err.println("DEBUG: Response location: " + codeResponse.getHeader("Location"));
+
+            // Check for OAuth2 authentication exception stored in session
+            Object authException = session.getAttribute(
+                    "SPRING_SECURITY_LAST_EXCEPTION");
+            if (authException != null) {
+                System.err.println("DEBUG: Authentication Exception: " + authException);
+                if (authException instanceof Throwable) {
+                    ((Throwable) authException).printStackTrace(System.err);
+                }
+            }
+
+            // Also check for OAuth2AuthorizationRequest to verify state was stored
+            Object authRequest = session.getAttribute(
+                    "org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository.AUTHORIZATION_REQUEST");
+            System.err.println("DEBUG: Stored OAuth2AuthorizationRequest: " + authRequest);
         } else if (!(auth instanceof OAuth2AuthenticationToken)) {
             System.err.println("DEBUG: Authentication type: " + auth.getClass().getName());
             System.err.println("DEBUG: Authentication principal: " + auth.getPrincipal());

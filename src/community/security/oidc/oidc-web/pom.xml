@@ -65,10 +65,23 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- Testcontainers 1.21.4 with Docker API 1.44 support for Docker 29+ -->
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers</artifactId>
+      <version>1.21.4</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>1.21.4</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>com.github.dasniko</groupId>
       <artifactId>testcontainers-keycloak</artifactId>
-      <version>4.1.2</version>
+      <version>3.8.0</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>
@@ -79,10 +92,14 @@
           <artifactId>quarkus-junit4-mock</artifactId>
           <groupId>io.quarkus</groupId>
         </exclusion>
-
         <exclusion>
           <artifactId>keycloak-admin-client</artifactId>
           <groupId>org.keycloak</groupId>
+        </exclusion>
+        <!-- Exclude old testcontainers to use our explicit version -->
+        <exclusion>
+          <groupId>org.testcontainers</groupId>
+          <artifactId>testcontainers</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

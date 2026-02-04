@@ -3,161 +3,41 @@
   <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="${relBaseUrl}/openlayers3/ol.css" type="text/css">
-    <style>
-        .ol-zoom {
-          top: 52px;
-        }
-        .ol-toggle-options {
-          z-index: 1000;
-          background: rgba(255,255,255,0.4);
-          border-radius: 4px;
-          padding: 2px;
-          position: absolute;
-          left: 8px;
-          top: 8px;
-        }
-        #updateFilterButton, #resetFilterButton {
-          height: 22px;
-          width: 22px;
-          text-align: center;
-          text-decoration: none !important;
-          line-height: 22px;
-          margin: 1px;
-          font-family: 'Lucida Grande',Verdana,Geneva,Lucida,Arial,Helvetica,sans-serif;
-          font-weight: bold !important;
-          background: rgba(0,60,136,0.5);
-          color: white !important;
-          padding: 2px;
-        }
-        .ol-toggle-options a {
-          background: rgba(0,60,136,0.5);
-          color: white;
-          display: block;
-          font-family: 'Lucida Grande',Verdana,Geneva,Lucida,Arial,Helvetica,sans-serif;
-          font-size: 19px;
-          font-weight: bold;
-          height: 22px;
-          line-height: 11px;
-          margin: 1px;
-          padding: 0;
-          text-align: center;
-          text-decoration: none;
-          width: 22px;
-          border-radius: 2px;
-        }
-        .ol-toggle-options a:hover {
-          color: #fff;
-          text-decoration: none;
-          background: rgba(0,60,136,0.7);
-        }
-        body {
-            font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
-            font-size: small;
-        }
-        iframe {
-            width: 100%;
-            height: 250px;
-            border: none;
-        }
-        /* Toolbar styles */
-        #toolbar {
-            position: relative;
-            padding-bottom: 0.5em;
-        }
-        #toolbar ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        #toolbar ul li {
-            float: left;
-            padding-right: 1em;
-            padding-bottom: 0.5em;
-        }
-        #toolbar ul li a {
-            font-weight: bold;
-            font-size: smaller;
-            vertical-align: middle;
-            color: black;
-            text-decoration: none;
-        }
-        #toolbar ul li a:hover {
-            text-decoration: underline;
-        }
-        #toolbar ul li * {
-            vertical-align: middle;
-        }
-        #map {
-            clear: both;
-            position: relative;
-            width: ${request.width?c}px;
-            height: ${request.height?c}px;
-            border: 1px solid black;
-        }
-        #wrapper {
-            width: ${request.width?c}px;
-        }
-        #location {
-            float: right;
-        }
-        /* Styles used by the default GetFeatureInfo output, added to make IE happy */
-        table.featureInfo, table.featureInfo td, table.featureInfo th {
-            border: 1px solid #ddd;
-            border-collapse: collapse;
-            margin: 0;
-            padding: 0;
-            font-size: 90%;
-            padding: .2em .1em;
-        }
-        table.featureInfo th {
-            padding: .2em .2em;
-            font-weight: bold;
-            background: #eee;
-        }
-        table.featureInfo td {
-            background: #fff;
-        }
-        table.featureInfo tr.odd td {
-            background: #eee;
-        }
-        table.featureInfo caption {
-            text-align: left;
-            font-size: 100%;
-            font-weight: bold;
-            padding: .2em .2em;
-        }
-    </style>
+    <link rel="stylesheet" href="${relBaseUrl}/openlayers3/layout.css" type="text/css">
     <script src="${relBaseUrl}/openlayers3/ol.js" type="text/javascript"></script>
     <script src="${relBaseUrl}/webresources/wms/OpenLayers3Map.js" type="text/javascript"></script>
     <title>OpenLayers map preview</title>
   </head>
   <body>
-    <div id="toolbar" style="display: none;">
-      <ul>
-        <li>
-          <a>WMS version:</a>
+  <div id="main">
+    <div id="sidebar">
+      <div id="brand">
+        <a wicket:id="home" id="logo" href="#"></a>
+        <button id="navigation-menu">
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'>
+            <path stroke='currentColor' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22' />
+          </svg>
+        </button>
+      </div>
+      <div id="sidebar-content">
+        <div id="toolbar" class="preview-form">
+          <label>WMS version:</label>
           <select id="wmsVersionSelector">
             <option value="1.1.1">1.1.1</option>
             <option value="1.3.0">1.3.0</option>
           </select>
-        </li>
-        <li>
-          <a>Tiling:</a>
+          <label>Tiling:</label>
           <select id="tilingModeSelector">
             <option value="untiled">Single tile</option>
             <option value="tiled">Tiled</option>
           </select>
-        </li>
-        <li>
-          <a>Antialias:</a>
+          <label>Antialias:</label>
           <select id="antialiasSelector">
             <option value="full">Full</option>
             <option value="text">Text only</option>
             <option value="none">Disabled</option>
           </select>
-        </li>
-        <li>
-          <a>Format:</a>
+          <label>Format:</label>
           <select id="imageFormatSelector">
             <option value="image/png">PNG 24bit</option>
             <option value="image/png8">PNG 8bit</option>
@@ -166,24 +46,20 @@
             <option id="jpeg-png" value="image/vnd.jpeg-png">JPEG-PNG</option>
             <option id="jpeg-png8" value="image/vnd.jpeg-png8">JPEG-PNG8</option>
           </select>
-        </li>
-        <li>
-          <a>Styles:</a>
+          <label>Styles:</label>
           <select id="styleSelector">
             <option value="">Default</option>
             <#list styles as style>          
-               <option value="${style}">${style}</option>  
+                <option value="${style}">${style}</option>  
             </#list>   
           </select>
-        </li>
-        <li>
-          <a>Width/Height:</a>
+          <label>Width/Height:</label>
           <select id="widthSelector">
-             <!--
-             These values come from a statistics of the viewable area given a certain screen area
-             (but have been adapted a litte, simplified numbers, added some resolutions for wide screen)
-             You can find them here: http://www.evolt.org/article/Real_World_Browser_Size_Stats_Part_II/20/2297/
-             --><option value="auto">Auto</option>
+              <!--
+              These values come from a statistics of the viewable area given a certain screen area
+              (but have been adapted a litte, simplified numbers, added some resolutions for wide screen)
+              You can find them here: http://www.evolt.org/article/Real_World_Browser_Size_Stats_Part_II/20/2297/
+              --><option value="auto">Auto</option>
                 <option value="600">600</option>
                 <option value="750">750</option>
                 <option value="950">950</option>
@@ -204,44 +80,42 @@
                 <option value="900">900</option>
                 <option value="1000">1000</option>
             </select>
-          </li>
-          <li>
-              <a>Filter:</a>
-              <select id="filterType">
-                  <option value="cql">CQL</option>
-                  <option value="ogc">OGC</option>
-                  <option value="fid">FeatureID</option>
-              </select>
-              <input type="text" size="80" id="filter"/>
-              <a id="updateFilterButton" href="#" title="Apply filter">Apply</a>
-              <a id="resetFilterButton" href="#" title="Reset filter">Reset</a>
-          </li>
-        </ul>
+            <label>Filter:</label>
+            <select id="filterType">
+                <option value="cql">CQL</option>
+                <option value="ogc">OGC</option>
+                <option value="fid">FeatureID</option>
+            </select>
+            <input type="text" size="80" id="filter"/>
+            <a id="updateFilterButton" class="button" href="#" title="Apply filter">Apply</a>
+            <a id="resetFilterButton" class="button outline-primary" href="#" title="Reset filter">Reset</a>
+        </div>
       </div>
-    <div id="map">
-      <div class="ol-toggle-options ol-unselectable"><a id="options" title="Toggle options toolbar" href="#toggle">...</a></div>
     </div>
-    <div id="wrapper">
-        <div id="location"></div>
-        <div id="scale"></div>
+    <div id="page">
+      <div id="map"></div>
+      <div id="wrapper">
+          <div id="location"></div>
+          <div id="scale"></div>
+      </div>
+      <div id="nodelist">
+          <em>Click on the map to get feature info</em>
+      </div>
+      <input type="hidden" id="pureCoverage" value="${pureCoverage}"/>
+      <input type="hidden" id="supportsFiltering" value="${supportsFiltering}"/>
+      <input type="hidden" id="minX" value="${request.bbox.minX?c}"/>
+      <input type="hidden" id="minY" value="${request.bbox.minY?c}"/>
+      <input type="hidden" id="maxX" value="${request.bbox.maxX?c}"/>
+      <input type="hidden" id="maxY" value="${request.bbox.maxY?c}"/>
+      <input type="hidden" id="SRS" value="${request.SRS}"/>
+      <input type="hidden" id="yx" value="${yx}"/>
+      <input type="hidden" id="global" value="${global}"/>
+      <input type="hidden" id="baseUrl" value="${baseUrl}"/>
+      <input type="hidden" id="servicePath" value="${servicePath}"/>
+      <input type="hidden" id="units" value="${units}"/>
+      <#list parameters as param>
+      <input type="hidden" class="param" title="${param.name}" value="${param.value}"/>
+      </#list>
     </div>
-    <div id="nodelist">
-        <em>Click on the map to get feature info</em>
-    </div>
-    <input type="hidden" id="pureCoverage" value="${pureCoverage}"/>
-    <input type="hidden" id="supportsFiltering" value="${supportsFiltering}"/>
-    <input type="hidden" id="minX" value="${request.bbox.minX?c}"/>
-    <input type="hidden" id="minY" value="${request.bbox.minY?c}"/>
-    <input type="hidden" id="maxX" value="${request.bbox.maxX?c}"/>
-    <input type="hidden" id="maxY" value="${request.bbox.maxY?c}"/>
-    <input type="hidden" id="SRS" value="${request.SRS}"/>
-    <input type="hidden" id="yx" value="${yx}"/>
-    <input type="hidden" id="global" value="${global}"/>
-    <input type="hidden" id="baseUrl" value="${baseUrl}"/>
-    <input type="hidden" id="servicePath" value="${servicePath}"/>
-    <input type="hidden" id="units" value="${units}"/>
-    <#list parameters as param>
-    <input type="hidden" class="param" title="${param.name}" value="${param.value}"/>
-    </#list>
   </body>
 </html>

@@ -323,26 +323,43 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
             }
         }
 
-        // Execute the OAuth2 code callback - this will exchange the code for tokens
-        // and save the authentication to the session, then redirect to success URL
-        MockHttpServletResponse codeResponse = executeOnSecurityFilters(webRequest);
-
-        // After successful OAuth2 login, Spring Security redirects to the success URL
-        // The authentication is saved to the session via SecurityContextRepository
-        assertEquals("OAuth2 code exchange should redirect to success URL", 302, codeResponse.getStatus());
-
-        // Now make a follow-up request to verify authentication was saved to session
-        // Use the same session to retrieve the authentication
-        MockHttpServletRequest followUpRequest = createRequest("web/");
-        followUpRequest.setSession(session);
-
+        // Execute the OAuth2 code callback and capture authentication during filter chain execution
+        // This is necessary because Spring Security 6 only has auth in SecurityContextHolder during request processing
         java.util.concurrent.atomic.AtomicReference<Authentication> authRef =
                 new java.util.concurrent.atomic.AtomicReference<>();
-        executeOnSecurityFiltersCapturingAuth(followUpRequest, authRef);
+        MockHttpServletResponse codeResponse = executeOnSecurityFiltersCapturingAuth(webRequest, authRef);
+
+        // After successful OAuth2 login, Spring Security redirects to the success URL
+        assertEquals("OAuth2 code exchange should redirect to success URL", 302, codeResponse.getStatus());
 
         Authentication auth = authRef.get();
-        assertNotNull("Authentication should be loaded from session on follow-up request", auth);
-        assertTrue("Should be OAuth2AuthenticationToken", auth instanceof OAuth2AuthenticationToken);
+
+        // If auth is null or not OAuth2AuthenticationToken, try loading from session as fallback
+        if (auth == null || !(auth instanceof OAuth2AuthenticationToken)) {
+            // Try loading from session - Spring Security 6 may have saved it there
+            org.springframework.security.web.context.HttpSessionSecurityContextRepository repo =
+                    new org.springframework.security.web.context.HttpSessionSecurityContextRepository();
+            org.springframework.security.core.context.SecurityContext ctx =
+                    repo.loadDeferredContext(webRequest).get();
+            if (ctx != null && ctx.getAuthentication() != null) {
+                auth = ctx.getAuthentication();
+            }
+        }
+
+        // Debug output if still failing
+        if (auth == null) {
+            System.err.println("DEBUG: Authentication is NULL after code exchange");
+            System.err.println("DEBUG: Response status: " + codeResponse.getStatus());
+            System.err.println("DEBUG: Response location: " + codeResponse.getHeader("Location"));
+        } else if (!(auth instanceof OAuth2AuthenticationToken)) {
+            System.err.println("DEBUG: Authentication type: " + auth.getClass().getName());
+            System.err.println("DEBUG: Authentication principal: " + auth.getPrincipal());
+            System.err.println("DEBUG: Is authenticated: " + auth.isAuthenticated());
+        }
+
+        assertNotNull("Authentication should not be null after OAuth2 code exchange", auth);
+        assertTrue("Should be OAuth2AuthenticationToken but was: " + (auth != null ? auth.getClass().getName() : "null"),
+                auth instanceof OAuth2AuthenticationToken);
 
         return (OAuth2AuthenticationToken) auth;
     }

@@ -53,35 +53,37 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
         String filterName = "OpenIdFilter1";
         navigateToOpenIdPanel(filterName);
 
-        // redirectUri Ajax test
-        // Unfortunately wicketTester forgets existing form data on ajax request, even if not submitting.
-        // So input has to provided twice. I think is a wicketTester bug...
         String prefix = "panel:content:";
         String baseUrl = "https://localhost:9090";
         String baseUrlComponentPath = prefix + "baseRedirectUri";
+
+        // --- Phase 1: trigger AJAX events to update dynamic state ---
+
+        // baseRedirectUri AJAX: updates redirect URIs for all providers
         formTester.setValue(baseUrlComponentPath, baseUrl + "/geoserver");
-        Component lComponent = formTester.getForm().get(baseUrlComponentPath);
-        tester.executeAjaxEvent(lComponent, "change");
+        Component baseUriComponent = formTester.getForm().get(baseUrlComponentPath);
+        tester.executeAjaxEvent(baseUriComponent, "change");
 
-        // Select OIDC provider via AJAX dropdown — this triggers AjaxFormComponentUpdatingBehavior
-        // which calls setSelectedProvider("oidc") on the config, setting oidcEnabled=true.
+        // providerSelector AJAX: calls setSelectedProvider("oidc") which sets oidcEnabled=true
+        // and updates container visibility. This is necessary because
+        // AjaxFormComponentUpdatingBehavior explicitly calls config.setSelectedProvider().
         formTester.select(prefix + "providerSelector", 0);
-        Component providerSelector = formTester.getForm().get(prefix + "providerSelector");
-        tester.executeAjaxEvent(providerSelector, "change");
+        Component providerSelectorComponent = formTester.getForm().get(prefix + "providerSelector");
+        tester.executeAjaxEvent(providerSelectorComponent, "change");
 
-        // Re-set all form values after AJAX events (wicketTester clears form state on AJAX)
+        // --- Phase 2: re-set ALL form values after AJAX events ---
+        // (WicketTester clears queued form data on each AJAX request)
+
+        // Common fields
         formTester.setValue(baseUrlComponentPath, baseUrl + "/geoserver");
         formTester.setValue(prefix + "name", filterName);
         formTester.setValue(prefix + "postLogoutRedirectUri", baseUrl + "/geoserver/postlogout");
         formTester.setValue(prefix + "enableRedirectAuthenticationEntryPoint", false);
 
-        // Select OIDC provider: directly set the dropdown model to "oidc".
-        // This calls setSelectedProvider("oidc") via the PropertyModel, setting oidcEnabled=true.
-        // FormTester.select() alone does not reliably submit the DropDownChoice value when
-        // it matches the default derived state from getSelectedProvider().
-        formTester.getForm().get(prefix + "providerSelector").setDefaultModelObject("oidc");
+        // Re-select OIDC provider so the dropdown value is submitted with the form save
+        formTester.select(prefix + "providerSelector", 0);
 
-        // OIDC is selected (pfv:4) — configure it
+        // OIDC provider settings (pfv:4 — the 4th provider panel added by addProviderComponents)
         prefix = "panel:content:pfv:4:settings:";
         formTester.setValue(prefix + "clientId", "oidcClientId");
         formTester.setValue(prefix + "clientSecret", "oidcClientSecret");
@@ -124,7 +126,7 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
         // common
         assertEquals("https://localhost:9090/geoserver", lConfig.getBaseRedirectUri());
         assertEquals("https://localhost:9090/geoserver/postlogout", lConfig.getPostLogoutRedirectUri());
-        assertEquals(Boolean.FALSE, lConfig.getEnableRedirectAuthenticationEntryPoint());
+        assertFalse(lConfig.getEnableRedirectAuthenticationEntryPoint());
 
         // OIDC should be the only enabled provider (dropdown is mutually exclusive)
         assertTrue(lConfig.isOidcEnabled());

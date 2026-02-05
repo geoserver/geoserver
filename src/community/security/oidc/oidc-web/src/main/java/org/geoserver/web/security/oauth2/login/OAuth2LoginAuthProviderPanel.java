@@ -16,7 +16,9 @@ import java.io.Serial;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.Component;
@@ -31,6 +33,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
@@ -72,6 +75,17 @@ public class OAuth2LoginAuthProviderPanel
 
     /** Prefix of custom OIDC specific attributes */
     private static final String PREFIX_OIDC = "oidc";
+
+    /** Provider keys for the dropdown (OIDC first as default) */
+    private static final List<String> PROVIDER_KEYS =
+            Arrays.asList(PREFIX_OIDC, PREFIX_GOOGLE, PREFIX_GIT_HUB, PREFIX_MS);
+
+    /** Display labels for provider keys */
+    private static final Map<String, String> PROVIDER_LABELS = Map.of(
+            PREFIX_OIDC, "OpenID Connect Provider",
+            PREFIX_GOOGLE, "Google",
+            PREFIX_GIT_HUB, "GitHub",
+            PREFIX_MS, "Microsoft Azure");
 
     public static String oidcPanelCSS;
     public static String oidcPanelJS;
@@ -226,6 +240,7 @@ public class OAuth2LoginAuthProviderPanel
 
     private GeoServerDialog dialog;
     private List<Component> redirectUriComponents = new ArrayList<>();
+    private Map<String, WebMarkupContainer> providerContainers = new LinkedHashMap<>();
 
     @SuppressWarnings("serial")
     public OAuth2LoginAuthProviderPanel(String id, IModel<GeoServerOAuth2LoginFilterConfig> model) {
@@ -241,6 +256,37 @@ public class OAuth2LoginAuthProviderPanel
         add(tf);
         add(new HelpLink("baseRedirectUriHelp", this).setDialog(dialog));
 
+        // -- Provider selection dropdown (mutually exclusive) --
+        DropDownChoice<String> providerSelector = new DropDownChoice<>(
+                "providerSelector",
+                new PropertyModel<>(configModel.getObject(), "selectedProvider"),
+                PROVIDER_KEYS,
+                new IChoiceRenderer<String>() {
+                    @Serial
+                    private static final long serialVersionUID = 1L;
+
+                    @Override
+                    public Object getDisplayValue(String object) {
+                        return PROVIDER_LABELS.getOrDefault(object, object);
+                    }
+
+                    @Override
+                    public String getIdValue(String object, int index) {
+                        return object;
+                    }
+
+                    @Override
+                    public String getObject(
+                            String id, IModel<? extends List<? extends String>> choices) {
+                        return id;
+                    }
+                });
+        providerSelector.setNullValid(false);
+        providerSelector.setOutputMarkupId(true);
+        add(providerSelector);
+        add(new HelpLink("providerSelectorHelp", this).setDialog(dialog));
+
+        // -- Provider settings panels (one per provider, shown/hidden based on dropdown) --
         RepeatingView prefixView = new RepeatingView("pfv");
         add(prefixView);
 
@@ -249,15 +295,39 @@ public class OAuth2LoginAuthProviderPanel
         addProviderComponents(prefixView, PREFIX_MS, "Microsoft Azure");
         addProviderComponents(prefixView, PREFIX_OIDC, "OpenID Connect Provider");
 
+        // Set initial visibility based on the currently selected provider
+        String selectedProvider = configModel.getObject().getSelectedProvider();
+        providerContainers.forEach(
+                (key, container) -> container.setVisible(key.equals(selectedProvider)));
+
+        // AJAX: switch visible provider panel when dropdown changes
+        providerSelector.add(new AjaxFormComponentUpdatingBehavior("change") {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                String selected = providerSelector.getModelObject();
+                configModel.getObject().setSelectedProvider(selected);
+                configModel.getObject().calculateRedirectUris();
+                providerContainers.forEach((key, container) -> {
+                    container.setVisible(key.equals(selected));
+                    target.add(container);
+                });
+                redirectUriComponents.stream()
+                        .filter(Component::isVisibleInHierarchy)
+                        .forEach(target::add);
+            }
+        });
+
         tf.add(new AjaxFormComponentUpdatingBehavior("change") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget pTarget) {
                 configModel.getObject().calculateRedirectUris();
-                redirectUriComponents.forEach(c -> {
-                    String lid = c.getMarkupId();
-                    pTarget.add(c, lid);
-                });
+                redirectUriComponents.stream()
+                        .filter(Component::isVisibleInHierarchy)
+                        .forEach(c -> {
+                            String lid = c.getMarkupId();
+                            pTarget.add(c, lid);
+                        });
             }
         });
 
@@ -276,7 +346,9 @@ public class OAuth2LoginAuthProviderPanel
     private void addProviderComponents(RepeatingView pView, String pProviderKey, String pProviderLabel) {
 
         WebMarkupContainer lContainer = new WebMarkupContainer(pView.newChildId());
+        lContainer.setOutputMarkupPlaceholderTag(true);
         pView.add(lContainer);
+        providerContainers.put(pProviderKey, lContainer);
 
         lContainer.add(createLabelResourceWithParams("providerHeadline", pProviderLabel));
 
@@ -285,10 +357,7 @@ public class OAuth2LoginAuthProviderPanel
 
         lContainer.add(lSHContainer);
 
-        IModel<Boolean> lModel = new PropertyModel<>(configModel.getObject(), pProviderKey + "Enabled");
-        CheckBox cb = new CheckBox("enabled", lModel);
-        lContainer.add(cb);
-        cb.add(new ToggleDisplayCheckboxBehavior(lSHContainer));
+        // No checkbox needed — provider visibility is controlled by the dropdown selector
 
         lSHContainer.add(createLabelResourceWithParams("infoFromProvider", pProviderLabel));
         lSHContainer.add(createLabelResourceWithParams("infoForProvider", pProviderLabel));

@@ -514,6 +514,33 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
         msEnabled = pMsEnabled;
     }
 
+    /**
+     * Returns the currently selected (active) provider key, derived from the individual enabled flags. Defaults to
+     * "oidc" if no provider is explicitly enabled.
+     *
+     * @return the provider key: "google", "gitHub", "ms", or "oidc"
+     */
+    public String getSelectedProvider() {
+        if (googleEnabled) return "google";
+        if (gitHubEnabled) return "gitHub";
+        if (msEnabled) return "ms";
+        // OIDC is the default
+        return "oidc";
+    }
+
+    /**
+     * Selects the given provider by enabling it and disabling all others. This is the model property backing the
+     * provider selection dropdown in the UI.
+     *
+     * @param provider one of "google", "gitHub", "ms", or "oidc"
+     */
+    public void setSelectedProvider(String provider) {
+        googleEnabled = "google".equals(provider);
+        gitHubEnabled = "gitHub".equals(provider);
+        msEnabled = "ms".equals(provider);
+        oidcEnabled = "oidc".equals(provider);
+    }
+
     /** @return the msClientId */
     public String getMsClientId() {
         return msClientId;

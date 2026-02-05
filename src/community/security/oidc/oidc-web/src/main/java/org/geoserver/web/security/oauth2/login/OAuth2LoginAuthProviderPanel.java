@@ -276,8 +276,7 @@ public class OAuth2LoginAuthProviderPanel
                     }
 
                     @Override
-                    public String getObject(
-                            String id, IModel<? extends List<? extends String>> choices) {
+                    public String getObject(String id, IModel<? extends List<? extends String>> choices) {
                         return id;
                     }
                 });
@@ -297,8 +296,7 @@ public class OAuth2LoginAuthProviderPanel
 
         // Set initial visibility based on the currently selected provider
         String selectedProvider = configModel.getObject().getSelectedProvider();
-        providerContainers.forEach(
-                (key, container) -> container.setVisible(key.equals(selectedProvider)));
+        providerContainers.forEach((key, container) -> container.setVisible(key.equals(selectedProvider)));
 
         // AJAX: switch visible provider panel when dropdown changes
         providerSelector.add(new AjaxFormComponentUpdatingBehavior("change") {

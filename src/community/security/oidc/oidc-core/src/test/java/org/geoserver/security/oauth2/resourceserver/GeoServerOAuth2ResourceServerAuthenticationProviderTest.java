@@ -108,9 +108,10 @@ public class GeoServerOAuth2ResourceServerAuthenticationProviderTest {
 
     @Test
     public void testCreateFilterThrowsRuntimeExceptionOnInvalidIssuer() {
-        // Given - a config with an unreachable issuer
+        // Given - a config with an unreachable issuer (use localhost to fail fast
+        // without external DNS resolution or network access)
         GeoServerOAuth2ResourceServerFilterConfig config = new GeoServerOAuth2ResourceServerFilterConfig();
-        config.setIssuerUri("https://issuer.example.com");
+        config.setIssuerUri("https://localhost:1/invalid-issuer");
         config.setName("test-filter");
 
         HttpSecurity mockHttp = mock(HttpSecurity.class);

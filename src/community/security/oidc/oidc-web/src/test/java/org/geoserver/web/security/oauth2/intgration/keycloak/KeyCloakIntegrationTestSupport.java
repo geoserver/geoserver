@@ -92,7 +92,7 @@ public class KeyCloakIntegrationTestSupport extends GeoServerWicketTestSupport {
             authServerUrl = keycloakContainer.getAuthServerUrl();
             LOGGER.info("Keycloak started at: " + authServerUrl);
         } catch (Exception e) {
-            // Handle Docker API version mismatch or other container startup failures
+            // Handle Docker API version mismatch or other known container infrastructure failures
             String message = e.getMessage();
             if (message != null
                     && (message.contains("API version")
@@ -101,9 +101,21 @@ public class KeyCloakIntegrationTestSupport extends GeoServerWicketTestSupport {
                 LOGGER.warning("Docker API version mismatch - skipping tests: " + message);
                 Assume.assumeTrue("Skipping Keycloak tests: Docker API version incompatible", false);
             }
-            // Also skip on other container startup failures to avoid breaking the build
-            LOGGER.warning("Failed to start Keycloak container - skipping tests: " + e.getMessage());
-            Assume.assumeTrue("Skipping Keycloak tests: Container failed to start - " + e.getMessage(), false);
+            // Skip on container startup failures related to Docker availability
+            if (message != null
+                    && (message.contains("Could not find a valid Docker environment")
+                            || message.contains("docker")
+                            || message.contains("Container startup failed")
+                            || message.contains("Timed out waiting for container"))) {
+                LOGGER.warning(
+                        "Failed to start Keycloak container - skipping tests: " + e.getMessage());
+                Assume.assumeTrue(
+                        "Skipping Keycloak tests: Container failed to start - " + e.getMessage(),
+                        false);
+            }
+            // Rethrow unexpected exceptions so genuine regressions (e.g., broken realm JSON,
+            // wrong image tag) are visible in CI rather than silently skipped
+            throw e;
         }
     }
 

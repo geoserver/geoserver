@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.OutputStream;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -70,6 +71,8 @@ public class KeyCloakExtendedIntegrationTest extends KeyCloakIntegrationTestSupp
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
         connection.setDoOutput(true);
+        connection.setConnectTimeout(10_000);
+        connection.setReadTimeout(10_000);
         connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
         String body = "grant_type=password"
@@ -83,8 +86,12 @@ public class KeyCloakExtendedIntegrationTest extends KeyCloakIntegrationTestSupp
             os.write(body.getBytes(StandardCharsets.UTF_8));
         }
 
-        String response = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
-        connection.disconnect();
+        String response;
+        try (InputStream is = connection.getInputStream()) {
+            response = IOUtils.toString(is, StandardCharsets.UTF_8);
+        } finally {
+            connection.disconnect();
+        }
 
         return JSONObject.fromObject(response);
     }
@@ -177,8 +184,12 @@ public class KeyCloakExtendedIntegrationTest extends KeyCloakIntegrationTestSupp
         connection.setRequestMethod("GET");
         connection.setRequestProperty("Authorization", "Bearer " + accessToken);
 
-        String response = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
-        connection.disconnect();
+        String response;
+        try (InputStream is = connection.getInputStream()) {
+            response = IOUtils.toString(is, StandardCharsets.UTF_8);
+        } finally {
+            connection.disconnect();
+        }
 
         JSONObject userInfo = JSONObject.fromObject(response);
 
@@ -202,8 +213,12 @@ public class KeyCloakExtendedIntegrationTest extends KeyCloakIntegrationTestSupp
         connection.setRequestMethod("GET");
         connection.setRequestProperty("Authorization", "Bearer " + accessToken);
 
-        String response = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
-        connection.disconnect();
+        String response;
+        try (InputStream is = connection.getInputStream()) {
+            response = IOUtils.toString(is, StandardCharsets.UTF_8);
+        } finally {
+            connection.disconnect();
+        }
 
         JSONObject userInfo = JSONObject.fromObject(response);
 
@@ -348,8 +363,12 @@ public class KeyCloakExtendedIntegrationTest extends KeyCloakIntegrationTestSupp
 
         assertEquals(200, connection.getResponseCode());
 
-        String response = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
-        connection.disconnect();
+        String response;
+        try (InputStream is = connection.getInputStream()) {
+            response = IOUtils.toString(is, StandardCharsets.UTF_8);
+        } finally {
+            connection.disconnect();
+        }
 
         JSONObject jwks = JSONObject.fromObject(response);
         assertTrue("JWKS should contain keys", jwks.has("keys"));
@@ -376,8 +395,12 @@ public class KeyCloakExtendedIntegrationTest extends KeyCloakIntegrationTestSupp
 
         assertEquals(200, connection.getResponseCode());
 
-        String response = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
-        connection.disconnect();
+        String response;
+        try (InputStream is = connection.getInputStream()) {
+            response = IOUtils.toString(is, StandardCharsets.UTF_8);
+        } finally {
+            connection.disconnect();
+        }
 
         JSONObject discovery = JSONObject.fromObject(response);
 
@@ -404,8 +427,12 @@ public class KeyCloakExtendedIntegrationTest extends KeyCloakIntegrationTestSupp
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
 
-        String response = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
-        connection.disconnect();
+        String response;
+        try (InputStream is = connection.getInputStream()) {
+            response = IOUtils.toString(is, StandardCharsets.UTF_8);
+        } finally {
+            connection.disconnect();
+        }
 
         JSONObject discovery = JSONObject.fromObject(response);
 

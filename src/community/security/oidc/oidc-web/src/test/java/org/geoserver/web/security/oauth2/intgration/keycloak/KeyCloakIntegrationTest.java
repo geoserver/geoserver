@@ -524,15 +524,20 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
     private MockHttpServletResponse executeOnSecurityFilters(MockHttpServletRequest request)
             throws IOException, jakarta.servlet.ServletException {
         // for session local support in Spring
-        new RequestContextListener().requestInitialized(new ServletRequestEvent(request.getServletContext(), request));
+        RequestContextListener listener = new RequestContextListener();
+        ServletRequestEvent event = new ServletRequestEvent(request.getServletContext(), request);
+        listener.requestInitialized(event);
+        try {
+            MockFilterChain chain = new MockFilterChain();
+            MockHttpServletResponse response = new MockHttpServletResponse();
+            GeoServerSecurityFilterChainProxy filterChainProxy =
+                    GeoServerExtensions.bean(GeoServerSecurityFilterChainProxy.class);
+            filterChainProxy.doFilter(request, response, chain);
 
-        MockFilterChain chain = new MockFilterChain();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        GeoServerSecurityFilterChainProxy filterChainProxy =
-                GeoServerExtensions.bean(GeoServerSecurityFilterChainProxy.class);
-        filterChainProxy.doFilter(request, response, chain);
-
-        return response;
+            return response;
+        } finally {
+            listener.requestDestroyed(event);
+        }
     }
 
     /**
@@ -550,26 +555,31 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
             MockHttpServletRequest request, java.util.concurrent.atomic.AtomicReference<Authentication> authRef)
             throws IOException, jakarta.servlet.ServletException {
         // for session local support in Spring
-        new RequestContextListener().requestInitialized(new ServletRequestEvent(request.getServletContext(), request));
+        RequestContextListener listener = new RequestContextListener();
+        ServletRequestEvent event = new ServletRequestEvent(request.getServletContext(), request);
+        listener.requestInitialized(event);
+        try {
+            // Use a terminal servlet to capture the authentication from SecurityContextHolder
+            // during filter chain execution (before it gets cleared)
+            jakarta.servlet.http.HttpServlet terminal = new jakarta.servlet.http.HttpServlet() {
+                @Override
+                protected void service(
+                        jakarta.servlet.http.HttpServletRequest req, jakarta.servlet.http.HttpServletResponse resp) {
+                    authRef.set(org.springframework.security.core.context.SecurityContextHolder.getContext()
+                            .getAuthentication());
+                }
+            };
 
-        // Use a terminal servlet to capture the authentication from SecurityContextHolder
-        // during filter chain execution (before it gets cleared)
-        jakarta.servlet.http.HttpServlet terminal = new jakarta.servlet.http.HttpServlet() {
-            @Override
-            protected void service(
-                    jakarta.servlet.http.HttpServletRequest req, jakarta.servlet.http.HttpServletResponse resp) {
-                authRef.set(org.springframework.security.core.context.SecurityContextHolder.getContext()
-                        .getAuthentication());
-            }
-        };
+            MockFilterChain chain = new MockFilterChain(terminal);
+            MockHttpServletResponse response = new MockHttpServletResponse();
+            GeoServerSecurityFilterChainProxy filterChainProxy =
+                    GeoServerExtensions.bean(GeoServerSecurityFilterChainProxy.class);
+            filterChainProxy.doFilter(request, response, chain);
 
-        MockFilterChain chain = new MockFilterChain(terminal);
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        GeoServerSecurityFilterChainProxy filterChainProxy =
-                GeoServerExtensions.bean(GeoServerSecurityFilterChainProxy.class);
-        filterChainProxy.doFilter(request, response, chain);
-
-        return response;
+            return response;
+        } finally {
+            listener.requestDestroyed(event);
+        }
     }
 
     /**

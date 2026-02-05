@@ -71,6 +71,8 @@ public class CollectionsCache implements GeoServerLifecycleHandler, OseoEventLis
             Throwable cause = e.getCause();
             if (cause instanceof IOException exception) throw exception;
             throw new IOException(e);
+        } catch (CacheLoader.InvalidCacheLoadException e) {
+            throw new IOException("Collection not found: " + collectionId, e);
         }
     }
 

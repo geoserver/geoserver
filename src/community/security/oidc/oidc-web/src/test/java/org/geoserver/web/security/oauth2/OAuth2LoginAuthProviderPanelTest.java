@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /** Tests for {@link OAuth2LoginAuthProviderPanel} */
+@SuppressWarnings("PMD.UseDiamondOperator")
 public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServicePanelTest {
 
     @Before

@@ -57,7 +57,6 @@ import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.ows.kvp.TimeParser;
-import org.geoserver.platform.ServiceException;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.api.data.Query;
 import org.geotools.api.feature.Attribute;
@@ -248,10 +247,30 @@ public class STACService {
         FeatureCollection<FeatureType, Feature> collections =
                 accessProvider.getOpenSearchAccess().getCollectionSource().getFeatures(q);
         Feature collection = DataUtilities.first(collections);
-        if (collection == null)
+        if (collection == null) {
+            reportCollectionNotFound(collectionId);
+        }
+        return collection;
+    }
+
+    /**
+     * For search we don't want to return a 404, the path existed, the collection is a parameter
+     *
+     * @param collectionId the collection identifier
+     */
+    private static void reportCollectionNotFound(String collectionId) {
+        if (Optional.ofNullable(APIRequestInfo.get())
+                .map(APIRequestInfo::getRequestPath)
+                .filter(path -> path.contains("ogc/stac/v1/search"))
+                .isPresent()) {
+            throw new APIException(
+                    APIException.INVALID_PARAMETER_VALUE,
+                    "Collection not found: " + collectionId,
+                    HttpStatus.BAD_REQUEST);
+        } else {
             throw new APIException(
                     APIException.NOT_FOUND, "Collection not found: " + collectionId, HttpStatus.NOT_FOUND);
-        return collection;
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -386,10 +405,7 @@ public class STACService {
     private void collectionAvailableAndEnabled(String collectionId) throws IOException {
         Feature collection = getCollection(collectionId);
         if (Boolean.FALSE.equals(collection.getProperty("enabled").getValue())) {
-            throw new APIException(
-                    ServiceException.INVALID_PARAMETER_VALUE,
-                    "Collection " + collectionId + " is not available",
-                    HttpStatus.NOT_FOUND);
+            reportCollectionNotFound(collectionId);
         }
     }
 
@@ -409,6 +425,12 @@ public class STACService {
             @RequestParam(name = FIELDS_PARAM, required = false) String[] fields,
             HttpServletRequest request)
             throws Exception {
+        // check the collections are there and enabled
+        if (collectionIds != null) {
+            for (String collectionId : collectionIds) {
+                collectionAvailableAndEnabled(collectionId);
+            }
+        }
         boolean hasFieldParam = request.getParameterMap().containsKey(FIELDS_PARAM);
         QueryResultBuilder resultBuilder =
                 new QueryResultBuilder(templates, accessProvider, filterParser, sampleFeatures, collectionsCache);
@@ -453,7 +475,12 @@ public class STACService {
     @ResponseBody
     @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     public SearchResponse searchPost(@RequestBody STACSearchQuery sq) throws Exception {
-
+        // check the collections are there and enabled
+        if (sq.getCollections() != null) {
+            for (String collectionId : sq.getCollections()) {
+                collectionAvailableAndEnabled(collectionId);
+            }
+        }
         QueryResultBuilder resultBuilder =
                 new QueryResultBuilder(templates, accessProvider, filterParser, sampleFeatures, collectionsCache);
         resultBuilder
@@ -621,7 +648,8 @@ public class STACService {
         String baseURL = APIRequestInfo.get().getBaseURL();
         String id = buildURL(baseURL, "ogc/stac/v1/queryables", null, RESOURCE);
         LOGGER.severe(
-                "Should consider the various collection specific templates here, and decide what to do for queriables that are in one collection but not in others (replace with null and simplify filter?)");
+                "Should consider the various collection specific templates here, and decide what to do for queriables"
+                        + " that are in one collection but not in others (replace with null and simplify filter?)");
         Queryables queryables = new STACQueryablesBuilder(
                         id,
                         templates.getItemTemplate(null),
@@ -643,7 +671,8 @@ public class STACService {
         String baseURL = APIRequestInfo.get().getBaseURL();
         String id = buildURL(baseURL, "ogc/stac/v1/sortables", null, RESOURCE);
         LOGGER.severe(
-                "Should consider the various collection specific templates here, and decide what to do for sortables that are in one collection but not in others (replace with null and simplify filter?)");
+                "Should consider the various collection specific templates here, and decide what to do for sortables"
+                        + " that are in one collection but not in others (replace with null and simplify filter?)");
         FeatureType itemsSchema =
                 accessProvider.getOpenSearchAccess().getProductSource().getSchema();
         RootBuilder template = this.templates.getItemTemplate(null);

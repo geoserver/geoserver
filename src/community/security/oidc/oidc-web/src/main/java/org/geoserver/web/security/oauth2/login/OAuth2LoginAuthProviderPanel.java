@@ -261,7 +261,7 @@ public class OAuth2LoginAuthProviderPanel
                 "providerSelector",
                 new PropertyModel<>(configModel.getObject(), "selectedProvider"),
                 PROVIDER_KEYS,
-                new IChoiceRenderer<String>() {
+                new IChoiceRenderer<>() {
                     @Serial
                     private static final long serialVersionUID = 1L;
 

@@ -43,8 +43,8 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
      * the configuration object contains the input after saving and reopening. The OIDC provider is selected (default)
      * and configured. Further steps change the user input and verify changes are also written to configuration.
      *
-     * <p>Note: The panel uses a mutually exclusive provider dropdown selector, so only one provider can be
-     * active at a time. This test focuses on the OIDC provider which is the default and most feature-rich.
+     * <p>Note: The panel uses a mutually exclusive provider dropdown selector, so only one provider can be active at a
+     * time. This test focuses on the OIDC provider which is the default and most feature-rich.
      *
      * @throws Exception
      */

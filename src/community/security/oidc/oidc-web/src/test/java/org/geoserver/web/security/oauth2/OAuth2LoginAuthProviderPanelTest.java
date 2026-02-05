@@ -40,8 +40,11 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
 
     /**
      * Creates a new configuration for a {@link GeoServerOAuth2LoginFilterConfig} providing all user input and verifies
-     * the configuration object contains the input after saving and reopening. Further steps change the user input and
-     * verify changes are also written to configuration.
+     * the configuration object contains the input after saving and reopening. The OIDC provider is selected (default)
+     * and configured. Further steps change the user input and verify changes are also written to configuration.
+     *
+     * <p>Note: The panel uses a mutually exclusive provider dropdown selector, so only one provider can be
+     * active at a time. This test focuses on the OIDC provider which is the default and most feature-rich.
      *
      * @throws Exception
      */
@@ -68,24 +71,11 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
         formTester.setValue(prefix + "postLogoutRedirectUri", baseUrl + "/geoserver/postlogout");
         formTester.setValue(prefix + "enableRedirectAuthenticationEntryPoint", false);
 
-        // Google
-        prefix = "panel:content:pfv:1:";
-        setBasicProviderValues(prefix, "google");
-
-        // GitHub
-        prefix = "panel:content:pfv:2:";
-        setBasicProviderValues(prefix, "gitHub");
-
-        // Microsoft
-        prefix = "panel:content:pfv:3:";
-        setBasicProviderValues(prefix, "ms");
-        prefix = prefix + "settings:";
-        formTester.setValue(prefix + "displayOnScopeSupport:scopes", "msScopes");
-
-        // OIDC
-        prefix = "panel:content:pfv:4:";
-        setBasicProviderValues(prefix, "oidc");
-        prefix = prefix + "settings:";
+        // OIDC is selected by default (pfv:4) — configure it directly
+        prefix = "panel:content:pfv:4:settings:";
+        formTester.setValue(prefix + "clientId", "oidcClientId");
+        formTester.setValue(prefix + "clientSecret", "oidcClientSecret");
+        formTester.setValue(prefix + "userNameAttribute", "oidcUserNameAttribute");
         formTester.setValue(prefix + "displayOnScopeSupport:scopes", "oidcScopes");
 
         String authUrl = "https://localhost:9000";
@@ -126,30 +116,13 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
         assertEquals("https://localhost:9090/geoserver/postlogout", lConfig.getPostLogoutRedirectUri());
         assertEquals(Boolean.FALSE, lConfig.getEnableRedirectAuthenticationEntryPoint());
 
-        // Google
-        assertEquals(Boolean.TRUE, lConfig.isGoogleEnabled());
-        assertEquals("googleClientId", lConfig.getGoogleClientId());
-        assertEquals("googleClientSecret", lConfig.getGoogleClientSecret());
-        assertEquals("googleUserNameAttribute", lConfig.getGoogleUserNameAttribute());
-        assertEquals("https://localhost:9090/geoserver/web/login/oauth2/code/google", lConfig.getGoogleRedirectUri());
+        // OIDC should be the only enabled provider (dropdown is mutually exclusive)
+        assertTrue(lConfig.isOidcEnabled());
+        assertFalse(lConfig.isGoogleEnabled());
+        assertFalse(lConfig.isGitHubEnabled());
+        assertFalse(lConfig.isMsEnabled());
 
-        // gitHub
-        assertEquals(Boolean.TRUE, lConfig.isGitHubEnabled());
-        assertEquals("gitHubClientId", lConfig.getGitHubClientId());
-        assertEquals("gitHubClientSecret", lConfig.getGitHubClientSecret());
-        assertEquals("gitHubUserNameAttribute", lConfig.getGitHubUserNameAttribute());
-        assertEquals("https://localhost:9090/geoserver/web/login/oauth2/code/gitHub", lConfig.getGitHubRedirectUri());
-
-        // MS
-        assertEquals(Boolean.TRUE, lConfig.isMsEnabled());
-        assertEquals("msClientId", lConfig.getMsClientId());
-        assertEquals("msClientSecret", lConfig.getMsClientSecret());
-        assertEquals("msUserNameAttribute", lConfig.getMsUserNameAttribute());
-        assertEquals("msScopes", lConfig.getMsScopes());
-        assertEquals("https://localhost:9090/geoserver/web/login/oauth2/code/microsoft", lConfig.getMsRedirectUri());
-
-        // OIDC
-        assertEquals(Boolean.TRUE, lConfig.isOidcEnabled());
+        // OIDC values
         assertEquals("oidcClientId", lConfig.getOidcClientId());
         assertEquals("oidcClientSecret", lConfig.getOidcClientSecret());
         assertEquals("oidcUserNameAttribute", lConfig.getOidcUserNameAttribute());
@@ -196,16 +169,6 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
         assertFalse(lConfig.isOidcAllowUnSecureLogging());
         assertNull(lConfig.getOidcResponseMode());
         assertFalse(lConfig.isOidcAuthenticationMethodPostSecret());
-    }
-
-    private void setBasicProviderValues(String pPrefix, String pValuePrefix) {
-        String enableComponentPath = pPrefix + "enabled";
-        formTester.setValue(enableComponentPath, true);
-
-        pPrefix = pPrefix + "settings:";
-        formTester.setValue(pPrefix + "clientId", pValuePrefix + "ClientId");
-        formTester.setValue(pPrefix + "clientSecret", pValuePrefix + "ClientSecret");
-        formTester.setValue(pPrefix + "userNameAttribute", pValuePrefix + "UserNameAttribute");
     }
 
     @Override

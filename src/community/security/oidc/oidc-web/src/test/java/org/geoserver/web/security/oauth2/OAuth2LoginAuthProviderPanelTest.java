@@ -62,19 +62,24 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
         formTester.setValue(baseUrlComponentPath, baseUrl + "/geoserver");
         Component lComponent = formTester.getForm().get(baseUrlComponentPath);
         tester.executeAjaxEvent(lComponent, "change");
+
+        // Select OIDC provider via AJAX dropdown — this triggers AjaxFormComponentUpdatingBehavior
+        // which calls setSelectedProvider("oidc") on the config, setting oidcEnabled=true.
+        formTester.select(prefix + "providerSelector", 0);
+        Component providerSelector = formTester.getForm().get(prefix + "providerSelector");
+        tester.executeAjaxEvent(providerSelector, "change");
+
+        // Re-set all form values after AJAX events (wicketTester clears form state on AJAX)
         formTester.setValue(baseUrlComponentPath, baseUrl + "/geoserver");
-
-        // filter
         formTester.setValue(prefix + "name", filterName);
-
-        // common
         formTester.setValue(prefix + "postLogoutRedirectUri", baseUrl + "/geoserver/postlogout");
         formTester.setValue(prefix + "enableRedirectAuthenticationEntryPoint", false);
 
-        // Explicitly select OIDC provider in dropdown (index 0 in PROVIDER_KEYS)
-        // This is required so that FormTester submits the dropdown value,
-        // which calls setSelectedProvider("oidc") and sets oidcEnabled=true.
-        formTester.select(prefix + "providerSelector", 0);
+        // Select OIDC provider: directly set the dropdown model to "oidc".
+        // This calls setSelectedProvider("oidc") via the PropertyModel, setting oidcEnabled=true.
+        // FormTester.select() alone does not reliably submit the DropDownChoice value when
+        // it matches the default derived state from getSelectedProvider().
+        formTester.getForm().get(prefix + "providerSelector").setDefaultModelObject("oidc");
 
         // OIDC is selected (pfv:4) — configure it
         prefix = "panel:content:pfv:4:settings:";

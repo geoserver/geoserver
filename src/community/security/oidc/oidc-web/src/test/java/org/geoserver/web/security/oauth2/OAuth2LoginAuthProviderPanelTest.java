@@ -71,7 +71,12 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
         formTester.setValue(prefix + "postLogoutRedirectUri", baseUrl + "/geoserver/postlogout");
         formTester.setValue(prefix + "enableRedirectAuthenticationEntryPoint", false);
 
-        // OIDC is selected by default (pfv:4) — configure it directly
+        // Explicitly select OIDC provider in dropdown (index 0 in PROVIDER_KEYS)
+        // This is required so that FormTester submits the dropdown value,
+        // which calls setSelectedProvider("oidc") and sets oidcEnabled=true.
+        formTester.select(prefix + "providerSelector", 0);
+
+        // OIDC is selected (pfv:4) — configure it
         prefix = "panel:content:pfv:4:settings:";
         formTester.setValue(prefix + "clientId", "oidcClientId");
         formTester.setValue(prefix + "clientSecret", "oidcClientSecret");

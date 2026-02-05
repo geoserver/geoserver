@@ -96,19 +96,14 @@ public class GeoServerOAuth2ResourceServerAuthenticationProviderTest {
         provider.onApplicationEvent(event);
     }
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void testOnApplicationEventWithContextLoadedEvent() {
-        // This test verifies the event handling doesn't throw
-        // The actual logging configuration would require a full GeoServer context
+        // This test verifies that when running without a full GeoServer/Spring context,
+        // onApplicationEvent fails in a well-defined way (NullPointerException) instead
+        // of silently swallowing errors.
         ContextLoadedEvent event = mock(ContextLoadedEvent.class);
 
-        // Should handle gracefully even without full context
-        try {
-            provider.onApplicationEvent(event);
-        } catch (NullPointerException e) {
-            // Expected when GeoServerExtensions.bean returns null in test context
-            // The important thing is the event type check works
-        }
+        provider.onApplicationEvent(event);
     }
 
     @Test

@@ -107,11 +107,8 @@ public class KeyCloakIntegrationTestSupport extends GeoServerWicketTestSupport {
                             || message.contains("docker")
                             || message.contains("Container startup failed")
                             || message.contains("Timed out waiting for container"))) {
-                LOGGER.warning(
-                        "Failed to start Keycloak container - skipping tests: " + e.getMessage());
-                Assume.assumeTrue(
-                        "Skipping Keycloak tests: Container failed to start - " + e.getMessage(),
-                        false);
+                LOGGER.warning("Failed to start Keycloak container - skipping tests: " + e.getMessage());
+                Assume.assumeTrue("Skipping Keycloak tests: Container failed to start - " + e.getMessage(), false);
             }
             // Rethrow unexpected exceptions so genuine regressions (e.g., broken realm JSON,
             // wrong image tag) are visible in CI rather than silently skipped

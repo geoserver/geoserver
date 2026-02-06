@@ -133,7 +133,8 @@ public class MSGraphRolesResolver {
         return result;
     }
 
-    private List<String> parseAppRolesJson(String jsonString) {
+    // Made package-protected for testing
+    List<String> parseAppRolesJson(String jsonString) {
         List<String> result = new ArrayList<>();
         JSONObject json = JSONObject.fromObject(jsonString);
         JSONArray values = json.getJSONArray("value");

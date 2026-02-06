@@ -96,9 +96,9 @@ public class GeoServerOAuth2LoginFilterConfigTest {
 
     // ── JIRA #2: Dynamic redirect URI resolution ────────────────────────────
 
-    /** Redirect URIs should reflect the current base, not a stale persisted value. */
+    /** Redirect URIs should reflect the current base after calling calculateRedirectUris(). */
     @Test
-    public void testRedirectUris_deriveFromCurrentBase() {
+    public void testRedirectUris_refreshFromCurrentBase() {
         System.setProperty(GeoServerOAuth2LoginFilterConfig.OPENID_TEST_GS_PROXY_BASE, "http://host-a/geoserver");
         GeoServerOAuth2LoginFilterConfig config = new GeoServerOAuth2LoginFilterConfig();
 
@@ -109,6 +109,13 @@ public class GeoServerOAuth2LoginFilterConfigTest {
         // Simulate a Proxy Base URL change (e.g. admin updated global settings)
         System.setProperty(GeoServerOAuth2LoginFilterConfig.OPENID_TEST_GS_PROXY_BASE, "http://host-b/geoserver");
 
+        // Before refresh — per-provider fields still contain old values
+        assertEquals(
+                "http://host-a/geoserver/web/login/oauth2/code/oidc",
+                config.getOidcRedirectUri());
+
+        // After refresh (as done by createFilter() or the Wicket AJAX handler) — updated
+        config.calculateRedirectUris();
         assertEquals(
                 "http://host-b/geoserver/web/login/oauth2/code/oidc",
                 config.getOidcRedirectUri());

@@ -70,6 +70,11 @@ public class GeoServerOAuth2LoginAuthenticationProvider extends AbstractFilterPr
         GeoServerOAuth2LoginFilterConfig lConfig = (GeoServerOAuth2LoginFilterConfig) config;
         LOGGER.fine("Using '" + builderBeanName + "' for filter creation");
 
+        // Refresh redirect URIs from the current dynamic base (PROXY_BASE_URL env var, global
+        // settings, etc.).  XStream deserialization bypasses the constructor, so per-provider
+        // redirect URI fields may still contain stale values from a previous Proxy Base URL.
+        lConfig.calculateRedirectUris();
+
         HttpSecurityCustomizer lHttpCustomizer;
         ClientRegistrationCustomizer lClientCustomizer;
         FilterBuilderCustomizer lBuilderCustomizer;

@@ -303,9 +303,9 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
         this.oidcAuthorizationUri = userAuthorizationUri;
     }
 
-    /** @return the redirectUri, dynamically derived from the current base redirect URI */
+    /** @return the redirectUri */
     public String getOidcRedirectUri() {
-        return redirectUri(REG_ID_OIDC);
+        return oidcRedirectUri;
     }
 
     /** @param redirectUri the redirectUri to set */
@@ -628,9 +628,9 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
         baseRedirectUriExplicitlySet = true;
     }
 
-    /** @return the googleRedirectUri, dynamically derived from the current base redirect URI */
+    /** @return the googleRedirectUri */
     public String getGoogleRedirectUri() {
-        return redirectUri(REG_ID_GOOGLE);
+        return googleRedirectUri;
     }
 
     /** @param pGoogleRedirectUri the googleRedirectUri to set */
@@ -638,9 +638,9 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
         googleRedirectUri = pGoogleRedirectUri;
     }
 
-    /** @return the gitHubRedirectUri, dynamically derived from the current base redirect URI */
+    /** @return the gitHubRedirectUri */
     public String getGitHubRedirectUri() {
-        return redirectUri(REG_ID_GIT_HUB);
+        return gitHubRedirectUri;
     }
 
     /** @param pGitHubRedirectUri the gitHubRedirectUri to set */
@@ -648,9 +648,9 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
         gitHubRedirectUri = pGitHubRedirectUri;
     }
 
-    /** @return the msRedirectUri, dynamically derived from the current base redirect URI */
+    /** @return the msRedirectUri */
     public String getMsRedirectUri() {
-        return redirectUri(REG_ID_MICROSOFT);
+        return msRedirectUri;
     }
 
     /** @param pMsRedirectUri the msRedirectUri to set */

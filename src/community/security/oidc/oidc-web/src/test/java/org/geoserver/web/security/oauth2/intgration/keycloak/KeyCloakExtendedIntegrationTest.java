@@ -182,6 +182,8 @@ public class KeyCloakExtendedIntegrationTest extends KeyCloakIntegrationTestSupp
         URL url = new URL(userInfoUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
+        connection.setConnectTimeout(10_000);
+        connection.setReadTimeout(10_000);
         connection.setRequestProperty("Authorization", "Bearer " + accessToken);
 
         String response;
@@ -211,6 +213,8 @@ public class KeyCloakExtendedIntegrationTest extends KeyCloakIntegrationTestSupp
         URL url = new URL(userInfoUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
+        connection.setConnectTimeout(10_000);
+        connection.setReadTimeout(10_000);
         connection.setRequestProperty("Authorization", "Bearer " + accessToken);
 
         String response;
@@ -236,12 +240,16 @@ public class KeyCloakExtendedIntegrationTest extends KeyCloakIntegrationTestSupp
         URL url = new URL(userInfoUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
+        connection.setConnectTimeout(10_000);
+        connection.setReadTimeout(10_000);
         connection.setRequestProperty("Authorization", "Bearer invalid-token");
 
-        int responseCode = connection.getResponseCode();
-        connection.disconnect();
-
-        assertEquals("Invalid token should return 401", 401, responseCode);
+        try {
+            int responseCode = connection.getResponseCode();
+            assertEquals("Invalid token should return 401", 401, responseCode);
+        } finally {
+            connection.disconnect();
+        }
     }
 
     // ==================== Direct Grant Token Tests ====================
@@ -302,6 +310,8 @@ public class KeyCloakExtendedIntegrationTest extends KeyCloakIntegrationTestSupp
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
         connection.setDoOutput(true);
+        connection.setConnectTimeout(10_000);
+        connection.setReadTimeout(10_000);
         connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
         String body = "grant_type=password"
@@ -316,10 +326,12 @@ public class KeyCloakExtendedIntegrationTest extends KeyCloakIntegrationTestSupp
         }
 
         // Should get 401 Unauthorized
-        int responseCode = connection.getResponseCode();
-        assertEquals("Invalid credentials should return 401", 401, responseCode);
-
-        connection.disconnect();
+        try {
+            int responseCode = connection.getResponseCode();
+            assertEquals("Invalid credentials should return 401", 401, responseCode);
+        } finally {
+            connection.disconnect();
+        }
     }
 
     /** Test that non-existent user fails to get a token. */
@@ -331,6 +343,8 @@ public class KeyCloakExtendedIntegrationTest extends KeyCloakIntegrationTestSupp
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
         connection.setDoOutput(true);
+        connection.setConnectTimeout(10_000);
+        connection.setReadTimeout(10_000);
         connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
         String body = "grant_type=password"
@@ -344,10 +358,12 @@ public class KeyCloakExtendedIntegrationTest extends KeyCloakIntegrationTestSupp
             os.write(body.getBytes(StandardCharsets.UTF_8));
         }
 
-        int responseCode = connection.getResponseCode();
-        assertEquals("Non-existent user should return 401", 401, responseCode);
-
-        connection.disconnect();
+        try {
+            int responseCode = connection.getResponseCode();
+            assertEquals("Non-existent user should return 401", 401, responseCode);
+        } finally {
+            connection.disconnect();
+        }
     }
 
     // ==================== JWKS Endpoint Test ====================
@@ -360,6 +376,8 @@ public class KeyCloakExtendedIntegrationTest extends KeyCloakIntegrationTestSupp
         URL url = new URL(jwksUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
+        connection.setConnectTimeout(10_000);
+        connection.setReadTimeout(10_000);
 
         assertEquals(200, connection.getResponseCode());
 
@@ -392,6 +410,8 @@ public class KeyCloakExtendedIntegrationTest extends KeyCloakIntegrationTestSupp
         URL url = new URL(discoveryUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
+        connection.setConnectTimeout(10_000);
+        connection.setReadTimeout(10_000);
 
         assertEquals(200, connection.getResponseCode());
 
@@ -426,6 +446,8 @@ public class KeyCloakExtendedIntegrationTest extends KeyCloakIntegrationTestSupp
         URL url = new URL(discoveryUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
+        connection.setConnectTimeout(10_000);
+        connection.setReadTimeout(10_000);
 
         String response;
         try (InputStream is = connection.getInputStream()) {

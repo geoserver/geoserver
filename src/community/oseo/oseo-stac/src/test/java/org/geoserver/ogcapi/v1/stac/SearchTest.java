@@ -29,6 +29,7 @@ import org.geoserver.ogcapi.OGCAPIMediaTypes;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.security.EOCollectionAccessLimitInfo;
 import org.geoserver.opensearch.eo.security.EOCollectionAccessLimitInfoImpl;
+import org.geoserver.platform.ServiceException;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.expression.Literal;
 import org.geotools.filter.IsGreaterThanImpl;
@@ -52,6 +53,9 @@ public class SearchTest extends STACTestSupport {
         copyTemplate("/box.json");
         copyTemplate("/parentLink.json");
         copyTemplate("/items-SENTINEL2.json");
+        // just to poison a bit the custom template management, checking it's tolerant to leftover templates
+        // for collections that were in use, and then got removed
+        copyTemplate("/items-SENTINEL2.json", "templates/ogc/stac/v1/", "/items-notThere.json");
     }
 
     @Test
@@ -62,9 +66,38 @@ public class SearchTest extends STACTestSupport {
     }
 
     @Test
+    public void testCollectionsGetInvalidName() throws Exception {
+        // two collections, one invalid
+        DocumentContext doc = getAsJSONPath("ogc/stac/v1/search?collections=SAS1,IAmNotThere", 400);
+        checkOGCAPIException(doc, ServiceException.INVALID_PARAMETER_VALUE, "Collection not found: IAmNotThere");
+    }
+
+    @Test
+    public void testCollectionsPostInvalidName() throws Exception {
+        // two collections, one invalid
+        String request =
+                """
+                {
+                  "collections": [
+                    "SAS1",
+                    "IAmNotThere"
+                  ]
+                }""";
+        DocumentContext doc = postAsJSONPath("ogc/stac/v1/search", request, 400);
+        checkOGCAPIException(doc, ServiceException.INVALID_PARAMETER_VALUE, "Collection not found: IAmNotThere");
+    }
+
+    @Test
     public void testCollectionsPost() throws Exception {
         // two SAS1, one Landsat
-        String request = "{\n" + "  \"collections\": [\n" + "    \"SAS1\",\n" + "    \"LANDSAT8\"\n" + "  ]\n" + "}";
+        String request =
+                """
+                {
+                  "collections": [
+                    "SAS1",
+                    "LANDSAT8"
+                  ]
+                }""";
         DocumentContext doc = postAsJSONPath("ogc/stac/v1/search", request, 200);
         checkCollections(doc, true);
     }

@@ -17,6 +17,8 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -33,16 +35,16 @@ import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginAuthenticationFilter;
 import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig;
 import org.geoserver.web.GeoServerHomePage;
+import org.geotools.util.logging.Logging;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.context.request.RequestContextListener;
 
 /**
@@ -79,6 +81,8 @@ import org.springframework.web.context.request.RequestContextListener;
  * more information on how to change the keycloak configuration.
  */
 public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
+
+    private static final Logger LOGGER = Logging.getLogger(KeyCloakIntegrationTest.class);
 
     // these are what's expected in the GS->OIDC IDP redirect URL
     String oidcLogin_responseType = "code";
@@ -185,6 +189,19 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
      * @throws Exception error occurred
      */
     public OAuth2AuthenticationToken login(String keycloakUserName, String keycloakPassword) throws Exception {
+        // First verify Keycloak is accessible
+        String discoveryUrl = authServerUrl + "/realms/gs-realm/.well-known/openid-configuration";
+        LOGGER.fine("Verifying Keycloak accessible at: " + discoveryUrl);
+        WebRequests.WebResponse discoveryResponse = WebRequests.webRequestGET(discoveryUrl);
+        LOGGER.fine("Discovery endpoint status: " + discoveryResponse.statusCode);
+        if (discoveryResponse.statusCode != 200) {
+            LOGGER.warning("Discovery response body: " + discoveryResponse.body);
+            LOGGER.warning("authServerUrl = " + authServerUrl);
+            LOGGER.warning(
+                    "keycloakContainer running = " + (keycloakContainer != null && keycloakContainer.isRunning()));
+        }
+        assertEquals("Keycloak discovery endpoint should be accessible", 200, discoveryResponse.statusCode);
+
         tester.startPage(new GeoServerHomePage());
         String html = tester.getLastResponseAsString();
 
@@ -197,12 +214,45 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
         MockHttpServletResponse webResponse = executeOnSecurityFilters(webRequest);
         HttpSession session = webRequest.getSession();
 
+        // Debug: Check if OAuth2AuthorizationRequest was stored in session
+        Object storedAuthRequest = session.getAttribute(
+                "org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository.AUTHORIZATION_REQUEST");
+        LOGGER.fine("After initial redirect - stored OAuth2AuthorizationRequest: " + storedAuthRequest);
+        LOGGER.fine("Session ID: " + session.getId());
+        LOGGER.fine("Redirect Location: " + webResponse.getHeader("Location"));
+
         // should be a 302 redirect to keycloak to start the login process
+        // Extract state, nonce, and PKCE code_challenge from the redirect URL
         Pair<String, String> state_nonce = validateRedirectToKeyCloak(webResponse);
         String oidcLogin_state = state_nonce.getLeft();
         String oidcLogin_nonce = state_nonce.getRight();
 
-        return keycloakLogin(session, oidcLogin_state, oidcLogin_nonce, keycloakUserName, keycloakPassword);
+        // Extract code_challenge from Spring's URL for PKCE support
+        String redirectUrl = webResponse.getHeader("Location");
+        String codeChallenge = null;
+        String codeChallengeMethod = null;
+        if (redirectUrl.contains("code_challenge=")) {
+            List<NameValuePair> params = new URIBuilder(new URI(redirectUrl), StandardCharsets.UTF_8).getQueryParams();
+            codeChallenge = params.stream()
+                    .filter(x -> x.getName().equals("code_challenge"))
+                    .findFirst()
+                    .map(NameValuePair::getValue)
+                    .orElse(null);
+            codeChallengeMethod = params.stream()
+                    .filter(x -> x.getName().equals("code_challenge_method"))
+                    .findFirst()
+                    .map(NameValuePair::getValue)
+                    .orElse(null);
+        }
+
+        return keycloakLogin(
+                session,
+                oidcLogin_state,
+                oidcLogin_nonce,
+                codeChallenge,
+                codeChallengeMethod,
+                keycloakUserName,
+                keycloakPassword);
     }
 
     /**
@@ -272,16 +322,29 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
      * @param session GS session must be the same for all requests
      * @param oidcLoginState state (generated by GS for the login)
      * @param oidcLoginNonce nonce (generated by GS for the login)
+     * @param codeChallenge PKCE code challenge (may be null if PKCE is disabled)
+     * @param codeChallengeMethod PKCE code challenge method (may be null if PKCE is disabled)
      * @param username who to login to keycloak as
      * @param password keycloak's user's password
      * @return GS security context auth
      * @throws Exception error occurred
      */
     private OAuth2AuthenticationToken keycloakLogin(
-            HttpSession session, String oidcLoginState, String oidcLoginNonce, String username, String password)
+            HttpSession session,
+            String oidcLoginState,
+            String oidcLoginNonce,
+            String codeChallenge,
+            String codeChallengeMethod,
+            String username,
+            String password)
             throws Exception {
-        // send request to keycloak to start the login process (will return with username/password form)
-        WebRequests.WebResponse startKeyCloakResponse = executeKeycloakStartUrl(oidcLoginState, oidcLoginNonce);
+        // send request to keycloak using the manually-built URL with PKCE support
+        WebRequests.WebResponse startKeyCloakResponse =
+                executeKeycloakStartUrl(oidcLoginState, oidcLoginNonce, codeChallenge, codeChallengeMethod);
+        LOGGER.fine("Keycloak response status: " + startKeyCloakResponse.statusCode);
+        if (startKeyCloakResponse.statusCode != 200) {
+            LOGGER.warning("Keycloak response body: " + startKeyCloakResponse.body);
+        }
         assertEquals(200, startKeyCloakResponse.statusCode);
 
         // send keycloak the completed username/password form
@@ -294,20 +357,97 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
         assertTrue(redirectCodeToGS.startsWith("http://localhost:8080/geoserver/web/login/oauth2/code/oidc"));
 
         String shortenedRedirectCodeToGS = redirectCodeToGS.substring("http://localhost:8080/geoserver/".length());
-        MockHttpServletRequest webRequest = createRequest(shortenedRedirectCodeToGS);
+
+        // Parse the URL to extract path and query parameters separately
+        String path;
+        String queryString = null;
+        int queryIndex = shortenedRedirectCodeToGS.indexOf('?');
+        if (queryIndex > 0) {
+            path = shortenedRedirectCodeToGS.substring(0, queryIndex);
+            queryString = shortenedRedirectCodeToGS.substring(queryIndex + 1);
+        } else {
+            path = shortenedRedirectCodeToGS;
+        }
+
+        MockHttpServletRequest webRequest = createRequest(path);
         webRequest.setSession(session);
-        // execute on security filters (response result is unused)
-        executeOnSecurityFilters(webRequest);
 
-        // get security context (Spring Security 6 style)
-        HttpSessionSecurityContextRepository repo = new HttpSessionSecurityContextRepository();
-        SecurityContext securityContext = repo.loadDeferredContext(webRequest).get(); // lazily resolves from session
+        // Debug: Check session state before code exchange
+        LOGGER.fine("Before code exchange - Session ID: " + session.getId());
+        Object storedAuthRequestBefore = session.getAttribute(
+                "org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository.AUTHORIZATION_REQUEST");
+        LOGGER.fine("Before code exchange - stored OAuth2AuthorizationRequest: " + storedAuthRequestBefore);
 
-        assertNotNull(securityContext);
-        assertNotNull(securityContext.getAuthentication());
-        assertTrue(securityContext.getAuthentication() instanceof OAuth2AuthenticationToken);
+        // Set the query string and parse parameters
+        if (queryString != null) {
+            webRequest.setQueryString(queryString);
+            // Parse query parameters and add them to the request
+            for (String param : queryString.split("&")) {
+                String[] keyValue = param.split("=", 2);
+                if (keyValue.length == 2) {
+                    webRequest.setParameter(
+                            keyValue[0], java.net.URLDecoder.decode(keyValue[1], StandardCharsets.UTF_8));
+                } else if (keyValue.length == 1) {
+                    webRequest.setParameter(keyValue[0], "");
+                }
+            }
+        }
 
-        return (OAuth2AuthenticationToken) securityContext.getAuthentication();
+        // Execute the OAuth2 code callback and capture authentication during filter chain execution
+        // This is necessary because Spring Security 6 only has auth in SecurityContextHolder during request processing
+        java.util.concurrent.atomic.AtomicReference<Authentication> authRef =
+                new java.util.concurrent.atomic.AtomicReference<>();
+        MockHttpServletResponse codeResponse = executeOnSecurityFiltersCapturingAuth(webRequest, authRef);
+
+        // After successful OAuth2 login, Spring Security redirects to the success URL
+        assertEquals("OAuth2 code exchange should redirect to success URL", 302, codeResponse.getStatus());
+
+        Authentication auth = authRef.get();
+
+        // If auth is null or not OAuth2AuthenticationToken, try loading from session as fallback
+        if (auth == null || !(auth instanceof OAuth2AuthenticationToken)) {
+            // Try loading from session - Spring Security 6 may have saved it there
+            org.springframework.security.web.context.HttpSessionSecurityContextRepository repo =
+                    new org.springframework.security.web.context.HttpSessionSecurityContextRepository();
+            org.springframework.security.core.context.SecurityContext ctx =
+                    repo.loadDeferredContext(webRequest).get();
+            if (ctx != null && ctx.getAuthentication() != null) {
+                auth = ctx.getAuthentication();
+            }
+        }
+
+        // Debug output if still failing
+        if (auth == null) {
+            LOGGER.warning("Authentication is NULL after code exchange");
+            LOGGER.warning("Response status: " + codeResponse.getStatus());
+            LOGGER.warning("Response location: " + codeResponse.getHeader("Location"));
+
+            // Check for OAuth2 authentication exception stored in session
+            Object authException = session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION");
+            if (authException != null) {
+                LOGGER.warning("Authentication Exception: " + authException);
+                if (authException instanceof Throwable) {
+                    LOGGER.log(Level.WARNING, "Authentication exception details", (Throwable) authException);
+                }
+            }
+
+            // Also check for OAuth2AuthorizationRequest to verify state was stored
+            Object authRequest = session.getAttribute(
+                    "org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository.AUTHORIZATION_REQUEST");
+            LOGGER.warning("Stored OAuth2AuthorizationRequest: " + authRequest);
+        } else if (!(auth instanceof OAuth2AuthenticationToken)) {
+            LOGGER.fine("Authentication type: " + auth.getClass().getName());
+            LOGGER.fine("Authentication principal: " + auth.getPrincipal());
+            LOGGER.fine("Is authenticated: " + auth.isAuthenticated());
+        }
+
+        assertNotNull("Authentication should not be null after OAuth2 code exchange", auth);
+        assertTrue(
+                "Should be OAuth2AuthenticationToken but was: "
+                        + (auth != null ? auth.getClass().getName() : "null"),
+                auth instanceof OAuth2AuthenticationToken);
+
+        return (OAuth2AuthenticationToken) auth;
     }
 
     /**
@@ -332,14 +472,17 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
     }
 
     /**
-     * Start the keycloak login process
+     * Start the keycloak login process with PKCE support
      *
      * @param oidcLoginState state (generated by GS for the login)
      * @param oidcLoginNonce nonce (generated by GS for the login)
+     * @param codeChallenge PKCE code challenge (may be null if PKCE is disabled)
+     * @param codeChallengeMethod PKCE code challenge method (may be null if PKCE is disabled)
      * @return response from keycloak (i.e. the login form)
      * @throws Exception error occurred
      */
-    public WebRequests.WebResponse executeKeycloakStartUrl(String oidcLoginState, String oidcLoginNonce)
+    public WebRequests.WebResponse executeKeycloakStartUrl(
+            String oidcLoginState, String oidcLoginNonce, String codeChallenge, String codeChallengeMethod)
             throws Exception {
         String startUrl = authServerUrl + "/realms/gs-realm/protocol/openid-connect/auth?";
         startUrl += "client_id=" + oidcLogin_client_id;
@@ -348,7 +491,26 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
         startUrl += "&redirect_uri=" + oidcLogin_redirect_uri;
         startUrl += "&state=" + oidcLoginState;
         startUrl += "&nonce=" + oidcLoginNonce;
+        // Add PKCE parameters if present
+        if (codeChallenge != null && !codeChallenge.isEmpty()) {
+            startUrl += "&code_challenge=" + codeChallenge;
+            startUrl += "&code_challenge_method=" + (codeChallengeMethod != null ? codeChallengeMethod : "S256");
+        }
+        LOGGER.fine("Calling Keycloak URL: " + startUrl);
         return WebRequests.webRequestGET(startUrl);
+    }
+
+    /**
+     * Start the keycloak login process (legacy method without PKCE)
+     *
+     * @param oidcLoginState state (generated by GS for the login)
+     * @param oidcLoginNonce nonce (generated by GS for the login)
+     * @return response from keycloak (i.e. the login form)
+     * @throws Exception error occurred
+     */
+    public WebRequests.WebResponse executeKeycloakStartUrl(String oidcLoginState, String oidcLoginNonce)
+            throws Exception {
+        return executeKeycloakStartUrl(oidcLoginState, oidcLoginNonce, null, null);
     }
 
     /**
@@ -362,15 +524,62 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
     private MockHttpServletResponse executeOnSecurityFilters(MockHttpServletRequest request)
             throws IOException, jakarta.servlet.ServletException {
         // for session local support in Spring
-        new RequestContextListener().requestInitialized(new ServletRequestEvent(request.getServletContext(), request));
+        RequestContextListener listener = new RequestContextListener();
+        ServletRequestEvent event = new ServletRequestEvent(request.getServletContext(), request);
+        listener.requestInitialized(event);
+        try {
+            MockFilterChain chain = new MockFilterChain();
+            MockHttpServletResponse response = new MockHttpServletResponse();
+            GeoServerSecurityFilterChainProxy filterChainProxy =
+                    GeoServerExtensions.bean(GeoServerSecurityFilterChainProxy.class);
+            filterChainProxy.doFilter(request, response, chain);
 
-        MockFilterChain chain = new MockFilterChain();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        GeoServerSecurityFilterChainProxy filterChainProxy =
-                GeoServerExtensions.bean(GeoServerSecurityFilterChainProxy.class);
-        filterChainProxy.doFilter(request, response, chain);
+            return response;
+        } finally {
+            listener.requestDestroyed(event);
+        }
+    }
 
-        return response;
+    /**
+     * Execute a web request on the security filters, capturing the Authentication during filter chain execution. In
+     * Spring Security 6, the SecurityContext is only in SecurityContextHolder during request processing and may not be
+     * saved to the session automatically. This method captures it during execution using a terminal servlet.
+     *
+     * @param request request to execute
+     * @param authRef AtomicReference to store the captured Authentication
+     * @return response from GS
+     * @throws IOException error occurred
+     * @throws jakarta.servlet.ServletException error occurred
+     */
+    private MockHttpServletResponse executeOnSecurityFiltersCapturingAuth(
+            MockHttpServletRequest request, java.util.concurrent.atomic.AtomicReference<Authentication> authRef)
+            throws IOException, jakarta.servlet.ServletException {
+        // for session local support in Spring
+        RequestContextListener listener = new RequestContextListener();
+        ServletRequestEvent event = new ServletRequestEvent(request.getServletContext(), request);
+        listener.requestInitialized(event);
+        try {
+            // Use a terminal servlet to capture the authentication from SecurityContextHolder
+            // during filter chain execution (before it gets cleared)
+            jakarta.servlet.http.HttpServlet terminal = new jakarta.servlet.http.HttpServlet() {
+                @Override
+                protected void service(
+                        jakarta.servlet.http.HttpServletRequest req, jakarta.servlet.http.HttpServletResponse resp) {
+                    authRef.set(org.springframework.security.core.context.SecurityContextHolder.getContext()
+                            .getAuthentication());
+                }
+            };
+
+            MockFilterChain chain = new MockFilterChain(terminal);
+            MockHttpServletResponse response = new MockHttpServletResponse();
+            GeoServerSecurityFilterChainProxy filterChainProxy =
+                    GeoServerExtensions.bean(GeoServerSecurityFilterChainProxy.class);
+            filterChainProxy.doFilter(request, response, chain);
+
+            return response;
+        } finally {
+            listener.requestDestroyed(event);
+        }
     }
 
     /**

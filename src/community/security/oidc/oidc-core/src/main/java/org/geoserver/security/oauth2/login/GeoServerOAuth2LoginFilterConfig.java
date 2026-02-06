@@ -62,8 +62,8 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
      * and after XStream deserialization since this is transient), {@link #getBaseRedirectUri()} resolves dynamically
      * from the current Proxy Base URL. When {@code true}, the explicitly set value is returned.
      *
-     * <p>This allows the dynamic resolution to kick in after config reload (so changes to the global Proxy Base URL
-     * are reflected), while still honoring explicit programmatic or UI-driven overrides within the same session.
+     * <p>This allows the dynamic resolution to kick in after config reload (so changes to the global Proxy Base URL are
+     * reflected), while still honoring explicit programmatic or UI-driven overrides within the same session.
      */
     private transient boolean baseRedirectUriExplicitlySet = false;
 
@@ -211,8 +211,8 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
     }
 
     /**
-     * Resolves the base redirect URI dynamically from the current environment. Appends "/" to ensure consistent trailing
-     * slash. Resolution order:
+     * Resolves the base redirect URI dynamically from the current environment. Appends "/" to ensure consistent
+     * trailing slash. Resolution order:
      *
      * <ol>
      *   <li>{@code PROXY_BASE_URL} environment variable / system property (container deployments)

@@ -288,7 +288,8 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
                         .get()
                         .getValue());
         assertEquals(
-                oidcLogin_redirect_uri,
+                System.getProperty("OPENID_TEST_GS_PROXY_BASE", "http://localhost:8080/geoserver")
+                        + "/web/login/oauth2/code/oidc",
                 params.stream()
                         .filter(x -> x.getName().equals("redirect_uri"))
                         .findFirst()

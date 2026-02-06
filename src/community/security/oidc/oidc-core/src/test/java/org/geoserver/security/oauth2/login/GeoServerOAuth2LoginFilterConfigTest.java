@@ -102,23 +102,17 @@ public class GeoServerOAuth2LoginFilterConfigTest {
         System.setProperty(GeoServerOAuth2LoginFilterConfig.OPENID_TEST_GS_PROXY_BASE, "http://host-a/geoserver");
         GeoServerOAuth2LoginFilterConfig config = new GeoServerOAuth2LoginFilterConfig();
 
-        assertEquals(
-                "http://host-a/geoserver/web/login/oauth2/code/oidc",
-                config.getOidcRedirectUri());
+        assertEquals("http://host-a/geoserver/web/login/oauth2/code/oidc", config.getOidcRedirectUri());
 
         // Simulate a Proxy Base URL change (e.g. admin updated global settings)
         System.setProperty(GeoServerOAuth2LoginFilterConfig.OPENID_TEST_GS_PROXY_BASE, "http://host-b/geoserver");
 
         // Before refresh — per-provider fields still contain old values
-        assertEquals(
-                "http://host-a/geoserver/web/login/oauth2/code/oidc",
-                config.getOidcRedirectUri());
+        assertEquals("http://host-a/geoserver/web/login/oauth2/code/oidc", config.getOidcRedirectUri());
 
         // After refresh (as done by createFilter() or the Wicket AJAX handler) — updated
         config.calculateRedirectUris();
-        assertEquals(
-                "http://host-b/geoserver/web/login/oauth2/code/oidc",
-                config.getOidcRedirectUri());
+        assertEquals("http://host-b/geoserver/web/login/oauth2/code/oidc", config.getOidcRedirectUri());
     }
 
     /** When setBaseRedirectUri is called explicitly, the set value should be honored. */
@@ -131,9 +125,7 @@ public class GeoServerOAuth2LoginFilterConfigTest {
         config.calculateRedirectUris();
 
         assertEquals("http://explicit:8080/geoserver/", config.getBaseRedirectUri());
-        assertEquals(
-                "http://explicit:8080/geoserver/web/login/oauth2/code/oidc",
-                config.getOidcRedirectUri());
+        assertEquals("http://explicit:8080/geoserver/web/login/oauth2/code/oidc", config.getOidcRedirectUri());
     }
 
     /** All four provider redirect URIs should use the same dynamic base. */

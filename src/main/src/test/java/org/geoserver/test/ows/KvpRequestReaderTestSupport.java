@@ -10,9 +10,8 @@ import java.util.List;
 import java.util.Map;
 import org.geoserver.ows.KvpParser;
 import org.geoserver.ows.KvpRequestReader;
-import org.geoserver.ows.util.CaseInsensitiveMap;
 import org.geoserver.ows.util.KvpUtils;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.test.GeoServerSystemTestSupport;
 
 /**
  * Test class for testing instances of {@link KvpRequestReader}.
@@ -22,7 +21,8 @@ import org.geoserver.test.GeoServerTestSupport;
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
-public abstract class KvpRequestReaderTestSupport extends GeoServerTestSupport {
+public abstract class KvpRequestReaderTestSupport extends GeoServerSystemTestSupport {
+
     /**
      * Parses a raw set of kvp's into a parsed set of kvps.
      *
@@ -36,14 +36,5 @@ public abstract class KvpRequestReaderTestSupport extends GeoServerTestSupport {
         if (errors != null && !errors.isEmpty()) throw (Exception) errors.get(0);
 
         return caseInsensitiveKvp(input);
-    }
-
-    protected <T> Map<String, Object> caseInsensitiveKvp(Map<String, Object> input) {
-        // make it case insensitive like the servlet+dispatcher maps
-        Map<String, Object> result = new HashMap<>();
-        for (String key : input.keySet()) {
-            result.put(key.toUpperCase(), input.get(key));
-        }
-        return new CaseInsensitiveMap<>(result);
     }
 }

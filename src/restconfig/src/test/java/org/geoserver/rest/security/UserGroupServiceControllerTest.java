@@ -23,7 +23,7 @@ import org.geoserver.rest.wrapper.RestWrapper;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.SecurityUserGroupServiceConfig;
 import org.geoserver.security.xml.XMLUserGroupServiceConfig;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
@@ -34,17 +34,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.util.UriComponentsBuilder;
 
-public class UserGroupServiceControllerTest extends GeoServerTestSupport {
+public class UserGroupServiceControllerTest extends GeoServerSystemTestSupport {
 
     private static final String TEST_SERVICE_PREFIX = "UGS-TEST-";
 
     private UserGroupServiceController controller;
 
-    @Override
     @Before
     public void oneTimeSetUp() throws Exception {
-        setValidating(true);
-        super.oneTimeSetUp();
         controller = applicationContext.getBean(UserGroupServiceController.class);
     }
 

@@ -17,12 +17,12 @@ import org.geoserver.rest.security.xml.JaxbUser;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.validation.PasswordPolicyException;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
-public class SequentialExecutionControllerTest extends GeoServerTestSupport {
+public class SequentialExecutionControllerTest extends GeoServerSystemTestSupport {
 
     private static final String USER_SERVICE = "default";
 
@@ -30,11 +30,8 @@ public class SequentialExecutionControllerTest extends GeoServerTestSupport {
 
     protected RolesRestController rolesController;
 
-    @Override
     @Before
     public void oneTimeSetUp() throws Exception {
-        setValidating(true);
-        super.oneTimeSetUp();
         usersController = applicationContext.getBean(UsersRestController.class);
         rolesController = applicationContext.getBean(RolesRestController.class);
     }

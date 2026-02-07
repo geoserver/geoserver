@@ -24,7 +24,7 @@ import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.data.DataUtilities;
 import org.geotools.feature.DefaultFeatureCollection;
@@ -32,7 +32,7 @@ import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.geometry.jts.WKTReader2;
 import org.junit.Test;
 
-public class XLSXPPIOTest extends GeoServerTestSupport {
+public class XLSXPPIOTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testEncodeOutputStream() throws Exception {

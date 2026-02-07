@@ -181,18 +181,9 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         super(GetMapRequest.class);
         this.wms = wms;
         this.httpClientConnectionManager = manager;
-    }
-
-    private void addWmsCacheConfigListener() {
-        GeoServer geoServer = wms.getGeoServer();
+        // add listener only once at the beginning, do not let them accumulate when HTTP configuration changes
+        GeoServer geoServer = this.wms.getGeoServer();
         geoServer.addListener(wmsCacheConfigListener);
-    }
-
-    private void removeWmsCacheConfigListener() {
-        GeoServer geoServer = wms.getGeoServer();
-        if (null != geoServer) {
-            geoServer.removeListener(wmsCacheConfigListener);
-        }
     }
 
     private CloseableHttpClient getHttpClient() {
@@ -202,7 +193,6 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                     CacheConfiguration wmsCacheConfig = getCacheConfig();
                     RequestConfig requestConfig = createHttpRequestConfig();
                     this._httpClient = createHttpClient(requestConfig, wmsCacheConfig);
-                    addWmsCacheConfigListener();
                     return this._httpClient;
                 }
             }
@@ -265,7 +255,6 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                 CloseableHttpClient client = this._httpClient;
                 this._httpClient = null;
                 this.cacheCfg = null;
-                removeWmsCacheConfigListener();
                 client.close();
             }
         }

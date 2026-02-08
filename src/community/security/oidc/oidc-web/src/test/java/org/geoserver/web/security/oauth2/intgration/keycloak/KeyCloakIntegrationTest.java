@@ -51,7 +51,7 @@ import org.springframework.web.context.request.RequestContextListener;
  * Basic login is as follows:
  *
  * <p>1. Get the GS homepage (via wicket) <br>
- * 2. There should be a button/anchor that sends the user to "/web/oauth2/authorization/oidc" <br>
+ * 2. There should be a button/anchor that sends the user to "/web/oauth2/authorization/openidconnect__oidc" <br>
  * 3. Click the button <br>
  * 4. Response should be a redirect to keycloak <br>
  * * verify the URL's params <br>
@@ -117,7 +117,7 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
 
         // validate the security context (auth)
         assertTrue(auth.isAuthenticated());
-        assertEquals("oidc", auth.getAuthorizedClientRegistrationId());
+        assertEquals("openidconnect__oidc", auth.getAuthorizedClientRegistrationId());
 
         assertEquals("admin@example.com", auth.getPrincipal().getName());
         assertEquals("admin@example.com", auth.getName());
@@ -163,7 +163,7 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
 
         // validate the security context (auth)
         assertTrue(auth.isAuthenticated());
-        assertEquals("oidc", auth.getAuthorizedClientRegistrationId());
+        assertEquals("openidconnect__oidc", auth.getAuthorizedClientRegistrationId());
 
         assertEquals("user_sample1@example.com", auth.getPrincipal().getName());
         assertEquals("user_sample1@example.com", auth.getName());
@@ -206,11 +206,12 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
         String html = tester.getLastResponseAsString();
 
         // 1. verify that there's a login button for oidc
-        assertTrue(html.contains(
-                "<a class=\"d-inline-block\" href=\"http://localhost/context/web/oauth2/authorization/oidc\">"));
+        assertTrue(
+                html.contains(
+                        "<a class=\"d-inline-block\" href=\"http://localhost/context/web/oauth2/authorization/openidconnect__oidc\">"));
 
         // 2. lets "press" the oidc login link:
-        MockHttpServletRequest webRequest = createRequest("web/oauth2/authorization/oidc", true);
+        MockHttpServletRequest webRequest = createRequest("web/oauth2/authorization/openidconnect__oidc", true);
         MockHttpServletResponse webResponse = executeOnSecurityFilters(webRequest);
         HttpSession session = webRequest.getSession();
 

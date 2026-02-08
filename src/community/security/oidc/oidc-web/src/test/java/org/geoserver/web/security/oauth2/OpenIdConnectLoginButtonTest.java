@@ -25,7 +25,8 @@ public class OpenIdConnectLoginButtonTest extends GeoServerWicketTestSupport {
 
     private static final String MARKUP_IMG =
             "<img src=\"./wicket/resource/org.geoserver.web.security.oauth2.login.OAuth2LoginAuthProviderPanel/openid";
-    private static final String MARKUP_FORM = "href=\"http://localhost/context/web/oauth2/authorization/oidc\"";
+    private static final String MARKUP_FORM =
+            "href=\"http://localhost/context/web/oauth2/authorization/openidconnect__oidc\"";
 
     @Override
     protected String getLogConfiguration() {

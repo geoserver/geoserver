@@ -25,7 +25,13 @@ import java.util.logging.Logger;
 import javax.naming.NamingException;
 import javax.security.auth.x500.X500Principal;
 import org.apache.commons.dbcp.BasicDataSource;
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.cert.X509v3CertificateBuilder;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.operator.ContentSigner;
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.eclipse.jetty.ee10.webapp.WebAppContext;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.plus.jndi.Resource;
@@ -252,39 +258,36 @@ public class Start {
         keyPairGenerator.initialize(1024);
         KeyPair KPair = keyPairGenerator.generateKeyPair();
 
-        // cerate a X509 certifacte generator
-        org.bouncycastle.x509.X509V3CertificateGenerator v3CertGen =
-                new org.bouncycastle.x509.X509V3CertificateGenerator();
+        // create a X509 certificate
+        // validity (10 years)
+        Date notBefore = new Date(System.currentTimeMillis() - 1000L * 60 * 60 * 24 * 30);
+        Date notAfter = new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 365 * 10));
+        // serial
+        BigInteger serial = new BigInteger(64, new SecureRandom()).abs();
 
-        // set validity to 10 years, issuer and subject are equal --> self singed certificate
-        int random = new SecureRandom().nextInt();
-        if (random < 0) random *= -1;
-        v3CertGen.setSerialNumber(BigInteger.valueOf(random));
-        v3CertGen.setIssuerDN(
-                new org.bouncycastle.jce.X509Principal("CN=" + hostname + ", OU=None, O=None L=None, C=None"));
-        v3CertGen.setNotBefore(new Date(System.currentTimeMillis() - 1000L * 60 * 60 * 24 * 30));
-        v3CertGen.setNotAfter(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 365 * 10)));
-        v3CertGen.setSubjectDN(
-                new org.bouncycastle.jce.X509Principal("CN=" + hostname + ", OU=None, O=None L=None, C=None"));
+        // issuer == subject for self-signed
+        X500Name subject = new X500Name("CN=" + hostname + ", OU=None, O=None, L=None, C=None");
 
-        v3CertGen.setPublicKey(KPair.getPublic());
-        v3CertGen.setSignatureAlgorithm("MD5WithRSAEncryption");
+        X509v3CertificateBuilder certBuilder =
+                new JcaX509v3CertificateBuilder(subject, serial, notBefore, notAfter, subject, KPair.getPublic());
 
-        X509Certificate PKCertificate = v3CertGen.generateX509Certificate(KPair.getPrivate());
+        // Sign (use SHA-256, not MD5)
+        ContentSigner signer = new JcaContentSignerBuilder("SHA256withRSA").build(KPair.getPrivate());
 
+        X509Certificate pkCertificate = new JcaX509CertificateConverter().getCertificate(certBuilder.build(signer));
         // store the certificate containing the public key,this file is needed
         // to import the public key in other key store.
         File certFile = new File(keyStoreFile.getParentFile(), hostname + ".cert");
         try (FileOutputStream fos = new FileOutputStream(certFile.getAbsoluteFile())) {
-            fos.write(PKCertificate.getEncoded());
+            fos.write(pkCertificate.getEncoded());
         }
 
         privateKS.setKeyEntry(
                 hostname + ".key", KPair.getPrivate(), password.toCharArray(), new java.security.cert.Certificate[] {
-                    PKCertificate
+                    pkCertificate
                 });
 
-        privateKS.setCertificateEntry(hostname + ".cert", PKCertificate);
+        privateKS.setCertificateEntry(hostname + ".cert", pkCertificate);
 
         privateKS.store(new FileOutputStream(keyStoreFile), password.toCharArray());
     }

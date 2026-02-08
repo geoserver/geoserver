@@ -45,6 +45,7 @@ import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAut
 import org.geoserver.security.config.RoleSource;
 import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig;
 import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginFilterConfig.OpenIdRoleSource;
+import org.geoserver.security.oauth2.login.OAuth2Provider;
 import org.geoserver.security.web.auth.PreAuthenticatedUserNameFilterPanel;
 import org.geoserver.security.web.auth.RoleSourceChoiceRenderer;
 import org.geoserver.web.GeoServerBasePage;
@@ -63,29 +64,6 @@ public class OAuth2LoginAuthProviderPanel
     /** serialVersionUID */
     @Serial
     private static final long serialVersionUID = -3025321797363970333L;
-
-    /** Prefix of Microsoft specific attributes */
-    private static final String PREFIX_MS = "ms";
-
-    /** Prefix of GitHub specific attributes */
-    private static final String PREFIX_GIT_HUB = "gitHub";
-
-    /** Prefix of Google specific attributes */
-    private static final String PREFIX_GOOGLE = "google";
-
-    /** Prefix of custom OIDC specific attributes */
-    private static final String PREFIX_OIDC = "oidc";
-
-    /** Provider keys for the dropdown (OIDC first as default) */
-    private static final List<String> PROVIDER_KEYS =
-            Arrays.asList(PREFIX_OIDC, PREFIX_GOOGLE, PREFIX_GIT_HUB, PREFIX_MS);
-
-    /** Display labels for provider keys */
-    private static final Map<String, String> PROVIDER_LABELS = Map.of(
-            PREFIX_OIDC, "OpenID Connect Provider",
-            PREFIX_GOOGLE, "Google",
-            PREFIX_GIT_HUB, "GitHub",
-            PREFIX_MS, "Microsoft Azure");
 
     public static String oidcPanelCSS;
     public static String oidcPanelJS;
@@ -240,7 +218,7 @@ public class OAuth2LoginAuthProviderPanel
 
     private GeoServerDialog dialog;
     private List<Component> redirectUriComponents = new ArrayList<>();
-    private Map<String, WebMarkupContainer> providerContainers = new LinkedHashMap<>();
+    private Map<OAuth2Provider, WebMarkupContainer> providerContainers = new LinkedHashMap<>();
 
     @SuppressWarnings("serial")
     public OAuth2LoginAuthProviderPanel(String id, IModel<GeoServerOAuth2LoginFilterConfig> model) {
@@ -260,14 +238,14 @@ public class OAuth2LoginAuthProviderPanel
         DropDownChoice<String> providerSelector = new DropDownChoice<>(
                 "providerSelector",
                 new PropertyModel<>(configModel.getObject(), "selectedProvider"),
-                PROVIDER_KEYS,
+                OAuth2Provider.prefixes(),
                 new IChoiceRenderer<>() {
                     @Serial
                     private static final long serialVersionUID = 1L;
 
                     @Override
                     public Object getDisplayValue(String object) {
-                        return PROVIDER_LABELS.getOrDefault(object, object);
+                        return OAuth2Provider.fromPropertyPrefix(object).getDisplayLabel();
                     }
 
                     @Override
@@ -289,14 +267,15 @@ public class OAuth2LoginAuthProviderPanel
         RepeatingView prefixView = new RepeatingView("pfv");
         add(prefixView);
 
-        addProviderComponents(prefixView, PREFIX_GOOGLE, "Google");
-        addProviderComponents(prefixView, PREFIX_GIT_HUB, "GitHub");
-        addProviderComponents(prefixView, PREFIX_MS, "Microsoft Azure");
-        addProviderComponents(prefixView, PREFIX_OIDC, "OpenID Connect Provider");
+        addProviderComponents(prefixView, OAuth2Provider.GOOGLE);
+        addProviderComponents(prefixView, OAuth2Provider.GITHUB);
+        addProviderComponents(prefixView, OAuth2Provider.MICROSOFT);
+        addProviderComponents(prefixView, OAuth2Provider.OIDC);
 
         // Set initial visibility based on the currently selected provider
         String selectedProvider = configModel.getObject().getSelectedProvider();
-        providerContainers.forEach((key, container) -> container.setVisible(key.equals(selectedProvider)));
+        providerContainers.forEach((provider, container) ->
+                container.setVisible(provider.getPropertyPrefix().equals(selectedProvider)));
 
         // AJAX: switch visible provider panel when dropdown changes
         providerSelector.add(new AjaxFormComponentUpdatingBehavior("change") {
@@ -305,8 +284,8 @@ public class OAuth2LoginAuthProviderPanel
                 String selected = providerSelector.getModelObject();
                 configModel.getObject().setSelectedProvider(selected);
                 configModel.getObject().calculateRedirectUris();
-                providerContainers.forEach((key, container) -> {
-                    container.setVisible(key.equals(selected));
+                providerContainers.forEach((provider, container) -> {
+                    container.setVisible(provider.getPropertyPrefix().equals(selected));
                     target.add(container);
                 });
                 redirectUriComponents.stream()
@@ -341,14 +320,14 @@ public class OAuth2LoginAuthProviderPanel
         add(new TextField<>("postLogoutRedirectUri"));
     }
 
-    private void addProviderComponents(RepeatingView pView, String pProviderKey, String pProviderLabel) {
+    private void addProviderComponents(RepeatingView pView, OAuth2Provider provider) {
 
         WebMarkupContainer lContainer = new WebMarkupContainer(pView.newChildId());
         lContainer.setOutputMarkupPlaceholderTag(true);
         pView.add(lContainer);
-        providerContainers.put(pProviderKey, lContainer);
+        providerContainers.put(provider, lContainer);
 
-        lContainer.add(createLabelResourceWithParams("providerHeadline", pProviderLabel));
+        lContainer.add(createLabelResourceWithParams("providerHeadline", provider.getDisplayLabel()));
 
         WebMarkupContainer lSHContainer = new WebMarkupContainer("settings");
         lSHContainer.setOutputMarkupId(true);
@@ -357,8 +336,9 @@ public class OAuth2LoginAuthProviderPanel
 
         // No checkbox needed — provider visibility is controlled by the dropdown selector
 
-        lSHContainer.add(createLabelResourceWithParams("infoFromProvider", pProviderLabel));
-        lSHContainer.add(createLabelResourceWithParams("infoForProvider", pProviderLabel));
+        String pProviderKey = provider.getPropertyPrefix();
+        lSHContainer.add(createLabelResourceWithParams("infoFromProvider", provider.getDisplayLabel()));
+        lSHContainer.add(createLabelResourceWithParams("infoForProvider", provider.getDisplayLabel()));
         lSHContainer.add(new HelpLink("connectionFromParametersHelp", this).setDialog(dialog));
         lSHContainer.add(createTextField("clientId", pProviderKey));
         lSHContainer.add(new HelpLink("clientIdHelp", this).setDialog(dialog));
@@ -377,20 +357,18 @@ public class OAuth2LoginAuthProviderPanel
 
         // -- Provider specifics below --
 
-        boolean lSupportsScope = pProviderKey.equals(PREFIX_MS) || pProviderKey.equals(PREFIX_OIDC);
         WebMarkupContainer lScopeContainer = new WebMarkupContainer("displayOnScopeSupport");
         lSHContainer.add(lScopeContainer);
-        if (lSupportsScope) {
+        if (provider.supportsScopes()) {
             lScopeContainer.add(createTextField("scopes", pProviderKey));
             lScopeContainer.add(new HelpLink("scopesHelp", this).setDialog(dialog));
         } else {
             lScopeContainer.setVisible(false);
         }
 
-        boolean lOidc = pProviderKey.equals(PREFIX_OIDC);
         WebMarkupContainer lOidcContainer = new WebMarkupContainer("displayOnOidc");
         lSHContainer.add(lOidcContainer);
-        if (lOidc) {
+        if (provider.isOidc()) {
             lOidcContainer.add(new DiscoveryPanel("topPanel"));
             lOidcContainer.add(new HelpLink("oidcTokenUriHelp", this).setDialog(dialog));
             lOidcContainer.add(new HelpLink("oidcAuthorizationUriHelp", this).setDialog(dialog));

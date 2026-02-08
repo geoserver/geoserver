@@ -10,8 +10,8 @@ import org.apache.directory.server.core.integ.AbstractLdapTestUnit;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.security.GeoServerSecurityManager;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,7 +34,7 @@ public abstract class LDAPBaseTest extends AbstractLdapTestUnit {
     public static final String ldapServerUrl = LDAPTestUtils.LDAP_SERVER_URL;
     public static final String basePath = LDAPTestUtils.LDAP_BASE_PATH;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
 
         tempFolder = File.createTempFile("ldap", "test");
@@ -57,7 +57,7 @@ public abstract class LDAPBaseTest extends AbstractLdapTestUnit {
 
     protected abstract void createConfig();
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         tempFolder.delete();
 

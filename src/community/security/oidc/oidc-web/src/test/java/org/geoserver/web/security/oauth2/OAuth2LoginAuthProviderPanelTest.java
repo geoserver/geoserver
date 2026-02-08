@@ -28,7 +28,12 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
 
     @Before
     public void setup() {
-        System.setProperty(GeoServerOAuth2LoginFilterConfig.OPENID_TEST_GS_PROXY_BASE, "http://localhost/geoserver");
+        // This system property is the lowest-priority fallback in resolveBaseRedirectUri().
+        // It must match the base URL used in testUserInputSaveModify() so that after save/reload
+        // (where the transient baseRedirectUriExplicitlySet flag resets), the dynamic getter
+        // resolves to the expected value.
+        System.setProperty(
+                GeoServerOAuth2LoginFilterConfig.OPENID_TEST_GS_PROXY_BASE, "https://localhost:9090/geoserver");
     }
 
     @Test

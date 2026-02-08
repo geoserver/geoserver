@@ -198,7 +198,10 @@ public class GeoServerOAuth2LoginIntegrationTest extends GeoServerSystemTestSupp
     private String reqParamNonce;
 
     public void setupWireMock() throws Exception {
-        System.setProperty(GeoServerOAuth2LoginFilterConfig.OPENID_TEST_GS_PROXY_BASE, "http://localhost/geoserver");
+        // Must match baseRedirectUri (without trailing slash) so that after XStream deserialization,
+        // resolveBaseRedirectUri() returns the same base that the test assertions expect.
+        System.setProperty(
+                GeoServerOAuth2LoginFilterConfig.OPENID_TEST_GS_PROXY_BASE, "http://localhost:8080/geoserver");
 
         openIdService = new WireMockServer(wireMockConfig()
                 .dynamicPort()

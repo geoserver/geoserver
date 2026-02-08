@@ -33,7 +33,7 @@ Also, the specific providers (:ref:`Google <community_oidc_google>`, :ref:`GitHu
 
 #. Create a new OIDC Filter
 
-    * Tick the "OpenID Connect Provider Login" checkbox
+    * From the :guilabel:`Provider` dropdown, select :guilabel:`OpenID Connect Provider` (this is the default selection)
     * Use your IDP's Client ID and Client Secret
     * Use your IDP's `openid-configuration` endpoint and "Discover" button to configure most of the GeoServer OIDC Options
     * Look in the "Advanced" configuration section to see if you need any of those options

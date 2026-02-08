@@ -67,18 +67,23 @@
       </ul>
       <br />
 
+      <h3>
+         <wicket:message key="providerSelection"></wicket:message>
+      </h3>
+      <ul>
+         <li>
+            <label for="providerSelector">
+               <span>
+                  <wicket:message key="providerSelectorLabel"></wicket:message>
+               </span>
+            </label>
+            <select wicket:id="providerSelector"></select>
+            <a href="#" wicket:id="providerSelectorHelp" class="help-link"></a>
+         </li>
+      </ul>
+
       <div wicket:id="pfv">
          <h3 wicket:id="providerHeadline"></h3>
-         <ul>
-            <li class="choiceItem">
-               <input wicket:id="enabled" type="checkbox" />
-               <label for="enabled">
-                  <span>
-                     <wicket:message key="enabled"></wicket:message>
-                  </span>
-               </label>
-            </li>
-         </ul>
          <div wicket:id="settings">
             <ul>
                <li>

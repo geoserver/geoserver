@@ -81,7 +81,7 @@ Create the OIDC Filter
     .. figure:: ../img/google-gs1.png
         :align: center
 
-#. Give the it a name like "oidc-azure", then click the "Microsoft Azure Login" checkbox.
+#. Give the it a name like "oidc-azure", then from the :guilabel:`Provider` dropdown select :guilabel:`Microsoft Azure`.
 
 #.  Fill in the required information:
 

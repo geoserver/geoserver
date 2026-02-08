@@ -514,6 +514,33 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
         msEnabled = pMsEnabled;
     }
 
+    /**
+     * Returns the currently selected (active) provider key, derived from the individual enabled flags. Defaults to
+     * {@link OAuth2Provider#OIDC} if no provider is explicitly enabled.
+     *
+     * @return the property prefix of the active {@link OAuth2Provider}
+     */
+    public String getSelectedProvider() {
+        if (googleEnabled) return OAuth2Provider.GOOGLE.getPropertyPrefix();
+        if (gitHubEnabled) return OAuth2Provider.GITHUB.getPropertyPrefix();
+        if (msEnabled) return OAuth2Provider.MICROSOFT.getPropertyPrefix();
+        // OIDC is the default
+        return OAuth2Provider.OIDC.getPropertyPrefix();
+    }
+
+    /**
+     * Selects the given provider by enabling it and disabling all others. This is the model property backing the
+     * provider selection dropdown in the UI.
+     *
+     * @param provider the {@link OAuth2Provider#getPropertyPrefix() property prefix} of the provider to select
+     */
+    public void setSelectedProvider(String provider) {
+        googleEnabled = OAuth2Provider.GOOGLE.getPropertyPrefix().equals(provider);
+        gitHubEnabled = OAuth2Provider.GITHUB.getPropertyPrefix().equals(provider);
+        msEnabled = OAuth2Provider.MICROSOFT.getPropertyPrefix().equals(provider);
+        oidcEnabled = OAuth2Provider.OIDC.getPropertyPrefix().equals(provider);
+    }
+
     /** @return the msClientId */
     public String getMsClientId() {
         return msClientId;

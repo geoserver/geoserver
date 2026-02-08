@@ -384,7 +384,7 @@ Create the OIDC Filter
     .. figure:: ../img/google-gs1.png
         :align: center
 
-#. Give the it a name like "test-keycloak", then click the "OpenID Connect Provider Login" checkbox.
+#. Give the it a name like "test-keycloak", then from the :guilabel:`Provider` dropdown select :guilabel:`OpenID Connect Provider` (this is the default selection).
     
     .. figure:: ../img/keycloak-gs-filter1.png
         :align: center

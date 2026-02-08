@@ -63,7 +63,7 @@ Create the OIDC Filter
       .. figure:: ../img/google-gs1.png
          :align: center
 
-   * Give the it a name like "oidc-github", then click the "GitHub Login" checkbox and copy-and-paste in the Client ID and Client Secret (from when you configured the github client).
+   * Give the it a name like "oidc-github", then from the :guilabel:`Provider` dropdown select :guilabel:`GitHub` and copy-and-paste in the Client ID and Client Secret (from when you configured the github client).
        
       .. figure:: ../img/github-gs1.png
          :align: center         

@@ -117,7 +117,7 @@ Create the OIDC Filter
       .. figure:: ../img/google-gs1.png
          :align: center
 
-   * Give the it a name like "test-google", then click the "Google Login" checkbox and copy-and-paste in the Client ID and Client Secret (from when you configured the google client).
+   * Give the it a name like "test-google", then from the :guilabel:`Provider` dropdown select :guilabel:`Google` and copy-and-paste in the Client ID and Client Secret (from when you configured the google client).
        
       .. figure:: ../img/google-gs2.png
          :align: center

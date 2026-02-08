@@ -10,6 +10,7 @@ import static java.util.stream.Collectors.toList;
 import static org.geoserver.security.filter.GeoServerLogoutFilter.LOGOUT_REDIRECT_ATTR;
 import static org.geoserver.security.oauth2.common.GeoServerOAuth2UserServices.newOAuth2UserService;
 import static org.geoserver.security.oauth2.common.GeoServerOAuth2UserServices.newOidcUserService;
+import static org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId.scopedRegId;
 import static org.geoserver.security.oauth2.login.OAuth2LoginButtonEnablementEvent.disableButtonEvent;
 import static org.geoserver.security.oauth2.login.OAuth2LoginButtonEnablementEvent.enableButtonEvent;
 import static org.springframework.security.oauth2.core.AuthorizationGrantType.AUTHORIZATION_CODE;
@@ -168,8 +169,7 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
     }
 
     private List<Filter> createFiltersImpl() throws Exception {
-        // Attention: Singleton (also picked up by Spring) uses this config. If multiple instances
-        // of this filter shall be allowed in the future (not planned), adjust this accordingly.
+        // Each builder instance gets its own prototype-scoped tokenDecoderFactory (see applicationContext.xml).
         tokenDecoderFactory.setGeoServerOAuth2LoginFilterConfig(configuration);
 
         http.oauth2Login(oauthConfig -> {
@@ -245,30 +245,37 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
     }
 
     private InMemoryClientRegistrationRepository createClientRegistrationRepository() {
+        String lFilterName = configuration.getName();
         List<ClientRegistration> lRegistrations = new ArrayList<>();
         if (configuration.isGoogleEnabled()) {
             lRegistrations.add(createGoogleClientRegistration());
-            eventPublisher.publishEvent(enableButtonEvent(this, REG_ID_GOOGLE));
+            eventPublisher.publishEvent(
+                    enableButtonEvent(this, REG_ID_GOOGLE, scopedRegId(lFilterName, REG_ID_GOOGLE)));
         } else {
-            eventPublisher.publishEvent(disableButtonEvent(this, REG_ID_GOOGLE));
+            eventPublisher.publishEvent(
+                    disableButtonEvent(this, REG_ID_GOOGLE, scopedRegId(lFilterName, REG_ID_GOOGLE)));
         }
         if (configuration.isGitHubEnabled()) {
             lRegistrations.add(createGitHubClientRegistration());
-            eventPublisher.publishEvent(enableButtonEvent(this, REG_ID_GIT_HUB));
+            eventPublisher.publishEvent(
+                    enableButtonEvent(this, REG_ID_GIT_HUB, scopedRegId(lFilterName, REG_ID_GIT_HUB)));
         } else {
-            eventPublisher.publishEvent(disableButtonEvent(this, REG_ID_GIT_HUB));
+            eventPublisher.publishEvent(
+                    disableButtonEvent(this, REG_ID_GIT_HUB, scopedRegId(lFilterName, REG_ID_GIT_HUB)));
         }
         if (configuration.isMsEnabled()) {
             lRegistrations.add(createMicrosoftClientRegistration());
-            eventPublisher.publishEvent(enableButtonEvent(this, REG_ID_MICROSOFT));
+            eventPublisher.publishEvent(
+                    enableButtonEvent(this, REG_ID_MICROSOFT, scopedRegId(lFilterName, REG_ID_MICROSOFT)));
         } else {
-            eventPublisher.publishEvent(disableButtonEvent(this, REG_ID_MICROSOFT));
+            eventPublisher.publishEvent(
+                    disableButtonEvent(this, REG_ID_MICROSOFT, scopedRegId(lFilterName, REG_ID_MICROSOFT)));
         }
         if (configuration.isOidcEnabled()) {
             lRegistrations.add(createCustomProviderRegistration());
-            eventPublisher.publishEvent(enableButtonEvent(this, REG_ID_OIDC));
+            eventPublisher.publishEvent(enableButtonEvent(this, REG_ID_OIDC, scopedRegId(lFilterName, REG_ID_OIDC)));
         } else {
-            eventPublisher.publishEvent(disableButtonEvent(this, REG_ID_OIDC));
+            eventPublisher.publishEvent(disableButtonEvent(this, REG_ID_OIDC, scopedRegId(lFilterName, REG_ID_OIDC)));
         }
         return new InMemoryClientRegistrationRepository(lRegistrations);
     }
@@ -296,7 +303,7 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
 
         ClientRegistration lReg = CommonOAuth2Provider.GOOGLE
                 // registrationId is used in paths (login and authorization)
-                .getBuilder(REG_ID_GOOGLE)
+                .getBuilder(scopedRegId(configuration.getName(), REG_ID_GOOGLE))
                 .clientId(configuration.getGoogleClientId())
                 .clientSecret(configuration.getGoogleClientSecret())
                 .userNameAttributeName(configuration.getGoogleUserNameAttribute())
@@ -322,7 +329,7 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
 
         ClientRegistration lReg = CommonOAuth2Provider.GITHUB
                 // registrationId is used in paths (login and authorization)
-                .getBuilder(REG_ID_GIT_HUB)
+                .getBuilder(scopedRegId(configuration.getName(), REG_ID_GIT_HUB))
                 .clientId(configuration.getGitHubClientId())
                 .clientSecret(configuration.getGitHubClientSecret())
                 .userNameAttributeName(configuration.getGitHubUserNameAttribute())
@@ -342,7 +349,7 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
         String[] lScopes = ScopeUtils.valueOf(lScopeTxt);
         ClientRegistration lReg = ClientRegistration
                 // registrationId is used in paths (login and authorization)
-                .withRegistrationId(REG_ID_MICROSOFT)
+                .withRegistrationId(scopedRegId(configuration.getName(), REG_ID_MICROSOFT))
                 .clientId(configuration.getMsClientId())
                 .clientSecret(configuration.getMsClientSecret())
                 .userNameAttributeName(configuration.getMsUserNameAttribute())
@@ -370,7 +377,7 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
 
         ClientRegistration lReg = ClientRegistration
                 // registrationId is used in paths (login and authorization)
-                .withRegistrationId(REG_ID_OIDC)
+                .withRegistrationId(scopedRegId(configuration.getName(), REG_ID_OIDC))
                 .clientId(configuration.getOidcClientId())
                 .clientSecret(configuration.getOidcClientSecret())
                 .userNameAttributeName(configuration.getOidcUserNameAttribute())
@@ -548,10 +555,12 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
         // Resolve the (single) enabled provider's JWKS endpoint
         String jwkSetUri = null;
         if (configuration.isGoogleEnabled()) {
-            ClientRegistration reg = getClientRegistrationRepository().findByRegistrationId(REG_ID_GOOGLE);
+            ClientRegistration reg = getClientRegistrationRepository()
+                    .findByRegistrationId(scopedRegId(configuration.getName(), REG_ID_GOOGLE));
             jwkSetUri = reg == null ? null : reg.getProviderDetails().getJwkSetUri();
         } else if (configuration.isMsEnabled()) {
-            ClientRegistration reg = getClientRegistrationRepository().findByRegistrationId(REG_ID_MICROSOFT);
+            ClientRegistration reg = getClientRegistrationRepository()
+                    .findByRegistrationId(scopedRegId(configuration.getName(), REG_ID_MICROSOFT));
             jwkSetUri = reg == null ? null : reg.getProviderDetails().getJwkSetUri();
         } else if (configuration.isOidcEnabled()) {
             jwkSetUri = configuration.getOidcJwkSetUri();

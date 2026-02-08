@@ -70,7 +70,7 @@ public class MonitorConfig implements GeoServerPluginConfigurator, ApplicationCo
     static final String DNS_CACHE_DEFAULT = "expireAfterWrite=15m,maximumSize=1000";
 
     public MonitorConfig() {
-        props = new PropertyFileWatcher.LinkedProperties();
+        props = new org.geoserver.util.LinkedProperties();
         props.put("storage", "memory");
         props.put("mode", "history");
         props.put("maxBodySize", "1024");
@@ -276,7 +276,9 @@ public class MonitorConfig implements GeoServerPluginConfigurator, ApplicationCo
         } else if (props != null) {
             File monitoringConfigurationFile = Resources.file(resourceLoader.get(MonitorConfig.PROPERTYFILENAME), true);
             try (OutputStream out = Files.out(monitoringConfigurationFile)) {
-                props.store(out, "");
+                org.geoserver.util.SortedProperties sortedProps = new org.geoserver.util.SortedProperties();
+                sortedProps.putAll(props);
+                sortedProps.store(out, "");
                 out.flush();
             }
         }

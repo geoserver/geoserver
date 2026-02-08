@@ -10,7 +10,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Properties;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.backuprestore.imagemosaic.ImageMosaicAdditionalResource;
@@ -22,6 +21,7 @@ import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.util.Filter;
+import org.geoserver.util.SortedProperties;
 
 /** @author Alessio Fabiani, GeoSolutions */
 public class ImageMosaicAdditionalResourceWriter extends ImageMosaicAdditionalResource
@@ -89,7 +89,7 @@ public class ImageMosaicAdditionalResourceWriter extends ImageMosaicAdditionalRe
         // Populate "Name=<mosaicName>" property into the indexer
         final File indexerFile = new File(targetMosaicBaseFolder.dir(), "indexer.properties");
 
-        Properties indexerProperties = new Properties();
+        SortedProperties indexerProperties = new SortedProperties();
 
         if (indexerFile.exists() && indexerFile.canRead()) {
             indexerProperties.load(new FileInputStream(indexerFile));

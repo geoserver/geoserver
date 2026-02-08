@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.util.LinkedProperties;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -56,8 +57,8 @@ public class RESTAccessRuleDAO extends AbstractAccessRuleDAO<String> {
     }
 
     @Override
-    protected Properties toProperties() {
-        Properties props = new Properties();
+    protected LinkedProperties toProperties() {
+        LinkedProperties props = new LinkedProperties();
         for (String rule : rules) {
             rule = rule.replaceAll(":", ";");
             if (!PATTERN.matcher(rule).matches()) {

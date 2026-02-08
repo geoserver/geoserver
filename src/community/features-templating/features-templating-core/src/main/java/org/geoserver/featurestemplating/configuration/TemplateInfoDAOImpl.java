@@ -32,6 +32,7 @@ import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.PropertyFileWatcher;
+import org.geoserver.util.SortedProperties;
 
 /** A template info DAO that use a property file for persistence. */
 public class TemplateInfoDAOImpl implements TemplateInfoDAO {
@@ -194,7 +195,9 @@ public class TemplateInfoDAOImpl implements TemplateInfoDAO {
         Properties p = toProperties();
         Resource propFile = dd.get(TEMPLATE_DIR, PROPERTY_FILE_NAME);
         try (OutputStream os = propFile.out()) {
-            p.store(os, null);
+            SortedProperties sortedProps = new SortedProperties();
+            sortedProps.putAll(p);
+            sortedProps.store(os, null);
         } catch (Exception e) {
             throw new RuntimeException("Could not write rules to " + PROPERTY_FILE_NAME);
         }

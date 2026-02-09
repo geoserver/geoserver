@@ -103,7 +103,9 @@ public class KeyCloakIntegrationTest extends KeyCloakIntegrationTestSupport {
     @BeforeClass
     public static void beforeClassLocal() {
         // for test cases this needs to be set by the OIDC module so it knows the mock server's base URL
-        System.setProperty("OPENID_TEST_GS_PROXY_BASE", "http://localhost/geoserver");
+        // Must match baseRedirectUri (without trailing slash) set in onSetUp() so that after
+        // XStream deserialization, resolveBaseRedirectUri() returns the same base.
+        System.setProperty("OPENID_TEST_GS_PROXY_BASE", "http://localhost:8080/geoserver");
     }
 
     /**

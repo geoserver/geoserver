@@ -49,6 +49,11 @@ public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
     }
 
     @Override
+    protected String getServiceType() {
+        return "WPS";
+    }
+
+    @Override
     protected void build(IModel info, final Form form) {
         TextField<Integer> connectionTimeout = new TextField<>("connectionTimeout", Integer.class);
         connectionTimeout.add(RangeValidator.minimum(-1));

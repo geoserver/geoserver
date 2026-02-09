@@ -15,10 +15,12 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.ows.util.OwsUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.security.DisabledServiceResourceFilter;
+import org.geotools.util.Version;
 import org.geotools.util.decorate.Wrapper;
 import org.geotools.util.logging.Logging;
 
@@ -73,7 +75,18 @@ public class DisabledServiceCheck implements DispatcherCallback {
     @Override
     public Service serviceDispatched(Request request, Service service) {
         try {
-            ServiceInfo info = lookupServiceInfo(service);
+            ServiceInfo cachedInfo = lookupServiceInfo(service);
+            ServiceInfo info = null;
+            if (cachedInfo != null) {
+                GeoServer geoServer = GeoServerExtensions.bean(GeoServer.class);
+                if (geoServer != null && cachedInfo.getId() != null) {
+                    info = geoServer.getService(cachedInfo.getId(), ServiceInfo.class);
+                }
+                if (info == null) {
+                    info = cachedInfo;
+                }
+            }
+
             if (info == null) {
                 // log a warning, we could not perform an important check
                 LOGGER.warning(
@@ -86,6 +99,21 @@ public class DisabledServiceCheck implements DispatcherCallback {
                     throw new ServiceException(
                             "Service " + info.getName() + " is disabled", ServiceException.SERVICE_UNAVAILABLE);
                 }
+
+                // check if the requested version is disabled
+                String requestedVersion = request.getVersion();
+                if (requestedVersion != null) {
+                    List<Version> disabledVersions = info.getDisabledVersions();
+                    if (disabledVersions != null && !disabledVersions.isEmpty()) {
+                        Version reqVersion = new Version(requestedVersion);
+                        if (disabledVersions.contains(reqVersion)) {
+                            throw new ServiceException(
+                                    "Service " + info.getName() + " version " + requestedVersion + " is disabled",
+                                    ServiceException.SERVICE_UNAVAILABLE);
+                        }
+                    }
+                }
+
                 // check if service is disabled for layer
                 String context = context(request);
                 if (context != null && context.contains("/")) {

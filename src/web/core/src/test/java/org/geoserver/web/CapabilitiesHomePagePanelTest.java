@@ -5,11 +5,17 @@
  */
 package org.geoserver.web;
 
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import org.apache.wicket.markup.html.WebPage;
+import org.geoserver.config.ServiceInfo;
+import org.geoserver.config.impl.ServiceInfoImpl;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.Service;
 import org.geotools.util.Version;
@@ -26,6 +32,22 @@ public class CapabilitiesHomePagePanelTest extends GeoServerWicketTestSupport {
          * WicketTester.assertListView does not work for a detached component, so this void page
          * acts as container
          */
+    }
+
+    /** Helper class that exposes a ServiceInfo with configurable disabled versions. */
+    private static class FakeServiceBackingObject {
+        private final ServiceInfo serviceInfo;
+
+        FakeServiceBackingObject(boolean enabled, List<Version> disabledVersions) {
+            ServiceInfoImpl info = new ServiceInfoImpl();
+            info.setEnabled(enabled);
+            info.setDisabledVersions(disabledVersions);
+            this.serviceInfo = info;
+        }
+
+        public ServiceInfo getServiceInfo() {
+            return serviceInfo;
+        }
     }
 
     @SuppressWarnings("deprecation")
@@ -90,5 +112,94 @@ public class CapabilitiesHomePagePanelTest extends GeoServerWicketTestSupport {
         } finally {
             GeoServerExtensionsHelper.clear();
         }
+    }
+
+    @Test
+    public void testDisabledVersionsNotShown() {
+        // 1.0.0 is disabled, 1.1.0 is enabled
+        List<Version> disabled = Collections.singletonList(new Version("1.0.0"));
+        Object backing = new FakeServiceBackingObject(true, disabled);
+
+        Service svc1 = new Service("TestSvc", backing, new Version("1.0.0"), Arrays.asList("GetCapabilities"));
+        Service svc2 = new Service("TestSvc", backing, new Version("1.1.0"), Arrays.asList("GetCapabilities"));
+
+        try {
+            GeoServerExtensionsHelper.singleton("testSvc1", svc1);
+            GeoServerExtensionsHelper.singleton("testSvc2", svc2);
+
+            ServiceInfoCapabilitiesProvider provider = new ServiceInfoCapabilitiesProvider();
+            CapabilitiesHomePagePanel panel = (CapabilitiesHomePagePanel) provider.getCapabilitiesComponent("capsList");
+
+            TestPage page = new TestPage();
+            page.add(panel);
+            tester.startPage(page);
+
+            // only version 1.1.0 should appear
+            tester.assertLabel("capsList:services:0:link:service", "TestSvc");
+            tester.assertLabel("capsList:services:0:link:version", "1.1.0");
+        } finally {
+            GeoServerExtensionsHelper.clear();
+        }
+    }
+
+    @Test
+    public void testAllVersionsShownWhenNoneDisabled() {
+        Object backing = new FakeServiceBackingObject(true, new ArrayList<>());
+        Service svc1 = new Service("TestSvc", backing, new Version("1.0.0"), Arrays.asList("GetCapabilities"));
+        Service svc2 = new Service("TestSvc", backing, new Version("1.1.0"), Arrays.asList("GetCapabilities"));
+
+        try {
+            GeoServerExtensionsHelper.singleton("testSvc1", svc1);
+            GeoServerExtensionsHelper.singleton("testSvc2", svc2);
+
+            ServiceInfoCapabilitiesProvider provider = new ServiceInfoCapabilitiesProvider();
+            CapabilitiesHomePagePanel panel = (CapabilitiesHomePagePanel) provider.getCapabilitiesComponent("capsList");
+
+            TestPage page = new TestPage();
+            page.add(panel);
+            tester.startPage(page);
+
+            // both versions should appear
+            tester.assertLabel("capsList:services:0:link:version", "1.1.0");
+            tester.assertLabel("capsList:services:1:link:version", "1.0.0");
+        } finally {
+            GeoServerExtensionsHelper.clear();
+        }
+    }
+
+    @Test
+    public void testDisabledServiceNotShown() {
+        Object backing = new FakeServiceBackingObject(false, new ArrayList<>());
+        Service svc1 = new Service("TestSvc", backing, new Version("1.0.0"), Arrays.asList("GetCapabilities"));
+
+        try {
+            GeoServerExtensionsHelper.singleton("testSvc1", svc1);
+
+            ServiceInfoCapabilitiesProvider provider = new ServiceInfoCapabilitiesProvider();
+            CapabilitiesHomePagePanel panel = (CapabilitiesHomePagePanel) provider.getCapabilitiesComponent("capsList");
+
+            if (panel != null) {
+                TestPage page = new TestPage();
+                page.add(panel);
+                tester.startPage(page);
+
+                int serviceCount = getServiceCount(panel);
+                for (int i = 0; i < serviceCount; i++) {
+                    String serviceName = tester.getComponentFromLastRenderedPage(
+                                    "capsList:services:" + i + ":link:service")
+                            .getDefaultModelObjectAsString();
+                    assertNotEquals("Disabled service TestSvc should not appear in panel", "TestSvc", serviceName);
+                }
+            }
+        } finally {
+            GeoServerExtensionsHelper.clear();
+        }
+    }
+
+    private int getServiceCount(CapabilitiesHomePagePanel panel) {
+        // Access the panel's model to count services
+        @SuppressWarnings("unchecked")
+        List<?> services = (List<?>) panel.getDefaultModelObject();
+        return services != null ? services.size() : 0;
     }
 }

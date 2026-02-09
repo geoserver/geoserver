@@ -49,6 +49,8 @@ public class ServiceInfoImpl implements ServiceInfo {
 
     protected List<Version> versions = new ArrayList<>();
 
+    protected List<Version> disabledVersions = new ArrayList<>();
+
     protected List<KeywordInfo> keywords = new ArrayList<>();
 
     protected List<String> exceptionFormats = new ArrayList<>();
@@ -239,6 +241,16 @@ public class ServiceInfoImpl implements ServiceInfo {
     }
 
     @Override
+    public List<Version> getDisabledVersions() {
+        return disabledVersions;
+    }
+
+    @Override
+    public void setDisabledVersions(List<Version> disabledVersions) {
+        this.disabledVersions = disabledVersions;
+    }
+
+    @Override
     public List<String> getExceptionFormats() {
         return exceptionFormats;
     }
@@ -359,6 +371,7 @@ public class ServiceInfoImpl implements ServiceInfo {
         result = prime * result + ((title == null) ? 0 : title.hashCode());
         result = prime * result + (verbose ? 1231 : 1237);
         result = prime * result + ((versions == null) ? 0 : versions.hashCode());
+        result = prime * result + ((disabledVersions == null) ? 0 : disabledVersions.hashCode());
         return result;
     }
 
@@ -416,6 +429,9 @@ public class ServiceInfoImpl implements ServiceInfo {
         if (versions == null) {
             if (other.getVersions() != null) return false;
         } else if (!versions.equals(other.getVersions())) return false;
+        if (disabledVersions == null) {
+            if (other.getDisabledVersions() != null) return false;
+        } else if (!disabledVersions.equals(other.getDisabledVersions())) return false;
         if (workspace == null) {
             if (other.getWorkspace() != null) return false;
         } else if (!workspace.equals(other.getWorkspace())) return false;

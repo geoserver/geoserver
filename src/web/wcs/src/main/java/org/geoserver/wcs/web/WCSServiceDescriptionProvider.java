@@ -97,10 +97,17 @@ public class WCSServiceDescriptionProvider extends ServiceDescriptionProvider {
             return links;
         }
 
+        WCSInfo info = info(workspaceInfo, layerInfo);
+        List<Version> disabledVersions = (info != null) ? info.getDisabledVersions() : null;
+
         List<Service> extensions = GeoServerExtensions.extensions(Service.class);
 
         for (Service service : extensions) {
             if (SERVICE_TYPE.equalsIgnoreCase(service.getId()) && SUPPORTED_VERSIONS.contains(service.getVersion())) {
+                if (disabledVersions != null && disabledVersions.contains(service.getVersion())) {
+                    continue;
+                }
+
                 String link = null;
                 if (service.getOperations().contains("GetCapabilities")) {
                     link = getCapabilitiesURL(workspaceInfo, layerInfo, service);

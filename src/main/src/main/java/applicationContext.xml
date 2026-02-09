@@ -192,7 +192,10 @@
   <bean id="defaultCatalogSecurityFactory" class="org.geoserver.security.decorators.DefaultSecureCatalogFactory"/>
   
   <bean id="disabledServiceChecker" class="org.geoserver.ows.DisabledServiceCheck"/>
-  
+
+  <!-- service version filter for disabled versions -->
+  <bean id="disabledServiceVersionFilter" class="org.geoserver.ows.DisabledServiceVersionFilter"/>
+
   <bean id="dispatcherMapping" 
     class="org.geoserver.ows.OWSHandlerMapping">
     <constructor-arg ref="catalog"/>

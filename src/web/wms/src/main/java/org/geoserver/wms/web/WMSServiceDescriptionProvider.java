@@ -18,6 +18,7 @@ import org.geoserver.web.ServiceDescriptionProvider;
 import org.geoserver.web.ServiceLinkDescription;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WebMapService;
+import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 
 /** Provide description of WMS services for welcome page. */
@@ -74,10 +75,18 @@ public class WMSServiceDescriptionProvider extends ServiceDescriptionProvider {
         if (workspaceInfo == null && !geoserver.getGlobal().isGlobalServices()) {
             return links;
         }
+
+        WMSInfo info = info(workspaceInfo, layerInfo);
+        List<Version> disabledVersions = (info != null) ? info.getDisabledVersions() : null;
+
         List<Service> extensions = GeoServerExtensions.extensions(Service.class);
 
         for (Service service : extensions) {
             if (service.getService() instanceof WebMapService) {
+                if (disabledVersions != null && disabledVersions.contains(service.getVersion())) {
+                    continue;
+                }
+
                 String link = null;
                 if (service.getOperations().contains("GetCapabilities")) {
                     link = getCapabilitiesURL(workspaceInfo, layerInfo, service);

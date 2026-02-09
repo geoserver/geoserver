@@ -42,8 +42,15 @@ public class ServiceInfoCapabilitiesProvider implements CapabilitiesHomePageLink
             } else {
                 try {
                     ServiceInfo serviceInfo = DisabledServiceCheck.lookupServiceInfo(service);
-                    if (serviceInfo != null && !serviceInfo.isEnabled()) {
-                        continue;
+                    if (serviceInfo != null) {
+                        if (!serviceInfo.isEnabled()) {
+                            continue;
+                        }
+
+                        List<org.geotools.util.Version> disabledVersions = serviceInfo.getDisabledVersions();
+                        if (disabledVersions != null && disabledVersions.contains(service.getVersion())) {
+                            continue;
+                        }
                     }
                 } catch (Exception unexpected) {
                     LOGGER.fine("Error while looking up service info for service ");

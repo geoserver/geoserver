@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Optional;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -96,9 +97,9 @@ public class GeoServerOAuth2LoginFilterConfigTest {
 
     // ── JIRA #2: Dynamic redirect URI resolution ────────────────────────────
 
-    /** Redirect URIs should reflect the current base after calling calculateRedirectUris(). */
+    /** Redirect URIs should reflect the current base dynamically, without needing calculateRedirectUris(). */
     @Test
-    public void testRedirectUris_refreshFromCurrentBase() {
+    public void testRedirectUris_dynamicallyReflectCurrentBase() {
         System.setProperty(GeoServerOAuth2LoginFilterConfig.OPENID_TEST_GS_PROXY_BASE, "http://host-a/geoserver");
         GeoServerOAuth2LoginFilterConfig config = new GeoServerOAuth2LoginFilterConfig();
 
@@ -107,11 +108,8 @@ public class GeoServerOAuth2LoginFilterConfigTest {
         // Simulate a Proxy Base URL change (e.g. admin updated global settings)
         System.setProperty(GeoServerOAuth2LoginFilterConfig.OPENID_TEST_GS_PROXY_BASE, "http://host-b/geoserver");
 
-        // Before refresh — per-provider fields still contain old values
-        assertEquals("http://host-a/geoserver/web/login/oauth2/code/oidc", config.getOidcRedirectUri());
-
-        // After refresh (as done by createFilter() or the Wicket AJAX handler) — updated
-        config.calculateRedirectUris();
+        // Getters are now dynamic — they immediately reflect the new base without
+        // requiring a call to calculateRedirectUris()
         assertEquals("http://host-b/geoserver/web/login/oauth2/code/oidc", config.getOidcRedirectUri());
     }
 
@@ -246,5 +244,68 @@ public class GeoServerOAuth2LoginFilterConfigTest {
     public void testSelectedProvider_defaultsToOidc() {
         GeoServerOAuth2LoginFilterConfig config = new GeoServerOAuth2LoginFilterConfig();
         assertEquals("oidc", config.getSelectedProvider());
+    }
+
+    // ── unwrapToString: handles Optional<String> from GeoServer 3.x ─────────
+
+    /** unwrapToString should extract the inner value from Optional.of(string). */
+    @Test
+    public void testUnwrapToString_unwrapsOptionalString() {
+        Object optValue = Optional.of("https://example.com/geoserver");
+        String result = GeoServerOAuth2LoginFilterConfig.unwrapToString(optValue);
+        assertEquals("https://example.com/geoserver", result);
+        assertFalse("Must not contain Optional[ wrapper", result.contains("Optional["));
+    }
+
+    /** unwrapToString should return null for Optional.empty(). */
+    @Test
+    public void testUnwrapToString_emptyOptionalReturnsNull() {
+        assertNull(GeoServerOAuth2LoginFilterConfig.unwrapToString(Optional.empty()));
+    }
+
+    /** unwrapToString should pass through a plain String unchanged. */
+    @Test
+    public void testUnwrapToString_plainStringPassesThrough() {
+        assertEquals(
+                "https://example.com/geoserver",
+                GeoServerOAuth2LoginFilterConfig.unwrapToString("https://example.com/geoserver"));
+    }
+
+    /** unwrapToString should return null for null input. */
+    @Test
+    public void testUnwrapToString_nullReturnsNull() {
+        assertNull(GeoServerOAuth2LoginFilterConfig.unwrapToString(null));
+    }
+
+    // ── Dynamic postLogoutRedirectUri ───────────────────────────────────────
+
+    /** postLogoutRedirectUri should dynamically reflect the current base URI. */
+    @Test
+    public void testPostLogoutRedirectUri_dynamicallyReflectsCurrentBase() {
+        System.setProperty(GeoServerOAuth2LoginFilterConfig.OPENID_TEST_GS_PROXY_BASE, "http://host-a/geoserver");
+        GeoServerOAuth2LoginFilterConfig config = new GeoServerOAuth2LoginFilterConfig();
+
+        assertEquals("http://host-a/geoserver/web/", config.getPostLogoutRedirectUri());
+
+        // Simulate a Proxy Base URL change
+        System.setProperty(GeoServerOAuth2LoginFilterConfig.OPENID_TEST_GS_PROXY_BASE, "http://host-b/geoserver");
+
+        // Should reflect the new base immediately
+        assertEquals("http://host-b/geoserver/web/", config.getPostLogoutRedirectUri());
+    }
+
+    /** All three UI fields should use the same dynamic base. */
+    @Test
+    public void testAllThreeUiFields_useSameDynamicBase() {
+        System.setProperty(
+                GeoServerOAuth2LoginFilterConfig.OPENID_TEST_GS_PROXY_BASE,
+                "https://geoserver-dev.corp.example.com/geoserver");
+        GeoServerOAuth2LoginFilterConfig config = new GeoServerOAuth2LoginFilterConfig();
+
+        assertEquals("https://geoserver-dev.corp.example.com/geoserver/", config.getBaseRedirectUri());
+        assertEquals("https://geoserver-dev.corp.example.com/geoserver/web/", config.getPostLogoutRedirectUri());
+        assertEquals(
+                "https://geoserver-dev.corp.example.com/geoserver/web/login/oauth2/code/oidc",
+                config.getOidcRedirectUri());
     }
 }

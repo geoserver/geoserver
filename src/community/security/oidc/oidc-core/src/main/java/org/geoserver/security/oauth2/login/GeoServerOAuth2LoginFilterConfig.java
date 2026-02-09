@@ -10,7 +10,6 @@ import static org.geoserver.security.oauth2.login.GeoServerOAuth2LoginAuthentica
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
@@ -228,15 +227,17 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
         //    deployments where the env var overrides global.xml at runtime
         String envProxyBase = GeoServerExtensions.getProperty("PROXY_BASE_URL");
         if (StringUtils.hasText(envProxyBase)) {
-            return envProxyBase.endsWith("/") ? envProxyBase : envProxyBase + "/";
+            return ensureTrailingSlash(envProxyBase);
         }
         // 2. proxyBaseUrl from GeoServer settings (global.xml or per-workspace)
-        Optional<String> settingsProxyBase = Optional.ofNullable(GeoServerExtensions.bean(GeoServer.class))
-                .map(gs -> gs.getSettings())
-                .map(s -> s.getProxyBaseUrl());
-        if (settingsProxyBase.isPresent() && StringUtils.hasText(settingsProxyBase.get())) {
-            String url = settingsProxyBase.get();
-            return url.endsWith("/") ? url : url + "/";
+        //    In GeoServer 3.x, getProxyBaseUrl() returns Optional<String> instead of String.
+        //    Calling Optional.toString() produces "Optional[url]", so we must unwrap it.
+        GeoServer gs = GeoServerExtensions.bean(GeoServer.class);
+        if (gs != null && gs.getSettings() != null) {
+            String url = unwrapToString(gs.getSettings().getProxyBaseUrl());
+            if (StringUtils.hasText(url)) {
+                return ensureTrailingSlash(url);
+            }
         }
         // 3. derive from current HTTP request context
         if (RequestContextHolder.getRequestAttributes() != null) {
@@ -244,6 +245,30 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
         }
         // 4. fallback to run tests without a full environment
         return GeoServerExtensions.getProperty(OPENID_TEST_GS_PROXY_BASE);
+    }
+
+    /** Appends "/" if not already present. */
+    private static String ensureTrailingSlash(String url) {
+        return url.endsWith("/") ? url : url + "/";
+    }
+
+    /**
+     * Converts a value to a plain String, unwrapping {@link java.util.Optional} if the runtime type is Optional.
+     *
+     * <p>In GeoServer 3.x, {@code SettingsInfo.getProxyBaseUrl()} returns {@code Optional<String>}.
+     * {@code Optional.toString()} produces the debug form {@code "Optional[url]"}, not the inner value. This helper
+     * detects that case and extracts the wrapped string.
+     *
+     * <p>Package-visible for unit testing.
+     */
+    static String unwrapToString(Object value) {
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof java.util.Optional<?> opt) {
+            return opt.map(Object::toString).orElse(null);
+        }
+        return value.toString();
     }
 
     public String getOidcUserNameAttribute() {
@@ -303,9 +328,9 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
         this.oidcAuthorizationUri = userAuthorizationUri;
     }
 
-    /** @return the redirectUri */
+    /** @return the redirectUri, dynamically computed from the current base redirect URI */
     public String getOidcRedirectUri() {
-        return oidcRedirectUri;
+        return redirectUri(REG_ID_OIDC);
     }
 
     /** @param redirectUri the redirectUri to set */
@@ -428,8 +453,13 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
         this.disableSignatureValidation = disableSignatureValidation;
     }
 
+    /**
+     * Returns the post-logout redirect URI, dynamically computed from the current base redirect URI. This ensures
+     * changes to PROXY_BASE_URL are reflected immediately without re-saving the filter.
+     */
     public String getPostLogoutRedirectUri() {
-        return postLogoutRedirectUri;
+        String dynamicUri = createPostLogoutRedirectUri();
+        return dynamicUri != null ? dynamicUri : postLogoutRedirectUri;
     }
 
     public void setPostLogoutRedirectUri(String postLogoutRedirectUri) {
@@ -628,9 +658,9 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
         baseRedirectUriExplicitlySet = true;
     }
 
-    /** @return the googleRedirectUri */
+    /** @return the googleRedirectUri, dynamically computed from the current base redirect URI */
     public String getGoogleRedirectUri() {
-        return googleRedirectUri;
+        return redirectUri(REG_ID_GOOGLE);
     }
 
     /** @param pGoogleRedirectUri the googleRedirectUri to set */
@@ -638,9 +668,9 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
         googleRedirectUri = pGoogleRedirectUri;
     }
 
-    /** @return the gitHubRedirectUri */
+    /** @return the gitHubRedirectUri, dynamically computed from the current base redirect URI */
     public String getGitHubRedirectUri() {
-        return gitHubRedirectUri;
+        return redirectUri(REG_ID_GIT_HUB);
     }
 
     /** @param pGitHubRedirectUri the gitHubRedirectUri to set */
@@ -648,9 +678,9 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
         gitHubRedirectUri = pGitHubRedirectUri;
     }
 
-    /** @return the msRedirectUri */
+    /** @return the msRedirectUri, dynamically computed from the current base redirect URI */
     public String getMsRedirectUri() {
-        return msRedirectUri;
+        return redirectUri(REG_ID_MICROSOFT);
     }
 
     /** @param pMsRedirectUri the msRedirectUri to set */

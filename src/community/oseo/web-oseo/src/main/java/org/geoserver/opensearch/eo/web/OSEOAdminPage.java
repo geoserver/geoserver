@@ -242,6 +242,11 @@ public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
     }
 
     @Override
+    protected String getServiceType() {
+        return "OSEO";
+    }
+
+    @Override
     protected void handleSubmit(OSEOInfo info) {
         if (backend != null) {
             info.setOpenSearchAccessStoreId(backend.getId());

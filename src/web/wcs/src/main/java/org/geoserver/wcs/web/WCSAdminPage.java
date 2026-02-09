@@ -81,6 +81,11 @@ public class WCSAdminPage extends BaseServiceAdminPage<WCSInfo> {
         return "WCS";
     }
 
+    @Override
+    protected String getServiceType() {
+        return "WCS";
+    }
+
     private class OverviewPolicyRenderer extends ChoiceRenderer<OverviewPolicy> {
 
         @Override

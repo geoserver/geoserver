@@ -66,6 +66,17 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
      */
     private transient boolean baseRedirectUriExplicitlySet = false;
 
+    /**
+     * Track whether per-provider redirect URIs were explicitly set via their respective setters. Same pattern as
+     * {@link #baseRedirectUriExplicitlySet}: transient so XStream deserialization always gets dynamic resolution, but
+     * programmatic overrides are honored within the same session.
+     */
+    private transient boolean oidcRedirectUriExplicitlySet = false;
+
+    private transient boolean googleRedirectUriExplicitlySet = false;
+    private transient boolean gitHubRedirectUriExplicitlySet = false;
+    private transient boolean msRedirectUriExplicitlySet = false;
+
     // Google
     private boolean googleEnabled;
     private String googleClientId;
@@ -244,7 +255,8 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
             return ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString() + "/";
         }
         // 4. fallback to run tests without a full environment
-        return GeoServerExtensions.getProperty(OPENID_TEST_GS_PROXY_BASE);
+        String testBase = GeoServerExtensions.getProperty(OPENID_TEST_GS_PROXY_BASE);
+        return testBase != null ? ensureTrailingSlash(testBase) : null;
     }
 
     /** Appends "/" if not already present. */
@@ -328,14 +340,18 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
         this.oidcAuthorizationUri = userAuthorizationUri;
     }
 
-    /** @return the redirectUri, dynamically computed from the current base redirect URI */
+    /** @return the redirectUri, dynamically computed unless explicitly set via {@link #setOidcRedirectUri} */
     public String getOidcRedirectUri() {
+        if (oidcRedirectUriExplicitlySet) {
+            return oidcRedirectUri;
+        }
         return redirectUri(REG_ID_OIDC);
     }
 
     /** @param redirectUri the redirectUri to set */
     public void setOidcRedirectUri(String redirectUri) {
         this.oidcRedirectUri = redirectUri;
+        this.oidcRedirectUriExplicitlySet = true;
     }
 
     /** @return the checkTokenEndpointUrl */
@@ -658,34 +674,46 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
         baseRedirectUriExplicitlySet = true;
     }
 
-    /** @return the googleRedirectUri, dynamically computed from the current base redirect URI */
+    /** @return the googleRedirectUri, dynamically computed unless explicitly set */
     public String getGoogleRedirectUri() {
+        if (googleRedirectUriExplicitlySet) {
+            return googleRedirectUri;
+        }
         return redirectUri(REG_ID_GOOGLE);
     }
 
     /** @param pGoogleRedirectUri the googleRedirectUri to set */
     public void setGoogleRedirectUri(String pGoogleRedirectUri) {
         googleRedirectUri = pGoogleRedirectUri;
+        googleRedirectUriExplicitlySet = true;
     }
 
-    /** @return the gitHubRedirectUri, dynamically computed from the current base redirect URI */
+    /** @return the gitHubRedirectUri, dynamically computed unless explicitly set */
     public String getGitHubRedirectUri() {
+        if (gitHubRedirectUriExplicitlySet) {
+            return gitHubRedirectUri;
+        }
         return redirectUri(REG_ID_GIT_HUB);
     }
 
     /** @param pGitHubRedirectUri the gitHubRedirectUri to set */
     public void setGitHubRedirectUri(String pGitHubRedirectUri) {
         gitHubRedirectUri = pGitHubRedirectUri;
+        gitHubRedirectUriExplicitlySet = true;
     }
 
-    /** @return the msRedirectUri, dynamically computed from the current base redirect URI */
+    /** @return the msRedirectUri, dynamically computed unless explicitly set */
     public String getMsRedirectUri() {
+        if (msRedirectUriExplicitlySet) {
+            return msRedirectUri;
+        }
         return redirectUri(REG_ID_MICROSOFT);
     }
 
     /** @param pMsRedirectUri the msRedirectUri to set */
     public void setMsRedirectUri(String pMsRedirectUri) {
         msRedirectUri = pMsRedirectUri;
+        msRedirectUriExplicitlySet = true;
     }
 
     /** @return the msScopes */

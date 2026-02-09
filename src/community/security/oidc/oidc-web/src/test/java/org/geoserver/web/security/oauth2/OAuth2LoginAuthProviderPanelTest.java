@@ -129,8 +129,8 @@ public class OAuth2LoginAuthProviderPanelTest extends AbstractSecurityNamedServi
         GeoServerOAuth2LoginFilterConfig lConfig = lOauthPanel.getConfigModel().getObject();
 
         // common
-        assertEquals("https://localhost:9090/geoserver", lConfig.getBaseRedirectUri());
-        assertEquals("https://localhost:9090/geoserver/postlogout", lConfig.getPostLogoutRedirectUri());
+        assertEquals("https://localhost:9090/geoserver/", lConfig.getBaseRedirectUri());
+        assertEquals("https://localhost:9090/geoserver/web", lConfig.getPostLogoutRedirectUri());
         assertFalse(lConfig.getEnableRedirectAuthenticationEntryPoint());
 
         // OIDC should be the only enabled provider (dropdown is mutually exclusive)

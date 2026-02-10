@@ -10,40 +10,33 @@
        "type":{
             "title":"marker type",
             "type":"string",
-            "required":true,
             "enum":["PFS"]
         },
         "url":{
             "title":"image url",
-            "type":"string",
-            "required":true
+            "type":"string"
         },
         "imageData":{
             "title":"image data (base64)",
-            "type":"string",
-            "required":true
+            "type":"string"
         },
         "contentType":{
             "title":"image content type",
-            "type":"string",
-            "required":true
+            "type":"string"
         },
         "outline":{
             "$ref":"sls.json"
         },
         "color":{
-            "$ref":"color.json",
-            "required":true
+            "$ref":"color.json"
         },
         "width":{
             "title":"image width",
-            "type":"number",
-            "required":true
+            "type":"number"
         },
         "height":{
             "title":"image height",
-            "type":"number",
-            "required":true
+            "type":"number"
         },
         "angle":{
             "title":"angle",
@@ -65,5 +58,6 @@
             "title":"angle",
             "type":"number"
         }
-    }
+    },
+    "required":["type","url","imageData","contentType","color","width","height"]
 }

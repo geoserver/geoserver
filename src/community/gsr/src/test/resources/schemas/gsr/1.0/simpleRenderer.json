@@ -9,7 +9,6 @@
         "type":{
             "title":"renderer type",
             "type":"string",
-            "required":true,
             "enum":["simple"]
         },
         "symbol":{
@@ -23,5 +22,6 @@
             "title":"description",
             "type":"string"
         }
-    }
+    },
+    "required":["type"]
 }

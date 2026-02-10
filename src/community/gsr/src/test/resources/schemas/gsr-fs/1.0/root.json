@@ -17,14 +17,14 @@
             "properties":{
                "id":{
                   "title":"layer id",
-                  "type":"integer",
-                  "required":true
+                  "type":"integer"
                },
                "name":{
                   "title":"layer name",
                   "type":"string"
                }
-            }
+            },
+            "required":["id"]
          }
       },
       "tables":{
@@ -36,14 +36,14 @@
             "properties":{
                "id":{
                   "title":"table id",
-                  "type":"integer",
-                  "required":true
+                  "type":"integer"
                },
                "name":{
                   "title":"table name",
                   "type":"string"
                }
-            }
+            },
+            "required":["id"]
          }
       }
    }

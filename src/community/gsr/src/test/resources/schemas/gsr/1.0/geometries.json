@@ -12,9 +12,9 @@
         "geometries":{
             "title":"array of geometries",
             "type":"array",
-            "required":true,
              "items":{ "$ref" : "geometry.json" }},
         "spatialReference":{
             "$ref" : "spatialreference.json"}
-    }
+    },
+    "required":["geometries"]
 }

@@ -5,8 +5,7 @@
    "properties":{
       "id":{
          "title":"layer or table identifier",
-         "type":"integer",
-         "required":true
+         "type":"integer"
       },
       "name":{
          "title":"layer or table name",
@@ -17,8 +16,7 @@
       },
       "type":{
          "title":"type ('Feature Layer' or 'Table')",
-         "type":"string",
-         "required":true
+         "type":"string"
       },
       "description":{
          "title":"layer or table description",
@@ -43,8 +41,7 @@
             "properties":{
                "id":{
                   "title":"relationship id",
-                  "type":"integer",
-                  "required":true
+                  "type":"integer"
                },
                "name":{
                   "title":"relationship name",
@@ -52,10 +49,10 @@
                },
                "relatedTableId":{
                   "title":"related layer/table id",
-                  "type":"integer",
-                  "required":true
+                  "type":"integer"
                }
-            }
+            },
+            "required":["id","relatedTableId"]
          }
       },
       "geometryType":{
@@ -94,8 +91,7 @@
          "properties":{
             "renderer":{
                "title":"renderer",
-               "$ref":"renderer.json",
-               "required":true
+               "$ref":"renderer.json"
             },
             "transparency":{
                "title":"transparency",
@@ -109,7 +105,8 @@
                   "null"
                ]
             }
-         }
+         },
+         "required":["renderer"]
       },
       "timeInfo":{
          "title":"temporal information",
@@ -212,13 +209,11 @@
             "properties":{
                "name":{
                   "title":"field name",
-                  "type":"string",
-                  "required":true
+                  "type":"string"
                },
                "type":{
                   "title":"field type",
-                  "type":"string",
-                  "required":true
+                  "type":"string"
                },
                "length":{
                   "title":"field length",
@@ -237,13 +232,11 @@
                   "properties":{
                      "type":{
                         "title":"type",
-                        "type":"string",
-                        "required":true
+                        "type":"string"
                      },
                      "name":{
                         "title":"domain name",
-                        "type":"string",
-                        "required":true
+                        "type":"string"
                      },
                      "codedValues":{
                         "title":"values",
@@ -254,20 +247,21 @@
                            "properties":{
                               "name":{
                                  "title":"name",
-                                 "type":"string",
-                                 "required":true
+                                 "type":"string"
                               },
                               "code":{
                                  "title":"code",
-                                 "type":"integer",
-                                 "required":true
+                                 "type":"integer"
                               }
-                           }
+                           },
+                           "required":["name","code"]
                         }
                      }
-                  }
+                  },
+                  "required":["type","name"]
                }
-            }
+            },
+            "required":["name","type"]
          }
       },
       "types":{
@@ -282,13 +276,11 @@
             "properties":{
                "id":{
                   "title":"sub-type id",
-                  "type":"string",
-                  "required":true
+                  "type":"string"
                },
                "name":{
                   "title":"sub-type name",
-                  "type":"string",
-                  "required":true
+                  "type":"string"
                },
                "domains":{
                   "title":"value domains",
@@ -307,7 +299,8 @@
                      "$ref":"template.json"
                   }
                }
-            }
+            },
+            "required":["id","name"]
          }
       },
       "templates":{
@@ -323,5 +316,6 @@
          "description":"comma separated list of supported capabilities, e.g. 'Query,Editing'",
          "type":"string"
       }
-   }
+   },
+   "required":["id","type"]
 }

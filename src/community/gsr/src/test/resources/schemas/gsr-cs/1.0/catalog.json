@@ -1,6 +1,6 @@
 {
-    "$schema":"http://json-schema.org/draft-03/schema#",
-    "id": "http://schemas.opengis.net/gsr-cs/1.0/catalog.json",
+    "$schema":"https://json-schema.org/draft/2020-12/schema",
+    "$id": "http://schemas.opengis.net/gsr-cs/1.0/catalog.json",
 
     "title":"catalog service resource",
     "type":"object",

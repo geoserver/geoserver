@@ -22,6 +22,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.util.IOUtils;
+import org.geoserver.util.SortedProperties;
 import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
@@ -211,7 +212,9 @@ public abstract class JDBCLoaderPropertiesFactoryBean extends PropertiesFactoryB
         try {
             OutputStream out = propFile.out();
             try {
-                config.store(out, comment);
+                SortedProperties sortedConfig = new SortedProperties();
+                sortedConfig.putAll(config);
+                sortedConfig.store(out, comment);
             } finally {
                 out.close();
             }

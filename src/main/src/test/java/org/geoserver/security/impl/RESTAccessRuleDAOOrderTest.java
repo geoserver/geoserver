@@ -30,7 +30,7 @@ public class RESTAccessRuleDAOOrderTest {
         @Override
         protected void checkPropertyFile(boolean force) {
             // skip checking - use in-memory properties only
-            lastModified.set(Long.MAX_VALUE);
+            lastModified = Long.MAX_VALUE;
         }
     }
 

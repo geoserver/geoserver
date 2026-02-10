@@ -7,21 +7,18 @@
     "properties":{
         "xmin":{
             "title":"xmin",
-            "type":"number",
-            "required":true},
+            "type":"number"},
         "ymin":{
             "title":"ymin",
-            "type":"number",
-            "required":true},
+            "type":"number"},
         "xmax":{
             "title":"xmax",
-            "type":"number",
-            "required":true},
+            "type":"number"},
         "ymax":{
             "title":"ymax",
-            "type":"number",
-            "required":true},
+            "type":"number"},
         "spatialReference":{
             "$ref" : "spatialreference.json"}
-    }
+    },
+    "required":["xmin","ymin","xmax","ymax"]
 }

@@ -7,8 +7,8 @@
     "properties":{
         "type":{
             "title":"marker type",
-            "type":"string",
-            "required":true
+            "type":"string"
         }
-    }
+    },
+    "required":["type"]
 }

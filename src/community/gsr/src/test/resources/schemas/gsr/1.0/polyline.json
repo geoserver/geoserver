@@ -10,7 +10,6 @@
         "paths":{
             "title":"paths",
             "type":"array",
-             "required":true,
             "items":{
                  "title":"path",
                  "type":"array",
@@ -22,5 +21,6 @@
                          "type":"number"}}}},
         "spatialReference":{
             "$ref" : "spatialreference.json"}
-    }
+    },
+    "required":["paths"]
 }

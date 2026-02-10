@@ -6,13 +6,11 @@
     "properties":{
        "name":{
           "title":"field name",
-          "type":"string",
-          "required":true
+          "type":"string"
        },
        "type":{
           "title":"value type",
-          "type":"string",
-          "required":true
+          "type":"string"
        },
        "alias":{
           "title":"alias of the field name for display purposes",
@@ -22,5 +20,6 @@
           "title":"length of the field",
           "type":"integer"
        }
-    }
+    },
+    "required":["name","type"]
 }

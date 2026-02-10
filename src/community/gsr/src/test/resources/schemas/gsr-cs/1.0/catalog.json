@@ -33,13 +33,12 @@
                  "properties":{
                     "name":{
                         "title":"service name",
-                        "type":"string",
-                        "required":true},
+                        "type":"string"},
                     "type":{
                         "title":"service type",
-                        "type":"string",
-                        "required":true}
-                 }
+                        "type":"string"}
+                 },
+                "required":["name","type"]
             }
         }
     }

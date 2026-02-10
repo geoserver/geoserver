@@ -9,7 +9,6 @@
         "type":{
             "title":"renderer type",
             "type":"string",
-            "required":true,
             "enum":["uniqueValue"]
         },
         "field1":{
@@ -56,5 +55,6 @@
                 }
             }
         }
-    }
+    },
+    "required":["type"]
 }

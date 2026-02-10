@@ -28,7 +28,7 @@ import org.geoserver.security.PropertyFileWatcher;
 import org.geoserver.util.IOUtils;
 import org.geoserver.util.LinkedProperties;
 import org.geoserver.util.SortedProperties;
-import org.geotools.api.referencing.FactoryException; 
+import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.referencing.CRS;
 import org.geotools.util.ConverterFactory;

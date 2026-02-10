@@ -26,8 +26,8 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Lock;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.security.PropertyFileWatcher;
+import org.geoserver.util.AbstractSortedProperties;
 import org.geoserver.util.IOUtils;
-import org.geoserver.util.LinkedProperties;
 import org.geoserver.util.SortedProperties;
 import org.geotools.util.logging.Logging;
 
@@ -139,7 +139,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
 
         // If callers return a concrete LinkedProperties or SortedProperties, preserve that behavior.
         // Otherwise default to alphabetical ordering (SortedProperties) for deterministic diffs/merges.
-        if (!(p instanceof LinkedProperties) && !(p instanceof SortedProperties)) {
+        if (!(p instanceof AbstractSortedProperties)) {
             SortedProperties sp = new SortedProperties();
             sp.putAll(p);
             p = sp;

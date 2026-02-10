@@ -4,12 +4,8 @@
  */
 package org.geoserver.util;
 
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 /**
  * A Properties subclass that maintains insertion order using a {@link java.util.LinkedHashMap}. LinkedProperties is
@@ -42,95 +38,5 @@ public class LinkedProperties extends AbstractSortedProperties {
 
     public LinkedProperties(Properties defaults) {
         super(new LinkedHashMap<>(), defaults);
-    }
-
-    @Override
-    public synchronized Object put(Object key, Object value) {
-        return linkMap.put(key, value);
-    }
-
-    @Override
-    public synchronized void putAll(Map<? extends Object, ? extends Object> t) {
-        linkMap.putAll(t);
-    }
-
-    @Override
-    public synchronized Object setProperty(String key, String value) {
-        return linkMap.put(key, value);
-    }
-
-    @Override
-    public synchronized Object get(Object key) {
-        return linkMap.get(key);
-    }
-
-    @Override
-    public synchronized String getProperty(String key) {
-        return (String) linkMap.get(key);
-    }
-
-    @Override
-    public synchronized String getProperty(String key, String defaultValue) {
-        return (String) (linkMap.containsKey(key) ? linkMap.get(key) : defaultValue);
-    }
-
-    @Override
-    public synchronized boolean contains(Object value) {
-        return linkMap.containsValue(value);
-    }
-
-    @Override
-    public boolean containsValue(Object value) {
-        return linkMap.containsValue(value);
-    }
-
-    @Override
-    public synchronized Enumeration<Object> keys() {
-        return Collections.enumeration(linkMap.keySet());
-    }
-
-    @Override
-    public synchronized Enumeration<Object> elements() {
-        return Collections.enumeration(linkMap.values());
-    }
-
-    @Override
-    public Set<Object> keySet() {
-        return linkMap.keySet();
-    }
-
-    @Override
-    public Set<Map.Entry<Object, Object>> entrySet() {
-        return linkMap.entrySet();
-    }
-
-    @Override
-    public synchronized void clear() {
-        linkMap.clear();
-    }
-
-    @Override
-    public synchronized boolean containsKey(Object key) {
-        return linkMap.containsKey(key);
-    }
-
-    @Override
-    public synchronized int size() {
-        return linkMap.size();
-    }
-
-    @Override
-    public synchronized String toString() {
-        return linkMap.toString();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return super.equals(o);
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
     }
 }

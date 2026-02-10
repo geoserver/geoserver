@@ -7,13 +7,11 @@
     "properties":{
         "family":{
             "title":"font family",
-            "type":"string",
-            "required":true
+            "type":"string"
         },
         "size":{
             "title":"font size",
-            "type":"number",
-            "required":true
+            "type":"number"
         },
         "style":{
             "title":"font style",
@@ -33,5 +31,6 @@
             "type":"string",
             "default":"none"
         }
-    }
+    },
+    "required":["family","size"]
 }

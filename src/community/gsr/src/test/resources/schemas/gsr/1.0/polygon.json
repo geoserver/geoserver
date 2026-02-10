@@ -10,7 +10,6 @@
         "rings":{
             "title":"rings",
             "type":"array",
-         "required":true,
             "items":{
                  "title":"ring",
                  "type":"array",
@@ -22,5 +21,6 @@
                          "type":"number"}}}},
         "spatialReference":{
             "$ref" : "spatialreference.json"}
-    }
+    },
+    "required":["rings"]
 }

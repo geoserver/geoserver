@@ -10,32 +10,29 @@
         "type":{
             "title":"domain type",
             "type":"string",
-            "required":true,
             "enum":["codedValue"]
         },
         "name":{
             "title":"domain name",
-            "type":"string",
-            "required":true
+            "type":"string"
         },
         "codedValues":{
             "title":"coded values",
             "type":"array",
-            "required":true,
             "minItems":1,
             "items":{
                 "type":"object",
                 "properties":{
                     "name":{
-                        "type":"string",
-                        "required":true
+                        "type":"string"
                     },
                     "code":{
-                        "type":["number","string"],
-                        "required":true
+                        "type":["number","string"]
                     }
-                }
+                },
+                "required":["name","code"]
             }
         }
-    }
+    },
+    "required":["type","name","codedValues"]
 }

@@ -7,8 +7,7 @@
     "properties":{
         "code":{
             "title":"error code according to HTTP",
-            "type":"integer",
-            "required":true},
+            "type":"integer"},
         "message":{
             "title":"error message",
             "type":"string"},
@@ -22,5 +21,6 @@
                 "title":"error detail",
                 "type":"string"}
         }
-    }
+    },
+    "required":["code"]
 }

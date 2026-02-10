@@ -31,6 +31,7 @@ import org.apache.wicket.core.util.resource.locator.ResourceStreamLocator;
 import org.apache.wicket.util.resource.AbstractResourceStream;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
+import org.geoserver.util.SortedProperties;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -78,7 +79,9 @@ public class GeoServerResourceStreamLocator extends ResourceStreamLocator {
 
                     // transform the properties to a stream
                     final ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    properties.store(out, "");
+                    SortedProperties sortedProps = new SortedProperties();
+                    sortedProps.putAll(properties);
+                    sortedProps.store(out, "");
 
                     return new AbstractResourceStream() {
                         @Override

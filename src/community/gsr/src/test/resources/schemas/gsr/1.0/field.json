@@ -1,6 +1,6 @@
 {
-    "$schema":"http://json-schema.org/draft-03/schema#",
-    "id":"http://schemas.opengis.net/gsr/1.0/field.json",
+    "$schema":"https://json-schema.org/draft/2020-12/schema",
+    "$id":"http://schemas.opengis.net/gsr/1.0/field.json",
     "title":"field",
     "type":"object",
     "properties":{

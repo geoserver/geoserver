@@ -40,6 +40,7 @@ import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.PropertyFileWatcher;
+import org.geoserver.util.SortedProperties;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -289,7 +290,9 @@ public class DefaultControlFlowConfigurator implements ControlFlowConfigurator, 
         } else if (this.configFile != null && this.configFile.getProperties() != null) {
             File controlFlowConfigurationFile = Resources.file(resourceLoader.get(PROPERTYFILENAME), true);
             try (OutputStream out = Files.out(controlFlowConfigurationFile)) {
-                this.configFile.getProperties().store(out, "");
+                SortedProperties sortedProps = new SortedProperties();
+                sortedProps.putAll(this.configFile.getProperties());
+                sortedProps.store(out, "");
                 out.flush();
             }
         }

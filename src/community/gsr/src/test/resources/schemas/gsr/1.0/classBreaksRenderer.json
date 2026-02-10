@@ -9,13 +9,11 @@
         "type":{
             "title":"renderer type",
             "type":"string",
-            "required":true,
             "enum":["classBreaks"]
         },
         "field":{
             "title":"name of field",
-            "type":"string",
-            "required":true
+            "type":"string"
         },
         "minValue":{
             "title":"minimum value",
@@ -41,5 +39,6 @@
                 }
             }
         }
-    }
+    },
+    "required":["type","field"]
 }

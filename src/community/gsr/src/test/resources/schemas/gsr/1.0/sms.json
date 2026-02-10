@@ -10,23 +10,19 @@
         "type":{
             "title":"marker type",
             "type":"string",
-            "required":true,
             "enum":["esriSMS"]
         },
         "style":{
             "title":"marker style",
             "description":"value SHOULD be SMSCircle, SMSCross, SMSDiamond, SMSSquare, SMSX",
-            "type":"string",
-            "required":true
+            "type":"string"
         },
         "color":{
-            "$ref":"color.json",
-            "required":true
+            "$ref":"color.json"
         },
         "size":{
             "title":"size",
-            "type":"number",
-            "required":true
+            "type":"number"
         },
         "angle":{
             "title":"angle",
@@ -45,14 +41,14 @@
             "type":"object",
             "properties":{
                 "color":{
-                    "$ref":"color.json",
-                    "required":true
+                    "$ref":"color.json"
                 },
                 "width":{
-                    "type":"number",
-                    "required":true
+                    "type":"number"
                 }
-            }
+            },
+            "required":["color","width"]
         }
-    }
+    },
+    "required":["type","style","color","size"]
 }

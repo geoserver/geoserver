@@ -10,8 +10,8 @@
         "type":{
             "title":"domain type",
             "type":"string",
-            "required":true,
             "enum":["inherited"]
         }
-    }
+    },
+    "required":["type"]
 }

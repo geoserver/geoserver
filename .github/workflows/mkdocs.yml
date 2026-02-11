@@ -70,9 +70,15 @@ jobs:
         source venv/bin/activate
         # Using petersmythe/translate fork with UTF-8 encoding fixes and RST admonition fix
         pip install git+https://github.com/petersmythe/translate.git
-        pip install mkdocs mkdocs-material mkdocs-minify-plugin
+        pip install mkdocs mkdocs-material mkdocs-minify-plugin mkdocs-macros-plugin pyyaml
         echo "VIRTUAL_ENV=$PWD/venv" >> $GITHUB_ENV
         echo "$PWD/venv/bin" >> $GITHUB_PATH
+
+    - name: Set RELEASE environment variable (from latest git tag or fallback)
+      run: |
+        RELEASE=$(git describe --tags --abbrev=0 2>/dev/null || echo "latest")
+        echo "RELEASE=$RELEASE" >> $GITHUB_ENV
+        echo "Using RELEASE=$RELEASE"
     - name: Create minimal config for mkdocs_translate
       run: |
         source venv/bin/activate
@@ -171,10 +177,45 @@ jobs:
               permalink: true
         plugins:
           - search
+          - macros
+        extra:
+          # Prefer RELEASE env var, fallback to 'latest'
+          release: ${RELEASE:-latest}
         site_dir: ../../gh-pages-output/$LANG/$DOC_TYPE
         EOF
+
+              # Create a simple macros.py so mkdocs-macros plugin provides release & helper
+              cat > macros.py << 'PY'
+import os
+
+def define_env(env):
+    env.variables['release'] = os.getenv('RELEASE', env.config.get('extra', {}).get('release', 'latest'))
+
+    def download_url(name):
+        release = env.variables.get('release', 'latest')
+        return f"https://sourceforge.net/projects/geoserver/files/GeoServer/{release}/{name}"
+
+    env.macro('download_url', download_url)
+PY
+
             fi
             
+            # Ensure macros.py exists so 'macros' plugin can use the release variable
+            if [ ! -f "macros.py" ]; then
+              cat > macros.py << 'PY'
+import os
+
+def define_env(env):
+    env.variables['release'] = os.getenv('RELEASE', env.config.get('extra', {}).get('release', 'latest'))
+
+    def download_url(name):
+        release = env.variables.get('release', 'latest')
+        return f"https://sourceforge.net/projects/geoserver/files/GeoServer/{release}/{name}"
+
+    env.macro('download_url', download_url)
+PY
+            fi
+
             echo "   Step 1: Initializing docs directory..."
             mkdocs_translate init || (echo "Init failed, exiting..." && exit 1)
             
@@ -266,6 +307,36 @@ jobs:
             
             # Build the site - fail on error (site_dir already set in mkdocs.yml)
             echo "=== Starting MkDocs build for $LANG/$DOC_TYPE ==="
+
+            # Ensure macros plugin and release extra are present in mkdocs.yml (use python to edit safely)
+            python - <<'PY'
+import os, yaml
+p = 'mkdocs.yml'
+if os.path.exists(p):
+    with open(p) as f:
+        cfg = yaml.safe_load(f) or {}
+    plugins = cfg.get('plugins', [])
+    if isinstance(plugins, list):
+        if 'macros' not in plugins:
+            plugins.append('macros')
+    else:
+        # If plugins is a mapping, convert to a list with macros appended
+        plugins_list = []
+        if isinstance(plugins, dict):
+            plugins_list = list(plugins.keys())
+        else:
+            plugins_list = plugins
+        if 'macros' not in plugins_list:
+            plugins_list.append('macros')
+        plugins = plugins_list
+    cfg['plugins'] = plugins
+    if 'extra' not in cfg:
+        cfg['extra'] = {}
+    cfg['extra']['release'] = os.getenv('RELEASE', cfg['extra'].get('release','latest'))
+    with open(p, 'w') as f:
+        yaml.safe_dump(cfg, f, sort_keys=False)
+PY
+
             if ! mkdocs build --clean --verbose; then
               echo "❌ ERROR: MkDocs build FAILED for $LANG/$DOC_TYPE"
               echo "Build cannot continue with errors. Please fix the issues above."

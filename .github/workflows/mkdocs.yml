@@ -186,27 +186,27 @@ jobs:
 
               # Create a simple macros.py so mkdocs-macros plugin provides release & helper
               cat > macros.py << 'PY'
-import os
+              import os
 
-def define_env(env):
-    env.variables['release'] = os.getenv('RELEASE', env.config.get('extra', {}).get('release', 'latest'))
+              def define_env(env):
+                  env.variables['release'] = os.getenv('RELEASE', env.config.get('extra', {}).get('release', 'latest'))
 
-    def download_url(name):
-        release = env.variables.get('release', 'latest')
-        return f"https://sourceforge.net/projects/geoserver/files/GeoServer/{release}/{name}"
+                  def download_url(name):
+                      release = env.variables.get('release', 'latest')
+                      return f"https://sourceforge.net/projects/geoserver/files/GeoServer/{release}/{name}"
 
-    env.macro('download_url', download_url)
-PY
+                  env.macro('download_url', download_url)
+              PY
 
             fi
             
             # Ensure macros.py exists so 'macros' plugin can use the release variable
             if [ ! -f "macros.py" ]; then
               cat > macros.py << 'PY'
-import os
+              import os
 
-def define_env(env):
-    env.variables['release'] = os.getenv('RELEASE', env.config.get('extra', {}).get('release', 'latest'))
+              def define_env(env):
+                  env.variables['release'] = os.getenv('RELEASE', env.config.get('extra', {}).get('release', 'latest'))
 
     def download_url(name):
         release = env.variables.get('release', 'latest')

@@ -31,156 +31,153 @@ import org.springframework.web.context.ServletContextAware;
  */
 public class FileLockProvider implements LockProvider, ServletContextAware {
 
-    static final Logger LOGGER = Logging.getLogger(FileLockProvider.class.getName());
+    private static final Logger LOGGER = Logging.getLogger(FileLockProvider.class.getName());
+    private final int timeoutSeconds;
 
     private File root;
     /** The wait to occur in case the lock cannot be acquired */
     int waitBeforeRetry = 20;
-    /** max lock attempts */
-    int maxLockAttempts = 120 * 1000 / waitBeforeRetry;
 
     MemoryLockProvider memoryProvider = new MemoryLockProvider();
 
     public FileLockProvider() {
         // base directory obtained from servletContext
+        this.timeoutSeconds = GS_LOCK_TIMEOUT;
     }
 
     public FileLockProvider(File basePath) {
         this.root = basePath;
+        this.timeoutSeconds = GS_LOCK_TIMEOUT;
+    }
+
+    /**
+     * Constructor allowing to specify a timeout for lock acquisition, in seconds. If the lock cannot be acquired within
+     * the specified time, an exception will be thrown.
+     *
+     * @param basePath the base directory for lock files
+     * @param timeoutSeconds the maximum time to wait for lock acquisition, in seconds
+     */
+    FileLockProvider(File basePath, int timeoutSeconds) {
+        this.root = basePath;
+        this.timeoutSeconds = timeoutSeconds;
     }
 
     @Override
-    @SuppressWarnings({"PMD.CloseResource", "PMD.UseTryWithResources"})
-    // complex but apparently correct handling
+    @SuppressWarnings({"PMD.CloseResource"})
     public Resource.Lock acquire(final String lockKey) {
         // first off, synchronize among threads in the same jvm (the nio locks won't lock
         // threads in the same JVM)
         final Resource.Lock memoryLock = memoryProvider.acquire(lockKey);
-
-        // then synch up between different processes
         final File file = getFile(lockKey);
+
+        // Track these to ensure cleanup on failure
+        FileOutputStream currFos = null;
+        FileLock currLock = null;
+
         if (LOGGER.isLoggable(Level.FINE))
             LOGGER.fine("Mapped lock key " + lockKey + " to lock file " + file + ". Attempting to lock on it.");
         try {
-            FileOutputStream currFos = null;
-            FileLock currLock = null;
-            try {
-                // try to lock
-                int count = 0;
-                while (currLock == null && count < maxLockAttempts) {
-                    // the file output stream can also fail to be acquired due to the
-                    // other nodes deleting the file
+            long startTime = System.currentTimeMillis();
+            long lockTimeoutMs = timeoutSeconds * 1000L;
+
+            while (currLock == null && (System.currentTimeMillis() - startTime) < lockTimeoutMs) {
+                try {
                     currFos = new FileOutputStream(file);
-                    try {
-                        currLock = currFos.getChannel().lock();
-                    } catch (OverlappingFileLockException | IOException e) {
+                    currLock = currFos.getChannel().tryLock();
+
+                    if (currLock == null) {
                         IOUtils.closeQuietly(currFos);
-                        try {
-                            Thread.sleep(20);
-                        } catch (InterruptedException ie) {
-                            // ok, moving on
-                        }
-                    } // this one is also thrown with a message "avoided fs deadlock"
-
-                    count++;
-                }
-
-                // verify we managed to get the FS lock
-                if (count >= maxLockAttempts) {
-                    throw new IllegalStateException(
-                            "Failed to get a lock on key " + lockKey + " after " + count + " attempts");
-                }
-
-                if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.fine("Lock "
-                            + lockKey
-                            + " acquired by thread "
-                            + Thread.currentThread().getId()
-                            + " on file "
-                            + file);
-                }
-
-                // store the results in a final variable for the inner class to use
-                final FileOutputStream fos = currFos;
-                final FileLock lock = currLock;
-
-                // nullify so that we don't close them, the locking occurred as expected
-                currFos = null;
-                currLock = null;
-
-                return new Resource.Lock() {
-
-                    boolean released;
-
-                    @Override
-                    public void release() {
-                        if (released) {
-                            return;
-                        }
-
-                        try {
-                            released = true;
-                            if (!lock.isValid()) {
-                                // do not crap out, locks usage is only there to prevent duplication
-                                // of work
-                                if (LOGGER.isLoggable(Level.FINE)) {
-                                    LOGGER.fine(
-                                            "Lock key "
-                                                    + lockKey
-                                                    + " for releasing lock is unknown, it means "
-                                                    + "this lock was never acquired, or was released twice. "
-                                                    + "Current thread is: "
-                                                    + Thread.currentThread().getId()
-                                                    + ". "
-                                                    + "Are you running two instances in the same JVM using NIO locks? "
-                                                    + "This case is not supported and will generate exactly this error message");
-                                    return;
-                                }
-                            }
-                            try {
-                                lock.release();
-                                IOUtils.closeQuietly(fos);
-                                file.delete();
-
-                                if (LOGGER.isLoggable(Level.FINE)) {
-                                    LOGGER.fine("Lock "
-                                            + lockKey
-                                            + " mapped onto "
-                                            + file
-                                            + " released by thread "
-                                            + Thread.currentThread().getId());
-                                }
-                            } catch (IOException e) {
-                                throw new IllegalStateException(
-                                        "Failure while trying to release lock for key " + lockKey, e);
-                            }
-                        } finally {
-                            memoryLock.release();
-                        }
+                        Thread.sleep(waitBeforeRetry);
                     }
-
-                    @Override
-                    public String toString() {
-                        return "FileLock " + file.getName();
+                } catch (OverlappingFileLockException | IOException | InterruptedException e) {
+                    IOUtils.closeQuietly(currFos);
+                    if (e instanceof InterruptedException) {
+                        Thread.currentThread().interrupt();
+                        break;
                     }
-                };
-            } finally {
-                if (currLock != null) {
-                    currLock.release();
-                    memoryLock.release();
+                    Thread.sleep(waitBeforeRetry);
                 }
-                IOUtils.closeQuietly(currFos);
-                file.delete();
             }
-        } catch (IOException e) {
-            throw new IllegalStateException("Failure while trying to get lock for key " + lockKey, e);
+
+            if (currLock == null) {
+                throw new IllegalStateException("Failed to get lock on " + lockKey + " after " + lockTimeoutMs + "ms");
+            }
+
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.fine("Lock "
+                        + lockKey
+                        + " acquired by thread "
+                        + Thread.currentThread().getId()
+                        + " on file "
+                        + file);
+            }
+
+            final FileOutputStream finalFos = currFos;
+            final FileLock finalLock = currLock;
+
+            return new Resource.Lock() {
+                boolean released;
+
+                @Override
+                public void release() {
+                    if (released) return;
+                    try {
+                        released = true;
+                        if (finalLock.isValid()) {
+                            finalLock.release();
+                            IOUtils.closeQuietly(finalFos);
+                            file.delete(); // Proper place for deletion
+
+                            if (LOGGER.isLoggable(Level.FINE)) {
+                                LOGGER.fine("Lock "
+                                        + lockKey
+                                        + " mapped onto "
+                                        + file
+                                        + " released by thread "
+                                        + Thread.currentThread().getId());
+                            }
+                        } else {
+                            // do not crap out, locks usage is only there to prevent duplication
+                            // of work
+                            if (LOGGER.isLoggable(Level.FINE)) {
+                                LOGGER.fine(("Lock key %s for releasing lock is unknown, it means this lock was never"
+                                                + " acquired, or was released twice. Current thread is: %d. Are you"
+                                                + " running two instances in the same JVM using NIO locks? This case is"
+                                                + " not supported and will generate exactly this error message")
+                                        .formatted(
+                                                lockKey, Thread.currentThread().getId()));
+                            }
+                        }
+
+                    } catch (IOException e) {
+                        throw new IllegalStateException("Failure releasing lock " + lockKey, e);
+                    } finally {
+                        memoryLock.release();
+                    }
+                }
+            };
+        } catch (Exception e) {
+            // If we get here, acquisition failed or timed out
+            if (currLock != null) {
+                try {
+                    currLock.release();
+                } catch (IOException ignored) {
+                }
+            }
+            IOUtils.closeQuietly(currFos);
+            memoryLock.release(); // Must release memory lock on failure
+            throw (e instanceof RuntimeException) ? (RuntimeException) e : new IllegalStateException(e);
         }
+        // Note: No finally block deleting the file here, it's done in the returned lock
     }
 
     private File getFile(String lockKey) {
         File locks = new File(root, "filelocks"); // avoid same directory as GWC
         locks.mkdirs();
-        String sha1 = DigestUtils.sha1Hex(lockKey);
+        // use a hash of the lock key to avoid issues with special characters and long file names
+        // SHA-256 has such low collision probability that if you care anyways, you should probably do something
+        // to defend against asteroids levelling your data center instead of worrying about lock collisions
+        String sha1 = DigestUtils.sha256Hex(lockKey);
         return new File(locks, sha1 + ".lock");
     }
 

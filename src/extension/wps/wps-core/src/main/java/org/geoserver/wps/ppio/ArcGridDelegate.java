@@ -1,11 +1,9 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
+/* (c) 2026 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wps.ppio;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,22 +17,9 @@ import org.geotools.gce.arcgrid.ArcGridFormat;
 import org.geotools.gce.arcgrid.ArcGridReader;
 import org.geotools.parameter.Parameter;
 
-/**
- * Decodes/encodes an ArcGrid file
- *
- * @author Andrea Aime - OpenGeo
- */
-public class ArcGridPPIO extends CDataPPIO {
-
-    private final WPSResourceManager resources;
-
-    protected ArcGridPPIO(WPSResourceManager resources) {
-        super(GridCoverage2D.class, GridCoverage2D.class, "application/arcgrid");
-        this.resources = resources;
-    }
-
-    @Override
-    public Object decode(InputStream input) throws Exception {
+/** Isolated from the PPIO so the JVM doesn't load these imports until this specific class is initialized. */
+class ArcGridDelegate {
+    public static Object decode(InputStream input, WPSResourceManager resources) throws Exception {
         // in order to read a grid coverage we need to first store it on disk
         File root = new File(System.getProperty("java.io.tmpdir", "."));
         File f = File.createTempFile("wps", "asc", root);
@@ -43,7 +28,7 @@ public class ArcGridPPIO extends CDataPPIO {
             FileUtils.copyInputStreamToFile(input, f);
             ArcGridFormat format = new ArcGridFormat();
             if (!format.accepts(f)) {
-                throw new WPSException("Could not read " + getMimeType() + " coverage");
+                throw new WPSException("Could not read application/arcgrid coverage");
             }
             ArcGridReader reader = format.getReader(f);
             resource = new GridCoverageReaderResource(reader, f);
@@ -57,23 +42,8 @@ public class ArcGridPPIO extends CDataPPIO {
         }
     }
 
-    @Override
-    public Object decode(String arcgrid) throws Exception {
-        // if the user forgot to add the final newline let's just add it
-        if (!arcgrid.endsWith("\n")) {
-            arcgrid += "\n";
-        }
-        return decode(new ByteArrayInputStream(arcgrid.getBytes()));
-    }
-
-    @Override
-    public void encode(Object value, OutputStream os) throws IOException {
+    public static void encode(Object value, OutputStream os) throws IOException {
         Parameter<Boolean> forceSquareCells = new Parameter<>(ArcGridFormat.FORCE_CELLSIZE, Boolean.TRUE);
         new ArcGridFormat().getWriter(os).write((GridCoverage2D) value, forceSquareCells);
-    }
-
-    @Override
-    public String getFileExtension() {
-        return "asc";
     }
 }

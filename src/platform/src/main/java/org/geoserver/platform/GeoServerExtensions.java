@@ -141,7 +141,8 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         List<T> result = new ArrayList<>(names.size());
         for (String name : names) {
             Object bean = getBean(context, name, isGeoServerExtensionsContext);
-            if (!excludeBean(name, bean, filters)) result.add((T) bean);
+            // filter via ExtensionFilter and skip NullBean objects (returned by Spring when a FactoryBean returns null)
+            if (!excludeBean(name, bean, filters) && extensionPoint.isInstance(bean)) result.add((T) bean);
         }
 
         // load from secondary extension providers

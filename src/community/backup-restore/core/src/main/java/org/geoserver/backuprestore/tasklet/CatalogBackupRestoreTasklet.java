@@ -786,7 +786,7 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
         // - Restore Workspaces/Namespaces definitions and settings
         for (WorkspaceInfo ws : getCatalog().getWorkspaces()) {
             if (!filteredResource(ws, true)) {
-                // Restore Workspace and Namespace confifuration
+                // Restore Workspace and Namespace configuration
                 // - Prepare Folder
                 Resource wsFolder = BackupUtils.dir(workspaces, ws.getName());
                 if (getFilters().length == 1 || getFilters()[1] == null) {

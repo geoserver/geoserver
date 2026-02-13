@@ -51,7 +51,6 @@ If you are still having issues, you might need to attach a Java debugger to GeoS
     * The easiest way to see this is in `GeoServerOAuth2RoleResolver#convert()`
 
 
-
 Logging OAuth2 Activity
 -----------------------
 
@@ -87,7 +86,29 @@ To setup for troubleshooting OIDC activity:
       DEBUG  [security.oauth2] - OIDC: Geoserver Roles: ROLE_ADMINISTRATOR
 
 
+Resource Server (Bearer JWT)
+----------------------------
 
+.. figure:: images/resource_server.png
+   
+   Bearer Resource Server Checkbox
+
+When enabled, the same OAuth2 / OpenID Connect login filter also accepts machine-to-machine requests that provide an Authorization: Bearer <JWT> header. The token is validated using the provider's JWK Set URI configured in this panel.
+
+Disable this option if you only want browser-based login, and you do not want this filter chain to accept bearer tokens.
+
+Opaque Token Support (JWE)
+--------------------------
+
+.. figure:: images/opaque_token.png
+   
+   Bearer Resource Server Checkbox
+
+When enabled, the same OAuth2 / OpenID Connect login filter will perform the token validation externally by triggering the token introspection URL.
+
+An opaque token is just an identifier. GeoServer can’t validate or extract claims from it locally (there’s nothing to decode like a JWT). So the only way to “understand” it is to ask the Authorization Server.
+
+So the token is validated remotely, and any “claims” GeoServer sees come from the introspection JSON.
 
 Proof Key of Code Exchange (PKCE) 
 ---------------------------------

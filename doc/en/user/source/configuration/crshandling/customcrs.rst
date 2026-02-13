@@ -3,8 +3,8 @@
 Custom CRS Definitions
 ======================
 
-Add a custom CRS
-----------------
+Add a custom CRS in the EPSG authority
+--------------------------------------
 
 This example shows how to add a custom projection in GeoServer.
 
@@ -125,4 +125,35 @@ You should write the following (in a single line, here it's reported formatted o
      AXIS["Northing", NORTH], 
      AUTHORITY["EPSG","23031"]]
 
-The definition has been changed in two places, the **TOWGS84** paramerers, and the Datum code, ``AUTHORITY["EPSG","4230"]``, has been removed. 
+The definition has been changed in two places, the **TOWGS84** parameters, and the Datum code, ``AUTHORITY["EPSG","4230"]``, has been removed.
+
+Configuring a custom CRS authority
+----------------------------------
+
+GeoServer also allows to configure a custom authority for your own CRS definitions.
+This is useful when you have a set of custom projections that you want to manage separately from the EPSG database.
+
+The process to declare a custom authority requires two steps:
+
+#. Create a new :file:`user_projections/authorities.properties` properties file to declare the custom authorities, one row for each, following the ``prefix=title`` pattern, e.g.::
+
+    MyCustomAuthority=My own CRS authority
+
+#. Create a property file with the WKT definitions, similar to ``epsg.properties``, but named after the custom authority prefix, e.g.::
+
+    user_projections/MyCustomAuthority.properties
+
+.. note:: Mind the capitalization of the file name, it must match the authority prefix declared in the ``authorities.properties`` file.
+
+The WKT definitions are still using a simple ``code=WKT`` pattern, for example ``MyCustomAuthority.properties`` will contain something like this::
+
+    1=PROJCS["My Custom Projection", ... ]
+    2=GEOGCS["My Custom Geographic CRS", ... ]
+
+.. note:: In order to support axis order flipping for different versions of WMS/WFS, the WKT definitions in the above
+          file should be provided in the geographic axis order, e.g., latitude/longitude, and GeoServer will take care
+          of generating the longitude/latitude version automatically.
+
+If the above files are modified at runtime, GeoServer won't notice the changes right away.
+To force a reload of the custom authority definitions, issue a "reset" of the configuration,
+e.g., from the UI go into "Server Status" and click on the "Reset" button.

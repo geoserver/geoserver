@@ -75,6 +75,13 @@ public class DataStoreFileUploadWFSTest extends CatalogRESTTestSupport {
     public void removePdsDataStore() {
         removeStore("gs", "pds");
         removeStore("gs", "store with spaces");
+        removeStore("gs", "foo_geopkg");
+
+        // clean up the GeoPackage files
+        File gpkgFile = new File("target/foo.gpkg");
+        if (gpkgFile.exists()) {
+            gpkgFile.delete();
+        }
     }
 
     @Test

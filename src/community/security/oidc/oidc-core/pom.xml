@@ -73,7 +73,7 @@
     </dependency>
 
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
+      <groupId>tools.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
     </dependency>
 
@@ -83,7 +83,7 @@
     </dependency>
 
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
+      <groupId>tools.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
     </dependency>
 
@@ -146,6 +146,17 @@
           <systemPropertyVariables>
             <OPENID_TEST_GS_PROXY_BASE>http://localhost/geoserver</OPENID_TEST_GS_PROXY_BASE>
           </systemPropertyVariables>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <!-- Interface-only classes with no executable code -->
+            <exclude>**/GeoServerOAuth2LoginCustomizers.class</exclude>
+            <exclude>**/GeoServerOAuth2LoginCustomizers$*.class</exclude>
+          </excludes>
         </configuration>
       </plugin>
     </plugins>

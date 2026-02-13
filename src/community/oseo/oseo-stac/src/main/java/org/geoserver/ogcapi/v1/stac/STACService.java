@@ -15,7 +15,6 @@ import static org.geoserver.ogcapi.ConformanceClass.CQL2_TEXT;
 import static org.geoserver.ogcapi.ConformanceClass.ECQL_TEXT;
 import static org.geoserver.ogcapi.ConformanceClass.FEATURES_FILTER;
 import static org.geoserver.ogcapi.ConformanceClass.FILTER;
-import static org.geoserver.ogcapi.MappingJackson2YAMLMessageConverter.APPLICATION_YAML_VALUE;
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.EO_IDENTIFIER;
 import static org.geoserver.opensearch.eo.store.OpenSearchQueries.getProductProperties;
 import static org.geoserver.ows.URLMangler.URLType.RESOURCE;
@@ -46,17 +45,16 @@ import org.geoserver.ogcapi.APIService;
 import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.DefaultContentType;
 import org.geoserver.ogcapi.HTMLResponseBody;
-import org.geoserver.ogcapi.JSONSchemaMessageConverter;
 import org.geoserver.ogcapi.OGCAPIMediaTypes;
-import org.geoserver.ogcapi.OpenAPIMessageConverter;
 import org.geoserver.ogcapi.PaginationLinksBuilder;
 import org.geoserver.ogcapi.Queryables;
 import org.geoserver.ogcapi.Sortables;
+import org.geoserver.ogcapi.SwaggerJSONAPIMessageConverter;
+import org.geoserver.ogcapi.SwaggerJSONSchemaMessageConverter;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.ows.kvp.TimeParser;
-import org.geoserver.platform.ServiceException;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.api.data.Query;
 import org.geotools.api.feature.Attribute;
@@ -202,11 +200,7 @@ public class STACService {
     @GetMapping(
             path = {"openapi", "openapi.json", "openapi.yaml"},
             name = "getApi",
-            produces = {
-                OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE,
-                APPLICATION_YAML_VALUE,
-                MediaType.TEXT_XML_VALUE
-            })
+            produces = {SwaggerJSONAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE, MediaType.APPLICATION_YAML_VALUE})
     @ResponseBody
     @HTMLResponseBody(templateName = "api.ftl", fileName = "api.html")
     public OpenAPI api() throws IOException {
@@ -243,10 +237,30 @@ public class STACService {
         FeatureCollection<FeatureType, Feature> collections =
                 accessProvider.getOpenSearchAccess().getCollectionSource().getFeatures(q);
         Feature collection = DataUtilities.first(collections);
-        if (collection == null)
+        if (collection == null) {
+            reportCollectionNotFound(collectionId);
+        }
+        return collection;
+    }
+
+    /**
+     * For search we don't want to return a 404, the path existed, the collection is a parameter
+     *
+     * @param collectionId the collection identifier
+     */
+    private static void reportCollectionNotFound(String collectionId) {
+        if (Optional.ofNullable(APIRequestInfo.get())
+                .map(APIRequestInfo::getRequestPath)
+                .filter(path -> path.contains("ogc/stac/v1/search"))
+                .isPresent()) {
+            throw new APIException(
+                    APIException.INVALID_PARAMETER_VALUE,
+                    "Collection not found: " + collectionId,
+                    HttpStatus.BAD_REQUEST);
+        } else {
             throw new APIException(
                     APIException.NOT_FOUND, "Collection not found: " + collectionId, HttpStatus.NOT_FOUND);
-        return collection;
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -381,10 +395,7 @@ public class STACService {
     private void collectionAvailableAndEnabled(String collectionId) throws IOException {
         Feature collection = getCollection(collectionId);
         if (Boolean.FALSE.equals(collection.getProperty("enabled").getValue())) {
-            throw new APIException(
-                    ServiceException.INVALID_PARAMETER_VALUE,
-                    "Collection " + collectionId + " is not available",
-                    HttpStatus.NOT_FOUND);
+            reportCollectionNotFound(collectionId);
         }
     }
 
@@ -404,6 +415,12 @@ public class STACService {
             @RequestParam(name = FIELDS_PARAM, required = false) String[] fields,
             HttpServletRequest request)
             throws Exception {
+        // check the collections are there and enabled
+        if (collectionIds != null) {
+            for (String collectionId : collectionIds) {
+                collectionAvailableAndEnabled(collectionId);
+            }
+        }
         boolean hasFieldParam = request.getParameterMap().containsKey(FIELDS_PARAM);
         QueryResultBuilder resultBuilder =
                 new QueryResultBuilder(templates, accessProvider, filterParser, sampleFeatures, collectionsCache);
@@ -448,7 +465,12 @@ public class STACService {
     @ResponseBody
     @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     public SearchResponse searchPost(@RequestBody STACSearchQuery sq) throws Exception {
-
+        // check the collections are there and enabled
+        if (sq.getCollections() != null) {
+            for (String collectionId : sq.getCollections()) {
+                collectionAvailableAndEnabled(collectionId);
+            }
+        }
         QueryResultBuilder resultBuilder =
                 new QueryResultBuilder(templates, accessProvider, filterParser, sampleFeatures, collectionsCache);
         resultBuilder
@@ -523,7 +545,7 @@ public class STACService {
     @GetMapping(
             path = "collections/{collectionId}/queryables",
             name = "getCollectionQueryables",
-            produces = JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE)
+            produces = SwaggerJSONSchemaMessageConverter.SCHEMA_TYPE_VALUE)
     @ResponseBody
     @HTMLResponseBody(templateName = "queryables-collection.ftl", fileName = "queryables.html")
     public Queryables collectionQueryables(@PathVariable(name = "collectionId") String collectionId)
@@ -550,7 +572,7 @@ public class STACService {
     @GetMapping(
             path = "collections/{collectionId}/sortables",
             name = "getCollectionSortables",
-            produces = JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE)
+            produces = SwaggerJSONSchemaMessageConverter.SCHEMA_TYPE_VALUE)
     @ResponseBody
     @HTMLResponseBody(templateName = "sortables-collection.ftl", fileName = "sortables.html")
     public Sortables collectionSortables(@PathVariable(name = "collectionId") String collectionId) throws IOException {
@@ -574,14 +596,15 @@ public class STACService {
     @GetMapping(
             path = "queryables",
             name = "getSearchQueryables",
-            produces = JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE)
+            produces = SwaggerJSONSchemaMessageConverter.SCHEMA_TYPE_VALUE)
     @ResponseBody
     @HTMLResponseBody(templateName = "queryables-global.ftl", fileName = "queryables.html")
     public Queryables searchQueryables() throws IOException {
         String baseURL = APIRequestInfo.get().getBaseURL();
         String id = buildURL(baseURL, "ogc/stac/v1/queryables", null, RESOURCE);
         LOGGER.severe(
-                "Should consider the various collection specific templates here, and decide what to do for queriables that are in one collection but not in others (replace with null and simplify filter?)");
+                "Should consider the various collection specific templates here, and decide what to do for queriables"
+                        + " that are in one collection but not in others (replace with null and simplify filter?)");
         Queryables queryables = new STACQueryablesBuilder(
                         id,
                         templates.getItemTemplate(null),
@@ -596,14 +619,15 @@ public class STACService {
     @GetMapping(
             path = "sortables",
             name = "getSearchSortables",
-            produces = JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE)
+            produces = SwaggerJSONSchemaMessageConverter.SCHEMA_TYPE_VALUE)
     @ResponseBody
     @HTMLResponseBody(templateName = "sortables-global.ftl", fileName = "sortables.html")
     public Sortables searchSortables() throws IOException {
         String baseURL = APIRequestInfo.get().getBaseURL();
         String id = buildURL(baseURL, "ogc/stac/v1/sortables", null, RESOURCE);
         LOGGER.severe(
-                "Should consider the various collection specific templates here, and decide what to do for sortables that are in one collection but not in others (replace with null and simplify filter?)");
+                "Should consider the various collection specific templates here, and decide what to do for sortables"
+                        + " that are in one collection but not in others (replace with null and simplify filter?)");
         FeatureType itemsSchema =
                 accessProvider.getOpenSearchAccess().getProductSource().getSchema();
         RootBuilder template = this.templates.getItemTemplate(null);

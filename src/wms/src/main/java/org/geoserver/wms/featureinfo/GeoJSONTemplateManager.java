@@ -5,8 +5,6 @@
 package org.geoserver.wms.featureinfo;
 
 import com.bedatadriven.jackson.datatype.jts.JtsModule;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import freemarker.template.Template;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -19,6 +17,9 @@ import org.geotools.api.feature.Feature;
 import org.geotools.api.feature.type.FeatureType;
 import org.geotools.feature.FeatureCollection;
 import org.locationtech.jts.geom.Geometry;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /** This class allows the management of freemarker templates to customize geoJSON output in getFeatureInfo request. */
 public class GeoJSONTemplateManager extends FreeMarkerTemplateManager {
@@ -26,9 +27,7 @@ public class GeoJSONTemplateManager extends FreeMarkerTemplateManager {
     static final ObjectMapper MAPPER;
 
     static {
-        MAPPER = new ObjectMapper();
-        JtsModule module = new JtsModule(6);
-        MAPPER.registerModule(module);
+        MAPPER = JsonMapper.builder().addModule(new JtsModule(6)).build();
     }
 
     public GeoJSONTemplateManager(OutputFormat format, WMS wms, GeoServerResourceLoader resourceLoader) {
@@ -87,7 +86,7 @@ public class GeoJSONTemplateManager extends FreeMarkerTemplateManager {
     }
 
     /** Encode geometry to a valid geoJSON representation. The method is aimed to be used in free marker templates. */
-    public static String geomToGeoJSON(Geometry geometry) throws JsonProcessingException {
+    public static String geomToGeoJSON(Geometry geometry) throws JacksonException {
         return MAPPER.writeValueAsString(geometry);
     }
 }

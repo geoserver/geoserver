@@ -19,6 +19,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.util.SortedProperties;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -112,7 +113,7 @@ public class ServiceAccessRuleDAO extends AbstractAccessRuleDAO<ServiceAccessRul
     /** Turns the rules list into a property bag */
     @Override
     protected Properties toProperties() {
-        Properties props = new Properties();
+        SortedProperties props = new SortedProperties();
         for (ServiceAccessRule rule : rules) {
             props.put(rule.getKey(), rule.getValue());
         }

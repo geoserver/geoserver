@@ -50,24 +50,40 @@
                      </label>
                      <a href="#" wicket:id="enableRedirectAuthenticationEntryPointHelp" class="help-link"></a>
                   </li>
+                  <li class="choiceItem">
+                     <input id="enableResourceServerMode"
+                        wicket:id="enableResourceServerMode" type="checkbox"
+                     />
+                     <label for="enableResourceServerMode">
+                        <span>
+                           <wicket:message key="enableResourceServerMode"></wicket:message>
+                        </span>
+                     </label>
+                     <a href="#" wicket:id="enableResourceServerModeHelp" class="help-link"></a>
+                  </li>
                </ul>
             </fieldset>
          </li>
       </ul>
       <br />
 
+      <h3>
+         <wicket:message key="providerSelection"></wicket:message>
+      </h3>
+      <ul>
+         <li>
+            <label for="providerSelector">
+               <span>
+                  <wicket:message key="providerSelectorLabel"></wicket:message>
+               </span>
+            </label>
+            <select wicket:id="providerSelector"></select>
+            <a href="#" wicket:id="providerSelectorHelp" class="help-link"></a>
+         </li>
+      </ul>
+
       <div wicket:id="pfv">
          <h3 wicket:id="providerHeadline"></h3>
-         <ul>
-            <li class="choiceItem">
-               <input wicket:id="enabled" type="checkbox" />
-               <label for="enabled">
-                  <span>
-                     <wicket:message key="enabled"></wicket:message>
-                  </span>
-               </label>
-            </li>
-         </ul>
          <div wicket:id="settings">
             <ul>
                <li>
@@ -230,16 +246,16 @@
                               </label>
                            </li>
                            <li class="choiceItem">
-                              <input id="oidcEnforceTokenValidation" wicket:id="oidcEnforceTokenValidation"
-                                 type="checkbox"
+                              <input id="disableSignatureValidation" wicket:id="disableSignatureValidation"
+                                     type="checkbox"
                               />
-                              <label for="oidcEnforceTokenValidation">
+                              <label for="disableSignatureValidation">
                                  <span>
-                                    <wicket:message key="oidcEnforceTokenValidation"></wicket:message>
+                                    <wicket:message key="disableSignatureValidation"></wicket:message>
                                  </span>
                               </label>
 
-                              <a href="#" wicket:id="oidcEnforceTokenValidationHelp" class="help-link"></a>
+                              <a href="#" wicket:id="disableSignatureValidationHelp" class="help-link"></a>
                            </li>
                            <li class="choiceItem">
                               <input id="oidcUsePKCE" wicket:id="oidcUsePKCE" type="checkbox" />
@@ -277,6 +293,15 @@
                               </label>
                               <input id="oidcResponseMode" wicket:id="oidcResponseMode" type="text" class="field text" />
                               <a href="#" wicket:id="oidcResponseModeHelp" class="help-link"></a>
+                           </li>
+                           <li>
+                              <label for="oidcIntrospectionUrl">
+                                 <span>
+                                    <wicket:message key="oidcIntrospectionUrl"></wicket:message>
+                                 </span>
+                              </label>
+                              <input id="oidcIntrospectionUrl" wicket:id="oidcIntrospectionUrl" type="text" class="field text" />
+                              <a href="#" wicket:id="oidcIntrospectionUrlHelp" class="help-link"></a>
                            </li>
                            <li class="choiceItem">
                               <input id="oidcAuthenticationMethodPostSecret"

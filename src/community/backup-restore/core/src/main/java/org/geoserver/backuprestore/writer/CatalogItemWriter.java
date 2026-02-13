@@ -22,11 +22,11 @@ import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.util.logging.Logging;
+import org.jspecify.annotations.NonNull;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.core.io.WritableResource;
-import org.springframework.lang.NonNull;
 
 /**
  * Concrete Spring Batch {@link ItemWriter}.

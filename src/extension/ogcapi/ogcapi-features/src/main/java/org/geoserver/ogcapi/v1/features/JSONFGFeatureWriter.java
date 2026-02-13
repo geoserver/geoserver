@@ -12,7 +12,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.data.TypeInfoCollectionWrapper;
 import org.geoserver.json.GeoJSONBuilder;
 import org.geoserver.ogcapi.APIRequestInfo;
-import org.geoserver.ogcapi.JSONSchemaMessageConverter;
+import org.geoserver.ogcapi.SwaggerJSONSchemaMessageConverter;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
@@ -165,6 +165,6 @@ public class JSONFGFeatureWriter<T extends FeatureType, F extends Feature> exten
         String linkType = "type";
         String linkTitle = "JSON schema";
 
-        jw.writeLink(jw, linkTitle, JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE, linkType, href);
+        jw.writeLink(jw, linkTitle, SwaggerJSONSchemaMessageConverter.SCHEMA_TYPE_VALUE, linkType, href);
     }
 }

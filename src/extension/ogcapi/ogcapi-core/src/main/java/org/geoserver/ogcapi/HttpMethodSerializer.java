@@ -4,16 +4,15 @@
  */
 package org.geoserver.ogcapi;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import java.io.IOException;
 import org.springframework.http.HttpMethod;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
 
 /** Serializer for HttpMethod enum-like class */
-public class HttpMethodSerializer extends JsonSerializer<HttpMethod> {
+public class HttpMethodSerializer extends ValueSerializer<HttpMethod> {
     @Override
-    public void serialize(HttpMethod value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+    public void serialize(HttpMethod value, JsonGenerator gen, SerializationContext serializers) {
         gen.writeString(value.name());
     }
 }

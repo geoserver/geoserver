@@ -5,8 +5,6 @@
 package org.geoserver.featurestemplating.ows.wfs;
 
 import com.ctc.wstx.stax.WstxOutputFactory;
-import com.fasterxml.jackson.core.JsonEncoding;
-import com.fasterxml.jackson.core.JsonFactory;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -33,6 +31,9 @@ import org.geoserver.wms.MapLayerInfo;
 import org.geotools.api.feature.type.Name;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
+import tools.jackson.core.JsonEncoding;
+import tools.jackson.core.ObjectWriteContext;
+import tools.jackson.core.json.JsonFactoryBuilder;
 
 /**
  * Helper class for Template responses which mainly allows to obtain a writer according to the specified format and
@@ -60,10 +61,16 @@ public class TemplateGetFeatureResponseHelper {
         switch (format) {
             case JSON:
             case GEOJSON:
-                outputWriter = new GeoJSONWriter(new JsonFactory().createGenerator(output, JsonEncoding.UTF8), format);
+                outputWriter = new GeoJSONWriter(
+                        new JsonFactoryBuilder()
+                                .build()
+                                .createGenerator(ObjectWriteContext.empty(), output, JsonEncoding.UTF8),
+                        format);
                 break;
             case JSONLD:
-                outputWriter = new JSONLDWriter(new JsonFactory().createGenerator(output, JsonEncoding.UTF8));
+                outputWriter = new JSONLDWriter(new JsonFactoryBuilder()
+                        .build()
+                        .createGenerator(ObjectWriteContext.empty(), output, JsonEncoding.UTF8));
                 break;
             case GML2:
             case GML31:

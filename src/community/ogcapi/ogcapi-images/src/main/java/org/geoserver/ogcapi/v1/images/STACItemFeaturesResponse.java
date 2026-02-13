@@ -104,6 +104,7 @@ public class STACItemFeaturesResponse extends RFCGeoJSONFeaturesResponse {
         return new STACGeoJSONFeatureWriter<>(gs, response, getItemId());
     }
 
+    @Override
     protected <T extends FeatureType, F extends Feature> GeoJSONFeatureWriter<T, F> getFeatureWriter(
             Operation operation) {
         return new STACGeoJSONFeatureWriter<>(gs, null, getItemId());

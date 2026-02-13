@@ -10,6 +10,7 @@ import static java.util.stream.Collectors.toList;
 import static org.geoserver.security.filter.GeoServerLogoutFilter.LOGOUT_REDIRECT_ATTR;
 import static org.geoserver.security.oauth2.common.GeoServerOAuth2UserServices.newOAuth2UserService;
 import static org.geoserver.security.oauth2.common.GeoServerOAuth2UserServices.newOidcUserService;
+import static org.geoserver.security.oauth2.login.GeoServerOAuth2ClientRegistrationId.scopedRegId;
 import static org.geoserver.security.oauth2.login.OAuth2LoginButtonEnablementEvent.disableButtonEvent;
 import static org.geoserver.security.oauth2.login.OAuth2LoginButtonEnablementEvent.enableButtonEvent;
 import static org.springframework.security.oauth2.core.AuthorizationGrantType.AUTHORIZATION_CODE;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import org.apache.commons.lang3.StringUtils;
 import org.geoserver.security.GeoServerRoleConverter;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
@@ -31,6 +33,7 @@ import org.geoserver.security.filter.GeoServerRoleResolvers;
 import org.geoserver.security.filter.GeoServerRoleResolvers.ResolverContext;
 import org.geoserver.security.oauth2.common.ConfidentialLogger;
 import org.geoserver.security.oauth2.common.HttpServletRequestSupplier;
+import org.geoserver.security.oauth2.common.TokenIntrospector;
 import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginCustomizers.ClientRegistrationCustomizer;
 import org.geoserver.security.oauth2.login.GeoServerOAuth2LoginCustomizers.HttpSecurityCustomizer;
 import org.geoserver.security.oauth2.spring.GeoServerAuthorizationRequestCustomizer;
@@ -61,8 +64,16 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequest
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtValidators;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.RequestMatcherRedirectFilter;
 import org.springframework.security.web.SecurityFilterChain;
@@ -86,7 +97,8 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
     private static final List<Class<?>> REQ_FILTER_TYPES = asList(
             OAuth2AuthorizationRequestRedirectFilter.class,
             OAuth2LoginAuthenticationFilter.class,
-            RequestCacheAwareFilter.class);
+            RequestCacheAwareFilter.class,
+            BearerTokenAuthenticationFilter.class);
 
     // mandatory
     private GeoServerOAuth2LoginFilterConfig configuration;
@@ -157,8 +169,7 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
     }
 
     private List<Filter> createFiltersImpl() throws Exception {
-        // Attention: Singleton (also picked up by Spring) uses this config. If multiple instances
-        // of this filter shall be allowed in the future (not planned), adjust this accordingly.
+        // Each builder instance gets its own prototype-scoped tokenDecoderFactory (see applicationContext.xml).
         tokenDecoderFactory.setGeoServerOAuth2LoginFilterConfig(configuration);
 
         http.oauth2Login(oauthConfig -> {
@@ -177,6 +188,31 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
 
             oauthConfig.loginProcessingUrl("/web/login/oauth2/code/*");
         });
+
+        // Hybrid mode: accept machine-to-machine requests via Authorization: Bearer <token>
+        // using the same provider configuration already stored in this filter.
+        // For safety, this is only auto-enabled when exactly one provider is enabled.
+        //
+        // If an introspection endpoint is configured, we enable opaque-token support (RFC 7662).
+        // Otherwise we fall back to JWT validation via JWKS.
+        OpaqueTokenIntrospector opaqueIntrospector = createResourceServerOpaqueTokenIntrospectorIfApplicable();
+        JwtDecoder resourceServerJwtDecoder =
+                (opaqueIntrospector == null) ? createResourceServerJwtDecoderIfApplicable() : null;
+
+        if (opaqueIntrospector != null) {
+            // Bearer-token requests must remain stateless even if a UI login session exists.
+            http.securityContext(sc -> sc.securityContextRepository(new BearerAwareSecurityContextRepository()));
+            http.oauth2ResourceServer(oauth -> oauth.opaqueToken(ot -> ot.introspector(opaqueIntrospector)));
+        } else if (resourceServerJwtDecoder != null) {
+            // Bearer-token requests must remain stateless even if a UI login session exists.
+            http.securityContext(sc -> sc.securityContextRepository(new BearerAwareSecurityContextRepository()));
+            GeoServerOAuth2JwtAuthenticationConverter converter =
+                    new GeoServerOAuth2JwtAuthenticationConverter(securityManager, configuration);
+            http.oauth2ResourceServer(oauth -> oauth.jwt(jwt -> {
+                jwt.decoder(resourceServerJwtDecoder);
+                jwt.jwtAuthenticationConverter(converter);
+            }));
+        }
 
         httpSecurityCustomizer.accept(http);
 
@@ -209,30 +245,37 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
     }
 
     private InMemoryClientRegistrationRepository createClientRegistrationRepository() {
+        String lFilterName = configuration.getName();
         List<ClientRegistration> lRegistrations = new ArrayList<>();
         if (configuration.isGoogleEnabled()) {
             lRegistrations.add(createGoogleClientRegistration());
-            eventPublisher.publishEvent(enableButtonEvent(this, REG_ID_GOOGLE));
+            eventPublisher.publishEvent(
+                    enableButtonEvent(this, REG_ID_GOOGLE, scopedRegId(lFilterName, REG_ID_GOOGLE)));
         } else {
-            eventPublisher.publishEvent(disableButtonEvent(this, REG_ID_GOOGLE));
+            eventPublisher.publishEvent(
+                    disableButtonEvent(this, REG_ID_GOOGLE, scopedRegId(lFilterName, REG_ID_GOOGLE)));
         }
         if (configuration.isGitHubEnabled()) {
             lRegistrations.add(createGitHubClientRegistration());
-            eventPublisher.publishEvent(enableButtonEvent(this, REG_ID_GIT_HUB));
+            eventPublisher.publishEvent(
+                    enableButtonEvent(this, REG_ID_GIT_HUB, scopedRegId(lFilterName, REG_ID_GIT_HUB)));
         } else {
-            eventPublisher.publishEvent(disableButtonEvent(this, REG_ID_GIT_HUB));
+            eventPublisher.publishEvent(
+                    disableButtonEvent(this, REG_ID_GIT_HUB, scopedRegId(lFilterName, REG_ID_GIT_HUB)));
         }
         if (configuration.isMsEnabled()) {
             lRegistrations.add(createMicrosoftClientRegistration());
-            eventPublisher.publishEvent(enableButtonEvent(this, REG_ID_MICROSOFT));
+            eventPublisher.publishEvent(
+                    enableButtonEvent(this, REG_ID_MICROSOFT, scopedRegId(lFilterName, REG_ID_MICROSOFT)));
         } else {
-            eventPublisher.publishEvent(disableButtonEvent(this, REG_ID_MICROSOFT));
+            eventPublisher.publishEvent(
+                    disableButtonEvent(this, REG_ID_MICROSOFT, scopedRegId(lFilterName, REG_ID_MICROSOFT)));
         }
         if (configuration.isOidcEnabled()) {
             lRegistrations.add(createCustomProviderRegistration());
-            eventPublisher.publishEvent(enableButtonEvent(this, REG_ID_OIDC));
+            eventPublisher.publishEvent(enableButtonEvent(this, REG_ID_OIDC, scopedRegId(lFilterName, REG_ID_OIDC)));
         } else {
-            eventPublisher.publishEvent(disableButtonEvent(this, REG_ID_OIDC));
+            eventPublisher.publishEvent(disableButtonEvent(this, REG_ID_OIDC, scopedRegId(lFilterName, REG_ID_OIDC)));
         }
         return new InMemoryClientRegistrationRepository(lRegistrations);
     }
@@ -260,7 +303,7 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
 
         ClientRegistration lReg = CommonOAuth2Provider.GOOGLE
                 // registrationId is used in paths (login and authorization)
-                .getBuilder(REG_ID_GOOGLE)
+                .getBuilder(scopedRegId(configuration.getName(), REG_ID_GOOGLE))
                 .clientId(configuration.getGoogleClientId())
                 .clientSecret(configuration.getGoogleClientSecret())
                 .userNameAttributeName(configuration.getGoogleUserNameAttribute())
@@ -286,7 +329,7 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
 
         ClientRegistration lReg = CommonOAuth2Provider.GITHUB
                 // registrationId is used in paths (login and authorization)
-                .getBuilder(REG_ID_GIT_HUB)
+                .getBuilder(scopedRegId(configuration.getName(), REG_ID_GIT_HUB))
                 .clientId(configuration.getGitHubClientId())
                 .clientSecret(configuration.getGitHubClientSecret())
                 .userNameAttributeName(configuration.getGitHubUserNameAttribute())
@@ -306,7 +349,7 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
         String[] lScopes = ScopeUtils.valueOf(lScopeTxt);
         ClientRegistration lReg = ClientRegistration
                 // registrationId is used in paths (login and authorization)
-                .withRegistrationId(REG_ID_MICROSOFT)
+                .withRegistrationId(scopedRegId(configuration.getName(), REG_ID_MICROSOFT))
                 .clientId(configuration.getMsClientId())
                 .clientSecret(configuration.getMsClientSecret())
                 .userNameAttributeName(configuration.getMsUserNameAttribute())
@@ -334,7 +377,7 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
 
         ClientRegistration lReg = ClientRegistration
                 // registrationId is used in paths (login and authorization)
-                .withRegistrationId(REG_ID_OIDC)
+                .withRegistrationId(scopedRegId(configuration.getName(), REG_ID_OIDC))
                 .clientId(configuration.getOidcClientId())
                 .clientSecret(configuration.getOidcClientSecret())
                 .userNameAttributeName(configuration.getOidcUserNameAttribute())
@@ -488,11 +531,109 @@ public class GeoServerOAuth2LoginAuthenticationFilterBuilder implements GeoServe
         authorizationRequestResolver = pAuthorizationRequestResolver;
     }
 
+    /**
+     * Creates a JwtDecoder for resource-server mode using the same provider configuration already stored in this
+     * filter.
+     *
+     * <p>To keep configuration simple (no additional auth filter config), this method only enables resource-server
+     * support when exactly one provider is enabled. GitHub is excluded since it is OAuth2-only and does not expose
+     * OIDC/JWKS metadata.
+     */
+    private JwtDecoder createResourceServerJwtDecoderIfApplicable() {
+        if (configuration != null && !configuration.isEnableResourceServerMode()) {
+            return null;
+        }
+
+        if (configuration == null) {
+            return null;
+        }
+
+        if (configuration.getActiveProviderCount() != 1) {
+            return null;
+        }
+
+        // Resolve the (single) enabled provider's JWKS endpoint
+        String jwkSetUri = null;
+        if (configuration.isGoogleEnabled()) {
+            ClientRegistration reg = getClientRegistrationRepository()
+                    .findByRegistrationId(scopedRegId(configuration.getName(), REG_ID_GOOGLE));
+            jwkSetUri = reg == null ? null : reg.getProviderDetails().getJwkSetUri();
+        } else if (configuration.isMsEnabled()) {
+            ClientRegistration reg = getClientRegistrationRepository()
+                    .findByRegistrationId(scopedRegId(configuration.getName(), REG_ID_MICROSOFT));
+            jwkSetUri = reg == null ? null : reg.getProviderDetails().getJwkSetUri();
+        } else if (configuration.isOidcEnabled()) {
+            jwkSetUri = configuration.getOidcJwkSetUri();
+        } else {
+            // GitHub-only (or unknown) provider: no JWKS available
+            return null;
+        }
+
+        if (!StringUtils.isNotBlank(jwkSetUri)) {
+            return null;
+        }
+
+        NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build();
+        OAuth2TokenValidator<Jwt> validator = JwtValidators.createDefault();
+        if (configuration.isValidateTokenAudience()) {
+            OAuth2TokenValidator<Jwt> aud = new GeoServerJwtAudienceValidator(
+                    configuration.getValidateTokenAudienceClaimName(),
+                    configuration.getValidateTokenAudienceClaimValue());
+            validator = new DelegatingOAuth2TokenValidator<>(validator, aud);
+        }
+        decoder.setJwtValidator(validator);
+        return decoder;
+    }
+
+    /**
+     * Creates an {@link OpaqueTokenIntrospector} for resource-server mode (opaque tokens) using the same provider
+     * configuration already stored in this filter.
+     *
+     * <p>To keep configuration simple (no additional auth filter config), this method only enables opaque-token support
+     * when exactly one provider is enabled and an introspection endpoint URL is configured.
+     */
+    private OpaqueTokenIntrospector createResourceServerOpaqueTokenIntrospectorIfApplicable() {
+        if (configuration != null && !configuration.isEnableResourceServerMode()) {
+            return null;
+        }
+
+        if (configuration == null) {
+            return null;
+        }
+
+        if (configuration.getActiveProviderCount() != 1) {
+            return null;
+        }
+
+        // For now we only support opaque introspection for the custom OIDC provider.
+        if (!configuration.isOidcEnabled()) {
+            return null;
+        }
+
+        String introspectionUrl = configuration.getOidcIntrospectionUrl();
+        if (!StringUtils.isNotBlank(introspectionUrl)) {
+            return null;
+        }
+
+        TokenIntrospector delegate = new TokenIntrospector(
+                introspectionUrl,
+                configuration.getOidcClientId(),
+                configuration.getOidcClientSecret(),
+                configuration.isOidcAuthenticationMethodPostSecret());
+
+        return new GeoServerOAuth2OpaqueTokenIntrospector(delegate, securityManager, configuration);
+    }
+
     /** @return the redirectToProviderFilter */
     public Filter getRedirectToProviderFilter() {
         if (redirectToProviderFilter == null) {
             AuthenticationTrustResolver trust = new AuthenticationTrustResolverImpl();
             RequestMatcher lMatcher = r -> {
+                if (configuration != null
+                        && configuration.isEnableResourceServerMode()
+                        && BearerAwareSecurityContextRepository.isBearerRequest(r)) {
+                    return false;
+                }
                 Authentication lAuth = SecurityContextHolder.getContext().getAuthentication();
                 if (lAuth == null) {
                     return true;

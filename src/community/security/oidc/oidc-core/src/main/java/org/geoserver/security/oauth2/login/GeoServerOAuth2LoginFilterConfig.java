@@ -45,8 +45,8 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
     }
 
     /**
-     * Constant used to setup the proxy base in tests that are running without a GeoServer instance or an actual HTTP
-     * request context. The value of the variable is set-up in the pom.xml, as a system property for surefire, in order
+     * Constant used to set up the proxy base in tests that are running without a GeoServer instance or an actual HTTP
+     * request context. The value of the variable is set up in the pom.xml, as a system property for surefire, in order
      * to avoid hard-coding the value in the code.
      */
     public static final String OPENID_TEST_GS_PROXY_BASE = "OPENID_TEST_GS_PROXY_BASE";
@@ -97,11 +97,13 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
     /** currently no UI counterpart */
     private String oidcJwsAlgorithmName;
 
+    private String oidcIntrospectionUrl;
+
     private boolean oidcForceAuthorizationUriHttps = true;
     private boolean oidcForceTokenUriHttps = true;
-    private boolean oidcEnforceTokenValidation = true;
     private boolean oidcUsePKCE = false;
     private boolean oidcAuthenticationMethodPostSecret = false;
+    private boolean disableSignatureValidation = false;
     /**
      * Add extra logging. NOTE: this might spill confidential information to the log - do not turn on in normal
      * operation!
@@ -112,6 +114,19 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
     private String tokenRolesClaim;
     private String postLogoutRedirectUri;
     private boolean enableRedirectAuthenticationEntryPoint;
+
+    /**
+     * Hybrid mode: accept machine-to-machine requests via Authorization: Bearer <JWT> and validate them using the same
+     * provider configuration already stored in this filter.
+     *
+     * <p>Enabled by default.
+     */
+    private boolean enableResourceServerMode = true;
+
+    // Resource Server (Bearer JWT) optional validations
+    private boolean validateTokenAudience = false;
+    private String validateTokenAudienceClaimName = "aud";
+    private String validateTokenAudienceClaimValue;
 
     // MSGraph
 
@@ -153,7 +168,7 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
         return lBase;
     }
 
-    /** @return an URI ending with "/" */
+    /** @return a URI ending with "/" */
     private String baseRedirectUriNormalized() {
         return ofNullable(baseRedirectUri)
                 .map(s -> s.endsWith("/") ? s : s + "/")
@@ -308,6 +323,21 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
         this.enableRedirectAuthenticationEntryPoint = enableRedirectAuthenticationEntryPoint;
     }
 
+    /** whether hybrid resource-server mode is enabled (Authorization: Bearer <JWT>) */
+    public boolean isEnableResourceServerMode() {
+        return enableResourceServerMode;
+    }
+
+    /** whether hybrid resource-server mode is enabled (Authorization: Bearer <JWT>) */
+    public boolean getEnableResourceServerMode() {
+        return enableResourceServerMode;
+    }
+
+    /** enableResourceServerMode enable/disable hybrid resource-server mode */
+    public void setEnableResourceServerMode(boolean enableResourceServerMode) {
+        this.enableResourceServerMode = enableResourceServerMode;
+    }
+
     public boolean getOidcForceTokenUriHttps() {
         return oidcForceTokenUriHttps;
     }
@@ -360,6 +390,14 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
         this.oidcAuthenticationMethodPostSecret = sendClientSecret;
     }
 
+    public boolean isDisableSignatureValidation() {
+        return disableSignatureValidation;
+    }
+
+    public void setDisableSignatureValidation(boolean disableSignatureValidation) {
+        this.disableSignatureValidation = disableSignatureValidation;
+    }
+
     public String getPostLogoutRedirectUri() {
         return postLogoutRedirectUri;
     }
@@ -374,14 +412,6 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
 
     public void setOidcUsePKCE(boolean usePKCE) {
         this.oidcUsePKCE = usePKCE;
-    }
-
-    public boolean isOidcEnforceTokenValidation() {
-        return oidcEnforceTokenValidation;
-    }
-
-    public void setOidcEnforceTokenValidation(boolean enforceTokenValidation) {
-        this.oidcEnforceTokenValidation = enforceTokenValidation;
     }
 
     /** @return the googleEnabled */
@@ -482,6 +512,33 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
     /** @param pMsEnabled the msEnabled to set */
     public void setMsEnabled(boolean pMsEnabled) {
         msEnabled = pMsEnabled;
+    }
+
+    /**
+     * Returns the currently selected (active) provider key, derived from the individual enabled flags. Defaults to
+     * {@link OAuth2Provider#OIDC} if no provider is explicitly enabled.
+     *
+     * @return the property prefix of the active {@link OAuth2Provider}
+     */
+    public String getSelectedProvider() {
+        if (googleEnabled) return OAuth2Provider.GOOGLE.getPropertyPrefix();
+        if (gitHubEnabled) return OAuth2Provider.GITHUB.getPropertyPrefix();
+        if (msEnabled) return OAuth2Provider.MICROSOFT.getPropertyPrefix();
+        // OIDC is the default
+        return OAuth2Provider.OIDC.getPropertyPrefix();
+    }
+
+    /**
+     * Selects the given provider by enabling it and disabling all others. This is the model property backing the
+     * provider selection dropdown in the UI.
+     *
+     * @param provider the {@link OAuth2Provider#getPropertyPrefix() property prefix} of the provider to select
+     */
+    public void setSelectedProvider(String provider) {
+        googleEnabled = OAuth2Provider.GOOGLE.getPropertyPrefix().equals(provider);
+        gitHubEnabled = OAuth2Provider.GITHUB.getPropertyPrefix().equals(provider);
+        msEnabled = OAuth2Provider.MICROSOFT.getPropertyPrefix().equals(provider);
+        oidcEnabled = OAuth2Provider.OIDC.getPropertyPrefix().equals(provider);
     }
 
     /** @return the msClientId */
@@ -594,6 +651,14 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
         oidcJwsAlgorithmName = pJwsAlgorithmName;
     }
 
+    public String getOidcIntrospectionUrl() {
+        return oidcIntrospectionUrl;
+    }
+
+    public void setOidcIntrospectionUrl(String oidcIntrospectionUrl) {
+        this.oidcIntrospectionUrl = oidcIntrospectionUrl;
+    }
+
     public String getRoleConverterString() {
         return roleConverterString;
     }
@@ -632,5 +697,32 @@ public class GeoServerOAuth2LoginFilterConfig extends PreAuthenticatedUserNameFi
 
     public void setMsGraphAppRoleAssignmentsObjectId(String msGraphAppRoleAssignmentsObjectId) {
         this.msGraphAppRoleAssignmentsObjectId = msGraphAppRoleAssignmentsObjectId;
+    }
+    /**
+     * When enabled, the resource server (Bearer JWT) validator will require the configured audience claim to match the
+     * expected value.
+     */
+    public boolean isValidateTokenAudience() {
+        return validateTokenAudience;
+    }
+
+    public void setValidateTokenAudience(boolean validateTokenAudience) {
+        this.validateTokenAudience = validateTokenAudience;
+    }
+
+    public String getValidateTokenAudienceClaimName() {
+        return validateTokenAudienceClaimName;
+    }
+
+    public void setValidateTokenAudienceClaimName(String validateTokenAudienceClaimName) {
+        this.validateTokenAudienceClaimName = validateTokenAudienceClaimName;
+    }
+
+    public String getValidateTokenAudienceClaimValue() {
+        return validateTokenAudienceClaimValue;
+    }
+
+    public void setValidateTokenAudienceClaimValue(String validateTokenAudienceClaimValue) {
+        this.validateTokenAudienceClaimValue = validateTokenAudienceClaimValue;
     }
 }

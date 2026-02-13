@@ -26,7 +26,7 @@
     <dependency>
       <!-- needed to implement TransactionListener extension point in truncate cache upon WFS transactions -->
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-wfs</artifactId>
+      <artifactId>gs-wfs-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -90,7 +90,7 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
+      <groupId>tools.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
     </dependency>
 
@@ -133,6 +133,12 @@
       <groupId>org.geoserver</groupId>
       <artifactId>gs-platform</artifactId>
       <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wfs1_x</artifactId>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

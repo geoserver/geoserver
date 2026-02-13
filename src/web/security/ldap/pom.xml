@@ -53,7 +53,22 @@
     </dependency>
     <dependency>
       <groupId>org.apache.directory.server</groupId>
-      <artifactId>apacheds-all</artifactId>
+      <artifactId>apacheds-jdbm-partition</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.directory.server</groupId>
+      <artifactId>apacheds-core-integ</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.directory.server</groupId>
+      <artifactId>apacheds-server-annotations</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.directory.server</groupId>
+      <artifactId>apacheds-test-framework</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -62,16 +77,9 @@
       <version>10.7.0</version>
       <scope>test</scope>
     </dependency>
-    <!--
-      bcprov-jdk15 must be before spring-ldap-test because the latter depends
-      on apacheds-all, which repackages an unsigned bcprov-jdk5 security
-      provider, which Oracle JDK 7 and 8 refuse to load, breaking the build on
-      those platforms. Placing the bcprov-jdk18 signed security provider here
-      places it earlier on the classpath than the unsigned provider.
-    -->
     <dependency>
       <groupId>org.bouncycastle</groupId>
-      <artifactId>bcprov-jdk18on</artifactId>
+      <artifactId>bcprov-lts8on</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

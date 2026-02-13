@@ -4,17 +4,18 @@
  */
 package org.geoserver.monitor.rest;
 
+import java.util.Map;
 import org.geoserver.rest.MediaTypeCallback;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 
 @Component
 public class MonitorMediaTypeCallback implements MediaTypeCallback {
 
     @Override
-    public void configure(ContentNegotiationConfigurer configurer) {
-        configurer.mediaType("csv", MonitorRequestController.CSV_MEDIATYPE);
-        configurer.mediaType("zip", MonitorRequestController.ZIP_MEDIATYPE);
-        configurer.mediaType("xls", MonitorRequestController.EXCEL_MEDIATYPE);
+    public void configure(Map<String, MediaType> mediaTypes) {
+        mediaTypes.put("csv", MonitorRequestController.CSV_MEDIATYPE);
+        mediaTypes.put("zip", MonitorRequestController.ZIP_MEDIATYPE);
+        mediaTypes.put("xls", MonitorRequestController.EXCEL_MEDIATYPE);
     }
 }

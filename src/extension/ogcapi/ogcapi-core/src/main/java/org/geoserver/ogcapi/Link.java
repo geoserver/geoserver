@@ -6,10 +6,10 @@ package org.geoserver.ogcapi;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import java.util.Map;
 import org.springframework.http.HttpMethod;
+import tools.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 /** Represents a JSON/XML link */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -76,6 +76,19 @@ public class Link {
         this.rel = rel;
         this.type = type;
         this.title = title;
+    }
+
+    /** Copy constructor */
+    public Link(Link other) {
+        this.href = other.href;
+        this.rel = other.rel;
+        this.type = other.type;
+        this.title = other.title;
+        this.classification = other.classification;
+        this.templated = other.templated;
+        this.merge = other.merge;
+        this.body = other.body;
+        this.method = other.method;
     }
 
     @JacksonXmlProperty(namespace = ATOM_NS, isAttribute = true)

@@ -3,11 +3,11 @@
 Application Properties
 ----------------------
 
-While many configuration and setup options are available through the Web Administration application :menuselection:`Settings > Global` page, more fundamental (and security minded) changes to how the application operates are made using "Application Properties" defined by:
+While many configuration and setup options are available through the Web Administration application :menuselection:`Settings > Global` page, more fundamental (and security minded) changes to how the application operates are made using "Application Properties" defined by (in order of priority):
 
-* Java System Properties
-* Web Application context parameters
-* System Environmental Variable
+  1. Java System Properties
+  2. Web Application context parameters
+  3. System Environmental Variables
 
 As part of the operating environment GeoServer application properties, unlike settings, cannot be changed at runtime.
 

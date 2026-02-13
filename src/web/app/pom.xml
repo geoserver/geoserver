@@ -95,7 +95,17 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-wfs</artifactId>
+      <artifactId>gs-wfs-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wfs1_x</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wfs2_x</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -176,15 +186,13 @@
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
-      <artifactId>gt-arcgrid</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.geotools</groupId>
       <artifactId>gt-imagemosaic</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.geotools</groupId>
-      <artifactId>gt-image</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>gt-image</artifactId>
+          <groupId>org.geotools</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents.client5</groupId>
@@ -226,6 +234,11 @@
       <artifactId>jetty-ee10-servlet</artifactId>
       <version>${jetty.version}</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcpkix-lts8on</artifactId>
+      <version>2.73.10</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -1482,11 +1495,15 @@
           <version>${project.version}</version>
         </dependency>
         <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-web-3d-geovolumes</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-web-ogcapi</artifactId>
           <version>${project.version}</version>
         </dependency>
-
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-web-coverages</artifactId>
@@ -1522,7 +1539,11 @@
           <artifactId>gs-web-processes</artifactId>
           <version>${project.version}</version>
         </dependency>
-
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-web-3d-geovolumes</artifactId>
+          <version>${project.version}</version>
+        </dependency>
       </dependencies>
     </profile>
     <profile>
@@ -1908,6 +1929,26 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-wcs1_1</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>arcgrid</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-arcgrid</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>image</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-image</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

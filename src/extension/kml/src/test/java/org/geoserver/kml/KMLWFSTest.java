@@ -20,7 +20,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.wfs.WFSTestSupport;
+import org.geoserver.wfs.WFS1XTestSupport;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.api.feature.simple.SimpleFeature;
@@ -32,7 +32,7 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
-public class KMLWFSTest extends WFSTestSupport {
+public class KMLWFSTest extends WFS1XTestSupport {
 
     @Override
     protected void setUpNamespaces(Map<String, String> namespaces) {

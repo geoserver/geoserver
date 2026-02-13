@@ -1,9 +1,9 @@
 .. _image_quickstart:
 
-Publishing a Image
-==================
+Publishing a GeoTIFF
+====================
 
-This tutorial walks through the steps of publishing a World + Image with GeoServer.
+This tutorial walks through the steps of publishing a GeoTIFF with GeoServer.
 
 .. note:: This tutorial assumes that GeoServer is running at ``http://localhost:8080/geoserver``.
 
@@ -74,7 +74,7 @@ Once the workspace is created, we are ready to add a new store. The store tells 
 
 #. In order to add the geopackage, you need to create a new store. Click the :guilabel:`Add new Store` button. You will be redirected to a list of data sources supported by GeoServer. Note that data sources are extensible, so your list may look slightly different.
   
-#. From the list of :guilabel:`Raster Data Sources` locate and click the :guilabel:`WorldImage` link.
+#. From the list of :guilabel:`Raster Data Sources` locate and click the :guilabel:`GeoTIFF` link.
 
    .. figure:: images/stores_rasters.png
       

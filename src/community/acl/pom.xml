@@ -19,7 +19,7 @@
     <module>assembly</module>
   </modules>
   <properties>
-    <geoserver-acl.version>3.0-M2</geoserver-acl.version>
+    <geoserver-acl.version>3.0-RC1</geoserver-acl.version>
     <lombok.version>1.18.42</lombok.version>
   </properties>
   <dependencyManagement>
@@ -66,7 +66,7 @@
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
-        <artifactId>gs-wfs</artifactId>
+        <artifactId>gs-wfs-core</artifactId>
         <version>${project.version}</version>
         <classifier>tests</classifier>
       </dependency>

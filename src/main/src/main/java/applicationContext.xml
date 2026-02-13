@@ -57,6 +57,10 @@
     <bean id="manifestLoader" class="org.geoserver.ManifestLoader" lazy-init="false">
        <constructor-arg ref="resourceLoader"/>
     </bean>
+
+    <bean id="customCRSAuthorityLoader" class="org.vfny.geoserver.crs.CustomCRSAuthorityLoader">
+        <constructor-arg ref="resourceLoader"/>
+    </bean>
     
     <!-- extensions -->
     <bean id="extensions" class="org.geoserver.platform.GeoServerExtensions"/>
@@ -106,7 +110,8 @@
     <bean id="geoServer" class="org.geoserver.config.impl.GeoServerImpl">
       <property name="catalog" ref="catalog"/>
     </bean>
-    <bean id="geoServerLoader" class="org.geoserver.config.GeoServerLoaderProxy" depends-on="extensions,dataDirectory,geoServerSecurityManager,configurationLock">
+    <bean id="geoServerLoader" class="org.geoserver.config.GeoServerLoaderProxy"
+          depends-on="extensions,dataDirectory,geoServerSecurityManager,configurationLock,customCRSAuthorityLoader">
       <constructor-arg ref="resourceLoader"/>
     </bean>
     
@@ -171,6 +176,10 @@
   <bean id="loggingInitializer" class="org.geoserver.logging.LoggingInitializer">
     <property name="resourceLoader" ref="resourceLoader"/>
     <property name="geoServer" ref="geoServer"/>
+  </bean>
+
+  <!-- cors initializer -->
+  <bean id="corsInitializer" class="org.geoserver.security.cors.CORSInitializer">
   </bean>
   
   <!-- resource pool initializer -->
@@ -388,5 +397,7 @@
   </bean>
 
   <bean id="geoserverTileCache" class="org.geoserver.jai.GeoServerTileCache"/>
+
+
 
 </beans>

@@ -41,7 +41,7 @@ public class GeoserverGridShiftLocator extends AbstractFactory implements GridSh
      * <p>It will look in GEOSERVER_DATA_DIR/user_projections
      *
      * @param grid the grid name/location
-     * @return the fully resolved URL of the grid or null, if the resource cannot be located.
+     * @return the fully resolved URL of the grid or null, if the definitions cannot be located.
      */
     @Override
     public URL locateGrid(String grid) {

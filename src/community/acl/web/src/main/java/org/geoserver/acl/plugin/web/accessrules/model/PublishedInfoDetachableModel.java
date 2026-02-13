@@ -14,8 +14,8 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.GeoServerApplication;
+import org.jspecify.annotations.Nullable;
 import org.springframework.context.ApplicationContext;
-import org.springframework.lang.Nullable;
 
 @SuppressWarnings("serial")
 public class PublishedInfoDetachableModel extends LoadableDetachableModel<PublishedInfo> {

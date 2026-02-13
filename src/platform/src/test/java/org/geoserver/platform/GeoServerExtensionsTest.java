@@ -83,9 +83,9 @@ public class GeoServerExtensionsTest {
 
         List<GeoServerExtensionsTest> extensions = GeoServerExtensions.extensions(GeoServerExtensionsTest.class);
         assertNotNull(extensions);
-        assertEquals(2, extensions.size());
+        // null is filtered out
+        assertEquals(1, extensions.size());
         assertTrue(extensions.contains(this));
-        assertTrue(extensions.contains(null));
 
         assertEquals(3, GeoServerExtensions.extensionsCache.size());
         assertTrue(GeoServerExtensions.extensionsCache.containsKey(GeoServerExtensionsTest.class));

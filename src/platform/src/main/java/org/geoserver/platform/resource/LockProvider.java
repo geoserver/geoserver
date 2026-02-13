@@ -22,6 +22,9 @@ package org.geoserver.platform.resource;
  */
 public interface LockProvider {
 
+    /** The wait to occur in case the lock cannot be acquired, in seconds. */
+    int GS_LOCK_TIMEOUT = Integer.parseInt(System.getProperty("GS_LOCK_TIMEOUT", String.valueOf(2 * 60)));
+
     /**
      * Acquires a exclusive lock (using resource path as key).
      *

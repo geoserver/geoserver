@@ -17,6 +17,8 @@
         <include>gs-web-ogcapi-*.jar</include>
         <include>gt-cql2-*.jar</include>
         <include>swagger-core-*.jar</include>
+        <include>jackson-core-2*.jar</include> <!-- for swagger -->
+        <include>jackson-databind-2*.jar</include> <!-- for swagger -->
         <include>jackson-dataformat-*.jar</include>
         <include>jackson-module-jaxb*.jar</include>
         <include>swagger-models-*.jar</include>

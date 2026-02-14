@@ -14,9 +14,9 @@
   </parent>
 
   <groupId>org.geoserver</groupId>
-  <artifactId>gs-wms</artifactId>
+  <artifactId>gs-wms-core</artifactId>
   <packaging>jar</packaging>
-  <name>Web Map Service Module</name>
+  <name>Web Map Service Core Module</name>
 
   <dependencies>
     <dependency>

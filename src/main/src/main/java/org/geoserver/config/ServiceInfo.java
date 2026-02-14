@@ -151,6 +151,20 @@ public interface ServiceInfo extends Info {
     List<Version> getVersions();
 
     /**
+     * The versions of the service that are disabled.
+     *
+     * @return List of disabled versions, empty list means all versions are enabled
+     */
+    List<Version> getDisabledVersions();
+
+    /**
+     * Sets the list of disabled versions for this service.
+     *
+     * @param disabledVersions List of versions to disable
+     */
+    void setDisabledVersions(List<Version> disabledVersions);
+
+    /**
      * Keywords associated with the service.
      *
      * @uml.property name="keywords"

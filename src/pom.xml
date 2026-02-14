@@ -35,7 +35,9 @@
     <module>wfs-core</module>
     <module>wfs1_x</module>
     <module>wfs2_x</module>
-    <module>wms</module>
+    <module>wms-core</module>
+    <module>wms1_1</module>
+    <module>wms1_3</module>
     <module>wms-gml</module>
     <module>ows</module>
     <module>gwc</module>
@@ -49,8 +51,6 @@
     <module>web</module>
     <module>community</module>
     <module>extension</module>
-    <module>wms1_1</module>
-    <module>wms1_3</module>
   </modules>
 
   <scm>
@@ -328,7 +328,7 @@
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
-        <artifactId>gs-wms</artifactId>
+        <artifactId>gs-wms-core</artifactId>
         <version>${gs.version}</version>
       </dependency>
       <dependency>
@@ -348,7 +348,7 @@
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
-        <artifactId>gs-wms</artifactId>
+        <artifactId>gs-wms-core</artifactId>
         <version>${gs.version}</version>
         <classifier>tests</classifier>
       </dependency>

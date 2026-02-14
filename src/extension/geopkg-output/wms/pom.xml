@@ -26,7 +26,7 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-wms</artifactId>
+      <artifactId>gs-wms-core</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -58,7 +58,7 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-wms</artifactId>
+      <artifactId>gs-wms-core</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>

@@ -112,18 +112,7 @@
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.geoserver.extension</groupId>
-      <artifactId>gs-css</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.extension</groupId>
-      <artifactId>gs-mbstyle</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
+
     <dependency>
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>

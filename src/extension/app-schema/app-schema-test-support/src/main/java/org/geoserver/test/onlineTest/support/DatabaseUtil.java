@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.geotools.util.SuppressFBWarnings;
 
 /**
  * This class provides utility function to split up generated sql files into individual statement to be execute by JDBC.
@@ -35,6 +36,7 @@ public class DatabaseUtil {
      * @param inputStream sql statements
      * @return list of SQL statements
      */
+    @SuppressFBWarnings("IM_BAD_CHECK_FOR_ODD")
     public List<String> splitPostgisSQLScript(InputStream inputStream) throws Exception {
         if (inputStream == null) {
             throw new IllegalArgumentException("PostGIS SQL Script is null, check resource reference");

@@ -1,5 +1,5 @@
-/* (c) 2014-16 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -36,36 +36,37 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
     /** Mapping file database parameters */
     public static String DB_PARAMS =
             """
-            <parameters>
-            <Parameter>
-            <name>dbtype</name>
-            <value>Oracle</value>
-            </Parameter>
-            <Parameter>
-            <name>host</name>
-            <value>${host}</value>
-            </Parameter>
-            <Parameter>
-            <name>port</name>
-            <value>${port}</value>
-            </Parameter>
-            <Parameter>
-            <name>database</name>
-            <value>${database}</value>
-            </Parameter>
-            <Parameter>
-            <name>user</name>
-            <value>${user}</value>
-            </Parameter>
-            <Parameter>
-            <name>passwd</name>
-            <value>${passwd}</value>
-            </Parameter>
-            <Parameter>
-            <name>Expose primary keys</name>\
-            <value>true</value>
-            </Parameter>
-            </parameters>"""; //
+        <parameters>
+        <Parameter>
+        <name>dbtype</name>
+        <value>Oracle</value>
+        </Parameter>
+        <Parameter>
+        <name>host</name>
+        <value>${host}</value>
+        </Parameter>
+        <Parameter>
+        <name>port</name>
+        <value>${port}</value>
+        </Parameter>
+        <Parameter>
+        <name>database</name>
+        <value>${database}</value>
+        </Parameter>
+        <Parameter>
+        <name>user</name>
+        <value>${user}</value>
+        </Parameter>
+        <Parameter>
+        <name>passwd</name>
+        <value>${passwd}</value>
+        </Parameter>
+        <Parameter>
+        <name>Expose primary keys</name>\
+        <value>true</value>
+        </Parameter>
+        </parameters>\
+        """; //
 
     /** Default WKT parser for non 3D tests. */
     private static String DEFAULT_PARSER = "SDO_GEOMETRY";
@@ -159,71 +160,11 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
                 String[] fieldNames = new String[size];
                 List<String> createParams = new ArrayList<>();
                 int j = 0;
-                String type;
-                String field;
                 int spatialIndexCounter = 0;
                 for (PropertyDescriptor desc : schema.getDescriptors()) {
-                    field = desc.getName().toString().toUpperCase();
-                    fieldNames[j] = field;
-                    if (desc instanceof GeometryDescriptor descriptor) {
-                        type = "SDO_GEOMETRY";
-                        // Update spatial index
-                        int srid = getSrid(((GeometryType) desc.getType()));
-
-                        spatialIndex
-                                .append("DELETE FROM user_sdo_geom_metadata WHERE table_name = '")
-                                .append(tableName)
-                                .append("'\n");
-
-                        spatialIndex
-                                .append("Insert into user_sdo_geom_metadata ")
-                                .append("(TABLE_NAME,COLUMN_NAME,DIMINFO,SRID)")
-                                .append("values ('")
-                                .append(tableName)
-                                .append("','")
-                                .append(field)
-                                .append("',MDSYS.SDO_DIM_ARRAY(MDSYS.SDO_DIM_ELEMENT('X',140.962,144.909,0.00001),")
-                                .append("MDSYS.SDO_DIM_ELEMENT('Y',-38.858,-33.98,0.00001)")
-                                .append( // support 3d index
-                                        descriptor.getCoordinateReferenceSystem() != null
-                                                        && descriptor
-                                                                        .getCoordinateReferenceSystem()
-                                                                        .getCoordinateSystem()
-                                                                        .getDimension()
-                                                                == 3
-                                                ? ", MDSYS.SDO_DIM_ELEMENT('Z',-100000, 100000, 1) ),"
-                                                : "),")
-                                .append(srid)
-                                .append(")\n");
-
-                        // ensure it's <= 30 characters to avoid Oracle exception
-                        String indexName = (tableName.length() <= 26 ? tableName : tableName.substring(0, 26)) + "_IDX";
-                        if (spatialIndexCounter > 0) {
-                            // to avoid duplicate index name when there are > 1 geometry in the same
-                            // table
-                            indexName += spatialIndexCounter;
-                        }
-
-                        spatialIndex
-                                .append("CREATE INDEX \"")
-                                .append(indexName)
-                                .append("\" ON \"")
-                                .append(tableName)
-                                .append("\"(\"")
-                                .append(field)
-                                .append("\") ")
-                                .append("INDEXTYPE IS \"MDSYS\".\"SPATIAL_INDEX\"\n");
-                        spatialIndexCounter++;
-                    } else {
-                        type = Classes.getShortName(desc.getType().getBinding());
-                        if (type.equalsIgnoreCase("String")) {
-                            type = "NVARCHAR2(250)";
-                        } else if (type.equalsIgnoreCase("Double")) {
-                            type = "NUMBER";
-                        }
-                        // etc. assign as required
-                    }
-                    createParams.add(field + " " + type);
+                    fieldNames[j] = desc.getName().toString().toUpperCase();
+                    spatialIndexCounter =
+                            addSpatialIndex(desc, spatialIndex, tableName, spatialIndexCounter, createParams);
                     j++;
                 }
                 // Add numeric PK for sorting
@@ -287,6 +228,75 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
                 this.sql = buf.toString();
             }
         }
+    }
+
+    private int addSpatialIndex(
+            PropertyDescriptor desc,
+            StringBuffer spatialIndex,
+            String tableName,
+            int spatialIndexCounter,
+            List<String> createParams) {
+        String field = desc.getName().toString().toUpperCase();
+        String type;
+        if (desc instanceof GeometryDescriptor descriptor) {
+            type = "SDO_GEOMETRY";
+            // Update spatial index
+            int srid = getSrid(((GeometryType) desc.getType()));
+
+            spatialIndex
+                    .append("DELETE FROM user_sdo_geom_metadata WHERE table_name = '")
+                    .append(tableName)
+                    .append("'\n");
+
+            spatialIndex
+                    .append("Insert into user_sdo_geom_metadata ")
+                    .append("(TABLE_NAME,COLUMN_NAME,DIMINFO,SRID)")
+                    .append("values ('")
+                    .append(tableName)
+                    .append("','")
+                    .append(field)
+                    .append("',MDSYS.SDO_DIM_ARRAY(MDSYS.SDO_DIM_ELEMENT('X',140.962,144.909,0.00001),")
+                    .append("MDSYS.SDO_DIM_ELEMENT('Y',-38.858,-33.98,0.00001)")
+                    .append( // support 3d index
+                            descriptor.getCoordinateReferenceSystem() != null && getDimension(descriptor) == 3
+                                    ? ", MDSYS.SDO_DIM_ELEMENT('Z',-100000, 100000, 1) ),"
+                                    : "),")
+                    .append(srid)
+                    .append(")\n");
+
+            // ensure it's <= 30 characters to avoid Oracle exception
+            String indexName = (tableName.length() <= 26 ? tableName : tableName.substring(0, 26)) + "_IDX";
+            if (spatialIndexCounter > 0) {
+                // to avoid duplicate index name when there are > 1 geometry in the same
+                // table
+                indexName += spatialIndexCounter;
+            }
+
+            spatialIndex
+                    .append("CREATE INDEX \"")
+                    .append(indexName)
+                    .append("\" ON \"")
+                    .append(tableName)
+                    .append("\"(\"")
+                    .append(field)
+                    .append("\") ")
+                    .append("INDEXTYPE IS \"MDSYS\".\"SPATIAL_INDEX\"\n");
+            spatialIndexCounter++;
+        } else {
+            type = Classes.getShortName(desc.getType().getBinding());
+            if (type.equalsIgnoreCase("String")) {
+                type = "NVARCHAR2(250)";
+            } else if (type.equalsIgnoreCase("Double")) {
+                type = "NUMBER";
+            }
+            // etc. assign as required
+        }
+        createParams.add(field + " " + type);
+        return spatialIndexCounter;
+    }
+
+    private static int getDimension(GeometryDescriptor descriptor) {
+        return descriptor.getCoordinateReferenceSystem().getCoordinateSystem().getDimension();
     }
 
     @Override

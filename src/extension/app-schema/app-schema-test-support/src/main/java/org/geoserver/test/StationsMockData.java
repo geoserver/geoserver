@@ -1,3 +1,7 @@
+/* (c) 2018 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 /*
  *    GeoTools - The Open Source Java GIS Toolkit
  *    http://geotools.org
@@ -161,7 +165,7 @@ public class StationsMockData extends AbstractAppSchemaMockData {
 
     /** Helper method the reads a resource content to a string. */
     protected static String resourceToString(String resourceName) {
-        try (InputStream input = NamespacesWfsTest.class.getResourceAsStream(resourceName)) {
+        try (InputStream input = StationsMockData.class.getResourceAsStream(resourceName)) {
             return IOUtils.toString(input);
         } catch (Exception exception) {
             throw new RuntimeException("Error reading resource '%s' content.".formatted(resourceName), exception);

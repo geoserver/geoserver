@@ -1,0 +1,590 @@
+<!-- copied from http://proj.badc.rl.ac.uk/svn/ndg/TI02-CSML/branches/CSML-egged/XMLSchemas/csmlMain.xsd and edited for unit test by Rini Angreani (CSIRO Earth Science and Resource Engineering) 
+The editing was partly due to bug GEOT-4022 with gml 3.1 types that are required here. The changes replace the types with gml 3.2 types where the problem does not occur. -->
+
+<schema targetNamespace="http://ndg.nerc.ac.uk/csml" xmlns:swe="http://www.opengis.net/swe/1.0/gml32" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:csml="http://ndg.nerc.ac.uk/csml" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.9">
+	<annotation>
+		<documentation>Main CSML schema file - includes domain geometries, coverage classes, feature types etc.</documentation>
+	</annotation>
+	<import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+	<import namespace="http://www.opengis.net/swe/1.0/gml32" schemaLocation="http://dp.schemas.opengis.net/08-127/sweCommon/1.0.1_gml32/swe.xsd"/>
+	<!--====================================================================== -->
+	<!--==== CSML 'dataset' types ====-->
+	<!--====================================================================== -->
+	<!--====================================================================== -->
+	<complexType name="CSMLFeatureCollectionType">
+		<annotation>
+			<documentation>This is the base type or a CSML Feature Collection (ref GML 3.2, sections 9.1.10.1 and 22.3.3).</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractFeatureType">
+				<sequence>
+					<element name="crsDictionary" minOccurs="0">
+						<complexType>
+							<sequence>
+								<element ref="gml:Dictionary"/>
+							</sequence>
+						</complexType>
+					</element>
+					<element name="phenomenonDictionary" minOccurs="0">
+						<complexType>
+							<sequence>
+								<element ref="gml:Dictionary"/>
+							</sequence>
+						</complexType>
+					</element>
+					<element name="uomDictionary" minOccurs="0">
+						<complexType>
+							<sequence>
+								<element ref="gml:Dictionary"/>
+							</sequence>
+						</complexType>
+					</element>
+					<element name="featureMember" minOccurs="0" maxOccurs="unbounded">
+						<complexType>
+							<complexContent>
+								<extension base="gml:AbstractFeatureMemberType">
+									<sequence>
+										<element ref="gml:AbstractFeature"/>
+									</sequence>
+								</extension>
+							</complexContent>
+						</complexType>
+					</element>
+				</sequence>
+				<attributeGroup ref="gml:AggregationAttributeGroup"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<element name="CSMLFeatureCollection" type="csml:CSMLFeatureCollectionType"/>
+	<!--====================================================================== -->
+	<!--====================================================================== -->
+	<!--==== Utility types ====-->
+	<!--====================================================================== -->
+	<!--====================================================================== -->
+	<!--==== ReferenceableGrid ==== -->
+	<!--====================================================================== -->
+	<annotation>
+		<documentation>TimeValueList and TimePositionListType based on the obvious extensions of GML TimePositionUnion and TimePositionType, and identical to the equivalents in SWE.</documentation>
+	</annotation>
+	<simpleType name="TimeValueList">
+		<annotation>
+			<documentation>Provides a list of GML's TimePositionUnion (see GML 3.2, sect 15.2.2.7)</documentation>
+		</annotation>
+		<list itemType="gml:TimePositionUnion"/>
+	</simpleType>
+	<complexType name="TimePositionListType">
+		<annotation>
+			<documentation>By direct analogy with gml:TimePositionType, adds attributes to csml:TimeValueList to support multiple time coordinate systems (see GML 3.2, sect 15.2.2.7).</documentation>
+		</annotation>
+		<simpleContent>
+			<extension base="csml:TimeValueList">
+				<attribute name="frame" type="anyURI" default="#ISO-8601"/>
+				<attribute name="calendarEraName" type="string"/>
+				<attribute name="indeterminatePosition" type="gml:TimeIndeterminateValueType"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<element name="timePositionList" type="csml:TimePositionListType">
+		<annotation>
+			<documentation>By direct analogy with gml:timePosition, creates a list version of the same (see GML 3.2, sect 15.2.2.7).</documentation>
+		</annotation>
+	</element>
+	<!--====================================================================== -->
+	<complexType name="SpatialOrTemporalPositionListType">
+		<annotation>
+			<documentation>SpatialOrTemporalPositionList allows efficient lists of either spatial or temporal positions. This extends gml:AbstractGMLType in order to have identity and a by-reference property type; the implication is that it should be modelled in UML as a 'Type' rather than 'Union' or 'DataType' (see GML 3.2, sect E.2.4).</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGMLType">
+				<choice>
+					<element name="coordinateList">
+						<simpleType>
+							<list itemType="double"/>
+						</simpleType>
+					</element>
+					<element ref="csml:timePositionList"/>
+				</choice>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="SpatialOrTemporalPositionList" type="csml:SpatialOrTemporalPositionListType" substitutionGroup="gml:AbstractGML"/>
+	<complexType name="SpatialOrTemporalPositionListPropertyType">
+		<sequence minOccurs="0">
+			<element ref="csml:SpatialOrTemporalPositionList"/>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<!--====================================================================== -->
+	<complexType name="GridOrdinateDescriptionType">
+		<annotation>
+			<documentation>GridOrdinateDescription defines grid point locations over entire Grid for a single spatial or temporal coordinate axis.</documentation>
+		</annotation>
+		<sequence>
+			<element name="coordAxisLabel" type="NCName"/>
+			<element name="coordAxisValues" type="csml:SpatialOrTemporalPositionListPropertyType"/>
+			<element name="gridAxesSpanned" type="gml:NCNameList"/>
+			<element name="sequenceRule" type="gml:SequenceRuleType"/>
+		</sequence>
+	</complexType>
+	<element name="GridOrdinateDescription" type="csml:GridOrdinateDescriptionType" substitutionGroup="gml:AbstractObject"/>
+	<complexType name="GridOrdinateDescriptionPropertyType">
+		<sequence minOccurs="0">
+			<element ref="csml:GridOrdinateDescription"/>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<!--====================================================================== -->
+	<complexType name="GridPointDescriptionType">
+		<annotation>
+			<documentation>GridPointDescription defines grid point locations over entire Grid by listing direct positions in given sequence order.</documentation>
+		</annotation>
+		<sequence>
+			<group ref="gml:geometricPositionListGroup"/>
+			<element name="sequenceRule" type="gml:SequenceRuleType"/>
+		</sequence>
+	</complexType>
+	<element name="GridPointDescription" type="csml:GridPointDescriptionType" substitutionGroup="gml:AbstractObject"/>
+	<complexType name="GridPointDescriptionPropertyType">
+		<sequence minOccurs="0">
+			<element ref="csml:GridPointDescription"/>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<!--====================================================================== -->
+	<complexType name="GridCoordinatesTableType">
+		<annotation>
+			<documentation>Defines a table providing the transformation between grid coordinates and external coordinate reference system (see ISO 19123 8.2.1). Allows all grid point locations to be listed explicitly (using the gml:gridPoints property), or individual ordinates to be listed for each coordinate system axis (using a set of gml:gridOrdinate elements – one for each axis of the coordinate reference system).</documentation>
+		</annotation>
+		<choice>
+			<element name="gridOrdinate" type="csml:GridOrdinateDescriptionPropertyType" maxOccurs="unbounded"/>
+			<element name="gridPoints" type="csml:GridPointDescriptionPropertyType"/>
+		</choice>
+	</complexType>
+	<element name="GridCoordinatesTable" type="csml:GridCoordinatesTableType" substitutionGroup="gml:AbstractObject"/>
+	<complexType name="GridCoordinatesTablePropertyType">
+		<sequence minOccurs="0">
+			<element ref="csml:GridCoordinatesTable"/>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<!--====================================================================== -->
+	<complexType name="ReferenceableGridType">
+		<annotation>
+			<documentation>An implementation of CV_ReferenceableGrid of ISO 19123.
+			The association role 'crs' to the SC_CRS to which it is referenceable is implemented using the gml:SRSReferenceGroup attributeGroup inherited from gml:Grid.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:GridType">
+				<sequence>
+					<element name="coordTransformTable" type="csml:GridCoordinatesTablePropertyType"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="ReferenceableGrid" type="csml:ReferenceableGridType" substitutionGroup="gml:Grid"/>
+	<complexType name="ReferenceableGridPropertyType">
+		<sequence minOccurs="0">
+			<element ref="csml:ReferenceableGrid"/>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<!--====================================================================== -->
+	<!--====================================================================== -->
+	<!--==== ReferenceableGridCoverage ====-->
+	<!--====================================================================== -->
+	
+	<!--====================================================================== -->
+	<!--====================================================================== -->
+	<!--==== CSML Grid Feature Type ====-->
+	<!--====================================================================== -->
+	
+	<!--====================================================================== -->
+	<!--====================================================================== -->
+	<!--==== CSML GridSeries Feature Type ====-->
+	<!--====================================================================== -->
+	<complexType name="SpatioTemporalCRSType">
+		<annotation>
+			<documentation>Exactly one component reference system must be a TM_TemporalCRS (i.e. gml:TemporalCRS)</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:CompoundCRSType"/>
+		</complexContent>
+	</complexType>
+	<element name="SpatioTemporalCRS" type="csml:SpatioTemporalCRSType" substitutionGroup="gml:CompoundCRS"/>
+	<!--====================================================================== -->
+	<complexType name="GridSeriesDomainType">
+		<annotation>
+			<documentation>The SC_CRS to which this is referenced (via the inherited gml:SRSReferenceGroup attributeGroup) should be a csml:SpatioTemporalCRS of srsDimension 3 or 4. In addition, one of the GridOrdinateDescription objects must have a timePositionList. Finally, the grid dimension should be 3 or 4. These constraints could perhaps be implemented by deriving by extension from ReferenceableGridType and applying facets to the attributes (?), or perhaps using schematron. For now, leave it unenforced but understood....</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="csml:ReferenceableGridType">
+				<sequence>
+					<sequence>
+						<group ref="gml:StandardObjectProperties"/>
+					</sequence>
+					<sequence>
+						<element name="limits" type="gml:GridLimitsType"/>
+						<choice>
+							<element name="axisLabels" type="gml:NCNameList"/>
+							<element name="axisName" type="string" maxOccurs="unbounded"/>
+						</choice>
+					</sequence>
+					<sequence>
+						<element name="coordTransformTable" type="csml:GridCoordinatesTablePropertyType"/>
+					</sequence>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="GridSeriesDomain" type="csml:GridSeriesDomainType" substitutionGroup="csml:ReferenceableGrid"/>
+	<complexType name="GridSeriesDomainPropertyType">
+		<sequence minOccurs="0">
+			<element ref="csml:GridSeriesDomain"/>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<!--====================================================================== -->
+	<complexType name="GridSeriesCoverageDomainType">
+		<complexContent>
+			<extension base="gml:GridType">
+				<sequence minOccurs="0">
+					<element ref="csml:GridSeriesDomain"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="gridSeriesDomain" type="csml:GridSeriesCoverageDomainType" substitutionGroup="gml:Grid"/>
+	<!--====================================================================== -->
+	<complexType name="GridSeriesCoverageType">
+		<complexContent>
+			<extension base="gml:DiscreteCoverageType">
+				<sequence>
+					<group ref="gml:StandardObjectProperties"/>
+					<element ref="gml:boundedBy" minOccurs="0"/>
+					<element ref="csml:gridSeriesDomain"/>
+					<element ref="gml:rangeSet"/>
+					<element ref="gml:coverageFunction" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="GridSeriesCoverage" type="csml:GridSeriesCoverageType" substitutionGroup="gml:GridCoverage"/>
+	<complexType name="GridSeriesCoveragePropertyType">
+		<sequence minOccurs="0">
+			<element ref="csml:GridSeriesCoverage"/>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<!--====================================================================== -->
+	<complexType name="GridSeriesFeatureType">
+		<complexContent>
+			<extension base="gml:AbstractFeatureType">
+				<sequence>
+					<element name="value" type="csml:GridSeriesCoveragePropertyType"/>
+					<element name="parameter" type="swe:PhenomenonPropertyType"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="GridSeriesFeature" type="csml:GridSeriesFeatureType" substitutionGroup="gml:AbstractFeature"/>
+	<complexType name="GridSeriesFeaturePropertyType">
+		<sequence minOccurs="0">
+			<element ref="csml:GridSeriesFeature"/>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<!--====================================================================== -->
+	<!--====================================================================== -->
+	<!--==== CSML PointCollection Feature Type ====-->
+	<!--====================================================================== -->
+	<complexType name="PointCollectionFeatureType">
+		<complexContent>
+			<extension base="gml:AbstractFeatureType">
+				<sequence>
+					<element name="time" type="gml:TimePositionType" minOccurs="0"/>
+					<element name="value">
+						<complexType>
+							<sequence>
+								<element ref="gml:MultiPointCoverage"/>
+							</sequence>
+						</complexType>
+					</element>
+					<element name="parameter" type="swe:PhenomenonPropertyType"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="PointCollectionFeature" type="csml:PointCollectionFeatureType" substitutionGroup="gml:AbstractFeature"/>
+	<complexType name="PointCollectionFeaturePropertyType">
+		<sequence minOccurs="0">
+			<element ref="csml:PointCollectionFeature"/>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<!--====================================================================== -->
+	<!--====================================================================== -->
+	<!--==== CSML Point Feature Type ====-->
+	<!--====================================================================== -->
+	
+	<!--====================================================================== -->
+	<!--====================================================================== -->
+	<!--==== Alternate Point Feature Type ====-->
+	<!--====================================================================== -->
+	
+	<!--====================================================================== -->
+	<!--====================================================================== -->
+	<!--==== CSML PointSeries Feature Type ====-->
+	<!--====================================================================== -->
+	<complexType name="TimeSeriesType">
+		<complexContent>
+			<extension base="gml:AbstractTimeComplexType">
+				<sequence>
+					<element ref="csml:timePositionList"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="TimeSeries" type="csml:TimeSeriesType" substitutionGroup="gml:AbstractTimeComplex"/>
+	<complexType name="TimeSeriesPropertyType">
+		<sequence minOccurs="0">
+			<element ref="csml:TimeSeries"/>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<!--====================================================================== -->
+	<complexType name="PointSeriesCoverageDomainType">
+		<complexContent>
+			<restriction base="gml:DomainSetType">
+				<sequence minOccurs="0">
+					<element ref="csml:TimeSeries"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<element name="pointSeriesDomain" type="csml:PointSeriesCoverageDomainType" substitutionGroup="gml:domainSet"/>
+	<!--====================================================================== -->
+	<complexType name="PointSeriesCoverageType">
+		<complexContent>
+			<restriction base="gml:DiscreteCoverageType">
+				<sequence>
+				  	<group ref="gml:StandardObjectProperties"/>
+					<element ref="gml:boundedBy" minOccurs="0"/>
+					<element ref="gml:rangeSet"/>
+					<element ref="gml:coverageFunction" minOccurs="0"/>					
+					<element ref="csml:pointSeriesDomain"/>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<element name="PointSeriesCoverage" type="csml:PointSeriesCoverageType" substitutionGroup="gml:AbstractDiscreteCoverage"/>
+	<complexType name="PointSeriesCoveragePropertyType">
+		<sequence minOccurs="0">
+			<element ref="csml:PointSeriesCoverage"/>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<!--====================================================================== -->
+	<complexType name="PointSeriesFeatureType">
+		<complexContent>
+			<extension base="gml:AbstractFeatureType">
+				<sequence>
+					<element name="location" type="gml:DirectPositionType" minOccurs="0"/>
+					<element name="value" type="csml:PointSeriesCoveragePropertyType"/>
+					<element name="parameter" type="swe:PhenomenonPropertyType"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="PointSeriesFeature" type="csml:PointSeriesFeatureType" substitutionGroup="gml:AbstractFeature"/>
+	<complexType name="PointSeriesFeaturePropertyType">
+		<sequence minOccurs="0">
+			<element ref="csml:PointSeriesFeature"/>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<!--====================================================================== -->
+	<!--====================================================================== -->
+	<!--==== CSML Profile Feature Type ====-->
+	<!--====================================================================== -->
+	<complexType name="ProfileDomainType">
+		<annotation>
+			<documentation>Constrains a gml:MultiPoint to a vertical line of points. The associated CRS should be a valid subtype of gml:VerticalCRS.</documentation>
+		</annotation>
+		<complexContent>
+			<restriction base="gml:MultiPointType">
+				<sequence>
+					<sequence>
+						<group ref="gml:StandardObjectProperties"/>
+					</sequence>
+					<sequence>
+						<element ref="gml:pointMember" minOccurs="0" maxOccurs="unbounded"/>
+						<element ref="gml:pointMembers" minOccurs="0"/>
+					</sequence>
+				</sequence>
+			</restriction>
+		</complexContent>
+	</complexType>
+	<element name="ProfileDomain" type="csml:ProfileDomainType" substitutionGroup="gml:MultiPoint"/>
+	<complexType name="ProfileDomainPropertyType">
+		<sequence minOccurs="0">
+			<element ref="csml:ProfileDomain"/>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<!--====================================================================== -->
+	<complexType name="ProfileCoverageDomainType">
+		<complexContent>
+			<extension base="gml:DiscreteCoverageType">
+				<sequence minOccurs="0">
+					<element ref="csml:ProfileDomain"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="profileDomain" type="csml:ProfileCoverageDomainType" substitutionGroup="gml:MultiPointCoverage"/>
+	<!--====================================================================== -->
+	<complexType name="ProfileCoverageType">
+		<complexContent>
+			<extension base="gml:DiscreteCoverageType">
+				<sequence>
+					<group ref="gml:StandardObjectProperties"/>
+					<element ref="gml:boundedBy" minOccurs="0"/>
+					<element ref="csml:profileDomain"/>
+					<element ref="gml:rangeSet"/>
+					<element ref="gml:coverageFunction" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="ProfileCoverage" type="csml:ProfileCoverageType" substitutionGroup="gml:MultiPointCoverage"/>
+	<complexType name="ProfileCoveragePropertyType">
+		<sequence minOccurs="0">
+			<element ref="csml:ProfileCoverage"/>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<!--====================================================================== -->
+	<complexType name="ProfileFeatureType">
+		<complexContent>
+			<extension base="gml:AbstractFeatureType">
+				<sequence>
+					<element name="location" type="gml:DirectPositionType" minOccurs="0"/>
+					<element name="time" type="gml:TimePositionType" minOccurs="0"/>
+					<element name="value" type="csml:ProfileCoveragePropertyType"/>
+					<element name="parameter" type="swe:PhenomenonPropertyType"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="ProfileFeature" type="csml:ProfileFeatureType" substitutionGroup="gml:AbstractFeature"/>
+	<complexType name="ProfileFeaturePropertyType">
+		<sequence minOccurs="0">
+			<element ref="csml:ProfileFeature"/>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<!--====================================================================== -->
+	<!--====================================================================== -->
+	<!--==== CSML ProfileSeries Feature Type ====-->
+	<!--====================================================================== -->
+	<complexType name="ProfileSeriesDomainType">
+		<annotation>
+			<documentation>The SC_CRS to which this is referenced (via the inherited gml:SRSReferenceGroup attributeGroup) should be a csml:SpatioTemporalCRS of srsDimension 2. In addition, one of the GridOrdinateDescription objects must have a timePositonList. Finally, the grid dimension should be 2.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="csml:ReferenceableGridType">
+				<sequence>
+					<sequence>
+						<group ref="gml:StandardObjectProperties"/>
+					</sequence>
+					<sequence>
+						<element name="limits" type="gml:GridLimitsType"/>
+						<choice>
+							<element name="axisLabels" type="gml:NCNameList"/>
+							<element name="axisName" type="string" maxOccurs="unbounded"/>
+						</choice>
+					</sequence>
+					<sequence>
+						<element name="coordTransformTable" type="csml:GridCoordinatesTablePropertyType"/>
+					</sequence>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="ProfileSeriesDomain" type="csml:ProfileSeriesDomainType" substitutionGroup="csml:ReferenceableGrid"/>
+	<complexType name="ProfileSeriesDomainPropertyType">
+		<sequence minOccurs="0">
+			<element ref="csml:ProfileSeriesDomain"/>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<!--====================================================================== -->
+	<complexType name="ProfileSeriesCoverageDomainType">
+		<complexContent>
+			<extension base="gml:GridType">
+				<sequence minOccurs="0">
+					<choice>
+						<element ref="csml:ProfileSeriesDomain"/>
+					</choice>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="profileSeriesDomain" type="csml:ProfileSeriesCoverageDomainType" substitutionGroup="gml:Grid"/>
+	<!--====================================================================== -->
+	<complexType name="ProfileSeriesCoverageType">
+		<complexContent>
+			<extension base="gml:DiscreteCoverageType">
+				<sequence>
+					<!--  <group ref="gml:StandardObjectProperties"/> -->
+					<element ref="gml:boundedBy" minOccurs="0"/>
+					<element ref="csml:profileSeriesDomain"/>
+					<element ref="gml:rangeSet"/>
+					<element ref="gml:coverageFunction" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="ProfileSeriesCoverage" type="csml:ProfileSeriesCoverageType" substitutionGroup="gml:GridCoverage"/>
+	<complexType name="ProfileSeriesCoveragePropertyType">
+		<sequence minOccurs="0">
+			<element ref="csml:ProfileSeriesCoverage"/>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<!--====================================================================== -->
+	<complexType name="ProfileSeriesFeatureType">
+		<complexContent>
+			<extension base="gml:AbstractFeatureType">
+				<sequence>
+					<element name="location" type="gml:DirectPositionType" minOccurs="0"/>
+					<element name="value" type="csml:ProfileSeriesCoveragePropertyType"/>
+					<element name="parameter" type="swe:PhenomenonPropertyType"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="ProfileSeriesFeature" type="csml:ProfileSeriesFeatureType" substitutionGroup="gml:AbstractFeature"/>
+	<complexType name="ProfileSeriesFeaturePropertyType">
+		<sequence minOccurs="0">
+			<element ref="csml:ProfileSeriesFeature"/>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+</schema>

@@ -97,6 +97,7 @@ public class GetFeatureNumberMatchedGeoJSONTest extends AbstractAppSchemaTestSup
                         + "&cql_filter= intersects(gsml:shape, buffer(POLYGON((-1.3 52.5,-1.3 52.6,-1.2 52.6,-1.2 52.5,-1.3 52.5)),100))"
                         + " AND gsml:MappedFeature.gsml:specification.gsml:GeologicUnit.gml:description LIKE %27%25Olivine%20basalt%2C%20tuff%25%27&startIndex=1");
 
+        print(json);
         assertNumberMatchedAndNumberReturned(json, 3, 2);
     }
 

@@ -53,7 +53,7 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-wms</artifactId>
+      <artifactId>gs-wms-core</artifactId>
       <version>${gs.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>

@@ -60,7 +60,7 @@
                 //NC - wms package required for wms support
             -->
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-wms</artifactId>
+      <artifactId>gs-wms-core</artifactId>
     </dependency>
     <dependency>
       <groupId>net.sf.opencsv</groupId>

@@ -1,0 +1,162 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:swe="http://www.opengis.net/swe/2.0" targetNamespace="http://www.opengis.net/swe/2.0" elementFormDefault="qualified" attributeFormDefault="unqualified" version="2.0.0">
+    <annotation>
+        <documentation>SWE Common Data Model schema for data arrays and data stream descriptors. See requirements class http://www.opengis.net/spec/SWE/2.0/req/xsd-block-components/
+        
+        SWE Common is an OGC Standard.
+        Copyright (c) 2010 Open Geospatial Consortium, Inc. All Rights Reserved. 
+        To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+        </documentation>
+    </annotation>
+    <include schemaLocation="simple_encodings.xsd"/>
+    <include schemaLocation="simple_components.xsd"/>
+    <!-- ================================================= -->
+    <element name="DataArray" substitutionGroup="swe:AbstractDataComponent" type="swe:DataArrayType">
+        <annotation>
+            <documentation>Implementation of ISO-11404 Array datatype. This defines an array of identical data components with a elementCount. Values are given as a block and can be encoded in different ways</documentation>
+        </annotation>
+    </element>
+    <complexType name="DataArrayType">
+        <complexContent>
+            <extension base="swe:AbstractDataComponentType">
+                <sequence>
+                    <element name="elementCount" type="swe:CountPropertyType">
+                        <annotation>
+                            <documentation>Specifies the size of the array (i.e. the number of elements of the defined type it contains)</documentation>
+                        </annotation>
+                    </element>
+                    <element name="elementType">
+                        <annotation>
+                            <documentation>Defines the structure of the element that will be repeated in the array</documentation>
+                        </annotation>
+                        <complexType>
+                            <complexContent>
+                                <extension base="swe:AbstractDataComponentPropertyType">
+                                    <attribute name="name" type="NCName" use="required"/>
+                                </extension>
+                            </complexContent>
+                        </complexType>
+                    </element>
+                    <element maxOccurs="1" minOccurs="0" name="encoding">
+                        <annotation>
+                            <documentation>Specifies the type of method used to encode the array values</documentation>
+                        </annotation>
+                        <complexType>
+                            <sequence>
+                                <element ref="swe:AbstractEncoding"/>
+                            </sequence>
+                        </complexType>
+                    </element>
+                    <element maxOccurs="1" minOccurs="0" name="values" type="swe:EncodedValuesPropertyType">
+                        <annotation>
+                            <documentation>If present, contains an encoded block of the values contained in the array. Values are optional so that the array definition can be used a as a schema for values provided externally</documentation>
+                        </annotation>
+                    </element>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="DataArrayPropertyType">
+        <sequence minOccurs="0">
+            <element ref="swe:DataArray"/>
+        </sequence>
+        <attributeGroup ref="swe:AssociationAttributeGroup"/>
+    </complexType>
+    <complexType name="DataArrayPropertyByValueType">
+        <sequence>
+            <element ref="swe:DataArray"/>
+        </sequence>
+    </complexType><!-- ================================================= -->
+    <element name="Matrix" substitutionGroup="swe:DataArray" type="swe:MatrixType">
+        <annotation>
+            <documentation>Implementation of ISO-11404 Array datatype. This defines an array of identical data components with a elementCount. Values are given as a block and can be encoded in different ways</documentation>
+        </annotation>
+    </element>
+    <complexType name="MatrixType">
+        <complexContent>
+            <extension base="swe:DataArrayType">
+                <attribute name="referenceFrame" type="anyURI" use="optional">
+                    <annotation>
+                        <documentation>Frame of reference (usually spatial) with respect to which the coordinates of this matrix are expressed</documentation>
+                    </annotation>
+                </attribute>
+                <attribute name="localFrame" type="anyURI" use="optional">
+                    <annotation>
+                        <documentation>Frame of reference whose origin is located by the transformation defined by this matrix</documentation>
+                    </annotation>
+                </attribute>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="MatrixPropertyType">
+        <sequence minOccurs="0">
+            <element ref="swe:Matrix"/>
+        </sequence>
+        <attributeGroup ref="swe:AssociationAttributeGroup"/>
+    </complexType>
+    <complexType name="MatrixPropertyByValueType">
+        <sequence>
+            <element ref="swe:Matrix"/>
+        </sequence>
+    </complexType><!-- ================================================= -->
+    <element name="DataStream" substitutionGroup="swe:AbstractSWEIdentifiable" type="swe:DataStreamType">
+        <annotation>
+            <documentation>Defines the structure of the element that will be repeated in the stream</documentation>
+        </annotation>
+    </element>
+    <complexType name="DataStreamType">
+        <complexContent>
+            <extension base="swe:AbstractSWEIdentifiableType">
+                <sequence>
+                    <element maxOccurs="1" minOccurs="0" name="elementCount">
+                        <annotation>
+                            <documentation>Number of elements of the defined type that the stream contains</documentation>
+                        </annotation>
+                        <complexType>
+                            <sequence>
+                                <element ref="swe:Count"/>
+                            </sequence>
+                        </complexType>
+                    </element>
+                    <element name="elementType">
+                        <annotation>
+                            <documentation>Definition and structure of one stream element</documentation>
+                        </annotation>
+                        <complexType>
+                            <complexContent>
+                                <extension base="swe:AbstractDataComponentPropertyType">
+                                    <attribute name="name" type="NCName" use="required"/>
+                                </extension>
+                            </complexContent>
+                        </complexType>
+                    </element>
+                    <element name="encoding">
+                        <annotation>
+                            <documentation>Method used to encode the stream values</documentation>
+                        </annotation>
+                        <complexType>
+                            <sequence>
+                                <element ref="swe:AbstractEncoding"/>
+                            </sequence>
+                        </complexType>
+                    </element>
+                    <element name="values" type="swe:EncodedValuesPropertyType">
+                        <annotation>
+                            <documentation>Encoded values for the stream (can be out of band)</documentation>
+                        </annotation>
+                    </element>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="DataStreamPropertyType">
+        <sequence minOccurs="0">
+            <element ref="swe:DataStream"/>
+        </sequence>
+        <attributeGroup ref="swe:AssociationAttributeGroup"/>
+    </complexType>
+    <complexType name="DataStreamPropertyByValueType">
+        <sequence>
+            <element ref="swe:DataStream"/>
+        </sequence>
+    </complexType>
+</schema>

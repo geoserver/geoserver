@@ -590,7 +590,7 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
      * @return the content of the resource as text
      */
     protected String readResource(String resourcePath) {
-        try (InputStream input = NormalizedMultiValuesTest.class.getResourceAsStream(resourcePath)) {
+        try (InputStream input = AbstractAppSchemaTestSupport.class.getResourceAsStream(resourcePath)) {
             return IOUtils.toString(input);
         } catch (Exception exception) {
             throw new RuntimeException("Error reading resource '%s'.".formatted(resourcePath));

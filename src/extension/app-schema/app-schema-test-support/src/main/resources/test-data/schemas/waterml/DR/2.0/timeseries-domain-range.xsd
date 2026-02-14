@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/waterml/DR/2.0" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:swe="http://www.opengis.net/swe/2.0" xmlns:wml2dr="http://www.opengis.net/waterml/DR/2.0" xmlns:wml2="http://www.opengis.net/waterml/2.0" xmlns:gmlcov="http://www.opengis.net/gmlcov/1.0" xmlns:om="http://www.opengis.net/om/2.0" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
+	<annotation>
+		<documentation>This schema describes the domain-range timeseries result structures for WaterML2.0. This is
+      only an informative schema and has not been adopted as a standard XML encoding. This is an implementation 
+      of the domain-range timeseries conceptual model.  This implementation only covers timeseries of measurements and categorical values
+      (string with codespaces). Subsequent versions of schema may support more complex results such as multi-result (compound), vectors etc. </documentation>
+	</annotation>
+	<import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+ 	<import namespace="http://www.opengis.net/gmlcov/1.0" schemaLocation="http://schemas.opengis.net/gmlcov/1.0/coverage.xsd"/> 
+<!-- <import namespace="http://www.opengis.net/waterml/2.0" schemaLocation="../../2.0/waterml2.xsd"/>-->
+	<import namespace="http://www.opengis.net/swe/2.0" schemaLocation="http://schemas.opengis.net/sweCommon/2.0/swe.xsd"/>
+	<!-- ====================================================================== -->
+	<!-- Supporting types for domain-range encodings: time lists                -->
+	<!-- ====================================================================== -->
+	<simpleType name="TimeListSimpleType">
+		<annotation>
+			<documentation>A list of dateTime instances</documentation>
+		</annotation>
+		<list itemType="dateTime"/>
+	</simpleType>
+	<complexType name="TimePositionListType">
+		<complexContent>
+			<extension base="gml:AbstractTimeObjectType">
+				<sequence>
+					<element name="timePositionList" type="wml2dr:TimeListSimpleType"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="TimePositionList" type="wml2dr:TimePositionListType" substitutionGroup="gml:AbstractTimeObject">
+		<annotation>
+			<documentation>gml:TimeInstant acts as a zero-dimensional geometric primitive that represents an identifiable position in time.</documentation>
+		</annotation>
+	</element>
+	<complexType name="TimePositionListPropertyType">
+		<sequence minOccurs="0">
+			<element ref="wml2dr:TimePositionList"/>
+		</sequence>
+	</complexType>
+	<!-- Annotation coverages -->
+	<element name="AnnotationCoverage" type="wml2dr:AnnotationCoverageType" substitutionGroup="gmlcov:AbstractDiscreteCoverage">
+		<annotation>
+			<documentation>A coverage that describes metadata about another temporal coverage. </documentation>
+		</annotation>
+	</element>
+	<complexType name="AnnotationCoverageType">
+		<complexContent>
+			<extension base="gmlcov:AbstractDiscreteCoverageType"/>
+		</complexContent>
+	</complexType>
+	<complexType name="AnnotationCoveragePropertyType">
+		<sequence>
+			<element ref="wml2dr:AnnotationCoverage"/>
+		</sequence>
+	</complexType>
+	<!-- ====================================================================== -->
+	<!-- Base level timeseries (domain-range) types -->
+	<!-- ====================================================================== -->
+	<complexType name="TimeseriesCoverageType">
+		<complexContent>
+			<extension base="gmlcov:AbstractDiscreteCoverageType">
+				<sequence>
+					<!--element name="annotation" type="wml2:AnnotationCoveragePropertyType" minOccurs="0" maxOccurs="unbounded"></element-->
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="TimeseriesDomainRange" type="wml2dr:TimeseriesCoverageType" substitutionGroup="gmlcov:AbstractDiscreteCoverage">
+		<annotation>
+			<documentation>A coverage with a domainSet composed of time instants (a time list). Restriction performed in schematron (the gml cov schema does not restrict the types directly in schema, just through requirements clauses and tests).</documentation>
+		</annotation>
+	</element>
+	<!-- ====================================================================== -->
+	<!-- Measurement timeseries (domain-range) types -->
+	<!-- ====================================================================== -->
+	<complexType name="MeasurementTimeseriesCoverageType">
+		<complexContent>
+			<extension base="wml2dr:TimeseriesCoverageType"/>
+		</complexContent>
+	</complexType>
+	<element name="MeasurementTimeseriesDomainRange" type="wml2dr:MeasurementTimeseriesCoverageType" substitutionGroup="gmlcov:AbstractDiscreteCoverage">
+		<annotation>
+			<documentation>A further restriction of the base domain-range timeseries type that restricts the rangeSet to be a measurement (quantity)</documentation>
+		</annotation>
+	</element>
+	<complexType name="MeasurementTimeseriesCoveragePropertyType">
+		<sequence minOccurs="0">
+			<element ref="wml2dr:MeasurementTimeseriesDomainRange"/>
+		</sequence>
+	</complexType>
+	<!-- ====================================================================== -->
+	<!-- Categorical timeseries (domain-range) types -->
+	<!-- ====================================================================== -->
+	<complexType name="CategoricalTimeseriesCoverageType">
+		<complexContent>
+			<extension base="wml2dr:TimeseriesCoverageType"/>
+		</complexContent>
+	</complexType>
+	<element name="CategoricalTimeseriesDomainRange" type="wml2dr:CategoricalTimeseriesCoverageType" substitutionGroup="gmlcov:AbstractDiscreteCoverage">
+		<annotation>
+			<documentation>A further restriction of the base domain-range timeseries type that restricts the rangeSet to be a category (scoped text)</documentation>
+		</annotation>
+	</element>
+	<complexType name="MeasurementTimeseriesMetadataExtensionType">
+		<sequence minOccurs="0" maxOccurs="unbounded">
+		<!-- 	<element name="defaultMetadata" type="wml2:DefaultTVPMetadataPropertyType"/> -->
+		<!--	<element name="timeseriesMetadata" type="wml2:MeasurementTSMetadataPropertyType" minOccurs="0"/> -->
+			<element name="annotation" type="wml2dr:AnnotationCoveragePropertyType" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+	</complexType>
+	<element name="MeasurementTimeseriesMetadataExtension" type="wml2dr:MeasurementTimeseriesMetadataExtensionType"/>
+	<complexType name="CategoricalTimeseriesMetadataExtensionType">
+		<sequence minOccurs="0" maxOccurs="unbounded">
+			<!-- Uses the same default for DR as we don't require the codeSpace (it is available in the value encoding) -->
+		<!--	<element name="defaultMetadata" type="wml2:DefaultTVPMetadataPropertyType" minOccurs="0"/> -->
+		<!--	<element name="timeseriesMetadata" type="wml2:TimeseriesMetadataPropertyType" minOccurs="0"/> -->
+			<element name="annotation" type="wml2dr:AnnotationCoveragePropertyType" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+	</complexType>
+	<element name="CategoricalTimeseriesMetadataExtension" type="wml2dr:MeasurementTimeseriesMetadataExtensionType"/>
+</schema>

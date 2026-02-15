@@ -18,6 +18,12 @@ Configure Microsoft Entra
 
 #. Give the application a name ("gs-azure-app"), set it to the MultiTenant.  Use "http://localhost:8080/geoserver/web/login/oauth2/code/microsoft" as the "Web" Redirect URI.  Press "Register".
 
+   .. tip::
+
+      The exact redirect URI that GeoServer will use is shown as the read-only
+      :guilabel:`Redirect URI` field in the filter configuration form. In production,
+      use that value instead of ``localhost``. See :ref:`Redirect Base URI <community_oidc_redirect_base_uri>`.
+
 
     .. figure:: ../img/azure_create_app2.png
         :align: center

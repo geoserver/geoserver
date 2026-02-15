@@ -1,14 +1,13 @@
 {
-    "$schema":"http://json-schema.org/draft-03/schema#",
-    "id": "http://schemas.opengis.net/gsr/1.0/error.json",
+    "$schema":"https://json-schema.org/draft/2020-12/schema",
+    "$id": "http://schemas.opengis.net/gsr/1.0/error.json",
 
     "title":"error description",
     "type":"object",
     "properties":{
         "code":{
             "title":"error code according to HTTP",
-            "type":"integer",
-            "required":true},
+            "type":"integer"},
         "message":{
             "title":"error message",
             "type":"string"},
@@ -22,5 +21,6 @@
                 "title":"error detail",
                 "type":"string"}
         }
-    }
+    },
+    "required":["code"]
 }

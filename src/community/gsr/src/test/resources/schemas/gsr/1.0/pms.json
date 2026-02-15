@@ -1,5 +1,5 @@
 {
-   "$schema":"http://json-schema.org/draft-03/schema#",
+   "$schema":"https://json-schema.org/draft/2020-12/schema",
 
     "title":"picture marker symbol",
     "type":"object",
@@ -10,37 +10,30 @@
         "type":{
             "title":"marker type",
             "type":"string",
-            "required":true,
             "enum":["esriPMS"]
         },
         "url":{
             "title":"image url",
-            "type":"string",
-            "required":true
+            "type":"string"
         },
         "imageData":{
             "title":"image data (base64)",
-            "type":"string",
-            "required":true
+            "type":"string"
         },
         "contentType":{
             "title":"image content type",
-            "type":"string",
-            "required":true
+            "type":"string"
         },
         "color":{
-            "$ref":"color.json",
-            "required":true
+            "$ref":"color.json"
         },
         "width":{
             "title":"image width",
-            "type":"number",
-            "required":true
+            "type":"number"
         },
         "height":{
             "title":"image height",
-            "type":"number",
-            "required":true
+            "type":"number"
         },
         "angle":{
             "title":"angle",
@@ -54,5 +47,6 @@
             "title":"angle",
             "type":"number"
         }
-    }
+    },
+    "required":["type","url","imageData","contentType","color","width","height"]
 }

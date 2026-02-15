@@ -54,7 +54,6 @@ GeoWebCache API:
 *   [gwcindex](gwcindex/index.html)
 *   [gwclayers](gwclayers/index.html)
 *   [gwcmasstruncate](gwcmasstruncate/index.html)
-*   [gwcmemorycachestatistics](gwcmemorycachestatistics/index.html)
 *   [gwcreload](gwcreload/index.html)
 *   [gwcseed](gwcseed/index.html)
 Importer Extension:

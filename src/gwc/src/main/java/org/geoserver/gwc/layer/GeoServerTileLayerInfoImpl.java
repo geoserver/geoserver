@@ -54,8 +54,6 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
 
     private boolean enabled;
 
-    private Boolean inMemoryCached;
-
     private String name;
 
     private String blobStoreId;
@@ -420,16 +418,6 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
     @Override
     public ParameterFilter getParameterFilter(String key) {
         return parameterFiltersMap.get(key.toUpperCase());
-    }
-
-    @Override
-    public boolean isInMemoryCached() {
-        return inMemoryCached != null ? inMemoryCached : true;
-    }
-
-    @Override
-    public void setInMemoryCached(boolean inMemoryCached) {
-        this.inMemoryCached = inMemoryCached;
     }
 
     @Override

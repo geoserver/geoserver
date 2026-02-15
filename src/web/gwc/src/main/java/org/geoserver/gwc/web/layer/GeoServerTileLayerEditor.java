@@ -45,12 +45,10 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.ModificationProxy;
-import org.geoserver.gwc.ConfigurableBlobStore;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.layer.CatalogLayerEventListener;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.util.DimensionWarning.WarningType;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -60,7 +58,6 @@ import org.geowebcache.diskquota.storage.Quota;
 import org.geowebcache.filter.parameters.ParameterFilter;
 import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.layer.TileLayer;
-import org.geowebcache.storage.blobstore.memory.CacheProvider;
 
 /**
  * Edit panel for a {@link GeoServerTileLayerInfo} (used to edit caching options for both {@link LayerInfo} and
@@ -123,8 +120,6 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
     private final String originalLayerName;
 
     private IModel<? extends CatalogInfo> layerModel;
-
-    private CheckBox enableInMemoryCaching;
 
     /** @param tileLayerModel must be a {@link GeoServerTileLayerInfoModel} */
     public GeoServerTileLayerEditor(
@@ -250,16 +245,6 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
                 }
             }
         });
-
-        // CheckBox for enabling/disabling inner caching for the layer
-        enableInMemoryCaching = new CheckBox("inMemoryCached", new PropertyModel<>(getModel(), "inMemoryCached"));
-        ConfigurableBlobStore store = GeoServerExtensions.bean(ConfigurableBlobStore.class);
-        if (store != null && store.getCache() != null) {
-            enableInMemoryCaching.setEnabled(mediator.getConfig().isInnerCachingEnabled()
-                    && !store.getCache().isImmutable());
-        }
-
-        configs.add(enableInMemoryCaching);
 
         List<Integer> metaTilingChoices =
                 Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20);
@@ -407,19 +392,6 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
 
         tileLayerInfo.setName(name);
 
-        // Remove the Layer from the cache if it is present
-        ConfigurableBlobStore store = GeoServerExtensions.bean(ConfigurableBlobStore.class);
-        if (store != null) {
-            CacheProvider cache = store.getCache();
-            if (cache != null) {
-                if (enableInMemoryCaching.getModelObject()) {
-                    cache.removeUncachedLayer(name);
-                } else {
-                    cache.addUncachedLayer(name);
-                }
-            }
-        }
-
         if (tileLayerExists) {
             gwc.save(tileLayer);
         } else {
@@ -502,20 +474,6 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
             cacheFormats.processInput();
             parameterFilters.processInput();
             gridSubsets.processInput();
-
-            //            // Remove add the Layer to the cache if it is present
-            //            ConfigurableBlobStore store =
-            // GeoServerExtensions.bean(ConfigurableBlobStore.class);
-            //            if(store != null){
-            //                CacheProvider cache = store.getCache();
-            //                if (cache != null) {
-            //                    if (enableInMemoryCaching.getModelObject()) {
-            //                        cache.removeUncachedLayer(getModel().getObject().getName());
-            //                    } else {
-            //                        cache.addUncachedLayer(getModel().getObject().getName());
-            //                    }
-            //                }
-            //            }
 
             tileLayerInfo.setId(layerModel.getObject().getId());
             setConvertedInput(tileLayerInfo);

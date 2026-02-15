@@ -70,18 +70,3 @@ However, if the integrated WMS/WMS-C is used, the request will be forwarded back
 When using the default GeoServer security system, rules cannot combine data security with service security. However, when using a security subsystem it may be possible
 to make such particular combinations. In this case the WMS-C service inherits all security rules from the regular WMS service; while all other GWC services will get their security
 from rules associated with the 'GWC' service itself.
-
-Configuring In Memory Caching
-------------------------------
-GWC In Memory Caching is a new feature which allows to cache GWC tiles in memory reducing their access time. User can also choose to avoid to store the files on the disk if needed. 
-For enabling/disabling these features the user may see the related section on the TileCaching :ref:`gwc_webadmin_defaults` page.  
-
-Actually there is a single caching method:
-
-	* Guava Caching
-	
-Guava Cache
-+++++++++++
-
-`Guava <https://code.google.com/p/guava-libraries/wiki/CachesExplained>`_ Cache provides a local in-memory cache to use for a single GeoServer instance. For configuring Guava Caching the user must only edit the configuration parameters in the *Caching Defaults* page.
-

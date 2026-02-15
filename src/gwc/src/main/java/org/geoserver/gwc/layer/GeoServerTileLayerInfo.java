@@ -212,20 +212,6 @@ public interface GeoServerTileLayerInfo extends Serializable, Cloneable {
     ParameterFilter getParameterFilter(String key);
 
     /**
-     * Is the layer cached in-memory
-     *
-     * @return true if the layer is cached in-memory
-     */
-    boolean isInMemoryCached();
-
-    /**
-     * Set whether or not the layer is cached in-memory
-     *
-     * @param inMemoryCached is the layer cached in-memory
-     */
-    void setInMemoryCached(boolean inMemoryCached);
-
-    /**
      * Set of dimension warnings that would cause the layer to avoid caching the tlie
      *
      * @return

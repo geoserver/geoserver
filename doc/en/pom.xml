@@ -259,16 +259,6 @@
             </configuration>
           </execution>
           <execution>
-            <id>gwcmemorycachestatistics</id>
-            <phase>process-resources</phase>
-            <goals><goal>generate</goal></goals>
-            <configuration>
-              <inputSpec>${project.basedir}/api/1.0.0/gwcmemorycachestatistics.yaml</inputSpec>
-              <output>${project.build.directory}/api/gwcmemorycachestatistics</output>
-              <language/>
-            </configuration>
-          </execution>
-          <execution>
             <id>gwcreload</id>
             <phase>process-resources</phase>
             <goals><goal>generate</goal></goals>

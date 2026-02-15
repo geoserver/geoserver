@@ -137,6 +137,8 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         serializer.allowTypes(new String[] {"java.util.Collections$UnmodifiableSet"});
         serializer.addDefaultImplementation(LinkedHashSet.class, Set.class);
         serializer.alias("warning", DimensionWarning.WarningType.class);
+        serializer.ignoreUnknownElements();
+
         return serializer;
     }
 

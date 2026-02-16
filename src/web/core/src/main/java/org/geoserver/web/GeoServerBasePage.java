@@ -486,11 +486,8 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         // includes jquery, required by the placeholder plugin (wicket only include jquery if he
         // need it)
         response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(JQueryResourceReference.INSTANCE_3)));
-        // response.render(CssReferenceHeaderItem.forReference(
-        //         new PackageResourceReference(GeoServerBasePage.class, "css/blueprint/screen.css"),
-        //         "screen, projection"));
-        // response.render(CssReferenceHeaderItem.forReference(
-        //         new PackageResourceReference(GeoServerBasePage.class, "css/blueprint/print.css"), "print"));
+        response.render(CssReferenceHeaderItem.forReference(
+                new PackageResourceReference(GeoServerBasePage.class, "css/blueprint/print.css"), "print"));
         response.render(CssReferenceHeaderItem.forReference(
                 new PackageResourceReference(GeoServerBasePage.class, "css/bootstrap-reboot.min.css"), "all"));
         response.render(CssReferenceHeaderItem.forReference(
@@ -499,12 +496,12 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                 new PackageResourceReference(GeoServerBasePage.class, "css/gs.css"), "screen, projection"));
         response.render(CssReferenceHeaderItem.forReference(
                 new PackageResourceReference(GeoServerBasePage.class, "css/gs-variables.css"), "screen, projection"));
-        // response.render(CssReferenceHeaderItem.forReference(
-        //         new PackageResourceReference(GeoServerBasePage.class, "css/geoserver.css"), "screen, projection"));
         response.render(JavaScriptHeaderItem.forReference(
                 new PackageResourceReference(GeoServerBasePage.class, "js/jquery.placeholder.js")));
         response.render(JavaScriptHeaderItem.forReference(
                 new PackageResourceReference(GeoServerBasePage.class, "js/jquery.fullscreen.js")));
+        response.render(JavaScriptHeaderItem.forReference(
+                new PackageResourceReference(GeoServerBasePage.class, "js/geoserver.js")));
 
         response.render(JavaScriptHeaderItem.forReference(
                 new PackageResourceReference(GeoServerBasePage.class, "js/jquery.hide.ajaxFeedback.js")));

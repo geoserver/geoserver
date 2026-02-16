@@ -123,10 +123,10 @@ body {
   padding: 0.5rem 0;
 }
 
-#navigation-menu {
+#sidebar-menu {
   display: none;
 }
-#navigation-menu svg {
+#sidebar-menu svg {
   width: 1.5rem;
 }
 .navigation-tab li a {
@@ -244,7 +244,7 @@ body {
       height: 30px;
       background-position: center left;
     }
-    #navigation-menu {
+    #sidebar-menu {
       display: block;
     }
     #sidebar-content {
@@ -823,7 +823,7 @@ button.danger,
   --gs-btn-disabled-border-color: #dc3545;
 }
 
-#navigation-menu,
+#sidebar-menu,
 button.outline-primary,
 .button.outline-primary {
   --gs-btn-color: #0076a1;

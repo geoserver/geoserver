@@ -44,7 +44,7 @@ body {
   padding: 1rem;
 }
 
-#logo {
+.logo {
   display: block;
   width: 100%;
   height: 40px;
@@ -118,11 +118,32 @@ body {
   padding: 0.5rem 0;
 }
 
-#navigation-menu {
+#sidebar-menu {
   display: none;
+  font-size: 0.75rem;
+  padding: 0.5rem;
 }
-#navigation-menu svg {
-  width: 1.5rem;
+
+#sidebar-close {
+  font-size: 0.75rem;
+  padding: 0.5rem;
+}
+
+#sidebar-close svg,
+#sidebar-menu svg {
+  width: 1.5em;
+}
+.sidebar-content-header {
+  display: none;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  align-items: center;
+  border-width: 4px;
+  border-style: solid;
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+  border-image: var(--gs-brand-gradient) 1;
 }
 .navigation-tab li a {
   display: flex;
@@ -141,11 +162,8 @@ body {
   min-width: 0;
   position: relative;
   overflow: auto;
-  display: flex;
   height: 100%;
   width: 100%;
-  flex-direction: column;
-  overflow: hidden;
 }
 
 .page-header,
@@ -156,6 +174,10 @@ body {
 
 .page-header {
   padding-top: 1rem;
+  position: sticky;
+  top: 0;
+  background-color: var(--gs-body-bg);
+  z-index: 10;
 }
 
 .header-panel {
@@ -173,12 +195,6 @@ body {
 
 .header-panel li {
   list-style: none;
-}
-
-.page-pane {
-  flex: 1;
-  min-height: 0;
-  overflow: auto;
 }
 
 .table-header {
@@ -230,16 +246,18 @@ body {
     #brand {
       display: flex;
       padding: 0.5rem;
-      flex-direction: column;
       flex-direction: row;
-      justify-content: space-between;
+      gap: 0.5rem;
     }
-    #logo {
+    .logo {
       width: 125px;
       height: 30px;
       background-position: center left;
     }
-    #navigation-menu {
+    .sidebar-content-header {
+      display: flex;
+    }
+    #sidebar-menu {
       display: block;
     }
     #sidebar-content {
@@ -251,8 +269,24 @@ body {
       width: 200px;
       max-width: 100%;
       display: none;
+      box-shadow: var(--gs-box-shadow);
     }
 }
+
+fieldset ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+fieldset ul li {
+  margin-bottom: 0.5rem;
+}
+
+fieldset + fieldset {
+  margin-top: 0.5rem;
+}
+
 a {
   text-decoration: none;
 }
@@ -458,8 +492,8 @@ button:focus-visible, .button:focus-visible {
   outline: 0;
   box-shadow: var(--gs-btn-focus-box-shadow);
 }
-button + button:active, button:first-child:active,
-.button + button:active, .button:first-child:active {
+button:active,
+.button:active {
   color: var(--gs-btn-active-color);
   background-color: var(--gs-btn-active-bg);
   border-color: var(--gs-btn-active-border-color);
@@ -604,6 +638,10 @@ table > tbody > tr:nth-of-type(odd) > * {
 .tab-row li.selected {
   border-bottom: 2px solid var(--gs-primary);
   font-weight: bold;
+}
+
+.tab-panel {
+  padding: 1rem 0;
 }
 
 .paginator {

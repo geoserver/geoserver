@@ -261,20 +261,20 @@
 
 button,
 .button {
-  --gs-btn-color: #fff;
-  --gs-btn-bg: #0076a1;
-  --gs-btn-border-color: #0076a1;
-  --gs-btn-hover-color: #fff;
-  --gs-btn-hover-bg: #006489;
-  --gs-btn-hover-border-color: #005a7b;
-  --gs-btn-focus-shadow-rgb: 0, 118, 161;
-  --gs-btn-active-color: #fff;
-  --gs-btn-active-bg: #005a7b;
-  --gs-btn-active-border-color: #00516e;
+  --gs-btn-color: var(--gs-body-color);
+  --gs-btn-bg: var(--gs-body-bg);
+  --gs-btn-border-color: var(--gs-border-color);
+  --gs-btn-hover-color: var(--gs-body-color);
+  --gs-btn-hover-bg: var(--gs-secondary-bg);
+  --gs-btn-hover-border-color: var(--gs-secondary-bg);
+  --gs-btn-focus-shadow-rgb: var(--gs-secondary-bg-rgb);
+  --gs-btn-active-color: var(--gs-body-color);
+  --gs-btn-active-bg: var(--gs-tertiary-bg);
+  --gs-btn-active-border-color: var(--gs-tertiary-bg);
   --gs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-  --gs-btn-disabled-color: #fff;
-  --gs-btn-disabled-bg: #0076a1;
-  --gs-btn-disabled-border-color: #0076a1;
+  --gs-btn-disabled-color: var(--gs-body-color);
+  --gs-btn-disabled-bg: var(--gs-body-bg);
+  --gs-btn-disabled-border-color: var(--gs-border-color);
 }
 
 button.danger,
@@ -295,7 +295,6 @@ button.danger,
   --gs-btn-disabled-border-color: #dc3545;
 }
 
-#navigation-menu,
 button.outline-primary,
 .button.outline-primary {
   --gs-btn-color: #0076a1;

@@ -17,14 +17,22 @@
     <div class="wrap selfclear">
     <div id="sidebar">
       <div id="brand">
-          <a wicket:id="home" id="logo" href="#"></a>
-          <button id="navigation-menu">
+          <button id="sidebar-menu" class="button">
             <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'>
               <path stroke='currentColor' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22' />
             </svg>
           </button>
+          <a wicket:id="home" class="logo" href="#"></a>
       </div>
       <div id="sidebar-content">
+        <div class="sidebar-content-header">
+          <button id="sidebar-close" class="button">
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'>
+              <path fill='currentColor' d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414' />
+            </svg>
+          </button>
+          <a wicket:id="home" class="logo" href="#"></a>
+        </div>
         <div wicket:id="nodeIdContainer"><center wicket:id="nodeId">192.168.1.4</center></div>
         <div id="authentication-panel">
           <div wicket:id="loginforms">

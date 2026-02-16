@@ -35,17 +35,22 @@ div.wicket-modal {
     z-index: 20001;
     visibility: visible;
     background-color: var(--gs-body-bg) !important;
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--gs-border-radius);
+    box-shadow: var(--gs-box-shadow);
 }
 
 /* Header/caption */
 div.wicket-modal div.w_caption {
-    height: 1.4em;
     display: flex;
     justify-content: space-between;
     align-items: center;
     cursor: grab;
-    border: 1px solid var(--gs-primary);
-    border-bottom: 0;
+    border: 1px solid var(--gs-border-color);
+    padding: 0.5rem;
+    border-top-left-radius: var(--gs-border-radius);
+    border-top-right-radius: var(--gs-border-radius);
 }
 
 div.wicket-modal h3.w_captionText {
@@ -53,7 +58,7 @@ div.wicket-modal h3.w_captionText {
     overflow: hidden;
     white-space: nowrap;
     user-select: none;
-    color: var(--gs-primary-text-emphasis);
+    color: var(--gs-emphasis-color);
     font-size: 12px;
     font-weight: bold;
 }
@@ -86,10 +91,11 @@ div.wicket-modal .close svg:hover {
 
 /* Body/content */
 div.wicket-modal div.w_content_container {
-    color: var(--gs-primary);
+    color: var(--gs-body-color);
     position: relative;
     width: 100%;
     height: max-content;
+    padding: 0.5rem;
 }
 
 div.wicket-modal div.w_content_1 {
@@ -99,13 +105,14 @@ div.wicket-modal div.w_content_1 {
 
 div.wicket-modal div.w_content_2 {
     cursor: default;
-    padding: 5px;
     display: flex;
     overflow: auto;
-    border: 1px solid var(--gs-primary);
-    height: calc(100% - 1.4em);
+    border: 1px solid var(--gs-border-color);
     border-top: 0px;
-    box-shadow: 0px 4px 10px 0px var(--gs-dark-border-subtle);
+    flex: 1;
+    min-height: 0;
+    border-bottom-left-radius: var(--gs-border-radius);
+    border-bottom-right-radius: var(--gs-border-radius);
 }
 
 div.wicket-modal div.w_content_3 {

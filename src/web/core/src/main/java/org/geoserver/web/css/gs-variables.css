@@ -258,7 +258,7 @@
   --bs-form-invalid-border-color: var(--gs-form-invalid-border-color);
 }
 
-
+/* Default button style - applied when only button or .button is used */
 button,
 .button {
   --gs-btn-color: var(--gs-body-color);
@@ -271,6 +271,24 @@ button,
   --gs-btn-active-color: var(--gs-body-color);
   --gs-btn-active-bg: var(--gs-tertiary-bg);
   --gs-btn-active-border-color: var(--gs-tertiary-bg);
+  --gs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --gs-btn-disabled-color: var(--gs-body-color);
+  --gs-btn-disabled-bg: var(--gs-body-bg);
+  --gs-btn-disabled-border-color: var(--gs-border-color);
+}
+
+button.primary,
+.button.primary {
+  --gs-btn-color: #fff;
+  --gs-btn-bg: #0076a1;
+  --gs-btn-border-color: #0076a1;
+  --gs-btn-hover-color: #fff;
+  --gs-btn-hover-bg: #006489;
+  --gs-btn-hover-border-color: #005a7b;
+  --gs-btn-focus-shadow-rgb: 0, 118, 161;
+  --gs-btn-active-color: #fff;
+  --gs-btn-active-bg: #005a7b;
+  --gs-btn-active-border-color: #00516e;
   --gs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
   --gs-btn-disabled-color: var(--gs-body-color);
   --gs-btn-disabled-bg: var(--gs-body-bg);

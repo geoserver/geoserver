@@ -65,11 +65,10 @@
     <constructor-arg ref="gwcXmlConfig" />
   </bean>
 
-  <bean id="gwcInitializer" class="org.geoserver.gwc.config.GWCInitializer">
+  <bean id="gwcInitializer" class="org.geoserver.gwc.config.GWCInitializer" depends-on="gwcCatalogConfiguration">
     <constructor-arg ref="gwcGeoServervConfigPersister" />
     <constructor-arg ref="rawCatalog" />
     <constructor-arg ref="GeoSeverTileLayerCatalog" />
-    <property name="blobStore" ref="gwcConfigBlobStore" />
   </bean>
 
   <bean id="GWCGeoServerConfigurationProvider" class="org.geoserver.gwc.layer.GWCGeoServerConfigurationProvider">

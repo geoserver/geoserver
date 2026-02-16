@@ -20,10 +20,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
-import org.geoserver.gwc.ConfigurableBlobStore;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.GeoserverAjaxSubmitLink;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
@@ -88,12 +86,7 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
             form.error("Error saving GWC config: " + e.getMessage());
             return;
         }
-        // Update ConfigurableBlobStore
-        ConfigurableBlobStore blobstore = GeoServerExtensions.bean(ConfigurableBlobStore.class);
-        if (blobstore != null) {
-            blobstore.setChanged(gwcConfig, false);
-        }
-        // Do return
+
         if (doReturn) doReturn();
     }
 

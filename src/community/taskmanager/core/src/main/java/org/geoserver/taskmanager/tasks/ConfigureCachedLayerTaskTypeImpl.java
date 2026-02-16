@@ -90,7 +90,6 @@ public class ConfigureCachedLayerTaskTypeImpl implements TaskType {
             final GSCachedLayerEncoder cachedLayerEncoder = new GSCachedLayerEncoder();
             cachedLayerEncoder.setName(layerName);
             cachedLayerEncoder.setEnabled(info.isEnabled());
-            cachedLayerEncoder.setInMemoryCached(info.isInMemoryCached());
             cachedLayerEncoder.setMetaWidthHeight(info.getMetaTilingX(), info.getMetaTilingY());
             cachedLayerEncoder.setExpireCache(info.getExpireCache());
             cachedLayerEncoder.setExpireClients(info.getExpireClients());

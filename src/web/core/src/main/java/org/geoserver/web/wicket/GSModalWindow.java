@@ -70,8 +70,6 @@ public class GSModalWindow extends Panel {
         super.renderHead(response);
         response.render(CssHeaderItem.forReference(new PackageResourceReference(getClass(), "modal/modal.css")));
         response.render(
-                CssHeaderItem.forReference(new PackageResourceReference(getClass(), "modal/GSModalWindow.css")));
-        response.render(
                 JavaScriptHeaderItem.forReference(new PackageResourceReference(getClass(), "modal/GSModalWindow.js")));
     }
 

@@ -16,7 +16,12 @@
       <a href="#" wicket:id="roleSourceHelp" class="help-link"></a>
     </legend>
     <div id="roleSource" class="horizontal">
-      <div class="py-1"><select wicket:id="roleSource"></select></div>
+      <div class="py-1">
+        <label>
+          <wicket:message key="roleSourceSelect"></wicket:message>
+        </label>
+        <select class="select" wicket:id="roleSource"></select>
+      </div>
 
       <div wicket:id="container">
         <div wicket:id="panel"/>

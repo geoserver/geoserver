@@ -4,8 +4,6 @@
  */
 package org.geoserver.opensearch.eo.response;
 
-import com.fasterxml.jackson.core.JsonEncoding;
-import com.fasterxml.jackson.core.JsonFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -31,6 +29,9 @@ import org.geotools.api.data.Query;
 import org.geotools.api.feature.Feature;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.filter.function.EnvFunction;
+import tools.jackson.core.JsonEncoding;
+import tools.jackson.core.ObjectWriteContext;
+import tools.jackson.core.json.JsonFactoryBuilder;
 
 public class GeoJSONSearchResponse extends Response {
 
@@ -55,7 +56,8 @@ public class GeoJSONSearchResponse extends Response {
         SearchResults results = (SearchResults) value;
 
         try (GeoJSONWriter writer = new GeoJSONWriter(
-                new JsonFactory().createGenerator(output, JsonEncoding.UTF8), TemplateIdentifier.GEOJSON)) {
+                new JsonFactoryBuilder().build().createGenerator(ObjectWriteContext.empty(), output, JsonEncoding.UTF8),
+                TemplateIdentifier.GEOJSON)) {
             writer.startTemplateOutput(null);
             try (FeatureIterator features = results.getResults().features()) {
                 while (features.hasNext()) {

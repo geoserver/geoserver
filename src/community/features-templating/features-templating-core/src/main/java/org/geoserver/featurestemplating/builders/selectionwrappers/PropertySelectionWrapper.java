@@ -6,7 +6,6 @@ package org.geoserver.featurestemplating.builders.selectionwrappers;
 
 import static org.geoserver.featurestemplating.builders.TemplateBuilderUtils.hasSelectableKey;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
@@ -14,6 +13,7 @@ import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilderWrapper;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
 import org.geoserver.featurestemplating.builders.visitors.PropertySelectionHandler;
+import tools.jackson.databind.JsonNode;
 
 /**
  * A generic PropertySelectionWrapper suitable for usage when a selectable TemplateBuilder has a dynamic key. It uses a

@@ -5,8 +5,8 @@
 package org.geoserver.ogcapi.v1.processes;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.util.Map;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 /**
  * Maps a JSON execution request from the OGC API Processes specification to a Java object. See example at

@@ -99,6 +99,7 @@ import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.GeoServerLoaderProxy;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.filters.SpringDelegatingFilter;
 import org.geoserver.logging.LoggingUtils;
 import org.geoserver.ows.util.CaseInsensitiveMap;
 import org.geoserver.ows.util.KvpUtils;
@@ -2380,10 +2381,16 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
 
     /**
      * Subclasses needed to do integration tests with servlet filters can override this method and return the list of
-     * filters to be used during mocked requests
+     * filters to be used during mocked requests. By default it returns a list with a single SpringDelegatingFilter
      */
     protected List<Filter> getFilters() {
-        return null;
+        try {
+            SpringDelegatingFilter filter = new SpringDelegatingFilter();
+            filter.init(null);
+            return List.of(filter);
+        } catch (ServletException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

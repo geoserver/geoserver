@@ -1,19 +1,17 @@
 {
-   "$schema":"http://json-schema.org/draft-03/schema#",
-   "id":"http://schemas.opengis.net/gsr/1.0/font.json",
+   "$schema":"https://json-schema.org/draft/2020-12/schema",
+   "$id":"http://schemas.opengis.net/gsr/1.0/font.json",
 
     "title":"domain",
     "type":"object",
     "properties":{
         "family":{
             "title":"font family",
-            "type":"string",
-            "required":true
+            "type":"string"
         },
         "size":{
             "title":"font size",
-            "type":"number",
-            "required":true
+            "type":"number"
         },
         "style":{
             "title":"font style",
@@ -33,5 +31,6 @@
             "type":"string",
             "default":"none"
         }
-    }
+    },
+    "required":["family","size"]
 }

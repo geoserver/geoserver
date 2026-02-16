@@ -19,7 +19,7 @@
     <module>assembly</module>
   </modules>
   <properties>
-    <geoserver-acl.version>3.0-M2</geoserver-acl.version>
+    <geoserver-acl.version>3.0-RC1</geoserver-acl.version>
     <lombok.version>1.18.42</lombok.version>
   </properties>
   <dependencyManagement>

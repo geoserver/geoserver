@@ -9,13 +9,13 @@
  */
 package org.geoserver.gsr;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import net.sf.json.JSON;
 import net.sf.json.JSONSerializer;
 import org.geoserver.gsr.api.GeoServicesJacksonJsonConverter;
 import org.geoserver.gsr.validation.JSONValidator;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 public abstract class JsonSchemaTest {
 
@@ -23,7 +23,7 @@ public abstract class JsonSchemaTest {
 
     public JsonSchemaTest() {}
 
-    public static String getJson(Object obj) throws JsonProcessingException {
+    public static String getJson(Object obj) throws JacksonException {
         return mapper.writeValueAsString(obj);
     }
 

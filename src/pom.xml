@@ -35,7 +35,9 @@
     <module>wfs-core</module>
     <module>wfs1_x</module>
     <module>wfs2_x</module>
-    <module>wms</module>
+    <module>wms-core</module>
+    <module>wms1_1</module>
+    <module>wms1_3</module>
     <module>wms-gml</module>
     <module>ows</module>
     <module>gwc</module>
@@ -94,9 +96,10 @@
     <gs.version>3.0-SNAPSHOT</gs.version>
     <gt.version>35-SNAPSHOT</gt.version>
     <gwc.version>2.0-SNAPSHOT</gwc.version>
-    <spring.version>6.2.12</spring.version>
-    <spring.security.version>6.5.5</spring.security.version>
+    <spring.version>7.0.2</spring.version>
+    <spring.security.version>7.0.2</spring.security.version>
     <spring.security.oauth2.version>2.5.2.RELEASE</spring.security.oauth2.version>
+    <spring.ldap.version>4.0.1</spring.ldap.version>
     <spring-integration.version>5.5.18</spring-integration.version>
     <wicket.version>10.7.0</wicket.version>
 
@@ -104,6 +107,7 @@
     <!-- Dependency version management    -->
     <!-- ================================ -->
     <ant.version>1.10.11</ant.version>
+    <apacheds.version>2.0.0.AM27</apacheds.version>
     <compress-lzf.version>1.0.3</compress-lzf.version>
     <eclipse.emf.version>2.15.0</eclipse.emf.version>
     <errorProne.version>2.31.0</errorProne.version>
@@ -185,6 +189,12 @@
         JTS, guava, imageio-ext, imageN, and more.
       -->
       <dependency>
+        <groupId>jakarta.xml.bind</groupId>
+        <artifactId>jakarta.xml.bind-api</artifactId>
+        <version>4.0.4</version>
+        <scope>compile</scope>
+      </dependency>
+      <dependency>
         <groupId>org.geotools</groupId>
         <artifactId>gt-platform-dependencies</artifactId>
         <version>${gt.version}</version>
@@ -225,7 +235,7 @@
       <dependency>
         <groupId>org.testcontainers</groupId>
         <artifactId>testcontainers-bom</artifactId>
-        <version>2.0.1</version>
+        <version>2.0.3</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -318,7 +328,17 @@
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
-        <artifactId>gs-wms</artifactId>
+        <artifactId>gs-wms-core</artifactId>
+        <version>${gs.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver</groupId>
+        <artifactId>gs-wms1_1</artifactId>
+        <version>${gs.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver</groupId>
+        <artifactId>gs-wms1_3</artifactId>
         <version>${gs.version}</version>
       </dependency>
       <dependency>
@@ -328,7 +348,19 @@
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>
-        <artifactId>gs-wms</artifactId>
+        <artifactId>gs-wms-core</artifactId>
+        <version>${gs.version}</version>
+        <classifier>tests</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver</groupId>
+        <artifactId>gs-wms1_1</artifactId>
+        <version>${gs.version}</version>
+        <classifier>tests</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver</groupId>
+        <artifactId>gs-wms1_3</artifactId>
         <version>${gs.version}</version>
         <classifier>tests</classifier>
       </dependency>
@@ -644,8 +676,14 @@
       <!-- springframework -->
       <dependency>
         <groupId>org.springframework.ldap</groupId>
+        <artifactId>spring-ldap-core</artifactId>
+        <version>${spring.ldap.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.ldap</groupId>
         <artifactId>spring-ldap-test</artifactId>
-        <version>2.3.2.RELEASE</version>
+        <version>${spring.ldap.version}</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.springframework.security.oauth</groupId>
@@ -664,10 +702,9 @@
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
-        <artifactId>bcprov-jdk18on</artifactId>
-        <version>1.79</version>
+        <artifactId>bcprov-lts8on</artifactId>
+        <version>2.73.10</version>
       </dependency>
-
       <!-- wicket framework -->
       <dependency>
         <groupId>org.apache.wicket</groupId>
@@ -944,8 +981,33 @@
       </dependency>
       <dependency>
         <groupId>org.apache.directory.server</groupId>
-        <artifactId>apacheds-all</artifactId>
-        <version>2.0.0-M24</version>
+        <artifactId>apacheds-core</artifactId>
+        <version>${apacheds.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.directory.server</groupId>
+        <artifactId>apacheds-protocol-ldap</artifactId>
+        <version>${apacheds.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.directory.server</groupId>
+        <artifactId>apacheds-jdbm-partition</artifactId>
+        <version>${apacheds.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.directory.server</groupId>
+        <artifactId>apacheds-core-integ</artifactId>
+        <version>${apacheds.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.directory.server</groupId>
+        <artifactId>apacheds-server-annotations</artifactId>
+        <version>${apacheds.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.directory.server</groupId>
+        <artifactId>apacheds-test-framework</artifactId>
+        <version>${apacheds.version}</version>
       </dependency>
       <dependency>
         <groupId>jakarta.annotation</groupId>
@@ -1225,7 +1287,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.5.3</version>
+          <version>3.5.4</version>
         </plugin>
         <plugin>
           <artifactId>maven-war-plugin</artifactId>

@@ -18,6 +18,7 @@ import org.springframework.security.web.authentication.preauth.x509.X509Principa
  *
  * @author mcr
  */
+@SuppressWarnings("deprecation") // TODO: remove and provide a X500 provider instead?
 public class GeoServerX509CertificateAuthenticationFilter extends GeoServerJ2eeBaseAuthenticationFilter {
 
     private X509PrincipalExtractor principalExtractor;

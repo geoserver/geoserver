@@ -28,6 +28,12 @@ Configure the GitHub IDP
    * The authorization callback in the form of "http://localhost:8080/geoserver/web/login/oauth2/code/gitHub"
    * Press "Register application"
 
+   .. tip::
+
+      The exact callback URL that GeoServer will use is shown as the read-only
+      :guilabel:`Redirect URI` field in the filter configuration form. In production,
+      use that value instead of ``localhost``. See :ref:`Redirect Base URI <community_oidc_redirect_base_uri>`.
+
     .. figure:: ../img/github-oauth2-app.png
         :align: center
 
@@ -63,7 +69,7 @@ Create the OIDC Filter
       .. figure:: ../img/google-gs1.png
          :align: center
 
-   * Give the it a name like "oidc-github", then click the "GitHub Login" checkbox and copy-and-paste in the Client ID and Client Secret (from when you configured the github client).
+   * Give the it a name like "oidc-github", then from the :guilabel:`Provider` dropdown select :guilabel:`GitHub` and copy-and-paste in the Client ID and Client Secret (from when you configured the github client).
        
       .. figure:: ../img/github-gs1.png
          :align: center         

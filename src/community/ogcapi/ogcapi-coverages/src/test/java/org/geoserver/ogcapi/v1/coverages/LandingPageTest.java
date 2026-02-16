@@ -11,7 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import com.jayway.jsonpath.DocumentContext;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ogcapi.Link;
-import org.geoserver.ogcapi.OpenAPIMessageConverter;
+import org.geoserver.ogcapi.SwaggerJSONAPIMessageConverter;
 import org.geoserver.platform.Service;
 import org.geoserver.wcs.WCSInfo;
 import org.geotools.util.Version;
@@ -135,7 +135,9 @@ public class LandingPageTest extends CoveragesTestSupport {
         // check API with right API mime type
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/coverages/v1/openapi?f=application%2Fvnd.oai.openapi%2Bjson%3Bversion%3D3.0",
-                readSingle(json, "links[?(@.type=='" + OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE + "')].href"));
+                readSingle(
+                        json,
+                        "links[?(@.type=='" + SwaggerJSONAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE + "')].href"));
         // check conformance links
         assertJSONList(
                 json,

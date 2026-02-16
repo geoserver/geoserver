@@ -110,7 +110,17 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-wms</artifactId>
+      <artifactId>gs-wms-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wms1_1</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wms1_3</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -234,6 +244,11 @@
       <artifactId>jetty-ee10-servlet</artifactId>
       <version>${jetty.version}</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcpkix-lts8on</artifactId>
+      <version>2.73.10</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>

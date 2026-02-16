@@ -4,14 +4,10 @@
  */
 package org.geoserver.security.oauth2.login;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import org.geoserver.platform.exception.GeoServerRuntimException;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.RoleSource;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
@@ -45,8 +41,6 @@ public class GeoServerOAuth2LoginFilterConfigValidator extends FilterConfigValid
 
     public void validateOAuth2FilterConfig(GeoServerOAuth2LoginFilterConfig filterConfig) throws FilterConfigException {
         super.validateFilterConfig((SecurityNamedServiceConfig) filterConfig);
-
-        validNoOtherInstance(filterConfig);
 
         String lProviderName = "OpenID Connect";
         if (filterConfig.isOidcEnabled()) {
@@ -88,6 +82,20 @@ public class GeoServerOAuth2LoginFilterConfigValidator extends FilterConfigValid
         validateRoleSourceMsGraph(filterConfig);
         validateRoleSourceIdToken(filterConfig);
         validateRoleSourceUserInfo(filterConfig);
+        validateTokenAudience(filterConfig);
+    }
+
+    private void validateTokenAudience(GeoServerOAuth2LoginFilterConfig filterConfig)
+            throws GeoServerOAuth2FilterConfigException {
+        if (!filterConfig.isValidateTokenAudience()) {
+            return;
+        }
+        if (!StringUtils.hasLength(filterConfig.getValidateTokenAudienceClaimName())) {
+            throw createFilterException(GeoServerOAuth2FilterConfigException.OAUTH2_AUDIENCE_CLAIM_NAME_REQUIRED);
+        }
+        if (!StringUtils.hasLength(filterConfig.getValidateTokenAudienceClaimValue())) {
+            throw createFilterException(GeoServerOAuth2FilterConfigException.OAUTH2_AUDIENCE_CLAIM_VALUE_REQUIRED);
+        }
     }
 
     private void validateRoleSourceUserInfo(GeoServerOAuth2LoginFilterConfig filterConfig)
@@ -235,25 +243,6 @@ public class GeoServerOAuth2LoginFilterConfigValidator extends FilterConfigValid
             if (filterConfig.getOidcForceTokenUriHttps()
                     && "https".equalsIgnoreCase(accessTokenUri.getProtocol()) == false)
                 throw createFilterException(GeoServerOAuth2FilterConfigException.OAUTH2_ACCESSTOKENURI_NOT_HTTPS);
-        }
-    }
-
-    private void validNoOtherInstance(GeoServerOAuth2LoginFilterConfig filterConfig)
-            throws GeoServerOAuth2FilterConfigException {
-        Set<String> lOAuthFilterNames;
-        try {
-            lOAuthFilterNames = manager.listFilters(GeoServerOAuth2LoginAuthenticationFilter.class);
-        } catch (IOException e) {
-            throw new GeoServerRuntimException("Validation failed. Error while listing existing filters.", e);
-        }
-        if (lOAuthFilterNames == null) {
-            lOAuthFilterNames = new HashSet<>();
-        }
-        lOAuthFilterNames.remove(filterConfig.getName());
-        if (!lOAuthFilterNames.isEmpty()) {
-            throw createFilterException(
-                    "OAUTH2_MULTIPLE_INSTANCE_NOT_SUPPORTED",
-                    lOAuthFilterNames.iterator().next());
         }
     }
 

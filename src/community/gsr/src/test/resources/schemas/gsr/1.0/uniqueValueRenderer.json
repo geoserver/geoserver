@@ -1,5 +1,5 @@
 {
-   "$schema":"http://json-schema.org/draft-03/schema#",
+   "$schema":"https://json-schema.org/draft/2020-12/schema",
 
     "title":"simple renderer",
     "extends":{
@@ -9,7 +9,6 @@
         "type":{
             "title":"renderer type",
             "type":"string",
-            "required":true,
             "enum":["uniqueValue"]
         },
         "field1":{
@@ -56,5 +55,6 @@
                 }
             }
         }
-    }
+    },
+    "required":["type"]
 }

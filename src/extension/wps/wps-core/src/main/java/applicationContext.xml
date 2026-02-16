@@ -188,7 +188,7 @@
     <bean id="geoTiffPPIO" class="org.geoserver.wps.ppio.GeoTiffPPIO">
       <constructor-arg ref="wpsResourceManager"/>
     </bean>
-    <bean id="arcGridPPIO" class="org.geoserver.wps.ppio.ArcGridPPIO">
+    <bean id="arcGridPPIO" class="org.geoserver.wps.ppio.ArcGridPPIOFactory" factory-method="create">
       <constructor-arg ref="wpsResourceManager"/>
     </bean>
     <bean id="coveragePngPPIO" class="org.geoserver.wps.ppio.CoveragePPIO.PNGPPIO"/>

@@ -337,37 +337,6 @@
         <module>jwt-headers/gs-jwt-headers</module>
       </modules>
     </profile>
-
-    <profile>
-      <id>oauth2-google</id>
-      <modules>
-        <module>security</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>oauth2-github</id>
-      <modules>
-        <module>security</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>oauth2-geonode</id>
-      <modules>
-        <module>security</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>oauth2-openid-connect</id>
-      <modules>
-        <module>security</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>oauth2-all</id>
-      <modules>
-        <module>security</module>
-      </modules>
-    </profile>
     <profile>
       <id>oidc</id>
       <modules>

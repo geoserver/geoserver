@@ -6,9 +6,6 @@ package org.geoserver.rest.security;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.thoughtworks.xstream.XStream;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
@@ -50,6 +47,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * REST controller for managing <em>Authentication Providers</em>.
@@ -490,7 +490,7 @@ public class AuthenticationProviderRestController extends RestBaseController {
         Class<? extends SecurityAuthProviderConfig> type = null;
 
         // Optional explicit override for the config class
-        String explicitCfg = n.path("configClassName").asText(null);
+        String explicitCfg = n.path("configClassName").asString(null);
         if (explicitCfg != null && !explicitCfg.isBlank()) {
             try {
                 Class<?> c = Class.forName(explicitCfg);
@@ -536,7 +536,7 @@ public class AuthenticationProviderRestController extends RestBaseController {
             }
         }
 
-        String className = n.path("className").asText(null);
+        String className = n.path("className").asString(null);
         if (className == null || className.isBlank()) {
             throw new BadRequest("Missing 'className' in JSON payload");
         }
@@ -572,7 +572,7 @@ public class AuthenticationProviderRestController extends RestBaseController {
             if (root.has("order")) root = root.get("order");
             if (!root.isArray() || root.isEmpty()) throw new BadRequest("`order` array required");
             List<String> out = new ArrayList<>();
-            root.forEach(x -> out.add(x.asText()));
+            root.forEach(x -> out.add(x.asString()));
             return out;
         }
     }

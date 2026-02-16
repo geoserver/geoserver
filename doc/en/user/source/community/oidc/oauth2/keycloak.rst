@@ -12,6 +12,12 @@ This will setup a Keycloak `Docker <https://www.docker.com/>`_ container and man
 
 See the `Keycloak Documentation <https://www.keycloak.org/guides>`_ for more information on setting up Keycloak.  Keycloak can also be use "in between" GeoServer and another OIDC IDP. 
 
+.. note::
+
+   If running both GeoServer and Keycloak in Docker, see the
+   :ref:`Docker networking <community_oidc_installing>` section in the installation guide
+   for important notes about ``host.docker.internal`` and ensuring consistent hostnames.
+
 
 Configure Keycloak
 ------------------
@@ -66,6 +72,14 @@ Docker Install and Basic Setup
 
 
 #. Set the "Root URL" and "Home URL" as "http://localhost:8080".  Set the "Valid post logout redirect URIs" and "Valid redirect URIs" as "http://localhost:8080/\*".  Then press "Save".
+
+   .. tip::
+
+      The exact redirect URI that GeoServer will use is shown as the read-only
+      :guilabel:`Redirect URI` field in the filter configuration form (e.g.
+      ``http://localhost:8080/geoserver/web/login/oauth2/code/oidc``).
+      In production, you may want to register only this specific URI rather
+      than a wildcard. See :ref:`Redirect Base URI <community_oidc_redirect_base_uri>`.
 
     .. figure:: ../img/keycloak-create-client4.png
      :align: center
@@ -384,7 +398,7 @@ Create the OIDC Filter
     .. figure:: ../img/google-gs1.png
         :align: center
 
-#. Give the it a name like "test-keycloak", then click the "OpenID Connect Provider Login" checkbox.
+#. Give the it a name like "test-keycloak", then from the :guilabel:`Provider` dropdown select :guilabel:`OpenID Connect Provider` (this is the default selection).
     
     .. figure:: ../img/keycloak-gs-filter1.png
         :align: center
@@ -407,7 +421,7 @@ Create the OIDC Filter
         :align: center
 
 
-Configure Role Role Source 
+Configure Role Source
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 

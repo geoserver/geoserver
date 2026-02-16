@@ -86,6 +86,12 @@ Configure the Google IDP
       .. figure:: ../img/google-credentials12.png
          :align: center
 
+   .. tip::
+
+      The exact redirect URI that GeoServer will use is shown as the read-only
+      :guilabel:`Redirect URI` field in the filter configuration form. In production,
+      use that value instead of ``localhost``. See :ref:`Redirect Base URI <community_oidc_redirect_base_uri>`.
+
    *  Record your Client ID and Client Secret, then press "Ok"
     
       * **You will not be able to retrieve your client secret once you press "ok"**
@@ -117,7 +123,7 @@ Create the OIDC Filter
       .. figure:: ../img/google-gs1.png
          :align: center
 
-   * Give the it a name like "test-google", then click the "Google Login" checkbox and copy-and-paste in the Client ID and Client Secret (from when you configured the google client).
+   * Give the it a name like "test-google", then from the :guilabel:`Provider` dropdown select :guilabel:`Google` and copy-and-paste in the Client ID and Client Secret (from when you configured the google client).
        
       .. figure:: ../img/google-gs2.png
          :align: center

@@ -11,6 +11,7 @@ import org.apache.commons.io.FileUtils;
 import org.geoserver.wms.map.RenderedImageMapOutputFormat;
 import org.geoserver.wms.map.RenderedImageMapOutputFormatTest;
 import org.junit.Before;
+import org.junit.Ignore;
 
 public class DDSMapProducerTest extends RenderedImageMapOutputFormatTest {
 
@@ -35,5 +36,11 @@ public class DDSMapProducerTest extends RenderedImageMapOutputFormatTest {
     protected void copySchemaFile(String file) throws IOException {
         File f = new File("../../web/app/src/main/webapp/schemas/" + file);
         FileUtils.copyFile(f, getResourceLoader().createFile("WEB-INF/schemas/" + file));
+    }
+
+    @Override
+    @Ignore
+    public void testMosaicExpansion() throws Exception {
+        // uses files local to gs-wms1_1, won't work here, not necessary either
     }
 }

@@ -56,12 +56,18 @@
       <artifactId>gs-wfs2_x</artifactId>
     </dependency>
     <dependency>
-      <!--
-                //NC - wms package required for wms support
-            -->
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-wms</artifactId>
+      <artifactId>gs-wms-core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wms1_3</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wms-gml</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>net.sf.opencsv</groupId>
       <artifactId>opencsv</artifactId>

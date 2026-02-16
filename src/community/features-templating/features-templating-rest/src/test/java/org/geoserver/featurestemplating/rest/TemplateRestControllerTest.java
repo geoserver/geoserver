@@ -430,7 +430,7 @@ public class TemplateRestControllerTest extends CatalogRESTTestSupport {
                     TemplateLoader.get().getTemplate(fifteen, TemplateIdentifier.JSON.getOutputFormat());
             StaticBuilder builder = (StaticBuilder)
                     rootBuilder.getChildren().get(0).getChildren().get(0);
-            String value = builder.getStaticValue().textValue();
+            String value = builder.getStaticValue().asString();
             assertEquals("value", value);
 
             // replace the template with a new one.
@@ -444,7 +444,7 @@ public class TemplateRestControllerTest extends CatalogRESTTestSupport {
             assertNotNull(rootBuilder);
             builder = (StaticBuilder)
                     rootBuilder.getChildren().get(0).getChildren().get(0);
-            value = builder.getStaticValue().textValue();
+            value = builder.getStaticValue().asString();
             assertEquals("differentValue", value);
 
             // delete the template

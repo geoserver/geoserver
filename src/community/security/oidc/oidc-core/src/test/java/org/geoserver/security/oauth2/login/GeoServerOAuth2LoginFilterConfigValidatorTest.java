@@ -8,6 +8,8 @@ package org.geoserver.security.oauth2.login;
 
 import static org.geoserver.security.oauth2.common.GeoServerOAuth2FilterConfigException.MSGRAPH_COMBINATION_INVALID;
 import static org.geoserver.security.oauth2.common.GeoServerOAuth2FilterConfigException.OAUTH2_ACCESSTOKENURI_MALFORMED;
+import static org.geoserver.security.oauth2.common.GeoServerOAuth2FilterConfigException.OAUTH2_AUDIENCE_CLAIM_NAME_REQUIRED;
+import static org.geoserver.security.oauth2.common.GeoServerOAuth2FilterConfigException.OAUTH2_AUDIENCE_CLAIM_VALUE_REQUIRED;
 import static org.geoserver.security.oauth2.common.GeoServerOAuth2FilterConfigException.OAUTH2_CLIENT_SECRET_REQUIRED;
 import static org.geoserver.security.oauth2.common.GeoServerOAuth2FilterConfigException.OAUTH2_CLIENT_USER_NAME_REQUIRED;
 import static org.geoserver.security.oauth2.common.GeoServerOAuth2FilterConfigException.OAUTH2_URL_IN_LOGOUT_URI_MALFORMED;
@@ -47,6 +49,37 @@ public class GeoServerOAuth2LoginFilterConfigValidatorTest extends GeoServerMock
         config.setName("testOAuth2");
 
         check(config);
+        validator.validateOAuth2FilterConfig(config);
+    }
+
+    @Test
+    public void testAudienceValidationConfig() throws Exception {
+        GeoServerOAuth2LoginFilterConfig config = new GeoServerOAuth2LoginFilterConfig();
+        config.setClassName(GeoServerOAuth2LoginAuthenticationFilter.class.getName());
+        config.setName("testOAuth2");
+
+        enableOidcValid(config);
+
+        config.setValidateTokenAudience(true);
+        config.setValidateTokenAudienceClaimName(null);
+        config.setValidateTokenAudienceClaimValue("geoserver");
+        try {
+            validator.validateOAuth2FilterConfig(config);
+            fail("Expected FilterConfigException");
+        } catch (FilterConfigException ex) {
+            assertExceptionCodeWithArgCount(ex, OAUTH2_AUDIENCE_CLAIM_NAME_REQUIRED, 0);
+        }
+
+        config.setValidateTokenAudienceClaimName("aud");
+        config.setValidateTokenAudienceClaimValue(null);
+        try {
+            validator.validateOAuth2FilterConfig(config);
+            fail("Expected FilterConfigException");
+        } catch (FilterConfigException ex) {
+            assertExceptionCodeWithArgCount(ex, OAUTH2_AUDIENCE_CLAIM_VALUE_REQUIRED, 0);
+        }
+
+        config.setValidateTokenAudienceClaimValue("geoserver");
         validator.validateOAuth2FilterConfig(config);
     }
 

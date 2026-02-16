@@ -25,7 +25,7 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-wms</artifactId>
+      <artifactId>gs-wms-core</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -46,26 +46,21 @@
       <!-- already provided by gs-main -->
     </dependency>
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
+      <groupId>tools.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
       <scope>provided</scope>
       <!-- already provided by gs-main -->
     </dependency>
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
+      <groupId>tools.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <scope>provided</scope>
       <!-- already provided by gs-main -->
     </dependency>
     <dependency>
       <!-- Match jackson version used by GeoServer -->
-      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <groupId>tools.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-smile</artifactId>
-    </dependency>
-    <dependency>
-      <!-- Match jackson version used by GeoServer -->
-      <groupId>com.fasterxml.jackson.datatype</groupId>
-      <artifactId>jackson-datatype-jsr310</artifactId>
     </dependency>
     <dependency>
       <groupId>org.locationtech.jts</groupId>

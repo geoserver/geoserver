@@ -52,12 +52,11 @@ public class UsernamePasswordAuthenticationProvider extends GeoServerAuthenticat
         userGroupServiceName = upAuthConfig.getUserGroupServiceName();
 
         // create delegate auth provider
-        authProvider = new DaoAuthenticationProvider();
         UserDetailsService userDetailsService = ugService;
         GeoServerEnvironment environment = GeoServerExtensions.bean(GeoServerEnvironment.class);
         if (GeoServerEnvironment.allowEnvParametrization() && environment != null)
             userDetailsService = new EnvironmentUserDetailService(ugService, environment);
-        authProvider.setUserDetailsService(userDetailsService);
+        authProvider = new DaoAuthenticationProvider(userDetailsService);
 
         // set up the password encoder
         // multiplex password encoder actually allows us to handle all types of passwords for

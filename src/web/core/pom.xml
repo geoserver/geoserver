@@ -114,7 +114,7 @@
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
-      <artifactId>bcprov-jdk18on</artifactId>
+      <artifactId>bcprov-lts8on</artifactId>
     </dependency>
     <dependency>
       <groupId>com.github.svenmeier.wicket-dnd</groupId>

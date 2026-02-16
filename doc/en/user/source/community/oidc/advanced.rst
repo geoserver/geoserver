@@ -20,10 +20,12 @@ There are a lot of little problems that can occur - here are some troubleshootin
 
 Common mistakes:
 
-    * Not putting the correct GeoServer callbacks in your IDP
+    * Not putting the correct GeoServer callbacks in your IDP. The exact callback URL is shown as the read-only :guilabel:`Redirect URI` field in the filter configuration — copy it from there.
     * Not putting the user roles in the IDP's ID Token, Access Token, or userinfo
     * Setting the wrong "JSON path" to find the roles in the ID Token, Access Token, or userinfo
     * Not putting in a "Role Conversion" that maps your IDPs role name to GeoServer's role name (especially "ROLE_ADMINISTRATOR")
+    * Not setting ``PROXY_BASE_URL`` correctly in Docker or container deployments, causing the Redirect URI to resolve to an internal hostname that the user's browser cannot reach. See :ref:`Redirect Base URI <community_oidc_redirect_base_uri>`.
+    * After logout, being unexpectedly signed out of all applications that share the same IDP — this is the expected default behavior. See :ref:`Logout Behavior <community_oidc_logout_behavior>`.
 
 If you are still having issues, you might need to attach a Java debugger to GeoServer.  The standard OIDC process is as follows:
 
@@ -33,11 +35,11 @@ If you are still having issues, you might need to attach a Java debugger to GeoS
     * If there is a problem, its most likely that:
 
         * GeoServer is configured with the wrong "User Authorization URI"
-        * The IDP is not configured to allow "http://localhost:8080/geoserver/web/login/oauth2/code/oidc" as the redirect URL
+        * The IDP is not configured to allow the redirect URL shown in the read-only :guilabel:`Redirect URI` field (e.g. ``http://localhost:8080/geoserver/web/login/oauth2/code/oidc``)
 
 #. User logs into the IDP (if this is problematic, consult your IDP's administrator)
 
-#. The user is then redirected back to GeoServer (http://localhost:8080/geoserver/web/login/oauth2/code/oidc) with an attached `?code=...`.  GeoServer will make a web request to the IDP to hand this "code" in for the Access/ID Token.
+#. The user is then redirected back to GeoServer (the Redirect URI) with an attached `?code=...`.  GeoServer will make a web request to the IDP to hand this "code" in for the Access/ID Token.
 
     * You should see this request in the Browser Network Logs (see your Browsers DevTools)
     * In the debugger, you can put a breakpoint in `GeoServerOauth2AccessTokenResponseClient#getTokenResponse()` to see this exchange
@@ -49,7 +51,6 @@ If you are still having issues, you might need to attach a Java debugger to GeoS
 #. Ensure that the roles are being correctly accessed
 
     * The easiest way to see this is in `GeoServerOAuth2RoleResolver#convert()`
-
 
 
 Logging OAuth2 Activity
@@ -87,7 +88,29 @@ To setup for troubleshooting OIDC activity:
       DEBUG  [security.oauth2] - OIDC: Geoserver Roles: ROLE_ADMINISTRATOR
 
 
+Resource Server (Bearer JWT)
+----------------------------
 
+.. figure:: images/resource_server.png
+   
+   Bearer Resource Server Checkbox
+
+When enabled, the same OAuth2 / OpenID Connect login filter also accepts machine-to-machine requests that provide an Authorization: Bearer <JWT> header. The token is validated using the provider's JWK Set URI configured in this panel.
+
+Disable this option if you only want browser-based login, and you do not want this filter chain to accept bearer tokens.
+
+Opaque Token Support (JWE)
+--------------------------
+
+.. figure:: images/opaque_token.png
+   
+   Bearer Resource Server Checkbox
+
+When enabled, the same OAuth2 / OpenID Connect login filter will perform the token validation externally by triggering the token introspection URL.
+
+An opaque token is just an identifier. GeoServer can't validate or extract claims from it locally (there's nothing to decode like a JWT). So the only way to "understand" it is to ask the Authorization Server.
+
+So the token is validated remotely, and any "claims" GeoServer sees come from the introspection JSON.
 
 Proof Key of Code Exchange (PKCE) 
 ---------------------------------
@@ -177,7 +200,7 @@ a WMS client sending tokens for each request will trigger the following requests
 
 * The bearer token is used against the ``token`` endpoint for username extraction
 
-* Then it’s used against the ``instrospection`` endpoint for validation (which also contains the exp attribute, see later)
+* Then it's used against the ``instrospection`` endpoint for validation (which also contains the exp attribute, see later)
 
 * It's finally used against the ``userinfo`` to extract the roles
 

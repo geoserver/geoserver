@@ -9,7 +9,6 @@
  */
 package org.geoserver.gsr;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Collections;
@@ -23,6 +22,7 @@ import org.geoserver.ogcapi.APIExceptionHandler;
 import org.geoserver.ogcapi.APIRequestInfo;
 import org.geotools.util.logging.Logging;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.ObjectMapper;
 
 @Component
 public class GSRExceptionHandler implements APIExceptionHandler {

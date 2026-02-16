@@ -6,7 +6,9 @@ package org.geoserver.web.security.oauth2.intgration.keycloak;
 
 import dasniko.testcontainers.keycloak.KeycloakContainer;
 import java.io.IOException;
+import java.util.logging.Logger;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geotools.util.logging.Logging;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assume;
@@ -32,6 +34,8 @@ import org.testcontainers.utility.MountableFile;
  */
 public class KeyCloakIntegrationTestSupport extends GeoServerWicketTestSupport {
 
+    private static final Logger LOGGER = Logging.getLogger(KeyCloakIntegrationTestSupport.class);
+
     /** Base URL for the Keycloak container (e.g., http://localhost:RANDOM_PORT). */
     static String authServerUrl;
 
@@ -56,28 +60,60 @@ public class KeyCloakIntegrationTestSupport extends GeoServerWicketTestSupport {
 
     @BeforeClass
     public static void beforeAll() throws IOException, InterruptedException {
+        LOGGER.info("KeyCloakIntegrationTestSupport.beforeAll() STARTING");
+
         // Skip entire class when Docker/Testcontainers is not usable
         if (!dockerAvailable()) {
+            LOGGER.info("Docker NOT available - skipping tests");
             Assume.assumeTrue("Skipping Keycloak integration tests: Docker not available", false);
         }
 
-        // Construct the container only after the assumption passes
-        keycloakContainer = new KeycloakContainer("quay.io/keycloak/keycloak:26.1")
-                // Import realms into the default Keycloak import directory
-                .withCopyToContainer(
-                        MountableFile.forClasspathResource(
-                                "org/geoserver/web/security/oauth2/login/keycloak/master-realm.json"),
-                        "/opt/keycloak/data/import/master-realm.json")
-                .withCopyToContainer(
-                        MountableFile.forClasspathResource(
-                                "org/geoserver/web/security/oauth2/login/keycloak/gs-realm-realm.json"),
-                        "/opt/keycloak/data/import/gs-realm-realm.json")
-                .withVerboseOutput()
-                // Keep debug logging (use `docker logs <container>` for details)
-                .withCustomCommand("--log-level=DEBUG");
+        LOGGER.info("Docker available - starting Keycloak container");
 
-        keycloakContainer.start();
-        authServerUrl = keycloakContainer.getAuthServerUrl();
+        try {
+            // Construct the container only after the assumption passes
+            // Note: Do NOT use .useTls() as the self-signed certificate will cause
+            // SSL validation failures when GeoServer tries to exchange tokens or fetch JWKS
+            keycloakContainer = new KeycloakContainer("quay.io/keycloak/keycloak:26.1")
+                    // Import realms into the default Keycloak import directory
+                    .withCopyToContainer(
+                            MountableFile.forClasspathResource(
+                                    "org/geoserver/web/security/oauth2/login/keycloak/master-realm.json"),
+                            "/opt/keycloak/data/import/master-realm.json")
+                    .withCopyToContainer(
+                            MountableFile.forClasspathResource(
+                                    "org/geoserver/web/security/oauth2/login/keycloak/gs-realm-realm.json"),
+                            "/opt/keycloak/data/import/gs-realm-realm.json")
+                    // Use INFO logging level to avoid memory issues from verbose output
+                    .withCustomCommand("--log-level=INFO");
+
+            LOGGER.info("Calling keycloakContainer.start()");
+            keycloakContainer.start();
+            authServerUrl = keycloakContainer.getAuthServerUrl();
+            LOGGER.info("Keycloak started at: " + authServerUrl);
+        } catch (Exception e) {
+            // Handle Docker API version mismatch or other known container infrastructure failures
+            String message = e.getMessage();
+            if (message != null
+                    && (message.contains("API version")
+                            || message.contains("too old")
+                            || message.contains("client version"))) {
+                LOGGER.warning("Docker API version mismatch - skipping tests: " + message);
+                Assume.assumeTrue("Skipping Keycloak tests: Docker API version incompatible", false);
+            }
+            // Skip on container startup failures related to Docker availability
+            if (message != null
+                    && (message.contains("Could not find a valid Docker environment")
+                            || message.contains("docker")
+                            || message.contains("Container startup failed")
+                            || message.contains("Timed out waiting for container"))) {
+                LOGGER.warning("Failed to start Keycloak container - skipping tests: " + e.getMessage());
+                Assume.assumeTrue("Skipping Keycloak tests: Container failed to start - " + e.getMessage(), false);
+            }
+            // Rethrow unexpected exceptions so genuine regressions (e.g., broken realm JSON,
+            // wrong image tag) are visible in CI rather than silently skipped
+            throw e;
+        }
     }
 
     @AfterClass

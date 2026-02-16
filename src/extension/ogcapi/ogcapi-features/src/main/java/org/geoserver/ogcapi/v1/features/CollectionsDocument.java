@@ -8,8 +8,6 @@ import static org.geoserver.catalog.util.CloseableIteratorAdapter.filter;
 import static org.geoserver.catalog.util.CloseableIteratorAdapter.transform;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,7 +30,6 @@ import org.geotools.util.logging.Logging;
  * A class representing the OGC API for Features server "collections" in a way that Jackson can easily translate to
  * JSON/YAML (and can be used as a Freemarker template model)
  */
-@JacksonXmlRootElement(localName = "Collections", namespace = "http://www.opengis.net/wfs/3.0")
 @JsonPropertyOrder({"links", "collections"})
 public class CollectionsDocument extends AbstractDocument {
     static final Logger LOGGER = Logging.getLogger(CollectionsDocument.class);
@@ -54,7 +51,6 @@ public class CollectionsDocument extends AbstractDocument {
     }
 
     @Override
-    @JacksonXmlProperty(localName = "Links")
     public List<Link> getLinks() {
         return links;
     }
@@ -64,7 +60,6 @@ public class CollectionsDocument extends AbstractDocument {
      *     {@code org.geoserver.ogcapi.CloseableIteratorSerializer} for JSON output or
      *     {@code org.geoserver.ogcapi.AutoCloseableTracker} for HTML output
      */
-    @JacksonXmlProperty(localName = "Collection")
     @SuppressWarnings("PMD.CloseResource")
     public CloseableIterator<CollectionDocument> getCollections() {
         Catalog catalog = geoServer.getCatalog();

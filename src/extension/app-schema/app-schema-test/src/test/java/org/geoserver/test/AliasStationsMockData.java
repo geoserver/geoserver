@@ -37,12 +37,8 @@ public class AliasStationsMockData extends StationsMockData {
             addDataStore(
                     dataStoreName,
                     namespacePrefix,
-                    AbstractAppSchemaMockData.buildAppSchemaDatastoreParams(
-                            namespacePrefix,
-                            typeName,
-                            getFileNamePart(mappingFileName),
-                            featureTypesBaseDir,
-                            dataStoreName));
+                    buildAppSchemaDatastoreParams(
+                            getFileNamePart(mappingFileName), featureTypesBaseDir, dataStoreName));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -74,10 +74,6 @@ body {
   flex-direction: column;
   gap: 0.5rem;
 }
-.authentication-form .choiceItem input {
-  float: none;
-  margin-left: 0;
-}
 
 #sidebar {
   position: relative;
@@ -447,6 +443,27 @@ input[type=password]:hover:not(:disabled):not([readonly])::file-selector-button 
 }
 
 /* Input checkbox */
+input[type=checkbox],
+input[type=radio] {
+  --gs-form-check-bg: var(--gs-body-bg);
+  flex-shrink: 0;
+  width: 1em;
+  height: 1em;
+  margin-top: 0.25em;
+  vertical-align: top;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: var(--gs-form-check-bg);
+  background-image: var(--gs-form-check-bg-image);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  border: var(--gs-border-width) solid var(--gs-border-color);
+  -webkit-print-color-adjust: exact;
+  color-adjust: exact;
+  print-color-adjust: exact;
+}
 input[type=checkbox] {
   border-radius: 0.25em;
 }
@@ -1148,12 +1165,4 @@ choiceItem, choiceList items
 .choiceItem label,
 .choiceList > * label {
   display: inline;
-}
-
-/* i18n choiceItem */
-.i18n-tile-and-abstract .choiceItem input {
-  margin-left: 0;
-}
-.i18n-text .choiceItem input {
-  margin-left: -1em;
 }

@@ -4,32 +4,32 @@
 </head>
 <body>
 <wicket:panel >
-        <ul>
-            <li>
+        <ul class="gn-unordered-list-class">
+            <li class="gn-list-item-class">
                 <label for="name"><wicket:message key="name">Name</wicket:message></label>
                 <input wicket:id="name" id="name" type="text" class="text"/>
             </li>
-            <li>
+            <li class="gn-list-item-class">
                 <label for="uri"><wicket:message key="namespaceURI">Namespace URI</wicket:message></label>
                 <input wicket:id="uri" id="uri" type="text" class="text"/>
                 <div class="instruct"><wicket:message key="namespaceUriAssocWithWorkspace">The namespace uri associated with this workspace</wicket:message></div>
             </li>
-            <li class="choiceItem">
+            <li class="gn-list-item-class choiceItem">
                 <input wicket:id="default" id="default" type="checkbox"/> <label for="default"><wicket:message key="defaultWorkspace">Default workspace</wicket:message></label>
             </li>
-            <li class="choiceItem">
+            <li class="gn-list-item-class choiceItem">
                 <input wicket:id="isolated" id="isolated" type="checkbox"/>
                 <label for="isolated">
                     <wicket:message key="isolatedWorkspace">Isolated workspace</wicket:message>
                 </label>
             </li>
             <!-- Commented out waiting for a consistent work to be done on the other edit pages
-            <li>
+            <li class="gn-list-item-class">
               <h3><wicket:message key="stores">Stores</wicket:message></h3>
               <div wicket:id="storeTable"></div>
             </li>
             -->
-            <li>
+            <li class="gn-list-item-class">
                 <div id="tableBody" class="clearfix pt-4">
                     <div wicket:id="services" class="pt-3">
                     </div>

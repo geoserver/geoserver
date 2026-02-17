@@ -2,7 +2,7 @@
 <body>
 <wicket:panel>
   <!--ul wicket:id="basicParams">
-    <li>
+    <li class="gn-list-item-class">
       <label class="choice" for="excludeGeometryless">
         <wicket:message key="excludeGeometryless">excludeGeometryless</wicket:message>
       </label>
@@ -12,20 +12,20 @@
   
   <a href="#" wicket:id="advancedLink"><wicket:message key="advanced">advanced</wicket:message></a>
   <div wicket:id="advancedContainer">
-    <ul wicket:id="advanced">
-      <li class="choiceItem" wicket:id="excludeGeometrylessContainer">
+    <ul class="gn-unordered-list-class" wicket:id="advanced">
+      <li class="gn-list-item-class choiceItem" wicket:id="excludeGeometrylessContainer">
         <input type="checkbox" wicket:id="excludeGeometryless" size="6" /> 
         <label for="excludeGeometrylessContainer">
           <wicket:message key="excludeGeometryless">excludeGeometryless</wicket:message>
         </label>
       </li>
-      <li class="choiceItem" wicket:id="looseBBoxContainer">
+      <li class="gn-list-item-class choiceItem" wicket:id="looseBBoxContainer">
         <input type="checkbox" wicket:id="looseBBox" size="6" /> 
         <label for="looseBBoxContainer">
           <wicket:message key="looseBBox">looseBBox</wicket:message>
         </label>
       </li>
-      <li>
+      <li class="gn-list-item-class">
         <label for="pkMetadata"><wicket:message key="pkMetadata">pkMetadata</wicket:message></label>
         <input class="text" type="text" wicket:id="pkMetadata" />
       </li>

@@ -17,11 +17,11 @@
       <h3>
          <wicket:message key="geoserverParameters"></wicket:message>
       </h3>
-      <ul>
-         <li>
+      <ul class="gn-unordered-list-class">
+         <li class="gn-list-item-class">
             <fieldset>
-               <ul>
-                  <li>
+               <ul class="gn-unordered-list-class">
+                  <li class="gn-list-item-class">
                      <label for="baseRedirectUri">
                         <span>
                            <wicket:message key="baseRedirectUri"></wicket:message>
@@ -30,7 +30,7 @@
                      <input id="baseRedirectUri" wicket:id="baseRedirectUri" type="text" class="field text" />
                      <a href="#" wicket:id="baseRedirectUriHelp" class="help-link"></a>
                   </li>
-                  <li>
+                  <li class="gn-list-item-class">
                      <label for="postLogoutRedirectUri">
                         <span>
                            <wicket:message key="postLogoutRedirectUri"></wicket:message>
@@ -39,7 +39,7 @@
                      <input id="postLogoutRedirectUri" wicket:id="postLogoutRedirectUri" type="text" class="field text" />
                      <a href="#" wicket:id="postLogoutRedirectUriHelp" class="help-link"></a>
                   </li>
-                  <li class="choiceItem">
+                  <li class="gn-list-item-class choiceItem">
                      <input id="enableRedirectAuthenticationEntryPoint"
                         wicket:id="enableRedirectAuthenticationEntryPoint" type="checkbox"
                      />
@@ -50,7 +50,7 @@
                      </label>
                      <a href="#" wicket:id="enableRedirectAuthenticationEntryPointHelp" class="help-link"></a>
                   </li>
-                  <li class="choiceItem">
+                  <li class="gn-list-item-class choiceItem">
                      <input id="enableResourceServerMode"
                         wicket:id="enableResourceServerMode" type="checkbox"
                      />
@@ -70,8 +70,8 @@
       <h3>
          <wicket:message key="providerSelection"></wicket:message>
       </h3>
-      <ul>
-         <li>
+      <ul class="gn-unordered-list-class">
+         <li class="gn-list-item-class">
             <label for="providerSelector">
                <span>
                   <wicket:message key="providerSelectorLabel"></wicket:message>
@@ -85,15 +85,15 @@
       <div wicket:id="pfv">
          <h3 wicket:id="providerHeadline"></h3>
          <div wicket:id="settings">
-            <ul>
-               <li>
+            <ul class="gn-unordered-list-class">
+               <li class="gn-list-item-class">
                   <fieldset>
                      <legend>
                         <span wicket:id="infoFromProvider"> </span>
                         <a href="#" wicket:id="connectionFromParametersHelp" class="help-link"></a>
                      </legend>
-                     <ul>
-                        <li>
+                     <ul class="gn-unordered-list-class">
+                        <li class="gn-list-item-class">
                            <label for="clientId">
                               <span>
                                  <wicket:message key="clientId"></wicket:message>
@@ -102,7 +102,7 @@
                            <input id="clientId" wicket:id="clientId" type="text" class="field text" />
                            <a href="#" wicket:id="clientIdHelp" class="help-link"></a>
                         </li>
-                        <li>
+                        <li class="gn-list-item-class">
                            <label for="clientSecret">
                               <span>
                                  <wicket:message key="clientSecret"></wicket:message>
@@ -115,15 +115,15 @@
                   </fieldset>
                </li>
             </ul>
-            <ul>
-               <li>
+            <ul class="gn-unordered-list-class">
+               <li class="gn-list-item-class">
                   <fieldset>
                      <legend>
                         <span wicket:id="infoForProvider"> </span>
                         <a href="#" wicket:id="connectionForParametersHelp" class="help-link"></a>
                      </legend>
-                     <ul>
-                        <li>
+                     <ul class="gn-unordered-list-class">
+                        <li class="gn-list-item-class">
                            <label for="redirectUri">
                               <span>
                                  <wicket:message key="redirectUri"></wicket:message>
@@ -136,16 +136,16 @@
                   </fieldset>
                </li>
             </ul>
-            <ul>
-               <li>
+            <ul class="gn-unordered-list-class">
+               <li class="gn-list-item-class">
                   <fieldset>
                      <legend>
                         <span>
                            <wicket:message key="protocolSettings"></wicket:message>
                         </span>
                      </legend>
-                     <ul>
-                        <li>
+                     <ul class="gn-unordered-list-class">
+                        <li class="gn-list-item-class">
                            <label for="userNameAttribute">
                               <span>
                                  <wicket:message key="userNameAttribute"></wicket:message>
@@ -155,7 +155,7 @@
                            <a href="#" wicket:id="userNameAttributeHelp" class="help-link"></a>
                         </li>
 
-                        <li wicket:id="displayOnScopeSupport">
+                        <li class="gn-list-item-class" wicket:id="displayOnScopeSupport">
                            <label for="scopes">
                               <span>
                                  <wicket:message key="scopes"></wicket:message>
@@ -168,11 +168,11 @@
                   </fieldset>
                   <div wicket:id="displayOnOidc">
                      <fieldset>
-                        <ul>
-                           <li>
+                        <ul class="gn-unordered-list-class">
+                           <li class="gn-list-item-class">
                               <div wicket:id="topPanel"></div>
                            </li>
-                           <li>
+                           <li class="gn-list-item-class">
                               <label for="oidcAuthorizationUri">
                                  <span>
                                     <wicket:message key="oidcAuthorizationUri"></wicket:message>
@@ -181,7 +181,7 @@
                               <input id="oidcAuthorizationUri" wicket:id="oidcAuthorizationUri" class="field text" />
                               <a href="#" wicket:id="oidcAuthorizationUriHelp" class="help-link"></a>
                            </li>
-                           <li>
+                           <li class="gn-list-item-class">
                               <label for="oidcTokenUri">
                                  <span>
                                     <wicket:message key="oidcTokenUri"></wicket:message>
@@ -190,7 +190,7 @@
                               <input id="oidcTokenUri" wicket:id="oidcTokenUri" type="text" class="field text" />
                               <a href="#" wicket:id="oidcTokenUriHelp" class="help-link"></a>
                            </li>
-                           <li>
+                           <li class="gn-list-item-class">
                               <label for="oidcUserInfoUri">
                                  <span>
                                     <wicket:message key="oidcUserInfoUri"></wicket:message>
@@ -199,7 +199,7 @@
                               <input id="oidcUserInfoUri" wicket:id="oidcUserInfoUri" type="text" class="field text" />
                               <a href="#" wicket:id="oidcUserInfoUriHelp" class="help-link"></a>
                            </li>
-                           <li>
+                           <li class="gn-list-item-class">
                               <label for="oidcJwkSetUri">
                                  <span>
                                     <wicket:message key="oidcJwkSetUri"></wicket:message>
@@ -208,7 +208,7 @@
                               <input id="oidcJwkSetUri" wicket:id="oidcJwkSetUri" type="text" class="field text" />
                               <a href="#" wicket:id="oidcJwkSetUriHelp" class="help-link"></a>
                            </li>
-                           <li>
+                           <li class="gn-list-item-class">
                               <label for="oidcLogoutUri">
                                  <span>
                                     <wicket:message key="oidcLogoutUri"></wicket:message>
@@ -226,8 +226,8 @@
                            </span>
                            <a href="#" wicket:id="oidcAdvancedSettingsHelp" class="help-link"></a>
                         </legend>
-                        <ul>
-                           <li class="choiceItem">
+                        <ul class="gn-unordered-list-class">
+                           <li class="gn-list-item-class choiceItem">
                               <input id="oidcForceTokenUriHttps" wicket:id="oidcForceTokenUriHttps" type="checkbox" />
                               <label for="oidcForceTokenUriHttps">
                                  <span>
@@ -235,7 +235,7 @@
                                  </span>
                               </label>
                            </li>
-                           <li class="choiceItem">
+                           <li class="gn-list-item-class choiceItem">
                               <input id="oidcForceAuthorizationUriHttps" wicket:id="oidcForceAuthorizationUriHttps"
                                  type="checkbox"
                               />
@@ -245,7 +245,7 @@
                                  </span>
                               </label>
                            </li>
-                           <li class="choiceItem">
+                           <li class="gn-list-item-class choiceItem">
                               <input id="disableSignatureValidation" wicket:id="disableSignatureValidation"
                                      type="checkbox"
                               />
@@ -257,7 +257,7 @@
 
                               <a href="#" wicket:id="disableSignatureValidationHelp" class="help-link"></a>
                            </li>
-                           <li class="choiceItem">
+                           <li class="gn-list-item-class choiceItem">
                               <input id="oidcUsePKCE" wicket:id="oidcUsePKCE" type="checkbox" />
                               <label for="oidcUsePKCE">
                                  <span>
@@ -266,7 +266,7 @@
                               </label>
                               <a href="#" wicket:id="oidcUsePKCEHelp" class="help-link"></a>
                            </li>
-                           <li class="choiceItem">
+                           <li class="gn-list-item-class choiceItem">
                               <input id="oidcAllowUnSecureLogging" wicket:id="oidcAllowUnSecureLogging" type="checkbox" />
                               <label for="oidcAllowUnSecureLogging">
                                  <span>
@@ -284,8 +284,8 @@
                            </span>
                            <a href="#" wicket:id="oidcProviderSettingsHelp" class="help-link"></a>
                         </legend>
-                        <ul>
-                           <li>
+                        <ul class="gn-unordered-list-class">
+                           <li class="gn-list-item-class">
                               <label for="oidcResponseMode">
                                  <span>
                                     <wicket:message key="oidcResponseMode"></wicket:message>
@@ -294,7 +294,7 @@
                               <input id="oidcResponseMode" wicket:id="oidcResponseMode" type="text" class="field text" />
                               <a href="#" wicket:id="oidcResponseModeHelp" class="help-link"></a>
                            </li>
-                           <li>
+                           <li class="gn-list-item-class">
                               <label for="oidcIntrospectionUrl">
                                  <span>
                                     <wicket:message key="oidcIntrospectionUrl"></wicket:message>
@@ -303,7 +303,7 @@
                               <input id="oidcIntrospectionUrl" wicket:id="oidcIntrospectionUrl" type="text" class="field text" />
                               <a href="#" wicket:id="oidcIntrospectionUrlHelp" class="help-link"></a>
                            </li>
-                           <li class="choiceItem">
+                           <li class="gn-list-item-class choiceItem">
                               <input id="oidcAuthenticationMethodPostSecret"
                                  wicket:id="oidcAuthenticationMethodPostSecret" type="checkbox"
                               />

@@ -8,8 +8,8 @@
     <form>
         <fieldset>
             <legend><span><wicket:message key="checksControl"></wicket:message></span></legend>
-            <ul>
-                <li class="choiceItem">
+            <ul class="gn-unordered-list-class">
+                <li class="gn-list-item-class choiceItem">
                     <input type="checkbox" id="checksEnabled" wicket:id="checksEnabled"
                            class="input.checkbox"></input>
                     <label for="checksEnabled" wicket:id="statusLabel"></label>
@@ -19,11 +19,11 @@
 
         <fieldset>
             <legend><span><wicket:message key="urlChecks"></wicket:message></span></legend>
-            <ul class="action-group">
-                <li><a class="add-link" href="#" wicket:id="addNew">
+            <ul class="gn-unordered-list-class action-group">
+                <li class="gn-list-item-class"> <a class="add-link" href="#" wicket:id="addNew">
                     <wicket:message key="addNew"/>
                 </a></li>
-                <li><a class="remove-link" href="#" wicket:id="removeSelected">
+                <li class="gn-list-item-class"> <a class="remove-link" href="#" wicket:id="removeSelected">
                     <wicket:message key="removeSelected"/>
                 </a></li>
             </ul>
@@ -34,8 +34,8 @@
     <form wicket:id="testForm">
         <fieldset>
             <legend><span><wicket:message key="testChecks"></wicket:message></span></legend>
-            <ul>
-                <li>
+            <ul class="gn-unordered-list-class">
+                <li class="gn-list-item-class">
                     <label for="input">
                         <wicket:message key="testInput"></wicket:message>
                     </label>

@@ -2,38 +2,38 @@
 <body>
 <wicket:extend>
 <form wicket:id="form" class="pt-3">
-    <ul>
-        <li>
+    <ul class="gn-unordered-list-class">
+        <li class="gn-list-item-class">
             <fieldset>
                 <legend><span><wicket:message key="upload">Upload</wicket:message></span></legend>
-                <ul>
-                    <li>
+                <ul class="gn-unordered-list-class">
+                    <li class="gn-list-item-class">
                         <label for="enabled"><wicket:message key="uploadRoot">root</wicket:message></label>
                         <div wicket:id="uploadRoot" class="field text"/>
                     </li>
                 </ul>
             </fieldset>
         </li>
-        <li>
+        <li class="gn-list-item-class">
             <fieldset>
                 <legend><span><wicket:message key="concurrency">Concurrency</wicket:message></span></legend>
-                <ul>
-                    <li>
+                <ul class="gn-unordered-list-class">
+                    <li class="gn-list-item-class">
                         <label><wicket:message key="maxSync">maxSync</wicket:message></label>
                         <input wicket:id="maxSync" class="field text"/>
                     </li>
-                    <li>
+                    <li class="gn-list-item-class">
                         <label><wicket:message key="maxAsync">maxAsync</wicket:message></label>
                         <input wicket:id="maxAsync" class="field text"/>
                     </li>
                 </ul>
             </fieldset>
         </li>
-        <li>
+        <li class="gn-list-item-class">
             <fieldset>
                 <legend><span><wicket:message key="maintenance">maintenance</wicket:message></span></legend>
-                <ul>
-                    <li>
+                <ul class="gn-unordered-list-class">
+                    <li class="gn-list-item-class">
                         <label><wicket:message key="expiration">expiration</wicket:message></label>
                         <input wicket:id="expiration" class="field text"/>
                     </li>

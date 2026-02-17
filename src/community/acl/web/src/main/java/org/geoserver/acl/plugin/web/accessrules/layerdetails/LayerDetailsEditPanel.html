@@ -7,25 +7,25 @@
     </legend>
     <div wicket:id="detailsContainer" style="padding-left:1em;">
       <fieldset>
-        <ul>
-          <li>
+        <ul class="gn-unordered-list-class">
+          <li class="gn-list-item-class">
             <label for="layerType"><wicket:message key="layerType"/></label>
             <span wicket:id="layerType"></span>
           </li>
-          <li>
+          <li class="gn-list-item-class">
             <div wicket:id="styles" id="styles">
               <fieldset>
-                <ul>
-                  <li>
+                <ul class="gn-unordered-list-class">
+                  <li class="gn-list-item-class">
                     <legend>
                      <span><wicket:message key="styles">Limit styles</wicket:message></span>
                     </legend>
                   </li>
-                  <li>
+                  <li class="gn-list-item-class">
                     <label for="defaultStyle"><wicket:message key="defaultStyle"/></label>
                     <input id="defaultStyle" wicket:id="defaultStyle" type="text" class="text"/>
                   </li>
-                  <li>
+                  <li class="gn-list-item-class">
                     <label for="allowedStyles"><wicket:message key="allowedStyles"/></label>
                     <div wicket:id="allowedStyles" id="allowedStyles"></div>
                   </li>
@@ -33,12 +33,12 @@
               </fieldset>
             </div>
           </li>
-          <li>
+          <li class="gn-list-item-class">
             <legend>
              <span><wicket:message key="filters">Filter contents</wicket:message></span>
             </legend>
           </li>
-          <li>
+          <li class="gn-list-item-class">
             <div class="tabset" id="filterTabs" wicket:id="filterTabs">
               <span wicket:id="filtertabset">
               <!-- Tab 1 -->
@@ -57,8 +57,8 @@
                 </div>
                 <div id="cqlread" class="tab-panel">
                   <fieldset>
-                    <ul> 
-                      <li>
+                    <ul class="gn-unordered-list-class">
+                      <li class="gn-list-item-class">
                         <label><wicket:message key="cqlFilterRead"/></label>
                         <textarea wicket:id="cqlFilterRead" id="cqlFilterRead"></textarea>
                       </li>
@@ -67,8 +67,8 @@
                 </div>
                 <div id="cqlwrite" class="tab-panel">
                   <fieldset>
-                    <ul> 
-                      <li>
+                    <ul class="gn-unordered-list-class">
+                      <li class="gn-list-item-class">
                         <label><wicket:message key="cqlFilterWrite"/></label>
                         <textarea wicket:id="cqlFilterWrite" id="cqlFilterWrite"></textarea>
                       </li>
@@ -78,7 +78,7 @@
               </div>
             </div>
           </li>
-          <li>
+          <li class="gn-list-item-class">
             <div id="layerAttributes" wicket:id="layerAttributes"></div>
           </li>
         </ul>

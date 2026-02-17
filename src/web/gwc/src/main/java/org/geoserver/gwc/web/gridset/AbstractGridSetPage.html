@@ -3,29 +3,29 @@
 <wicket:extend>
   <form wicket:id="gridSetForm">
     <fieldset>
-      <ul>
-        <li>
+      <ul class="gn-unordered-list-class">
+        <li class="gn-list-item-class">
           <div class="seflclear">
             <span wicket:id="name">Name</span>
           </div>
         </li>
-        <li>
+        <li class="gn-list-item-class">
  	      <label for="description"><wicket:message key="descriptionField">Description</wicket:message></label>
           <textarea wicket:id="description" class="field textarea w-100 h-10-em"></textarea>
         </li>
-        <li>
+        <li class="gn-list-item-class">
           <label for="crs"><wicket:message key="crs">CRS</wicket:message></label>
           <span id="crs" wicket:id="crs"></span>
         </li>
-        <li>
+        <li class="gn-list-item-class">
           <label for="bounds"><wicket:message key="bounds">GridSet bounds</wicket:message></label>
           <span id="bounds" wicket:id="bounds"></span>
           <a href="#" wicket:id="computeBounds"><wicket:message key="computeBounds">Compute from CRS</wicket:message></a>
         </li>
-        <li>
+        <li class="gn-list-item-class">
           <div><span wicket:id="tileWidth">Tile width</span></div>
         </li>
-        <li>
+        <li class="gn-list-item-class">
           <div><span wicket:id="tileHeight">Tile Height</span></div>
         </li>
       </ul>
@@ -34,9 +34,9 @@
       <legend>
         <span><wicket:message key="tileMatrixSet">Tile Matrix Set</wicket:message></span>
       </legend>
-      <ul>
-        <li><div wicket:id="tileMatrixSetEditor"></div></li>
-        <li>
+      <ul class="gn-unordered-list-class">
+        <li class="gn-list-item-class"> <div wicket:id="tileMatrixSetEditor"></div></li>
+        <li class="gn-list-item-class">
           <div>
            <span>
             <a href="#" wicket:id="addZoomLevel"><wicket:message key="addZoomLevel">Add zoom level</wicket:message></a>

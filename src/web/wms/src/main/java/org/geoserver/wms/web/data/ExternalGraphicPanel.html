@@ -3,22 +3,22 @@
 <body>
 <wicket:panel>
   <div wicket:id="externalGraphicContainer">
-    <ul wicket:id="list">
-      <li>
+    <ul class="gn-unordered-list-class" wicket:id="list">
+      <li class="gn-list-item-class">
         <label for="onlineResource"><wicket:message key="onlineResource">URL:</wicket:message></label>
       </li>
-      <li>
+      <li class="gn-list-item-class">
         <input wicket:id="onlineResource" type="text" class="text"></input>
         <a href="#" wicket:id="chooseImage"><wicket:message key="chooseImage">Choose ...</wicket:message></a>
         <br>
         <a href="#" wicket:id="autoFill"><wicket:message key="autoFill">Auto-detect image size and type</wicket:message></a>
       </li>
-      <li><label for="width"><wicket:message key="width">Width</wicket:message></label></li>
-      <li><input wicket:id="width" type="text" class="text"></input></li>
-      <li><label for="height"><wicket:message key="height">Height</wicket:message></label></li>
-      <li><input wicket:id="height" type="text" class="text"></input></li>
-      <li><label for="format"><wicket:message key="format">format</wicket:message></label></li>
-      <li><input wicket:id="format" type="text" class="text"></input></li>      
+      <li class="gn-list-item-class"> <label for="width"><wicket:message key="width">Width</wicket:message></label></li>
+      <li class="gn-list-item-class"> <input wicket:id="width" type="text" class="text"></input></li>
+      <li class="gn-list-item-class"> <label for="height"><wicket:message key="height">Height</wicket:message></label></li>
+      <li class="gn-list-item-class"> <input wicket:id="height" type="text" class="text"></input></li>
+      <li class="gn-list-item-class"> <label for="format"><wicket:message key="format">format</wicket:message></label></li>
+      <li class="gn-list-item-class"> <input wicket:id="format" type="text" class="text"></input></li>
     </ul>
     <form wicket:id="showhide" id="showhideForm">
         <button wicket:id="show"><wicket:message key="show">Show</wicket:message></button>

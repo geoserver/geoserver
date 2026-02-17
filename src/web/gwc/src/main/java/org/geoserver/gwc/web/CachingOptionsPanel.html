@@ -3,17 +3,17 @@
 <wicket:panel>
 <fieldset>
   <legend><span><wicket:message key="GWCSettingsPage.defaultCacheOptions">Default Caching Options</wicket:message></span></legend>
-  <ul>
-    <li class="choiceItem">
+  <ul class="gn-unordered-list-class">
+    <li class="gn-list-item-class choiceItem">
       <input id="cacheLayersByDefault" type="checkbox" wicket:id="cacheLayersByDefault" />
       <label for="cacheLayersByDefault">
         <wicket:message key="GWCSettingsPage.cacheLayersByDefault">Automatically cache newly added layers</wicket:message>
       </label>
     </li>
-    <li wicket:id="container">
+    <li class="gn-list-item-class" wicket:id="container">
       <div wicket:id="configs">
-        <ul>
-          <li>
+        <ul class="gn-unordered-list-class">
+          <li class="gn-list-item-class">
             <div class="w-50">
               <label><wicket:message key="GWCSettingsPage.lockProvider">lockProvider:</wicket:message></label>
             </div>
@@ -22,13 +22,13 @@
             </div>
             <br>
           </li>
-          <li class="choiceItem">
+          <li class="gn-list-item-class choiceItem">
             <input id="cacheNonDefaultStyles" type="checkbox" wicket:id="cacheNonDefaultStyles" />
             <label for="cacheNonDefaultStyles">
               <wicket:message key="GWCSettingsPage.cacheNonDefaultStyles">Automatically cache non default styles</wicket:message>
             </label>
           </li>
-          <li>
+          <li class="gn-list-item-class">
             <div class="w-50">
               <label><wicket:message key="GWCSettingsPage.metaTiling">Default meta tiling factors:</wicket:message></label>
             </div>
@@ -39,7 +39,7 @@
               <wicket:message key="GWCSettingsPage.metaTilingY">Tiles high</wicket:message>
             </div>
           </li>
-          <li>
+          <li class="gn-list-item-class">
             <div class="w-50">
               <label><wicket:message key="GWCSettingsPage.gutter">Default gutter size:</wicket:message></label>
             </div>
@@ -48,7 +48,7 @@
             </div>
             <br>
           </li>
-          <li>
+          <li class="gn-list-item-class">
             <label><wicket:message key="GWCSettingsPage.defaultCacheFormats">Default Cache Formats</wicket:message></label>
             <table>
               <tr>
@@ -82,11 +82,11 @@
               </tr>
             </table>
           </li>
-          <li>
+          <li class="gn-list-item-class">
             <label class="text"><wicket:message key="skipOnWarning">SkipOnWarning</wicket:message></label>
             <span wicket:id="warningSkips"></span>
           </li>
-          <li>
+          <li class="gn-list-item-class">
             <label><wicket:message key="cachedGridsets">Cached Grid Sets:</wicket:message></label>
             <span wicket:id="cachedGridsets"></span>
           </li>

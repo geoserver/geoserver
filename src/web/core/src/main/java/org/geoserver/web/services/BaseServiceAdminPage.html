@@ -7,43 +7,43 @@
       <wicket:message key="workspace">Workspace</wicket:message>
       <a href="#" wicket:id="workspaceHelp" class="help-link"></a>
     </legend>
-    <ul>
-      <li>
+    <ul class="gn-unordered-list-class">
+      <li class="gn-list-item-class">
         <div wicket:id="workspace"></div>
       </li>
     </ul>
   </fieldset>
   <fieldset>
     <legend><wicket:message key="serviceMetadata">Service Metadata</wicket:message></legend>
-    <ul>
-      <li class="choiceItem">
+    <ul class="gn-unordered-list-class">
+      <li class="gn-list-item-class choiceItem">
         <input wicket:id="enabled" type="checkbox">
         <label for="enabled"><span wicket:id="service.enabled">enable</span></label>
       </li>
-      <li class="choiceItem">
+      <li class="gn-list-item-class choiceItem">
         <input wicket:id="citeCompliant" type="checkbox">
         <label for="citeCompliant"><wicket:message key="strictCITECompliance">Strict CITE compliance</wicket:message></label>
       </li>
-      <li>
+      <li class="gn-list-item-class">
         <label><wicket:message key="maintainer">Maintainer</wicket:message></label>
         <input wicket:id="maintainer" class="field text">
       </li>
-      <li>
+      <li class="gn-list-item-class">
         <label><wicket:message key="onlineResource">Online resource</wicket:message></label>
         <input wicket:id="onlineResource" class="field text">
       </li>
-      <li>
+      <li class="gn-list-item-class">
         <div wicket:id="serviceTitleAndAbstract"></div>
       </li>
-      <li>
+      <li class="gn-list-item-class">
          <label><wicket:message key="fees">Fees</wicket:message></label>
          <input wicket:id="fees" class="field text">
       </li>
-      <li>
+      <li class="gn-list-item-class">
          <label><wicket:message key="accessConstraints">Access Constraints</wicket:message></label>
          <input wicket:id="accessConstraints" class="field text">
       </li>
-      <li>
+      <li class="gn-list-item-class">
          <div wicket:id="keywords"></div>
       </li>
     </ul>
@@ -62,20 +62,20 @@
 <div wicket:id="dialog"></div>
 
   <wicket:fragment id="stringFragment" wicket:id="stringFragment">
-    <ul>
-      <li>
+    <ul class="gn-unordered-list-class">
+      <li class="gn-list-item-class">
         <label for="title"><wicket:message key="titleMsg">Title</wicket:message></label>
         <input class="text" type="text" wicket:id="title"/>
       </li>
-      <li>
+      <li class="gn-list-item-class">
         <label for="abstract"><wicket:message key="abstract">Abstract</wicket:message></label>
         <textarea wicket:id="abstract" class="field textarea" rows="10" cols="30"></textarea>
       </li>
     </ul>
   </wicket:fragment>
   <wicket:fragment id="internationalStringFragment" wicket:id="internationalStringFragment">
-    <ul>
-      <li>
+    <ul class="gn-unordered-list-class">
+      <li class="gn-list-item-class">
         <div id="titleAndAbstract" wicket:id="titleAndAbstract"/>
       </li>
     </ul>

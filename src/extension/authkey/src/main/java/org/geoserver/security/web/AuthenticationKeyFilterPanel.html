@@ -4,42 +4,42 @@
     xmlns:wicket="http://wicket.apache.org/">
 <body>
   <wicket:extend>
-  	<ul>
-	  <li>
+  	<ul class="gn-unordered-list-class">
+	  <li class="gn-list-item-class">
 		  <fieldset>
 		  <legend>
 		  		<span><wicket:message key="authKeyParameters"></wicket:message></span>
 		  		<a href="#" wicket:id="authKeyParametersHelp" class="help-link"></a>
 		  </legend>
-			  <ul>	  
-				  <li>                    
+			  <ul class="gn-unordered-list-class">
+				  <li class="gn-list-item-class">
 				     <label for="authKeyParamName"><wicket:message key="authKeyParamName"></wicket:message></label>
 				     <input id="authKeyParamName" wicket:id="authKeyParamName" type="text" class="text"/>
 				  </li>
-				  <li>
+				  <li class="gn-list-item-class">
                     <label ><wicket:message key="authKeyMapperName"></wicket:message></label>
                     <select wicket:id="authKeyMapperName"></select>
                   </li>
-				  <li>
+				  <li class="gn-list-item-class">
 					  <label for="allowMapperKeysAutoSync"><wicket:message key="allowMapperKeysAutoSync"></wicket:message></label>
 					  <input id="allowMapperKeysAutoSync" wicket:id="allowMapperKeysAutoSync" type="checkbox" class="checkbox"/>
 				  </li>
-				  <li>
+				  <li class="gn-list-item-class">
 					  <label for="allowChallengeAnonymousSessions"><wicket:message key="allowChallengeAnonymousSessions"></wicket:message></label>
 					  <input id="allowChallengeAnonymousSessions" wicket:id="allowChallengeAnonymousSessions" type="checkbox" class="checkbox"/>
 				  </li>
-				  <li>
+				  <li class="gn-list-item-class">
                     <div wicket:id="authKeyMapperParamsContainer">
                         <div wicket:id="authKeyMapperParamsPanel">
                         </div>
                     </div>
                 </li>   
-				  <li>
+				  <li class="gn-list-item-class">
                     <label ><wicket:message key="userGroupService"></wicket:message></label>
                     <select wicket:id="userGroupServiceName"></select>
                   </li>
 				  
-				  <li>
+				  <li class="gn-list-item-class">
 	      			<div class="button-group selfclear">
 	        		<a wicket:id="synchronize"><span><wicket:message key="synchronize"></wicket:message></span></a>
 	      			</div>

@@ -3,24 +3,24 @@
 <wicket:extend>
   <form wicket:id="form">
   <fieldset>
-    <ul class="gn-unordered-list-class">
-      <li class="gn-list-item-class">
+    <div class="gn-unordered-list-class">
+      <div class="gn-list-item-class">
         <label for="priority"><wicket:message key="priority"></wicket:message></label>
         <input id="priority" wicket:id="priority" type="text" class="text" />
-      </li>
-      <li class="gn-list-item-class">
+      </div>
+      <div class="gn-list-item-class">
         <label for="roleName"><wicket:message key="roleName"></wicket:message></label>
         <input id="roleName" wicket:id="roleName" type="text" class="text" placeholder="*"/>
-      </li>
-      <li class="gn-list-item-class">
+      </div>
+      <div class="gn-list-item-class">
         <label for="userName"><wicket:message key="username"></wicket:message></label>
         <input id="userName" wicket:id="userName" type="text" class="text" placeholder="*"/>
-      </li>
-      <li class="gn-list-item-class">
+      </div>
+      <div class="gn-list-item-class">
         <label for="workspace"><wicket:message key="workspace"></wicket:message></label>
         <input id="workspace" wicket:id="workspace" type="text" class="text" placeholder="*"/>
-      </li>
-      <li class="gn-list-item-class">
+      </div>
+      <div class="gn-list-item-class">
         <label wicket:for="access"><wicket:message key="access"></wicket:message></label>
         <span wicket:id="access">
           <div class="switch-field">
@@ -31,8 +31,8 @@
             <label wicket:for="ADMIN"><wicket:message key="AdminGrantType.ADMIN"/></label>      
           </div>
         </span>
-      </li>
-    </ul>
+      </div>
+    </div>
   </fieldset>
   <div class="button-group toolbar-sticky selfclear">
     <a href="#" class="form-button-save" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>

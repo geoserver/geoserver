@@ -3,48 +3,48 @@
 <body>
   <wicket:panel>
 
-    <ul class="gn-unordered-list-class">
-      <li class="gn-list-item-class"> <input type="checkbox" wicket:id="enabled"/>
+    <div class="gn-unordered-list-class">
+      <div class="gn-list-item-class"> <input type="checkbox" wicket:id="enabled"/>
       <wicket:message key="enabled">enabled</wicket:message>
-        &nbsp;&nbsp;<em><span wicket:id="noAttributeMsg"></span></em></li>
-      <li class="gn-list-item-class" wicket:id="configContainer">
-        <ul class="gn-unordered-list-class" wicket:id="configs">
-            <li class="gn-list-item-class" wicket:id="attributeContainer">
-                <ul class="gn-unordered-list-class">
-                    <li class="gn-list-item-class">
+        &nbsp;&nbsp;<em><span wicket:id="noAttributeMsg"></span></em></div>
+      <div class="gn-list-item-class" wicket:id="configContainer">
+        <div class="gn-unordered-list-class" wicket:id="configs">
+            <div class="gn-list-item-class" wicket:id="attributeContainer">
+                <div class="gn-unordered-list-class">
+                    <div class="gn-list-item-class">
                         <label for="attribute">
                             <wicket:message key="attribute">attribute</wicket:message>
                         </label>
                         <select class="select" id="attribute" wicket:id="attribute"></select>
-                    </li>
-                    <li class="gn-list-item-class">
+                    </div>
+                    <div class="gn-list-item-class">
                         <label for="endAttribute">
                             <wicket:message key="endAttribute">endAttribute</wicket:message>
                         </label>
                         <select class="select" id="endAttribute" wicket:id="endAttribute"></select>
-                    </li>
-                </ul>
-            </li>
-          <li class="gn-list-item-class" wicket:id="unitsContainer">
+                    </div>
+                </div>
+            </div>
+          <div class="gn-list-item-class" wicket:id="unitsContainer">
             <label for="units"><wicket:message key="units">units</wicket:message></label>
             <input type="text" wicket:id="units" class="field text" />
             <label for="unitSymbol">
               <wicket:message key="unitSymbol">unitSymbol</wicket:message>
             </label>
             <input type="text" wicket:id="unitSymbol" class="field text" />
-          </li>
-          <li class="gn-list-item-class"> <label><wicket:message key="presentation">presentation</wicket:message></label>
+          </div>
+          <div class="gn-list-item-class"> <label><wicket:message key="presentation">presentation</wicket:message></label>
             <select class="select" wicket:id="presentation"></select>
-          </li>
-          <li class="gn-list-item-class" wicket:id="resolutionContainer">
+          </div>
+          <div class="gn-list-item-class" wicket:id="resolutionContainer">
             <div wicket:id="resolutions">
               <label><wicket:message key="resolution">resolution</wicket:message></label>
               <input type="text" wicket:id="resElevation"
                 class="field text" />
               <div wicket:id="resTime" />
             </div>
-          </li>
-          <li class="gn-list-item-class" wicket:id="defaultValueContainer">
+          </div>
+          <div class="gn-list-item-class" wicket:id="defaultValueContainer">
             <label for="strategy">
               <wicket:message key="defaultValueStrategy">defaultValue</wicket:message>
             </label>
@@ -56,36 +56,36 @@
               <input type="text" wicket:id="referenceValue" class="field text" />
               &nbsp;&nbsp;<em><span class="error" wicket:id="refValueValidationMsg"></span></em>
 			</div>
-          </li>
-          <li class="gn-list-item-class" wicket:id="nearestMatchContainer">
-            <ul class="gn-unordered-list-class">
-              <li class="gn-list-item-class">
+          </div>
+          <div class="gn-list-item-class" wicket:id="nearestMatchContainer">
+            <div class="gn-unordered-list-class">
+              <div class="gn-list-item-class">
                 <input type="checkbox" id="nearestMatchEnabled" wicket:id="nearestMatchEnabled"/><wicket:message key="nearestMatch">nearestMatch</wicket:message>
-              </li>
-                <li class="gn-list-item-class" wicket:id="rawNearestMatch">
+              </div>
+                <div class="gn-list-item-class" wicket:id="rawNearestMatch">
                     <input type="checkbox" id="rawNearestMatchEnabled" wicket:id="rawNearestMatchEnabled"/><wicket:message key="rawNearestMatch">rawNearestMatch</wicket:message>
-                </li>
-                <li class="gn-list-item-class" wicket:id="acceptableIntervalEditor">
+                </div>
+                <div class="gn-list-item-class" wicket:id="acceptableIntervalEditor">
                   <label><wicket:message key="acceptableInterval">acceptableInterval</wicket:message></label>
                   <input type="text" wicket:id="acceptableInterval" class="field text" />
-                </li>
-                <li class="gn-list-item-class" wicket:id="failedMatchBehaviorContainer">
+                </div>
+                <div class="gn-list-item-class" wicket:id="failedMatchBehaviorContainer">
                   <label><wicket:message key="failedMatchBehavior">failedMatchBehavior</wicket:message></label>
                   <select class="select" wicket:id="nearestFailBehavior" />
-                </li>
-            </ul>
-          </li>
-          <li class="gn-list-item-class" wicket:id="startEndContainer">
+                </div>
+            </div>
+          </div>
+          <div class="gn-list-item-class" wicket:id="startEndContainer">
             <label><wicket:message key="startValue">startValue</wicket:message></label>
             <input type="text" wicket:id="startValue" class="field text" />
             &nbsp;<em><span class="error" wicket:id="startValueValidationMsg"></span></em>
             <label><wicket:message key="endValue">endValue</wicket:message></label>
             <input type="text" wicket:id="endValue" class="field text" />
             &nbsp;<em><span class="error" wicket:id="endValueValidationMsg"></span></em>
-          </li>
-        </ul>
-      </li>
-    </ul>
+          </div>
+        </div>
+      </div>
+    </div>
 
   </wicket:panel>
 </body>

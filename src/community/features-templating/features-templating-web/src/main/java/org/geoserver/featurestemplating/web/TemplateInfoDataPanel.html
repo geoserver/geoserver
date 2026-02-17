@@ -11,40 +11,40 @@
             <legend>
                 <span><wicket:message key="templateInfoData">Template Info</wicket:message></span>
             </legend>
-            <ul class="gn-unordered-list-class">
-                <li class="gn-list-item-class">
+            <div class="gn-unordered-list-class">
+                <div class="gn-list-item-class">
                     <label for="templateName"><wicket:message key="templateName"></wicket:message></label>
                     <input id="templateName" wicket:id="templateName" type="text" class="text" />
-                </li>
-                <li class="gn-list-item-class">
+                </div>
+                <div class="gn-list-item-class">
                     <label for="extension"><wicket:message key="extension"></wicket:message></label>
                     <select wicket:id="extension" id="extension" />
-                </li>
-                <li class="gn-list-item-class">
+                </div>
+                <div class="gn-list-item-class">
                     <label for="workspace"><wicket:message key="workspace"></wicket:message></label>
                     <select wicket:id="workspace" id="workspace" />
-                </li>
+                </div>
 
-                <li class="gn-list-item-class">
+                <div class="gn-list-item-class">
                     <label for="featureTypeInfo"><wicket:message key="featureTypeInfo"></wicket:message></label>
                     <select wicket:id="featureTypeInfo" id="featureTypeInfo" />
-                </li>
+                </div>
 
                 <div class="pt-4">
                     <fieldset class="mb-0">
                         <legend>
                             <span><wicket:message key="templateContentSpan">Template Content</wicket:message></span>
                         </legend>
-                        <ul class="gn-unordered-list-class">
-                            <li class="gn-list-item-class">
+                        <div class="gn-unordered-list-class">
+                            <div class="gn-list-item-class">
                                 <label for="filename"><wicket:message key="templateFile">Template file</wicket:message></label>
                                 <input type="file" id="filename" wicket:id="filename"/>
                                 <a href="#" wicket:id="upload"><wicket:message key="upload">Upload</wicket:message></a>
-                            </li>
-                        </ul>
+                            </div>
+                        </div>
                     </fieldset>
                 </div>
-            </ul>
+            </div>
         </fieldset>
     </div>
 </wicket:panel>

@@ -2,29 +2,29 @@
 <body>
 <wicket:extend>
 <form wicket:id="form">
-  <ul class="gn-unordered-list-class">
-    <li class="gn-list-item-class">
+  <div class="gn-unordered-list-class">
+    <div class="gn-list-item-class">
       <label for="sourceCRS"><wicket:message key="sourceCRS">sourceCRS</wicket:message></label>
       <span id="sourceCRS" wicket:id="sourceCRS"></span>
-    </li>
-    <li class="gn-list-item-class">
+    </div>
+    <div class="gn-list-item-class">
       <label for="targetCRS"><wicket:message key="targetCRS">targetCRS</wicket:message></label>
       <span id="targetCRS" wicket:id="targetCRS"></span>
-    </li>
-    <li class="gn-list-item-class">
+    </div>
+    <div class="gn-list-item-class">
       <a href="#" wicket:id="wkt"><wicket:message key="wkt">Show transformation details</wicket:message></a>
-    </li>
-    <li class="gn-list-item-class">
+    </div>
+    <div class="gn-list-item-class">
       <label for="sourceGeom"><wicket:message key="sourceGeom">sourceGeom</wicket:message></label>
       <textarea id="sourceGeom" class="reproj-console-geom" wicket:id="sourceGeom"></textarea><br/>
       <a href="#" wicket:id="forward"><wicket:message key="forward">forward</wicket:message></a>
-    </li>
-    <li class="gn-list-item-class">
+    </div>
+    <div class="gn-list-item-class">
       <label for="targetGeom"><wicket:message key="targetGeom">targetGeom</wicket:message></label>
       <textarea id="targetGeom" class="reproj-console-geom" wicket:id="targetGeom"></textarea><br/>
       <a href="#" wicket:id="backward"><wicket:message key="backward">backward</wicket:message></a>
-    </li>
-  </ul>
+    </div>
+  </div>
 </form>
   <div wicket:id="popup"></div>
 </wicket:extend>

@@ -1,68 +1,68 @@
 <html xmlns:wicket="http://wicket.apache.org/">
 <body>
 <wicket:panel>
-   <ul class="gn-unordered-list-class">
-      <li class="gn-list-item-class">
+   <div class="gn-unordered-list-class">
+      <div class="gn-list-item-class">
         <fieldset>
           <legend><span><wicket:message key="process">choose process</wicket:message></span></legend>
-          <ul class="gn-unordered-list-class">
-            <li class="gn-list-item-class">
+          <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class">
               <!--  <label for="name"><wicket:message key="name">process</wicket:message></label> -->
               <select wicket:id="process"></select> 
               <p wicket:id="descriptionContainer"> <span wicket:id="processDescription"/> 
               	(<a href="#" wicket:id="describeProcess"><wicket:message key="describe">describe</wicket:message></a>)</p>
-            </li>
-          </ul>
+            </div>
+          </div>
         </fieldset>
-      </li>
-      <li class="gn-list-item-class" wicket:id="inputContainer">
+      </div>
+      <div class="gn-list-item-class" wicket:id="inputContainer">
         <fieldset>
           <legend><span><wicket:message key="inputs">inputs</wicket:message></span></legend>
-          <ul class="gn-unordered-list-class">
-            <li class="gn-list-item-class mb-2" wicket:id="inputs">
+          <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class mb-2" wicket:id="inputs">
               <label wicket:id="param"></label>
               <span wicket:id="paramDescription"></span><br/>
               <span wicket:id="paramValue"></span>
-            </li>
-          </ul>
+            </div>
+          </div>
         </fieldset>
-      </li>
-      <li class="gn-list-item-class" wicket:id="outputContainer">
+      </div>
+      <div class="gn-list-item-class" wicket:id="outputContainer">
         <fieldset>
           <legend><span><wicket:message key="outputs">outputs</wicket:message></span></legend>
-          <ul class="gn-unordered-list-class">
-            <li class="gn-list-item-class mb-2" wicket:id="outputs">
+          <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class mb-2" wicket:id="outputs">
               <label wicket:id="param"></label>
               <span wicket:id="paramDescription"></span><br/>
               <input class="field checkbox d-inline" type="checkbox" wicket:id="include"/> Generate <select wicket:id="mime"></select>
-            </li>
-          </ul>
+            </div>
+          </div>
         </fieldset>
-      </li>
-      <li class="gn-list-item-class" wicket:id="authenticationContainer">
+      </div>
+      <div class="gn-list-item-class" wicket:id="authenticationContainer">
         <fieldset>
           <legend><span><wicket:message key="authentication">authentication</wicket:message></span></legend>
-          <ul class="gn-unordered-list-class">
-            <li class="gn-list-item-class choiceItem">
+          <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class choiceItem">
               <input type="checkbox" wicket:id="authenticate" id="authenticate"/>
               <label for="authenticate"><wicket:message key="authenticate">authenticate</wicket:message></label>
-            </li>
-            <li class="gn-list-item-class" wicket:id="userpwdContainer">
-	            <ul class="gn-unordered-list-class">
-		            <li class="gn-list-item-class">
+            </div>
+            <div class="gn-list-item-class" wicket:id="userpwdContainer">
+	            <div class="gn-unordered-list-class">
+		            <div class="gn-list-item-class">
 		              <label><wicket:message key="username">username</wicket:message></label>
 		              <input type="text" size="30" name="username" wicket:id="username"  id="WPSusername" class="text"/>
-		            </li>
-		            <li class="gn-list-item-class">
+		            </div>
+		            <div class="gn-list-item-class">
 		              <label><wicket:message key="password">password</wicket:message></label>
 		              <input type="password" size="30" name="password" wicket:id="password" id="WPSpassword" class="text"/>
-		            </li>
-	            </ul>
-            </li>
-          </ul>
+		            </div>
+	            </div>
+            </div>
+          </div>
         </fieldset>
-      </li>
-    </ul>
+      </div>
+    </div>
     
     <div wicket:id="feedback"></div>
   

@@ -4,23 +4,23 @@
 <form>
   <wicket:panel>
     <h3><wicket:message key="httpSettings">HTTP Settings</wicket:message></h3>
-    <ul class="gn-unordered-list-class">
-    <li class="gn-list-item-class">
+    <div class="gn-unordered-list-class">
+    <div class="gn-list-item-class">
       <fieldset>
         <legend><span><wicket:message key="cacheSettings">Caching Settings</wicket:message></span></legend>
-        <ul class="gn-unordered-list-class">
-          <li class="gn-list-item-class choiceItem">
+        <div class="gn-unordered-list-class">
+          <div class="gn-list-item-class choiceItem">
             <input id="cachingEnabled" wicket:id="cachingEnabled" type="checkbox">
             <label for="cachingEnabled"><wicket:message key="cacheResponses">Cache Responses</wicket:message></label>
-          </li>
-          <li class="gn-list-item-class">
+          </div>
+          <div class="gn-list-item-class">
             <label for="cacheAgeMax"><wicket:message key="cacheTime">Cache Time (seconds)</wicket:message></label>
             <input id="cacheAgeMax" class="text" type="text" wicket:id="cacheAgeMax">
-          </li>
-        </ul>
+          </div>
+        </div>
       </fieldset>
-    </li>
-    </ul>
+    </div>
+    </div>
   </wicket:panel>
   <input type="submit" value="Save Changes">
 </form>

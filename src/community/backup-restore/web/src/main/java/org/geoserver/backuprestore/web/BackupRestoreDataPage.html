@@ -27,20 +27,20 @@
     <h3><span><wicket:message key="issueNewBackup">issueNewBackup</wicket:message></span></h3>
 	<fieldset>
 	    <legend><span><wicket:message key="newBackupOptions">Backup Options</wicket:message></span></legend>
-	    <ul class="gn-unordered-list-class">
-	      <li class="gn-list-item-class choiceItem">
+	    <div class="gn-unordered-list-class">
+	      <div class="gn-list-item-class choiceItem">
 	        <input id="backupOptOverwirte" type="checkbox" wicket:id="backupOptOverwirte" />
 	        <label for="backupOptOverwirteLabel"><wicket:message key="backupOptOverwirteLabel">Overwrite Existing Archive</wicket:message></label>
-	      </li>
-	      <li class="gn-list-item-class choiceItem">
+	      </div>
+	      <div class="gn-list-item-class choiceItem">
 	        <input id="backupOptBestEffort" type="checkbox" wicket:id="backupOptBestEffort" />
 	        <label for="backupOptBestEffortLabel"><wicket:message key="backupOptBestEffortLabel">Skip Failing Resources</wicket:message></label>
-	      </li>
-	      <li class="gn-list-item-class choiceItem">
+	      </div>
+	      <div class="gn-list-item-class choiceItem">
 	        <input id="backupOptCleanTemp" type="checkbox" wicket:id="backupOptCleanTemp" />
 	        <label for="backupOptCleanTempLabel"><wicket:message key="backupOptCleanTempLabel">Clean-Up Temp Resources</wicket:message></label>
-	      </li>
-	    </ul>
+	      </div>
+	    </div>
 	</fieldset>
 	<div class="button-group selfclear">
       <a href="#" wicket:id="newBackupStart">
@@ -58,11 +58,11 @@
         <span class="border-0"><wicket:message key="recentBackups">recentBackups</wicket:message></span>
       </legend>
 
-      <ul class="gn-unordered-list-class">
-        <li class="gn-list-item-class">
+      <div class="gn-unordered-list-class">
+        <div class="gn-list-item-class">
           <div wicket:id="backups"></div>
-        </li>
-      </ul>
+        </div>
+      </div>
     </fieldset>
   </form>
 
@@ -70,20 +70,20 @@
     <h3><span><wicket:message key="issueNewRestore">issueNewRestore</wicket:message></span></h3>
 	<fieldset>
 	    <legend><span><wicket:message key="newRestoreOptions">Restore Options</wicket:message></span></legend>
-	    <ul class="gn-unordered-list-class">
-	      <li class="gn-list-item-class choiceItem">
+	    <div class="gn-unordered-list-class">
+	      <div class="gn-list-item-class choiceItem">
 	        <input id="restoreOptDryRun" type="checkbox" wicket:id="restoreOptDryRun" />
 	        <label for="restoreOptDryRunLabel"><wicket:message key="restoreOptDryRunLabel">Restore Dry-Run</wicket:message></label>
-	      </li>
-	      <li class="gn-list-item-class choiceItem">
+	      </div>
+	      <div class="gn-list-item-class choiceItem">
 	        <input id="restoreOptBestEffort" type="checkbox" wicket:id="restoreOptBestEffort" />
 	        <label for="restoreOptBestEffortLabel"><wicket:message key="restoreOptBestEffortLabel">Skip Failing Resources</wicket:message></label>
-	      </li>
-	      <li class="gn-list-item-class choiceItem">
+	      </div>
+	      <div class="gn-list-item-class choiceItem">
 	        <input id="restoreOptCleanTemp" type="checkbox" wicket:id="restoreOptCleanTemp" />
 	        <label for="restoreOptCleanTempLabel"><wicket:message key="restoreOptCleanTempLabel">Clean-Up Temp Resources</wicket:message></label>
-	      </li>
-	    </ul>
+	      </div>
+	    </div>
 	</fieldset>
 	<div class="button-group selfclear">
       <a href="#" wicket:id="newRestoreStart">
@@ -101,11 +101,11 @@
         <span class="border-0"><wicket:message key="recentRestores">recentRestores</wicket:message></span>
       </legend>
 
-      <ul class="gn-unordered-list-class">
-        <li class="gn-list-item-class">
+      <div class="gn-unordered-list-class">
+        <div class="gn-list-item-class">
           <div wicket:id="restores"></div>
-        </li>
-      </ul>
+        </div>
+      </div>
     </fieldset>
   </form>
     

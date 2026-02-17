@@ -3,40 +3,40 @@
   <body>
     <wicket:extend>
       <form id="form" wicket:id="form">
-        <ul class="gn-unordered-list-class">
-          <li class="gn-list-item-class">
+        <div class="gn-unordered-list-class">
+          <div class="gn-list-item-class">
             <fieldset>
               <legend><span><wicket:message key="settings"></wicket:message></span></legend>
-              <ul class="gn-unordered-list-class">
-                <li class="gn-list-item-class choiceItem">
+              <div class="gn-unordered-list-class">
+                <div class="gn-list-item-class choiceItem">
                   <input id="enabled" wicket:id="enabled" type="checkbox"/>
                   <label for="enabled"><wicket:message key="enabled"></wicket:message></label>
-                </li>
-                <li class="gn-list-item-class choiceItem">
+                </div>
+                <div class="gn-list-item-class choiceItem">
                   <input id="reportOnly" wicket:id="reportOnly" type="checkbox"/>
                   <label for="reportOnly"><wicket:message key="reportOnly"></wicket:message></label>
-                </li>
-                <li class="gn-list-item-class choiceItem">
+                </div>
+                <div class="gn-list-item-class choiceItem">
                   <input id="allowOverride" wicket:id="allowOverride" type="checkbox"/>
                   <label for="allowOverride"><wicket:message key="allowOverride"></wicket:message></label>
-                </li>
-                <li class="gn-list-item-class choiceItem">
+                </div>
+                <div class="gn-list-item-class choiceItem">
                   <input id="injectProxyBase" wicket:id="injectProxyBase" type="checkbox"/>
                   <label for="injectProxyBase"><wicket:message key="injectProxyBase"></wicket:message></label>
-                </li>
-                <li class="gn-list-item-class">
+                </div>
+                <div class="gn-list-item-class">
                   <label for="remoteResources"><wicket:message key="remoteResources"></wicket:message></label>
                   <textarea wicket:id="remoteResources" id="remoteResources" class="textarea h-2-em"></textarea>
-                </li>
-                <li class="gn-list-item-class">
+                </div>
+                <div class="gn-list-item-class">
                   <label for="formAction"><wicket:message key="formAction"></wicket:message></label>
                   <textarea wicket:id="formAction" id="formAction" class="textarea h-2-em"></textarea>
-                </li>
-                <li class="gn-list-item-class">
+                </div>
+                <div class="gn-list-item-class">
                   <label for="frameAncestors"><wicket:message key="frameAncestors"></wicket:message></label>
                   <textarea wicket:id="frameAncestors" id="frameAncestors" class="textarea h-2-em"></textarea>
-                </li>
-              </ul>
+                </div>
+              </div>
             </fieldset>
             <fieldset>
               <legend><span><wicket:message key="policies"></wicket:message></span></legend>
@@ -44,24 +44,24 @@
             </fieldset>
             <fieldset>
               <legend><span><wicket:message key="test"></wicket:message></span></legend>
-              <ul class="gn-unordered-list-class">
-                <li class="gn-list-item-class">
+              <div class="gn-unordered-list-class">
+                <div class="gn-list-item-class">
                   <label for="testUrl"><wicket:message key="testUrl"></wicket:message></label>
                   <textarea wicket:id="testUrl" id="testUrl" class="textarea h-2-em"></textarea>
-                </li>
-                <li class="gn-list-item-class">
+                </div>
+                <div class="gn-list-item-class">
                   <div class="button-group selfclear">
                     <a wicket:id="testLink"><span><wicket:message key="testLink"></wicket:message></span></a>
                   </div>
-                </li>
-                <li class="gn-list-item-class">
+                </div>
+                <div class="gn-list-item-class">
                   <label for="testResult"><wicket:message key="testResult"></wicket:message></label>
                   <textarea wicket:id="testResult" id="testResult" class="textarea"></textarea>
-                </li>
-              </ul>
+                </div>
+              </div>
             </fieldset>
-          </li>
-        </ul>
+          </div>
+        </div>
         <div class="button-group toolbar-sticky selfclear">
           <button wicket:id="save" class="form-button-save" type="submit"><wicket:message key="save"/></button>
           <button wicket:id="apply" class="form-button-apply" type="submit"><wicket:message key="apply"/></button>

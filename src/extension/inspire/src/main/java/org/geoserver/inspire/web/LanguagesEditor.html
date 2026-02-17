@@ -1,15 +1,15 @@
 <html xmlns:wicket="http://wicket.apache.org/">
 <body>
 <wicket:panel>
-    <ul class="gn-unordered-list-class">
-        <li class="gn-list-item-class">
+    <div class="gn-unordered-list-class">
+        <div class="gn-list-item-class">
             <select id="languages" class="select w-25-em" wicket:id="languages" multiple="multiple"></select>
             <button wicket:id="removeLanguages" type="submit"><wicket:message key="removeSelected">Remove selected</wicket:message></button>
-        </li>
-        <li class="gn-list-item-class">
+        </div>
+        <div class="gn-list-item-class">
             <select id="selectLanguage" class="text" type="text" wicket:id="selectLanguage"/>
-        </li>
-    </ul>
+        </div>
+    </div>
     <button wicket:id="addLanguage" type="submit"> <wicket:message key="addLanguage">Add</wicket:message> </button>
 </wicket:panel>
 </body>

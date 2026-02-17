@@ -3,51 +3,51 @@
 <wicket:panel>
     <fieldset>
         <legend><span><wicket:message key="settings"></wicket:message></span></legend>
-        <ul class="gn-unordered-list-class">
-            <li class="gn-list-item-class choiceItem">
+        <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class choiceItem">
                 <input id="enabled" wicket:id="enabled" type="checkbox"/>
                 <label for="enabled">
                     <wicket:message key="enabled">Enabled</wicket:message>
                 </label>
-            </li>
-            <li class="gn-list-item-class choiceItem">
+            </div>
+            <div class="gn-list-item-class choiceItem">
                 <label wicket:for="allowedOriginPatterns">
                     <wicket:message key="allowedOriginPatterns">Allowed Origin Patterns</wicket:message>
                 </label>
                 <input wicket:id="allowedOriginPatterns"></input>
-            </li>
-            <li class="gn-list-item-class choiceItem">
+            </div>
+            <div class="gn-list-item-class choiceItem">
                 <label wicket:for="allowedMethods">
                     <wicket:message key="allowedMethods">Allowed Methods</wicket:message>
                 </label>
                 <select wicket:id="allowedMethods" multiple="multiple" size="4"></select>
-            </li>
-            <li class="gn-list-item-class choiceItem">
+            </div>
+            <div class="gn-list-item-class choiceItem">
                 <label wicket:for="allowedHeaders">
                     <wicket:message key="allowedHeaders">Allowed Headers</wicket:message>
                 </label>
                 <select wicket:id="allowedHeaders" multiple="multiple" size="4"></select>
-            </li>
-            <li class="gn-list-item-class choiceItem">
+            </div>
+            <div class="gn-list-item-class choiceItem">
                 <label wicket:for="maxAge">
                     <wicket:message key="maxAge">Max Age (seconds)</wicket:message>
                 </label>
                 <input type="number" wicket:id="maxAge" rows="1"/>
-            </li>
-            <li class="gn-list-item-class choiceItem">
+            </div>
+            <div class="gn-list-item-class choiceItem">
                 <input id="supportsCredentials" wicket:id="supportsCredentials" type="checkbox"/>
                 <label for="supportsCredentials">
                     <wicket:message key="supportsCredentials">Supports Credentials</wicket:message>
                 </label>
-            </li>
-            <li class="gn-list-item-class choiceItem">
+            </div>
+            <div class="gn-list-item-class choiceItem">
                 <p class="warning">
                     <wicket:message key="restartNotice">Note: GeoServer must be restarted for these changes to take
                         effect.
                     </wicket:message>
                 </p>
-            </li>
-        </ul>
+            </div>
+        </div>
     </fieldset>
 </wicket:panel>
 </body>

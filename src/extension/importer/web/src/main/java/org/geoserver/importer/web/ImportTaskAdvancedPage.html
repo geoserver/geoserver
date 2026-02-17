@@ -9,37 +9,37 @@
 <body>
 <wicket:extend>
   <form wicket:id="form">
-   <ul class="gn-unordered-list-class plain pt-5">
-     <li class="gn-list-item-class">
+   <div class="gn-unordered-list-class plain pt-5">
+     <div class="gn-list-item-class">
      <fieldset>
        <legend>
          <span><wicket:message key="reprojection">Reprojection</wicket:message></span>
        </legend>
-       <ul class="gn-unordered-list-class plain pt-2">
-         <li class="gn-list-item-class">
+       <div class="gn-unordered-list-class plain pt-2">
+         <div class="gn-list-item-class">
            <input type="checkbox" wicket:id="enableReprojection"></input>
            <span><wicket:message key="enabled"></wicket:message></span>
             
             <div wicket:id="reprojection">
             </div>
-          </li>
-        </ul>
+          </div>
+        </div>
      </fieldset>
-     </li>
-     <li class="gn-list-item-class">
+     </div>
+     <div class="gn-list-item-class">
      <fieldset>
        <legend>
          <span><wicket:message key="attributeRemapping">Attribute Remapping</wicket:message></span>
        </legend>
-       <ul class="gn-unordered-list-class plain pt-2">
-         <li class="gn-list-item-class">
+       <div class="gn-unordered-list-class plain pt-2">
+         <div class="gn-list-item-class">
             <div wicket:id="remapping">
             </div>
-          </li>
-        </ul>
+          </div>
+        </div>
      </fieldset>
-     </li>
-   </ul>
+     </div>
+   </div>
    <div class="button-group toolbar-sticky selfclear">
       <a href="#" class="form-button-save" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
       <a href="#" class="form-button-cancel" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>

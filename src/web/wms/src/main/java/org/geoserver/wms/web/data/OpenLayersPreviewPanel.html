@@ -6,19 +6,19 @@
   </head>
   <body>
     <wicket:panel>
-      <ul class="gn-unordered-list-class horizontal-form">
-        <li class="gn-list-item-class">
+      <div class="gn-unordered-list-class horizontal-form">
+        <div class="gn-list-item-class">
           <wicket:message key="previewOnLayer">Preview on layer: </wicket:message><a wicket:id="change.layer" href="#"></a>
-        </li>
-        <li class="gn-list-item-class">
+        </div>
+        <div class="gn-list-item-class">
           <label for="previewStyleGroup">
             <wicket:message key="previewAsStyleGroup">Preview as style group: </wicket:message>
           </label>
           <input wicket:id="previewStyleGroup" id="previewStyleGroup" type="checkbox"/>
            <a href="#" wicket:id="styleGroupHelp" class="help-link"></a>
           
-        </li>
-      </ul>
+        </div>
+      </div>
       <div wicket:id="olPreview" class="bottom-margin-1em"/>
       <div wicket:id="dialog"/>
     </wicket:panel>

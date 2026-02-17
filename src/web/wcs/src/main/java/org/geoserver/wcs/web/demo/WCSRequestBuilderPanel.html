@@ -1,54 +1,54 @@
 <html xmlns:wicket="http://wicket.apache.org/">
 <body>
 <wicket:panel>
-    <ul class="gn-unordered-list-class">
-      <li class="gn-list-item-class">
+    <div class="gn-unordered-list-class">
+      <div class="gn-list-item-class">
         <label for="version"><wicket:message key="version">wcs_version</wicket:message></label>
         <select wicket:id="version"></select>
-      </li>
-      <li class="gn-list-item-class">
+      </div>
+      <div class="gn-list-item-class">
         <label for="name"><wicket:message key="name">coverage</wicket:message></label>
         <select wicket:id="coverage"></select>&nbsp;&nbsp;
         <a href="#" wicket:id="describeCoverage"><wicket:message key="describe">describe</wicket:message></a>
-      </li>
-    </ul>
-    <li class="gn-unordered-list-class" wicket:id="details">
-      <li class="gn-list-item-class">
+      </div>
+    </div>
+    <div class="gn-unordered-list-class" wicket:id="details">
+      <div class="gn-list-item-class">
         <label for="envelope"><wicket:message key="envelope">bounds</wicket:message></label>
         <div wicket:id="envelope"></div>
-      </li>
-      <li class="gn-list-item-class" wicket:id="sourceGridContainer">
+      </div>
+      <div class="gn-list-item-class" wicket:id="sourceGridContainer">
         <label for="grid"><wicket:message key="grid">grid</wicket:message></label>
-        <ul class="gn-unordered-list-class">
-           <li class="gn-list-item-class choiceItem">
+        <div class="gn-unordered-list-class">
+           <div class="gn-list-item-class choiceItem">
              <input id="manualGrid" type="checkbox" wicket:id="manualGrid" />
              <label for="manualGrid"><wicket:message key="manualGrid">manualGrid</wicket:message></label>
-           </li>
-           <li class="gn-list-item-class">
+           </div>
+           <div class="gn-list-item-class">
             <div wicket:id="sourceGrid"></div>
-          </li>
-        </ul>
-      </li>
-      <li class="gn-list-item-class" wicket:id="targetLayoutContainer">
+          </div>
+        </div>
+      </div>
+      <div class="gn-list-item-class" wicket:id="targetLayoutContainer">
         <label for="targetLayout"><wicket:message key="targetLayout">targetLayout</wicket:message></label>
-        <ul class="gn-unordered-list-class">
-           <li class="gn-list-item-class">
+        <div class="gn-unordered-list-class">
+           <div class="gn-list-item-class">
              <select wicket:id="targetLayout"></select>
-           </li>
-           <li class="gn-list-item-class">
+           </div>
+           <div class="gn-list-item-class">
             <div wicket:id="targetGridToWorld"></div>
-          </li>
-        </ul>
-      </li>
-      <li class="gn-list-item-class">
+          </div>
+        </div>
+      </div>
+      <div class="gn-list-item-class">
         <label for="targetCRS"><wicket:message key="targetCRS">targetCRS</wicket:message></label>
         <span wicket:id="targetCRS"></span>
-      </li>
-      <li class="gn-list-item-class">
+      </div>
+      <div class="gn-list-item-class">
         <label for="format"><wicket:message key="format">output_format</wicket:message></label>
         <select wicket:id="format"></select>
-      </li>
-    </ul>
+      </div>
+    </div>
     
     <div wicket:id="feedback"></div>
 </wicket:panel>

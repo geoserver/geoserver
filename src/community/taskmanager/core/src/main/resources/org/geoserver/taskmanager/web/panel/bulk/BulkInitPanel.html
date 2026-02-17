@@ -5,22 +5,22 @@
 	<wicket:panel>
 	    <div wicket:id="dialog"></div>
 		<form wicket:id="form">
-		  <ul class="gn-unordered-list-class">
-			<li class="gn-list-item-class"> <label for="workspace"><wicket:message key="workspace" /></label>
-			 <input id="workspace" wicket:id="workspace" type="text" class="text"></input> </li>
-			<li class="gn-list-item-class"> <label for="configuration"><wicket:message key="configuration" /></label>
-			 <input id="configuration" wicket:id="configuration" type="text" class="text" /></li>
-             <li class="gn-list-item-class"> <label wicket:id="configsFound"></label> </li>
-            <li class="gn-list-item-class"> <label for="startDelay"><wicket:message key="startDelay" /></label>
-             <input id="startDelay" wicket:id="startDelay" type="number" class="number" /> </li>
-            <li class="gn-list-item-class"> <label for="betweenDelay"><wicket:message key="betweenDelay" /></label>
-             <input id="betweenDelay" wicket:id="betweenDelay" type="number" class="number" /> </li>
-            <li class="gn-list-item-class">
+		  <div class="gn-unordered-list-class">
+			<div class="gn-list-item-class"> <label for="workspace"><wicket:message key="workspace" /></label>
+			 <input id="workspace" wicket:id="workspace" type="text" class="text"></input> </div>
+			<div class="gn-list-item-class"> <label for="configuration"><wicket:message key="configuration" /></label>
+			 <input id="configuration" wicket:id="configuration" type="text" class="text" /></div>
+             <div class="gn-list-item-class"> <label wicket:id="configsFound"></label> </div>
+            <div class="gn-list-item-class"> <label for="startDelay"><wicket:message key="startDelay" /></label>
+             <input id="startDelay" wicket:id="startDelay" type="number" class="number" /> </div>
+            <div class="gn-list-item-class"> <label for="betweenDelay"><wicket:message key="betweenDelay" /></label>
+             <input id="betweenDelay" wicket:id="betweenDelay" type="number" class="number" /> </div>
+            <div class="gn-list-item-class">
               <div class="button-group selfclear">
                    <a href="#" wicket:id="run"><wicket:message key="run"/></a>
               </div>
-            </li>
-         </ul>
+            </div>
+         </div>
 		</form>
 	</wicket:panel>
 </body>

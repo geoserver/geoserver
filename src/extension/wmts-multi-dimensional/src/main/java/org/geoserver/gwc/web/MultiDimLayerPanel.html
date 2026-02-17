@@ -3,14 +3,14 @@
 <body>
 <form name="theForm">
     <wicket:panel>
-        <ul class="gn-unordered-list-class">
-            <li class="gn-list-item-class">
+        <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class">
                 <fieldset>
                     <legend>
                         <span><wicket:message key="MultiDimLayerPanel.title">multidim</wicket:message></span>
                     </legend>
-                    <ul class="gn-unordered-list-class">
-                        <li class="gn-list-item-class" wicket:id="sidecarTypeContainer">
+                    <div class="gn-unordered-list-class">
+                        <div class="gn-list-item-class" wicket:id="sidecarTypeContainer">
                             <label for="sidecarStore">
                                 <wicket:message key="sidecarStore">sidecarStore</wicket:message>
                             </label>
@@ -19,23 +19,23 @@
                                 <wicket:message key="sidecarType">sidecarType</wicket:message>
                             </label>
                             <select id="sidecarType" wicket:id="sidecarType"/>
-                        </li>
-                        <li class="gn-list-item-class">
+                        </div>
+                        <div class="gn-list-item-class">
                             <label for="defaultExpandLimit">
                                 <wicket:message key="defaultExpandLimit">defaultExpandLimit</wicket:message>
                             </label>
                             <input id="defaultExpandLimit" class="text" type="text" wicket:id="defaultExpandLimit"/>
-                        </li>
-                        <li class="gn-list-item-class">
+                        </div>
+                        <div class="gn-list-item-class">
                             <label for="maxExpandLimit">
                                 <wicket:message key="maxExpandLimit">maxExpandLimit</wicket:message>
                             </label>
                             <input id="maxExpandLimit" class="text" type="text" wicket:id="maxExpandLimit"/>
-                        </li>
-                    </ul>
+                        </div>
+                    </div>
                 </fieldset>
-            </li>
-        </ul>
+            </div>
+        </div>
     </wicket:panel>
 </form>
 </body>

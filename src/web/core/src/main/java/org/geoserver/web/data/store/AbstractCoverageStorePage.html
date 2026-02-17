@@ -3,14 +3,14 @@
 <wicket:extend>
   <wicket:child/>
   <form wicket:id="rasterStoreForm">
-  <ul class="gn-unordered-list-class">
-    <li class="gn-list-item-class">
+  <div class="gn-unordered-list-class">
+    <div class="gn-list-item-class">
       <fieldset>
       <div wicket:id="storeType">Store Type</div>
       <div wicket:id="storeTypeDescription">Store Description</div>
       </fieldset>
-    </li>    
-    <li class="gn-list-item-class">
+    </div>
+    <div class="gn-list-item-class">
       <fieldset>
         <legend><span><wicket:message key="basicStoreInfo">Basic Store Info</wicket:message></span></legend>
         <div wicket:id="workspacePanel"></div>
@@ -19,11 +19,11 @@
         <div wicket:id="enabledPanel"></div>
         <div wicket:id="disableOnConnFailurePanel"></div>
       </fieldset>
-    </li>
-    <li class="gn-list-item-class">
+    </div>
+    <div class="gn-list-item-class">
         <div wicket:id="parametersPanel"></div>
-    </li>
-  </ul>
+    </div>
+  </div>
 
     <div wicket:id="feedback"></div>
     <div class="button-group toolbar-sticky selfclear">

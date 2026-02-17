@@ -8,20 +8,20 @@
                   <wicket:message key="oseoMetadata">specificMetadata</wicket:message>
                </span>
         </legend>
-        <ul class="gn-unordered-list-class">
-            <li class="gn-list-item-class">
+        <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class">
                 <label>
                     <wicket:message key="attribution">attribution</wicket:message>
                 </label>
                 <input type="text" wicket:id="attribution" class="field text"/>
-            </li>
-            <li class="gn-list-item-class">
+            </div>
+            <div class="gn-list-item-class">
                 <label>
                     <wicket:message key="globalQueryables">queryables</wicket:message>
                 </label>
                 <textarea class="field textarea" wicket:id="globalQueryables" />
-            </li>
-        </ul>
+            </div>
+        </div>
     </fieldset>
     <fieldset>
         <legend>
@@ -29,26 +29,26 @@
                   <wicket:message key="metadataSource">metadataSource</wicket:message>
                </span>
         </legend>
-        <ul class="gn-unordered-list-class">
-            <li class="gn-list-item-class">
+        <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class">
                 <label>
                     <wicket:message key="openSearchAccessId">openSearchAccessId</wicket:message>
                 </label>
                 <select wicket:id="openSearchAccessId"/>
-            </li>
-            <li class="gn-list-item-class">
+            </div>
+            <div class="gn-list-item-class">
                 <label>
                     <wicket:message key="aggregatesCacheTTL">aggregatesCacheTTL</wicket:message>
                 </label>
                 <input type="text" wicket:id="aggregatesCacheTTL" class="field text"/>
-            </li>
-            <li class="gn-list-item-class">
+            </div>
+            <div class="gn-list-item-class">
                 <label>
                     <wicket:message key="aggregatesCacheTTLUnit">aggregatesCacheTTLUnit</wicket:message>
                 </label>
                 <select wicket:id="aggregatesCacheTTLUnit"/>
-            </li>
-        </ul>
+            </div>
+        </div>
     </fieldset>
     <fieldset>
         <legend>
@@ -56,20 +56,20 @@
                   <wicket:message key="paging">paging</wicket:message>
                </span>
         </legend>
-        <ul class="gn-unordered-list-class">
-            <li class="gn-list-item-class">
+        <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class">
                 <label>
                     <wicket:message key="recordsPerPage">recordsPerPage</wicket:message>
                 </label>
                 <input type="text" wicket:id="recordsPerPage" class="field text"/>
-            </li>
-            <li class="gn-list-item-class">
+            </div>
+            <div class="gn-list-item-class">
                 <label>
                     <wicket:message key="maximumRecordsPerPage">maxRecordsPerPage</wicket:message>
                 </label>
                 <input type="text" wicket:id="maximumRecordsPerPage" class="field text"/>
-            </li>
-        </ul>
+            </div>
+        </div>
     </fieldset>
     <fieldset>
         <legend>
@@ -78,16 +78,16 @@
                </span>
             <a href="#" wicket:id="productClassesHelp" class="help-link"></a>
         </legend>
-        <ul class="gn-unordered-list-class">
-            <li class="gn-list-item-class">
-            <li class="gn-list-item-class"> <a class="add-link" wicket:id="addClass">
+        <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class">
+            <div class="gn-list-item-class"> <a class="add-link" wicket:id="addClass">
                 <wicket:message key="addClass">Add class</wicket:message>
-            </a></li>
+            </a></div>
 
-            <li class="gn-list-item-class">
+            <div class="gn-list-item-class">
                 <div wicket:id="productClasses"></div>
-            </li>
-        </ul>
+            </div>
+        </div>
     </fieldset>
     <fieldset>
         <legend>
@@ -95,14 +95,14 @@
                   <wicket:message key="responseConfiguration">responseConfiguration</wicket:message>
                </span>
         </legend>
-        <ul class="gn-unordered-list-class choiceList">
-            <li class="gn-list-item-class">
+        <div class="gn-unordered-list-class choiceList">
+            <div class="gn-list-item-class">
                 <input id="skipNumberMatched" wicket:id="skipNumberMatched" type="checkbox"></input>
                 <label for="skipNumberMatched">
                     <wicket:message key="skipNumberMatched">skipNumberMatched</wicket:message>
                 </label>
-            </li>
-        </ul>
+            </div>
+        </div>
     </fieldset>
     <wicket:fragment wicket:id="text">
         <input type="text" wicket:id="text"/>

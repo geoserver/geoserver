@@ -5,21 +5,21 @@
 <body>
 <wicket:extend>
 <form name="schemaForm" wicket:id="schemaForm" id="schemaForm">
-    <ul class="gn-unordered-list-class">
-        <li class="gn-list-item-class">
+    <div class="gn-unordered-list-class">
+        <div class="gn-list-item-class">
             <fieldset>
-                <ul class="gn-unordered-list-class">
-                    <li class="gn-list-item-class">
+                <div class="gn-unordered-list-class">
+                    <div class="gn-list-item-class">
                         <div wicket:id="schemaPanel"  id="schema-info-tabbed-panel" class="bottom-padding-0pt5em"></div>
-                    </li>
-                    <li class="gn-list-item-class">
+                    </div>
+                    <div class="gn-list-item-class">
                         <label for="schemaEditor"><wicket:message key="schemaEditor"></wicket:message></label>
                         <div class="field" wicket:id="schemaEditor" id="schemaEditor"> </div>
-                    </li>
-                </ul>
+                    </div>
+                </div>
             </fieldset>
-        </li>
-    </ul>
+        </div>
+    </div>
     <div class="button-group toolbar-sticky selfclear">
         <a href="#" class="form-button-save" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
         <a href="#" class="form-button-cancel" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>

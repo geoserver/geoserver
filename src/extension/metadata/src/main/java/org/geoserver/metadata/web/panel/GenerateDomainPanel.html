@@ -4,8 +4,8 @@
       xmlns:wicket="http://wicket.apache.org/">
 <body>
 <wicket:panel>
-    <ul class="gn-unordered-list-class">
-        <li class="gn-list-item-class">
+    <div class="gn-unordered-list-class">
+        <div class="gn-list-item-class">
             <legend>
                 <wicket:message key="GenerateDomainPanel.header"/>
             </legend>
@@ -19,14 +19,14 @@
                 <label for="defAttributeName"><wicket:message key="defAttributeName"></wicket:message></label>
                 <select id="defAttributeName" wicket:id="defAttributeName" />
 			</fieldset>
-        </li>
-        <li class="gn-list-item-class">
+        </div>
+        <div class="gn-list-item-class">
             <wicket:message key="confirmGenerate"/>
-        </li>
-        <li class="gn-list-item-class">
+        </div>
+        <div class="gn-list-item-class">
             <span wicket:id="generateFeedback"></span>
-        </li>
-    </ul>
+        </div>
+    </div>
 
 </wicket:panel>
 </body>

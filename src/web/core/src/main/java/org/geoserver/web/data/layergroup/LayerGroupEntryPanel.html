@@ -3,21 +3,21 @@
 <wicket:panel>
   <fieldset>
     <div wicket:id="panelTitle"/>
-    <ul class="gn-unordered-list-class">
-      <li class="gn-list-item-class">
-        <ul class="gn-unordered-list-class action-group">
-          <li class="gn-list-item-class"> <a class="add-link" wicket:id="addLayer"><wicket:message key="addLayer">Add Layer...</wicket:message></a></li>
-          <li class="gn-list-item-class"> <a class="add-link" wicket:id="addLayerGroup"><wicket:message key="addLayerGroup">Add Layer Group...</wicket:message></a></li>
-          <li class="gn-list-item-class">
+    <div class="gn-unordered-list-class">
+      <div class="gn-list-item-class">
+        <div class="gn-unordered-list-class action-group">
+          <div class="gn-list-item-class"> <a class="add-link" wicket:id="addLayer"><wicket:message key="addLayer">Add Layer...</wicket:message></a></div>
+          <div class="gn-list-item-class"> <a class="add-link" wicket:id="addLayerGroup"><wicket:message key="addLayerGroup">Add Layer Group...</wicket:message></a></div>
+          <div class="gn-list-item-class">
             <a class="add-link" wicket:id="addStyleGroup"><wicket:message key="addStyleGroup">Add Style Group...</wicket:message></a>
             <a href="#" wicket:id="styleGroupHelp" class="help-link"></a>
-          </li>
-        </ul>
-      </li>
-      <li class="gn-list-item-class">
+          </div>
+        </div>
+      </div>
+      <div class="gn-list-item-class">
         <div wicket:id="layers"></div>
-      </li>
-    </ul>
+      </div>
+    </div>
   </fieldset>
   <div wicket:id="popup"></div>
   <div wicket:id="dialog"></div>

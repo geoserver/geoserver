@@ -7,62 +7,62 @@
 
   <fieldset>
     <legend><span>Request SRS</span></legend>
-    <ul class="gn-unordered-list-class">
-      <li class="gn-list-item-class">
+    <div class="gn-unordered-list-class">
+      <div class="gn-list-item-class">
         <label for="requestSRS"><wicket:message key="wcs.data.resource.requestSRS">Current Request SRS List</wicket:message></label>
         <select id="requestSRS" class="select" wicket:id="requestSRS" multiple="multiple"/>
         <button wicket:id="deleteSelectedRequestSRSs" type="submit"><wicket:message key="wcs.data.resource.requestSRS.delete">Delete Selected</wicket:message></button>
-      </li>
-      <li class="gn-list-item-class">
+      </div>
+      <div class="gn-list-item-class">
         <label for="newRequestSRS">New Request SRS</label>
         <input id="newRequestSRS" class="text" wicket:id="newRequestSRS" type="text"></input>
         <button wicket:id="addNewRequestSRS" type="submit"><wicket:message key="wcs.data.resource.requestSRS.add">Add SRS</wicket:message></button>
-      </li>
-    </ul>
+      </div>
+    </div>
   </fieldset>
 
   <fieldset>
     <legend><span>Response SRS</span></legend>
-    <ul class="gn-unordered-list-class">
-      <li class="gn-list-item-class">
+    <div class="gn-unordered-list-class">
+      <div class="gn-list-item-class">
         <label for="responseSRS"><wicket:message key="wcs.data.resource.responseSRS">Current Response SRS List </wicket:message></label>
         <select id="responseSRS" class="select" wicket:id="responseSRS" multiple="multiple"/>
         <button wicket:id="deleteSelectedResponseSRSs" type="submit"><wicket:message key="wcs.data.resource.responseSRS.delete">Delete Selected</wicket:message></button>
-      </li>
-      <li class="gn-list-item-class">
+      </div>
+      <div class="gn-list-item-class">
         <label for="newRequestSRS">New Request SRS</label>
         <input id="newRequestSRS" class="text" wicket:id="newResponseSRS" type="text"></input>
         <button wicket:id="addNewResponseSRS" type="submit"><wicket:message key="wcs.data.resource.responseSRS.add">Add SRS</wicket:message></button>
-      </li>
-    </ul>
+      </div>
+    </div>
   </fieldset>
 
   <fieldset>
     <legend><span><wicket:message key="interpolationMethods">Interpolation Methods</wicket:message></span></legend>
-    <ul class="gn-unordered-list-class">
-      <li class="gn-list-item-class">
+    <div class="gn-unordered-list-class">
+      <div class="gn-list-item-class">
         <label for="defaultInterpolationMethod"><wicket:message key="defaultInterpolationMethod">Default Interpolation Method</wicket:message></label>
         <select id="defaultInterpolationMethod" wicket:id="defaultInterpolationMethod"/>
-      </li>
-      <li class="gn-list-item-class">
+      </div>
+      <div class="gn-list-item-class">
         <label for="curInterpolationMethods"><wicket:message key="curInterpolationMethods">Current Interpolation Methods</wicket:message></label>
         <div wicket:id="interpolationMethods"></div>
-      </li>
-    </ul>
+      </div>
+    </div>
   </fieldset>
 
   <fieldset>
     <legend><span>Formats</span></legend>
-    <ul class="gn-unordered-list-class">
-      <li class="gn-list-item-class">
+    <div class="gn-unordered-list-class">
+      <div class="gn-list-item-class">
         <label for="nativeFormat"><wicket:message key="wcs.data.resource.nativeFormat">Native Format</wicket:message></label>
         <input id="nativeFormat" wicket:id="nativeFormat" type="text"></input>
-      </li>
-      <li class="gn-list-item-class">
+      </div>
+      <div class="gn-list-item-class">
         <label for="formatPalette"><wicket:message key="wcs.data.resource.supportedFormats">Supported Formats</wicket:message></label>
         <div wicket:id="formatPalette"></div>
-      </li>
-    </ul>
+      </div>
+    </div>
   </fieldset>
 
 </wicket:panel>

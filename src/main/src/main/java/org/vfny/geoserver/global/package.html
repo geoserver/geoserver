@@ -13,25 +13,25 @@ Common state used by the GeoServer Servlets is maintained by this package.
 </p>
 
 Features:
-<ul class="gn-unordered-list-class">
-<li class="gn-list-item-class">
+<div class="gn-unordered-list-class">
+<div class="gn-list-item-class">
 Contains the actual server state - that is WMS reflects the state of the
 Web Map Server
-</li>
-<li class="gn-list-item-class">
+</div>
+<div class="gn-list-item-class">
 These classes should be saved in the Web Container
 (rather than the current singletons)
-</li>
-<li class="gn-list-item-class">
+</div>
+<div class="gn-list-item-class">
 Application set up is provided using Data Transfer Objects from the global.dto
 package. Both the initial loading the initial XML configuration files and the
 dynamic configuraiton systems are handled in this manner.
-</li>
-<li class="gn-list-item-class">
+</div>
+<div class="gn-list-item-class">
 Data contains "real" GeoTools2 DataStores with JDBC connections (and implements the
 GeoTools2 Catalog Interface)
-</li>
-</ul>
+</div>
+</div>
 <center>
 <img src="doc-files/GeoServerStateDiagram.gif">
 <br>

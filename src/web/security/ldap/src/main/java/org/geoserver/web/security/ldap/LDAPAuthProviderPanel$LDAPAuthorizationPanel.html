@@ -4,52 +4,52 @@
     xmlns:wicket="http://wicket.apache.org/">
 <body>
 <wicket:panel>
- <ul class="gn-unordered-list-class">
-  <li class="gn-list-item-class">
+ <div class="gn-unordered-list-class">
+  <div class="gn-list-item-class">
   
   	<input class="choiceItem" id="bindBeforeGroupSearch" wicket:id="bindBeforeGroupSearch" type="checkbox"></input>
     <label for="bindBeforeGroupSearch">
       <wicket:message key="bindBeforeGroupSearch"></wicket:message>
     </label>    
-  </li>
-  <li class="gn-list-item-class">
+  </div>
+  <div class="gn-list-item-class">
     <label for="groupSearchBase"><wicket:message key="groupSearchBase"></wicket:message></label>
     <input id="groupSearchBase" wicket:id="groupSearchBase" type="text" class="text"></input>
-  </li>
-  <li class="gn-list-item-class">
+  </div>
+  <div class="gn-list-item-class">
     <label for="groupSearchFilter"><wicket:message key="groupSearchFilter"></wicket:message></label>
     <input id="groupSearchFilter" wicket:id="groupSearchFilter" type="text" class="text"></input>
-  </li>
-  <li class="gn-list-item-class">
+  </div>
+  <div class="gn-list-item-class">
     <label for="adminGroup"><wicket:message key="adminGroup"></wicket:message></label>
     <input id="adminGroup" wicket:id="adminGroup" type="text" class="text"></input>
-  </li>
-  <li class="gn-list-item-class">
+  </div>
+  <div class="gn-list-item-class">
     <label for="groupAdminGroup"><wicket:message key="groupAdminGroup"></wicket:message></label>
     <input id="groupAdminGroup" wicket:id="groupAdminGroup" type="text" class="text"></input>
-  </li>
+  </div>
   <!-- Hierarchical groups configuration fields -->
-  <li class="gn-list-item-class">
+  <div class="gn-list-item-class">
   	<input class="choiceItem" id="useNestedParentGroups" wicket:id="useNestedParentGroups" type="checkbox"></input>
     <label for="useNestedParentGroups">
       <wicket:message key="useNestedParentGroups"></wicket:message>
     </label>    
-  </li>
-  <li class="gn-list-item-class">
+  </div>
+  <div class="gn-list-item-class">
     <div id="nestedSearchFieldsContainer" wicket:id="nestedSearchFieldsContainer">
-  	  <ul class="gn-unordered-list-class">
-  	    <li class="gn-list-item-class">
+  	  <div class="gn-unordered-list-class">
+  	    <div class="gn-list-item-class">
   		  <label for="maxGroupSearchLevel"><wicket:message key="maxGroupSearchLevel"></wicket:message></label>
           <input id="maxGroupSearchLevel" wicket:id="maxGroupSearchLevel" type="text" class="text"></input>
-        </li>
-        <li class="gn-list-item-class">
+        </div>
+        <div class="gn-list-item-class">
           <label for="nestedGroupSearchFilter"><wicket:message key="nestedGroupSearchFilter"></wicket:message></label>
           <input id="nestedGroupSearchFilter" wicket:id="nestedGroupSearchFilter" type="text" class="text"></input>
-        </li>
-  	  </ul>
+        </div>
+  	  </div>
     </div>
-  </li>
- </ul>
+  </div>
+ </div>
 </wicket:panel>
 </body>
 </html>

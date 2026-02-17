@@ -4,31 +4,31 @@
 <body>
 <wicket:extend>
     <wicket:fragment wicket:id="header">
-        <ul class="gn-unordered-list-class">
-            <li class="gn-list-item-class"> <a class="add-link" href="#" wicket:id="addNew">
+        <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class"> <a class="add-link" href="#" wicket:id="addNew">
                 <wicket:message key="addNew"/>
-            </a></li>
-            <li class="gn-list-item-class"> <a class="remove-link" href="#" wicket:id="removeSelected">
+            </a></div>
+            <div class="gn-list-item-class"> <a class="remove-link" href="#" wicket:id="removeSelected">
                 <wicket:message key="removeSelected"/>
-            </a></li>
-        </ul>
+            </a></div>
+        </div>
     </wicket:fragment>
     <div wicket:id="rulesPanel"></div>
     <form wicket:id="form">
         <fieldset class="mt-5">
             <legend><span><wicket:message key="testRules"></wicket:message></span></legend>
-            <ul class="gn-unordered-list-class">
-                <li class="gn-list-item-class">
+            <div class="gn-unordered-list-class">
+                <div class="gn-list-item-class">
                     <label for="input"><wicket:message key="input"></wicket:message>
                     </label>
                     <textarea wicket:id="input" id="input" class="w-75 h-5-em"></textarea>
-                </li>
-                <li class="gn-list-item-class">
+                </div>
+                <div class="gn-list-item-class">
                     <label for="output"><wicket:message key="output"></wicket:message>
                     </label>
                     <textarea wicket:id="output" id="output" class="w-75 h-5-em"></textarea>
-                </li>
-            </ul>
+                </div>
+            </div>
         </fieldset>
 
         <div class="button-group selfclear">

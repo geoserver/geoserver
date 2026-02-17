@@ -8,7 +8,7 @@
         <link href="#" rel="shortcut icon" wicket:id="faviconLink"/>
     </wicket:head>
 <body>
-<li class="gn-list-item-class"> a</li>
+<div class="gn-list-item-class"> a</div>
   <div id="header">
     <div class="wrap">
     </div><!-- /.wrap -->
@@ -49,29 +49,29 @@
               <!-- <div><img src="#" wicket:id="link.icon"/><span wicket:id="link.label"></span></div> -->
             </a>
         </div>
-        <ul class="gn-unordered-list-class" id="navigation">
+        <div class="gn-unordered-list-class" id="navigation">
           <div id="localeSwitcher">
             <!-- <wicket:link><img src="img/icons/globe.png"/></wicket:link> -->
             <select  wicket:id="localeSwitcher"></select>
           </div>
-          <li class="gn-list-item-class navigation-tab" wicket:id="category">
+          <div class="gn-list-item-class navigation-tab" wicket:id="category">
             <div class="navigation-tab-header">
               <span wicket:id="category.header">[Category Header]</span>
             </div>
-            <ul class="gn-unordered-list-class navigation-tab-content plain">
-              <li class="gn-list-item-class nav-administer-service" wicket:id="category.links">
+            <div class="gn-unordered-list-class navigation-tab-content plain">
+              <div class="gn-list-item-class nav-administer-service" wicket:id="category.links">
                 <a wicket:id="link">
                   <img src="#" wicket:id="link.icon"/><span wicket:id="link.label"></span>
                 </a>
-              </li>
-            </ul>
-          </li>
-          <li class="gn-list-item-class navigation-tab" wicket:id="standalone">
+              </div>
+            </div>
+          </div>
+          <div class="gn-list-item-class navigation-tab" wicket:id="standalone">
             <div class="navigation-tab-single">
               <a wicket:id="link" href="#"><span wicket:id="link.label">[Link]</span></a>
             </div>
-          </li>
-        </ul>
+          </div>
+        </div>
         <div class="devtoolbar" wicket:id="devButtons" title="Developer helper actions. This bar must not be available in releases"></div>
       </div>
       

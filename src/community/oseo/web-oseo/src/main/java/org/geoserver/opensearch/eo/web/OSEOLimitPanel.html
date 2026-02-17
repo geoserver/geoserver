@@ -5,26 +5,26 @@
         <fieldset>
             <!--legend><span><wicket:message key="AttributeTypeInfoEditPanel.details">Details</wicket:message></span>
             </legend-->
-            <ul class="gn-unordered-list-class">
-                <li class="gn-list-item-class" wicket:id="collectionContainer">
+            <div class="gn-unordered-list-class">
+                <div class="gn-list-item-class" wicket:id="collectionContainer">
                     <label for="collection">
                         <wicket:message key="OSEOSecurityPage.th.collection">collection</wicket:message>
                     </label>
                     <select id="collection" wicket:id="collection"></select>
-                </li>
-                <li class="gn-list-item-class">
+                </div>
+                <div class="gn-list-item-class">
                     <label for="cqlFilter">
                         <wicket:message key="OSEOSecurityPage.th.cqlFilter">CQL Filter</wicket:message>
                     </label>
                     <textarea id="cqlFilter" type="text" wicket:id="cqlFilter" class="cql"></textarea>
-                </li>
-                <li class="gn-list-item-class">
+                </div>
+                <div class="gn-list-item-class">
                     <label for="roles">
                         <wicket:message key="OSEOSecurityPage.th.roles">Roles</wicket:message>
                     </label>
                     <div wicket:id="roles"></div>
-                </li>
-            </ul>
+                </div>
+            </div>
         </fieldset>
         <div wicket:id="dialogFeedback"></div>
     </form>

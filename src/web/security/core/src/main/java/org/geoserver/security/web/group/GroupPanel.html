@@ -6,23 +6,23 @@
 <wicket:panel>
   <form>
 
-    <ul class="gn-unordered-list-class" wicket:id="header">
-      <li class="gn-list-item-class" wicket:id="message"></li>
-      <li class="gn-list-item-class"> <span><wicket:message key="GroupPanel.title"/></span></li>
-      <li class="gn-list-item-class">
-        <ul class="gn-unordered-list-class action-group">
-          <li class="gn-list-item-class"> <a class="add-link" href="#" wicket:id="addNew">
+    <div class="gn-unordered-list-class" wicket:id="header">
+      <div class="gn-list-item-class" wicket:id="message"></div>
+      <div class="gn-list-item-class"> <span><wicket:message key="GroupPanel.title"/></span></div>
+      <div class="gn-list-item-class">
+        <div class="gn-unordered-list-class action-group">
+          <div class="gn-list-item-class"> <a class="add-link" href="#" wicket:id="addNew">
             <wicket:message key="addNew"/>
-          </a></li>
-          <li class="gn-list-item-class"> <a class="remove-link" href="#" wicket:id="removeSelected">
+          </a></div>
+          <div class="gn-list-item-class"> <a class="remove-link" href="#" wicket:id="removeSelected">
             <wicket:message key="removeSelected"/>
-          </a></li>
-          <li class="gn-list-item-class"> <a class="remove-link" href="#" wicket:id="removeSelectedWithRoles">
+          </a></div>
+          <div class="gn-list-item-class"> <a class="remove-link" href="#" wicket:id="removeSelectedWithRoles">
             <wicket:message key="removeSelectedWithRoles"/>
-          </a></li>
-        </ul>
-      </li>
-    </ul>
+          </a></div>
+        </div>
+      </div>
+    </div>
 
     <div wicket:id="table"></div>
 

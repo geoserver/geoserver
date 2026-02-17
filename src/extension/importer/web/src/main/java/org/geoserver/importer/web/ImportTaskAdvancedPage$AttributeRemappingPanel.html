@@ -2,27 +2,27 @@
 <body>
 <wicket:panel>
   <div wicket:id="remapsContainer">
-   <ul class="gn-unordered-list-class plain" wicket:id="remaps">
-     <li class="gn-list-item-class">
-       <ul class="gn-unordered-list-class plain horizontal">
-         <li class="gn-list-item-class">
+   <div class="gn-unordered-list-class plain" wicket:id="remaps">
+     <div class="gn-list-item-class">
+       <div class="gn-unordered-list-class plain horizontal">
+         <div class="gn-list-item-class">
            <!--label for="att">Attribute</label-->
            <select name="att" wicket:id="att"/>
-         </li>
-         <li class="gn-list-item-class">
+         </div>
+         <div class="gn-list-item-class">
            <!--label for="type">Type</label-->
            <select wicket:id="type"/>
-         </li>
-         <li class="gn-list-item-class">
+         </div>
+         <div class="gn-list-item-class">
            <input wicket:id="dateFormat"/>
-         </li>
-         <li class="gn-list-item-class">
+         </div>
+         <div class="gn-list-item-class">
            <a wicket:id="apply" href="" class="apply-link"><span><wicket:message key="apply">Apply</wicket:message></span></a>
            <a wicket:id="cancel" href="" class="remove-link"><span><wicket:message key="cancel">Cancel</wicket:message></span></a>
-         </li>
-       </ul>
-    </li>
-   </ul>
+         </div>
+       </div>
+    </div>
+   </div>
    </div>
    <a href="" class="add-link" wicket:id="add">Add</a>
 </wicket:panel>

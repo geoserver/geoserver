@@ -13,24 +13,24 @@
         <div wicket:id="dialog"></div>
         <form wicket:id="form">
             <fieldset>
-                <ul class="gn-unordered-list-class">
-                    <li class="gn-list-item-class">
+                <div class="gn-unordered-list-class">
+                    <div class="gn-list-item-class">
                         <label for="name"><wicket:message key="name"/></label>
                         <input id="name" wicket:id="name" type="text" class="text" />
 
                         <label for="description"><wicket:message key="descriptionField"/></label>
                         <input id="description" wicket:id="description" type="text" class="text" />
-                    </li>
-                    <li class="gn-list-item-class">
+                    </div>
+                    <div class="gn-list-item-class">
                         <div wicket:id="metadataTabs" class="tabpanel mt-2"></div>
-                    </li>
-                    <li class="gn-list-item-class">
+                    </div>
+                    <div class="gn-list-item-class">
                         <div class="button-group toolbar-sticky selfclear">
                             <a href="#" class="form-button-save" wicket:id="save"><wicket:message key="save"/></a>
                             <a href="#" class="form-button-cancel" wicket:id="cancel"><wicket:message key="cancel"/></a>
                         </div>
-                    </li>
-                </ul>
+                    </div>
+                </div>
             </fieldset>
         </form>
     </wicket:extend>

@@ -4,8 +4,8 @@
 <body>
 	<wicket:panel>
 		<fieldset>
-		<ul class="gn-unordered-list-class">
-			<li class="gn-list-item-class">
+		<div class="gn-unordered-list-class">
+			<div class="gn-list-item-class">
 			    <legend><span><wicket:message key="storage"/></span></legend>
 
 				<label for="bucket"><wicket:message key="bucket"/></label>
@@ -13,8 +13,8 @@
 				
 				<label for="prefix"><wicket:message key="prefix"/></label>
 				<input id="prefix" wicket:id="prefix" type="text" class="text" />
-			</li>
-			<li class="gn-list-item-class">
+			</div>
+			<div class="gn-list-item-class">
 			    <legend><span><wicket:message key="authentication"/></span></legend>
 
 				<label for="useDefaultCredentialsChain"><wicket:message key="useDefaultCredentialsChain"/></label>
@@ -22,8 +22,8 @@
 	
 				<label for="apiKey"><wicket:message key="apiKey"/></label>
 				<input id="apiKey" wicket:id="apiKey" type="password" class="text" />
-				</li>
-			<li class="gn-list-item-class">
+				</div>
+			<div class="gn-list-item-class">
 			    <legend><span><wicket:message key="advanced"/></span></legend>
 
 				<label for="projectId"><wicket:message key="projectId"/></label>
@@ -34,8 +34,8 @@
 	
 				<label for="endpointUrl"><wicket:message key="endpointUrl"/></label>
 				<input id="endpointUrl" wicket:id="endpointUrl" type="text" class="text" />
-            </li>
-        </ul>
+            </div>
+        </div>
 		</fieldset>
 	</wicket:panel>
 </body>

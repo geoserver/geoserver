@@ -3,28 +3,28 @@
   <body>
     <wicket:extend>
       <form id="form" wicket:id="form">
-        <ul>
-          <li>
+        <ul class="gn-unordered-list-class">
+          <li class="gn-list-item-class">
             <fieldset>
               <legend><span><wicket:message key="settings"></wicket:message></span></legend>
-              <ul>
-                <li>
+              <ul class="gn-unordered-list-class">
+                <li class="gn-list-item-class">
                   <label for="name"><wicket:message key="name"></wicket:message></label>
                   <input id="name" wicket:id="name" type="text" class="text"/>
                 </li>
-                <li>
+                <li class="gn-list-item-class">
                   <label for="description"><wicket:message key="descriptionLabel"></wicket:message></label>
                   <textarea wicket:id="description" id="description" class="textarea"></textarea>
                 </li>
-                <li class="choiceItem">
+                <li class="gn-list-item-class choiceItem">
                   <input id="enabled" wicket:id="enabled" type="checkbox"/>
                   <label for="enabled"><wicket:message key="enabled"></wicket:message></label>
                 </li>
-                <li>
+                <li class="gn-list-item-class">
                   <label for="filter"><wicket:message key="filter"></wicket:message></label>
                   <textarea wicket:id="filter" id="filter" class="textarea"></textarea>
                 </li>
-                <li>
+                <li class="gn-list-item-class">
                   <label for="directives"><wicket:message key="directives"></wicket:message></label>
                   <textarea wicket:id="directives" id="directives" class="textarea"></textarea>
                 </li>

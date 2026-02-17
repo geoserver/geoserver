@@ -17,9 +17,9 @@
 				<wicket:message key="fixTitle" />
 			</legend>
 			<form>
-				<ul>
-					<li><wicket:message key="fixMsg"></wicket:message></li>
-					<li>
+				<ul class="gn-unordered-list-class">
+					<li class="gn-list-item-class"> <wicket:message key="fixMsg"></wicket:message></li>
+					<li class="gn-list-item-class">
 						<button wicket:id="fix">
 							<wicket:message key="fixBtn" />
 						</button>
@@ -32,15 +32,15 @@
 				<wicket:message key="importTitle" />
 			</legend>
 			<form wicket:id="formImport">
-				<ul>
-					<li><wicket:message key="importMsg" /></li>
-					<li><label for="geonetworkName"><wicket:message
+				<ul class="gn-unordered-list-class">
+					<li class="gn-list-item-class"> <wicket:message key="importMsg" /></li>
+					<li class="gn-list-item-class"> <label for="geonetworkName"><wicket:message
 								key="geonetworkName" /></label> `<select id="geonetworkName"
 						wicket:id="geonetworkName" /></li>
-					<li><label for="importCsv"><wicket:message
+					<li class="gn-list-item-class"> <label for="importCsv"><wicket:message
 								key="importCsv" /></label> <input wicket:id="importCsv" size="40"
 						type="file" /></li>
-					<li>
+					<li class="gn-list-item-class">
 						<button wicket:id="import">
 							<wicket:message key="importBtn" />
 						</button>
@@ -53,15 +53,15 @@
 				<wicket:message key="customTitle" />
 			</legend>
 			<form wicket:id="formCustom">
-				<ul>
-					<li><wicket:message key="customMsg" /></li>
-					<li><label for="ruleList"><wicket:message
+				<ul class="gn-unordered-list-class">
+					<li class="gn-list-item-class"> <wicket:message key="customMsg" /></li>
+					<li class="gn-list-item-class"> <label for="ruleList"><wicket:message
 								key="ruleList" /></label> `<input id="ruleList" type="text"
 						wicket:id="ruleList" /></li>
-					<li><label for="customCsv"><wicket:message
+					<li class="gn-list-item-class"> <label for="customCsv"><wicket:message
 								key="customCsv" /></label> <input wicket:id="customCsv" size="40"
 						type="file" /></li>
-					<li>
+					<li class="gn-list-item-class">
 						<button wicket:id="custom">
 							<wicket:message key="customBtn" />
 						</button>
@@ -74,12 +74,12 @@
 				<wicket:message key="clearTitle" />
 			</legend>
 			<form wicket:id="formClear">
-				<ul>
-					<li><wicket:message key="clearMsg" /></li>
-					<li class="choiceItem"><input type="checkbox"
+				<ul class="gn-unordered-list-class">
+					<li class="gn-list-item-class"> <wicket:message key="clearMsg" /></li>
+					<li class="gn-list-item-class choiceItem"><input type="checkbox"
 						id="clearTemplates" wicket:id="clearTemplates"></input> <label
 						for="clearTemplates"><wicket:message key="clearTemplates" /></label></li>
-					<li>
+					<li class="gn-list-item-class">
 						<button wicket:id="clear">
 							<wicket:message key="clearBtn" />
 						</button>

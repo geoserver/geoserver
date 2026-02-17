@@ -3,13 +3,13 @@
 <wicket:extend>
 <h2><span wicket:id="pageTitle"><wicket:message key="addOrEditWorkspace">Add or Edit Workspace</wicket:message></span></h2>
 <form wicket:id="nsForm">
-  <ul>
-    <li>
+  <ul class="gn-unordered-list-class">
+    <li class="gn-list-item-class">
       <label for="prefixValue"><span wicket:id="prefix"><wicket:message key="prefix">Prefix</wicket:message></span></label>
     	<input wicket:id="prefixValue" type="text" size="20"/>
       <p class="instruct"><wicket:message key="shortNameForWorkspaceUsedAsNamespacePrefix">Short name for the workspace. Will be used as namespace prefix.</wicket:message></p>
     </li>
-    <li>
+    <li class="gn-list-item-class">
       <label for="uriValue"><span wicket:id="uri"><wicket:message key="uri">URI</wicket:message></span></label>
       <input wicket:id="uriValue" type="text" size="60"/>
       <p class="instruct"><wicket:message key="setURIasNamespace">Set a valid URI (Universal Resource Identifier) as namespace.</wicket:message></p>

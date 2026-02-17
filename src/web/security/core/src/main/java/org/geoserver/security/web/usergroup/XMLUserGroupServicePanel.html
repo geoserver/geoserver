@@ -4,22 +4,22 @@
     xmlns:wicket="http://wicket.apache.org/">
 <body>
 <wicket:extend>
-    <ul>
-      <li>
+    <ul class="gn-unordered-list-class">
+      <li class="gn-list-item-class">
         <fieldset>
          <legend>
             <span><wicket:message key="settings"></wicket:message></span>
          </legend>
-         <ul>
-          <li>
+         <ul class="gn-unordered-list-class">
+          <li class="gn-list-item-class">
             <label for="fileName"><wicket:message key="fileName"></wicket:message></label>
             <input wicket:id="fileName" type="text" class="field text">
           </li>
-          <li class="choiceItem">
+          <li class="gn-list-item-class choiceItem">
             <input wicket:id="validating" type="checkbox">
             <label for="validating"><wicket:message key="validating"></wicket:message></label>
           </li>
-          <li>
+          <li class="gn-list-item-class">
             <label for="checkInterval"><wicket:message key="checkInterval"></wicket:message></label>
             <input wicket:id="checkInterval" type="text" class="field text">
           </li>

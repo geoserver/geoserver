@@ -4,62 +4,62 @@
     xmlns:wicket="http://wicket.apache.org/">
 <body>
 <wicket:extend>
-    <ul class="float-start">
-      <li>
+    <ul class="gn-unordered-list-class float-start">
+      <li class="gn-list-item-class">
         <fieldset>
           <legend>
             <span><wicket:message key="ldapSettings"></wicket:message></span>
           </legend>
-          <ul>
-            <li>
+          <ul class="gn-unordered-list-class">
+            <li class="gn-list-item-class">
               <label for="serverURL"><wicket:message key="serverURL"></wicket:message></label>
               <input id="serverURL" wicket:id="serverURL" type="text" class="text"></input>
             </li>
             
-            <li class="choiceItem">
+            <li class="gn-list-item-class choiceItem">
               <input id="useTLS" wicket:id="useTLS" type="checkbox"></input>
               <label for="useTLS"><wicket:message key="useTLS"></wicket:message></label>
             </li>
-            <li>
+            <li class="gn-list-item-class">
 			    <label for="groupSearchBase"><wicket:message key="groupSearchBase"></wicket:message></label>
 			    <input id="groupSearchBase" wicket:id="groupSearchBase" type="text" class="text"></input>
 			  </li>
-			  <li>
+			  <li class="gn-list-item-class">
 			    <label for="groupSearchFilter"><wicket:message key="groupSearchFilter"></wicket:message></label>
 			    <input id="groupSearchFilter" wicket:id="groupSearchFilter" type="text" class="text"></input>
 			  </li>
-			  <li>
+			  <li class="gn-list-item-class">
 	               <label for="allGroupsSearchFilter"><wicket:message key="allGroupsSearchFilter"></wicket:message></label>
 	               <input id="allGroupsSearchFilter" wicket:id="allGroupsSearchFilter" type="text" class="text"></input>
 	             </li>
-	             <li>
+	             <li class="gn-list-item-class">
 	              <label for="userFilter"><wicket:message key="userFilter"></wicket:message></label>
 	              <input id="userFilter" wicket:id="userFilter" type="text" class="text"></input>
 	          </li>
-              <li>
+              <li class="gn-list-item-class">
                   <label for="rolePrefix"><wicket:message key="rolePrefix"></wicket:message></label>
                   <input id="rolePrefix" wicket:id="rolePrefix" type="text" class="text"></input>
               </li>
-              <li class="choiceItem">
+              <li class="gn-list-item-class choiceItem">
                   <input id="convertToUpperCase" wicket:id="convertToUpperCase" type="checkbox"></input>
                   <label for="convertToUpperCase"><wicket:message key="convertToUpperCase"></wicket:message></label>
               </li>
           </ul>
         </fieldset>
       </li>
-      <li>
+      <li class="gn-list-item-class">
          <fieldset>
           <legend>
             <span><wicket:message key="authentication"></wicket:message></span>
           </legend>
-          <ul>
-           <li class="choiceItem">
+          <ul class="gn-unordered-list-class">
+           <li class="gn-list-item-class choiceItem">
             <input id="bindBeforeGroupSearch" wicket:id="bindBeforeGroupSearch" type="checkbox"></input>
             <label for="bindBeforeGroupSearch">
               <wicket:message key="bindBeforeGroupSearch"></wicket:message>
             </label>
            </li>
-           <li>
+           <li class="gn-list-item-class">
             <div wicket:id="authenticationPanelContainer">
               <div wicket:id="authenticationPanel">
               </div>
@@ -68,27 +68,27 @@
           </ul>
          </fieldset>
       </li>
-       <li>
+       <li class="gn-list-item-class">
          <fieldset>
           <legend>
             <span><wicket:message key="hierarchicalGroups"></wicket:message></span>
           </legend>
-          <ul>
+          <ul class="gn-unordered-list-class">
               <!-- Hierarchical groups configuration fields -->
-			  <li>
+			  <li class="gn-list-item-class">
 			  	<input class="choiceItem" id="useNestedParentGroups" wicket:id="useNestedParentGroups" type="checkbox"></input>
 			    <label for="useNestedParentGroups">
 			      <wicket:message key="useNestedParentGroups"></wicket:message>
 			    </label>    
 			  </li>
-			  <li>
+			  <li class="gn-list-item-class">
 			    <div id="nestedSearchFieldsContainer" wicket:id="nestedSearchFieldsContainer">
-			  	  <ul>
-			  	    <li>
+			  	  <ul class="gn-unordered-list-class">
+			  	    <li class="gn-list-item-class">
 			  		  <label for="maxGroupSearchLevel"><wicket:message key="maxGroupSearchLevel"></wicket:message></label>
 			          <input id="maxGroupSearchLevel" wicket:id="maxGroupSearchLevel" type="text" class="text"></input>
 			        </li>
-			        <li>
+			        <li class="gn-list-item-class">
 			          <label for="nestedGroupSearchFilter"><wicket:message key="nestedGroupSearchFilter"></wicket:message></label>
 			          <input id="nestedGroupSearchFilter" wicket:id="nestedGroupSearchFilter" type="text" class="text"></input>
 			        </li>

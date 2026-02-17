@@ -15,8 +15,8 @@
 	
 		<form wicket:id="batchForm">	  		  	  
 		  	 <fieldset>		
-		  	 	<ul>
-		  	 	 <li>
+		  	 	<ul class="gn-unordered-list-class">
+		  	 	 <li class="gn-list-item-class">
 			  	 	 <label for="name"><wicket:message key="name"/></label>
 		             <input id="name" wicket:id="name" type="text" class="text" />
 		             
@@ -36,12 +36,12 @@
                      <input id="enabled"  wicket:id="enabled" type="checkbox" class="checkbox"  />  
                       
 				 </li>
-				 <li>
+				 <li class="gn-list-item-class">
 					 <h4><wicket:message key="tasks"/></h4>
 					 
-					 <ul>
-						<li><a class="add-link" href="#" wicket:id="addNew"><wicket:message key="addNew" /></a></li>
-						<li><a class="remove-link" href="#" wicket:id="removeSelected"><wicket:message key="removeSelected" /></a></li>
+					 <ul class="gn-unordered-list-class">
+						<li class="gn-list-item-class"> <a class="add-link" href="#" wicket:id="addNew"><wicket:message key="addNew" /></a></li>
+						<li class="gn-list-item-class"> <a class="remove-link" href="#" wicket:id="removeSelected"><wicket:message key="removeSelected" /></a></li>
 					</ul>
 					
 					 <div wicket:id="tasksPanel"></div>

@@ -9,14 +9,14 @@
 <body>
 <wicket:extend>
   <form wicket:id="form">
-   <ul class="plain pt-5">
-     <li>
+   <ul class="gn-unordered-list-class plain pt-5">
+     <li class="gn-list-item-class">
      <fieldset>
        <legend>
          <span><wicket:message key="reprojection">Reprojection</wicket:message></span>
        </legend>
-       <ul class="plain pt-2">
-         <li>
+       <ul class="gn-unordered-list-class plain pt-2">
+         <li class="gn-list-item-class">
            <input type="checkbox" wicket:id="enableReprojection"></input>
            <span><wicket:message key="enabled"></wicket:message></span>
             
@@ -26,13 +26,13 @@
         </ul>
      </fieldset>
      </li>
-     <li>
+     <li class="gn-list-item-class">
      <fieldset>
        <legend>
          <span><wicket:message key="attributeRemapping">Attribute Remapping</wicket:message></span>
        </legend>
-       <ul class="plain pt-2">
-         <li>
+       <ul class="gn-unordered-list-class plain pt-2">
+         <li class="gn-list-item-class">
             <div wicket:id="remapping">
             </div>
           </li>

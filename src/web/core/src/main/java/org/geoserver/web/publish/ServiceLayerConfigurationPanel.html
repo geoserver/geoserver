@@ -10,23 +10,23 @@
       <span><wicket:message key="layerSettings">Layer Settings</wicket:message></span>
       <a href="#" wicket:id="layerSettingsHelp" class="help-link"></a>
     </legend>
-    <ul class="choiceList">
-      <li>
+    <ul class="gn-unordered-list-class choiceList">
+      <li class="gn-list-item-class">
         <input id="configEnabled" type="checkbox" wicket:id="configEnabled"></input>
         <label for="configEnabled">
           <wicket:message key="config">Selectively enable services for layer</wicket:message>
         </label>
       </li>
     </ul>
-    <ul>
-      <li>
+    <ul class="gn-unordered-list-class">
+      <li class="gn-list-item-class">
         <div wicket:id="serviceSelectionContainer">
           <span wicket:id="servicesSelection"></span>
         </div>
       </li>
     </ul>
-    <ul>
-      <li>
+    <ul class="gn-unordered-list-class">
+      <li class="gn-list-item-class">
         <label id="defaultDisabledServicesLabel" wicket:id="defaultDisabledServicesLabel" for="defaultDisabledServices"/>
         <input id="defaultDisabledServices" class="text" type="text" wicket:id="defaultDisabledServices" title="List of services disabled by default. This setting is defined by 'org.geoserver.service.disabled' application property."/>
       </li>

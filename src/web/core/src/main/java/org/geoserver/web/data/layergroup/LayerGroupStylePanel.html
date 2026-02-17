@@ -7,21 +7,21 @@
             <legend>
                 <wicket:message key="groupStyle">Layer Group Style</wicket:message>
             </legend>
-            <ul>
-                <li><label for="layerGroupStyleName"><wicket:message key="layerGroupStyleName">Style Name</wicket:message></label></li>
-                <li>
+            <ul class="gn-unordered-list-class">
+                <li class="gn-list-item-class"> <label for="layerGroupStyleName"><wicket:message key="layerGroupStyleName">Style Name</wicket:message></label></li>
+                <li class="gn-list-item-class">
                     <div>
                         <input id="layerGroupStyleName" wicket:id="layerGroupStyleName" type="text">
                         <a class="remove-link" wicket:id="remove"><wicket:message key="removeStyle">Remove Style</wicket:message></a>
                     </div>
                 </li>
-                <li>
+                <li class="gn-list-item-class">
                     <div wicket:id="titleAndAbstract"/>
                 </li>
-                <li>
+                <li class="gn-list-item-class">
                     <br/>
                 </li>
-                <li>
+                <li class="gn-list-item-class">
                     <div wicket:id="layerGroupEntryPanel"></div>
                 </li>
             </ul>

@@ -6,14 +6,14 @@
 
   <fieldset>
     <legend><span><wicket:message key="RasterAttributeTableConfig.title">RAT</wicket:message></span></legend>
-    <ul>
-      <li wicket:id="styleToolbar" class="genericToolbar">
+    <ul class="gn-unordered-list-class">
+      <li class="gn-list-item-class genericToolbar" wicket:id="styleToolbar">
         <span>Band</span><select wicket:id="bands"></select>
         <span>Classification</span><select wicket:id="classifications"></select>
         <span>Style name</span><input type="text" wicket:id="styleName"></input>
         <button wicket:id="createStyles" type="submit"><wicket:message key="RasterAttributeTableConfig.create">Create style</wicket:message></button>
       </li>
-      <li>
+      <li class="gn-list-item-class">
         <div wicket:id="rat" class="largeTable"></div>
       </li>
     </ul>

@@ -4,23 +4,23 @@
     xmlns:wicket="http://wicket.apache.org/">
 <body>
 <wicket:panel>
-  <ul>
-    <li>
+  <ul class="gn-unordered-list-class">
+    <li class="gn-list-item-class">
       <div wicket:id="feedback"></div>
     </li>
-    <li class="choiceList">
+    <li class="gn-list-item-class choiceList">
       <input id="jndi" wicket:id="jndi" type="checkbox"></input>
       <label for="jndi">
         <wicket:message key="jndi"></wicket:message>
       </label>
     </li>
-    <li>
+    <li class="gn-list-item-class">
       <div wicket:id="cxPanelContainer">
        <div wicket:id="cxPanel">
        </div>
     </div>
     </li>
-    <li>
+    <li class="gn-list-item-class">
       <div class="button-group selfclear">
         <a wicket:id="cxTest"><span><wicket:message key="testConnection"></wicket:message></span></a>
       </div>

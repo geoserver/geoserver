@@ -18,8 +18,8 @@
 
 		<form wicket:id="configurationForm">	  		  	  
 		  	 <fieldset>		
-		  	 	<ul>
-		  	 	 <li>
+		  	 	<ul class="gn-unordered-list-class">
+		  	 	 <li class="gn-list-item-class">
 			  	 	 <label for="name"><wicket:message key="name"/></label>
 		             <input id="name" wicket:id="name" type="text" class="text" />
 		             
@@ -29,16 +29,16 @@
 				  	 <label for="description"><wicket:message key="descriptionField"/></label>
 		             <input id="description" wicket:id="description" type="text" class="text" />             
 				 </li>
-				 <li>
+				 <li class="gn-list-item-class">
 					 <h4><wicket:message key="attributes"/></h4> 
 					 <div wicket:id="attributesPanel"></div>
 				 </li>
-				 <li>
+				 <li class="gn-list-item-class">
 					 <h4><wicket:message key="tasks"/></h4>
 					 
-					 <ul class="links-above-table">
-						<li><a class="add-link" href="#" wicket:id="addNew"><wicket:message key="addNew" /></a></li>
-						<li><a class="remove-link" href="#" wicket:id="removeSelected"><wicket:message key="removeSelected" /></a></li>
+					 <ul class="gn-unordered-list-class links-above-table">
+						<li class="gn-list-item-class"> <a class="add-link" href="#" wicket:id="addNew"><wicket:message key="addNew" /></a></li>
+						<li class="gn-list-item-class"> <a class="remove-link" href="#" wicket:id="removeSelected"><wicket:message key="removeSelected" /></a></li>
 					 </ul>
 					
 					 <div wicket:id="tasksPanel"></div>
@@ -55,7 +55,7 @@
                    
                      
 				</li>
-				<li>				    
+				<li class="gn-list-item-class">
                      <a href="#" wicket:id="export"><wicket:message key="export"/></a>
 				</li>
 			</ul>     

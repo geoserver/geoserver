@@ -5,10 +5,10 @@
     <div class="w-95">
        <form wicket:id="form" class="clearfix">
          <div class="float-start"><wicket:message key="maxLines">max console lines</wicket:message>&nbsp;<input type="number" wicket:id="lines"/></div>
-         <div class="float-end"><a href="#" wicket:id="refresh"><wicket:message key="refresh">refresh</wicket:message></a></div>
+         <div class="float-end"><a class="button" href="#" wicket:id="refresh"><wicket:message key="refresh">refresh</wicket:message></a></div>
        </form>
        <div><textarea readonly="readonly" class="w-100 h-50-em text-small" wicket:id="logs"></textarea></div>
-       <a href="#" wicket:id="download"><wicket:message key="download">download full log file</wicket:message></a>
+       <a class="button" href="#" wicket:id="download"><wicket:message key="download">download full log file</wicket:message></a>
     </div>
 </wicket:extend>
 </body>

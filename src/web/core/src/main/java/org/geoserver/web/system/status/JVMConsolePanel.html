@@ -4,12 +4,12 @@
 <wicket:panel>
     <div class="w-95">
         <div class="button-group selfclear">
-            <a href="#" id="dumpThread" wicket:id="dumpThread"><wicket:message key="threadDump">Thread dump</wicket:message></a>
-            <a href="#" id="dumpHeap" wicket:id="dumpHeap"><wicket:message key="heapDump">Heap dump</wicket:message></a>
+            <a href="#" id="dumpThread" wicket:id="dumpThread" class="button"><wicket:message key="threadDump">Thread dump</wicket:message></a>
+            <a href="#" id="dumpHeap" wicket:id="dumpHeap" class="button"><wicket:message key="heapDump">Heap dump</wicket:message></a>
         </div>
 
         <div><textarea id="dumpContent" readonly="readonly" class="w-100 h-50-em text-small" wicket:id="dumpContent"></textarea></div>
-        <a href="#" id="downloadlink" wicket:id="downloadlink"><wicket:message key="download">download as dump text</wicket:message></a>
+        <a href="#" id="downloadlink" wicket:id="downloadlink" class="button"><wicket:message key="download">download as dump text</wicket:message></a>
     </div>
 </wicket:panel>
 </body>

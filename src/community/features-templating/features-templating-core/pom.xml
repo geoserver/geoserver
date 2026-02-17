@@ -50,7 +50,7 @@
     <dependency>
       <groupId>com.github.jsonld-java</groupId>
       <artifactId>jsonld-java</artifactId>
-      <version>0.12.5</version>
+      <version>0.13.6</version>
     </dependency>
     <dependency>
       <groupId>jakarta.servlet</groupId>

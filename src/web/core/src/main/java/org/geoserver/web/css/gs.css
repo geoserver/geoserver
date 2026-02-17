@@ -74,6 +74,10 @@ body {
   flex-direction: column;
   gap: 0.5rem;
 }
+.authentication-form .choiceItem input {
+  float: none;
+  margin-left: 0;
+}
 
 #sidebar {
   position: relative;
@@ -440,6 +444,46 @@ input[type=text]:hover:not(:disabled):not([readonly])::file-selector-button,
 input[type=number]:hover:not(:disabled):not([readonly])::file-selector-button,
 input[type=password]:hover:not(:disabled):not([readonly])::file-selector-button {
   background-color: var(--gs-secondary-bg);
+}
+
+/* Input checkbox */
+input[type=checkbox] {
+  border-radius: 0.25em;
+}
+input[type=radio] {
+  border-radius: 50%;
+}
+input[type=checkbox]:active,
+input[type=radio]:active {
+  filter: brightness(90%);
+}
+input[type=checkbox]:focus,
+input[type=radio]:focus {
+  border-color: #86b7fe;
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+input[type=checkbox]:checked,
+input[type=radio]:checked {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+input:checked[type=checkbox] {
+  --gs-form-check-bg-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
+}
+input:checked[type=radio] {
+  --gs-form-check-bg-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='%23fff'/%3e%3c/svg%3e");
+}
+input[type=checkbox]:indeterminate {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  --gs-form-check-bg-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10h8'/%3e%3c/svg%3e");
+}
+input[type=checkbox]:disabled,
+input[type=radio]:disabled {
+  pointer-events: none;
+  filter: none;
+  opacity: 0.5;
 }
 
 button, .button {
@@ -979,3 +1023,38 @@ input.btnTxt:hover {
   max-width: 100px;
 }
 
+/*--------------------------
+choiceItem, choiceList items
+---------------------------*/
+.choiceList > *,
+.choiceItem {
+  display: block;
+  min-height: 1.5rem;
+  padding-left: 1.5em;
+  margin-bottom: 0.125rem;
+}
+.choiceList > * input,
+.choiceItem input {
+  margin-left: -1.5em;
+  float: left;
+  margin-top: 0.25em;
+}
+.choiceItem input[disabled] ~ label,
+.choiceItem input:disabled ~ label,
+.choiceList input:disabled ~ label {
+  cursor: default;
+  opacity: 0.5;
+}
+.choiceItem label,
+.choiceItem label,
+.choiceList > * label {
+  display: inline;
+}
+
+/* i18n choiceItem */
+.i18n-tile-and-abstract .choiceItem input {
+  margin-left: 0;
+}
+.i18n-text .choiceItem input {
+  margin-left: -1em;
+}

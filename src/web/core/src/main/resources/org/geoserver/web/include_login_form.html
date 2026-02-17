@@ -3,10 +3,10 @@
 <label class="d-none" for="password"><wicket:message key="password">Password</wicket:message></label>
 <input autocomplete="${autocomplete}" id="password" type="password" name="password" value="" title="password" placeholder="password" wicket:message="title:password,placeholder:passwordGeoServer"/>
 
-<div class="form-check ps-0 py-1">
-  <label class="shown form-check-label" for="_spring_security_remember_me">
+<div class="choiceItem ps-0 py-1">
+  <input id="_spring_security_remember_me" type="checkbox" name="_spring_security_remember_me" />
+  <label class="shown" for="_spring_security_remember_me">
     <wicket:message key="rememberMe">Remember me</wicket:message>
   </label>
-  <input class="form-check-input" id="_spring_security_remember_me" type="checkbox" name="_spring_security_remember_me" />
 </div>
 

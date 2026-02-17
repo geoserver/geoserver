@@ -7,9 +7,11 @@
         <div class="gn-list-item-class">
             <span wicket:id="labelContainer" class="selfclear">
                   <label class="float-start" wicket:id="stringLabel" />
-                  <div class="float-start form-check">
-                    <input class="form-check-input" type="checkbox" wicket:id="labelContainer_i18nCheckbox" />
-                    <wicket:message key="i18nCheckBox">i18n</wicket:message>
+                  <div class="float-start choiceItem">
+                    <input type="checkbox" wicket:id="labelContainer_i18nCheckbox" />
+                    <label wicket:for="labelContainer_i18nCheckbox">
+                        <wicket:message key="i18nCheckBox">i18n</wicket:message>
+                    </label>
                   </div>
             </span>
         </div>

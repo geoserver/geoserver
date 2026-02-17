@@ -8,6 +8,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -185,7 +186,7 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
 
             if (!filterIsValid()) {
                 // Backup additional stuff only when performing a FULL backup
-                backupFullAdditional(dd, resourceStore, targetBackupFolder);
+                backupFullAdditionals(dd, resourceStore, targetBackupFolder);
             } else {
                 // backup selected GWC artifacts
                 backupFilteredGwc(dd, resourceStore, targetBackupFolder);
@@ -227,30 +228,74 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
 
             Assert.notNull(gwcConfig, "gwcConfig is NULL");
 
-            // Store GWC Layers Configurations
-            final TileLayerCatalog gwcCatalog = (TileLayerCatalog) GeoServerExtensions.bean("GeoSeverTileLayerCatalog");
-
-            if (gwcCatalog != null) {
-                final XMLConfiguration gwcXmlPersisterFactory =
-                        (XMLConfiguration) GeoServerExtensions.bean("gwcXmlConfig");
-                final GeoServerResourceLoader resourceLoader = new GeoServerResourceLoader(targetBackupFolder.dir());
-
-                final DefaultTileLayerCatalog gwcBackupCatalog =
-                        new DefaultTileLayerCatalog(resourceLoader, gwcXmlPersisterFactory);
-                gwcBackupCatalog.initialize();
-
-                for (String layerName : gwcCatalog.getLayerNames()) {
-                    backupGwcLayer(gwcCatalog, gwcBackupCatalog, layerName);
-                }
-            }
+            // Store GWC Layers Configurations by copying files directly.
+            // This avoids creating a DefaultTileLayerCatalog which registers a FileSystemWatcher
+            // that causes lock contention and deadlocks on subsequent backup operations.
+            backupGwcLayersDirect(targetBackupFolder, true);
 
         } catch (Exception e) {
             logValidationExceptions(null, e);
         }
     }
 
+    /**
+     * Copy GWC layer files directly to the target backup folder. This avoids creating a DefaultTileLayerCatalog which
+     * registers a FileSystemWatcher that causes lock contention and deadlocks on subsequent backup operations.
+     *
+     * @param targetBackupFolder the target folder for the backup
+     * @param applyFilter whether to apply workspace/layer filters
+     */
+    private void backupGwcLayersDirect(Resource targetBackupFolder, boolean applyFilter) throws Exception {
+        final TileLayerCatalog gwcCatalog = (TileLayerCatalog) GeoServerExtensions.bean("GeoSeverTileLayerCatalog");
+        if (gwcCatalog == null) return;
+
+        GeoServerDataDirectory dd = (GeoServerDataDirectory) GeoServerExtensions.bean("dataDirectory");
+        Resource gwcLayersDir = dd.get("gwc-layers");
+        Resource targetGwcLayersDir = BackupUtils.dir(targetBackupFolder, "gwc-layers");
+
+        for (String layerName : gwcCatalog.getLayerNames()) {
+            GeoServerTileLayerInfo layerInfo = gwcCatalog.getLayerByName(layerName);
+            if (layerInfo != null) {
+                // Apply filter check only if requested
+                if (applyFilter && !shouldBackupGwcLayer(layerName)) {
+                    continue;
+                }
+                // Copy the layer XML file directly
+                String layerId = layerInfo.getId();
+                Resource sourceFile = gwcLayersDir.get(layerId + ".xml");
+                if (Resources.exists(sourceFile)) {
+                    try (FileInputStream fis = new FileInputStream(sourceFile.file())) {
+                        Resources.copy(fis, targetGwcLayersDir, layerId + ".xml");
+                    }
+                }
+            }
+        }
+    }
+
+    /** Determines if a GWC layer should be backed up based on filter settings. */
+    private boolean shouldBackupGwcLayer(String layerName) {
+        LayerInfo layerInfo = getCatalog().getLayerByName(layerName);
+        if (layerInfo != null) {
+            WorkspaceInfo ws = getLayerWorkspace(layerInfo);
+            return !filteredResource(layerInfo, ws, true, LayerInfo.class);
+        }
+
+        try {
+            LayerGroupInfo layerGroupInfo = getCatalog().getLayerGroupByName(layerName);
+            if (layerGroupInfo != null) {
+                WorkspaceInfo ws = getLayerGroupWorkspace(layerGroupInfo);
+                return !filteredResource(ws, false);
+            }
+        } catch (NullPointerException e) {
+            if (getCurrentJobExecution() != null) {
+                getCurrentJobExecution().addWarningExceptions(Arrays.asList(e));
+            }
+        }
+        return false;
+    }
+
     /** Backup additional stuff only when performing a FULL backup. */
-    private void backupFullAdditional(
+    private void backupFullAdditionals(
             final GeoServerDataDirectory dd, final ResourceStore resourceStore, Resource targetBackupFolder)
             throws IOException, Exception {
         // Backup GeoServer Plugins
@@ -731,8 +776,7 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
     }
 
     /** */
-    @SuppressWarnings("unchecked")
-    private void restoreWorkSpacesAndLayers(Resource sourceRestoreFolder, Resource workspaces) throws Exception {
+    private void restoreWorkSpacesAndLayers(Resource sourceRestoreFodler, Resource workspaces) throws Exception {
         // - Restore Default Workspace
         if (!filterIsValid() || !filteredResource(getCatalog().getDefaultWorkspace(), true)) {
             Files.delete(workspaces.get("default.xml").file());
@@ -754,7 +798,7 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
 
                 // Restore DataStores/CoverageStores
                 for (DataStoreInfo ds : getCatalog().getStoresByWorkspace(ws.getName(), DataStoreInfo.class)) {
-                    if (!filteredResource(ds, ws, true, DataStoreInfo.class)) {
+                    if (!filteredResource(ds, ws, true, StoreInfo.class)) {
                         // - Prepare Folder
                         Resource dsFolder = BackupUtils.dir(wsFolder, ds.getName());
 
@@ -766,7 +810,7 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
 
                         // Restore Resources
                         for (FeatureTypeInfo ft : getCatalog().getFeatureTypesByDataStore(ds)) {
-                            if (!filteredResource(ft, ws, true, FeatureTypeInfo.class)) {
+                            if (!filteredResource(ft, ws, true, ResourceInfo.class)) {
                                 // - Prepare Folder
                                 Files.delete(dsFolder.get(ft.getName()).dir());
                                 Resource ftFolder = BackupUtils.dir(dsFolder, ft.getName());
@@ -778,7 +822,7 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                                     if (!filteredResource(ly, ws, true, LayerInfo.class)) {
                                         doWrite(ly, ftFolder, "layer.xml");
 
-                                        Resource ftResource = sourceRestoreFolder.get(Paths.path(
+                                        Resource ftResource = sourceRestoreFodler.get(Paths.path(
                                                 "workspaces/" + ws.getName() + "/" + ds.getName(), ft.getName()));
                                         List<Resource> resources = Resources.list(
                                                 ftResource,
@@ -805,7 +849,7 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                 }
 
                 for (CoverageStoreInfo cs : getCatalog().getStoresByWorkspace(ws.getName(), CoverageStoreInfo.class)) {
-                    if (!filteredResource(cs, ws, true, CoverageStoreInfo.class)) {
+                    if (!filteredResource(cs, ws, true, StoreInfo.class)) {
                         // - Prepare Folder
                         Resource csFolder = BackupUtils.dir(wsFolder, cs.getName());
 
@@ -815,7 +859,7 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
 
                         // Restore Resources
                         for (CoverageInfo ci : getCatalog().getCoveragesByCoverageStore(cs)) {
-                            if (!filteredResource(ci, ws, true, CoverageInfo.class)) {
+                            if (!filteredResource(ci, ws, true, ResourceInfo.class)) {
                                 // - Prepare Folder
                                 Files.delete(csFolder.get(ci.getName()).dir());
                                 Resource ciFolder = BackupUtils.dir(csFolder, ci.getName());
@@ -827,7 +871,7 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                                     if (!filteredResource(ly, ws, true, LayerInfo.class)) {
                                         doWrite(ly, ciFolder, "layer.xml");
 
-                                        Resource ftResource = sourceRestoreFolder.get(Paths.path(
+                                        Resource ftResource = sourceRestoreFodler.get(Paths.path(
                                                 "workspaces/" + ws.getName() + "/" + cs.getName(), ci.getName()));
                                         List<Resource> resources = Resources.list(
                                                 ftResource,
@@ -854,21 +898,20 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                 }
 
                 for (WMSStoreInfo wms : getCatalog().getStoresByWorkspace(ws.getName(), WMSStoreInfo.class)) {
-                    if (!filteredResource(wms, ws, true, WMSStoreInfo.class)) {
-                        restoreWMSStoreInfo(sourceRestoreFolder, ws, wsFolder, wms);
+                    if (!filteredResource(wms, ws, true, StoreInfo.class)) {
+                        restoreWMSStoreInfo(sourceRestoreFodler, ws, wsFolder, wms);
                     }
                 }
 
                 for (WMTSStoreInfo wmts : getCatalog().getStoresByWorkspace(ws.getName(), WMTSStoreInfo.class)) {
-                    if (!filteredResource(wmts, ws, true, WMTSStoreInfo.class)) {
-                        restoreWMTSStoreInfo(sourceRestoreFolder, ws, wsFolder, wmts);
+                    if (!filteredResource(wmts, ws, true, StoreInfo.class)) {
+                        restoreWMTSStoreInfo(sourceRestoreFodler, ws, wsFolder, wmts);
                     }
                 }
             }
         }
     }
 
-    @SuppressWarnings("unchecked")
     private void restoreWMTSStoreInfo(
             Resource sourceRestoreFodler, WorkspaceInfo ws, Resource wsFolder, WMTSStoreInfo wmts) throws Exception {
         // - Prepare Folder
@@ -886,9 +929,8 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
         }
     }
 
-    @SuppressWarnings("unchecked")
     private void restoreWMSStoreInfo(
-            Resource sourceRestoreFolder, WorkspaceInfo ws, Resource wsFolder, WMSStoreInfo wms) throws Exception {
+            Resource sourceRestoreFodler, WorkspaceInfo ws, Resource wsFolder, WMSStoreInfo wms) throws Exception {
         // - Prepare Folder
         Resource wmsFolder = BackupUtils.dir(wsFolder, wms.getName());
 
@@ -899,14 +941,13 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
         List<WMSLayerInfo> wmsLayerInfoList = getCatalog().getResourcesByStore(wms, WMSLayerInfo.class);
         for (WMSLayerInfo wl : wmsLayerInfoList) {
             if (!filteredResource(wl, ws, true, ResourceInfo.class)) {
-                restoreWMSLayer(sourceRestoreFolder, ws, wms, wmsFolder, wl);
+                restoreWMSLayer(sourceRestoreFodler, ws, wms, wmsFolder, wl);
             }
         }
     }
 
-    @SuppressWarnings("unchecked")
     private void restoreWTMSLayer(
-            Resource sourceRestoreFolder, WorkspaceInfo ws, WMTSStoreInfo wms, Resource wmsFolder, WMTSLayerInfo wl)
+            Resource sourceRestoreFodler, WorkspaceInfo ws, WMTSStoreInfo wms, Resource wmsFolder, WMTSLayerInfo wl)
             throws Exception {
         // - Prepare Folder
         Files.delete(wmsFolder.get(wl.getName()).dir());
@@ -918,14 +959,13 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
         for (LayerInfo ly : getCatalog().getLayers(wl)) {
             if (!filteredResource(ly, ws, true, LayerInfo.class)) {
                 String wmtsLayerInfoName = wl.getName();
-                restoreLayerResources(sourceRestoreFolder, ws, wms, ftFolder, ly, wmtsLayerInfoName);
+                restoreLayerResources(sourceRestoreFodler, ws, wms, ftFolder, ly, wmtsLayerInfoName);
             }
         }
     }
 
-    @SuppressWarnings("unchecked")
     private void restoreWMSLayer(
-            Resource sourceRestoreFolder, WorkspaceInfo ws, WMSStoreInfo wms, Resource wmsFolder, WMSLayerInfo wl)
+            Resource sourceRestoreFodler, WorkspaceInfo ws, WMSStoreInfo wms, Resource wmsFolder, WMSLayerInfo wl)
             throws Exception {
         // - Prepare Folder
         Files.delete(wmsFolder.get(wl.getName()).dir());
@@ -937,13 +977,13 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
         for (LayerInfo ly : getCatalog().getLayers(wl)) {
             if (!filteredResource(ly, ws, true, LayerInfo.class)) {
                 String wmsLayerInfoName = wl.getName();
-                restoreLayerResources(sourceRestoreFolder, ws, wms, ftFolder, ly, wmsLayerInfoName);
+                restoreLayerResources(sourceRestoreFodler, ws, wms, ftFolder, ly, wmsLayerInfoName);
             }
         }
     }
 
     private void restoreLayerResources(
-            Resource sourceRestoreFolder,
+            Resource sourceRestoreFodler,
             WorkspaceInfo ws,
             HTTPStoreInfo httpStoreInfo,
             Resource ftFolder,
@@ -952,7 +992,7 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
             throws Exception {
         doWrite(ly, ftFolder, "layer.xml");
 
-        Resource ftResource = sourceRestoreFolder.get(
+        Resource ftResource = sourceRestoreFodler.get(
                 Paths.path("workspaces/" + ws.getName() + "/" + httpStoreInfo.getName(), wmsLayerInfoName));
         List<Resource> resources = Resources.list(
                 ftResource,
@@ -995,6 +1035,7 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
             // TODO: perform more tests and integrity checks on reloaded configuration
 
             // Store GWC Providers Configurations
+            // Use direct file copy to avoid acquiring locks through gwcProvider.in()
             Resource targetGWCProviderBackupDir =
                     BackupUtils.dir(targetBackupFolder, GeoserverXMLResourceProvider.DEFAULT_CONFIGURATION_DIR_NAME);
 
@@ -1002,71 +1043,18 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                     GeoServerExtensions.extensions(GeoserverXMLResourceProvider.class)) {
                 Resource providerConfigFile = Resources.fromPath(gwcProvider.getLocation());
                 if (Resources.exists(providerConfigFile) && FileUtils.sizeOf(providerConfigFile.file()) > 0) {
-                    Resources.copy(gwcProvider.in(), targetGWCProviderBackupDir, providerConfigFile.name());
+                    // Use direct file copy instead of gwcProvider.in() to avoid lock acquisition
+                    try (FileInputStream fis = new FileInputStream(providerConfigFile.file())) {
+                        Resources.copy(fis, targetGWCProviderBackupDir, providerConfigFile.name());
+                    }
                 }
             }
 
-            // Store GWC Layers Configurations
-            // TODO: This should be done using the spring-batch item reader/writer, since it is not
-            // safe to save tons of single XML files.
-            //       Nonetheless, given the default implementation of GWC Catalog does not have much
-            // sense to refactor this code now.
-            final TileLayerCatalog gwcCatalog = (TileLayerCatalog) GeoServerExtensions.bean("GeoSeverTileLayerCatalog");
-
-            if (gwcCatalog != null) {
-                final XMLConfiguration gwcXmlPersisterFactory =
-                        (XMLConfiguration) GeoServerExtensions.bean("gwcXmlConfig");
-                final GeoServerResourceLoader resourceLoader = new GeoServerResourceLoader(targetBackupFolder.dir());
-
-                final DefaultTileLayerCatalog gwcBackupCatalog =
-                        new DefaultTileLayerCatalog(resourceLoader, gwcXmlPersisterFactory);
-                gwcBackupCatalog.initialize();
-
-                for (String layerName : gwcCatalog.getLayerNames()) {
-                    backupGwcLayer(gwcCatalog, gwcBackupCatalog, layerName);
-                }
-            }
+            // Store GWC Layers Configurations by copying files directly
+            backupGwcLayersDirect(targetBackupFolder, false);
 
         } catch (Exception e) {
             logValidationExceptions(null, e);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private void backupGwcLayer(
-            final TileLayerCatalog gwcCatalog, final DefaultTileLayerCatalog gwcBackupCatalog, String layerName) {
-        GeoServerTileLayerInfo gwcLayerInfo = gwcCatalog.getLayerByName(layerName);
-
-        // Persist the GWC Layer Info into the backup folder
-        boolean persistResource = false;
-
-        LayerInfo layerInfo = getCatalog().getLayerByName(layerName);
-
-        if (layerInfo != null) {
-            WorkspaceInfo ws = getLayerWorkspace(layerInfo);
-
-            if (!filteredResource(layerInfo, ws, true, LayerInfo.class)) {
-                persistResource = true;
-            }
-        } else {
-            try {
-                LayerGroupInfo layerGroupInfo = getCatalog().getLayerGroupByName(layerName);
-                if (layerGroupInfo != null) {
-                    WorkspaceInfo ws = getLayerGroupWorkspace(layerGroupInfo);
-
-                    if (!filteredResource(ws, false)) {
-                        persistResource = true;
-                    }
-                }
-            } catch (NullPointerException e) {
-                if (getCurrentJobExecution() != null) {
-                    getCurrentJobExecution().addWarningExceptions(List.of(e));
-                }
-            }
-        }
-
-        if (persistResource) {
-            gwcBackupCatalog.save(gwcLayerInfo);
         }
     }
 
@@ -1078,7 +1066,7 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
     }
 
     private WorkspaceInfo getLayerWorkspace(LayerInfo layerInfo) {
-        return layerInfo.getResource() != null
+        WorkspaceInfo ws = layerInfo.getResource() != null
                         && layerInfo.getResource().getStore() != null
                         && layerInfo.getResource().getStore().getWorkspace() != null
                 ? getCatalog()
@@ -1088,6 +1076,7 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
                                 .getWorkspace()
                                 .getName())
                 : null;
+        return ws;
     }
 
     /**

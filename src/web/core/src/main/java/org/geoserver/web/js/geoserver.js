@@ -11,10 +11,6 @@
             const tabRowTop = pageHeaderBoundingClientRect.height;
             if (tabRow) {
                 tabRow.style.top = `${tabRowTop}px`;
-                const links = tabRow.querySelectorAll('a');
-                [...links].forEach(link => {
-                    link.addEventListener('click', () => setTimeout(() => updateHeaderStickyPosition(), 300));
-                });
             }
             const tabRowBoundingClientRect = tabRow ? tabRow.getBoundingClientRect() : { height: 0 };
             const tableHeaderTop = tabRowBoundingClientRect.height + pageHeaderBoundingClientRect.height;
@@ -24,6 +20,25 @@
         }
         updateHeaderStickyPosition();
         window.addEventListener('resize', updateHeaderStickyPosition);
+        // we need to control changes inside the page
+        // when tab are controlled via js (e.g.: style editor page)
+        const page = document.querySelector('#page');
+        if (page) {
+            let timeout = undefined;
+            const observer = new MutationObserver(() => {
+                if (timeout) {
+                    clearTimeout(timeout);
+                    timeout = undefined;
+                }
+                timeout = setTimeout(() => {
+                    updateHeaderStickyPosition();
+                }, 300)
+            });
+            observer.observe(page, {
+                subtree: true,
+                childList: true,
+            });
+        }
 
         // enabled sidebar menu button on small screen
         function initializeNavigationMenu() {

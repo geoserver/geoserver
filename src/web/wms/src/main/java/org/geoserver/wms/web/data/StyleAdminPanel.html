@@ -6,15 +6,15 @@
   </head>
   <body>
     <wicket:panel>
-      <div class="clearfix pt-4">
-          <fieldset class="float-start style-data-span">
+      <div>
+          <fieldset class="style-data-span">
             <legend>
               <span><wicket:message key="styleDataSpan">Style Info</wicket:message></span>
             </legend>
             <div class="gn-unordered-list-class">
               <div class="gn-list-item-class">
                 <label for="name"><wicket:message key="name">Name</wicket:message></label>
-                <input wicket:id="name" class="text"></input>
+                <input wicket:id="name" type="text"></input>
               </div>
               <div class="gn-list-item-class">
                 <label for="workspace"><wicket:message key="workspace">Workspace</wicket:message></label>
@@ -28,7 +28,7 @@
                 </div>
               </div>
             </div>
-          <div class="top-padding-2em"><fieldset class="bottom-margin-0em">
+          <fieldset class="bottom-margin-0em">
             <legend>
               <span><wicket:message key="styleContentSpan">Style Content</wicket:message></span>
             </legend>
@@ -49,9 +49,10 @@
                 <a href="#" wicket:id="upload"><wicket:message key="upload">Upload</wicket:message></a>
               </div>
             </div>
-          </fieldset></div>
           </fieldset>
-          <fieldset class="float-start style-legend-span">
+          </fieldset>
+          </fieldset>
+          <fieldset class="style-legend-span">
             <legend>
               <span><wicket:message key="legendSpan">Legend</wicket:message></span>
             </legend>

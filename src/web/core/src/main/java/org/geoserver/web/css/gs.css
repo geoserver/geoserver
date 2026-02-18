@@ -177,7 +177,7 @@ body {
   position: sticky;
   top: 0;
   background-color: var(--gs-body-bg);
-  z-index: 10;
+  z-index: 15;
 }
 
 .header-panel {
@@ -289,6 +289,10 @@ fieldset > * {
 
 fieldset + fieldset {
   margin-top: 0.5rem;
+}
+
+fieldset {
+  padding: 0.5rem 0;
 }
 
 form input[type=text],
@@ -1181,4 +1185,114 @@ choiceItem, choiceList items
 
 label ~ .choiceItem {
   display: inline-block;
+}
+
+/*--------------
+Style editor
+--------------*/
+
+/* Fullscreen */
+#fullscreen-div {
+  display: block;
+  position: fixed;
+  z-index: 20;
+  top: 1.5rem;
+  right: 1.5rem;
+}
+#fullscreen-div img {
+  display: block;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  width: 1rem;
+  height: 1rem;
+  background-image: url(../img/icons/silk/arrow_out.png);
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+#page.fullscreen {
+  position: fixed;
+  top: 0; 
+  left: 0; 
+  right: 0; 
+  bottom: 0;
+  padding: 0px;
+  border-right: 10px;
+  margin: 0px !important;
+  overflow-y: hidden;
+  z-index: 9;
+  background: var(--gs-body-bg);
+  display: flex;
+  flex-direction: column;
+}
+
+#page.fullscreen .page-pane {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+#fullscreen-div img.fullscreen-image-in {
+  background-image: url(../img/icons/silk/arrow_inwards.png);
+}
+.fullscreen #header-title {
+   font-size: 1.5rem;
+   font-weight: bold;
+}
+.fullscreen #header-description {
+   display: none;
+}
+.fullscreen #styleForm {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -moz-box-orient: vertical;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  flex: 1;
+  min-height: 0;
+}
+.fullscreen #styleForm #style-context {
+  -webkit-box-ordinal-group: 2;
+  -moz-box-ordinal-group: 2;
+  -ms-flex-order: 2;
+  -webkit-order: 2;
+  order: 2;
+  width: 50%;
+  height: 100%;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+.fullscreen #styleForm #style-context .tab-panel {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 0;
+}
+.fullscreen #styleForm #style-editor {
+  -webkit-box-ordinal-group: 1;
+  -moz-box-ordinal-group: 1;
+  -ms-flex-order: 1;
+  -webkit-order: 1;
+  order: 1;
+  width: 50%;
+  padding: 1rem;
+  height: 100%;
+}
+
+#page.fullscreen .table-header,
+#page.fullscreen .tab-row {
+  top: 0 !important;
+}
+
+/* Style editor code container */
+.codemirror {
+  border: 1px solid var(--gs-border-color);
+  padding-bottom: 3px;
 }

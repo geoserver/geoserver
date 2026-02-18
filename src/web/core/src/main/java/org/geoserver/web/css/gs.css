@@ -273,16 +273,9 @@ body {
     }
 }
 
-/* Temporary style to hide bullets in fieldset */
-form ul,
-fieldset ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
 
-form ul li,
-fieldset ul li,
+form .gn-list-item-class,
+fieldset .gn-list-item-class,
 fieldset > * {
   margin-bottom: 0.5rem;
 }
@@ -304,7 +297,6 @@ form .select2,
 form textarea  {
   max-width: 50ch;
 }
-/* End of temporary style to hide bullets in fieldset */
 
 a {
   text-decoration: none;

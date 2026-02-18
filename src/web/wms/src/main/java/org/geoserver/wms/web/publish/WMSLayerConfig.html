@@ -33,26 +33,26 @@
         </div>
         <div class="gn-list-item-class">
           <label for="buffer"><wicket:message key="defaultRenderingBuffer">def. rendering buffer</wicket:message></label>
-          <input id="buffer" class="text" wicket:id="renderingBuffer" type="text"></input>
+          <input id="buffer" wicket:id="renderingBuffer" type="text"></input>
         </div>
       </div>
       <div class="gn-unordered-list-class">
         <div class="gn-list-item-class">
           <label for="wmsPath"><wicket:message key="defaultWmsPath">Default WMS Path</wicket:message></label>
-          <input id="wmsPath" class="text" wicket:id="wmsPath" type="text"></input>
+          <input id="wmsPath" wicket:id="wmsPath" type="text"></input>
         </div>
       </div>
       <div class="gn-unordered-list-class">
         <div class="gn-list-item-class">
           <label for="defaultInterpolationMethod"><wicket:message key="interpolationLabel">Default Interpolation Method</wicket:message></label>
-          <select id="defaultInterpolationMethod" wicket:id="defaultInterpolationMethod" class="text"/>
+          <select id="defaultInterpolationMethod" wicket:id="defaultInterpolationMethod"/>
         </div>
       </div>
       <div class="gn-unordered-list-class" id="remotestyles" wicket:id="remotestyles">
       <h3><wicket:message key="remoteDefaultTitle">Cascaded WMS Settings</wicket:message></h3>
         <div class="gn-list-item-class">
           <label for="remoteStylesDropDown"><wicket:message key="remoteStylesLabel">Default Remote Style</wicket:message></label>
-          <select id="remoteStylesDropDown" wicket:id="remoteStylesDropDown" class="text"/>
+          <select id="remoteStylesDropDown" wicket:id="remoteStylesDropDown"/>
         </div>
         <div class="gn-list-item-class">
           <label for="extraRemoteStyles"><wicket:message key="extraRemoteStylesLabel">Additional Remote Styles</wicket:message></label>
@@ -95,7 +95,7 @@
         <h3><span><wicket:message key="vendorParametersTitle">Vendor Properties</wicket:message></span></h3>
         <div class="gn-list-item-class">
           <label for="vendorParameters"><wicket:message key="vendorParametersLabel">Enter Key Value Pairs</wicket:message></label>
-          <textarea wicket:id="vendorParameters" id="vendorParameters" class="input textarea" rows="10" cols="30" ></textarea>
+          <textarea wicket:id="vendorParameters" id="vendorParameters" class="input" rows="10" cols="30" ></textarea>
         </div>
       </div>
     </fieldset>

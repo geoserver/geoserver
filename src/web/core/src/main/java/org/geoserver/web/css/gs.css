@@ -1364,3 +1364,10 @@ form .palette-choices,
 form .palette-selected {
   max-width: 50ch;
 }
+/* logs textarea */
+#logs {
+  height: calc(100vh - 14.5em);
+}
+#dumpContent {
+  height: calc(100vh - 17.5em);
+}

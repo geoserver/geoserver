@@ -25,7 +25,7 @@
       </legend>
       <div class="gn-unordered-list-class">
         <div class="gn-list-item-class">
-          <textarea class="input textarea" rows="10" cols="30" wicket:id="srs"></textarea>
+          <textarea class="input" rows="10" cols="30" wicket:id="srs"></textarea>
         </div>
         <div class="gn-list-item-class choiceItem">
           <input type="checkbox" wicket:id="bBOXForEachCRS"></input>
@@ -40,7 +40,7 @@
       </legend>
       <div class="gn-unordered-list-class">
         <div class="gn-list-item-class">
-          <textarea class="input textarea" rows="10" cols="30" wicket:id="allowedURLsForAuthForwarding"></textarea>
+          <textarea class="input" rows="10" cols="30" wicket:id="allowedURLsForAuthForwarding"></textarea>
         </div>
       </div>
     </fieldset>
@@ -98,7 +98,7 @@
        </div>
        <div class="gn-list-item-class">
           <label><wicket:message key="kmScore">Raster/vector threshold (0-100, default 40)</wicket:message></label>
-          <input type="text" class="text" wicket:id="kml.kmscore"/>
+          <input type="text" wicket:id="kml.kmscore"/>
         </div>
       </div>
     </fieldset>
@@ -108,19 +108,19 @@
       <div class="gn-unordered-list-class">
         <div class="gn-list-item-class">
           <label><wicket:message key="maxRequestMemory">Max rendering memory</wicket:message></label>
-          <input type="text" wicket:id="maxRequestMemory" class="field text"/>
+          <input type="text" wicket:id="maxRequestMemory" class="field"/>
         </div>
         <div class="gn-list-item-class">
           <label><wicket:message key="maxRenderingTime">Max rendering time</wicket:message></label>
-          <input type="text" wicket:id="maxRenderingTime" class="field text"/>
+          <input type="text" wicket:id="maxRenderingTime" class="field"/>
         </div>
         <div class="gn-list-item-class">
           <label><wicket:message key="maxRenderingErrors">Max rendering errors</wicket:message></label>
-          <input type="text" wicket:id="maxRenderingErrors" class="field text"/>
+          <input type="text" wicket:id="maxRenderingErrors" class="field"/>
         </div>
         <div class="gn-list-item-class">
           <label><wicket:message key="maxRequestedDimensionValues">Max requested dimension values</wicket:message></label>
-          <input type="text" wicket:id="maxRequestedDimensionValues" class="field text"/>
+          <input type="text" wicket:id="maxRequestedDimensionValues" class="field"/>
         </div>
       </div>
     </fieldset>
@@ -130,7 +130,7 @@
       <div class="gn-unordered-list-class">
         <div class="gn-list-item-class">
           <label><wicket:message key="maxBuffer">Max buffer</wicket:message></label>
-          <input type="text" wicket:id="maxBuffer" class="field text"/>
+          <input type="text" wicket:id="maxBuffer" class="field"/>
         </div>
       </div>
     </fieldset>
@@ -154,12 +154,12 @@
         </div>
         <div class="gn-list-item-class">
           <label><wicket:message key="watermarkUrl">Watermark URL</wicket:message></label>
-          <input wicket:id="watermark.uRL" class="field text" type="text"></input>
+          <input wicket:id="watermark.uRL" class="field" type="text"></input>
           <a href="#" wicket:id="chooser"><wicket:message key="browse">...</wicket:message></a>
         </div>
         <div class="gn-list-item-class">
           <label><wicket:message key="watermarkTransparency">Watermark Transparency (0 - 100)</wicket:message></label>
-          <input wicket:id="watermark.transparency" class="field text" type="text"></input>
+          <input wicket:id="watermark.transparency" class="field" type="text"></input>
         </div>
         <div class="gn-list-item-class">
           <label><wicket:message key="watermarkPosition">Watermark Position</wicket:message></label>
@@ -173,7 +173,7 @@
       <div class="gn-unordered-list-class">
         <div class="gn-list-item-class">
           <label><wicket:message key="pngCompression">Compression level (0-100, default 25)</wicket:message></label>
-          <input class="text" type="text" wicket:id="png.compression"></input>
+          <input type="text" wicket:id="png.compression"></input>
         </div>
       </div>
     </fieldset>
@@ -183,7 +183,7 @@
       <div class="gn-unordered-list-class">
         <div class="gn-list-item-class">
           <label><wicket:message key="jpegCompression">Compression level (0-100, default 25)</wicket:message></label>
-          <input class="text" type="text" wicket:id="jpeg.compression"></input>
+          <input type="text" wicket:id="jpeg.compression"></input>
         </div>
       </div>
     </fieldset>
@@ -291,11 +291,11 @@
         </div>
         <div class="gn-list-item-class">
           <label><wicket:message key="cacheEntries">Max entries</wicket:message></label>
-          <input class="text" type="text" wicket:id="cacheConfiguration.maxEntries"></input>
+          <input type="text" wicket:id="cacheConfiguration.maxEntries"></input>
         </div>
         <div class="gn-list-item-class">
           <label><wicket:message key="cacheEntrySize">Max entry size</wicket:message></label>
-          <input class="text" type="text" wicket:id="cacheConfiguration.maxEntrySize"></input>
+          <input type="text" wicket:id="cacheConfiguration.maxEntrySize"></input>
         </div>
       </div>
     </fieldset>
@@ -305,11 +305,11 @@
       <div class="gn-unordered-list-class">
         <div class="gn-list-item-class">
           <label><wicket:message key="remoteStyleTimeout">Timeout in milliseconds</wicket:message></label>
-          <input class="text" type="text" wicket:id="remoteStyleTimeout"></input>
+          <input type="text" wicket:id="remoteStyleTimeout"></input>
         </div>
         <div class="gn-list-item-class">
           <label><wicket:message key="remoteStyleMaxRequestTime">Max request time in milliseconds</wicket:message></label>
-          <input class="text" type="text" wicket:id="remoteStyleMaxRequestTime"></input>
+          <input type="text" wicket:id="remoteStyleMaxRequestTime"></input>
         </div>
       </div>
     </fieldset>
@@ -318,8 +318,8 @@
       <legend><span><wicket:message key="layerGroupCapabilitiesSettings">Layer Group Capabilities Settings</wicket:message></span></legend>
       <div class="gn-unordered-list-class">
         <div class="gn-list-item-class">
-          <label><wicket:message key="defaultGroupStyleEnabled">Default LayerGroup Style In GetCapabilities</wicket:message></label>
           <input type="checkbox" wicket:id="defaultGroupStyleEnabled"/>
+          <label><wicket:message key="defaultGroupStyleEnabled">Default LayerGroup Style In GetCapabilities</wicket:message></label>
         </div>
       </div>
     </fieldset>

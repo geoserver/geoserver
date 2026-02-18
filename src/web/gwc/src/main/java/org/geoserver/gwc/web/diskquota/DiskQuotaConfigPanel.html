@@ -10,13 +10,13 @@
         </div>
         <div class="gn-list-item-class">
           <label for="cleanUpFreq"><wicket:message key="cleanUpFreq">Force cache disk quota is exceeded every:</wicket:message></label>
-          <input class="text w-80px" wicket:id="cleanUpFreq" id="cleanUpFreq" type="text"/>
+          <input class="w-80px" wicket:id="cleanUpFreq" id="cleanUpFreq" type="text"/>
           <wicket:message key="cleanUpFreqUnits">minutes</wicket:message>
           <div wicket:id="cleanUpLastRun">(Last run: X minutes ago.)</div>
         </div>
         <div class="gn-list-item-class">
           <label for="globalQuota"><wicket:message key="setGlobalQuota">Set cache disk quota to:</wicket:message></label>
-          <input class="text w-80px" wicket:id="globalQuota" id="globalQuota" type="text"/>
+          <input class="w-80px" wicket:id="globalQuota" id="globalQuota" type="text"/>
           <select class="text" id="globalQuotaUnits" wicket:id="globalQuotaUnits"></select>
           <div wicket:id="globalQuotaProgressBar"></div>
         </div>
@@ -51,7 +51,7 @@
 	           	<div class="gn-unordered-list-class">
 		            <div class="gn-list-item-class" wicket:id="jndiLocationContainer">
 			          <label for="jndiLocation"><wicket:message key="jndiLocation">jdniLocation:</wicket:message></label>
-			          <input type="text" class="text" id="jndiLocation" wicket:id="jndiLocation">
+			          <input type="text" id="jndiLocation" wicket:id="jndiLocation">
 		            </div>
 		            <div class="gn-list-item-class" wicket:id="connectionPoolConfigurator"></div>
 		        </div>

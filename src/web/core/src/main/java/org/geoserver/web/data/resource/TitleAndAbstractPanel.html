@@ -6,9 +6,11 @@
     <div class="gn-unordered-list-class i18n-tile-and-abstract">
         <div class="gn-list-item-class">
             <span wicket:id="titleLabel">
-                  <label class="float-start" for="title" wicket:id="titleLabel" />
-                    <input class="float-start" type="checkbox" wicket:id="titleLabel_i18nCheckbox" />
+                <label for="title" wicket:id="titleLabel" />
+                <div class="choiceItem">
+                    <input type="checkbox" wicket:id="titleLabel_i18nCheckbox" />
                     <label><wicket:message key="i18nCheckBox">i18n</wicket:message></label>
+                </div>
             </span>
         </div>
         <div class="gn-list-item-class">
@@ -19,9 +21,11 @@
         </div>
         <div class="gn-list-item-class">
             <span wicket:id="abstractLabel">
-               <label class="float-start" for="abstract" wicket:id="abstractLabel" />
-                <input class="float-start" type="checkbox" wicket:id="abstractLabel_i18nCheckbox" />
-                <label><wicket:message key="i18nCheckBox">i18n</wicket:message></label>
+                <label for="abstract" wicket:id="abstractLabel" />
+                <div class="choiceItem">
+                    <input type="checkbox" wicket:id="abstractLabel_i18nCheckbox" />
+                    <label><wicket:message key="i18nCheckBox">i18n</wicket:message></label>
+               </div>
             </span>
         </div>
         <div class="gn-list-item-class">

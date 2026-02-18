@@ -1296,3 +1296,71 @@ Style editor
   border: 1px solid var(--gs-border-color);
   padding-bottom: 3px;
 }
+
+
+
+/* Palette theme */
+.palette-theme-default {
+  display: block;
+}
+.palette-theme-default .palette-header {
+  display: block;
+  text-align: center;
+  padding: 0.5rem 0.25rem;
+  font-family: var(--gs-body-font-family);
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--gs-primary-text-emphasis);
+  background-color: var(--gs-info-bg-subtle);
+  border-top: var(--gs-border-width) var(--gs-border-style) var(--gs-info-border-subtle);
+  border-left: var(--gs-border-width) var(--gs-border-style) var(--gs-info-border-subtle);
+  border-right: var(--gs-border-width) var(--gs-border-style) var(--gs-info-border-subtle);
+  border-bottom: 0;
+  border-top-left-radius: var(--gs-border-radius);
+  border-top-right-radius: var(--gs-border-radius);
+}
+
+.palette-theme-default .palette-choices select,
+.palette-theme-default .palette-selected select {
+  width: 100%;
+  min-width: 100%;
+  box-sizing: border-box;
+  border: var(--gs-border-width) var(--gs-border-style) var(--gs-border-color);
+  border-radius: var(--gs-border-radius);
+  padding: 0.5rem;
+  font-family: var(--gs-body-font-family);
+  color: var(--gs-body-color);
+  background-color: var(--gs-body-bg);
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.palette-theme-default .palette-buttons button {
+  display: block;
+  padding: 0.25rem;
+  margin: 0.25rem auto;
+  cursor: pointer;
+  border: var(--gs-border-width) var(--gs-border-style) var(--gs-border-color);
+  border-radius: var(--gs-border-radius-sm);
+  background-color: var(--gs-tertiary-bg);
+  transition: all 0.2s ease-in-out;
+}
+
+.palette-theme-default .palette-buttons button div {
+  width: auto;
+  height: auto;
+}
+.palette-theme-default .palette-buttons button div:after {
+  display: block;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+.palette-theme-default .palette-buttons button:hover {
+  background-color: var(--gs-primary-bg-subtle);
+  border-color: var(--gs-primary);
+}
+
+form .palette-choices,
+form .palette-selected {
+  max-width: 50ch;
+}

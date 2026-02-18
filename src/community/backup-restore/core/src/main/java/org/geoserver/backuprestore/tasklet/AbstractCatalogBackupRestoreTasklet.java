@@ -48,7 +48,7 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.StoppableTasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.util.Assert;
 
@@ -165,7 +165,7 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
 
     private StepExecution execution = null;
 
-    private TaskExecutor taskExecutor = new SimpleAsyncTaskExecutor();
+    private TaskExecutor taskExecutor = new SyncTaskExecutor();
 
     private boolean interruptOnCancel = false;
 

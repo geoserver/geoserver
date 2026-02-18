@@ -298,6 +298,7 @@ fieldset {
 form input[type=text],
 form input[type=number],
 form input[type=password],
+form input[type=file],
 form select,
 form .select2,
 form textarea  {
@@ -333,7 +334,8 @@ textarea {
 textarea,
 input[type=text],
 input[type=number],
-input[type=password] {
+input[type=password],
+input[type=file] {
   display: block;
   width: 100%;
   padding: 0.375rem 0.75rem;
@@ -354,6 +356,7 @@ input[type=password] {
   input[type=text],
   input[type=number],
   input[type=password],
+  input[type=file],
   textarea {
     transition: none;
   }
@@ -367,6 +370,7 @@ input[type=file]:not(:disabled):not([readonly]) {
 input[type=text]:focus,
 input[type=number]:focus,
 input[type=password]:focus,
+input[type=file]:focus,
 textarea:focus {
   color: var(--gs-body-color);
   background-color: var(--gs-body-bg);
@@ -374,34 +378,21 @@ textarea:focus {
   outline: 0;
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
-input[type=text]::-webkit-date-and-time-value,
-input[type=number]::-webkit-date-and-time-value,
-input[type=password]::-webkit-date-and-time-value {
-  min-width: 85px;
-  height: 1.5em;
-  margin: 0;
-}
-input[type=text]::-webkit-datetime-edit,
-input[type=number]::-webkit-datetime-edit,
-input[type=password]::-webkit-datetime-edit {
-  display: block;
-  padding: 0;
-}
 input[type=text]::placeholder,
 input[type=number]::placeholder,
-input[type=password]::placeholder {
+input[type=password]::placeholder,
+input[type=file]::placeholder {
   color: var(--gs-secondary-color);
   opacity: 1;
 }
 input[type=text]:disabled,
 input[type=number]:disabled,
-input[type=password]:disabled {
+input[type=password]:disabled,
+input[type=file]:disabled {
   background-color: var(--gs-secondary-bg);
   opacity: 1;
 }
-input[type=text]::-webkit-file-upload-button,
-input[type=number]::-webkit-file-upload-button,
-input[type=password]::-webkit-file-upload-button {
+input[type=file]::-webkit-file-upload-button {
   padding: 0.375rem 0.75rem;
   margin: -0.375rem -0.75rem;
   -webkit-margin-end: 0.75rem;
@@ -417,9 +408,7 @@ input[type=password]::-webkit-file-upload-button {
   -webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
-input[type=text]::file-selector-button,
-input[type=number]::file-selector-button,
-input[type=password]::file-selector-button {
+input[type=file]::file-selector-button {
   padding: 0.375rem 0.75rem;
   margin: -0.375rem -0.75rem;
   -webkit-margin-end: 0.75rem;
@@ -435,26 +424,18 @@ input[type=password]::file-selector-button {
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 @media (prefers-reduced-motion: reduce) {
-  input[type=text]::-webkit-file-upload-button,
-  input[type=number]::-webkit-file-upload-button,
-  input[type=password]::-webkit-file-upload-button {
+  input[type=file]::-webkit-file-upload-button {
     -webkit-transition: none;
     transition: none;
   }
-  input[type=text]::file-selector-button,
-  input[type=number]::file-selector-button,
-  input[type=password]::file-selector-button {
+  input[type=file]::file-selector-button {
     transition: none;
   }
 }
-input[type=text]:hover:not(:disabled):not([readonly])::-webkit-file-upload-button,
-input[type=number]:hover:not(:disabled):not([readonly])::-webkit-file-upload-button,
-input[type=password]:hover:not(:disabled):not([readonly])::-webkit-file-upload-button {
+input[type=file]:hover:not(:disabled):not([readonly])::-webkit-file-upload-button {
   background-color: var(--gs-secondary-bg);
 }
-input[type=text]:hover:not(:disabled):not([readonly])::file-selector-button,
-input[type=number]:hover:not(:disabled):not([readonly])::file-selector-button,
-input[type=password]:hover:not(:disabled):not([readonly])::file-selector-button {
+input[type=file]:hover:not(:disabled):not([readonly])::file-selector-button {
   background-color: var(--gs-secondary-bg);
 }
 

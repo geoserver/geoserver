@@ -13,7 +13,7 @@
     <div id="sidebar">
       <div id="brand">
         <a wicket:id="home" id="logo" href="#"></a>
-        <button id="navigation-menu">
+        <button id="sidebar-menu" class="button">
           <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'>
             <path stroke='currentColor' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22' />
           </svg>

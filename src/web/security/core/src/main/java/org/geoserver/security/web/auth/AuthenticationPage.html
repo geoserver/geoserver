@@ -15,7 +15,7 @@
         <label for="redirectURL">
           <wicket:message key="redirectURL"></wicket:message>
         </label>
-        <input id="redirectURL" wicket:id="redirectURL" type="text" class="text"/>
+        <input id="redirectURL" wicket:id="redirectURL" type="text"/>
       </div>
 
     </fieldset>
@@ -27,7 +27,7 @@
         <label for="sslPort">
           <wicket:message key="sslPort"></wicket:message>
         </label>
-        <input id="sslPort" wicket:id="sslPort" type="text" class="text"/>
+        <input id="sslPort" wicket:id="sslPort" type="text"/>
       </div>
 
     </fieldset>
@@ -36,7 +36,7 @@
       <legend><span><wicket:message key="bruteForceSettings"></wicket:message></span></legend>
 
       <div class="choiceItem py-1">
-        <input id="bfEnabled" wicket:id="bfEnabled" type="checkbox" class="field checkbox"/>
+        <input id="bfEnabled" wicket:id="bfEnabled" type="checkbox" class="field"/>
         <label for="bfEnabled">
           <wicket:message key="bfEnabled"></wicket:message>
         </label>
@@ -45,25 +45,25 @@
         <label for="bfMinDelaySeconds">
           <wicket:message key="bfMinDelaySeconds"></wicket:message>
         </label>
-        <input id="bfMinDelaySeconds" wicket:id="bfMinDelaySeconds" type="text" class="text"/>
+        <input id="bfMinDelaySeconds" wicket:id="bfMinDelaySeconds" type="text"/>
       </div>
       <div class="py-1">
         <label for="bfMaxDelaySeconds">
           <wicket:message key="bfMaxDelaySeconds"></wicket:message>
         </label>
-        <input id="bfMaxDelaySeconds" wicket:id="bfMaxDelaySeconds" type="text" class="text"/>
+        <input id="bfMaxDelaySeconds" wicket:id="bfMaxDelaySeconds" type="text"/>
       </div>
       <div class="py-1">
         <label for="bfWhitelistedNetmasks">
           <wicket:message key="bfWhitelistedNetmasks"></wicket:message>
         </label>
-        <input id="bfWhitelistedNetmasks" wicket:id="bfWhitelistedNetmasks" type="text" class="text"/>
+        <input id="bfWhitelistedNetmasks" wicket:id="bfWhitelistedNetmasks" type="text"/>
       </div>
       <div class="py-1">
         <label for="bfMaxBlockedThreads">
           <wicket:message key="bfMaxBlockedThreads"></wicket:message>
         </label>
-        <input id="bfMaxBlockedThreads" wicket:id="bfMaxBlockedThreads" type="text" class="text"/>
+        <input id="bfMaxBlockedThreads" wicket:id="bfMaxBlockedThreads" type="text"/>
       </div>
 
     </fieldset>
@@ -109,10 +109,10 @@
     </fieldset>
 
     <div class="button-group toolbar-sticky selfclear">
-      <a href="#" class="form-button-save" wicket:id="save">
+      <a href="#" class="form-button-save button primary" wicket:id="save">
         <wicket:message key="save"></wicket:message>
       </a>
-      <a href="#" class="form-button-cancel" wicket:id="cancel">
+      <a href="#" class="form-button-cancel button outline-danger" wicket:id="cancel">
         <wicket:message key="cancel"></wicket:message>
       </a>
     </div>

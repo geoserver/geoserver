@@ -21,13 +21,13 @@
         <label for="name">
           <wicket:message key="name"></wicket:message>
         </label>
-        <input type="text" wicket:id="name" class="text"/>
+        <input type="text" wicket:id="name"/>
       </div>
       <div class="py-1">
         <label for="patternString">
           <wicket:message key="patternString"></wicket:message>
         </label>
-        <input type="text" wicket:id="patternString" class="text"/>
+        <input type="text" wicket:id="patternString"/>
       </div>
       <div class="choiceItem py-1">
         <input id="disabled" wicket:id="disabled" type="checkbox"/>
@@ -100,10 +100,10 @@
 
 
     <div class="button-group toolbar-sticky selfclear">
-      <a href="#" class="form-button-save" wicket:id="close">
+      <a href="#" class="form-button-save button primary" wicket:id="close">
         <wicket:message key="close">Save</wicket:message>
       </a>
-      <a href="#" class="form-button-cancel" wicket:id="cancel">
+      <a href="#" class="form-button-cancel button outline-danger" wicket:id="cancel">
         <wicket:message key="cancel">Cancel</wicket:message>
       </a>
     </div>

@@ -6,11 +6,11 @@
       <div class="gn-unordered-list-class">
         <div class="gn-list-item-class">
           <label for="maxFeatures"><wicket:message key="maxNumberOfFeatures">Maximum number of features</wicket:message></label>
-          <input id="maxNumberOfFeatures" wicket:id="maxFeatures" class="field text" type="text"></input>
+          <input id="maxNumberOfFeatures" wicket:id="maxFeatures" class="field" type="text"></input>
         </div>
         <div class="gn-list-item-class">
           <label for="maxNumberOfFeaturesForPreview"><wicket:message key="maxNumberOfFeaturesForPreview">Maximum number of features for preview (Values &lt= 0 use the maximum number of features)</wicket:message></label>
-          <input class="field text" wicket:id="maxNumberOfFeaturesForPreview" type="text"></input>
+          <input class="field" wicket:id="maxNumberOfFeaturesForPreview" type="text"></input>
         </div>
         <div class="gn-list-item-class choiceItem">
           <input wicket:id="featureBounding" type="checkbox"></input>
@@ -33,14 +33,14 @@
       </legend>
       <div class="gn-unordered-list-class">
         <div class="gn-list-item-class">
-          <textarea class="input textarea" rows="10" cols="30" wicket:id="srs"></textarea>
+          <textarea class="input" rows="10" cols="30" wicket:id="srs"></textarea>
         </div>
       </div>
     </fieldset>
     <fieldset>
       <legend><span><wicket:message key="csv.title">CSV</wicket:message></span></legend>
       <label for="csvDateFormat"><wicket:message key="csvDateFormat">Date Format</wicket:message></label>
-      <input class="field text" wicket:id="csvDateFormat" type="text"></input>
+      <input class="field" wicket:id="csvDateFormat" type="text"></input>
     </fieldset>
     <fieldset>
       <legend><span><wicket:message key="serviceLevel">Service Level</wicket:message></span></legend>

@@ -21,7 +21,7 @@
         <label>
             <wicket:message key="userNameHeaderAttributeName"></wicket:message>
         </label>
-        <input class="field text" wicket:id="userNameHeaderAttributeName"/>
+        <input class="field" wicket:id="userNameHeaderAttributeName" type="text"/>
         <br>
         <label>
             <wicket:message key="formatUserName"></wicket:message>
@@ -37,7 +37,7 @@
             <label>
                 <wicket:message key="userNamePath"></wicket:message>
             </label>
-            <input class="field text" wicket:id="userNameJsonPath"/>
+            <input class="field" wicket:id="userNameJsonPath" type="text"/>
         </div>
 
         <br>
@@ -47,7 +47,7 @@
         </legend>
 
         <div class="flex">
-            <input class="field checkbox" id="validateToken"
+            <input class="field" id="validateToken"
                   type="checkbox" wicket:id="validateToken"/>
             <label id="validateTokenLabel">
                 <wicket:message key="showTokenValidation"></wicket:message>
@@ -56,7 +56,7 @@
         <div id="validateTokenDiv" class="padLeftLarge padTopSmall">
         <div class="padtopLarge" >
             <div class="flex">
-                <input class="field checkbox autoTopBottom" id="validateTokenExpiry"
+                <input class="field autoTopBottom" id="validateTokenExpiry"
                        type="checkbox" wicket:id="validateTokenExpiry"/>
                 <label class="padLeftSmall">
                     <wicket:message key="validateTokenExpiry"></wicket:message>
@@ -68,7 +68,7 @@
 
 
             <div class="flex padTopLarge">
-                <input class="field checkbox autoTopBottom" id="validateTokenSignature"
+                <input class="field autoTopBottom" id="validateTokenSignature"
                          type="checkbox" wicket:id="validateTokenSignature"/>
                 <label  class="padLeftSmall" >
                     <wicket:message key="validateTokenSignatureText"></wicket:message>
@@ -78,13 +78,13 @@
                 <label>
                     <wicket:message key="validateTokenSignatureURL"></wicket:message>
                 </label>
-                <input class="field text" wicket:id="validateTokenSignatureURL"/>
+                <input class="field" wicket:id="validateTokenSignatureURL" type="text"/>
             </div>
 
 
         <div  class="padTopLarge">
             <div class="flex">
-                <input class="field checkbox autoTopBottom" id="validateTokenAgainstURL"
+                <input class="field autoTopBottom" id="validateTokenAgainstURL"
                          type="checkbox" wicket:id="validateTokenAgainstURL"/>
                 <label class="padLeftSmall" >
                     <wicket:message key="validateTokenAgainstURL"></wicket:message>
@@ -96,10 +96,10 @@
                     <wicket:message key="validateTokenAgainstURLText"></wicket:message>
                 </label>
                 <div>
-                    <input class="field text" wicket:id="validateTokenAgainstURLEndpoint"/>
+                    <input class="field" wicket:id="validateTokenAgainstURLEndpoint" type="text"/>
                 </div>
                 <div class="flex">
-                    <input class="field checkbox autoTopBottom" id="validateSubjectWithEndpoint"
+                    <input class="field autoTopBottom" id="validateSubjectWithEndpoint"
                             type="checkbox" wicket:id="validateSubjectWithEndpoint"/>
                     <label  class="padLeftSmall">
                         <wicket:message key="validateTokenAgainstURLSubject"></wicket:message>
@@ -112,7 +112,7 @@
 
         <div class="padTopLarge">
             <div class="flex">
-                <input class="field checkbox autoTopBottom" id="validateTokenAudience"
+                <input class="field autoTopBottom" id="validateTokenAudience"
                        type="checkbox" wicket:id="validateTokenAudience"/>
                 <label class="padLeftSmall">
                     <wicket:message key="validateTokenAudience"></wicket:message>
@@ -123,13 +123,13 @@
                     <wicket:message key="validateTokenAudienceClaimName"></wicket:message>
                 </label>
                 <div>
-                    <input class="field text" wicket:id="validateTokenAudienceClaimName"/>
+                    <input class="field" wicket:id="validateTokenAudienceClaimName" type="text"/>
                 </div>
                 <label>
                     <wicket:message key="validateTokenAudienceClaimValue"></wicket:message>
                 </label>
                 <div>
-                    <input class="field text" wicket:id="validateTokenAudienceClaimValue"/>
+                    <input class="field" wicket:id="validateTokenAudienceClaimValue" type="text"/>
                 </div>
 
             </div>

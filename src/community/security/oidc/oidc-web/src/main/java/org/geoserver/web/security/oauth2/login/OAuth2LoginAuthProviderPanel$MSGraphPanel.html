@@ -7,14 +7,14 @@
 
 
     <div class="display-flex">
-        <input class="field checkbox autoTopBottom" id="msGraphMemberOf"
+        <input class="field autoTopBottom" id="msGraphMemberOf"
                type="checkbox" wicket:id="msGraphMemberOf"/>
         <label class="padLeftSmall"  >
             <wicket:message key="msGraphMemberOf"></wicket:message>
         </label>
     </div>
     <div class="display-flex">
-        <input class="field checkbox autoTopBottom" id="msGraphAppRoleAssignments"
+        <input class="field autoTopBottom" id="msGraphAppRoleAssignments"
                type="checkbox" wicket:id="msGraphAppRoleAssignments"/>
         <label class="padLeftSmall"  >
             <wicket:message key="msGraphAppRoleAssignments"></wicket:message>
@@ -22,7 +22,7 @@
     </div>
     <div class="" id="msGraphObjectIdDiv">
         <div class="display-flex flex-column pad-checkbox">
-            <input class="field text autoTopBottom" id="msGraphAppRoleAssignmentsObjectId"
+            <input type="text" class="field autoTopBottom" id="msGraphAppRoleAssignmentsObjectId"
                      wicket:id="msGraphAppRoleAssignmentsObjectId"/>
             <label class="padLeftSmall"  >
                 <wicket:message key="msGraphAppRoleAssignmentsObjectId"></wicket:message>
@@ -42,14 +42,14 @@
       `oninput` fires when user changes the value - this will
       update the summary table.
     -->
-    <input class="field text width95" id="roleConverterString"
+    <input type="text" class="field width95" id="roleConverterString"
            wicket:id="roleConverterString"/>
 
     <label>
         <wicket:message key="roleConverterHint"></wicket:message>
     </label>
     <div class="display-flex">
-        <input class="field checkbox autoTopBottom" id="onlyExternalListedRoles"
+        <input class="field autoTopBottom" id="onlyExternalListedRoles"
                type="checkbox" wicket:id="onlyExternalListedRoles"/>
         <label class="padLeftSmall"  >
             <wicket:message key="roleConverterOnlyListedExternalRoles"></wicket:message>

@@ -8,7 +8,7 @@
     <div class="gn-unordered-list-class">
       <div class="gn-list-item-class">
         <label for="imageIOCacheThreshold"><wicket:message key="imageIOCacheThreshold">ImageIO cache threshold</wicket:message></label>
-        <input id="imageIOCacheThreshold" class="field text" type="text" wicket:id="imageIOCacheThreshold" />
+        <input id="imageIOCacheThreshold" class="field" type="text" wicket:id="imageIOCacheThreshold" />
       </div>
     </div>
   </fieldset>
@@ -17,15 +17,15 @@
     <div class="gn-unordered-list-class">
       <div class="gn-list-item-class">
          <label for="corePoolSize"><wicket:message key="corePoolSize">ThreadPoolExecutor Core Pool Size</wicket:message></label>
-         <input id="corePoolSize" class="field text" type="number" wicket:id="corePoolSize" />
+         <input id="corePoolSize" class="field" type="number" wicket:id="corePoolSize" />
       </div>
       <div class="gn-list-item-class">
         <label for="maxPoolSize"><wicket:message key="maxPoolSize">ThreadPoolExecutor Max Pool Size </wicket:message></label>
-        <input id="maxPoolSize" class="field text" type="number" wicket:id="maxPoolSize" />
+        <input id="maxPoolSize" class="field" type="number" wicket:id="maxPoolSize" />
       </div>
       <div class="gn-list-item-class">
         <label for="keepAliveTime"><wicket:message key="keepAliveTime">ThreadPoolExecutor Keep Alive Time (ms)</wicket:message></label>
-        <input id="keepAliveTime" class="field text" type="number" wicket:id="keepAliveTime" />
+        <input id="keepAliveTime" class="field" type="number" wicket:id="keepAliveTime" />
       </div>
       <div class="gn-list-item-class">
         <label><wicket:message key="queueType">Default QueueType</wicket:message></label>
@@ -33,9 +33,9 @@
       </div>
     </div>
     <div class="button-group toolbar-sticky selfclear">
-      <button type="submit" class="form-button-save" wicket:id="submit"><wicket:message key="save">save</wicket:message></button>
-      <a href="#a" class="form-button-apply" wicket:id="apply"><wicket:message key="apply">Apply</wicket:message></a>
-      <button type="submit" class="form-button-cancel" wicket:id="cancel"><wicket:message key="cancel">cancel</wicket:message></button>
+      <button type="submit" class="form-button-save primary" wicket:id="submit"><wicket:message key="save">save</wicket:message></button>
+      <a href="#a" class="form-button-apply button outline-primary" wicket:id="apply"><wicket:message key="apply">Apply</wicket:message></a>
+      <button type="submit" class="form-button-cancel outline-danger" wicket:id="cancel"><wicket:message key="cancel">cancel</wicket:message></button>
     </div>
   </fieldset>
   </form>

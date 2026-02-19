@@ -4,7 +4,7 @@
 <body>
    <wicket:panel>
       <br><wicket:message key="jsonPath"></wicket:message> <br>
-      <input wicket:id="tokenRolesClaim" class="field text" /><br>
+      <input wicket:id="tokenRolesClaim" class="field" type="text" /><br>
 
       <label class="padTopLarge" >
          <wicket:message key="roleConverterTitle"></wicket:message>
@@ -13,14 +13,14 @@
         `oninput` fires when user changes the value - this will
         update the summary table.
       -->
-      <input class="field text width95" id="roleConverterString"
+      <input type="text" class="field width95" id="roleConverterString"
              wicket:id="roleConverterString"/>
 
       <label>
          <wicket:message key="roleConverterHint"></wicket:message>
       </label>
       <div class="display-flex">
-         <input class="field checkbox autoTopBottom" id="onlyExternalListedRoles"
+         <input class="field autoTopBottom" id="onlyExternalListedRoles"
                 type="checkbox" wicket:id="onlyExternalListedRoles"/>
          <label class="padLeftSmall"  >
             <wicket:message key="roleConverterOnlyListedExternalRoles"></wicket:message>

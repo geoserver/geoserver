@@ -8,13 +8,13 @@
     	<div wicket:id="table"></div>
         
         <div class="button-group toolbar-sticky selfclear">
-              <button wicket:id="apply" class="form-button-save" type="submit"><wicket:message key="ok"/></button>
-              <button wicket:id="cancel" class="form-button-cancel" type="submit"><wicket:message key="cancel"/></button> 
+              <button wicket:id="apply" class="form-button-save primary" type="submit"><wicket:message key="ok"/></button>
+              <button wicket:id="cancel" class="form-button-cancel outline-danger" type="submit"><wicket:message key="cancel"/></button> 
          </div>
     </form>
 	
 	<wicket:fragment wicket:id="textEditor">
-		<label for="text" class="float-start w-10 fw-normal"><wicket:message key="max">max</wicket:message></label>
+		<label for="text" class="float-start w-slice fw-normal"><wicket:message key="max">max</wicket:message></label>
     <input type="text" class="w-25" wicket:id="text" />
 	</wicket:fragment>
     

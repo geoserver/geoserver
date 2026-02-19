@@ -11,7 +11,7 @@
         <label for="username">
           <wicket:message key="username">username</wicket:message>
         </label>
-        <input type="text" wicket:id="username" id="username" class="text"/>
+        <input type="text" wicket:id="username" id="username"/>
       </div>
       <div class="choiceItem py-1">
         <input type="checkbox" wicket:id="enabled" id="enabled"/>
@@ -23,13 +23,13 @@
         <label for="password">
           <wicket:message key="password">password</wicket:message>
         </label>
-        <input type="password" wicket:id="password" id="password" class="text"/>
+        <input type="password" wicket:id="password" id="password"/>
       </div>
       <div class="py-1">
         <label for="confirmPassword">
           <wicket:message key="confirmPassword">confirmPassword</wicket:message>
         </label>
-        <input type="password" wicket:id="confirmPassword" id="confirmPassword" class="text"/>
+        <input type="password" wicket:id="confirmPassword" id="confirmPassword"/>
       </div>
     </fieldset>
 
@@ -53,7 +53,7 @@
         <label>
           <wicket:message key="adminGroups"></wicket:message>
         </label>
-        <select class="select choicesSelect w-200px" wicket:id="adminGroups" multiple="multiple"></select>
+        <select class="select choicesSelect w-md" wicket:id="adminGroups" multiple="multiple"></select>
       </div>
     </fieldset>
 
@@ -69,8 +69,8 @@
     </fieldset>
 
     <div class="button-group toolbar-sticky selfclear">
-      <a href="#" class="form-button-save" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
-      <a href="#" class="form-button-cancel" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
+      <a href="#" class="form-button-save button primary" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
+      <a href="#" class="form-button-cancel button outline-danger" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
     </div>
   </form>
 </wicket:extend>

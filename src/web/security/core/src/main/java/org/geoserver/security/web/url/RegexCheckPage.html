@@ -18,13 +18,13 @@
                 <label for="regex"><wicket:message key="regexLabel">regex</wicket:message></label>
                 <input wicket:id="regex" id="regex" type="text" />
             </div>
-            <div class="gn-list-item-class">
-                <label for="enabled"><wicket:message key="enabledLabel">enable</wicket:message></label>
+            <div class="gn-list-item-class choiceItem">
                 <input wicket:id="enabled" id="enabled" type="checkbox"/>
+                <label for="enabled"><wicket:message key="enabledLabel">enable</wicket:message></label>
             </div>
             <div class="gn-list-item-class button-group selfclear">
-                <a href="#" wicket:id="submit"><wicket:message key="submitLabel">submit</wicket:message></a>
-                <a href="#" wicket:id="cancel"><wicket:message key="cancelLabel">Cancel</wicket:message></a>
+                <a href="#" class="button primary" wicket:id="submit"><wicket:message key="submitLabel">submit</wicket:message></a>
+                <a href="#" class="button outline-danger" wicket:id="cancel"><wicket:message key="cancelLabel">Cancel</wicket:message></a>
             </div>
         </div>
     </form>

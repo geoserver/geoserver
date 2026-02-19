@@ -1355,6 +1355,12 @@
           <groupId>org.eclipse.jetty</groupId>
           <artifactId>jetty-maven-plugin</artifactId>
           <version>11.0.26</version>
+          <configuration>
+            <scan>2</scan>
+            <webApp>
+              <contextPath>/</contextPath>
+            </webApp>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>

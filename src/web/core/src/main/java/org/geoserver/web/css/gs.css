@@ -1072,9 +1072,8 @@ Feedback Message Styles
   flex-wrap: wrap;
 }
 
-.button-group a:hover,
-.button-group button:hover,
-input.btnTxt:hover {
+.button-group .icon:hover,
+input.btnTxt:hover { /* TODO: Remove .btnTxt in favor of .button */
   background-color: var(--gs-tertiary-bg);
   color: var(--gs-body-color);
 }

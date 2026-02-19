@@ -145,7 +145,7 @@ body {
   border-right: 0;
   border-image: var(--gs-brand-gradient) 1;
 }
-.navigation-tab li a {
+.navigation-tab .gn-list-item-class a {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -989,8 +989,11 @@ input.search {
 /*-----------------------
 Feedback Message Styles
 -----------------------*/
-#feedback ul {
+#feedback ul,
+.feedbackPanel {
   margin: 0;
+  list-style: none;
+  padding: 0;
 }
 
 #feedback li {

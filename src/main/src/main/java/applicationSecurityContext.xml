@@ -18,8 +18,26 @@
       Remember that rules are matched in order, so please put the most specific rules at the beginning of the list.
       In order to have these applied, add restFilterDefintionMap to the end of the filter list in the filterChainProxy above
   -->
-  <bean id="restFilterDefinitionMap" class="org.geoserver.security.RESTfulDefinitionSource">
+  <bean id="defaultRestFilterDefinitionMap" class="org.geoserver.security.RESTfulDefinitionSource">
       <constructor-arg ref="restRulesDao"/>
+  </bean>
+  <!--
+     HTTP Method security rules for workspace administrators, handling the dynamic nature of it
+  -->
+  <bean id="workspaceAdminRestDefinitionSource" class="org.geoserver.security.workspaceadmin.WorkspaceAdminRestfulDefinitionSource">
+      <constructor-arg ref="workspaceAdminAuthorization"/>
+  </bean>
+
+  <!--
+     HTTP Method security proxy for FilterInvocationSecurityMetadataSource implementations handling REST security
+  -->
+  <bean id="restFilterDefinitionMap" class="org.geoserver.security.RESTfulDefinitionSourceProxy">
+      <constructor-arg>
+        <list>
+            <ref bean="defaultRestFilterDefinitionMap"/>
+            <ref bean="workspaceAdminRestDefinitionSource"/>
+        </list>
+      </constructor-arg>
   </bean>
 
   <bean id="geoserverMetadataSource" class="org.geoserver.security.filter.GeoServerSecurityMetadataSource" />
@@ -197,5 +215,14 @@
     <constructor-arg ref="geoServer"/>
     <constructor-arg ref="dataDirectory"/>
     <constructor-arg ref="xstreamPersisterFactory"/>
+  </bean>
+
+  <!-- The dao used to deal with rest security for workspace administrators -->
+  <bean id="workspaceAdminRESTAccessRuleDAO" class="org.geoserver.security.workspaceadmin.WorkspaceAdminRESTAccessRuleDAO">
+  </bean>
+  
+  <!-- The workspace administrators centralized logic -->
+  <bean id="workspaceAdminAuthorization" class="org.geoserver.security.workspaceadmin.WorkspaceAdminAuthorizer">
+      <constructor-arg ref="workspaceAdminRESTAccessRuleDAO"/>
   </bean>
 </beans>

@@ -35,6 +35,7 @@ import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.util.IOUtils;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
@@ -114,6 +115,14 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
 
         getDataDirectory().get("mydir3/test.html").file();
         getDataDirectory().get("mydir3/test.js").file();
+
+        // all requests must be authenticated due to ResourceController's use of SecureResourceStore
+        super.login("admin", "geoserver", "ROLE_ADMINISTRATOR");
+    }
+
+    @After
+    public void after() {
+        super.logout();
     }
 
     @Test

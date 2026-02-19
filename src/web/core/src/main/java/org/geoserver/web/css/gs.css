@@ -273,6 +273,40 @@ body {
     }
 }
 
+/* Utilities */
+
+.text-xs { font-size: 0.6875rem; }
+
+.w-xs    { width: 1.875rem; }
+.w-sm    { width: 5rem; }
+.w-md    { width: 15rem; }
+.w-lg    { width: 37.5rem; }
+.w-xl    { width: 80rem; }
+
+.w-edge  { width: 1%; }
+.w-slice { width: 10%; }
+.w-wide  { width: 95%; }
+.w-full  { width: 100%; }
+
+.h-sm    { height: 3.125rem; }
+.h-md    { height: 6.25rem; }
+.h-lg    { height: 25rem; }
+.h-xl    { height: 100rem; }
+.h-full  { height: 100%; }
+
+.hidden {
+  display: none;
+}
+
+.visibility-hidden {
+  visibility: hidden;
+}
+
+.visibility-visible {
+  visibility: visible;
+}
+
+/* End Utilities */
 
 form .gn-list-item-class,
 fieldset .gn-list-item-class,

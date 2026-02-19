@@ -9,7 +9,7 @@
 
 
   <form wicket:id="demoRequestsForm">
-  <table class="h-100pct w-100pct">
+  <table>
     <tbody>
       <tr>
         <td class="label"><wicket:message key="request">Request:</wicket:message></td>
@@ -29,7 +29,7 @@
       </tr>
       <tr>
         <td class="label"><wicket:message key="url">URL:</wicket:message></td>
-        <td class="datum"><input wicket:id="url" type="text" class="w-100pct" name="url" value=""/></td>
+        <td class="datum"><input wicket:id="url" type="text" class="w-full" name="url" value=""/></td>
       </tr>
       <tr>
           <td><wicket:message key="prettyXml">Pretty XML:</wicket:message></td>
@@ -45,12 +45,12 @@
         <td class="label"><wicket:message key="userName">User Name:</wicket:message></td>
         <td class="datum"><input id="inputUsername" type="text" size="30" name="username" wicket:id="username"/>
           <wicket:message key="password">Password:</wicket:message> 
-          <input type="password" size="30" name="password" wicket:id="password" class="w-120px"/>
+          <input type="password" size="30" name="password" wicket:id="password" class="w-md"/>
         </td>
       </tr>
       <tr>
         <td   class="label tdNoWidth"></td>
-        <td class="datum w-99pct">
+        <td class="datum w-wide">
             <div id="divNewWindow">
                 <div class="button-group selfclear">
                     <a id="linkSubmit"    ><wicket:message key="submit">Submit</wicket:message></a>

@@ -491,8 +491,6 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         response.render(CssReferenceHeaderItem.forReference(
                 new PackageResourceReference(GeoServerBasePage.class, "css/bootstrap-reboot.min.css"), "all"));
         response.render(CssReferenceHeaderItem.forReference(
-                new PackageResourceReference(GeoServerBasePage.class, "css/bootstrap-utilities.min.css"), "all"));
-        response.render(CssReferenceHeaderItem.forReference(
                 new PackageResourceReference(GeoServerBasePage.class, "css/gs.css"), "screen, projection"));
         response.render(CssReferenceHeaderItem.forReference(
                 new PackageResourceReference(GeoServerBasePage.class, "css/gs-variables.css"), "screen, projection"));

@@ -1,3 +1,174 @@
+
+/* Extracted from Bootstrap Reboot v5.3.8 */
+/*!
+ * Bootstrap Reboot v5.3.8 (https://getbootstrap.com/)
+ * Copyright 2011-2025 The Bootstrap Authors
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ */
+:root,
+[data-gs-theme=light] {
+  --gs-primary: #0076a1;
+  --gs-brand-gradient: linear-gradient(to right, #cbe4a1 0%, #00abda 100%);
+  --gs-secondary: #6c757d;
+  --gs-success: #198754;
+  --gs-info: #2cb5e8;
+  --gs-warning: #ffc107;
+  --gs-danger: #dc3545;
+  --gs-light: #f8f9fa;
+  --gs-dark: #212529;
+  --gs-primary-rgb: 0, 118, 161;
+  --gs-secondary-rgb: 108, 117, 125;
+  --gs-success-rgb: 25, 135, 84;
+  --gs-info-rgb: 44, 181, 232;
+  --gs-warning-rgb: 255, 193, 7;
+  --gs-danger-rgb: 220, 53, 69;
+  --gs-light-rgb: 248, 249, 250;
+  --gs-dark-rgb: 33, 37, 41;
+  --gs-primary-text-emphasis: #004761;
+  --gs-secondary-text-emphasis: #2b2f32;
+  --gs-success-text-emphasis: #0a3622;
+  --gs-info-text-emphasis: #004d66;
+  --gs-warning-text-emphasis: #664d03;
+  --gs-danger-text-emphasis: #58151c;
+  --gs-light-text-emphasis: #495057;
+  --gs-dark-text-emphasis: #495057;
+  --gs-primary-bg-subtle: #e6f1f6;
+  --gs-secondary-bg-subtle: #e2e3e5;
+  --gs-success-bg-subtle: #d1e7dd;
+  --gs-info-bg-subtle: #eaf8fd;
+  --gs-warning-bg-subtle: #fff3cd;
+  --gs-danger-bg-subtle: #f8d7da;
+  --gs-light-bg-subtle: #fcfcfd;
+  --gs-dark-bg-subtle: #ced4da;
+  --gs-primary-border-subtle: #99c8d9;
+  --gs-secondary-border-subtle: #c4c8cb;
+  --gs-success-border-subtle: #a3cfbb;
+  --gs-info-border-subtle: #b1e5f8;
+  --gs-warning-border-subtle: #ffe69c;
+  --gs-danger-border-subtle: #f1aeb5;
+  --gs-light-border-subtle: #e9ecef;
+  --gs-dark-border-subtle: #adb5bd;
+  --gs-white-rgb: 255, 255, 255;
+  --gs-black-rgb: 0, 0, 0;
+  --gs-font-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --gs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --gs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
+  --gs-body-font-family: var(--gs-font-sans-serif);
+  --gs-body-font-size: 1rem;
+  --gs-body-font-weight: 400;
+  --gs-body-line-height: 1.5;
+  --gs-body-color: #212529;
+  --gs-body-color-rgb: 33, 37, 41;
+  --gs-body-bg: #fff;
+  --gs-body-bg-rgb: 255, 255, 255;
+  --gs-emphasis-color: #000;
+  --gs-emphasis-color-rgb: 0, 0, 0;
+  --gs-secondary-color: rgba(33, 37, 41, 0.75);
+  --gs-secondary-color-rgb: 33, 37, 41;
+  --gs-secondary-bg: #e9ecef;
+  --gs-secondary-bg-rgb: 233, 236, 239;
+  --gs-tertiary-color: rgba(33, 37, 41, 0.5);
+  --gs-tertiary-color-rgb: 33, 37, 41;
+  --gs-tertiary-bg: #f8f9fa;
+  --gs-tertiary-bg-rgb: 248, 249, 250;
+  --gs-heading-color: inherit;
+  --gs-link-color: #0076a1;
+  --gs-link-color-rgb: 0, 118, 161;
+  --gs-link-decoration: underline;
+  --gs-link-hover-color: #005a7b;
+  --gs-link-hover-color-rgb: 0, 90, 123;
+  --gs-code-color: #d63384;
+  --gs-highlight-color: #212529;
+  --gs-highlight-bg: #fff3cd;
+  --gs-border-width: 1px;
+  --gs-border-style: solid;
+  --gs-border-color: #dee2e6;
+  --gs-border-color-translucent: rgba(0, 0, 0, 0.175);
+  --gs-border-radius: 0.375rem;
+  --gs-border-radius-sm: 0.25rem;
+  --gs-border-radius-lg: 0.5rem;
+  --gs-border-radius-xl: 1rem;
+  --gs-border-radius-xxl: 2rem;
+  --gs-border-radius-2xl: var(--gs-border-radius-xxl);
+  --gs-border-radius-pill: 50rem;
+  --gs-box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  --gs-box-shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  --gs-box-shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+  --gs-box-shadow-inset: inset 0 1px 2px rgba(0, 0, 0, 0.075);
+  --gs-focus-ring-width: 0.25rem;
+  --gs-focus-ring-opacity: 0.25;
+  --gs-focus-ring-color: rgba(0, 118, 161, 0.25);
+  --gs-form-valid-color: #198754;
+  --gs-form-valid-border-color: #198754;
+  --gs-form-invalid-color: #dc3545;
+  --gs-form-invalid-border-color: #dc3545;
+}
+
+[data-gs-theme=dark] {
+  color-scheme: dark;
+  --gs-body-color: #dee2e6;
+  --gs-body-color-rgb: 222, 226, 230;
+  --gs-body-bg: #212529;
+  --gs-body-bg-rgb: 33, 37, 41;
+  --gs-emphasis-color: #fff;
+  --gs-emphasis-color-rgb: 255, 255, 255;
+  --gs-secondary-color: rgba(222, 226, 230, 0.75);
+  --gs-secondary-color-rgb: 222, 226, 230;
+  --gs-secondary-bg: #343a40;
+  --gs-secondary-bg-rgb: 52, 58, 64;
+  --gs-tertiary-color: rgba(222, 226, 230, 0.5);
+  --gs-tertiary-color-rgb: 222, 226, 230;
+  --gs-tertiary-bg: #2b3035;
+  --gs-tertiary-bg-rgb: 43, 48, 53;
+  --gs-primary-text-emphasis: #4ba0c4;
+  --gs-secondary-text-emphasis: #a7acb1;
+  --gs-success-text-emphasis: #75b798;
+  --gs-info-text-emphasis: #86d9f7;
+  --gs-warning-text-emphasis: #ffda6a;
+  --gs-danger-text-emphasis: #ea868f;
+  --gs-light-text-emphasis: #f8f9fa;
+  --gs-dark-text-emphasis: #dee2e6;
+  --gs-primary-bg-subtle: #00222f;
+  --gs-secondary-bg-subtle: #161719;
+  --gs-success-bg-subtle: #051b11;
+  --gs-info-bg-subtle: #052a36;
+  --gs-warning-bg-subtle: #332701;
+  --gs-danger-bg-subtle: #2c0b0e;
+  --gs-light-bg-subtle: #343a40;
+  --gs-dark-bg-subtle: #1a1d20;
+  --gs-primary-border-subtle: #004761;
+  --gs-secondary-border-subtle: #41464b;
+  --gs-success-border-subtle: #0f5132;
+  --gs-info-border-subtle: #005a7b;
+  --gs-warning-border-subtle: #997404;
+  --gs-danger-border-subtle: #842029;
+  --gs-light-border-subtle: #495057;
+  --gs-dark-border-subtle: #343a40;
+  --gs-heading-color: inherit;
+  --gs-link-color: #4ba0c4;
+  --gs-link-hover-color: #79bad6;
+  --gs-link-color-rgb: 75, 160, 196;
+  --gs-link-hover-color-rgb: 121, 186, 214;
+  --gs-code-color: #e685b5;
+  --gs-highlight-color: #dee2e6;
+  --gs-highlight-bg: #664d03;
+  --gs-border-color: #495057;
+  --gs-border-color-translucent: rgba(255, 255, 255, 0.15);
+  --gs-form-valid-color: #75b798;
+  --gs-form-valid-border-color: #75b798;
+  --gs-form-invalid-color: #ea868f;
+  --gs-form-invalid-border-color: #ea868f;
+}
+
+/* Customized version of Bootstrap Reboot */
+/* Removed CSS variables and replaced prefix --bs- to --gs- */
+/*!
+ * Bootstrap Reboot v5.3.8 (https://getbootstrap.com/)
+ * Copyright 2011-2025 The Bootstrap Authors
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ */*,::after,::before{box-sizing:border-box}@media (prefers-reduced-motion:no-preference){:root{scroll-behavior:smooth}}body{margin:0;font-family:var(--gs-body-font-family);font-size:var(--gs-body-font-size);font-weight:var(--gs-body-font-weight);line-height:var(--gs-body-line-height);color:var(--gs-body-color);text-align:var(--gs-body-text-align);background-color:var(--gs-body-bg);-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}hr{margin:1rem 0;color:inherit;border:0;border-top:var(--gs-border-width) solid;opacity:.25}h1,h2,h3,h4,h5,h6{margin-top:0;margin-bottom:.5rem;font-weight:500;line-height:1.2;color:var(--gs-heading-color)}h1{font-size:calc(1.375rem + 1.5vw)}@media (min-width:1200px){h1{font-size:2.5rem}}h2{font-size:calc(1.325rem + .9vw)}@media (min-width:1200px){h2{font-size:2rem}}h3{font-size:calc(1.3rem + .6vw)}@media (min-width:1200px){h3{font-size:1.75rem}}h4{font-size:calc(1.275rem + .3vw)}@media (min-width:1200px){h4{font-size:1.5rem}}h5{font-size:1.25rem}h6{font-size:1rem}p{margin-top:0;margin-bottom:1rem}abbr[title]{-webkit-text-decoration:underline dotted;text-decoration:underline dotted;cursor:help;-webkit-text-decoration-skip-ink:none;text-decoration-skip-ink:none}address{margin-bottom:1rem;font-style:normal;line-height:inherit}ol,ul{padding-left:2rem}dl,ol,ul{margin-top:0;margin-bottom:1rem}ol ol,ol ul,ul ol,ul ul{margin-bottom:0}dt{font-weight:700}dd{margin-bottom:.5rem;margin-left:0}blockquote{margin:0 0 1rem}b,strong{font-weight:bolder}small{font-size:.875em}mark{padding:.1875em;color:var(--gs-highlight-color);background-color:var(--gs-highlight-bg)}sub,sup{position:relative;font-size:.75em;line-height:0;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}a{color:rgba(var(--gs-link-color-rgb),var(--gs-link-opacity,1));text-decoration:underline}a:hover{--gs-link-color-rgb:var(--gs-link-hover-color-rgb)}a:not([href]):not([class]),a:not([href]):not([class]):hover{color:inherit;text-decoration:none}code,kbd,pre,samp{font-family:var(--gs-font-monospace);font-size:1em}pre{display:block;margin-top:0;margin-bottom:1rem;overflow:auto;font-size:.875em}pre code{font-size:inherit;color:inherit;word-break:normal}code{font-size:.875em;color:var(--gs-code-color);word-wrap:break-word}a>code{color:inherit}kbd{padding:.1875rem .375rem;font-size:.875em;color:var(--gs-body-bg);background-color:var(--gs-body-color);border-radius:.25rem}kbd kbd{padding:0;font-size:1em}figure{margin:0 0 1rem}img,svg{vertical-align:middle}table{caption-side:bottom;border-collapse:collapse}caption{padding-top:.5rem;padding-bottom:.5rem;color:var(--gs-secondary-color);text-align:left}th{text-align:inherit;text-align:-webkit-match-parent}tbody,td,tfoot,th,thead,tr{border-color:inherit;border-style:solid;border-width:0}label{display:inline-block}button{border-radius:0}button:focus:not(:focus-visible){outline:0}button,input,optgroup,select,textarea{margin:0;font-family:inherit;font-size:inherit;line-height:inherit}button,select{text-transform:none}[role=button]{cursor:pointer}select{word-wrap:normal}select:disabled{opacity:1}[list]:not([type=date]):not([type=datetime-local]):not([type=month]):not([type=week]):not([type=time])::-webkit-calendar-picker-indicator{display:none!important}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button}[type=button]:not(:disabled),[type=reset]:not(:disabled),[type=submit]:not(:disabled),button:not(:disabled){cursor:pointer}::-moz-focus-inner{padding:0;border-style:none}textarea{resize:vertical}fieldset{min-width:0;padding:0;margin:0;border:0}legend{float:left;width:100%;padding:0;margin-bottom:.5rem;line-height:inherit;font-size:calc(1.275rem + .3vw)}@media (min-width:1200px){legend{font-size:1.5rem}}legend+*{clear:left}::-webkit-datetime-edit-day-field,::-webkit-datetime-edit-fields-wrapper,::-webkit-datetime-edit-hour-field,::-webkit-datetime-edit-minute,::-webkit-datetime-edit-month-field,::-webkit-datetime-edit-text,::-webkit-datetime-edit-year-field{padding:0}::-webkit-inner-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}[type=search]::-webkit-search-cancel-button{cursor:pointer;filter:grayscale(1)}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-color-swatch-wrapper{padding:0}::-webkit-file-upload-button{font:inherit;-webkit-appearance:button}::file-selector-button{font:inherit;-webkit-appearance:button}output{display:inline-block}iframe{border:0}summary{display:list-item;cursor:pointer}progress{vertical-align:baseline}[hidden]{display:none!important}
+/* End of Customized version of Bootstrap Reboot */
+
 /* Page layout */
 
 html,
@@ -1379,4 +1550,99 @@ form .palette-selected {
 }
 #dumpContent {
   height: calc(100vh - 17.5em);
+}
+
+/* Component styles overrides */
+/* We should keep these customization to the end of the page to proper override CSS variables */
+/* Default button style - applied when only button or .button is used */
+button,
+.button {
+  --gs-btn-color: var(--gs-body-color);
+  --gs-btn-bg: var(--gs-body-bg);
+  --gs-btn-border-color: var(--gs-border-color);
+  --gs-btn-hover-color: var(--gs-body-color);
+  --gs-btn-hover-bg: var(--gs-secondary-bg);
+  --gs-btn-hover-border-color: var(--gs-secondary-bg);
+  --gs-btn-focus-shadow-rgb: var(--gs-secondary-bg-rgb);
+  --gs-btn-active-color: var(--gs-body-color);
+  --gs-btn-active-bg: var(--gs-tertiary-bg);
+  --gs-btn-active-border-color: var(--gs-tertiary-bg);
+  --gs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --gs-btn-disabled-color: var(--gs-body-color);
+  --gs-btn-disabled-bg: var(--gs-body-bg);
+  --gs-btn-disabled-border-color: var(--gs-border-color);
+}
+
+button.primary,
+.button.primary {
+  --gs-btn-color: #fff;
+  --gs-btn-bg: #0076a1;
+  --gs-btn-border-color: #0076a1;
+  --gs-btn-hover-color: #fff;
+  --gs-btn-hover-bg: #006489;
+  --gs-btn-hover-border-color: #005a7b;
+  --gs-btn-focus-shadow-rgb: 0, 118, 161;
+  --gs-btn-active-color: #fff;
+  --gs-btn-active-bg: #005a7b;
+  --gs-btn-active-border-color: #00516e;
+  --gs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --gs-btn-disabled-color: var(--gs-body-color);
+  --gs-btn-disabled-bg: var(--gs-body-bg);
+  --gs-btn-disabled-border-color: var(--gs-border-color);
+}
+
+button.danger,
+.button.danger {
+  --gs-btn-color: #fff;
+  --gs-btn-bg: #dc3545;
+  --gs-btn-border-color: #dc3545;
+  --gs-btn-hover-color: #fff;
+  --gs-btn-hover-bg: #bb2d3b;
+  --gs-btn-hover-border-color: #b02a37;
+  --gs-btn-focus-shadow-rgb: 225, 83, 97;
+  --gs-btn-active-color: #fff;
+  --gs-btn-active-bg: #b02a37;
+  --gs-btn-active-border-color: #a52834;
+  --gs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --gs-btn-disabled-color: #fff;
+  --gs-btn-disabled-bg: #dc3545;
+  --gs-btn-disabled-border-color: #dc3545;
+}
+
+button.outline-primary,
+.button.outline-primary {
+  --gs-btn-color: #0076a1;
+  --gs-btn-bg: var(--gs-body-bg);
+  --gs-btn-border-color: #0076a1;
+  --gs-btn-hover-color: #fff;
+  --gs-btn-hover-bg: #0076a1;
+  --gs-btn-hover-border-color: #0076a1;
+  --gs-btn-focus-shadow-rgb: 0, 118, 161;
+  --gs-btn-active-color: #fff;
+  --gs-btn-active-bg: #0076a1;
+  --gs-btn-active-border-color: #0076a1;
+  --gs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --gs-btn-disabled-color: #0076a1;
+  --gs-btn-disabled-bg: transparent;
+  --gs-btn-disabled-border-color: #0076a1;
+  --gs-gradient: none;
+}
+
+button.outline-danger,
+.button.outline-danger {
+  --gs-btn-color: #dc3545;
+  --gs-btn-bg: var(--gs-body-bg);
+  --gs-btn-border-color: #dc3545;
+  --gs-btn-hover-color: #fff;
+  --gs-btn-hover-bg: #dc3545;
+  --gs-btn-hover-border-color: #dc3545;
+  --gs-btn-focus-shadow-rgb: 220, 53, 69;
+  --gs-btn-active-color: #fff;
+  --gs-btn-active-bg: #dc3545;
+  --gs-btn-active-border-color: #dc3545;
+  --gs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --gs-btn-disabled-color: #dc3545;
+  --gs-btn-disabled-bg: transparent;
+  --gs-btn-disabled-border-color: #dc3545;
+  --gs-gradient: none;
 }

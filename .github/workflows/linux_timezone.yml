@@ -1,4 +1,4 @@
-name: Linux Locale Build
+name: Linux Timezone Build
 
 on:
   pull_request:
@@ -18,9 +18,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # italian has . and , usage opposite to english, will add more languages as time allows for testing and fixing
-        locale: [it_IT.UTF-8]
-        jdk: [ 17]
+        # America/St_Johns: We cannot handle this one yet see GEOT-2870
+        timezone: ['America/Vancouver','America/St_Johns']
+        jdk: [ 17 ]
         dist: [ 'temurin' ]
         os: [ 'ubuntu-22.04' ]
     runs-on: ${{ matrix.os }}
@@ -46,17 +46,9 @@ jobs:
         key: gs-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           gs-${{ runner.os }}-maven-
-    - name: Install locales
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y locales
-        sudo locale-gen en_US.UTF-8 it_IT.UTF-8 tr_TR.UTF-8
-        sudo update-locale
     - name: Set locale
       run: |
-        echo "LANG=${{ matrix.locale }}" >> $GITHUB_ENV
-        echo "LC_ALL=${{ matrix.locale }}" >> $GITHUB_ENV
-        echo "LC_NUMERIC=${{ matrix.locale }}" >> $GITHUB_ENV
+        echo "TZ=${{ matrix.timezone }}" >> $GITHUB_ENV
         locale
     - name: Build with Maven
       run: |

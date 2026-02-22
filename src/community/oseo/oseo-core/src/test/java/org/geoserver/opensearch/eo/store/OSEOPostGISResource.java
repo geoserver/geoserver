@@ -42,8 +42,9 @@ public class OSEOPostGISResource extends ExternalResource {
         DockerImageName image =
                 DockerImageName.parse("postgis/postgis:18-3.6-alpine").asCompatibleSubstituteFor("postgres");
         this.populateGranulesTable = populateGranulesTable;
-        postgis =
-                new PostgreSQLContainer(image); // .withDatabaseName("oseo").withUsername("oseo").withPassword("oseo");
+        postgis = new PostgreSQLContainer(image)
+                .withCommand(
+                        "postgres", "-c", "fsync=off", "-c", "synchronous_commit=off", "-c", "full_page_writes=off");
     }
 
     @Override

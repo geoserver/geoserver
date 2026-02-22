@@ -25,10 +25,12 @@ jobs:
       with:
         java-version: 17
         distribution: 'temurin'
-    - name: Set up Maven
-      uses: stCarolas/setup-maven@v5
-      with:
-        maven-version: 3.9.8
+    - name: Install mvnd
+      run: |
+        MVND_VERSION=1.0.3
+        curl -L "https://dlcdn.apache.org/maven/mvnd/${MVND_VERSION}/maven-mvnd-${MVND_VERSION}-darwin-amd64.tar.gz" -o mvnd.tar.gz
+        tar -xzf mvnd.tar.gz
+        echo "$GITHUB_WORKSPACE/maven-mvnd-${MVND_VERSION}-darwin-amd64/bin" >> $GITHUB_PATH
     - name: Maven repository caching
       uses: actions/cache@v4
       with:
@@ -38,7 +40,7 @@ jobs:
           gs-${{ runner.os }}-maven-
     - name: Build with Maven
       run: |
-        mvn -B -ntp -U -T1C -Prelease,pending,macos-github-build -f src/pom.xml clean install
+        mvnd -B -ntp -U -Dsmartbuilder.profiling=true -Prelease,pending,macos-github-build -f src/pom.xml clean install
     - name: Remove SNAPSHOT jars from repository
       if: always()
       run: |

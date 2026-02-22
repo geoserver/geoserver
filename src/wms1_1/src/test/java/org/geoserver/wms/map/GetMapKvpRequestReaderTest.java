@@ -8,15 +8,15 @@ import static org.junit.Assert.assertEquals;
 
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.test.ows.KvpRequestReaderTestSupport;
+import org.junit.Before;
 import org.junit.Test;
 
 public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
 
     Dispatcher dispatcher;
 
-    @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+    @Before
+    public void setUpInternal() throws Exception {
         dispatcher = (Dispatcher) applicationContext.getBean("dispatcher");
     }
 

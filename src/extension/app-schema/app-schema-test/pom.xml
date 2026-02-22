@@ -76,6 +76,15 @@
       <artifactId>gs-wms-gml</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.geoserver.extension</groupId>
+      <artifactId>gs-app-schema-test-support</artifactId>
+      <version>${gs.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wms-gml</artifactId>
+    </dependency>
+    <dependency>
       <groupId>net.sf.opencsv</groupId>
       <artifactId>opencsv</artifactId>
       <scope>test</scope>

@@ -269,11 +269,36 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
             }
         });
 
+        // Separator before external links: visible when external links present OR logged in
+        // (logged out + no external links = hide)
+        WebMarkupContainer separatorBeforeExternalLinks = new WebMarkupContainer("separatorBeforeExternalLinks");
+        separatorBeforeExternalLinks.setVisible(!loginExternalLinks.isEmpty() || !anonymous);
+
+        // Separator after external links: visible only when external links present
+        WebMarkupContainer separatorAfterExternalLinks = new WebMarkupContainer("separatorAfterExternalLinks");
+        separatorAfterExternalLinks.setVisible(!loginExternalLinks.isEmpty());
+
         // logout form
         WebMarkupContainer loggedInAsForm = new WebMarkupContainer("loggedinasform");
         loggedInAsForm.add(new LoggedInUserLabel("loggedInUsername"));
         loggedInAsForm.setVisible(!anonymous);
         add(loggedInAsForm);
+        add(separatorBeforeExternalLinks);
+        add(separatorAfterExternalLinks);
+
+        // User avatar: initials when logged in, icon when anonymous
+        Label userInitials = new Label("userInitials", new LoadableDetachableModel<String>() {
+            @Override
+            protected String load() {
+                return getInitialsFromDisplayName();
+            }
+        });
+        userInitials.setVisible(!anonymous);
+        add(userInitials);
+
+        WebMarkupContainer userIconAnonymous = new WebMarkupContainer("userIconAnonymous");
+        userIconAnonymous.setVisible(anonymous);
+        add(userIconAnonymous);
 
         WebMarkupContainer logoutForm = new WebMarkupContainer("logoutform") {
             @Override
@@ -415,6 +440,20 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         model.add(null); // to reset the choice and go back to browser language
         model.addAll(LocalizationsFinder.getAvailableLocales());
         return model;
+    }
+
+    /**
+     * Returns initials derived from the logged-in user's display name for the avatar. E.g., "John Doe" -> "JD", "admin"
+     * -> "A", "a" -> "A".
+     */
+    private String getInitialsFromDisplayName() {
+        String name = getSession().getUsername();
+        if (name == null || name.isEmpty()) return "?";
+        String[] parts = name.trim().split("\\s+");
+        if (parts.length >= 2) {
+            return (parts[0].charAt(0) + "" + parts[parts.length - 1].charAt(0)).toUpperCase();
+        }
+        return name.substring(0, 1).toUpperCase();
     }
 
     /**

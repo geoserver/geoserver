@@ -94,7 +94,21 @@
     <property name="order" value="175" />
   </bean>
 
+  <bean id="utilitiesCategory" class="org.geoserver.web.Category">
+    <property name="nameKey" value="category.utilities" />
+    <property name="order" value="310" />
+  </bean>
+
   <!-- Server menu items -->
+  <bean id="welcomeMenuPage" class="org.geoserver.web.MenuPageInfo">
+    <property name="id" value="welcome" />
+    <property name="titleKey" value="GeoServerHomePage.title" />
+    <property name="descriptionKey" value="GeoServerHomePage.description" />
+    <property name="componentClass" value="org.geoserver.web.GeoServerHomePage" />
+    <property name="category" ref="aboutStatusCategory" />
+    <property name="icon" value="img/logo.svg" />
+    <property name="order" value="5" />
+  </bean>
   <bean id="statusMenuPage" class="org.geoserver.web.MenuPageInfo">
     <property name="id" value="server.admin.status" />
     <property name="titleKey" value="StatusPage.title" />
@@ -211,12 +225,14 @@
     <property name="titleKey" value="demo.title" />
     <property name="descriptionKey" value="demo.description" />
     <property name="componentClass" value="org.geoserver.web.DemoPage" />
+    <property name="category" ref="utilitiesCategory" />
+    <property name="icon" value="img/icons/silk/picture_empty.png" />
+    <property name="order" value="10" />
     <property name="authorizer">
       <bean class="org.geoserver.web.EmptyPageLinksAuthorizer">
         <property name="linkClasses" value="org.geoserver.web.DemoLinkInfo" />
       </bean>
     </property>
-
   </bean>
 
   <!-- Tool menu item -->
@@ -225,6 +241,9 @@
     <property name="titleKey" value="tools.title" />
     <property name="descriptionKey" value="tools.description" />
     <property name="componentClass" value="org.geoserver.web.ToolPage" />
+    <property name="category" ref="utilitiesCategory" />
+    <property name="icon" value="img/icons/silk/wrench.png" />
+    <property name="order" value="15" />
     <property name="authorizer">
       <bean class="org.geoserver.web.EmptyPageLinksAuthorizer">
         <property name="linkClasses">

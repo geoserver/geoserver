@@ -1,109 +1,132 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-    <wicket:head>
-        <meta http-equiv="X-UA-Compatible" content="IE=10" />
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <title wicket:id="pageTitle">GeoServer</title>
-        <link href="#" rel="shortcut icon" wicket:id="faviconLink"/>
-    </wicket:head>
-<body>
-  <div id="header">
-    <div class="wrap">
-    </div><!-- /.wrap -->
-  </div><!-- /#header -->
-  <div id="main">
-    <div class="wrap selfclear">
-    <div id="sidebar">
-      <div id="brand">
-          <button id="sidebar-menu" class="button">
-            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'>
-              <path stroke='currentColor' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22' />
+  <wicket:head>
+      <meta http-equiv="X-UA-Compatible" content="IE=10" />
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+      <title wicket:id="pageTitle">GeoServer</title>
+      <link href="#" rel="shortcut icon" wicket:id="faviconLink"/>
+  </wicket:head>
+  <body>
+    <div id="header" class="gs-header">
+      <div class="gs-header-bar">
+        <div class="gs-header-left">
+          <a wicket:id="home" class="logo" href="#"></a>
+          <button id="navigation-menu" class="gs-header-hamburger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="main-navigation">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" aria-hidden="true">
+              <path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"/>
             </svg>
           </button>
-          <a wicket:id="home" class="logo" href="#"></a>
-      </div>
-      <div id="sidebar-content">
-        <div class="sidebar-content-header">
-          <button id="sidebar-close" class="button">
-            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'>
-              <path fill='currentColor' d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414' />
-            </svg>
-          </button>
-          <a wicket:id="home" class="logo" href="#"></a>
-        </div>
-        <div wicket:id="nodeIdContainer"><center wicket:id="nodeId">192.168.1.4</center></div>
-        <div id="authentication-panel">
-          <div wicket:id="loginforms">
-            <form wicket:id="loginform" method="post" action="../j_spring_security_check">
-              <div wicket:id="login.include" class="authentication-form"></div>
-              <button type="submit" class="button primary">
-                <span wicket:id="link.label"></span>
-              </button>
-            </form>
-          </div>
-          <div wicket:id="loginExternalLinks">
-            <a wicket:id="loginform" >
-                <div><img src="#" wicket:id="link.icon"/><span wicket:id="link.label"></span></div>
-            </a>
-          </div>
-          <div wicket:id="loggedinasform" class="username">
-            <wicket:message key="loggedInAs">Logged in as</wicket:message>
-            <span wicket:id="loggedInUsername">User von Testenheimer</span>.
-          </div>
-           <a wicket:id="logoutform" class="button outline-primary">
-              <span wicket:id="link.label"></span>
-              <!-- <div><img src="#" wicket:id="link.icon"/><span wicket:id="link.label"></span></div> -->
-            </a>
-        </div>
-        <div class="gn-unordered-list-class" id="navigation">
-          <div id="localeSwitcher">
-            <!-- <wicket:link><img src="img/icons/globe.png"/></wicket:link> -->
-            <select  wicket:id="localeSwitcher"></select>
-          </div>
-          <div class="gn-list-item-class navigation-tab" wicket:id="category">
-            <div class="navigation-tab-header">
-              <span wicket:id="category.header">[Category Header]</span>
+          <div id="main-navigation" class="gs-header-nav-container">
+            <div id="navigation-container" class="gs-header-nav" role="navigation" aria-label="Main navigation">
+              <div class="gn-unordered-list-class" id="navigation">
+                <div class="gn-list-item-class navigation-tab" wicket:id="category">
+                  <div class="navigation-tab-header">
+                    <span wicket:id="category.header">[Category Header]</span>
+                  </div>
+                  <div class="gn-unordered-list-class navigation-tab-content plain">
+                    <div class="gn-list-item-class nav-administer-service" wicket:id="category.links">
+                      <a wicket:id="link">
+                        <img src="#" wicket:id="link.icon" alt=""/><span wicket:id="link.label"></span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="devtoolbar" wicket:id="devButtons" title="Developer helper actions. This bar must not be available in releases"></div>
             </div>
-            <div class="gn-unordered-list-class navigation-tab-content plain">
-              <div class="gn-list-item-class nav-administer-service" wicket:id="category.links">
-                <a wicket:id="link">
-                  <img src="#" wicket:id="link.icon"/><span wicket:id="link.label"></span>
-                </a>
+          </div>
+          <div class="navigation-content-header">
+            <button id="navigation-close" class="button" type="button" aria-label="Close menu">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" aria-hidden="true">
+                <path fill="currentColor" d="M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="gs-header-right">
+          <div id="localeSwitcher" class="gs-locale-selector" role="group" aria-label="Language">
+            <select wicket:id="localeSwitcher"></select>
+          </div>
+          <div id="authentication-panel" class="gs-user-avatar-dropdown" role="group" aria-label="User menu">
+            <div class="gs-user-avatar gs-user-avatar-trigger" id="user-avatar-trigger" tabindex="0" role="button" aria-haspopup="true" aria-expanded="false" aria-controls="user-dropdown-panel">
+              <span wicket:id="userInitials" class="gs-user-initials">JD</span>
+              <span wicket:id="userIconAnonymous" class="gs-user-icon-anonymous">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" width="20" height="20">
+                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+              </span>
+            </div>
+            <div class="gs-user-dropdown-panel" id="user-dropdown-panel" role="menu" aria-labelledby="user-avatar-trigger" hidden>
+              <div class="gs-user-dropdown-login">
+                <div wicket:id="loginforms">
+                  <form wicket:id="loginform" method="post" action="../j_spring_security_check" class="gs-login-form">
+                    <div wicket:id="login.include" class="authentication-form"></div>
+                    <button type="submit" class="button primary">
+                      <span wicket:id="link.label"></span>
+                    </button>
+                  </form>
+                </div>
+              </div>
+              <div class="gs-user-dropdown-info">
+                <div wicket:id="loggedinasform" class="username">
+                  <wicket:message key="loggedInAs">Logged in as</wicket:message>
+                  <span wicket:id="loggedInUsername">username</span>.
+                </div>
+                <div class="gs-unordered-list-class">
+                  <!-- Switch component -->
+                  <div class="gs-switch" role="group" aria-label="Theme">
+                    <input type="checkbox" id="gs-switch" class="gs-switch-input" aria-label="Toggle dark theme"/>
+                    <label for="gs-switch" class="gs-switch-label">
+                      <span class="gs-switch-content"></span>
+                      <span class="gs-switch-text">Dark theme</span>
+                    </label>
+                  </div>
+                  <!-- 2. Separator -->
+                  <hr wicket:id="separatorBeforeExternalLinks"/>
+                  <!-- 3. External links -->
+                  <div wicket:id="loginExternalLinks">
+                    <a wicket:id="loginform">
+                      <div><img src="#" wicket:id="link.icon" alt=""/><span wicket:id="link.label"></span></div>
+                    </a>
+                  </div>
+                  <!-- 4. Separator -->
+                  <hr wicket:id="separatorAfterExternalLinks"/>
+                  <!-- 5. Buttons: logout when logged in -->
+                  <div class="gn-list-item-class">
+                    <a wicket:id="logoutform" role="menuitem">
+                      <img src="#" wicket:id="link.icon" alt=""/><span wicket:id="link.label"></span>
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-          <div class="gn-list-item-class navigation-tab" wicket:id="standalone">
-            <div class="navigation-tab-single">
-              <a wicket:id="link" href="#"><span wicket:id="link.label">[Link]</span></a>
-            </div>
-          </div>
         </div>
-        <div class="devtoolbar" wicket:id="devButtons" title="Developer helper actions. This bar must not be available in releases"></div>
       </div>
-      
-    </div><!-- /#sidebar -->
-    <div id="page" class="selfclear">
-      <div class="page-header">
-        <div id="topFeedback" wicket:id="topFeedback"></div>
-        <h1 wicket:id="gbpTitle" id="header-title"></h1>
-        <p wicket:id="gbpDescription" id="header-description"></p>
-        <div wicket:id="headerPanel" class="header-panel"></div>
-      </div>
-        
-      <div class="page-pane selfclear" id="page-pane">
-        <wicket:child></wicket:child>
-      </div>
-      <div class="page-footer">
-        <div id="bottomFeedback" wicket:id="bottomFeedback"></div>
-      </div>
-    </div><!-- /#page -->
-    </div><!-- /.wrap> -->
-  </div><!-- /#main -->
-  <!-- The feebdback component needs a local style so that the Wicket Ajax support can flip
-       its value to "display: true". Will not work with a class, do not use one here -->
-  <div id="ajaxFeedback">
-    <img alt="Loading..." wicket:id="ajaxFeedbackImage"/>
-  </div>
-</body>
+      <div class="gs-header-backdrop" id="header-backdrop" aria-hidden="true"></div>
+    </div><!-- /#header -->
+    <div id="main">
+      <div class="wrap selfclear">
+        <div id="page" class="selfclear">
+          <div class="page-header">
+            <div id="topFeedback" wicket:id="topFeedback"></div>
+            <h1 wicket:id="gbpTitle" id="header-title"></h1>
+            <p wicket:id="gbpDescription" id="header-description"></p>
+            <div wicket:id="headerPanel" class="header-panel"></div>
+          </div>
+
+          <div class="page-pane selfclear" id="page-pane">
+            <wicket:child></wicket:child>
+          </div>
+          <div class="page-footer">
+            <div id="bottomFeedback" wicket:id="bottomFeedback"></div>
+          </div>
+        </div><!-- /#page -->
+      </div><!-- /.wrap -->
+    </div><!-- /#main -->
+    <div id="ajaxFeedback">
+      <img alt="Loading..." wicket:id="ajaxFeedbackImage"/>
+    </div>
+  </body>
 </html>

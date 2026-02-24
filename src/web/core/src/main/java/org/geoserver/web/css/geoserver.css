@@ -1487,6 +1487,11 @@ form a.collapsed {
   background-image: url(../img/icons/silk/bullet_arrow_right.png);
 }
 
+#sidebar-close {
+  font-size: 0.75rem;
+  padding: 0.5rem;
+}
+
 /*---------------
  Navigation bar 
  ---------------*/

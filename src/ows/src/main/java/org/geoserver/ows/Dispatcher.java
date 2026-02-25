@@ -317,8 +317,17 @@ public class Dispatcher extends AbstractController {
         // figure out method
         request.setGet("GET".equalsIgnoreCase(httpRequest.getMethod()) || isForm(reqContentType));
 
-        // create the kvp map
-        parseKVP(request);
+        // parse workspace context first so version negotiation can use it
+        initRequestContext(request);
+
+        // so DisabledServiceCheck can read workspace context for version filtering
+        REQUEST.set(request);
+        try {
+            // create the kvp map
+            parseKVP(request);
+        } finally {
+            REQUEST.remove();
+        }
 
         if (!request.isGet()) { // && httpRequest.getInputStream().available() > 0) {
             // check for a SOAP request, if so we need to unwrap the SOAP stuff
@@ -382,7 +391,6 @@ public class Dispatcher extends AbstractController {
                 request.getInput().reset();
             }
         }
-        initRequestContext(request);
 
         return fireInitCallback(request);
     }
@@ -420,15 +428,18 @@ public class Dispatcher extends AbstractController {
         String version = KvpUtils.getSingleValue(kvp, "version");
         String wmtver = KvpUtils.getSingleValue(kvp, "wmtver");
         if (service != null && "GetCapabilities".equalsIgnoreCase(request)) {
-            List<String> supportedVersions = RequestUtils.getSupportedVersions(service);
-
             if (version != null) {
-                // pre-OWS negotiation if version if available
-                version = RequestUtils.getVersionPreOws(supportedVersions, List.of(version));
+                // pre-OWS negotiation if version is available - use ALL versions, not filtered
+                List<String> allVersions = RequestUtils.getSupportedVersions(service);
+                version = RequestUtils.getVersionPreOws(allVersions, List.of(version));
             } else if (wmtver != null && "WMS".equalsIgnoreCase(service)) {
-                // this case is specific to WMS for backwards compatibility
-                version = RequestUtils.getVersionPreOws(supportedVersions, List.of(wmtver));
+                // this case is specific to WMS for backwards compatibility - use ALL versions
+                List<String> allVersions = RequestUtils.getSupportedVersions(service);
+                version = RequestUtils.getVersionPreOws(allVersions, List.of(wmtver));
             } else {
+                // filter to enabled versions only
+                List<String> supportedVersions = getEnabledVersions(service);
+
                 // OWS negotiation, using acceptVersions
                 String acceptVersionsList = Optional.ofNullable(kvp)
                         .map(map -> map.get(ACCEPT_VERSIONS))
@@ -440,6 +451,18 @@ public class Dispatcher extends AbstractController {
                     req.setAcceptVersions(acceptVersions);
                     version = RequestUtils.getVersionOWS(supportedVersions, acceptVersions, citeCompliant);
                     if (version == null) versionNegotiationFailed();
+                } else if (supportedVersions != null && !supportedVersions.isEmpty()) {
+                    // No version or acceptVersions specified, default to highest enabled version
+                    version = supportedVersions.get(0);
+                } else {
+                    // if no enabled versions found (shouldn't normally happen),
+                    // use highest supported version to prevent returning null
+                    logger.warning("No enabled versions found for service " + service
+                            + ", falling back to highest supported version");
+                    List<String> allVersions = RequestUtils.getSupportedVersions(service);
+                    if (allVersions != null && !allVersions.isEmpty()) {
+                        version = allVersions.get(allVersions.size() - 1);
+                    }
                 }
             }
 
@@ -655,6 +678,9 @@ public class Dispatcher extends AbstractController {
 
             if (service == null) {
                 service = normalize((String) map.get("service"));
+                if (service != null) {
+                    service = service.toUpperCase();
+                }
 
                 if ((service != null) && !citeCompliant) {
                     req.setService(service);
@@ -1756,7 +1782,7 @@ public class Dispatcher extends AbstractController {
             List<String> supportedVersions = null;
             if (service != null) {
                 req.setService(normalize(service));
-                supportedVersions = RequestUtils.getSupportedVersions(service);
+                supportedVersions = getEnabledVersions(service);
             }
             version = RequestUtils.getVersionOWS(supportedVersions, acceptVersions, citeCompliant);
             if (version == null) versionNegotiationFailed();
@@ -1945,5 +1971,39 @@ public class Dispatcher extends AbstractController {
      */
     public static boolean isSecurityException(Throwable t) {
         return t != null && t.getClass().getPackage().getName().startsWith("org.springframework.security");
+    }
+
+    /**
+     * Gets supported versions for a service, filtering out any disabled versions using registered ServiceVersionFilter
+     * extensions.
+     *
+     * @param serviceId The service identifier (e.g., "WMS", "WFS")
+     * @return List of enabled versions for the service
+     */
+    private static List<String> getEnabledVersions(String serviceId) {
+        List<String> versions = RequestUtils.getSupportedVersions(serviceId);
+        logger.info("Dispatcher.getEnabledVersions for " + serviceId + ", all versions: " + versions);
+
+        Collection<ServiceVersionFilter> filters = GeoServerExtensions.extensions(ServiceVersionFilter.class);
+        logger.info("Found " + filters.size() + " ServiceVersionFilter(s)");
+        if (!filters.isEmpty()) {
+            Collection<Service> services = GeoServerExtensions.extensions(Service.class);
+            Service service = services.stream()
+                    .filter(s -> s.getId().equalsIgnoreCase(serviceId))
+                    .findFirst()
+                    .orElse(null);
+
+            if (service != null) {
+                for (ServiceVersionFilter filter : filters) {
+                    versions = filter.filterVersions(service, versions);
+                }
+            }
+        }
+
+        if (versions != null) {
+            versions.sort(Comparator.comparing(Version::new, Comparator.reverseOrder()));
+        }
+
+        return versions;
     }
 }

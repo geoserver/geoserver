@@ -110,6 +110,9 @@ public abstract class XStreamServiceLoader<T extends ServiceInfo> implements Ser
             if (impl.getVersions() == null) {
                 impl.setVersions(new ArrayList<>());
             }
+            if (impl.getDisabledVersions() == null) {
+                impl.setDisabledVersions(new ArrayList<>());
+            }
             if (impl.getName() == null) {
                 impl.setName(impl.getType());
             }

@@ -7,13 +7,11 @@
 
 <wicket:extend>
 
-
+  <div class="gn-panel-DemoRequestsPage">
   <form wicket:id="demoRequestsForm">
-  <table class="h-100pct w-100pct">
-    <tbody>
-      <tr>
-        <td class="label"><wicket:message key="request">Request:</wicket:message></td>
-        <td class="datum">
+    <div class="gs-grid-table">
+        <div class="gs-grid-table-cell label"><wicket:message key="request">Request:</wicket:message></div>
+        <div class="gs-grid-table-cell datum">
          <select wicket:id="demoRequestsList">
           <optgroup label="WMS">
             <option>wms1</option>
@@ -25,32 +23,31 @@
             <option>wcs1</option>
           </optgroup>
          </select>
-        </td>
-      </tr>
-      <tr>
-        <td class="label"><wicket:message key="url">URL:</wicket:message></td>
-        <td class="datum"><input wicket:id="url" type="text" class="text w-100pct" name="url" value=""/></td>
-      </tr>
-      <tr>
-          <td><wicket:message key="prettyXml">Pretty XML:</wicket:message></td>
-          <td><input type="checkbox" id="prettyXML" wicket:id="prettyXML"  name="prettyXML" checked></td>
-      </tr>
-      <tr>
-        <td class="label"><wicket:message key="body">Body:</wicket:message></td>
-        <td class="datum">
+        </div>
+
+        <div class="gs-grid-table-cell label"><wicket:message key="url">URL:</wicket:message></div>
+        <div class="gs-grid-table-cell datum"><input wicket:id="url" type="text" class="w-full" name="url" value=""/></div>
+
+
+          <div class="gs-grid-table-cell"><wicket:message key="prettyXml">Pretty XML:</wicket:message></div>
+          <div class="gs-grid-table-cell"><input type="checkbox" id="prettyXML" wicket:id="prettyXML"  name="prettyXML" checked="checked"/></div>
+
+
+        <div class="gs-grid-table-cell label"><wicket:message key="body">Body:</wicket:message></div>
+        <div class="gs-grid-table-cell  datum">
           <div class="field textarea" wicket:id="body" id="body"> </div>
-        </td>
-      </tr>
-      <tr>
-        <td class="label"><wicket:message key="userName">User Name:</wicket:message></td>
-        <td class="datum"><input id="inputUsername" type="text" size="30" name="username" wicket:id="username" class="text"/>
-          <wicket:message key="password">Password:</wicket:message> 
-          <input type="password" size="30" name="password" wicket:id="password" class="text w-120px"/>
-        </td>
-      </tr>
-      <tr>
-        <td   class="label tdNoWidth"></td>
-        <td class="datum w-99pct">
+        </div>
+
+
+        <div class="label gs-grid-table-cell "><wicket:message key="userName">User Name:</wicket:message></div>
+        <div class="gs-grid-table-cell  datum"><input id="inputUsername" type="text" size="30" name="username" wicket:id="username"/> </div>
+        <div class="label gs-grid-table-cell ">  <wicket:message key="password">Password:</wicket:message> </div>
+        <div class="label gs-grid-table-cell "> <input type="password" size="30" name="password" wicket:id="password" class="w-md"/></div>
+
+
+
+        <div   class="gs-grid-table-cell label tdNoWidth"></div>
+        <div class="gs-grid-table-cell  datum w-wide">
             <div id="divNewWindow">
                 <div class="button-group selfclear">
                     <a id="linkSubmit"    ><wicket:message key="submit">Submit</wicket:message></a>
@@ -60,15 +57,14 @@
                     <a id="linkSubmitNewWin"  ><wicket:message key="openNewWindow">openNewWindow</wicket:message></a>
                 </div>
             </div>
-        </td>
-      </tr>
-    <tr id="trNewWindow">
-        <td><wicket:message key="openNewWindow">openNewWindow:</wicket:message></td>
-        <td><input type="checkbox" id="openNewWindow" wicket:id="openNewWindow"  name="openNewWindow"></td>
-    </tr>
-    </tbody>
-  </table>
+      </div>
+
+        <div class="gs-grid-table-cell newWindowCheckbox "><wicket:message key="openNewWindow">openNewWindow:</wicket:message></div>
+        <div class="gs-grid-table-cell newWindowCheckbox "><input type="checkbox" id="openNewWindow" wicket:id="openNewWindow"  name="openNewWindow"/></div>
+
+   </div>
  </form>
+
 
 
     <legend>
@@ -83,7 +79,7 @@
     <div  id="responseDiv">
     </div>
 
-
+  </div>
 </wicket:extend>
 </body>
 </html>

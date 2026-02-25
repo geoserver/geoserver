@@ -22,6 +22,7 @@ import org.geoserver.wcs2_0.WebCoverageService20;
 import org.geoserver.web.ServiceDescription;
 import org.geoserver.web.ServiceDescriptionProvider;
 import org.geoserver.web.ServiceLinkDescription;
+import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 
 /** Provide description of WMS services for welcome page. */
@@ -98,12 +99,18 @@ public class WCSServiceDescriptionProvider extends ServiceDescriptionProvider {
             return links;
         }
 
+        WCSInfo info = info(workspaceInfo, layerInfo);
+        List<Version> disabledVersions = (info != null) ? info.getDisabledVersions() : null;
+
         List<Service> extensions = GeoServerExtensions.extensions(Service.class);
 
         for (Service service : extensions) {
             if ((service.getService() instanceof WebCoverageService111)
                     || (service.getService() instanceof WebCoverageService100)
                     || (service.getService() instanceof WebCoverageService20)) {
+                if (disabledVersions != null && disabledVersions.contains(service.getVersion())) {
+                    continue;
+                }
 
                 String link = null;
                 if (service.getOperations().contains("GetCapabilities")) {

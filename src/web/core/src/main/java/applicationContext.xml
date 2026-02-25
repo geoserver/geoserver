@@ -106,7 +106,7 @@
     <property name="descriptionKey" value="GeoServerHomePage.description" />
     <property name="componentClass" value="org.geoserver.web.GeoServerHomePage" />
     <property name="category" ref="aboutStatusCategory" />
-    <property name="icon" value="img/logo.svg" />
+    <property name="icon" value="img/logo-icon.svg" />
     <property name="order" value="5" />
   </bean>
   <bean id="statusMenuPage" class="org.geoserver.web.MenuPageInfo">

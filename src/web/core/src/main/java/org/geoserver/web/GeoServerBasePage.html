@@ -20,20 +20,20 @@
           </button>
           <div id="main-navigation" class="gs-header-nav-container">
             <div id="navigation-container" class="gs-header-nav" role="navigation" aria-label="Main navigation">
-              <div class="gn-unordered-list-class" id="navigation">
-                <div class="gn-list-item-class navigation-tab" wicket:id="category">
+              <ul id="navigation">
+                <li class="navigation-tab" wicket:id="category">
                   <div class="navigation-tab-header">
                     <span wicket:id="category.header">[Category Header]</span>
                   </div>
-                  <div class="gn-unordered-list-class navigation-tab-content plain">
-                    <div class="gn-list-item-class nav-administer-service" wicket:id="category.links">
+                  <ul class="navigation-tab-content plain">
+                    <li class="nav-administer-service" wicket:id="category.links">
                       <a wicket:id="link">
                         <img src="#" wicket:id="link.icon" alt=""/><span wicket:id="link.label"></span>
                       </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
               <div class="devtoolbar" wicket:id="devButtons" title="Developer helper actions. This bar must not be available in releases"></div>
             </div>
           </div>
@@ -49,10 +49,10 @@
           <div id="localeSwitcher" class="gs-locale-selector" role="group" aria-label="Language">
             <select wicket:id="localeSwitcher"></select>
           </div>
-          <div id="authentication-panel" class="gs-user-avatar-dropdown" role="group" aria-label="User menu">
-            <div class="gs-user-avatar gs-user-avatar-trigger" id="user-avatar-trigger" tabindex="0" role="button" aria-haspopup="true" aria-expanded="false" aria-controls="user-dropdown-panel">
-              <span wicket:id="userInitials" class="gs-user-initials">JD</span>
-              <span wicket:id="userIconAnonymous" class="gs-user-icon-anonymous">
+          <div class="gs-user-avatar-dropdown" role="group" aria-label="User menu">
+            <div class="gs-user-avatar" id="user-avatar-trigger" tabindex="0" role="button" aria-haspopup="true" aria-expanded="false" aria-controls="user-dropdown-panel">
+              <span class="gs-user-initials"></span>
+              <span class="gs-user-icon-anonymous">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" width="20" height="20">
                   <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                 </svg>
@@ -72,9 +72,9 @@
               <div class="gs-user-dropdown-info">
                 <div wicket:id="loggedinasform" class="username">
                   <wicket:message key="loggedInAs">Logged in as</wicket:message>
-                  <span wicket:id="loggedInUsername">username</span>.
+                  <span wicket:id="loggedInUsername" class="username-text"></span>.
                 </div>
-                <div class="gs-unordered-list-class">
+                <ul>
                   <!-- Switch component -->
                   <div class="gs-switch" role="group" aria-label="Theme">
                     <input type="checkbox" id="gs-switch" class="gs-switch-input" aria-label="Toggle dark theme"/>
@@ -84,22 +84,22 @@
                     </label>
                   </div>
                   <!-- 2. Separator -->
-                  <hr wicket:id="separatorBeforeExternalLinks"/>
+                  <hr />
                   <!-- 3. External links -->
-                  <div wicket:id="loginExternalLinks">
+                  <div wicket:id="loginExternalLinks" class="gs-login-external-links">
                     <a wicket:id="loginform">
                       <div><img src="#" wicket:id="link.icon" alt=""/><span wicket:id="link.label"></span></div>
                     </a>
                   </div>
                   <!-- 4. Separator -->
-                  <hr wicket:id="separatorAfterExternalLinks"/>
+                  <hr />
                   <!-- 5. Buttons: logout when logged in -->
-                  <div class="gn-list-item-class">
+                  <li>
                     <a wicket:id="logoutform" role="menuitem">
                       <img src="#" wicket:id="link.icon" alt=""/><span wicket:id="link.label"></span>
                     </a>
-                  </div>
-                </div>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>

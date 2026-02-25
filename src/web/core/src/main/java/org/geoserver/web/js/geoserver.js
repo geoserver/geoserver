@@ -152,6 +152,25 @@
             });
         }
         initializeUserDropdown();
+
+        // Initialize avatar initials from username text in the dropdown
+        function initializeUserInitials() {
+            var avatarInitials = document.querySelector('.gs-user-avatar .gs-user-initials');
+            if (!avatarInitials) return;
+
+            var usernameSpan = document.querySelector('.gs-user-dropdown-panel .username span');
+            var username = usernameSpan && usernameSpan.textContent
+                ? usernameSpan.textContent.trim()
+                : '';
+
+            if (username) {
+                avatarInitials.textContent = username.charAt(0).toUpperCase();
+            } else {
+                // No username available: clear initials so CSS can show anonymous icon
+                avatarInitials.textContent = '';
+            }
+        }
+        initializeUserInitials();
     });
 })();
 

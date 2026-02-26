@@ -5,11 +5,11 @@
     <wicket:panel>
       <div class="gs-panel-RESTSettingsPanel">
         <div class="gn-unordered-list-class">
-          <div class="gn-list-item-class">
+          <div class="gn-list-item-class choiceItem">
+            <input id="quiet" class="field" type="checkbox" wicket:id="quiet"/>
             <label for="quiet" class="field checkbox">
               <wicket:message key="quiet">Disable Logging on REST</wicket:message>
             </label>
-            <input id="quiet" class="field" type="checkbox" wicket:id="quiet"/>
           </div>
           <div class="gn-list-item-class">
             <label for="rootdir" class="text">

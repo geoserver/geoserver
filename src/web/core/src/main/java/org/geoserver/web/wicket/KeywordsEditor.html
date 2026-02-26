@@ -7,27 +7,33 @@
           <label for="keywords">
             <wicket:message key="currentKeywords">Current Keywords</wicket:message>
           </label>
-          <select id="keywords" class="select w-md" wicket:id="keywords" multiple="multiple"/>
-          <button wicket:id="removeKeywords" type="submit">
-            <wicket:message key="removeSelected">Remove selected</wicket:message>
-          </button>
+          <div class="gs-input-group">
+            <select id="keywords" class="select w-md" wicket:id="keywords" multiple="multiple"/>
+            <button wicket:id="removeKeywords" type="submit">
+              <wicket:message key="removeSelected">Remove selected</wicket:message>
+            </button>
+          </div>
         </div>
         <div class="my-1">
           <label for="newKeyword">
             <wicket:message key="newKeyword">New Keyword</wicket:message>
           </label>
-          <input id="newKeyword" type="text" wicket:id="newKeyword"/>
-          <select id="lang" class="text" type="text" wicket:id="lang"/>
+          <div class="gs-input-group">
+            <input id="newKeyword" type="text" wicket:id="newKeyword"/>
+            <select id="lang" class="text" type="text" wicket:id="lang"/>
+          </div>
         </div>
         <div class="my-1">
           <label for="vocab">
             <wicket:message key="vocabulary">Vocabulary</wicket:message>
           </label>
-          <input id="vocab" type="text" wicket:id="vocab"/>
+          <div class="gs-input-group">
+            <input id="vocab" type="text" wicket:id="vocab"/>
+            <button wicket:id="addKeyword" type="submit">
+              <wicket:message key="addKeyword">Add</wicket:message>
+            </button>
+          </div>
         </div>
-        <button wicket:id="addKeyword" type="submit">
-          <wicket:message key="addKeyword">Add</wicket:message>
-        </button>
       </div>
     </wicket:panel>
   </body>

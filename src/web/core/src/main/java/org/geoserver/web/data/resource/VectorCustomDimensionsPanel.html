@@ -17,10 +17,12 @@
                 <label for="nameInput">
                   <wicket:message key="nameInput"/>
                 </label>
-                <input wicket:id="nameInput" id="nameInput" type="text" size="40"/>
-                <button type="submit" wicket:id="addButton">
-                  <wicket:message key="addButton">Add new dimension</wicket:message>
-                </button>
+                <div class="gs-input-group">
+                  <input wicket:id="nameInput" id="nameInput" type="text" size="40"/>
+                  <button type="submit" wicket:id="addButton">
+                    <wicket:message key="addButton">Add new dimension</wicket:message>
+                  </button>
+                </div>
               </div>
               <br/>
               <div wicket:id="vectorCustomDimensionsView">

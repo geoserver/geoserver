@@ -17,10 +17,12 @@
               <label for="availableStyles">
                 <wicket:message key="copyFrom">CopyFrom</wicket:message>
               </label>
-              <select id="availableStyles" class="w-md" wicket:id="availableStyles"/>
-              <a href="#" wicket:id="copy">
-                <wicket:message key="copy">Copy</wicket:message>
-              </a>
+              <div class="gs-input-group">
+                <select id="availableStyles" class="w-md" wicket:id="availableStyles"/>
+                <a class="button" href="#" wicket:id="copy">
+                  <wicket:message key="copy">Copy</wicket:message>
+                </a>
+              </div>
             </div>
             <div class="gn-list-item-class">
               <div wicket:id="listContainer">

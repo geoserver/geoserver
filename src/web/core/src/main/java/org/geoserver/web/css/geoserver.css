@@ -1584,11 +1584,10 @@ form a.collapsed {
 #authentication-panel .button {
   text-align: center;
 }
-#authentication-panel form,
-.authentication-form {
+.authentication-form .gs-authentication-form {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.25rem;
 }
 
 /* Nav container & dropdowns */
@@ -1745,12 +1744,6 @@ form a.collapsed {
   height: 2em;
   width: 100%;
   box-sizing: border-box;
-  font-size: 0.875em;
-}
-.gs-user-dropdown-panel label.hidden {
-  display: block;
-  margin-bottom: 0.25em;
-  color: var(--gs-secondary-color);
   font-size: 0.875em;
 }
 .gs-user-dropdown-panel .choiceItem {
@@ -1979,4 +1972,66 @@ label.gs-switch-label {
 .bounding-box-controls {
     display:flex;
     flex-direction: column;
+}
+
+/*-----------
+ Input group
+------------*/
+.gs-input-group {
+  display: flex;
+  padding-bottom: 0.5rem;
+}
+.gs-input-group > *,
+.gs-input-group > input {
+  border-radius: 0;
+}
+.gs-input-group > *:first-child {
+  border-top-left-radius: var(--gs-border-radius);
+  border-bottom-left-radius: var(--gs-border-radius);
+}
+.gs-input-group > *:last-child {
+  border-top-right-radius: var(--gs-border-radius);
+  border-bottom-right-radius: var(--gs-border-radius);
+}
+.gs-input-group > *:not(:last-child) {
+    border-right: none;
+}
+.gs-input-group > button,
+.gs-input-group > .button {
+  height: fit-content;
+  white-space: nowrap;
+}
+.gs-input-group > select {
+  width: fit-content;
+}
+
+/* Input groups with Select2 */
+.gs-input-group > .select2-hidden-accessible:first-child + .select2 .select2-selection--single {
+  border-top-left-radius: var(--gs-border-radius);
+  border-bottom-left-radius: var(--gs-border-radius);
+}
+.gs-input-group > .select2-hidden-accessible:first-child + .select2:not(:last-child) .select2-selection--single {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.gs-input-group > .select2-hidden-accessible:not(:first-child) + .select2:last-child .select2-selection--single {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.gs-input-group > .select2-hidden-accessible:nth-last-child(2) + .select2:last-child .select2-selection--single {
+  border-top-right-radius: var(--gs-border-radius);
+  border-bottom-right-radius: var(--gs-border-radius);
+}
+.gs-input-group > .select2 .selection {
+  height: 100%;
+}
+.gs-input-group > .select2 .selection .select2-selection {
+  height: inherit;
+}
+
+/* Parameter filter button */
+.button.add-selected-btn {
+  height: auto;
+  display: flex;
+  align-items: center;
 }

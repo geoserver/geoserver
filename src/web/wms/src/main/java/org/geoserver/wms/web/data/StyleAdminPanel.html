@@ -49,28 +49,34 @@
                   <label for="name">
                     <wicket:message key="generateNew">GenerateNew</wicket:message>
                   </label>
-                  <select wicket:id="templates"/>
-                  <a href="#" wicket:id="generate">
-                    <wicket:message key="generate">Generate</wicket:message>
-                  </a>
+                  <div class="gs-input-group">
+                    <select wicket:id="templates"/>
+                    <a class="button" href="#" wicket:id="generate">
+                      <wicket:message key="generate">Generate</wicket:message>
+                    </a>
+                  </div>
                 </div>
                 <div class="gn-list-item-class">
                   <label for="name">
                     <wicket:message key="copyFrom">CopyFrom</wicket:message>
                   </label>
-                  <select wicket:id="existingStyles" class="w-27-em"/>
-                  <a href="#" wicket:id="copy">
-                    <wicket:message key="copy">Copy</wicket:message>
-                  </a>
+                  <div class="gs-input-group">
+                    <select wicket:id="existingStyles" class="w-27-em"/>
+                    <a class="button" href="#" wicket:id="copy">
+                      <wicket:message key="copy">Copy</wicket:message>
+                    </a>
+                  </div>
                 </div>
                 <div class="gn-list-item-class">
                   <label for="filename">
                     <wicket:message key="styleFile">Style file</wicket:message>
                   </label>
-                  <input type="file" wicket:id="filename"/>
-                  <a href="#" wicket:id="upload">
-                    <wicket:message key="upload">Upload</wicket:message>
-                  </a>
+                  <div class="gs-input-group">
+                    <input type="file" wicket:id="filename"/>
+                    <a class="button" href="#" wicket:id="upload">
+                      <wicket:message key="upload">Upload</wicket:message>
+                    </a>
+                  </div>
                 </div>
               </div>
             </fieldset>

@@ -1,16 +1,24 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-  <select id="type" wicket:id="type"/>
-  <span wicket:id="dayOfWeekLabel"><wicket:message key="dayOfWeek"/></span>
-  <select id="dayOfWeek" wicket:id="dayOfWeek"/>
-  <span wicket:id="dayOfMonthLabel"><wicket:message key="dayOfMonth"/></span>
-  <select id="dayOfMonth" wicket:id="dayOfMonth"/>
-  <span wicket:id="timeLabel"><wicket:message key="time"/></span>
-  <input id="time" wicket:id="time" type="text" class="w-sm" />
-  <input id="custom" wicket:id="custom" type="text" />
-</wicket:panel>
-</body>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-FrequencyPanel">
+        <select id="type" wicket:id="type"></select>
+        <span wicket:id="dayOfWeekLabel">
+          <wicket:message key="dayOfWeek"></wicket:message>
+        </span>
+        <select id="dayOfWeek" wicket:id="dayOfWeek"></select>
+        <span wicket:id="dayOfMonthLabel">
+          <wicket:message key="dayOfMonth"></wicket:message>
+        </span>
+        <select id="dayOfMonth" wicket:id="dayOfMonth"></select>
+        <span wicket:id="timeLabel">
+          <wicket:message key="time"></wicket:message>
+        </span>
+        <input id="time" wicket:id="time" type="text" class="w-sm" />
+        <input id="custom" wicket:id="custom" type="text" />
+      </div>
+    </wicket:panel>
+  </body>
 </html>

@@ -1,18 +1,19 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-
-		<div class="repeat-panel repeat-attribute"
-			wicket:id="attributesTablePanel"></div>
-		<div wicket:id="noData"></div>
-		
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-RepeatableAttributesTablePanel">
+        <div class="repeat-panel repeat-attribute" wicket:id="attributesTablePanel"></div>
+        <div wicket:id="noData"></div>
         <div class="gn-unordered-list-class">
-            <div class="gn-list-item-class"> <a class="add-link" href="#" wicket:id="addNew"> <wicket:message
-                        key="addData"></wicket:message>
-            </a></div>
+          <div class="gn-list-item-class">
+            <a class="add-link" href="#" wicket:id="addNew">
+              <wicket:message key="addData"></wicket:message>
+            </a>
+          </div>
         </div>
-	</wicket:panel>
-</body>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

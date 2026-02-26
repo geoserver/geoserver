@@ -1970,3 +1970,13 @@ label.gs-switch-label {
     border-top: 1px solid var(--gs-border-color);
   }
 }
+
+.gs-panel-EnvelopePanel .gn-unordered-list-class {
+    display: flex;
+    flex-direction: row;
+}
+
+.bounding-box-controls {
+    display:flex;
+    flex-direction: column;
+}

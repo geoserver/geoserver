@@ -1,50 +1,67 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-  <wicket:panel>
-    <div class="gn-unordered-list-class">
-    <div class="gn-list-item-class">
-      <fieldset>
-        <legend><span><wicket:message key="inspire">INSPIRE</wicket:message></span></legend>
+  <head/>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-InspireAdminPanel">
         <div class="gn-unordered-list-class">
-        <div class="gn-list-item-class choiceItem">
-          <input id="createExtendedCapabilities" type="checkbox" wicket:id="createExtendedCapabilities" />
-          <label for="createExtendedCapabilities">
-            <wicket:message key="createExtendedCapabilities">Create INSPIRE ExtendedCapabilities element</wicket:message>
-          </label>
-        </div>
-          <div class="gn-list-item-class" wicket:id="container">
-            <div wicket:id="configs">
+          <div class="gn-list-item-class">
+            <fieldset>
+              <legend>
+                <span>
+                  <wicket:message key="inspire">INSPIRE</wicket:message>
+                </span>
+              </legend>
               <div class="gn-unordered-list-class">
-                <div class="gn-list-item-class">
-                  <label for="language"><wicket:message key="language">Default Language</wicket:message></label>
-                  <select wicket:id="language"></select>
+                <div class="gn-list-item-class choiceItem">
+                  <input id="createExtendedCapabilities" type="checkbox" wicket:id="createExtendedCapabilities"/>
+                  <label for="createExtendedCapabilities">
+                    <wicket:message key="createExtendedCapabilities">Create INSPIRE ExtendedCapabilities element</wicket:message>
+                  </label>
                 </div>
-                <div class="gn-list-item-class">
-                  <label for="otherLanguages"><wicket:message key="otherLanguages">Other Supported Languages</wicket:message></label>
-                  <div wicket:id="otherLanguages"></div>
-                </div>
-                <div class="gn-list-item-class">
-                  <span wicket:id="border">
-                  <label for="metadataURL"><wicket:message key="metadataURL">Metadata URL</wicket:message></label> 
-                  <input type="text" wicket:id="metadataURL" size="50 "></input>
-                  </span>
-                </div>
-                <div class="gn-list-item-class">
-                  <label for="metadataURLType"><wicket:message key="metadataURLType">metadataURLType</wicket:message></label> 
-                  <select wicket:id="metadataURLType"></select>
-                </div>
-                <div class="gn-list-item-class" wicket:id="datasetIdentifiersContainer">
-                  <label for="spatialDatasetIdentifiers"><wicket:message key="spatialDatasetIdentifiers">spatialDatasetIdentifiers</wicket:message></label> 
-                  <div wicket:id="spatialDatasetIdentifiers"></div>
+                <div class="gn-list-item-class" wicket:id="container">
+                  <div wicket:id="configs">
+                    <div class="gn-unordered-list-class">
+                      <div class="gn-list-item-class">
+                        <label for="language">
+                          <wicket:message key="language">Default Language</wicket:message>
+                        </label>
+                        <select wicket:id="language"/>
+                      </div>
+                      <div class="gn-list-item-class">
+                        <label for="otherLanguages">
+                          <wicket:message key="otherLanguages">Other Supported Languages</wicket:message>
+                        </label>
+                        <div wicket:id="otherLanguages"/>
+                      </div>
+                      <div class="gn-list-item-class">
+                        <span wicket:id="border">
+                          <label for="metadataURL">
+                            <wicket:message key="metadataURL">Metadata URL</wicket:message>
+                          </label>
+                          <input type="text" wicket:id="metadataURL" size="50 "/>
+                        </span>
+                      </div>
+                      <div class="gn-list-item-class">
+                        <label for="metadataURLType">
+                          <wicket:message key="metadataURLType">metadataURLType</wicket:message>
+                        </label>
+                        <select wicket:id="metadataURLType"/>
+                      </div>
+                      <div class="gn-list-item-class" wicket:id="datasetIdentifiersContainer">
+                        <label for="spatialDatasetIdentifiers">
+                          <wicket:message key="spatialDatasetIdentifiers">spatialDatasetIdentifiers</wicket:message>
+                        </label>
+                        <div wicket:id="spatialDatasetIdentifiers"/>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
+            </fieldset>
           </div>
         </div>
-      </fieldset>
-    </div>
-    </div>
-  </wicket:panel>
-</body>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

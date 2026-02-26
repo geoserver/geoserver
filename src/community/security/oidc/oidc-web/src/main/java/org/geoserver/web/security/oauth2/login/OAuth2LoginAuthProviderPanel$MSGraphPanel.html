@@ -1,85 +1,71 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-   <br>
-
-
-    <div class="display-flex">
-        <input class="field autoTopBottom" id="msGraphMemberOf"
-               type="checkbox" wicket:id="msGraphMemberOf"/>
-        <label class="padLeftSmall"  >
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-OAuth2LoginAuthProviderPanel_MSGraphPanel">
+        <br />
+        <div class="display-flex">
+          <input class="field autoTopBottom" id="msGraphMemberOf" type="checkbox" wicket:id="msGraphMemberOf" />
+          <label class="padLeftSmall">
             <wicket:message key="msGraphMemberOf"></wicket:message>
-        </label>
-    </div>
-    <div class="display-flex">
-        <input class="field autoTopBottom" id="msGraphAppRoleAssignments"
-               type="checkbox" wicket:id="msGraphAppRoleAssignments"/>
-        <label class="padLeftSmall"  >
-            <wicket:message key="msGraphAppRoleAssignments"></wicket:message>
-        </label>
-    </div>
-    <div class="" id="msGraphObjectIdDiv">
-        <div class="display-flex flex-column pad-checkbox">
-            <input type="text" class="field autoTopBottom" id="msGraphAppRoleAssignmentsObjectId"
-                     wicket:id="msGraphAppRoleAssignmentsObjectId"/>
-            <label class="padLeftSmall"  >
-                <wicket:message key="msGraphAppRoleAssignmentsObjectId"></wicket:message>
-            </label>
+          </label>
         </div>
-    </div>
-
-
-
-
-    <br>
-
-    <label class="padTopLarge" >
-        <wicket:message key="roleConverterTitle"></wicket:message>
-    </label>
-    <!--
+        <div class="display-flex">
+          <input class="field autoTopBottom" id="msGraphAppRoleAssignments" type="checkbox" wicket:id="msGraphAppRoleAssignments" />
+          <label class="padLeftSmall">
+            <wicket:message key="msGraphAppRoleAssignments"></wicket:message>
+          </label>
+        </div>
+        <div class="" id="msGraphObjectIdDiv">
+          <div class="display-flex flex-column pad-checkbox">
+            <input type="text" class="field autoTopBottom" id="msGraphAppRoleAssignmentsObjectId" wicket:id="msGraphAppRoleAssignmentsObjectId" />
+            <label class="padLeftSmall">
+              <wicket:message key="msGraphAppRoleAssignmentsObjectId"></wicket:message>
+            </label>
+          </div>
+        </div>
+        <br />
+        <label class="padTopLarge">
+          <wicket:message key="roleConverterTitle"></wicket:message>
+        </label>
+<!--
       `oninput` fires when user changes the value - this will
       update the summary table.
     -->
-    <input type="text" class="field width95" id="roleConverterString"
-           wicket:id="roleConverterString"/>
-
-    <label>
-        <wicket:message key="roleConverterHint"></wicket:message>
-    </label>
-    <div class="display-flex">
-        <input class="field autoTopBottom" id="onlyExternalListedRoles"
-               type="checkbox" wicket:id="onlyExternalListedRoles"/>
-        <label class="padLeftSmall"  >
-            <wicket:message key="roleConverterOnlyListedExternalRoles"></wicket:message>
+        <input type="text" class="field width95" id="roleConverterString" wicket:id="roleConverterString" />
+        <label>
+          <wicket:message key="roleConverterHint"></wicket:message>
         </label>
-    </div>
-
-
-    <div id="roleConverterStringDiv" class="padTopLarge">
-        <table id="roleConverterStringTable">
+        <div class="display-flex">
+          <input class="field autoTopBottom" id="onlyExternalListedRoles" type="checkbox" wicket:id="onlyExternalListedRoles" />
+          <label class="padLeftSmall">
+            <wicket:message key="roleConverterOnlyListedExternalRoles"></wicket:message>
+          </label>
+        </div>
+        <div id="roleConverterStringDiv" class="padTopLarge">
+          <table id="roleConverterStringTable">
             <thead>
-            <tr>
+              <tr>
                 <th class="textAlignCenter">
-                    <wicket:message key="externalRoleTitle"/>
+                  <wicket:message key="externalRoleTitle"></wicket:message>
                 </th>
                 <th class="textAlignCenter">
-                    <wicket:message key="gsRoleTitle"/>
+                  <wicket:message key="gsRoleTitle"></wicket:message>
                 </th>
-            </tr>
+              </tr>
             </thead>
             <tbody id="roleConverterStringTbody">
 
             </tbody>
-        </table>
-
-        <div class="display-flex justifyContentCenter fontSize10"  >
+          </table>
+          <div class="display-flex justifyContentCenter fontSize10">
             <div>
-                <wicket:message key="roleConverterTableTitle"/>
+              <wicket:message key="roleConverterTableTitle"></wicket:message>
             </div>
+          </div>
         </div>
-    </div>
-</wicket:panel>
-</body>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

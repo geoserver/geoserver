@@ -1,53 +1,59 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-<wicket:panel>
-    <div class="gn-unordered-list-class">
-        <div class="gn-list-item-class">
+  <head/>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-DownloadLimitsPanel">
+        <div class="gn-unordered-list-class">
+          <div class="gn-list-item-class">
             <fieldset>
-                <legend><span><wicket:message key="wpsDownload">WPS download</wicket:message></span>
-                </legend>
-                <div class="gn-unordered-list-class">
-                    <div class="gn-list-item-class">
-                        <label for="maxFeatures">
-                            <wicket:message key="maxFeatures">maxFeatures</wicket:message>
-                        </label>
-                        <input type="text" wicket:id="maxFeatures"></input>
-                    </div>
-                    <div class="gn-list-item-class">
-                        <label for="rasterSizeLimits">
-                            <wicket:message key="rasterSizeLimits">rasterSizeLimits</wicket:message>
-                        </label>
-                        <input type="text" wicket:id="rasterSizeLimits"></input>
-                    </div>
-                    <div class="gn-list-item-class">
-                        <label for="writeLimits">
-                            <wicket:message key="writeLimits">writeLimits</wicket:message>
-                        </label>
-                        <input type="text" wicket:id="writeLimits"></input>
-                    </div>
-                    <div class="gn-list-item-class">
-                        <label for="hardOutputLimit">
-                            <wicket:message key="hardOutputLimit">hardOutputLimit</wicket:message>
-                        </label>
-                        <input type="text" wicket:id="hardOutputLimit"></input>
-                    </div>
-                    <div class="gn-list-item-class">
-                        <label for="maxAnimationFrames">
-                            <wicket:message key="maxAnimationFrames">maxAnimationFrames</wicket:message>
-                        </label>
-                        <input type="text" wicket:id="maxAnimationFrames"></input>
-                    </div>
-                    <div class="gn-list-item-class">
-                        <label for="compressionLevel">
-                            <wicket:message key="compressionLevel">compressionLevel</wicket:message>
-                        </label>
-                        <input type="text" wicket:id="compressionLevel"></input>
-                    </div>
+              <legend>
+                <span>
+                  <wicket:message key="wpsDownload">WPS download</wicket:message>
+                </span>
+              </legend>
+              <div class="gn-unordered-list-class">
+                <div class="gn-list-item-class">
+                  <label for="maxFeatures">
+                    <wicket:message key="maxFeatures">maxFeatures</wicket:message>
+                  </label>
+                  <input type="text" wicket:id="maxFeatures"/>
                 </div>
+                <div class="gn-list-item-class">
+                  <label for="rasterSizeLimits">
+                    <wicket:message key="rasterSizeLimits">rasterSizeLimits</wicket:message>
+                  </label>
+                  <input type="text" wicket:id="rasterSizeLimits"/>
+                </div>
+                <div class="gn-list-item-class">
+                  <label for="writeLimits">
+                    <wicket:message key="writeLimits">writeLimits</wicket:message>
+                  </label>
+                  <input type="text" wicket:id="writeLimits"/>
+                </div>
+                <div class="gn-list-item-class">
+                  <label for="hardOutputLimit">
+                    <wicket:message key="hardOutputLimit">hardOutputLimit</wicket:message>
+                  </label>
+                  <input type="text" wicket:id="hardOutputLimit"/>
+                </div>
+                <div class="gn-list-item-class">
+                  <label for="maxAnimationFrames">
+                    <wicket:message key="maxAnimationFrames">maxAnimationFrames</wicket:message>
+                  </label>
+                  <input type="text" wicket:id="maxAnimationFrames"/>
+                </div>
+                <div class="gn-list-item-class">
+                  <label for="compressionLevel">
+                    <wicket:message key="compressionLevel">compressionLevel</wicket:message>
+                  </label>
+                  <input type="text" wicket:id="compressionLevel"/>
+                </div>
+              </div>
             </fieldset>
+          </div>
         </div>
-    </div>
-</wicket:panel>
-</body>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

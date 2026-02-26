@@ -1,76 +1,66 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:wicket="http://wicket.apache.org/">
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
 <!--
   ~ (c) 2024 Open Source Geospatial Foundation - all rights reserved
   ~ This code is licensed under the GPL 2.0 license, available at the root
   ~ application directory.
   ~
   -->
-<wicket:head>
+  <wicket:head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </wicket:head>
-
-<body>
-
-
-<wicket:panel>
-
-    <label>
-        <wicket:message key="rolesHeaderName"></wicket:message>
-    </label>
-    <input class="field" type="text" wicket:id="rolesHeaderName"/>
-
-    <label>
-        <wicket:message key="jsonPath"></wicket:message>
-    </label>
-    <input class="field" type="text" wicket:id="rolesJsonPath"/>
-
-    <label class="padTopLarge" >
-        <wicket:message key="roleConverterTitle"></wicket:message>
-    </label>
-    <!--
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-JwtHeadersAuthFilterPanel_JsonClaimPanel">
+        <label>
+          <wicket:message key="rolesHeaderName"></wicket:message>
+        </label>
+        <input class="field" type="text" wicket:id="rolesHeaderName" />
+        <label>
+          <wicket:message key="jsonPath"></wicket:message>
+        </label>
+        <input class="field" type="text" wicket:id="rolesJsonPath" />
+        <label class="padTopLarge">
+          <wicket:message key="roleConverterTitle"></wicket:message>
+        </label>
+<!--
       `oninput` fires when user changes the value - this will
       update the summary table.
     -->
-    <input class="field width95" type="text" id="roleConverterString"
-          wicket:id="roleConverterString"/>
-
-    <label>
-        <wicket:message key="roleConverterHint"></wicket:message>
-    </label>
-    <div class="flex">
-        <input class="field autoTopBottom" id="onlyExternalListedRoles"
-              type="checkbox" wicket:id="onlyExternalListedRoles"/>
-        <label class="padLeftSmall"  >
-            <wicket:message key="roleConverterOnlyListedExternalRoles"></wicket:message>
+        <input class="field width95" type="text" id="roleConverterString" wicket:id="roleConverterString" />
+        <label>
+          <wicket:message key="roleConverterHint"></wicket:message>
         </label>
-    </div>
-
-    <div id="roleConverterStringDiv" >
-        <table id="roleConverterStringTable">
+        <div class="flex">
+          <input class="field autoTopBottom" id="onlyExternalListedRoles" type="checkbox" wicket:id="onlyExternalListedRoles" />
+          <label class="padLeftSmall">
+            <wicket:message key="roleConverterOnlyListedExternalRoles"></wicket:message>
+          </label>
+        </div>
+        <div id="roleConverterStringDiv">
+          <table id="roleConverterStringTable">
             <thead>
-            <tr>
+              <tr>
                 <th class="textAlignCenter">
-                    <wicket:message key="externalRoleTitle"/>
+                  <wicket:message key="externalRoleTitle"></wicket:message>
                 </th>
                 <th class="textAlignCenter">
-                    <wicket:message key="gsRoleTitle"/>
+                  <wicket:message key="gsRoleTitle"></wicket:message>
                 </th>
-            </tr>
+              </tr>
             </thead>
             <tbody id="roleConverterStringTbody">
 
             </tbody>
-        </table>
-
-        <div class="flex justifyContentCenter fontSize10"  >
+          </table>
+          <div class="flex justifyContentCenter fontSize10">
             <div>
-                <wicket:message key="roleConverterTableTitle"/>
+              <wicket:message key="roleConverterTableTitle"></wicket:message>
             </div>
+          </div>
         </div>
-    </div>
-</wicket:panel>
-</body>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

@@ -1,45 +1,65 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-     <div class="gn-unordered-list-class">
-        <div class="gn-list-item-class">
-          <label for="jdbcDriver"><wicket:message key="jdbcDriver">JDBC Driver class</wicket:message></label>
-          <input wicket:id="jdbcDriver" id="jdbDriver" type="text"/>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-JDBCConnectionPoolPanel">
+        <div class="gn-unordered-list-class">
+          <div class="gn-list-item-class">
+            <label for="jdbcDriver">
+              <wicket:message key="jdbcDriver">JDBC Driver class</wicket:message>
+            </label>
+            <input wicket:id="jdbcDriver" id="jdbDriver" type="text"/>
+          </div>
+          <div class="gn-list-item-class">
+            <label for="jdbcUrl">
+              <wicket:message key="jdbcUrl">URL</wicket:message>
+            </label>
+            <input class="w-xl" wicket:id="jdbcUrl" id="jdbcUrl" type="text"/>
+          </div>
+          <div class="gn-list-item-class">
+            <label for="jdbcUser">
+              <wicket:message key="jdbcUser">username</wicket:message>
+            </label>
+            <input wicket:id="jdbcUser" id="jdbcUser" type="text"/>
+          </div>
+          <div class="gn-list-item-class">
+            <label for="jdbcPassword">
+              <wicket:message key="jdbcPassword">username</wicket:message>
+            </label>
+            <input class="password" wicket:id="jdbcPassword" id="jdbcPassword" type="password"/>
+          </div>
+          <div class="gn-list-item-class">
+            <label for="jdbcMinConnections">
+              <wicket:message key="jdbcMinConnections">minConnections</wicket:message>
+            </label>
+            <input wicket:id="jdbcMinConnections" id="jdbcMinConnections" type="text"/>
+          </div>
+          <div class="gn-list-item-class">
+            <label for="jdbcMaxConnections">
+              <wicket:message key="jdbcMaxConnections">maxConnections</wicket:message>
+            </label>
+            <input wicket:id="jdbcMaxConnections" id="jdbcMaxConnections" type="text"/>
+          </div>
+          <div class="gn-list-item-class">
+            <label for="jdbcConnectionTimeout">
+              <wicket:message key="jdbcConnectionTimeOut">connectionTimeOut</wicket:message>
+            </label>
+            <input wicket:id="jdbcConnectionTimeout" id="jdbcConnectionTimeout" type="text"/>
+          </div>
+          <div class="gn-list-item-class">
+            <label for="jdbcValidationQuery">
+              <wicket:message key="jdbcValidationQuery">validationQuery</wicket:message>
+            </label>
+            <input wicket:id="jdbcValidationQuery" id="jdbcValidationQuery" type="text"/>
+          </div>
+          <div class="gn-list-item-class">
+            <label for="jdbcMaxOpenPreparedStatements">
+              <wicket:message key="jdbcMaxOpenPreparedStatements">jdbcMaxOpenPreparedStatements</wicket:message>
+            </label>
+            <input wicket:id="jdbcMaxOpenPreparedStatements" id="jdbcMaxOpenPreparedStatements" type="text"/>
+          </div>
         </div>
-        <div class="gn-list-item-class">
-          <label for="jdbcUrl"><wicket:message key="jdbcUrl">URL</wicket:message></label>
-          <input class="w-xl" wicket:id="jdbcUrl" id="jdbcUrl" type="text"/>
-        </div>
-        <div class="gn-list-item-class">
-          <label for="jdbcUser"><wicket:message key="jdbcUser">username</wicket:message></label>
-          <input wicket:id="jdbcUser" id="jdbcUser" type="text"/>
-        </div>
-        <div class="gn-list-item-class">
-          <label for="jdbcPassword"><wicket:message key="jdbcPassword">username</wicket:message></label>
-          <input class="password" wicket:id="jdbcPassword" id="jdbcPassword" type="password"/>
-        </div>
-        <div class="gn-list-item-class">
-          <label for="jdbcMinConnections"><wicket:message key="jdbcMinConnections">minConnections</wicket:message></label>
-          <input wicket:id="jdbcMinConnections" id="jdbcMinConnections" type="text"/>
-        </div>
-        <div class="gn-list-item-class">
-          <label for="jdbcMaxConnections"><wicket:message key="jdbcMaxConnections">maxConnections</wicket:message></label>
-          <input wicket:id="jdbcMaxConnections" id="jdbcMaxConnections" type="text"/>
-        </div>
-        <div class="gn-list-item-class">
-          <label for="jdbcConnectionTimeout"><wicket:message key="jdbcConnectionTimeOut">connectionTimeOut</wicket:message></label>
-          <input wicket:id="jdbcConnectionTimeout" id="jdbcConnectionTimeout" type="text"/>
-        </div>
-        <div class="gn-list-item-class">
-          <label for="jdbcValidationQuery"><wicket:message key="jdbcValidationQuery">validationQuery</wicket:message></label>
-          <input wicket:id="jdbcValidationQuery" id="jdbcValidationQuery" type="text"/>
-        </div>
-        <div class="gn-list-item-class">
-          <label for="jdbcMaxOpenPreparedStatements"><wicket:message key="jdbcMaxOpenPreparedStatements">jdbcMaxOpenPreparedStatements</wicket:message></label>
-          <input wicket:id="jdbcMaxOpenPreparedStatements" id="jdbcMaxOpenPreparedStatements" type="text"/>
-        </div>
-     </div>
-</wicket:panel>
-</body>
+      </div>
+    </wicket:panel>
+  </body>
 </html>
-

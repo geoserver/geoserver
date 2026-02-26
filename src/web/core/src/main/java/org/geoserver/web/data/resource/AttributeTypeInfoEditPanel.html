@@ -1,90 +1,98 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-    <form id="attributeForm" wicket:id="attributeForm">
-        <fieldset>
-            <legend><span><wicket:message key="AttributeTypeInfoEditPanel.details">Details</wicket:message></span>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-AttributeTypeInfoEditPanel">
+        <form id="attributeForm" wicket:id="attributeForm">
+          <fieldset>
+            <legend>
+              <span>
+                <wicket:message key="AttributeTypeInfoEditPanel.details">Details</wicket:message>
+              </span>
             </legend>
             <div class="gn-unordered-list-class">
-                <div class="gn-list-item-class">
-                    <label for="name">
-                        <wicket:message key="AttributeTypeInfoEditor.th.name">Name</wicket:message>
-                    </label>
-                    <input id="name" type="text" wicket:id="name" />
-                </div>
-                <div class="gn-list-item-class">
-                    <label for="type">
-                        <wicket:message key="AttributeTypeInfoEditor.th.binding">Type</wicket:message>
-                    </label>
-                    <input id="type" type="text" wicket:id="type" />
-                </div>
-                <div class="gn-list-item-class">
-                    <label for="source">
-                        <wicket:message key="AttributeTypeInfoEditPanel.source">Source</wicket:message>
-                    </label>
-                    <textarea id="source" wicket:id="source" class="cql"></textarea>
-                </div>
-                <div class="gn-list-item-class">
-                    <label for="description">
-                        <wicket:message key="AttributeTypeInfoEditor.th.description">Description</wicket:message>
-                    </label>
-                    <textarea id="description" wicket:id="description" class="cql"></textarea>
-                </div>
-                <div class="gn-list-item-class">
-                    <label for="nillable">
-                        <wicket:message key="AttributeTypeInfoEditPanel.nillable">Nillable</wicket:message>
-                    </label>
-                    <input id="nillable" type="checkbox" wicket:id="nillable"/>
-                </div>
+              <div class="gn-list-item-class">
+                <label for="name">
+                  <wicket:message key="AttributeTypeInfoEditor.th.name">Name</wicket:message>
+                </label>
+                <input id="name" type="text" wicket:id="name"/>
+              </div>
+              <div class="gn-list-item-class">
+                <label for="type">
+                  <wicket:message key="AttributeTypeInfoEditor.th.binding">Type</wicket:message>
+                </label>
+                <input id="type" type="text" wicket:id="type"/>
+              </div>
+              <div class="gn-list-item-class">
+                <label for="source">
+                  <wicket:message key="AttributeTypeInfoEditPanel.source">Source</wicket:message>
+                </label>
+                <textarea id="source" wicket:id="source" class="cql"/>
+              </div>
+              <div class="gn-list-item-class">
+                <label for="description">
+                  <wicket:message key="AttributeTypeInfoEditor.th.description">Description</wicket:message>
+                </label>
+                <textarea id="description" wicket:id="description" class="cql"/>
+              </div>
+              <div class="gn-list-item-class">
+                <label for="nillable">
+                  <wicket:message key="AttributeTypeInfoEditPanel.nillable">Nillable</wicket:message>
+                </label>
+                <input id="nillable" type="checkbox" wicket:id="nillable"/>
+              </div>
             </div>
-        </fieldset>
-        <fieldset wicket:id="restrictionsContainer">
-            <legend><span><wicket:message
-                    key="AttributeTypeInfoEditPanel.restrictions">Restrictions</wicket:message></span>
+          </fieldset>
+          <fieldset wicket:id="restrictionsContainer">
+            <legend>
+              <span>
+                <wicket:message key="AttributeTypeInfoEditPanel.restrictions">Restrictions</wicket:message>
+              </span>
             </legend>
             <div class="gn-unordered-list-class">
-                <div class="gn-list-item-class">
-                    <label for="restrictionType">
-                        <wicket:message key="AttributeTypeInfoEditPanel.restrictionType">Restriction Type
+              <div class="gn-list-item-class">
+                <label for="restrictionType">
+                  <wicket:message key="AttributeTypeInfoEditPanel.restrictionType">Restriction Type
                         </wicket:message>
-                    </label>
-                    <select id="restrictionType" wicket:id="restrictionType"></select>
-                </div>
-                <div class="gn-list-item-class" wicket:id="optionsContainer">
-                    <select class="select w-md" wicket:id="options" size="7"></select>
-                    <button wicket:id="removeOption">
-                        <wicket:message key="AttributeTypeInfoEditPanel.removeSelected">Remove selected</wicket:message>
-                    </button>
-                    <label for="newOption">
-                        <wicket:message key="AttributeTypeInfoEditPanel.newOption">New Option</wicket:message>
-                    </label>
-                    <input id="newOption" type="text" wicket:id="newOption"/>
-                    <button wicket:id="addOption">
-                        <wicket:message key="AttributeTypeInfoEditPanel.addOption">Add Option</wicket:message>
-                    </button>
-                </div>
-                <div class="gn-list-item-class" wicket:id="rangeContainer">
-                    <div class="gn-unordered-list-class clearfix">
-                        <div class="gn-list-item-class float-start">
-                            <label for="rangeMin">
-                                <wicket:message key="AttributeTypeInfoEditPanel.minInclusive">Min inclusive
+                </label>
+                <select id="restrictionType" wicket:id="restrictionType"/>
+              </div>
+              <div class="gn-list-item-class" wicket:id="optionsContainer">
+                <select class="select w-md" wicket:id="options" size="7"/>
+                <button wicket:id="removeOption">
+                  <wicket:message key="AttributeTypeInfoEditPanel.removeSelected">Remove selected</wicket:message>
+                </button>
+                <label for="newOption">
+                  <wicket:message key="AttributeTypeInfoEditPanel.newOption">New Option</wicket:message>
+                </label>
+                <input id="newOption" type="text" wicket:id="newOption"/>
+                <button wicket:id="addOption">
+                  <wicket:message key="AttributeTypeInfoEditPanel.addOption">Add Option</wicket:message>
+                </button>
+              </div>
+              <div class="gn-list-item-class" wicket:id="rangeContainer">
+                <div class="gn-unordered-list-class clearfix">
+                  <div class="gn-list-item-class float-start">
+                    <label for="rangeMin">
+                      <wicket:message key="AttributeTypeInfoEditPanel.minInclusive">Min inclusive
                                 </wicket:message>
-                            </label>
-                            <input id="rangeMin" type="number" wicket:id="rangeMin"/>
-                        </div>
-                        <div class="gn-list-item-class float-start">
-                            <label for="rangeMax">
-                                <wicket:message key="AttributeTypeInfoEditPanel.maxInclusive">Max inclusive
+                    </label>
+                    <input id="rangeMin" type="number" wicket:id="rangeMin"/>
+                  </div>
+                  <div class="gn-list-item-class float-start">
+                    <label for="rangeMax">
+                      <wicket:message key="AttributeTypeInfoEditPanel.maxInclusive">Max inclusive
                                 </wicket:message>
-                            </label>
-                            <input id="rangeMax" type="number" wicket:id="rangeMax"/>
-                        </div>
-                    </div>
+                    </label>
+                    <input id="rangeMax" type="number" wicket:id="rangeMax"/>
+                  </div>
                 </div>
+              </div>
             </div>
-        </fieldset>
-        <div wicket:id="dialogFeedback"></div>
-    </form>
-</wicket:panel>
-</body>
+          </fieldset>
+          <div wicket:id="dialogFeedback"/>
+        </form>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

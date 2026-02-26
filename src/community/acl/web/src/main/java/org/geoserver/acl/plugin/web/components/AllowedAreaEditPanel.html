@@ -1,26 +1,36 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
- <body>
-   <wicket:panel>
-      <fieldset>
-        <div class="gn-unordered-list-class">
-          <div class="gn-list-item-class">
-            <label for="allowedArea"><wicket:message key="allowedArea"/></label>
-            <textarea id="allowedArea" wicket:id="allowedArea" draggable="true" placeholder="SRID=4326;MULTIPOLYGON(((...)))"></textarea>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-AllowedAreaEditPanel">
+        <fieldset>
+          <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class">
+              <label for="allowedArea">
+                <wicket:message key="allowedArea"/>
+              </label>
+              <textarea id="allowedArea" wicket:id="allowedArea" draggable="true" placeholder="SRID=4326;MULTIPOLYGON(((...)))"/>
+            </div>
+            <div class="gn-list-item-class">
+              <label>
+                <wicket:message key="spatialFilterType"/>
+              </label>
+              <span wicket:id="spatialFilterType">
+                <div class="switch-field">
+                  <input wicket:id="INTERSECT" type="radio"/>
+                  <label wicket:for="INTERSECT">
+                    <wicket:message key="SpatialFilterType.INTERSECT"/>
+                  </label>
+                  <input wicket:id="CLIP" type="radio"/>
+                  <label wicket:for="CLIP">
+                    <wicket:message key="SpatialFilterType.CLIP"/>
+                  </label>
+                </div>
+              </span>
+            </div>
           </div>
-          <div class="gn-list-item-class">
-            <label><wicket:message key="spatialFilterType"/></label>
-            <span wicket:id="spatialFilterType">
-              <div class="switch-field">
-                <input wicket:id="INTERSECT" type="radio"/>
-                <label wicket:for="INTERSECT"><wicket:message key="SpatialFilterType.INTERSECT"/></label>
-  
-                <input wicket:id="CLIP" type="radio"/>
-                <label wicket:for="CLIP"><wicket:message key="SpatialFilterType.CLIP"/></label>
-              </div>
-            </span>
-          </div>
-        </div>
-      </fieldset>
-   </wicket:panel>
- </body>
+        </fieldset>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

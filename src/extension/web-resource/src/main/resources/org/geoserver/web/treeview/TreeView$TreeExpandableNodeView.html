@@ -1,9 +1,16 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
+  <body>
     <wicket:panel>
-        <input wicket:id="cbExpand" type="checkbox">
-        <label wicket:id="label"><span class="selectableLabel" wicket:id="selectableLabel"></span></label>        
+      <div class="gs-panel-TreeView_TreeExpandableNodeView">
+        <input wicket:id="cbExpand" type="checkbox"/>
+        <label wicket:id="label">
+          <span class="selectableLabel" wicket:id="selectableLabel"/>
+        </label>
         <div class="gn-unordered-list-class">
-            <div class="gn-list-item-class" wicket:id="children"></div>
+          <div class="gn-list-item-class" wicket:id="children"/>
         </div>
+      </div>
     </wicket:panel>
+  </body>
 </html>

@@ -1,83 +1,88 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-    <legend>
-        <span><label wicket:id="schemaRuleConfigurationLabel" class="fontWeightBold"></label></span>
-    </legend>
-            <form name="theForm" wicket:id="theForm" id="theForm">
-                <div class="clearfix">
-                <fieldset  class="float-start features-templating-rule-fieldset-1">
-                    <div wicket:id="ruleFeedback" id="ruleFeedback"/>
-                    <div class="gn-unordered-list-class">
-                        <div class="gn-list-item-class">
-                            <label for="priority">
-                                <wicket:message key="priority"></wicket:message>
-                            </label>
-                            <input type="number" id="priority" wicket:id="priority"/>
-                        </div>
-                        <div class="gn-list-item-class">
-                            <label for="schemaIdentifier">
-                                <wicket:message key="schemaIdentifier"></wicket:message>
-                            </label>
-                            <select id="schemaIdentifier" wicket:id="schemaIdentifier"/>
-                        </div>
-                        <div class="gn-list-item-class">
-                            <label for="outputFormats">
-                                <wicket:message key="outputFormats"></wicket:message>
-                            </label>
-                            <select wicket:id="outputFormats" id="outputFormats"/>
-                        </div>
-                        <div class="gn-list-item-class">
-                            <label for="profileFilter">
-                                <wicket:message key="profileFilter"></wicket:message>
-                            </label>
-                            <textarea wicket:id="profileFilter" id="profileFilter" class="w-md h-md"/>
-                        </div>
-                        <div class="gn-list-item-class">
-                            <label for="cqlFilter">
-                                <wicket:message key="cqlFilter"></wicket:message>
-                            </label>
-                            <textarea wicket:id="cqlFilter" id="cqlFilter" class="w-md h-md"/>
-                        </div>
-                    </div>
-                </fieldset>
-                    <fieldset class="float-end features-templating-rule-fieldset-2">
-                        <legend>
-                            <wicket:message key="cqlFunctions">Available CQL functions</wicket:message>
-                        </legend>
-                        <div class="gn-unordered-list-class">
-                            <div class="gn-list-item-class">
-                                <label>
-                                    <wicket:message key="mimeTypeFunction"/>
-                                </label>
-                            </div>
-                            <div class="gn-list-item-class">
-                                <label>
-                                    <wicket:message key="requestParamFunction"/>
-                                </label>
-                            </div>
-                            <div class="gn-list-item-class">
-                                <label>
-                                    <wicket:message key="headerFunction"/>
-                                </label>
-                            </div>
-                            <div class="gn-list-item-class">
-                                <label>
-                                    <wicket:message key="requestMatchRegexFunction"/>
-                                </label>
-                            </div>
-                        </div>
-                    </fieldset>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-SchemaRuleConfigurationPanel">
+        <legend>
+          <span>
+            <label wicket:id="schemaRuleConfigurationLabel" class="fontWeightBold"/>
+          </span>
+        </legend>
+        <form name="theForm" wicket:id="theForm" id="theForm">
+          <div class="clearfix">
+            <fieldset class="float-start features-templating-rule-fieldset-1">
+              <div wicket:id="ruleFeedback" id="ruleFeedback"/>
+              <div class="gn-unordered-list-class">
+                <div class="gn-list-item-class">
+                  <label for="priority">
+                    <wicket:message key="priority"/>
+                  </label>
+                  <input type="number" id="priority" wicket:id="priority"/>
                 </div>
-                <div class="button-group toolbar-sticky clearfix">
-                    <a href="#" class="form-button-save button primary" wicket:id="save">
-                        <label wicket:id="submitLabel" class="features-templating-rule-save"></label>
-                    </a>
-                    <a href="#" class="form-button-cancel button outline-danger" wicket:id="cancel">
-                        <wicket:message key="cancel">Cancel</wicket:message>
-                    </a>
+                <div class="gn-list-item-class">
+                  <label for="schemaIdentifier">
+                    <wicket:message key="schemaIdentifier"/>
+                  </label>
+                  <select id="schemaIdentifier" wicket:id="schemaIdentifier"/>
                 </div>
-            </form>
-</wicket:panel>
-</body>
+                <div class="gn-list-item-class">
+                  <label for="outputFormats">
+                    <wicket:message key="outputFormats"/>
+                  </label>
+                  <select wicket:id="outputFormats" id="outputFormats"/>
+                </div>
+                <div class="gn-list-item-class">
+                  <label for="profileFilter">
+                    <wicket:message key="profileFilter"/>
+                  </label>
+                  <textarea wicket:id="profileFilter" id="profileFilter" class="w-md h-md"/>
+                </div>
+                <div class="gn-list-item-class">
+                  <label for="cqlFilter">
+                    <wicket:message key="cqlFilter"/>
+                  </label>
+                  <textarea wicket:id="cqlFilter" id="cqlFilter" class="w-md h-md"/>
+                </div>
+              </div>
+            </fieldset>
+            <fieldset class="float-end features-templating-rule-fieldset-2">
+              <legend>
+                <wicket:message key="cqlFunctions">Available CQL functions</wicket:message>
+              </legend>
+              <div class="gn-unordered-list-class">
+                <div class="gn-list-item-class">
+                  <label>
+                    <wicket:message key="mimeTypeFunction"/>
+                  </label>
+                </div>
+                <div class="gn-list-item-class">
+                  <label>
+                    <wicket:message key="requestParamFunction"/>
+                  </label>
+                </div>
+                <div class="gn-list-item-class">
+                  <label>
+                    <wicket:message key="headerFunction"/>
+                  </label>
+                </div>
+                <div class="gn-list-item-class">
+                  <label>
+                    <wicket:message key="requestMatchRegexFunction"/>
+                  </label>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+          <div class="button-group toolbar-sticky clearfix">
+            <a href="#" class="form-button-save button primary" wicket:id="save">
+              <label wicket:id="submitLabel" class="features-templating-rule-save"/>
+            </a>
+            <a href="#" class="form-button-cancel button outline-danger" wicket:id="cancel">
+              <wicket:message key="cancel">Cancel</wicket:message>
+            </a>
+          </div>
+        </form>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

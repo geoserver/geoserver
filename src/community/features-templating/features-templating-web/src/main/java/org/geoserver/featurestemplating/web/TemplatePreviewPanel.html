@@ -1,65 +1,67 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head>
+  <head>
     <title>
-        <wicket:message key="title">Template Preview</wicket:message>
+      <wicket:message key="title">Template Preview</wicket:message>
     </title>
-</head>
-<body>
-<wicket:panel>
-    <form name="previewForm" wicket:id="previewForm" id="previewForm">
-        <div>
+  </head>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-TemplatePreviewPanel">
+        <form name="previewForm" wicket:id="previewForm" id="previewForm">
+          <div>
             <fieldset>
-                <div class="gn-unordered-list-class">
-                    <div class="gn-list-item-class">
-                        <label for="outputFormats">
-                            <wicket:message key="outputFormats"></wicket:message>
-                        </label>
-                        <select wicket:id="outputFormats" id="outputFormats"/>
-                    </div>
-                    <div class="gn-list-item-class">
-                        <label for="workspaces">
-                            <wicket:message key="workspaces"></wicket:message>
-                        </label>
-                        <select wicket:id="workspaces" id="workspaces"/>
-                    </div>
-                    <div class="gn-list-item-class">
-                        <label for="featureTypes">
-                            <wicket:message key="featureTypes"></wicket:message>
-                        </label>
-                        <select wicket:id="featureTypes" id="featureTypes"/>
-                    </div>
-                    <div class="gn-list-item-class">
-                        <label for="featureId">
-                            <wicket:message key="featureId"></wicket:message>
-                        </label>
-                        <input type="text" wicket:id="featureId" id="featureId"/>
-                    </div>
-                    <div class="gn-list-item-class">
-                        <label for="cqlFilterField">
-                            <wicket:message key="cqlFilterField"></wicket:message>
-                        </label>
-                        <input type="text" wicket:id="cqlFilterField" id="cqlFilterField"/>
-                    </div>
-                    <div class="gn-list-item-class">
-                        <label for="previewArea">
-                            <wicket:message key="previewArea"></wicket:message>
-                        </label>
-                        <div class="field" wicket:id="previewArea" id="previewArea"></div>
-                        <div wicket:id="validateFeedback"></div>
-                    </div>
+              <div class="gn-unordered-list-class">
+                <div class="gn-list-item-class">
+                  <label for="outputFormats">
+                    <wicket:message key="outputFormats"/>
+                  </label>
+                  <select wicket:id="outputFormats" id="outputFormats"/>
                 </div>
+                <div class="gn-list-item-class">
+                  <label for="workspaces">
+                    <wicket:message key="workspaces"/>
+                  </label>
+                  <select wicket:id="workspaces" id="workspaces"/>
+                </div>
+                <div class="gn-list-item-class">
+                  <label for="featureTypes">
+                    <wicket:message key="featureTypes"/>
+                  </label>
+                  <select wicket:id="featureTypes" id="featureTypes"/>
+                </div>
+                <div class="gn-list-item-class">
+                  <label for="featureId">
+                    <wicket:message key="featureId"/>
+                  </label>
+                  <input type="text" wicket:id="featureId" id="featureId"/>
+                </div>
+                <div class="gn-list-item-class">
+                  <label for="cqlFilterField">
+                    <wicket:message key="cqlFilterField"/>
+                  </label>
+                  <input type="text" wicket:id="cqlFilterField" id="cqlFilterField"/>
+                </div>
+                <div class="gn-list-item-class">
+                  <label for="previewArea">
+                    <wicket:message key="previewArea"/>
+                  </label>
+                  <div class="field" wicket:id="previewArea" id="previewArea"/>
+                  <div wicket:id="validateFeedback"/>
+                </div>
+              </div>
             </fieldset>
-        </div>
-        <div class="button-group toolbar-sticky selfclear">
+          </div>
+          <div class="button-group toolbar-sticky selfclear">
             <a href="#" class="form-button-save button primary" wicket:id="preview" id="preview">
-                <wicket:message key="preview">Preview</wicket:message>
+              <wicket:message key="preview">Preview</wicket:message>
             </a>
             <a href="#" class="form-button-save button primary" wicket:id="validate" id="validate">
-                <wicket:message key="validate">Validate</wicket:message>
+              <wicket:message key="validate">Validate</wicket:message>
             </a>
-        </div>
-    </form>
-
-</wicket:panel>
-</body>
+          </div>
+        </form>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

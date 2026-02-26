@@ -1,56 +1,77 @@
-<html>
- <body>
-   <wicket:panel>
-      <fieldset>
-        <div class="gn-unordered-list-class">
-          <div class="gn-list-item-class">
-            <input id="layerDetailsCheck" type="checkbox" wicket:id="layerDetailsCheck" />
-            <label for="layerDetailsCheck"><wicket:message key="layerDetailsCheck"></wicket:message></label>
+<?xml version="1.0"?>
+<html xmlns:wicket="http://wicket.apache.org/">
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-GeofenceRulePage_LayerDetailsPanel">
+        <fieldset>
+          <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class">
+              <input id="layerDetailsCheck" type="checkbox" wicket:id="layerDetailsCheck"/>
+              <label for="layerDetailsCheck">
+                <wicket:message key="layerDetailsCheck"/>
+              </label>
+            </div>
+            <div class="gn-list-item-class">
+              <div id="layerDetailsContainer" wicket:id="layerDetailsContainer">
+                <div class="gn-unordered-list-class">
+                  <div class="gn-list-item-class">
+                    <label for="layerType">
+                      <wicket:message key="layerType"/>
+                    </label>
+                    <label wicket:id="layerType" id="layerType"/>
+                  </div>
+                  <div class="gn-list-item-class">
+                    <label for="defaultStyle">
+                      <wicket:message key="defaultStyle"/>
+                    </label>
+                    <select wicket:id="defaultStyle" id="defaultStyle"/>
+                  </div>
+                  <div class="gn-list-item-class">
+                    <label for="allowedStyles">
+                      <wicket:message key="allowedStyles"/>
+                    </label>
+                    <span wicket:id="allowedStyles" id="allowedStyles"/>
+                  </div>
+                  <div class="gn-list-item-class">
+                    <label for="cqlFilterRead">
+                      <wicket:message key="cqlFilterRead"/>
+                    </label>
+                    <textarea wicket:id="cqlFilterRead" id="cqlFilterRead" class="w-50 h-sm"/>
+                  </div>
+                  <div class="gn-list-item-class">
+                    <label for="cqlFilterWrite">
+                      <wicket:message key="cqlFilterWrite"/>
+                    </label>
+                    <textarea wicket:id="cqlFilterWrite" id="cqlFilterWrite" class="w-50 h-sm"/>
+                  </div>
+                  <div class="gn-list-item-class">
+                    <label for="catalogMode">
+                      <wicket:message key="catalogMode"/>
+                    </label>
+                    <select wicket:id="catalogMode" id="catalogMode"/>
+                  </div>
+                  <div class="gn-list-item-class">
+                    <label for="allowedArea">
+                      <wicket:message key="allowedArea"/>
+                    </label>
+                    <textarea wicket:id="allowedArea" id="allowedArea" class="w-50 h-sm"/>
+                  </div>
+                  <div class="gn-list-item-class">
+                    <label for="spatialFilterType">
+                      <wicket:message key="spatialFilterType"/>
+                    </label>
+                    <select wicket:id="spatialFilterType" id="spatialFilterType"/>
+                  </div>
+                  <div class="gn-list-item-class">
+                    <label wicket:id="layerAttributesLabel" for="layerAttributes"/>
+                    <div wicket:id="layerAttributes" id="layerAttributes"/>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="gn-list-item-class">
-          <div id="layerDetailsContainer" wicket:id="layerDetailsContainer">
-            <div class="gn-unordered-list-class">
-	          <div class="gn-list-item-class">
-	            <label for="layerType"><wicket:message key="layerType"></wicket:message></label>
-	            <label wicket:id="layerType" id="layerType" />
-	          </div>
-	          <div class="gn-list-item-class">
-	            <label for="defaultStyle"><wicket:message key="defaultStyle"></wicket:message></label>
-	            <select wicket:id="defaultStyle" id="defaultStyle" />
-	          </div>
-	          <div class="gn-list-item-class">
-	            <label for="allowedStyles"><wicket:message key="allowedStyles"></wicket:message></label>
-	            <span wicket:id="allowedStyles" id="allowedStyles"></span>
-	          </div>
-	          <div class="gn-list-item-class">
-	            <label for="cqlFilterRead"><wicket:message key="cqlFilterRead"></wicket:message></label>
-	            <textarea wicket:id="cqlFilterRead" id="cqlFilterRead" class="w-50 h-sm"></textarea>
-	          </div>
-	          <div class="gn-list-item-class">
-	            <label for="cqlFilterWrite"><wicket:message key="cqlFilterWrite"></wicket:message></label>
-	            <textarea wicket:id="cqlFilterWrite" id="cqlFilterWrite" class="w-50 h-sm"></textarea>
-	          </div>
-	          <div class="gn-list-item-class">
-	            <label for="catalogMode"><wicket:message key="catalogMode"></wicket:message></label>
-	             <select wicket:id="catalogMode" id="catalogMode" />
-	          </div>
-	          <div class="gn-list-item-class">
-	            <label for="allowedArea"><wicket:message key="allowedArea"></wicket:message></label>
-	            <textarea wicket:id="allowedArea" id="allowedArea" class="w-50 h-sm"></textarea>
-	          </div>
-				<div class="gn-list-item-class">
-					<label for="spatialFilterType"><wicket:message key="spatialFilterType"></wicket:message></label>
-					<select wicket:id="spatialFilterType" id="spatialFilterType" />
-				</div>
-	          <div class="gn-list-item-class">
-	             <label wicket:id="layerAttributesLabel"  for="layerAttributes"></label>
-	             <div wicket:id="layerAttributes" id="layerAttributes"></div>
-	          </div>
-	         </div>
-	       </div>
-	       </div>
-        </div>
-      </fieldset>
-   </wicket:panel>
- </body>
+        </fieldset>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

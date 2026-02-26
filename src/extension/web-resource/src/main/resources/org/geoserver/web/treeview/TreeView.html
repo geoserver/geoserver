@@ -1,15 +1,19 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-    <wicket:head>
-      <wicket:link>
-        <link rel="stylesheet" href="styleTreeView.css" type="text/css">
-      </wicket:link>
-    </wicket:head>
-
+  <wicket:head>
+    <wicket:link>
+      <link rel="stylesheet" href="styleTreeView.css" type="text/css"/>
+    </wicket:link>
+  </wicket:head>
+  <body>
     <wicket:panel>
+      <div class="gs-panel-TreeView">
         <div class="treeview">
-           <div class="gn-unordered-list-class">
-               <div class="gn-list-item-class" wicket:id="rootView"></div>
-           </div>
+          <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class" wicket:id="rootView"/>
+          </div>
         </div>
+      </div>
     </wicket:panel>
+  </body>
 </html>

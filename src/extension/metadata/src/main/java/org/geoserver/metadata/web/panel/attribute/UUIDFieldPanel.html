@@ -1,10 +1,14 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-  <input wicket:id="textfield" class="w-lg" type="text"/>
-  <a class="refresh-link" href="#" wicket:id="generateUUID"><wicket:message key="generateUUID" /></a>
-</wicket:panel>
-</body>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-UUIDFieldPanel">
+        <input wicket:id="textfield" class="w-lg" type="text" />
+        <a class="refresh-link" href="#" wicket:id="generateUUID">
+          <wicket:message key="generateUUID"></wicket:message>
+        </a>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

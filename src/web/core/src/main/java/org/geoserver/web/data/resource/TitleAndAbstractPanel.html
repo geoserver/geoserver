@@ -1,40 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head />
-<body>
-<wicket:panel>
-    <div class="gn-unordered-list-class i18n-tile-and-abstract">
-        <div class="gn-list-item-class">
+  <head/>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-TitleAndAbstractPanel">
+        <div class="gn-unordered-list-class i18n-tile-and-abstract">
+          <div class="gn-list-item-class">
             <span wicket:id="titleLabel">
-                <label for="title" wicket:id="titleLabel" />
-                <div class="choiceItem">
-                    <input type="checkbox" wicket:id="titleLabel_i18nCheckbox" />
-                    <label><wicket:message key="i18nCheckBox">i18n</wicket:message></label>
-                </div>
+              <label for="title" wicket:id="titleLabel"/>
+              <div class="choiceItem">
+                <input type="checkbox" wicket:id="titleLabel_i18nCheckbox"/>
+                <label>
+                  <wicket:message key="i18nCheckBox">i18n</wicket:message>
+                </label>
+              </div>
             </span>
-        </div>
-        <div class="gn-list-item-class">
-            <input type="text" wicket:id="title" />
-        </div>
-        <div class="gn-list-item-class">
-            <div wicket:id="internationalTitle" />
-        </div>
-        <div class="gn-list-item-class">
+          </div>
+          <div class="gn-list-item-class">
+            <input type="text" wicket:id="title"/>
+          </div>
+          <div class="gn-list-item-class">
+            <div wicket:id="internationalTitle"/>
+          </div>
+          <div class="gn-list-item-class">
             <span wicket:id="abstractLabel">
-                <label for="abstract" wicket:id="abstractLabel" />
-                <div class="choiceItem">
-                    <input type="checkbox" wicket:id="abstractLabel_i18nCheckbox" />
-                    <label><wicket:message key="i18nCheckBox">i18n</wicket:message></label>
-               </div>
+              <label for="abstract" wicket:id="abstractLabel"/>
+              <div class="choiceItem">
+                <input type="checkbox" wicket:id="abstractLabel_i18nCheckbox"/>
+                <label>
+                  <wicket:message key="i18nCheckBox">i18n</wicket:message>
+                </label>
+              </div>
             </span>
+          </div>
+          <div class="gn-list-item-class">
+            <textarea wicket:id="abstract" class="field" rows="10" cols="30"/>
+          </div>
+          <div class="gn-list-item-class">
+            <div wicket:id="internationalAbstract"/>
+          </div>
         </div>
-        <div class="gn-list-item-class">
-            <textarea wicket:id="abstract" class="field" rows="10" cols="30" />
-        </div>
-        <div class="gn-list-item-class">
-            <div wicket:id="internationalAbstract" />
-        </div>
-    </div>
-</wicket:panel>
-</body>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

@@ -1,34 +1,35 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:wicket="http://wicket.apache.org/">
-<body>
-	<wicket:panel>
-
-		<div class="py-1">
-			<label>
-				<wicket:message key="httpMethod"></wicket:message>
-			</label>
-			<select wicket:id="httpMethod"></select>
-		</div>
-		<div class="py-1">
-			<label for="urlPath">
-				<wicket:message key="urlPath"></wicket:message>
-			</label>
-			<input id="urlPath" type="text" wicket:id="urlPath"/>
-		</div>
-
-		<div class="button-group selfclear">
-			<a wicket:id="chainTest"><span><wicket:message key="chainTest"></wicket:message></span></a>
-		</div>
-
-		<div class="py-1">
-			<label for="chainTestResult">
-				<wicket:message key="chainTestResult"></wicket:message>
-			</label>
-			<input id="chainTestResult" type="text" wicket:id="chainTestResult"/>
-		</div>
-
-	</wicket:panel>
-</body>
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-AuthenticationPage_AuthFilterChainPanel">
+        <div class="py-1">
+          <label>
+            <wicket:message key="httpMethod"></wicket:message>
+          </label>
+          <select wicket:id="httpMethod"></select>
+        </div>
+        <div class="py-1">
+          <label for="urlPath">
+            <wicket:message key="urlPath"></wicket:message>
+          </label>
+          <input id="urlPath" type="text" wicket:id="urlPath" />
+        </div>
+        <div class="button-group selfclear">
+          <a wicket:id="chainTest">
+            <span>
+              <wicket:message key="chainTest"></wicket:message>
+            </span>
+          </a>
+        </div>
+        <div class="py-1">
+          <label for="chainTestResult">
+            <wicket:message key="chainTestResult"></wicket:message>
+          </label>
+          <input id="chainTestResult" type="text" wicket:id="chainTestResult" />
+        </div>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

@@ -1,20 +1,34 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-    <table wicket:id="container">
-      <th><wicket:message key="key"/></th>
-      <th><wicket:message key="value"/></th>
-      <tr wicket:id="list">
-        <td><input type="text" wicket:id="key"/></td>
-        <td><input type="text" wicket:id="value"/></td>
-        <td><a href="#" class="remove-link" wicket:id="remove"><wicket:message key="remove"/></a></td>
-      </tr>
-    </table>
-    <a class="add-link" href="#" wicket:id="add"><wicket:message key="add"/></a>
-
-</wicket:panel>
-</body>
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-PropertyEditorFormComponent">
+        <table wicket:id="container">
+          <th>
+            <wicket:message key="key"></wicket:message>
+          </th>
+          <th>
+            <wicket:message key="value"></wicket:message>
+          </th>
+          <tr wicket:id="list">
+            <td>
+              <input type="text" wicket:id="key" />
+            </td>
+            <td>
+              <input type="text" wicket:id="value" />
+            </td>
+            <td>
+              <a href="#" class="remove-link" wicket:id="remove">
+                <wicket:message key="remove"></wicket:message>
+              </a>
+            </td>
+          </tr>
+        </table>
+        <a class="add-link" href="#" wicket:id="add">
+          <wicket:message key="add"></wicket:message>
+        </a>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

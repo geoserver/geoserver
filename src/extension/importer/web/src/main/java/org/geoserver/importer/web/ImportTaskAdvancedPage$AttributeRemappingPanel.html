@@ -1,30 +1,41 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-  <div wicket:id="remapsContainer">
-   <div class="gn-unordered-list-class plain" wicket:id="remaps">
-     <div class="gn-list-item-class">
-       <div class="gn-unordered-list-class plain horizontal">
-         <div class="gn-list-item-class">
-           <!--label for="att">Attribute</label-->
-           <select name="att" wicket:id="att"/>
-         </div>
-         <div class="gn-list-item-class">
-           <!--label for="type">Type</label-->
-           <select wicket:id="type"/>
-         </div>
-         <div class="gn-list-item-class">
-           <input wicket:id="dateFormat" type="text"/>
-         </div>
-         <div class="gn-list-item-class">
-           <a wicket:id="apply" href="" class="apply-link"><span><wicket:message key="apply">Apply</wicket:message></span></a>
-           <a wicket:id="cancel" href="" class="remove-link"><span><wicket:message key="cancel">Cancel</wicket:message></span></a>
-         </div>
-       </div>
-    </div>
-   </div>
-   </div>
-   <a href="" class="add-link" wicket:id="add">Add</a>
-</wicket:panel>
-</body>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-ImportTaskAdvancedPage_AttributeRemappingPanel">
+        <div wicket:id="remapsContainer">
+          <div class="gn-unordered-list-class plain" wicket:id="remaps">
+            <div class="gn-list-item-class">
+              <div class="gn-unordered-list-class plain horizontal">
+                <div class="gn-list-item-class">
+                  <!--label for="att">Attribute</label-->
+                  <select name="att" wicket:id="att"/>
+                </div>
+                <div class="gn-list-item-class">
+                  <!--label for="type">Type</label-->
+                  <select wicket:id="type"/>
+                </div>
+                <div class="gn-list-item-class">
+                  <input wicket:id="dateFormat" type="text"/>
+                </div>
+                <div class="gn-list-item-class">
+                  <a wicket:id="apply" href="" class="apply-link">
+                    <span>
+                      <wicket:message key="apply">Apply</wicket:message>
+                    </span>
+                  </a>
+                  <a wicket:id="cancel" href="" class="remove-link">
+                    <span>
+                      <wicket:message key="cancel">Cancel</wicket:message>
+                    </span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <a href="" class="add-link" wicket:id="add">Add</a>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

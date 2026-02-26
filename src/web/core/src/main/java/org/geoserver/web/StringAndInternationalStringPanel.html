@@ -1,27 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head />
-<body>
-<wicket:panel>
-    <div class="gn-unordered-list-class i18n-text">
-        <div class="gn-list-item-class">
+  <head/>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-StringAndInternationalStringPanel">
+        <div class="gn-unordered-list-class i18n-text">
+          <div class="gn-list-item-class">
             <span wicket:id="labelContainer" class="selfclear">
-                  <label class="float-start" wicket:id="stringLabel" />
-                  <div class="float-start choiceItem">
-                    <input type="checkbox" wicket:id="labelContainer_i18nCheckbox" />
-                    <label wicket:for="labelContainer_i18nCheckbox">
-                        <wicket:message key="i18nCheckBox">i18n</wicket:message>
-                    </label>
-                  </div>
+              <label class="float-start" wicket:id="stringLabel"/>
+              <div class="float-start choiceItem">
+                <input type="checkbox" wicket:id="labelContainer_i18nCheckbox"/>
+                <label wicket:for="labelContainer_i18nCheckbox">
+                  <wicket:message key="i18nCheckBox">i18n</wicket:message>
+                </label>
+              </div>
             </span>
+          </div>
+          <div class="gn-list-item-class">
+            <input type="text" wicket:id="stringField"/>
+          </div>
+          <div class="gn-list-item-class">
+            <div wicket:id="internationalField"/>
+          </div>
         </div>
-        <div class="gn-list-item-class">
-            <input type="text" wicket:id="stringField" />
-        </div>
-        <div class="gn-list-item-class">
-            <div wicket:id="internationalField" />
-        </div>
-    </div>
-</wicket:panel>
-</body>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

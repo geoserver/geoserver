@@ -1,106 +1,152 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-<form name="theForm">
-  <wicket:panel>
-    <h3><wicket:message key="defaultTitle">WMS Settings</wicket:message></h3>
-
-    <fieldset>
-      <legend><span><wicket:message key="layerSettings">Layer Settings</wicket:message></span></legend>
-      <div class="gn-unordered-list-class choiceList">
-        <div class="gn-list-item-class">
-          <input id="queryableEnabled" type="checkbox" wicket:id="queryableEnabled"></input>
-          <label for="queryableEnabled"><wicket:message key="queryable">Queryable</wicket:message></label>
+  <head/>
+  <body>
+    <form name="theForm">
+      <wicket:panel>
+        <div class="gs-panel-WMSLayerConfig">
+          <h3>
+            <wicket:message key="defaultTitle">WMS Settings</wicket:message>
+          </h3>
+          <fieldset>
+            <legend>
+              <span>
+                <wicket:message key="layerSettings">Layer Settings</wicket:message>
+              </span>
+            </legend>
+            <div class="gn-unordered-list-class choiceList">
+              <div class="gn-list-item-class">
+                <input id="queryableEnabled" type="checkbox" wicket:id="queryableEnabled"/>
+                <label for="queryableEnabled">
+                  <wicket:message key="queryable">Queryable</wicket:message>
+                </label>
+              </div>
+            </div>
+            <div class="gn-unordered-list-class choiceList">
+              <div class="gn-list-item-class">
+                <input id="opaqueEnabled" type="checkbox" wicket:id="opaqueEnabled"/>
+                <label for="opaqueEnabled">
+                  <wicket:message key="opaque">Opaque</wicket:message>
+                </label>
+              </div>
+            </div>
+            <div class="gn-unordered-list-class" wicket:id="styles">
+              <div class="gn-list-item-class">
+                <label for="defaultStyle">
+                  <wicket:message key="defaultStyle">Default Style</wicket:message>
+                </label>
+                <select id="defaultStyle" class="select" wicket:id="defaultStyle"/>
+              </div>
+              <div class="gn-list-item-class">
+                <img wicket:id="defaultStyleLegendGraphic"/>
+              </div>
+              <div class="gn-list-item-class">
+                <label>
+                  <wicket:message key="additionalStyles">Additional Styles</wicket:message>
+                </label>
+                <span wicket:id="extraStyles"/>
+              </div>
+              <div class="gn-list-item-class">
+                <label for="buffer">
+                  <wicket:message key="defaultRenderingBuffer">def. rendering buffer</wicket:message>
+                </label>
+                <input id="buffer" wicket:id="renderingBuffer" type="text"/>
+              </div>
+            </div>
+            <div class="gn-unordered-list-class">
+              <div class="gn-list-item-class">
+                <label for="wmsPath">
+                  <wicket:message key="defaultWmsPath">Default WMS Path</wicket:message>
+                </label>
+                <input id="wmsPath" wicket:id="wmsPath" type="text"/>
+              </div>
+            </div>
+            <div class="gn-unordered-list-class">
+              <div class="gn-list-item-class">
+                <label for="defaultInterpolationMethod">
+                  <wicket:message key="interpolationLabel">Default Interpolation Method</wicket:message>
+                </label>
+                <select id="defaultInterpolationMethod" wicket:id="defaultInterpolationMethod"/>
+              </div>
+            </div>
+            <div class="gn-unordered-list-class" id="remotestyles" wicket:id="remotestyles">
+              <h3>
+                <wicket:message key="remoteDefaultTitle">Cascaded WMS Settings</wicket:message>
+              </h3>
+              <div class="gn-list-item-class">
+                <label for="remoteStylesDropDown">
+                  <wicket:message key="remoteStylesLabel">Default Remote Style</wicket:message>
+                </label>
+                <select id="remoteStylesDropDown" wicket:id="remoteStylesDropDown"/>
+              </div>
+              <div class="gn-list-item-class">
+                <label for="extraRemoteStyles">
+                  <wicket:message key="extraRemoteStylesLabel">Additional Remote Styles</wicket:message>
+                </label>
+                <span id="extraRemoteStyles" wicket:id="extraRemoteStyles"/>
+              </div>
+            </div>
+            <div class="gn-unordered-list-class" id="remoteformats" wicket:id="remoteformats">
+              <div class="gn-list-item-class">
+                <label for="remoteFormatsDropDown">
+                  <wicket:message key="remoteFormatsDropDownLabel">Default Remote Format</wicket:message>
+                </label>
+                <select id="remoteFormatsDropDown" wicket:id="remoteFormatsDropDown" class="text"/>
+              </div>
+              <div class="gn-list-item-class">
+                <label for="remoteFormatsPalette">
+                  <wicket:message key="remoteFormatsPaeletteLabel">Additional Remote Formats</wicket:message>
+                </label>
+                <span wicket:id="remoteFormatsPalette"/>
+              </div>
+            </div>
+          </fieldset>
+          <fieldset>
+            <div class="gn-unordered-list-class" id="scaleDenominatorContainer" wicket:id="scaleDenominatorContainer">
+              <legend>
+                <span>
+                  <wicket:message key="MinMaxTitle">Minimum and Maximum Scale Denominators</wicket:message>
+                </span>
+              </legend>
+              <div class="gn-list-item-class">
+                <label for="minScale">
+                  <wicket:message key="minScaleLabel">Minimum</wicket:message>
+                </label>
+                <input id="minScale" type="text" wicket:id="minScale"/>
+              </div>
+              <div class="gn-list-item-class">
+                <label for="maxScale">
+                  <wicket:message key="maxScaleLabel">Maximum</wicket:message>
+                </label>
+                <input id="maxScale" type="text" wicket:id="maxScale"/>
+              </div>
+            </div>
+            <div class="gn-unordered-list-class choiceList" id="metaDataCheckBoxContainer" wicket:id="metaDataCheckBoxContainer">
+              <div class="gn-list-item-class">
+                <input id="respectMetadataBBoxChkBox" type="checkbox" wicket:id="respectMetadataBBoxChkBox"/>
+                <label for="respectMetadataBBoxChkBox">
+                  <wicket:message key="respectMetadataBBoxLabel"> Do not send requests if requested map area is outside of the layer bounds</wicket:message>
+                </label>
+              </div>
+            </div>
+          </fieldset>
+          <fieldset>
+            <div class="gn-unordered-list-class" id="vendorParametersContainer" wicket:id="vendorParametersContainer">
+              <h3>
+                <span>
+                  <wicket:message key="vendorParametersTitle">Vendor Properties</wicket:message>
+                </span>
+              </h3>
+              <div class="gn-list-item-class">
+                <label for="vendorParameters">
+                  <wicket:message key="vendorParametersLabel">Enter Key Value Pairs</wicket:message>
+                </label>
+                <textarea wicket:id="vendorParameters" id="vendorParameters" class="input" rows="10" cols="30"/>
+              </div>
+            </div>
+          </fieldset>
         </div>
-      </div>
-      <div class="gn-unordered-list-class choiceList">
-        <div class="gn-list-item-class">
-          <input id="opaqueEnabled" type="checkbox" wicket:id="opaqueEnabled"></input>
-          <label for="opaqueEnabled"><wicket:message key="opaque">Opaque</wicket:message></label>
-        </div>
-      </div>
-      <div class="gn-unordered-list-class" wicket:id="styles">
-        <div class="gn-list-item-class">
-          <label for="defaultStyle"><wicket:message key="defaultStyle">Default Style</wicket:message></label>
-          <select id="defaultStyle" class="select" wicket:id="defaultStyle"></select>
-        </div>
-        <div class="gn-list-item-class">
-          <img wicket:id="defaultStyleLegendGraphic"></img>
-        </div>
-        <div class="gn-list-item-class">
-          <label><wicket:message key="additionalStyles">Additional Styles</wicket:message></label>
-          <span wicket:id="extraStyles"></span>
-        </div>
-        <div class="gn-list-item-class">
-          <label for="buffer"><wicket:message key="defaultRenderingBuffer">def. rendering buffer</wicket:message></label>
-          <input id="buffer" wicket:id="renderingBuffer" type="text"></input>
-        </div>
-      </div>
-      <div class="gn-unordered-list-class">
-        <div class="gn-list-item-class">
-          <label for="wmsPath"><wicket:message key="defaultWmsPath">Default WMS Path</wicket:message></label>
-          <input id="wmsPath" wicket:id="wmsPath" type="text"></input>
-        </div>
-      </div>
-      <div class="gn-unordered-list-class">
-        <div class="gn-list-item-class">
-          <label for="defaultInterpolationMethod"><wicket:message key="interpolationLabel">Default Interpolation Method</wicket:message></label>
-          <select id="defaultInterpolationMethod" wicket:id="defaultInterpolationMethod"/>
-        </div>
-      </div>
-      <div class="gn-unordered-list-class" id="remotestyles" wicket:id="remotestyles">
-      <h3><wicket:message key="remoteDefaultTitle">Cascaded WMS Settings</wicket:message></h3>
-        <div class="gn-list-item-class">
-          <label for="remoteStylesDropDown"><wicket:message key="remoteStylesLabel">Default Remote Style</wicket:message></label>
-          <select id="remoteStylesDropDown" wicket:id="remoteStylesDropDown"/>
-        </div>
-        <div class="gn-list-item-class">
-          <label for="extraRemoteStyles"><wicket:message key="extraRemoteStylesLabel">Additional Remote Styles</wicket:message></label>
-          <span id="extraRemoteStyles" wicket:id="extraRemoteStyles"></span>
-        </div>
-      </div>
-      <div class="gn-unordered-list-class" id="remoteformats" wicket:id="remoteformats">
-        <div class="gn-list-item-class">
-          <label for="remoteFormatsDropDown"><wicket:message key="remoteFormatsDropDownLabel">Default Remote Format</wicket:message></label>
-          <select id="remoteFormatsDropDown" wicket:id="remoteFormatsDropDown" class="text"/>
-        </div>
-        <div class="gn-list-item-class">
-          <label for="remoteFormatsPalette"><wicket:message key="remoteFormatsPaeletteLabel">Additional Remote Formats</wicket:message></label>
-          <span wicket:id="remoteFormatsPalette"></span>
-        </div>
-      </div>
-    </fieldset>
-
-    <fieldset>
-      <div class="gn-unordered-list-class" id="scaleDenominatorContainer" wicket:id="scaleDenominatorContainer">
-         <legend><span><wicket:message key="MinMaxTitle">Minimum and Maximum Scale Denominators</wicket:message></span></legend>
-         <div class="gn-list-item-class">
-          <label for="minScale"><wicket:message key="minScaleLabel">Minimum</wicket:message></label>
-          <input id="minScale" type="text" wicket:id="minScale"></input>
-        </div>
-        <div class="gn-list-item-class">
-          <label for="maxScale"><wicket:message key="maxScaleLabel">Maximum</wicket:message></label>
-          <input id="maxScale" type="text" wicket:id="maxScale"></input>
-        </div>
-      </div>
-      <div class="gn-unordered-list-class choiceList" id="metaDataCheckBoxContainer" wicket:id="metaDataCheckBoxContainer">
-        <div class="gn-list-item-class">
-          <input id="respectMetadataBBoxChkBox" type="checkbox" wicket:id="respectMetadataBBoxChkBox"></input>
-          <label for="respectMetadataBBoxChkBox"><wicket:message key="respectMetadataBBoxLabel"> Do not send requests if requested map area is outside of the layer bounds</wicket:message></label>
-        </div>
-      </div>
-    </fieldset>
-    <fieldset >
-      <div class="gn-unordered-list-class" id="vendorParametersContainer" wicket:id="vendorParametersContainer">
-        <h3><span><wicket:message key="vendorParametersTitle">Vendor Properties</wicket:message></span></h3>
-        <div class="gn-list-item-class">
-          <label for="vendorParameters"><wicket:message key="vendorParametersLabel">Enter Key Value Pairs</wicket:message></label>
-          <textarea wicket:id="vendorParameters" id="vendorParameters" class="input" rows="10" cols="30" ></textarea>
-        </div>
-      </div>
-    </fieldset>
-
-  </wicket:panel>
-</form>
-</body>
+      </wicket:panel>
+    </form>
+  </body>
 </html>

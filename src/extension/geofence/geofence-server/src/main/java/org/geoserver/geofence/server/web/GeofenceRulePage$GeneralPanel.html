@@ -1,70 +1,97 @@
-<html>
- <body>
-   <wicket:panel>
-      <fieldset>
-        <div class="gn-unordered-list-class">
-          <div class="gn-list-item-class">
-            <label for="priority"><wicket:message key="priority"></wicket:message></label>
-            <input id="priority" wicket:id="priority" type="text" />
+<?xml version="1.0"?>
+<html xmlns:wicket="http://wicket.apache.org/">
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-GeofenceRulePage_GeneralPanel">
+        <fieldset>
+          <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class">
+              <label for="priority">
+                <wicket:message key="priority"/>
+              </label>
+              <input id="priority" wicket:id="priority" type="text"/>
+            </div>
+            <div class="gn-list-item-class">
+              <label for="roleName">
+                <wicket:message key="roleName"/>
+              </label>
+              <select wicket:id="roleName" id="roleName"/>
+            </div>
+            <div class="gn-list-item-class">
+              <label for="userName">
+                <wicket:message key="username"/>
+              </label>
+              <select wicket:id="userName" id="userName"/>
+            </div>
+            <div class="gn-list-item-class">
+              <label for="service">
+                <wicket:message key="service"/>
+              </label>
+              <select wicket:id="service" id="service"/>
+            </div>
+            <div class="gn-list-item-class">
+              <label for="request">
+                <wicket:message key="request"/>
+              </label>
+              <select wicket:id="request" id="request"/>
+            </div>
+            <div class="gn-list-item-class">
+              <label for="subfield">
+                <wicket:message key="subfield"/>
+              </label>
+              <input wicket:id="subfield" id="subfield" type="text"/>
+            </div>
+            <div class="gn-list-item-class">
+              <label for="workspace">
+                <wicket:message key="workspace"/>
+              </label>
+              <select wicket:id="workspace" id="workspace"/>
+            </div>
+            <div class="gn-list-item-class">
+              <label for="layer">
+                <wicket:message key="layer"/>
+              </label>
+              <select wicket:id="layer" id="layer"/>
+            </div>
+            <div class="gn-list-item-class">
+              <label for="validAfter">
+                <wicket:message key="validAfter"/>
+              </label>
+              <input id="validAfter" wicket:id="validAfter" type="text"/>
+            </div>
+            <div class="gn-list-item-class">
+              <label for="validBefore">
+                <wicket:message key="validBefore"/>
+              </label>
+              <input id="validBefore" wicket:id="validBefore" type="text"/>
+            </div>
+            <div class="gn-list-item-class">
+              <label for="addressRange">
+                <wicket:message key="addressRange"/>
+              </label>
+              <input id="addressRange" wicket:id="addressRange" type="text" class="IPAddress"/>
+            </div>
+            <div class="gn-list-item-class">
+              <label for="access">
+                <wicket:message key="access"/>
+              </label>
+              <select wicket:id="access" id="access"/>
+            </div>
+            <div class="gn-list-item-class">
+              <label wicket:id="catalogModeLabel"/>
+              <select wicket:id="catalogMode" id="catalogMode"/>
+            </div>
+            <div class="gn-list-item-class">
+              <label wicket:id="allowedAreaLabel"/>
+              <textarea wicket:id="allowedArea" id="allowedArea" class="w-50 h-sm"/>
+            </div>
+            <div class="gn-list-item-class">
+              <label wicket:id="spatialFilterTypeLabel"/>
+              <select wicket:id="spatialFilterType" id="spatialFilterType"/>
+            </div>
           </div>
-          <div class="gn-list-item-class">
-            <label for="roleName"><wicket:message key="roleName"></wicket:message></label>
-            <select wicket:id="roleName" id="roleName" />
-          </div>
-          <div class="gn-list-item-class">
-            <label for="userName"><wicket:message key="username"></wicket:message></label>
-            <select wicket:id="userName" id="userName" />
-          </div>
-          <div class="gn-list-item-class">
-            <label for="service"><wicket:message key="service"></wicket:message></label>
-            <select wicket:id="service" id="service" />
-          </div>
-          <div class="gn-list-item-class">
-            <label for="request"><wicket:message key="request"></wicket:message></label>
-            <select wicket:id="request" id="request" />
-          </div>
-          <div class="gn-list-item-class">
-            <label for="subfield"><wicket:message key="subfield"></wicket:message></label>
-            <input wicket:id="subfield" id="subfield" type="text" />
-          </div>
-          <div class="gn-list-item-class">
-            <label for="workspace"><wicket:message key="workspace"></wicket:message></label>
-            <select wicket:id="workspace" id="workspace" />
-          </div>
-          <div class="gn-list-item-class">
-            <label for="layer"><wicket:message key="layer"></wicket:message></label>
-            <select wicket:id="layer" id="layer" />
-          </div>
-          <div class="gn-list-item-class">
-            <label for="validAfter"><wicket:message key="validAfter"></wicket:message></label>
-            <input id="validAfter" wicket:id="validAfter" type="text"/>
-          </div>
-          <div class="gn-list-item-class">
-            <label for="validBefore"><wicket:message key="validBefore"></wicket:message></label>
-            <input id="validBefore" wicket:id="validBefore" type="text"/>
-          </div>
-          <div class="gn-list-item-class">
-            <label for="addressRange"><wicket:message key="addressRange"></wicket:message></label>
-            <input id="addressRange" wicket:id="addressRange" type="text" class="IPAddress" />
-          </div>
-          <div class="gn-list-item-class">
-            <label for="access"><wicket:message key="access"></wicket:message></label>
-            <select wicket:id="access" id="access" />
-          </div>
-          <div class="gn-list-item-class">
-            <label wicket:id="catalogModeLabel"></label>
-             <select wicket:id="catalogMode" id="catalogMode" />
-          </div>
-          <div class="gn-list-item-class">
-            <label wicket:id="allowedAreaLabel"></label>
-            <textarea wicket:id="allowedArea" id="allowedArea" class="w-50 h-sm"></textarea>
-          </div>
-          <div class="gn-list-item-class">
-            <label wicket:id="spatialFilterTypeLabel"></label>
-            <select wicket:id="spatialFilterType" id="spatialFilterType" />
-          </div>
-        </div>
-      </fieldset>
-   </wicket:panel>
- </body>
+        </fieldset>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

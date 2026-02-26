@@ -1,20 +1,23 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-<div class="gn-unordered-list-class">
-
-
-    <div class="gn-list-item-class">
-        <label><wicket:message key="bounds">Bounds</wicket:message></label>
-        <div wicket:id="bounds" class="selfclear"></div>
-    </div>
-    <div class="gn-list-item-class">
-        <input  wicket:id="generateBoundsFromCRS" type="submit" wicket:message="value:generateBoundsFromSRS"/>
-    </div>
-    <div class="gn-list-item-class">
-        <span id="steps" wicket:id="steps"></span>
-    </div>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-GraticulePanel">
+        <div class="gn-unordered-list-class">
+          <div class="gn-list-item-class">
+            <label>
+              <wicket:message key="bounds">Bounds</wicket:message>
+            </label>
+            <div wicket:id="bounds" class="selfclear"/>
           </div>
-</wicket:panel>
-</body>
+          <div class="gn-list-item-class">
+            <input wicket:id="generateBoundsFromCRS" type="submit" wicket:message="value:generateBoundsFromSRS"/>
+          </div>
+          <div class="gn-list-item-class">
+            <span id="steps" wicket:id="steps"/>
+          </div>
+        </div>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

@@ -1,26 +1,39 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-  <wicket:panel>
-    <fieldset>
-        <legend><span><wicket:message key="rootLayer">Root Layer in Capabilities:</wicket:message></span></legend>
-        <div wicket:id="rootLayer">
-        <div class="gn-unordered-list-class choiceList">
-            <div class="gn-list-item-class">
+  <head/>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-RootLayerConfig">
+        <fieldset>
+          <legend>
+            <span>
+              <wicket:message key="rootLayer">Root Layer in Capabilities:</wicket:message>
+            </span>
+          </legend>
+          <div wicket:id="rootLayer">
+            <div class="gn-unordered-list-class choiceList">
+              <div class="gn-list-item-class">
                 <input id="rootLayerGlobal" type="radio" wicket:id="rootLayerGlobal" value="Global"/>
-                <label for="rootLayerGlobal"><wicket:message key="rootLayerGlobal">WMS Global Settings</wicket:message></label>
-            </div>
-            <div class="gn-list-item-class">
+                <label for="rootLayerGlobal">
+                  <wicket:message key="rootLayerGlobal">WMS Global Settings</wicket:message>
+                </label>
+              </div>
+              <div class="gn-list-item-class">
                 <input id="rootLayerYes" type="radio" wicket:id="rootLayerYes" value="Yes"/>
-                <label for="rootLayerYes"><wicket:message key="rootLayerYes">Yes</wicket:message></label>
-            </div>
-            <div class="gn-list-item-class">
+                <label for="rootLayerYes">
+                  <wicket:message key="rootLayerYes">Yes</wicket:message>
+                </label>
+              </div>
+              <div class="gn-list-item-class">
                 <input id="rootLayerNo" type="radio" wicket:id="rootLayerNo" value="Yes"/>
-                <label for="rootLayerNo"><wicket:message key="rootLayerNo">No</wicket:message></label>
+                <label for="rootLayerNo">
+                  <wicket:message key="rootLayerNo">No</wicket:message>
+                </label>
+              </div>
             </div>
-        </div>
+          </div>
+        </fieldset>
       </div>
-    </fieldset>
-  </wicket:panel>
-</body>
+    </wicket:panel>
+  </body>
 </html>

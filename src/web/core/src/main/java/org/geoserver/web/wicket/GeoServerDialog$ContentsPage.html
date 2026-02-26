@@ -1,15 +1,21 @@
+<?xml version="1.0"?>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/" xml:lang="en" lang="en">
-<body>
-<wicket:panel>
-    <!-- The ok/cancel form -->
-    <form wicket:id="form" class="p-1">
-	<div class=".clearBoth" wicket:id="userPanel"></div>
-	<div class="button-group float-end">
-		<a href="#" class="button primary" wicket:id="submit"><wicket:message key="ok"/></a>
-		<a href="#" class="button outline-danger" wicket:id="cancel"><wicket:message key="cancel"/></a>
-    </div>
-	</form>
-</wicket:panel>
-</body>
-
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-GeoServerDialog_ContentsPage">
+        <!-- The ok/cancel form -->
+        <form wicket:id="form" class="p-1">
+          <div class=".clearBoth" wicket:id="userPanel"/>
+          <div class="button-group float-end">
+            <a href="#" class="button primary" wicket:id="submit">
+              <wicket:message key="ok"/>
+            </a>
+            <a href="#" class="button outline-danger" wicket:id="cancel">
+              <wicket:message key="cancel"/>
+            </a>
+          </div>
+        </form>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

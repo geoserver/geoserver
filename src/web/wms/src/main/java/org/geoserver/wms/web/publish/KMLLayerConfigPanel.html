@@ -1,28 +1,39 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-<form name="theForm">
-  <wicket:panel>
-
-    <fieldset>
-      <legend><span><wicket:message key="kmlFormatSettings">KML Format Settings</wicket:message></span></legend>
-      <div class="gn-unordered-list-class">
-        <div class="gn-list-item-class">
-          <label for="regionateAttribute"><wicket:message key="defaultRegionatingAttribute">Default Regionating Attribute</wicket:message></label>
-          <select id="regionateAttribute" class="text" type="text" wicket:id="kml.regionateAttribute"></select>
+  <head/>
+  <body>
+    <form name="theForm">
+      <wicket:panel>
+        <div class="gs-panel-KMLLayerConfigPanel">
+          <fieldset>
+            <legend>
+              <span>
+                <wicket:message key="kmlFormatSettings">KML Format Settings</wicket:message>
+              </span>
+            </legend>
+            <div class="gn-unordered-list-class">
+              <div class="gn-list-item-class">
+                <label for="regionateAttribute">
+                  <wicket:message key="defaultRegionatingAttribute">Default Regionating Attribute</wicket:message>
+                </label>
+                <select id="regionateAttribute" class="text" type="text" wicket:id="kml.regionateAttribute"/>
+              </div>
+              <div class="gn-list-item-class">
+                <label for="regionateStrategy">
+                  <wicket:message key="defaultRegionatingMethod">Default Regionating Method</wicket:message>
+                </label>
+                <select id="regionateStrategy" class="text" type="text" wicket:id="kml.regionateStrategy"/>
+              </div>
+              <div class="gn-list-item-class">
+                <label for="regionateFeatureLimit">
+                  <wicket:message key="featuresPerRegionatedTile">Features Per Regionated Tile</wicket:message>
+                </label>
+                <input id="regionateFeatureLimit" type="text" wicket:id="kml.regionateFeatureLimit"/>
+              </div>
+            </div>
+          </fieldset>
         </div>
-        <div class="gn-list-item-class">
-          <label for="regionateStrategy"><wicket:message key="defaultRegionatingMethod">Default Regionating Method</wicket:message></label>
-          <select id="regionateStrategy" class="text" type="text" wicket:id="kml.regionateStrategy"></select>
-        </div>
-        <div class="gn-list-item-class">
-          <label for="regionateFeatureLimit"><wicket:message key="featuresPerRegionatedTile">Features Per Regionated Tile</wicket:message></label>
-          <input id="regionateFeatureLimit" type="text" wicket:id="kml.regionateFeatureLimit"></input>
-        </div>
-      </div>
-    </fieldset>
-
-  </wicket:panel>
-</form>
-</body>
+      </wicket:panel>
+    </form>
+  </body>
 </html>

@@ -1,43 +1,69 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-  <div class="virtual-relationships-panel">
-    <h3><wicket:message key="VirtualRelationshipsPanel.title">Virtual relationships</wicket:message></h3>
-    <div wicket:id="feedback"></div>
-    <div wicket:id="toolbar" class="virtual-relationships-toolbar">
-      <a href="#" wicket:id="addLink" class="add-link"><wicket:message key="VirtualRelationshipsPanel.add">Add virtual relationship</wicket:message></a>
-    </div>
-
-    <div wicket:id="emptyContainer" class="virtual-relationships-empty">
-      <wicket:message key="VirtualRelationshipsPanel.empty">No virtual relationships defined.</wicket:message>
-    </div>
-
-    <table wicket:id="relationshipsTable" class="virtual-relationships-table">
-      <thead>
-        <tr>
-          <th><wicket:message key="VirtualRelationshipsPanel.name">Name</wicket:message></th>
-          <th><wicket:message key="VirtualRelationshipsPanel.cardinality">Cardinality</wicket:message></th>
-          <th><wicket:message key="VirtualRelationshipsPanel.source">Source</wicket:message></th>
-          <th><wicket:message key="VirtualRelationshipsPanel.target">Target</wicket:message></th>
-          <th class="virtual-relationships-actions"><wicket:message key="VirtualRelationshipsPanel.actions">Actions</wicket:message></th>
-        </tr>
-      </thead>
-      <tbody wicket:id="relationships">
-        <tr>
-          <td><span wicket:id="name"></span></td>
-          <td><span wicket:id="cardinality"></span></td>
-          <td><span wicket:id="source"></span></td>
-          <td><span wicket:id="target"></span></td>
-          <td class="virtual-relationships-actions">
-            <a href="#" wicket:id="edit"><wicket:message key="VirtualRelationshipsPanel.edit">Edit</wicket:message></a>
-            <a href="#" wicket:id="remove" class="remove-link"><wicket:message key="VirtualRelationshipsPanel.remove">Remove</wicket:message></a>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <div wicket:id="relationshipModal"></div>
-  </div>
-</wicket:panel>
-</body>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-VirtualRelationshipsPanel">
+        <div class="virtual-relationships-panel">
+          <h3>
+            <wicket:message key="VirtualRelationshipsPanel.title">Virtual relationships</wicket:message>
+          </h3>
+          <div wicket:id="feedback"/>
+          <div wicket:id="toolbar" class="virtual-relationships-toolbar">
+            <a href="#" wicket:id="addLink" class="add-link">
+              <wicket:message key="VirtualRelationshipsPanel.add">Add virtual relationship</wicket:message>
+            </a>
+          </div>
+          <div wicket:id="emptyContainer" class="virtual-relationships-empty">
+            <wicket:message key="VirtualRelationshipsPanel.empty">No virtual relationships defined.</wicket:message>
+          </div>
+          <table wicket:id="relationshipsTable" class="virtual-relationships-table">
+            <thead>
+              <tr>
+                <th>
+                  <wicket:message key="VirtualRelationshipsPanel.name">Name</wicket:message>
+                </th>
+                <th>
+                  <wicket:message key="VirtualRelationshipsPanel.cardinality">Cardinality</wicket:message>
+                </th>
+                <th>
+                  <wicket:message key="VirtualRelationshipsPanel.source">Source</wicket:message>
+                </th>
+                <th>
+                  <wicket:message key="VirtualRelationshipsPanel.target">Target</wicket:message>
+                </th>
+                <th class="virtual-relationships-actions">
+                  <wicket:message key="VirtualRelationshipsPanel.actions">Actions</wicket:message>
+                </th>
+              </tr>
+            </thead>
+            <tbody wicket:id="relationships">
+              <tr>
+                <td>
+                  <span wicket:id="name"/>
+                </td>
+                <td>
+                  <span wicket:id="cardinality"/>
+                </td>
+                <td>
+                  <span wicket:id="source"/>
+                </td>
+                <td>
+                  <span wicket:id="target"/>
+                </td>
+                <td class="virtual-relationships-actions">
+                  <a href="#" wicket:id="edit">
+                    <wicket:message key="VirtualRelationshipsPanel.edit">Edit</wicket:message>
+                  </a>
+                  <a href="#" wicket:id="remove" class="remove-link">
+                    <wicket:message key="VirtualRelationshipsPanel.remove">Remove</wicket:message>
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div wicket:id="relationshipModal"/>
+        </div>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

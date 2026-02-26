@@ -1,31 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-   <head />
-   <body>
-      <form name="theForm">
-         <wicket:panel>
-            <fieldset>
-               <legend>
-                  <span>
-                     <wicket:message key="CSWLayerConfig.directDownloadSettings">DirectDownload settings</wicket:message>
-                  </span>
-               </legend>
-               <div class="gn-unordered-list-class">
-                  <div class="gn-list-item-class">
-                     <input id="directDownloadEnabled" class="field" type="checkbox" wicket:id="directDownloadEnabled" />
-                     <label class="choice">
-                        <wicket:message key="CSWLayerConfig.directDownloadEnabled">Enable directDownload link creations</wicket:message>
-                     </label>
-                  </div>
-                  <div class="gn-list-item-class">
-                     <label>
-                        <wicket:message key="CSWLayerConfig.maxDownloadSize">maxdownloadsize</wicket:message>
-                     </label>
-                     <input type="text" wicket:id="maxDownloadSize" class="field" />
-                  </div>
-               </div>
-            </fieldset>
-         </wicket:panel>
-      </form>
-   </body>
+  <head/>
+  <body>
+    <form name="theForm">
+      <wicket:panel>
+        <div class="gs-panel-CSWLayerConfig">
+          <fieldset>
+            <legend>
+              <span>
+                <wicket:message key="CSWLayerConfig.directDownloadSettings">DirectDownload settings</wicket:message>
+              </span>
+            </legend>
+            <div class="gn-unordered-list-class">
+              <div class="gn-list-item-class">
+                <input id="directDownloadEnabled" class="field" type="checkbox" wicket:id="directDownloadEnabled"/>
+                <label class="choice">
+                  <wicket:message key="CSWLayerConfig.directDownloadEnabled">Enable directDownload link creations</wicket:message>
+                </label>
+              </div>
+              <div class="gn-list-item-class">
+                <label>
+                  <wicket:message key="CSWLayerConfig.maxDownloadSize">maxdownloadsize</wicket:message>
+                </label>
+                <input type="text" wicket:id="maxDownloadSize" class="field"/>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+      </wicket:panel>
+    </form>
+  </body>
 </html>

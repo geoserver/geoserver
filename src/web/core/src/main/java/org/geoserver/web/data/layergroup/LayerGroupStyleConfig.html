@@ -1,28 +1,37 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-  <fieldset>
-    <legend>
-      <wicket:message key="groupStyles">Layer Group Styles</wicket:message>
-    </legend>
-    <div class="gn-unordered-list-class">
-      <div class="gn-list-item-class">
-        <a class="add-link" wicket:id="addNew"><wicket:message key="addNew">Add new</wicket:message></a>
-      </div>
-      <div class="gn-list-item-class">
-        <label for="availableStyles"><wicket:message key="copyFrom">CopyFrom</wicket:message></label>
-        <select id="availableStyles" class="w-md" wicket:id="availableStyles"></select>
-        <a href="#" wicket:id="copy"><wicket:message key="copy">Copy</wicket:message></a>
-      </div>
-      <div class="gn-list-item-class">
-        <div wicket:id="listContainer">
-          <div  wicket:id="styleList">
-            <div wicket:id="layerGroupStylePanel"/>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-LayerGroupStyleConfig">
+        <fieldset>
+          <legend>
+            <wicket:message key="groupStyles">Layer Group Styles</wicket:message>
+          </legend>
+          <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class">
+              <a class="add-link" wicket:id="addNew">
+                <wicket:message key="addNew">Add new</wicket:message>
+              </a>
+            </div>
+            <div class="gn-list-item-class">
+              <label for="availableStyles">
+                <wicket:message key="copyFrom">CopyFrom</wicket:message>
+              </label>
+              <select id="availableStyles" class="w-md" wicket:id="availableStyles"/>
+              <a href="#" wicket:id="copy">
+                <wicket:message key="copy">Copy</wicket:message>
+              </a>
+            </div>
+            <div class="gn-list-item-class">
+              <div wicket:id="listContainer">
+                <div wicket:id="styleList">
+                  <div wicket:id="layerGroupStylePanel"/>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        </fieldset>
       </div>
-    </div>
-  </fieldset>
-</wicket:panel>
-</body>
+    </wicket:panel>
+  </body>
 </html>

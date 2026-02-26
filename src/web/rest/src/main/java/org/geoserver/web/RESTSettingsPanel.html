@@ -1,18 +1,24 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-
-  <wicket:panel>
-    <div class="gn-unordered-list-class">
-        <div class="gn-list-item-class">
-   		  <label for="quiet" class="field checkbox"><wicket:message key="quiet">Disable Logging on REST</wicket:message></label>
-          <input id="quiet" class="field" type="checkbox" wicket:id="quiet" />
+  <head/>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-RESTSettingsPanel">
+        <div class="gn-unordered-list-class">
+          <div class="gn-list-item-class">
+            <label for="quiet" class="field checkbox">
+              <wicket:message key="quiet">Disable Logging on REST</wicket:message>
+            </label>
+            <input id="quiet" class="field" type="checkbox" wicket:id="quiet"/>
+          </div>
+          <div class="gn-list-item-class">
+            <label for="rootdir" class="text">
+              <wicket:message key="rootdir">Root directory path</wicket:message>
+            </label>
+            <input id="rootdir" class="field" type="text" wicket:id="rootdir"/>
+          </div>
         </div>
-    	<div class="gn-list-item-class">
-   		  <label for="rootdir" class="text"><wicket:message key="rootdir">Root directory path</wicket:message></label>
-          <input id="rootdir" class="field" type="text" wicket:id="rootdir" />
-        </div>
-    </div>
-  </wicket:panel>
-</body>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

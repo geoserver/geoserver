@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
   <head>
     <title>
@@ -6,68 +7,98 @@
   </head>
   <body>
     <wicket:panel>
-      <div>
+      <div class="gs-panel-StyleAdminPanel">
+        <div>
           <fieldset class="style-data-span">
             <legend>
-              <span><wicket:message key="styleDataSpan">Style Info</wicket:message></span>
+              <span>
+                <wicket:message key="styleDataSpan">Style Info</wicket:message>
+              </span>
             </legend>
             <div class="gn-unordered-list-class">
               <div class="gn-list-item-class">
-                <label for="name"><wicket:message key="name">Name</wicket:message></label>
-                <input wicket:id="name" type="text"></input>
+                <label for="name">
+                  <wicket:message key="name">Name</wicket:message>
+                </label>
+                <input wicket:id="name" type="text"/>
               </div>
               <div class="gn-list-item-class">
-                <label for="workspace"><wicket:message key="workspace">Workspace</wicket:message></label>
-                <select wicket:id="workspace"></select>
+                <label for="workspace">
+                  <wicket:message key="workspace">Workspace</wicket:message>
+                </label>
+                <select wicket:id="workspace"/>
               </div>
               <div class="gn-list-item-class">
-                <label for="format"><wicket:message key="format">Format</wicket:message></label>
-                <select wicket:id="format"></select>
+                <label for="format">
+                  <wicket:message key="format">Format</wicket:message>
+                </label>
+                <select wicket:id="format"/>
                 <div wicket:id="formatReadOnly" class="info-link display-inline-block">
-                  <wicket:message key="formatReadOnly"></wicket:message>
+                  <wicket:message key="formatReadOnly"/>
                 </div>
               </div>
             </div>
-          <fieldset class="bottom-margin-0em">
-            <legend>
-              <span><wicket:message key="styleContentSpan">Style Content</wicket:message></span>
-            </legend>
-            <div class="gn-unordered-list-class">
-              <div class="gn-list-item-class">
-                <label for="name"><wicket:message key="generateNew">GenerateNew</wicket:message></label>
-                <select wicket:id="templates"></select>
-                <a href="#" wicket:id="generate"><wicket:message key="generate">Generate</wicket:message></a>
+            <fieldset class="bottom-margin-0em">
+              <legend>
+                <span>
+                  <wicket:message key="styleContentSpan">Style Content</wicket:message>
+                </span>
+              </legend>
+              <div class="gn-unordered-list-class">
+                <div class="gn-list-item-class">
+                  <label for="name">
+                    <wicket:message key="generateNew">GenerateNew</wicket:message>
+                  </label>
+                  <select wicket:id="templates"/>
+                  <a href="#" wicket:id="generate">
+                    <wicket:message key="generate">Generate</wicket:message>
+                  </a>
+                </div>
+                <div class="gn-list-item-class">
+                  <label for="name">
+                    <wicket:message key="copyFrom">CopyFrom</wicket:message>
+                  </label>
+                  <select wicket:id="existingStyles" class="w-27-em"/>
+                  <a href="#" wicket:id="copy">
+                    <wicket:message key="copy">Copy</wicket:message>
+                  </a>
+                </div>
+                <div class="gn-list-item-class">
+                  <label for="filename">
+                    <wicket:message key="styleFile">Style file</wicket:message>
+                  </label>
+                  <input type="file" wicket:id="filename"/>
+                  <a href="#" wicket:id="upload">
+                    <wicket:message key="upload">Upload</wicket:message>
+                  </a>
+                </div>
               </div>
-              <div class="gn-list-item-class">
-                <label for="name"><wicket:message key="copyFrom">CopyFrom</wicket:message></label>
-                <select wicket:id="existingStyles" class="w-27-em"></select>
-                <a href="#" wicket:id="copy"><wicket:message key="copy">Copy</wicket:message></a>
-              </div>
-              <div class="gn-list-item-class">
-                <label for="filename"><wicket:message key="styleFile">Style file</wicket:message></label>
-                <input type="file" wicket:id="filename"></input> 
-                <a href="#" wicket:id="upload"><wicket:message key="upload">Upload</wicket:message></a>
-              </div>
-            </div>
-          </fieldset>
+            </fieldset>
           </fieldset>
           <fieldset class="style-legend-span">
             <legend>
-              <span><wicket:message key="legendSpan">Legend</wicket:message></span>
+              <span>
+                <wicket:message key="legendSpan">Legend</wicket:message>
+              </span>
             </legend>
             <div class="gn-unordered-list-class">
               <div class="gn-list-item-class">
-                <label for="legend"><wicket:message key="legend">Legend</wicket:message></label>
-                <span wicket:id="legendPanel"></span>
+                <label for="legend">
+                  <wicket:message key="legend">Legend</wicket:message>
+                </label>
+                <span wicket:id="legendPanel"/>
               </div>
               <div class="gn-list-item-class">
-                <a href="#" wicket:id="preview"><wicket:message key="preview">Preview Legend</wicket:message></a>
+                <a href="#" wicket:id="preview">
+                  <wicket:message key="preview">Preview Legend</wicket:message>
+                </a>
                 <div wicket:id="legendContainer">
-                  <img wicket:id="legendImg"></img>
+                  <img wicket:id="legendImg"/>
                 </div>
               </div>
             </div>
           </fieldset>
+        </div>
       </div>
     </wicket:panel>
   </body>

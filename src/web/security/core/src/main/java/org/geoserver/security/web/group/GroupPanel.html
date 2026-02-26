@@ -1,33 +1,41 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-  <form>
-
-    <div class="gn-unordered-list-class" wicket:id="header">
-      <div class="gn-list-item-class" wicket:id="message"></div>
-      <div class="gn-list-item-class"> <span><wicket:message key="GroupPanel.title"/></span></div>
-      <div class="gn-list-item-class">
-        <div class="gn-unordered-list-class action-group">
-          <div class="gn-list-item-class"> <a class="add-link" href="#" wicket:id="addNew">
-            <wicket:message key="addNew"/>
-          </a></div>
-          <div class="gn-list-item-class"> <a class="remove-link" href="#" wicket:id="removeSelected">
-            <wicket:message key="removeSelected"/>
-          </a></div>
-          <div class="gn-list-item-class"> <a class="remove-link" href="#" wicket:id="removeSelectedWithRoles">
-            <wicket:message key="removeSelectedWithRoles"/>
-          </a></div>
-        </div>
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-GroupPanel">
+        <form>
+          <div class="gn-unordered-list-class" wicket:id="header">
+            <div class="gn-list-item-class" wicket:id="message"></div>
+            <div class="gn-list-item-class">
+              <span>
+                <wicket:message key="GroupPanel.title"></wicket:message>
+              </span>
+            </div>
+            <div class="gn-list-item-class">
+              <div class="gn-unordered-list-class action-group">
+                <div class="gn-list-item-class">
+                  <a class="add-link" href="#" wicket:id="addNew">
+                    <wicket:message key="addNew"></wicket:message>
+                  </a>
+                </div>
+                <div class="gn-list-item-class">
+                  <a class="remove-link" href="#" wicket:id="removeSelected">
+                    <wicket:message key="removeSelected"></wicket:message>
+                  </a>
+                </div>
+                <div class="gn-list-item-class">
+                  <a class="remove-link" href="#" wicket:id="removeSelectedWithRoles">
+                    <wicket:message key="removeSelectedWithRoles"></wicket:message>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div wicket:id="table"></div>
+        </form>
+        <div wicket:id="dialog"></div>
       </div>
-    </div>
-
-    <div wicket:id="table"></div>
-
-  </form>
- <div wicket:id="dialog"></div>
-</wicket:panel>
-</body>
+    </wicket:panel>
+  </body>
 </html>

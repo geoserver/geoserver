@@ -1,24 +1,31 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-	<form name="theForm">
-		<wicket:panel>
-			<div class="gn-unordered-list-class">
-				<div class="gn-list-item-class">
-					<fieldset>
-						<legend>
-							<span><wicket:message key="wcseo">wcseo</wicket:message></span>
-						</legend>
-						<div class="gn-unordered-list-class choiceList">
-							<div class="gn-list-item-class"> <input type="checkbox" wicket:id="dataset"></input> <label
-								for="dataset"><wicket:message
-										key="dataset">expose as dataset</wicket:message></label></div>
-						</div>
-					</fieldset>
-
-				</div>
-			</div>
-		</wicket:panel>
-	</form>
-</body>
+  <head/>
+  <body>
+    <form name="theForm">
+      <wicket:panel>
+        <div class="gs-panel-WCSEOLayerConfig">
+          <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class">
+              <fieldset>
+                <legend>
+                  <span>
+                    <wicket:message key="wcseo">wcseo</wicket:message>
+                  </span>
+                </legend>
+                <div class="gn-unordered-list-class choiceList">
+                  <div class="gn-list-item-class">
+                    <input type="checkbox" wicket:id="dataset"/>
+                    <label for="dataset">
+                      <wicket:message key="dataset">expose as dataset</wicket:message>
+                    </label>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+        </div>
+      </wicket:panel>
+    </form>
+  </body>
 </html>

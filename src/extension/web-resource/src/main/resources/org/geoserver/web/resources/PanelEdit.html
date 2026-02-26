@@ -1,18 +1,33 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-  <wicket:panel>         
-      <h3><wicket:message key="titleEdit"></wicket:message></h3>
-      <div wicket:id="feedback"></div>
-  
-      <div class="gn-unordered-list-class">
-        <div class="gn-list-item-class">
-          <label><wicket:message key="resource"></wicket:message></label>
-          <input wicket:id="resource" size="40" type="text">
-          <br/><span wicket:id="createDirectory" ><small><wicket:message key="createDirectory"></wicket:message></small></span>
-        </div>
-        <div class="gn-list-item-class">
-          <label><wicket:message key="contents"></wicket:message></label>
-          <textarea wicket:id="contents" class="w-lg h-lg"></textarea>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-PanelEdit">
+        <h3>
+          <wicket:message key="titleEdit"/>
+        </h3>
+        <div wicket:id="feedback"/>
+        <div class="gn-unordered-list-class">
+          <div class="gn-list-item-class">
+            <label>
+              <wicket:message key="resource"/>
+            </label>
+            <input wicket:id="resource" size="40" type="text"/>
+            <br/>
+            <span wicket:id="createDirectory">
+              <small>
+                <wicket:message key="createDirectory"/>
+              </small>
+            </span>
+          </div>
+          <div class="gn-list-item-class">
+            <label>
+              <wicket:message key="contents"/>
+            </label>
+            <textarea wicket:id="contents" class="w-lg h-lg"/>
+          </div>
         </div>
       </div>
- </wicket:panel>
+    </wicket:panel>
+  </body>
 </html>

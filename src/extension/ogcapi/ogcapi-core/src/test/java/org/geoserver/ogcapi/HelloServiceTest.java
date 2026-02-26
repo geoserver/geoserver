@@ -430,7 +430,7 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
         // - resource link generation
         String expected =
                 """
-                <html>
+                <html xmlns:wicket="http://wicket.apache.org/">
                 <head>
                     <script src="http://localhost:8080/geoserver/webresources/ogcapi/hello.js"></script>
                 </head>

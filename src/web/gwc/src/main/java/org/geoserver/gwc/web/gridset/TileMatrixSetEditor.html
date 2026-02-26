@@ -1,36 +1,58 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-<wicket:panel>
-  <div wicket:id="container">
-    <wicket:message key="defineGridsOn">Define grids based on</wicket:message>
-    <span wicket:id="useResolutionsOrScalesGroup">
-      <input type="radio" wicket:id="preserveResolutions"> Resolutions
-      <input type="radio" wicket:id="preserveScales"> Scale denominators
+  <head/>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-TileMatrixSetEditor">
+        <div wicket:id="container">
+          <wicket:message key="defineGridsOn">Define grids based on</wicket:message>
+          <span wicket:id="useResolutionsOrScalesGroup"><input type="radio" wicket:id="preserveResolutions"/> Resolutions
+      <input type="radio" wicket:id="preserveScales"/> Scale denominators
     </span>
-    <table wicket:id="table">
-      <thead>
-        <tr>
-          <th><label wicket:id="level">Level</label></th>
-          <th><label wicket:id="resolution">Resolution</label></th>
-          <th><label wicket:id="scale">Scale</label></th>
-          <th><label wicket:id="name">Name</label></th>
-          <th><label wicket:id="tiles">Tiles</label></th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr wicket:id="gridLevels">
-          <td class="text-end"><label wicket:id="zoomLevel"></label></td>
-          <td><input wicket:id="resolution" type="text" class="w-140px"></td>
-          <td>1:<input wicket:id="scale" type="text" class="w-140px"></td>
-          <td><input wicket:id="name" type="text" class="w-140px"></td>
-          <td class="text-center"><label wicket:id="tiles"></label></td>
-          <td><a href="#" wicket:id="removeLink"></a></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</wicket:panel>
-</body>
+          <table wicket:id="table">
+            <thead>
+              <tr>
+                <th>
+                  <label wicket:id="level">Level</label>
+                </th>
+                <th>
+                  <label wicket:id="resolution">Resolution</label>
+                </th>
+                <th>
+                  <label wicket:id="scale">Scale</label>
+                </th>
+                <th>
+                  <label wicket:id="name">Name</label>
+                </th>
+                <th>
+                  <label wicket:id="tiles">Tiles</label>
+                </th>
+                <th/>
+              </tr>
+            </thead>
+            <tbody>
+              <tr wicket:id="gridLevels">
+                <td class="text-end">
+                  <label wicket:id="zoomLevel"/>
+                </td>
+                <td>
+                  <input wicket:id="resolution" type="text" class="w-140px"/>
+                </td>
+                <td>1:<input wicket:id="scale" type="text" class="w-140px"/></td>
+                <td>
+                  <input wicket:id="name" type="text" class="w-140px"/>
+                </td>
+                <td class="text-center">
+                  <label wicket:id="tiles"/>
+                </td>
+                <td>
+                  <a href="#" wicket:id="removeLink"/>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

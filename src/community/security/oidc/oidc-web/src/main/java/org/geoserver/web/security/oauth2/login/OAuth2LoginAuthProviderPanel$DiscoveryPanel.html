@@ -1,16 +1,19 @@
-<html>
-<body>
-   <wicket:panel>
-      <label for="oidcDiscoveryUri">
-         <span>
-            <wicket:message key="discovery"></wicket:message>
-         </span>
-      </label>
-      <input id="oidcDiscoveryUri" wicket:id="oidcDiscoveryUri" type="text" class="field" />
-      <button id="discover" wicket:id="discover" type="button">
-         <wicket:message key="discover"></wicket:message>
-      </button>
-      <a href="#" wicket:id="oidcDiscoveryUriKeyHelp" class="help-link"></a>
-   </wicket:panel>
-</body>
+<?xml version="1.0"?>
+<html xmlns:wicket="http://wicket.apache.org/">
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-OAuth2LoginAuthProviderPanel_DiscoveryPanel">
+        <label for="oidcDiscoveryUri">
+          <span>
+            <wicket:message key="discovery"/>
+          </span>
+        </label>
+        <input id="oidcDiscoveryUri" wicket:id="oidcDiscoveryUri" type="text" class="field"/>
+        <button id="discover" wicket:id="discover" type="button">
+          <wicket:message key="discover"/>
+        </button>
+        <a href="#" wicket:id="oidcDiscoveryUriKeyHelp" class="help-link"/>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

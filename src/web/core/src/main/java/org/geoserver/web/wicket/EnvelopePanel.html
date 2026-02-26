@@ -1,41 +1,46 @@
-<html>
-<head>
-<title><wicket:message key="title">Envelope Panel</wicket:message></title>
-</head>
-<body>
-<wicket:panel>
-
-  <div class="gn-unordered-list-class clearfix">
-    <div class="gn-list-item-class float-start">
-      <label for="minX" wicket:id="minXL">minX</label>
-      <input wicket:id="minX" id="minX" type="text" class="w-md"/>
-    </div>
-    <div class="gn-list-item-class float-start">
-      <label for="minY" wicket:id="minYL">Min Y</label>
-      <input wicket:id="minY" id="minY" type="text" class="w-md"/>
-    </div>
-    <div class="gn-list-item-class float-start">
-      <label for="minZ" wicket:id="minZL">Min Z</label>
-      <input wicket:id="minZ" id="minZ" type="text" class="w-md"/>
-    </div>
-    <div class="gn-list-item-class float-start">
-      <label for="maxX" wicket:id="maxXL">Max X</label>
-      <input wicket:id="maxX" id="maxX" type="text" class="w-md"/>
-    </div>
-    <div class="gn-list-item-class float-start">
-      <label for="maxY" wicket:id="maxYL">Max Y</label>
-      <input wicket:id="maxY" id="maxY" type="text" class="w-md"/>
-    </div>
-    <div class="gn-list-item-class float-start">
-      <label for="maxZ" wicket:id="maxZL">Max Z</label>
-      <input wicket:id="maxZ" id="maxZ" type="text" class="w-md"/>
-    </div>
-  </div>
-  <div class="clearfix" wicket:id="crsContainer">
-    <label for="crs"><wicket:message key="crs">Coordinate Reference System</wicket:message></label>
-    <span wicket:id="crs"/>
-  </div>
-
-</wicket:panel>
-</body>
+<?xml version="1.0"?>
+<html xmlns:wicket="http://wicket.apache.org/">
+  <head>
+    <title>
+      <wicket:message key="title">Envelope Panel</wicket:message>
+    </title>
+  </head>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-EnvelopePanel">
+        <div class="gn-unordered-list-class">
+          <div class="gn-list-item-class">
+            <label for="minX" wicket:id="minXL">minX</label>
+            <input wicket:id="minX" id="minX" type="text" class="w-md"/>
+          </div>
+          <div class="gn-list-item-class">
+            <label for="minY" wicket:id="minYL">Min Y</label>
+            <input wicket:id="minY" id="minY" type="text" class="w-md"/>
+          </div>
+          <div class="gn-list-item-class">
+            <label for="minZ" wicket:id="minZL">Min Z</label>
+            <input wicket:id="minZ" id="minZ" type="text" class="w-md"/>
+          </div>
+          <div class="gn-list-item-class">
+            <label for="maxX" wicket:id="maxXL">Max X</label>
+            <input wicket:id="maxX" id="maxX" type="text" class="w-md"/>
+          </div>
+          <div class="gn-list-item-class">
+            <label for="maxY" wicket:id="maxYL">Max Y</label>
+            <input wicket:id="maxY" id="maxY" type="text" class="w-md"/>
+          </div>
+          <div class="gn-list-item-class">
+            <label for="maxZ" wicket:id="maxZL">Max Z</label>
+            <input wicket:id="maxZ" id="maxZ" type="text" class="w-md"/>
+          </div>
+        </div>
+        <div class="clearfix" wicket:id="crsContainer">
+          <label for="crs">
+            <wicket:message key="crs">Coordinate Reference System</wicket:message>
+          </label>
+          <span wicket:id="crs"/>
+        </div>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

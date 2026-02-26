@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
   <head>
     <title>
@@ -6,21 +7,23 @@
   </head>
   <body>
     <wicket:panel>
-      <div class="gn-unordered-list-class horizontal-form">
-        <div class="gn-list-item-class">
-          <wicket:message key="previewOnLayer">Preview on layer: </wicket:message><a wicket:id="change.layer" href="#"></a>
+      <div class="gs-panel-OpenLayersPreviewPanel">
+        <div class="gn-unordered-list-class horizontal-form">
+          <div class="gn-list-item-class">
+            <wicket:message key="previewOnLayer">Preview on layer: </wicket:message>
+            <a wicket:id="change.layer" href="#"/>
+          </div>
+          <div class="gn-list-item-class">
+            <label for="previewStyleGroup">
+              <wicket:message key="previewAsStyleGroup">Preview as style group: </wicket:message>
+            </label>
+            <input wicket:id="previewStyleGroup" id="previewStyleGroup" type="checkbox"/>
+            <a href="#" wicket:id="styleGroupHelp" class="help-link"/>
+          </div>
         </div>
-        <div class="gn-list-item-class">
-          <label for="previewStyleGroup">
-            <wicket:message key="previewAsStyleGroup">Preview as style group: </wicket:message>
-          </label>
-          <input wicket:id="previewStyleGroup" id="previewStyleGroup" type="checkbox"/>
-           <a href="#" wicket:id="styleGroupHelp" class="help-link"></a>
-          
-        </div>
+        <div wicket:id="olPreview" class="bottom-margin-1em"/>
+        <div wicket:id="dialog"/>
       </div>
-      <div wicket:id="olPreview" class="bottom-margin-1em"/>
-      <div wicket:id="dialog"/>
     </wicket:panel>
   </body>
 </html>

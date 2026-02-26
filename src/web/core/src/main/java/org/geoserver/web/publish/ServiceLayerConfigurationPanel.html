@@ -1,41 +1,45 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-<form name="theForm">
-  <wicket:panel>
-  <h3><wicket:message key="defaultTitle">Services Settings</wicket:message></h3>
-
-  <fieldset>
-    <legend>
-      <span><wicket:message key="layerSettings">Layer Settings</wicket:message></span>
-      <a href="#" wicket:id="layerSettingsHelp" class="help-link"></a>
-    </legend>
-    <div class="gn-unordered-list-class choiceList">
-      <div class="gn-list-item-class">
-        <input id="configEnabled" type="checkbox" wicket:id="configEnabled"></input>
-        <label for="configEnabled">
-          <wicket:message key="config">Selectively enable services for layer</wicket:message>
-        </label>
-      </div>
-    </div>
-    <div class="gn-unordered-list-class">
-      <div class="gn-list-item-class">
-        <div wicket:id="serviceSelectionContainer">
-          <span wicket:id="servicesSelection"></span>
+  <head/>
+  <body>
+    <form name="theForm">
+      <wicket:panel>
+        <div class="gs-panel-ServiceLayerConfigurationPanel">
+          <h3>
+            <wicket:message key="defaultTitle">Services Settings</wicket:message>
+          </h3>
+          <fieldset>
+            <legend>
+              <span>
+                <wicket:message key="layerSettings">Layer Settings</wicket:message>
+              </span>
+              <a href="#" wicket:id="layerSettingsHelp" class="help-link"/>
+            </legend>
+            <div class="gn-unordered-list-class choiceList">
+              <div class="gn-list-item-class">
+                <input id="configEnabled" type="checkbox" wicket:id="configEnabled"/>
+                <label for="configEnabled">
+                  <wicket:message key="config">Selectively enable services for layer</wicket:message>
+                </label>
+              </div>
+            </div>
+            <div class="gn-unordered-list-class">
+              <div class="gn-list-item-class">
+                <div wicket:id="serviceSelectionContainer">
+                  <span wicket:id="servicesSelection"/>
+                </div>
+              </div>
+            </div>
+            <div class="gn-unordered-list-class">
+              <div class="gn-list-item-class">
+                <label id="defaultDisabledServicesLabel" wicket:id="defaultDisabledServicesLabel" for="defaultDisabledServices"/>
+                <input id="defaultDisabledServices" type="text" wicket:id="defaultDisabledServices" title="List of services disabled by default. This setting is defined by 'org.geoserver.service.disabled' application property."/>
+              </div>
+            </div>
+          </fieldset>
+          <div wicket:id="serviceDialog"/>
         </div>
-      </div>
-    </div>
-    <div class="gn-unordered-list-class">
-      <div class="gn-list-item-class">
-        <label id="defaultDisabledServicesLabel" wicket:id="defaultDisabledServicesLabel" for="defaultDisabledServices"/>
-        <input id="defaultDisabledServices" type="text" wicket:id="defaultDisabledServices" title="List of services disabled by default. This setting is defined by 'org.geoserver.service.disabled' application property."/>
-      </div>
-    </div>
-  </fieldset>
-
-  <div wicket:id="serviceDialog"></div>
-
-  </wicket:panel>
-</form>
-</body>
+      </wicket:panel>
+    </form>
+  </body>
 </html>

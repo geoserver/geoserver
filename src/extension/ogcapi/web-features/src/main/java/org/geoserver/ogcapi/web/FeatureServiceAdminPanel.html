@@ -1,33 +1,52 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-<wicket:panel>
-    <h3><wicket:message key="defaultTitle">Feature Service</wicket:message></h3>
-    <p><wicket:message key="configureInformation">Feature Service is a modular OGC API service with "building blocks" that can be enabled and configured for use.</wicket:message></p>
-    <div class="gn-unordered-list-class">
-        <div class="gn-list-item-class">
+  <head/>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-FeatureServiceAdminPanel">
+        <h3>
+          <wicket:message key="defaultTitle">Feature Service</wicket:message>
+        </h3>
+        <p>
+          <wicket:message key="configureInformation">Feature Service is a modular OGC API service with "building blocks" that can be enabled and configured for use.</wicket:message>
+        </p>
+        <div class="gn-unordered-list-class">
+          <div class="gn-list-item-class">
             <fieldset>
-                <legend><span><wicket:message key="features.title">OGC API - Features</wicket:message></span></legend>
-                <div wicket:id="featureConformance"></div>
+              <legend>
+                <span>
+                  <wicket:message key="features.title">OGC API - Features</wicket:message>
+                </span>
+              </legend>
+              <div wicket:id="featureConformance"/>
             </fieldset>
+          </div>
         </div>
-    </div>
-    <div class="gn-unordered-list-class">
-        <div class="gn-list-item-class">
+        <div class="gn-unordered-list-class">
+          <div class="gn-list-item-class">
             <fieldset>
-                <legend><span><wicket:message key="cql2.title">Common Query Language (CQL2)</wicket:message></span></legend>
-                <div wicket:id="cqlConformance"></div>
+              <legend>
+                <span>
+                  <wicket:message key="cql2.title">Common Query Language (CQL2)</wicket:message>
+                </span>
+              </legend>
+              <div wicket:id="cqlConformance"/>
             </fieldset>
+          </div>
         </div>
-    </div>
-    <div class="gn-unordered-list-class">
-        <div class="gn-list-item-class">
+        <div class="gn-unordered-list-class">
+          <div class="gn-list-item-class">
             <fieldset>
-                <legend><span><wicket:message key="ecql.title">Extended Common Query Language</wicket:message></span></legend>
-                <div wicket:id="ecqlConformance"></div>
+              <legend>
+                <span>
+                  <wicket:message key="ecql.title">Extended Common Query Language</wicket:message>
+                </span>
+              </legend>
+              <div wicket:id="ecqlConformance"/>
             </fieldset>
+          </div>
         </div>
-    </div>
-</wicket:panel>
-</body>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

@@ -1,26 +1,34 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-  <wicket:panel>
-
-    <fieldset>
-      <legend><span><wicket:message key="authorityURLs">Authority URLs</wicket:message></span></legend>
-      <div class="gn-unordered-list-class">
-        <div class="gn-list-item-class">
-          <div wicket:id="authorityurls"></div>
-        </div>
+  <head/>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-LayerAuthoritiesAndIdentifiersPanel">
+        <fieldset>
+          <legend>
+            <span>
+              <wicket:message key="authorityURLs">Authority URLs</wicket:message>
+            </span>
+          </legend>
+          <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class">
+              <div wicket:id="authorityurls"/>
+            </div>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>
+            <span>
+              <wicket:message key="layerIdentifiers">Layer Identifiers</wicket:message>
+            </span>
+          </legend>
+          <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class">
+              <div wicket:id="layerIdentifiers"/>
+            </div>
+          </div>
+        </fieldset>
       </div>
-    </fieldset>
-
-    <fieldset>
-      <legend><span><wicket:message key="layerIdentifiers">Layer Identifiers</wicket:message></span></legend>
-      <div class="gn-unordered-list-class">
-        <div class="gn-list-item-class">
-          <div wicket:id="layerIdentifiers"></div>
-        </div>
-      </div>
-    </fieldset>
-
-  </wicket:panel>
-</body>
+    </wicket:panel>
+  </body>
 </html>

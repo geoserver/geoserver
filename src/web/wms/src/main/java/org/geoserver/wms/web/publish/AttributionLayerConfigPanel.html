@@ -1,41 +1,60 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-  <wicket:panel>
-
-    <fieldset>
-      <legend><span><wicket:message key="wms.attribution">WMS Attribution</wicket:message></span></legend>
-      <div class="gn-unordered-list-class">
-        <div class="gn-list-item-class">
-            <label for="wms.attribution.title"><wicket:message key="wms.attribution.title"></wicket:message></label>
-            <input wicket:id="wms.attribution.title" type="text"></input>
-        </div>
-        <div class="gn-list-item-class">
-            <label for="wms.attribution.href"><wicket:message key="wms.attribution.href"></wicket:message></label>
-            <input wicket:id="wms.attribution.href" type="text"></input>
-        </div>
-        <div class="gn-list-item-class">
-            <label for="wms.attribution.logo"><wicket:message key="wms.attribution.logo"></wicket:message></label>
-            <input wicket:id="wms.attribution.logo" type="text"></input>
-        </div>
-        <div class="gn-list-item-class">
-            <label for="wms.attribution.type"><wicket:message key="wms.attribution.type"></wicket:message></label>
-            <input wicket:id="wms.attribution.type" type="text"></input>
-        </div>
-        <div class="gn-list-item-class">
-            <label for="wms.attribution.width"><wicket:message key="wms.attribution.width"></wicket:message></label>
-            <input wicket:id="wms.attribution.width" size="6" type="text"></input>
-        </div>
-        <div class="gn-list-item-class">
-            <label for="wms.attribution.height"><wicket:message key="wms.attribution.height"></wicket:message></label>
-            <input wicket:id="wms.attribution.height" size="6" type="text"></input>
-        </div>
-        <div class="gn-list-item-class">
-            <a href="#" wicket:id="verifyImage"><wicket:message key="wms.attribution.verify"></wicket:message></a>
-        </div>
-        </div>
-    </fieldset>
-
-  </wicket:panel>
-</body>
+  <head/>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-AttributionLayerConfigPanel">
+        <fieldset>
+          <legend>
+            <span>
+              <wicket:message key="wms.attribution">WMS Attribution</wicket:message>
+            </span>
+          </legend>
+          <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class">
+              <label for="wms.attribution.title">
+                <wicket:message key="wms.attribution.title"/>
+              </label>
+              <input wicket:id="wms.attribution.title" type="text"/>
+            </div>
+            <div class="gn-list-item-class">
+              <label for="wms.attribution.href">
+                <wicket:message key="wms.attribution.href"/>
+              </label>
+              <input wicket:id="wms.attribution.href" type="text"/>
+            </div>
+            <div class="gn-list-item-class">
+              <label for="wms.attribution.logo">
+                <wicket:message key="wms.attribution.logo"/>
+              </label>
+              <input wicket:id="wms.attribution.logo" type="text"/>
+            </div>
+            <div class="gn-list-item-class">
+              <label for="wms.attribution.type">
+                <wicket:message key="wms.attribution.type"/>
+              </label>
+              <input wicket:id="wms.attribution.type" type="text"/>
+            </div>
+            <div class="gn-list-item-class">
+              <label for="wms.attribution.width">
+                <wicket:message key="wms.attribution.width"/>
+              </label>
+              <input wicket:id="wms.attribution.width" size="6" type="text"/>
+            </div>
+            <div class="gn-list-item-class">
+              <label for="wms.attribution.height">
+                <wicket:message key="wms.attribution.height"/>
+              </label>
+              <input wicket:id="wms.attribution.height" size="6" type="text"/>
+            </div>
+            <div class="gn-list-item-class">
+              <a href="#" wicket:id="verifyImage">
+                <wicket:message key="wms.attribution.verify"/>
+              </a>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

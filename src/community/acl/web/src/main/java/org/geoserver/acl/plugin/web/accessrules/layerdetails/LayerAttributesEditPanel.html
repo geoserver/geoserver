@@ -1,33 +1,42 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-  <wicket:panel>
-    <legend>
-      <input type="checkbox" wicket:id="layerAttributesCheck"></input>
-      <span><wicket:message key="layerAttributes">Layer Atrributes</wicket:message></span>
-    </legend>
-    <div wicket:id="attributesContainer" style="padding-left:1em;">
-      <fieldset>
-        <div class="gn-unordered-list-class">
-          <div class="gn-list-item-class">
-            <div wicket:id="table" id="layerAttributes" class="w-60 h-lg"></div>
-          </div>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-LayerAttributesEditPanel">
+        <legend>
+          <input type="checkbox" wicket:id="layerAttributesCheck"/>
+          <span>
+            <wicket:message key="layerAttributes">Layer Atrributes</wicket:message>
+          </span>
+        </legend>
+        <div wicket:id="attributesContainer" style="padding-left:1em;">
+          <fieldset>
+            <div class="gn-unordered-list-class">
+              <div class="gn-list-item-class">
+                <div wicket:id="table" id="layerAttributes" class="w-60 h-lg"/>
+              </div>
+            </div>
+          </fieldset>
         </div>
-      </fieldset>
-    </div>
-  </wicket:panel>
-  <wicket:fragment wicket:id="attributeAccessFragment">
-    <span wicket:id="access" id="access">
-      <div class="switch-field">
-        <input wicket:id="NONE" type="radio" class="none" />
-        <label wicket:for="NONE"><wicket:message key="LayerAttributesEditPanel.AccessType.NONE"/></label>
-        
-        <input wicket:id="READONLY" type="radio" class="ro" />
-        <label wicket:for="READONLY"><wicket:message key="LayerAttributesEditPanel.AccessType.READONLY"/></label>
-        
-        <input wicket:id="READWRITE" type="radio" class="rw" />
-        <label wicket:for="READWRITE"><wicket:message key="LayerAttributesEditPanel.AccessType.READWRITE"/></label>
       </div>
-    </span>
-  </wicket:fragment>
-</body>
+    </wicket:panel>
+    <wicket:fragment wicket:id="attributeAccessFragment">
+      <span wicket:id="access" id="access">
+        <div class="switch-field">
+          <input wicket:id="NONE" type="radio" class="none"/>
+          <label wicket:for="NONE">
+            <wicket:message key="LayerAttributesEditPanel.AccessType.NONE"/>
+          </label>
+          <input wicket:id="READONLY" type="radio" class="ro"/>
+          <label wicket:for="READONLY">
+            <wicket:message key="LayerAttributesEditPanel.AccessType.READONLY"/>
+          </label>
+          <input wicket:id="READWRITE" type="radio" class="rw"/>
+          <label wicket:for="READWRITE">
+            <wicket:message key="LayerAttributesEditPanel.AccessType.READWRITE"/>
+          </label>
+        </div>
+      </span>
+    </wicket:fragment>
+  </body>
 </html>

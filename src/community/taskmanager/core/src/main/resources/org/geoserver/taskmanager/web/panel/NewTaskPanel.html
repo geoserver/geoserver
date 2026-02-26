@@ -1,17 +1,31 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-	<wicket:panel>
-		<div wicket:id="feedback" />
-		<div class="gn-unordered-list-class">
-			<div class="gn-list-item-class"> <label for="name"><wicket:message key="name" /></label>
-			<input id="name" wicket:id="name" type="text" /></div>
-			<div class="gn-list-item-class"> <label for="type"><wicket:message key="type" /></label>
-			<select wicket:id="type" /></div>
-			<div class="gn-list-item-class"> <label for="copy"><wicket:message key="copy" /></label>
-			<select wicket:id="copy" /></div>
-		</div>
-	</wicket:panel>
-</body>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-NewTaskPanel">
+        <div wicket:id="feedback"></div>
+        <div class="gn-unordered-list-class">
+          <div class="gn-list-item-class">
+            <label for="name">
+              <wicket:message key="name"></wicket:message>
+            </label>
+            <input id="name" wicket:id="name" type="text" />
+          </div>
+          <div class="gn-list-item-class">
+            <label for="type">
+              <wicket:message key="type"></wicket:message>
+            </label>
+            <select wicket:id="type"></select>
+          </div>
+          <div class="gn-list-item-class">
+            <label for="copy">
+              <wicket:message key="copy"></wicket:message>
+            </label>
+            <select wicket:id="copy"></select>
+          </div>
+        </div>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

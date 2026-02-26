@@ -1,10 +1,13 @@
-<html>
-<body>
+<?xml version="1.0"?>
+<html xmlns:wicket="http://wicket.apache.org/">
+  <body>
     <wicket:panel>
-      <label for="min" wicket:id="minLabel" class="float-start fw-normal w-slice">min</label>
-      <input wicket:id="min" id="min" type="text" class="float-start w-25 me-2"/>
-      <label for="max" wicket:id="maxLabel" class="float-start fw-normal w-slice">max</label>
-      <input wicket:id="max" id="max" type="text" class="clearboth w-25"/>
+      <div class="gs-panel-RangePanel">
+        <label for="min" wicket:id="minLabel" class="float-start fw-normal w-slice">min</label>
+        <input wicket:id="min" id="min" type="text" class="float-start w-25 me-2"/>
+        <label for="max" wicket:id="maxLabel" class="float-start fw-normal w-slice">max</label>
+        <input wicket:id="max" id="max" type="text" class="clearboth w-25"/>
+      </div>
     </wicket:panel>
-</body>
+  </body>
 </html>

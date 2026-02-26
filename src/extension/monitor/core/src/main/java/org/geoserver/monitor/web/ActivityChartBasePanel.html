@@ -1,19 +1,22 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head>
-<title><wicket:message key="title">Activity</wicket:message></title>
-</head>
-<body>
-<wicket:panel>
-     <form wicket:id="form" class="pb-1 ps-5">
-        <label for="from" class="inline">From</label>
-        <input type="text" wicket:id="from" id="start" class="pe-4 d-inline"></input>
-        
-        <label for="to" class="inline">To</label>
-        <input type="text" wicket:id="to" id="end" class="d-inline"></input>
-        
-        <a href="#" wicket:id="refresh" class="refresh-link">Refresh</a>
-    </form>
-    <img wicket:id="chart"></img>
-</wicket:panel>
-</body>
+  <head>
+    <title>
+      <wicket:message key="title">Activity</wicket:message>
+    </title>
+  </head>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-ActivityChartBasePanel">
+        <form wicket:id="form" class="pb-1 ps-5">
+          <label for="from" class="inline">From</label>
+          <input type="text" wicket:id="from" id="start" class="pe-4 d-inline"/>
+          <label for="to" class="inline">To</label>
+          <input type="text" wicket:id="to" id="end" class="d-inline"/>
+          <a href="#" wicket:id="refresh" class="refresh-link">Refresh</a>
+        </form>
+        <img wicket:id="chart"/>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

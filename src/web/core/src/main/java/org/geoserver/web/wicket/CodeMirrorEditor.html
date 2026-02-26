@@ -1,74 +1,76 @@
-<html>
+<?xml version="1.0"?>
+<html xmlns:wicket="http://wicket.apache.org/">
   <wicket:head>
   </wicket:head>
-<body>
-<wicket:panel>
-  <div wicket:id="editorContainer">
-    <div wicket:id="toolbar" class="py-1">
-      <wicket:link>
-        <div class="button-group button-toolbar clearfix">
-              <a class="button-undo icon" href="#a" title="Undo" id="cm_undo">
-                <span></span>
-              </a>
-              <a class="button-redo icon separator" href="#a" title="Redo" id="cm_redo">
-                <span></span>
-              </a>
-              <a class="button-goto icon" href="#a" title="Go to line ..." id="cm_goto">
-                <span></span>
-              </a>
-              <a class="button-reformat icon separator" href="#a" title="Reformat" id="cm_reformat">
-                <span></span>
-              </a>
-              <a class="button-find icon separator" href="#a" title="Find" id="cm_find">
-                <span></span>
-              </a>
-               <a class="button-find-next icon separator" href="#a" title="Find next" id="cm_find_next">
-                 <span></span>
-               </a>
-              <a class="button-replace icon separator" href="#a" title="Replace" id="cm_replace">
-                 <span></span>
-              </a>
-              <wicket:message key="font"/>
-              <select class="m-0" id="cm_font_size">
-                <option value="8">8pt</option>
-                <option value="10">10pt</option>
-                <option value="12" selected="selected">12pt</option>
-                <option value="14">14pt</option>
-                <option value="16">16pt</option>
-                <option value="18">18pt</option>
-                <option value="20">20pt</option>
-              </select>
-              <wicket:message key="height"/>
-              <select class="m-0" id="cm_editor_heigth">
-                <option value="200">200px</option>
-                <option value="250">250px</option>
-                <option value="300" selected="selected">300px</option>
-                <option value="350">350px</option>
-                <option value="400">400px</option>
-                <option value="450">450px</option>
-                <option value="500">500px</option>
-                <option value="450">550px</option>
-                <option value="600">600px</option>
-                <option value="650">650px</option>
-                <option value="700">700px</option>
-                <option value="750">750px</option>
-                <option value="800">800px</option>
-                <option value="850">850px</option>
-                <option value="900">900px</option>
-                <option value="950">950px</option>
-                <option value="1000">1000px</option>                  
-              </select>
-
-              <a class="icon separator" wicket:id="custom-buttons">
-                <span></span>
-              </a>    
-            </div>
-      </wicket:link>
-    </div>
-    <div wicket:id="editorParent">
-      <textarea wicket:id="editor"></textarea>
-    </div>
-  </div>
-</wicket:panel>
-</body>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-CodeMirrorEditor">
+        <div wicket:id="editorContainer">
+          <div wicket:id="toolbar" class="py-1">
+            <wicket:link>
+              <div class="button-group button-toolbar clearfix">
+                <a class="button-undo icon" href="#a" title="Undo" id="cm_undo">
+                  <span/>
+                </a>
+                <a class="button-redo icon separator" href="#a" title="Redo" id="cm_redo">
+                  <span/>
+                </a>
+                <a class="button-goto icon" href="#a" title="Go to line ..." id="cm_goto">
+                  <span/>
+                </a>
+                <a class="button-reformat icon separator" href="#a" title="Reformat" id="cm_reformat">
+                  <span/>
+                </a>
+                <a class="button-find icon separator" href="#a" title="Find" id="cm_find">
+                  <span/>
+                </a>
+                <a class="button-find-next icon separator" href="#a" title="Find next" id="cm_find_next">
+                  <span/>
+                </a>
+                <a class="button-replace icon separator" href="#a" title="Replace" id="cm_replace">
+                  <span/>
+                </a>
+                <wicket:message key="font"/>
+                <select class="m-0" id="cm_font_size">
+                  <option value="8">8pt</option>
+                  <option value="10">10pt</option>
+                  <option value="12" selected="selected">12pt</option>
+                  <option value="14">14pt</option>
+                  <option value="16">16pt</option>
+                  <option value="18">18pt</option>
+                  <option value="20">20pt</option>
+                </select>
+                <wicket:message key="height"/>
+                <select class="m-0" id="cm_editor_heigth">
+                  <option value="200">200px</option>
+                  <option value="250">250px</option>
+                  <option value="300" selected="selected">300px</option>
+                  <option value="350">350px</option>
+                  <option value="400">400px</option>
+                  <option value="450">450px</option>
+                  <option value="500">500px</option>
+                  <option value="450">550px</option>
+                  <option value="600">600px</option>
+                  <option value="650">650px</option>
+                  <option value="700">700px</option>
+                  <option value="750">750px</option>
+                  <option value="800">800px</option>
+                  <option value="850">850px</option>
+                  <option value="900">900px</option>
+                  <option value="950">950px</option>
+                  <option value="1000">1000px</option>
+                </select>
+                <a class="icon separator" wicket:id="custom-buttons">
+                  <span/>
+                </a>
+              </div>
+            </wicket:link>
+          </div>
+          <div wicket:id="editorParent">
+            <textarea wicket:id="editor"/>
+          </div>
+        </div>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

@@ -1,24 +1,40 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-	<wicket:panel>
-       	<div wicket:id="dialog"></div>
-		<form wicket:id="form">
-		  <div class="gn-unordered-list-class">
-            <div class="gn-list-item-class"> <label for="template"><wicket:message key="template" /></label>
-            <select wicket:id="template" /></div>
-			<div class="gn-list-item-class"> <label for="fileUpload"><wicket:message key="fileUpload" /></label>
-			<input wicket:id="fileUpload" size="40" type="file"/></div>
-            <div class="gn-list-item-class"> <label for="validate"><wicket:message key="validate" /></label>
-            <input wicket:id="validate" size="40" type="checkbox"/></div>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-BulkImportPanel">
+        <div wicket:id="dialog"></div>
+        <form wicket:id="form">
+          <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class">
+              <label for="template">
+                <wicket:message key="template"></wicket:message>
+              </label>
+              <select wicket:id="template"></select>
+            </div>
+            <div class="gn-list-item-class">
+              <label for="fileUpload">
+                <wicket:message key="fileUpload"></wicket:message>
+              </label>
+              <input wicket:id="fileUpload" size="40" type="file" />
+            </div>
+            <div class="gn-list-item-class">
+              <label for="validate">
+                <wicket:message key="validate"></wicket:message>
+              </label>
+              <input wicket:id="validate" size="40" type="checkbox" />
+            </div>
             <div class="gn-list-item-class">
               <div class="button-group toolbar-sticky selfclear">
-                   <a href="#" class="form-button-import" wicket:id="import"><wicket:message key="import"/></a>
+                <a href="#" class="form-button-import" wicket:id="import">
+                  <wicket:message key="import"></wicket:message>
+                </a>
               </div>
             </div>
-         </div>
-		</form>
-	</wicket:panel>
-</body>
+          </div>
+        </form>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

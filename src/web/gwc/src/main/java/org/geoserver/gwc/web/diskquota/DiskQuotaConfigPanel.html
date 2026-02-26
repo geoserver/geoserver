@@ -1,66 +1,92 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-    <fieldset>
-      <legend><span><wicket:message key="diskQuota">Disk Quota</wicket:message></span></legend>
-      <div class="gn-unordered-list-class">
-        <div class="gn-list-item-class choiceItem">
-          <input id="enableDiskQuota" type="checkbox" wicket:id="enableDiskQuota" />
-          <label for="enableDiskQuota"><wicket:message key="enableDiskQuota">Enable Disk Quota</wicket:message></label>
-        </div>
-        <div class="gn-list-item-class">
-          <label for="cleanUpFreq"><wicket:message key="cleanUpFreq">Force cache disk quota is exceeded every:</wicket:message></label>
-          <input class="w-sm" wicket:id="cleanUpFreq" id="cleanUpFreq" type="text"/>
-          <wicket:message key="cleanUpFreqUnits">minutes</wicket:message>
-          <div wicket:id="cleanUpLastRun">(Last run: X minutes ago.)</div>
-        </div>
-        <div class="gn-list-item-class">
-          <label for="globalQuota"><wicket:message key="setGlobalQuota">Set cache disk quota to:</wicket:message></label>
-          <input class="w-sm" wicket:id="globalQuota" id="globalQuota" type="text"/>
-          <select class="text" id="globalQuotaUnits" wicket:id="globalQuotaUnits"></select>
-          <div wicket:id="globalQuotaProgressBar"></div>
-        </div>
-        <div class="gn-list-item-class">
-          <label><wicket:message key="globalQuotaTitle">When forcing quota limits, remove tiles that are:</wicket:message></label>
-          <div wicket:id="globalQuotaExpirationPolicy">
-          <div class="gn-unordered-list-class choiceList">
-            <div class="gn-list-item-class">
-              <input id="globalQuotaPolicyLFU" type="radio" wicket:id="globalQuotaPolicyLFU" />
-              <label for="globalQuotaPolicyLFU"><wicket:message key="LFU">Least frequently used</wicket:message></label>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-DiskQuotaConfigPanel">
+        <fieldset>
+          <legend>
+            <span>
+              <wicket:message key="diskQuota">Disk Quota</wicket:message>
+            </span>
+          </legend>
+          <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class choiceItem">
+              <input id="enableDiskQuota" type="checkbox" wicket:id="enableDiskQuota"/>
+              <label for="enableDiskQuota">
+                <wicket:message key="enableDiskQuota">Enable Disk Quota</wicket:message>
+              </label>
             </div>
             <div class="gn-list-item-class">
-              <input id="globalQuotaPolicyLRU" type="radio" wicket:id="globalQuotaPolicyLRU" value="LRU"/>
-              <label for="globalQuotaPolicyLRU"><wicket:message key="LRU">Least recently used</wicket:message></label>
+              <label for="cleanUpFreq">
+                <wicket:message key="cleanUpFreq">Force cache disk quota is exceeded every:</wicket:message>
+              </label>
+              <input class="w-sm" wicket:id="cleanUpFreq" id="cleanUpFreq" type="text"/>
+              <wicket:message key="cleanUpFreqUnits">minutes</wicket:message>
+              <div wicket:id="cleanUpLastRun">(Last run: X minutes ago.)</div>
+            </div>
+            <div class="gn-list-item-class">
+              <label for="globalQuota">
+                <wicket:message key="setGlobalQuota">Set cache disk quota to:</wicket:message>
+              </label>
+              <input class="w-sm" wicket:id="globalQuota" id="globalQuota" type="text"/>
+              <select class="text" id="globalQuotaUnits" wicket:id="globalQuotaUnits"/>
+              <div wicket:id="globalQuotaProgressBar"/>
+            </div>
+            <div class="gn-list-item-class">
+              <label>
+                <wicket:message key="globalQuotaTitle">When forcing quota limits, remove tiles that are:</wicket:message>
+              </label>
+              <div wicket:id="globalQuotaExpirationPolicy">
+                <div class="gn-unordered-list-class choiceList">
+                  <div class="gn-list-item-class">
+                    <input id="globalQuotaPolicyLFU" type="radio" wicket:id="globalQuotaPolicyLFU"/>
+                    <label for="globalQuotaPolicyLFU">
+                      <wicket:message key="LFU">Least frequently used</wicket:message>
+                    </label>
+                  </div>
+                  <div class="gn-list-item-class">
+                    <input id="globalQuotaPolicyLRU" type="radio" wicket:id="globalQuotaPolicyLRU" value="LRU"/>
+                    <label for="globalQuotaPolicyLRU">
+                      <wicket:message key="LRU">Least recently used</wicket:message>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="gn-list-item-class" wicket:id="quotaStoreContainer">
+              <label for="diskQuotaStore">
+                <wicket:message key="diskQuotaStore">quotastore:</wicket:message>
+              </label>
+              <select class="text" id="diskQuotaStore" wicket:id="diskQuotaStore"/>
+              <div class="gn-unordered-list-class" wicket:id="jdbcQuotaStoreContainer">
+                <div class="gn-list-item-class">
+                  <label for="dialectChooser">
+                    <wicket:message key="jdbcQuotaDialect">dialect:</wicket:message>
+                  </label>
+                  <select class="text" id="dialectChooser" wicket:id="dialectChooser"/>
+                </div>
+                <div class="gn-list-item-class">
+                  <label for="connectionTypeChooser">
+                    <wicket:message key="connectionTypeChooser">connectionType:</wicket:message>
+                  </label>
+                  <select class="text" id="connectionTypeChooser" wicket:id="connectionTypeChooser"/>
+                </div>
+                <div class="gn-list-item-class" wicket:id="connectionTypeContainer">
+                  <div class="gn-unordered-list-class">
+                    <div class="gn-list-item-class" wicket:id="jndiLocationContainer">
+                      <label for="jndiLocation">
+                        <wicket:message key="jndiLocation">jdniLocation:</wicket:message>
+                      </label>
+                      <input type="text" id="jndiLocation" wicket:id="jndiLocation"/>
+                    </div>
+                    <div class="gn-list-item-class" wicket:id="connectionPoolConfigurator"/>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          </div>
-        </div>
-        <div class="gn-list-item-class" wicket:id="quotaStoreContainer">
-          <label for="diskQuotaStore"><wicket:message key="diskQuotaStore">quotastore:</wicket:message></label>
-          <select class="text" id="diskQuotaStore" wicket:id="diskQuotaStore"></select>
-          <div class="gn-unordered-list-class" wicket:id="jdbcQuotaStoreContainer">
-            <div class="gn-list-item-class">
-	          <label for="dialectChooser"><wicket:message key="jdbcQuotaDialect">dialect:</wicket:message></label>
-	          <select class="text" id="dialectChooser" wicket:id="dialectChooser"></select>
-            </div>
-            <div class="gn-list-item-class">
-	          <label for="connectionTypeChooser"><wicket:message key="connectionTypeChooser">connectionType:</wicket:message></label>
-	          <select class="text" id="connectionTypeChooser" wicket:id="connectionTypeChooser"></select>
-            </div>
-            <div class="gn-list-item-class" wicket:id="connectionTypeContainer">
-	           	<div class="gn-unordered-list-class">
-		            <div class="gn-list-item-class" wicket:id="jndiLocationContainer">
-			          <label for="jndiLocation"><wicket:message key="jndiLocation">jdniLocation:</wicket:message></label>
-			          <input type="text" id="jndiLocation" wicket:id="jndiLocation">
-		            </div>
-		            <div class="gn-list-item-class" wicket:id="connectionPoolConfigurator"></div>
-		        </div>
-		    </div>
-          </div>
-        </div>
+        </fieldset>
       </div>
-    </fieldset>
-</wicket:panel>
-</body>
+    </wicket:panel>
+  </body>
 </html>
-

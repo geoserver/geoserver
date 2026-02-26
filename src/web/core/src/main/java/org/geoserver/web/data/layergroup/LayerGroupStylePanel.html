@@ -1,32 +1,41 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-    <br/>
-    <div>
-        <fieldset>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-LayerGroupStylePanel">
+        <br/>
+        <div>
+          <fieldset>
             <legend>
-                <wicket:message key="groupStyle">Layer Group Style</wicket:message>
+              <wicket:message key="groupStyle">Layer Group Style</wicket:message>
             </legend>
             <div class="gn-unordered-list-class">
-                <div class="gn-list-item-class"> <label for="layerGroupStyleName"><wicket:message key="layerGroupStyleName">Style Name</wicket:message></label></div>
-                <div class="gn-list-item-class">
-                    <div>
-                        <input id="layerGroupStyleName" wicket:id="layerGroupStyleName" type="text">
-                        <a class="remove-link" wicket:id="remove"><wicket:message key="removeStyle">Remove Style</wicket:message></a>
-                    </div>
+              <div class="gn-list-item-class">
+                <label for="layerGroupStyleName">
+                  <wicket:message key="layerGroupStyleName">Style Name</wicket:message>
+                </label>
+              </div>
+              <div class="gn-list-item-class">
+                <div>
+                  <input id="layerGroupStyleName" wicket:id="layerGroupStyleName" type="text"/>
+                  <a class="remove-link" wicket:id="remove">
+                    <wicket:message key="removeStyle">Remove Style</wicket:message>
+                  </a>
                 </div>
-                <div class="gn-list-item-class">
-                    <div wicket:id="titleAndAbstract"/>
-                </div>
-                <div class="gn-list-item-class">
-                    <br/>
-                </div>
-                <div class="gn-list-item-class">
-                    <div wicket:id="layerGroupEntryPanel"></div>
-                </div>
+              </div>
+              <div class="gn-list-item-class">
+                <div wicket:id="titleAndAbstract"/>
+              </div>
+              <div class="gn-list-item-class">
+                <br/>
+              </div>
+              <div class="gn-list-item-class">
+                <div wicket:id="layerGroupEntryPanel"/>
+              </div>
             </div>
-        </fieldset>
-    </div>
-</wicket:panel>
-</body>
+          </fieldset>
+        </div>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

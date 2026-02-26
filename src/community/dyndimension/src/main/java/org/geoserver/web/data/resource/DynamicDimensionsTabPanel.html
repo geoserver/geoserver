@@ -1,32 +1,32 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
+  <head/>
+  <body>
     <wicket:panel>
+      <div class="gs-panel-DynamicDimensionsTabPanel">
         <div class="gn-unordered-list-class">
-            <!-- TIME -->
-            <div class="gn-list-item-class">
-                <fieldset>
-                    <legend>
-                        <span><wicket:message key="defaultConfigs">defaultConfigs</wicket:message></span>
-                    </legend>
-                    <p>
-                        <wicket:message key="DynamicDimensionsTabPanel.description">description</wicket:message>
-                    </p>
-                    <div wicket:id="editor"></div>
-                </fieldset>
-            </div>
-
+          <!-- TIME -->
+          <div class="gn-list-item-class">
+            <fieldset>
+              <legend>
+                <span>
+                  <wicket:message key="defaultConfigs">defaultConfigs</wicket:message>
+                </span>
+              </legend>
+              <p>
+                <wicket:message key="DynamicDimensionsTabPanel.description">description</wicket:message>
+              </p>
+              <div wicket:id="editor"/>
+            </fieldset>
+          </div>
         </div>
+      </div>
     </wicket:panel>
-
     <wicket:fragment wicket:id="policyChoice">
-        <select type wicket:id="choice"></select>
+      <select wicket:id="choice"/>
     </wicket:fragment>
-    
     <wicket:fragment wicket:id="ecqlEditor">
-        <textarea rows="1" wicket:id="editor" class="h-sm"></textarea>
+      <textarea rows="1" wicket:id="editor" class="h-sm"/>
     </wicket:fragment>
-    
-
-</body>
+  </body>
 </html>

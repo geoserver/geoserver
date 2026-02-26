@@ -1,28 +1,25 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-  <fieldset class="border-0">
-
-    <div>
-      <span wicket:id="message"></span>
-    </div>
-    <div>
-      <label for="name">
-        <wicket:message key="name"></wicket:message>
-      </label>
-      <input type="text" wicket:id="name" />
-    </div>
-
-  </fieldset>
-
-  <fieldset class="border-0">
-    <wicket:child></wicket:child>
-  </fieldset>
-
-  <div wicket:id="dialog"></div>
-</wicket:panel>
-</body>
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-SecurityNamedServicePanel">
+        <fieldset class="border-0">
+          <div>
+            <span wicket:id="message"></span>
+          </div>
+          <div>
+            <label for="name">
+              <wicket:message key="name"></wicket:message>
+            </label>
+            <input type="text" wicket:id="name" />
+          </div>
+        </fieldset>
+        <fieldset class="border-0">
+          <wicket:child></wicket:child>
+        </fieldset>
+        <div wicket:id="dialog"></div>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

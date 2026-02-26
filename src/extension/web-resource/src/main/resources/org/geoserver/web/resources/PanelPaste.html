@@ -1,21 +1,38 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-  <wicket:panel>         
-      <h3><wicket:message key="titlePaste"></wicket:message></h3>
-      <div wicket:id="feedback"></div>
-  
-      <div class="gn-unordered-list-class">
-        <div class="gn-list-item-class">
-          <label><wicket:message key="source"></wicket:message></label>
-          <input wicket:id="source" size="40" type="text" readonly>
-          <br/>
-          <span wicket:id="labelMove"><wicket:message key="moveMessage"></wicket:message></span>
-          <span wicket:id="labelCopy"><wicket:message key="copyMessage"></wicket:message></span>
-        </div>
-        <div class="gn-list-item-class">
-          <label><wicket:message key="directory"></wicket:message></label>
-          <input wicket:id="directory" size="40" type="text">
-          <br/><small><wicket:message key="createDirectory"></wicket:message></small>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-PanelPaste">
+        <h3>
+          <wicket:message key="titlePaste"/>
+        </h3>
+        <div wicket:id="feedback"/>
+        <div class="gn-unordered-list-class">
+          <div class="gn-list-item-class">
+            <label>
+              <wicket:message key="source"/>
+            </label>
+            <input wicket:id="source" size="40" type="text" readonly="readonly"/>
+            <br/>
+            <span wicket:id="labelMove">
+              <wicket:message key="moveMessage"/>
+            </span>
+            <span wicket:id="labelCopy">
+              <wicket:message key="copyMessage"/>
+            </span>
+          </div>
+          <div class="gn-list-item-class">
+            <label>
+              <wicket:message key="directory"/>
+            </label>
+            <input wicket:id="directory" size="40" type="text"/>
+            <br/>
+            <small>
+              <wicket:message key="createDirectory"/>
+            </small>
+          </div>
         </div>
       </div>
- </wicket:panel>
+    </wicket:panel>
+  </body>
 </html>

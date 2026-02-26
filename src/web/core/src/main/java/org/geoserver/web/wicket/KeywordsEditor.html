@@ -1,25 +1,34 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-  <wicket:panel>
-
-    <div class="my-1">
-      <label for="keywords"><wicket:message key="currentKeywords">Current Keywords</wicket:message></label>
-      <select id="keywords" class="select w-md" wicket:id="keywords" multiple="multiple"></select>
-      <button wicket:id="removeKeywords" type="submit"><wicket:message key="removeSelected">Remove selected</wicket:message></button>
-    </div>
-
-    <div class="my-1">
-      <label for="newKeyword"><wicket:message key="newKeyword">New Keyword</wicket:message></label>
-      <input id="newKeyword" type="text" wicket:id="newKeyword"/>
-      <select id="lang" class="text" type="text" wicket:id="lang"></select>
-    </div>
-
-    <div class="my-1">
-      <label for="vocab"><wicket:message key="vocabulary">Vocabulary</wicket:message></label>
-      <input id="vocab" type="text" wicket:id="vocab"/>
-    </div>
-
-    <button wicket:id="addKeyword" type="submit"> <wicket:message key="addKeyword">Add</wicket:message> </button>
-  </wicket:panel>
-</body>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-KeywordsEditor">
+        <div class="my-1">
+          <label for="keywords">
+            <wicket:message key="currentKeywords">Current Keywords</wicket:message>
+          </label>
+          <select id="keywords" class="select w-md" wicket:id="keywords" multiple="multiple"/>
+          <button wicket:id="removeKeywords" type="submit">
+            <wicket:message key="removeSelected">Remove selected</wicket:message>
+          </button>
+        </div>
+        <div class="my-1">
+          <label for="newKeyword">
+            <wicket:message key="newKeyword">New Keyword</wicket:message>
+          </label>
+          <input id="newKeyword" type="text" wicket:id="newKeyword"/>
+          <select id="lang" class="text" type="text" wicket:id="lang"/>
+        </div>
+        <div class="my-1">
+          <label for="vocab">
+            <wicket:message key="vocabulary">Vocabulary</wicket:message>
+          </label>
+          <input id="vocab" type="text" wicket:id="vocab"/>
+        </div>
+        <button wicket:id="addKeyword" type="submit">
+          <wicket:message key="addKeyword">Add</wicket:message>
+        </button>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

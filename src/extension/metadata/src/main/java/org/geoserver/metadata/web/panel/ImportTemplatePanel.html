@@ -1,31 +1,34 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-	<div wicket:id="importDialog"></div>
-
-	<fieldset>
-		<legend>
-			<span><wicket:message key="header"></wicket:message></span>
-		</legend>
-		<div class="gn-unordered-list-class links-above-table">
-			<div class="gn-list-item-class"> <select wicket:id="metadataTemplate"/> <a href="#"
-																										wicket:id="link">
-				<wicket:message key="actionImport"/>
-			</a></div>
-			<div class="gn-list-item-class"> <a class="remove-link" href="#"
-						 wicket:id="removeSelected">
-				<wicket:message
-								key="removeSelected"/>
-			</a></div>
-		</div>
-		<span wicket:id="linkTemplateFeedback"></span>
-		<div wicket:id="templatesPanel"></div>
-		<div wicket:id="noData"></div>
-	</fieldset>
-
-</wicket:panel>
-</body>
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-ImportTemplatePanel">
+        <div wicket:id="importDialog"></div>
+        <fieldset>
+          <legend>
+            <span>
+              <wicket:message key="header"></wicket:message>
+            </span>
+          </legend>
+          <div class="gn-unordered-list-class links-above-table">
+            <div class="gn-list-item-class">
+              <select wicket:id="metadataTemplate"></select>
+              <a href="#" wicket:id="link">
+                <wicket:message key="actionImport"></wicket:message>
+              </a>
+            </div>
+            <div class="gn-list-item-class">
+              <a class="remove-link" href="#" wicket:id="removeSelected">
+                <wicket:message key="removeSelected"></wicket:message>
+              </a>
+            </div>
+          </div>
+          <span wicket:id="linkTemplateFeedback"></span>
+          <div wicket:id="templatesPanel"></div>
+          <div wicket:id="noData"></div>
+        </fieldset>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

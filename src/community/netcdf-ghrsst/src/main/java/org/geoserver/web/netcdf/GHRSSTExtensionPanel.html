@@ -1,52 +1,55 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-<wicket:panel>
-    <fieldset>
-        <legend>
+  <head/>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-GHRSSTExtensionPanel">
+        <fieldset>
+          <legend>
             <span>
-                <wicket:message key="GHRSSTExtensionPanel.title">GHRSST Output Settings</wicket:message>
+              <wicket:message key="GHRSSTExtensionPanel.title">GHRSST Output Settings</wicket:message>
             </span>
-        </legend>
-        <div>
+          </legend>
+          <div>
             <div class="gn-unordered-list-class">
-                <div class="gn-list-item-class choiceItem">
-                    <input id="enabled" type="checkbox" wicket:id="enabled"/>
-                    <label for="enabled" class="checkbox">
-                        <wicket:message key="enable">enable</wicket:message>
+              <div class="gn-list-item-class choiceItem">
+                <input id="enabled" type="checkbox" wicket:id="enabled"/>
+                <label for="enabled" class="checkbox">
+                  <wicket:message key="enable">enable</wicket:message>
+                </label>
+              </div>
+              <div class="gn-list-item-class" wicket:id="settings">
+                <div class="gn-unordered-list-class">
+                  <div class="gn-list-item-class">
+                    <label for="rdac">
+                      <wicket:message key="rdac">RDAC</wicket:message>
                     </label>
+                    <input id="rdac" class="field" type="text" wicket:id="rdac"/>
+                  </div>
+                  <div class="gn-list-item-class">
+                    <label for="processingLevel">
+                      <wicket:message key="processingLevel">processingLevel</wicket:message>
+                    </label>
+                    <input id="processingLevel" class="field" type="text" wicket:id="processingLevel"/>
+                  </div>
+                  <div class="gn-list-item-class">
+                    <label for="sstType">
+                      <wicket:message key="sstType">sstType</wicket:message>
+                    </label>
+                    <input id="sstType" class="field" type="text" wicket:id="sstType"/>
+                  </div>
+                  <div class="gn-list-item-class">
+                    <label for="productString">
+                      <wicket:message key="productString">productString</wicket:message>
+                    </label>
+                    <input id="productString" class="field" type="text" wicket:id="productString"/>
+                  </div>
                 </div>
-                <div class="gn-list-item-class" wicket:id="settings">
-                    <div class="gn-unordered-list-class">
-                        <div class="gn-list-item-class">
-                            <label for="rdac">
-                                <wicket:message key="rdac">RDAC</wicket:message>
-                            </label>
-                            <input id="rdac" class="field" type="text" wicket:id="rdac"/>
-                        </div>
-                        <div class="gn-list-item-class">
-                            <label for="processingLevel">
-                                <wicket:message key="processingLevel">processingLevel</wicket:message>
-                            </label>
-                            <input id="processingLevel" class="field" type="text" wicket:id="processingLevel"/>
-                        </div>
-                        <div class="gn-list-item-class">
-                            <label for="sstType">
-                                <wicket:message key="sstType">sstType</wicket:message>
-                            </label>
-                            <input id="sstType" class="field" type="text" wicket:id="sstType"/>
-                        </div>
-                        <div class="gn-list-item-class">
-                            <label for="productString">
-                                <wicket:message key="productString">productString</wicket:message>
-                            </label>
-                            <input id="productString" class="field" type="text" wicket:id="productString"/>
-                        </div>
-                    </div>
-                </div>
+              </div>
             </div>
-        </div>
-    </fieldset>
-</wicket:panel>
-</body>
+          </div>
+        </fieldset>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

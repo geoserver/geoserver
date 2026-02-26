@@ -1,39 +1,38 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-   <wicket:panel>
-      <select wicket:id="type"/> <span wicket:id="editor"></span>
-      <div wicket:id="subprocessPopupWindow"></div>   
-   </wicket:panel>
-   
-   <wicket:fragment wicket:id="text">
-      <select wicket:id="mime"/><br/>
-      <textarea class="w-md h-sm p-2" wicket:id="textarea"></textarea>
-   </wicket:fragment>
-   
-   <wicket:fragment wicket:id="vectorLayer">
-      <select wicket:id="layer"></select>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-ComplexInputPanel">
+        <select wicket:id="type"/>
+        <span wicket:id="editor"/>
+        <div wicket:id="subprocessPopupWindow"/>
+      </div>
+    </wicket:panel>
+    <wicket:fragment wicket:id="text">
+      <select wicket:id="mime"/>
+      <br/>
+      <textarea class="w-md h-sm p-2" wicket:id="textarea"/>
+    </wicket:fragment>
+    <wicket:fragment wicket:id="vectorLayer">
+      <select wicket:id="layer"/>
       <!-- 
       <span wicket:id="attributes"></span>
       <span>Filter</span><input type="text" wicket:id="filter"/>
        -->
-   </wicket:fragment>
-   
-   <wicket:fragment wicket:id="rasterLayer">
-      <select wicket:id="layer"></select>
-   </wicket:fragment>
-   
-   <wicket:fragment wicket:id="reference">
-      <br/>Method <select wicket:id="method"/><br/>
+    </wicket:fragment>
+    <wicket:fragment wicket:id="rasterLayer">
+      <select wicket:id="layer"/>
+    </wicket:fragment>
+    <wicket:fragment wicket:id="reference"><br/>Method <select wicket:id="method"/><br/>
       Mime type <select wicket:id="mime"/><br/>
       URL <input type="text" class="w-md" wicket:id="url"/><br/>
       <div wicket:id="bodyContainer">
-      Body <br/> <textarea class="w-md h-sm p-2" wicket:id="body"></textarea></div>
+      Body <br/> <textarea class="w-md h-sm p-2" wicket:id="body"/></div>
    </wicket:fragment>
-   
-   <wicket:fragment wicket:id="subprocess">
-      <a href="#" wicket:id="edit">Define/Edit</a><br/>
-      <textarea class="w-md h-sm p-2" readonly="readonly" wicket:id="xml"></textarea>
-   </wicket:fragment>
-   
- </body>
+    <wicket:fragment wicket:id="subprocess">
+      <a href="#" wicket:id="edit">Define/Edit</a>
+      <br/>
+      <textarea class="w-md h-sm p-2" readonly="readonly" wicket:id="xml"/>
+    </wicket:fragment>
+  </body>
 </html>

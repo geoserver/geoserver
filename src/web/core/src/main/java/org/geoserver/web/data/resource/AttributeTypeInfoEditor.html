@@ -1,26 +1,33 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-<wicket:panel>
-    <wicket:fragment wicket:id="name">
-        <label wicket:id="name"></label>
-    </wicket:fragment>
-    <wicket:fragment wicket:id="type">
-        <label wicket:id="type"></label>
-    </wicket:fragment>
-    <wicket:fragment wicket:id="description">
-        <label wicket:id="description" class="cql"></label>
-    </wicket:fragment>
-    <div class="gn-unordered-list-class action-group">
-        <div class="gn-list-item-class"> <a class="add-link" wicket:id="addAttribute">
-            <wicket:message key="addAttribute">Add</wicket:message>
-        </a></div>
-        <div class="gn-list-item-class"> <a class="reset-link" wicket:id="resetAttributes">
-            <wicket:message key="resetAttributes">Reset</wicket:message>
-        </a></div>
-    </div>
-    <div wicket:id="table"></div>
-    <div wicket:id="dialog"></div>
-</wicket:panel>
-</body>
+  <head/>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-AttributeTypeInfoEditor">
+        <wicket:fragment wicket:id="name">
+          <label wicket:id="name"/>
+        </wicket:fragment>
+        <wicket:fragment wicket:id="type">
+          <label wicket:id="type"/>
+        </wicket:fragment>
+        <wicket:fragment wicket:id="description">
+          <label wicket:id="description" class="cql"/>
+        </wicket:fragment>
+        <div class="gn-unordered-list-class action-group">
+          <div class="gn-list-item-class">
+            <a class="add-link" wicket:id="addAttribute">
+              <wicket:message key="addAttribute">Add</wicket:message>
+            </a>
+          </div>
+          <div class="gn-list-item-class">
+            <a class="reset-link" wicket:id="resetAttributes">
+              <wicket:message key="resetAttributes">Reset</wicket:message>
+            </a>
+          </div>
+        </div>
+        <div wicket:id="table"/>
+        <div wicket:id="dialog"/>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

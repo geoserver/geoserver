@@ -1,35 +1,48 @@
+<?xml version="1.0"?>
 <!-- 
  Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-<form name="theForm">
-    <wicket:panel>
-        <div class="gn-unordered-list-class">
+  <head/>
+  <body>
+    <form name="theForm">
+      <wicket:panel>
+        <div class="gs-panel-BilLayerConfigPanel">
+          <div class="gn-unordered-list-class">
             <div class="gn-list-item-class">
-                <fieldset>
-                    <legend><span><wicket:message key="bilFormatSettings">BIL Format Settings</wicket:message></span></legend>
-                    <div class="gn-unordered-list-class">
-                        <div class="gn-list-item-class">
-                            <label for="defaultDataTypeAttribute"><wicket:message key="defaultDataTypeAttribute">Default Data Type Attribute</wicket:message></label>
-                            <select id="defaultDataTypeAttribute" type="text" wicket:id="bil.defaultDataTypeAttribute"></select>
-                        </div>
-                        <div class="gn-list-item-class">
-                            <label for="byteOrderAttribute"><wicket:message key="byteOrderAttribute">Byte Order</wicket:message></label>
-                            <select id="byteOrderAttribute" type="text" wicket:id="bil.byteOrderAttribute"></select>
-                        </div>
-                        <div class="gn-list-item-class">
-                            <label for="noDataOutputAttribute"><wicket:message key="noDataOutputAttribute">Default NoData Output Attribute</wicket:message></label>
-                            <input id="noDataOutputAttribute" type="text" wicket:id="bil.noDataOutputAttribute"></input>
-                        </div>
-                    </div>
-                </fieldset>
+              <fieldset>
+                <legend>
+                  <span>
+                    <wicket:message key="bilFormatSettings">BIL Format Settings</wicket:message>
+                  </span>
+                </legend>
+                <div class="gn-unordered-list-class">
+                  <div class="gn-list-item-class">
+                    <label for="defaultDataTypeAttribute">
+                      <wicket:message key="defaultDataTypeAttribute">Default Data Type Attribute</wicket:message>
+                    </label>
+                    <select id="defaultDataTypeAttribute" type="text" wicket:id="bil.defaultDataTypeAttribute"/>
+                  </div>
+                  <div class="gn-list-item-class">
+                    <label for="byteOrderAttribute">
+                      <wicket:message key="byteOrderAttribute">Byte Order</wicket:message>
+                    </label>
+                    <select id="byteOrderAttribute" type="text" wicket:id="bil.byteOrderAttribute"/>
+                  </div>
+                  <div class="gn-list-item-class">
+                    <label for="noDataOutputAttribute">
+                      <wicket:message key="noDataOutputAttribute">Default NoData Output Attribute</wicket:message>
+                    </label>
+                    <input id="noDataOutputAttribute" type="text" wicket:id="bil.noDataOutputAttribute"/>
+                  </div>
+                </div>
+              </fieldset>
             </div>
+          </div>
         </div>
-    </wicket:panel>
-</form>
-</body>
+      </wicket:panel>
+    </form>
+  </body>
 </html>

@@ -1,20 +1,27 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
+  <head/>
+  <body>
     <wicket:panel>
+      <div class="gs-panel-VerticalCRSConfigurationPanel">
         <div>
-            <fieldset>
-                <legend>
-                   <span><wicket:message key="VerticalCRSConfigurationPanel.title">Vertical Coordinate Reference System</wicket:message></span>
-                </legend>
-                    <div class="gn-unordered-list-class">
-                        <div class="gn-list-item-class">
-                            <label for="verticalCRS"><wicket:message key="verticalCRS">Vertical CRS</wicket:message></label>
-                            <span id="verticalCRS" wicket:id="verticalCRS"></span>
-                        </div>
-                    </div>
-            </fieldset>
+          <fieldset>
+            <legend>
+              <span>
+                <wicket:message key="VerticalCRSConfigurationPanel.title">Vertical Coordinate Reference System</wicket:message>
+              </span>
+            </legend>
+            <div class="gn-unordered-list-class">
+              <div class="gn-list-item-class">
+                <label for="verticalCRS">
+                  <wicket:message key="verticalCRS">Vertical CRS</wicket:message>
+                </label>
+                <span id="verticalCRS" wicket:id="verticalCRS"/>
+              </div>
+            </div>
+          </fieldset>
         </div>
+      </div>
     </wicket:panel>
-</body>
+  </body>
 </html>

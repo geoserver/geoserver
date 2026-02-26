@@ -1,26 +1,40 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-<wicket:panel>
-    <div wicket:id="container">
-    <div class="gn-unordered-list-class action-group">
-        <div class="gn-list-item-class"> <a class="add-link" href="#" wicket:id="addNew"><wicket:message key="addNew"/></a></div>
-    </div>
-    <div class="i18n-panel" wicket:id="tablePanel"/>
-    </div>
-</wicket:panel>
-<wicket:fragment wicket:id="txtFragment">
-        <span wicket:id="border"><input wicket:id="txt" type="text" /></span>
-</wicket:fragment>
-<wicket:fragment wicket:id="txtAreaFragment">
-        <span wicket:id="border"><textarea wicket:id="txt" class="field" rows="10" cols="30"/></span>
-</wicket:fragment>
-<wicket:fragment wicket:id="selectFragment">
-    <span wicket:id="border"><select wicket:id="select"/></span>
-</wicket:fragment>
-
-<wicket:fragment wicket:id="removeFragment">
-    <a href="#" wicket:id="remove"><wicket:message key="remove">Remove</wicket:message></a>
-</wicket:fragment>
-</body>
+  <head/>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-InternationalStringPanel">
+        <div wicket:id="container">
+          <div class="gn-unordered-list-class action-group">
+            <div class="gn-list-item-class">
+              <a class="add-link" href="#" wicket:id="addNew">
+                <wicket:message key="addNew"/>
+              </a>
+            </div>
+          </div>
+          <div class="i18n-panel" wicket:id="tablePanel"/>
+        </div>
+      </div>
+    </wicket:panel>
+    <wicket:fragment wicket:id="txtFragment">
+      <span wicket:id="border">
+        <input wicket:id="txt" type="text"/>
+      </span>
+    </wicket:fragment>
+    <wicket:fragment wicket:id="txtAreaFragment">
+      <span wicket:id="border">
+        <textarea wicket:id="txt" class="field" rows="10" cols="30"/>
+      </span>
+    </wicket:fragment>
+    <wicket:fragment wicket:id="selectFragment">
+      <span wicket:id="border">
+        <select wicket:id="select"/>
+      </span>
+    </wicket:fragment>
+    <wicket:fragment wicket:id="removeFragment">
+      <a href="#" wicket:id="remove">
+        <wicket:message key="remove">Remove</wicket:message>
+      </a>
+    </wicket:fragment>
+  </body>
 </html>

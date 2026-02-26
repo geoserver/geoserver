@@ -1,76 +1,91 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-  <fieldset>
-   <div class="gn-unordered-list-class">
-    <legend><span><wicket:message key="contactOrganization">Organization</wicket:message></span></legend>
-    <div class="gn-list-item-class">
-      <div wicket:id="contactOrganization"/>
-    </div>
-    <div class="gn-list-item-class">
-      <div wicket:id="onlineResource"/>
-    </div>
-    <div class="gn-list-item-class">
-            <span wicket:id="welcomeLabel">
-               <label class="leftwise" for="welcome" wicket:id="welcomeLabel" />
-               <input class="leftwise" type="checkbox" wicket:id="welcomeLabel_i18nCheckbox" />
-               <wicket:message key="i18nCheckBox">i18n</wicket:message>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-ContactPanel">
+        <fieldset>
+          <div class="gn-unordered-list-class">
+            <legend>
+              <span>
+                <wicket:message key="contactOrganization">Organization</wicket:message>
+              </span>
+            </legend>
+            <div class="gn-list-item-class">
+              <div wicket:id="contactOrganization"/>
+            </div>
+            <div class="gn-list-item-class">
+              <div wicket:id="onlineResource"/>
+            </div>
+            <div class="gn-list-item-class">
+              <span wicket:id="welcomeLabel">
+                <label class="leftwise" for="welcome" wicket:id="welcomeLabel"/>
+                <input class="leftwise" type="checkbox" wicket:id="welcomeLabel_i18nCheckbox"/>
+                <wicket:message key="i18nCheckBox">i18n</wicket:message>
+              </span>
+            </div>
+            <div class="gn-list-item-class">
+              <textarea wicket:id="welcome" class="field" rows="10" cols="30"/>
+            </div>
+            <div class="gn-list-item-class">
+              <div wicket:id="internationalWelcome"/>
+            </div>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>
+            <span>
+              <wicket:message key="contact">Contact</wicket:message>
             </span>
-    </div>
-    <div class="gn-list-item-class">
-      <textarea wicket:id="welcome" class="field" rows="10" cols="30" />
-    </div>
-    <div class="gn-list-item-class">
-      <div wicket:id="internationalWelcome" />
-    </div>
-   </div>
-  </fieldset>
-  <fieldset>
-    <legend><span><wicket:message key="contact">Contact</wicket:message></span></legend>
-    <div class="gn-unordered-list-class">
-      <div class="gn-list-item-class">
-        <div wicket:id="contactPerson"/>
+          </legend>
+          <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class">
+              <div wicket:id="contactPerson"/>
+            </div>
+            <div class="gn-list-item-class">
+              <div wicket:id="contactPosition"/>
+            </div>
+            <div class="gn-list-item-class">
+              <div wicket:id="contactEmail"/>
+            </div>
+            <div class="gn-list-item-class">
+              <div wicket:id="contactVoice"/>
+            </div>
+            <div class="gn-list-item-class">
+              <div wicket:id="contactFacsimile"/>
+            </div>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>
+            <span>
+              <wicket:message key="address">Address</wicket:message>
+            </span>
+          </legend>
+          <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class">
+              <div wicket:id="addressType"/>
+            </div>
+            <div class="gn-list-item-class">
+              <div wicket:id="address"/>
+            </div>
+            <div class="gn-list-item-class">
+              <div wicket:id="addressDeliveryPoint"/>
+            </div>
+            <div class="gn-list-item-class">
+              <div wicket:id="addressCity"/>
+            </div>
+            <div class="gn-list-item-class">
+              <div wicket:id="addressState"/>
+            </div>
+            <div class="gn-list-item-class">
+              <div wicket:id="addressPostalCode"/>
+            </div>
+            <div class="gn-list-item-class">
+              <div wicket:id="addressCountry"/>
+            </div>
+          </div>
+        </fieldset>
       </div>
-      <div class="gn-list-item-class">
-        <div wicket:id="contactPosition"/>
-      </div>
-      <div class="gn-list-item-class">
-        <div wicket:id="contactEmail"/>
-      </div>
-      <div class="gn-list-item-class">
-        <div wicket:id="contactVoice"/>
-      </div>
-      <div class="gn-list-item-class">
-        <div wicket:id="contactFacsimile"/>
-      </div>
-    </div>
-  </fieldset>
-  <fieldset>
-    <legend><span><wicket:message key="address">Address</wicket:message></span></legend>
-    <div class="gn-unordered-list-class">
-      <div class="gn-list-item-class">
-        <div wicket:id="addressType"/>
-      </div>
-      <div class="gn-list-item-class">
-        <div wicket:id="address"/>
-      </div>
-      <div class="gn-list-item-class">
-        <div wicket:id="addressDeliveryPoint"/>
-      </div>
-      <div class="gn-list-item-class">
-        <div wicket:id="addressCity"/>
-      </div>
-      <div class="gn-list-item-class">
-        <div wicket:id="addressState"/>
-      </div>
-      <div class="gn-list-item-class">
-        <div wicket:id="addressPostalCode"/>
-      </div>
-      <div class="gn-list-item-class">
-        <div wicket:id="addressCountry"/>
-      </div>
-    </div>
-  </fieldset>
-</wicket:panel>
-</body>
+    </wicket:panel>
+  </body>
 </html>

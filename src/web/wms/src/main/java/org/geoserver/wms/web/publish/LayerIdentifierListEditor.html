@@ -1,27 +1,48 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-<wicket:panel>
-  <div wicket:id="container">
-    <table wicket:id="table">
-      <tr>
-        <th width="94em"><wicket:message key="authority">Authority</wicket:message></th>
-        <th width="95%"><wicket:message key="identifier">Identifier</wicket:message></th>
-        <th></th>
-      </tr>
-      <tr wicket:id="identifiers">
-        <td><div wicket:id="authFeedbak" class="w-full"><select wicket:id="authority" class="w-md"></select></div></td>
-        <td><div wicket:id="idFeedbak" class="w-full"><input wicket:id="identifier" type="text" class="w-wide"></input></div></td>
-        <td><a href="#" wicket:id="removeLink"><wicket:message key="remove">Remove</wicket:message></a></td>
-      </tr>
-    </table>
-    <p wicket:id="noIdentifiers"></p>
-  </div>
-  <div>
-   <span>
-    <button wicket:id="addIdentifier"><wicket:message key="addIdentifier">Add Authority URL</wicket:message></button>
-   </span>
-  </div>
-</wicket:panel>
-</body>
+  <head/>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-LayerIdentifierListEditor">
+        <div wicket:id="container">
+          <table wicket:id="table">
+            <tr>
+              <th width="94em">
+                <wicket:message key="authority">Authority</wicket:message>
+              </th>
+              <th width="95%">
+                <wicket:message key="identifier">Identifier</wicket:message>
+              </th>
+              <th/>
+            </tr>
+            <tr wicket:id="identifiers">
+              <td>
+                <div wicket:id="authFeedbak" class="w-full">
+                  <select wicket:id="authority" class="w-md"/>
+                </div>
+              </td>
+              <td>
+                <div wicket:id="idFeedbak" class="w-full">
+                  <input wicket:id="identifier" type="text" class="w-wide"/>
+                </div>
+              </td>
+              <td>
+                <a href="#" wicket:id="removeLink">
+                  <wicket:message key="remove">Remove</wicket:message>
+                </a>
+              </td>
+            </tr>
+          </table>
+          <p wicket:id="noIdentifiers"/>
+        </div>
+        <div>
+          <span>
+            <button wicket:id="addIdentifier">
+              <wicket:message key="addIdentifier">Add Authority URL</wicket:message>
+            </button>
+          </span>
+        </div>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

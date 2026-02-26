@@ -1,20 +1,27 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-<wicket:panel>
-    <wicket:fragment wicket:id="text">
-        <input type="text" wicket:id="text" class="w-sm"></input>
-    </wicket:fragment>
-    <wicket:fragment wicket:id="area">
-        <textarea wicket:id="area" class="cql"></textarea>
-    </wicket:fragment>
-    <wicket:fragment wicket:id="service">
-        <select wicket:id="service" class="w-sm"></select>
-    </wicket:fragment>
-    <div class="gn-unordered-list-class action-group">
-        <div class="gn-list-item-class"> <a class="add-link" wicket:id="addLink"><wicket:message key="addLink">Add</wicket:message></a></div>
-    </div>
-    <div wicket:id="table"></div>
-</wicket:panel>
-</body>
+  <head/>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-LinkInfoEditor">
+        <wicket:fragment wicket:id="text">
+          <input type="text" wicket:id="text" class="w-sm"/>
+        </wicket:fragment>
+        <wicket:fragment wicket:id="area">
+          <textarea wicket:id="area" class="cql"/>
+        </wicket:fragment>
+        <wicket:fragment wicket:id="service">
+          <select wicket:id="service" class="w-sm"/>
+        </wicket:fragment>
+        <div class="gn-unordered-list-class action-group">
+          <div class="gn-list-item-class">
+            <a class="add-link" wicket:id="addLink">
+              <wicket:message key="addLink">Add</wicket:message>
+            </a>
+          </div>
+        </div>
+        <div wicket:id="table"/>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

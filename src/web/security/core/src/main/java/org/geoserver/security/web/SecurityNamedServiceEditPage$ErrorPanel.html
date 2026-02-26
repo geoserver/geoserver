@@ -1,16 +1,23 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-  <form>
-  <div class="gn-unordered-list-class">
-    <div class="gn-list-item-class"> <span wicket:id="message"></span></div>
-  </div>
-  <textarea wicket:id="stackTrace">
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-SecurityNamedServiceEditPage_ErrorPanel">
+        <form>
+          <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class">
+              <span wicket:id="message"/>
+            </div>
+          </div>
+          <textarea wicket:id="stackTrace">
   </textarea>
-  <div class="button-group button-copy">
-    <a wicket:id="copy"><wicket:message key="copy">Copy</wicket:message></a>
-  </div>
-  </form>
-</wicket:panel>
-</body>
+          <div class="button-group button-copy">
+            <a wicket:id="copy">
+              <wicket:message key="copy">Copy</wicket:message>
+            </a>
+          </div>
+        </form>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

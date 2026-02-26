@@ -1,54 +1,61 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-    <fieldset>
-        <legend><span><wicket:message key="settings"></wicket:message></span></legend>
-        <div class="gn-unordered-list-class">
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-CORSConfigurationPanel">
+        <fieldset>
+          <legend>
+            <span>
+              <wicket:message key="settings"/>
+            </span>
+          </legend>
+          <div class="gn-unordered-list-class">
             <div class="gn-list-item-class choiceItem">
-                <input id="enabled" wicket:id="enabled" type="checkbox"/>
-                <label for="enabled">
-                    <wicket:message key="enabled">Enabled</wicket:message>
-                </label>
+              <input id="enabled" wicket:id="enabled" type="checkbox"/>
+              <label for="enabled">
+                <wicket:message key="enabled">Enabled</wicket:message>
+              </label>
             </div>
             <div class="gn-list-item-class">
-                <label wicket:for="allowedOriginPatterns">
-                    <wicket:message key="allowedOriginPatterns">Allowed Origin Patterns</wicket:message>
-                </label>
-                <input wicket:id="allowedOriginPatterns" type="text"></input>
+              <label wicket:for="allowedOriginPatterns">
+                <wicket:message key="allowedOriginPatterns">Allowed Origin Patterns</wicket:message>
+              </label>
+              <input wicket:id="allowedOriginPatterns" type="text"/>
             </div>
             <div class="gn-list-item-class">
-                <label wicket:for="allowedMethods">
-                    <wicket:message key="allowedMethods">Allowed Methods</wicket:message>
-                </label>
-                <select wicket:id="allowedMethods" multiple="multiple" size="4"></select>
+              <label wicket:for="allowedMethods">
+                <wicket:message key="allowedMethods">Allowed Methods</wicket:message>
+              </label>
+              <select wicket:id="allowedMethods" multiple="multiple" size="4"/>
             </div>
             <div class="gn-list-item-class">
-                <label wicket:for="allowedHeaders">
-                    <wicket:message key="allowedHeaders">Allowed Headers</wicket:message>
-                </label>
-                <select wicket:id="allowedHeaders" multiple="multiple" size="4"></select>
+              <label wicket:for="allowedHeaders">
+                <wicket:message key="allowedHeaders">Allowed Headers</wicket:message>
+              </label>
+              <select wicket:id="allowedHeaders" multiple="multiple" size="4"/>
             </div>
             <div class="gn-list-item-class">
-                <label wicket:for="maxAge">
-                    <wicket:message key="maxAge">Max Age (seconds)</wicket:message>
-                </label>
-                <input type="number" wicket:id="maxAge" rows="1"/>
+              <label wicket:for="maxAge">
+                <wicket:message key="maxAge">Max Age (seconds)</wicket:message>
+              </label>
+              <input type="number" wicket:id="maxAge" rows="1"/>
             </div>
             <div class="gn-list-item-class choiceItem">
-                <input id="supportsCredentials" wicket:id="supportsCredentials" type="checkbox"/>
-                <label for="supportsCredentials">
-                    <wicket:message key="supportsCredentials">Supports Credentials</wicket:message>
-                </label>
+              <input id="supportsCredentials" wicket:id="supportsCredentials" type="checkbox"/>
+              <label for="supportsCredentials">
+                <wicket:message key="supportsCredentials">Supports Credentials</wicket:message>
+              </label>
             </div>
             <div class="gn-list-item-class">
-                <p class="warning">
-                    <wicket:message key="restartNotice">Note: GeoServer must be restarted for these changes to take
+              <p class="warning">
+                <wicket:message key="restartNotice">Note: GeoServer must be restarted for these changes to take
                         effect.
                     </wicket:message>
-                </p>
+              </p>
             </div>
-        </div>
-    </fieldset>
-</wicket:panel>
-</body>
+          </div>
+        </fieldset>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

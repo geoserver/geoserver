@@ -1,39 +1,52 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-	<wicket:panel>
-
-				<div>
-					<div class="gn-unordered-list-class plain">
-						<div class="gn-list-item-class choiceItem">
-							<input id="statistics" type="checkbox" wicket:id="statistics"/>
-							<label for="statistics">
-								<b>
-									<wicket:message key="statistics.enabled">Enable All Statistics</wicket:message>
-								</b>
-							</label>
-						</div>
-					</div>
-				</div>
-
-		<div>
-			<wicket:message key="updated">Updated at</wicket:message>
-			<span wicket:id="time"></span>
-		</div>
-		<table>
-			<thead>
-				<tr>
-					<th><span><wicket:message key="info">Info</wicket:message></span></th>
-					<th><span><wicket:message key="value">Value</wicket:message></span></th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr wicket:id="metrics">
-					<th scope="row"><span wicket:id="info"></span></th>
-					<td><span wicket:id="value"></span></td>
-				</tr>
-			</tbody>
-		</table>
-	</wicket:panel>
-</body>
+  <head/>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-RefreshedPanel">
+        <div>
+          <div class="gn-unordered-list-class plain">
+            <div class="gn-list-item-class choiceItem">
+              <input id="statistics" type="checkbox" wicket:id="statistics"/>
+              <label for="statistics">
+                <b>
+                  <wicket:message key="statistics.enabled">Enable All Statistics</wicket:message>
+                </b>
+              </label>
+            </div>
+          </div>
+        </div>
+        <div>
+          <wicket:message key="updated">Updated at</wicket:message>
+          <span wicket:id="time"/>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>
+                <span>
+                  <wicket:message key="info">Info</wicket:message>
+                </span>
+              </th>
+              <th>
+                <span>
+                  <wicket:message key="value">Value</wicket:message>
+                </span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr wicket:id="metrics">
+              <th scope="row">
+                <span wicket:id="info"/>
+              </th>
+              <td>
+                <span wicket:id="value"/>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

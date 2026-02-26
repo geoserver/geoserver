@@ -1,20 +1,26 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-  <fieldset>
-    <legend>
-      <span><wicket:message key="servicesSpan">Services</wicket:message></span>
-      <a href="#" wicket:id="servicesHelp" class="help-link"></a>
-    </legend>
-    <div class="gn-unordered-list-class">
-      <div class="gn-list-item-class nav-administer-service choiceItem" wicket:id="services">
-        <input type="checkbox" wicket:id="enabled" class="float-start me-3"/>
-        <a wicket:id="link">
-         <img src="#" wicket:id="link.icon"/><span wicket:id="link.label"></span>
-        </a>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-WorkspaceEditPage_ServicesPanel">
+        <fieldset>
+          <legend>
+            <span>
+              <wicket:message key="servicesSpan">Services</wicket:message>
+            </span>
+            <a href="#" wicket:id="servicesHelp" class="help-link"/>
+          </legend>
+          <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class nav-administer-service choiceItem" wicket:id="services">
+              <input type="checkbox" wicket:id="enabled" class="float-start me-3"/>
+              <a wicket:id="link">
+                <img src="#" wicket:id="link.icon"/>
+                <span wicket:id="link.label"/>
+              </a>
+            </div>
+          </div>
+        </fieldset>
       </div>
-    </div>
-  </fieldset>
-</wicket:panel>
-</body>
+    </wicket:panel>
+  </body>
 </html>

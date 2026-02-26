@@ -1,38 +1,22 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-    <div wicket:id="rootObjects">
-      <h3>
-      <wicket:message key="ConfirmRemovalPanel.aboutRemove">About to remove</wicket:message>: 
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-ConfirmGridSetRemovalPanel">
+        <div wicket:id="rootObjects">
+          <h3><wicket:message key="ConfirmRemovalPanel.aboutRemove">About to remove</wicket:message>: 
       
-      <span wicket:id="rootObjectNames"></span>
-      </h3>
-    </div>
-        
-    <div wicket:id="removedObjects">
-        <wicket:message
-            key="ConfirmRemovalPanel.removedObjects">The following cached Layers will be removed</wicket:message>:
-        <div class="gn-unordered-list-class plain-ul">
-            <div class="gn-list-item-class" wicket:id="workspacesRemoved"><wicket:message
-                key="ConfirmRemovalPanel.workspaces" />: <span wicket:id="workspaces"></span></div>
-            <div class="gn-list-item-class plain-li" wicket:id="storesRemoved"><wicket:message key="ConfirmRemovalPanel.stores"/>:
-                <span wicket:id="stores"></span></div>
-            <div class="gn-list-item-class" wicket:id="layersRemoved"><wicket:message key="ConfirmRemovalPanel.layers" />:
-                <span wicket:id="layers"></span></div>
-            <div class="gn-list-item-class" wicket:id="groupsRemoved"><wicket:message key="ConfirmRemovalPanel.groups" />:
-                <span wicket:id="groups"></span></div>
+      <span wicket:id="rootObjectNames"/></h3>
         </div>
-    </div>
-
-    <div wicket:id="modifiedObjects">
-        <wicket:message
-            key="ConfirmRemovalPanel.modifiedObjects">The following objects will be modified as a result</wicket:message>:
-        <div class="gn-unordered-list-class plain-ul">
-            <div class="gn-list-item-class" wicket:id="layersModified"><wicket:message key="ConfirmRemovalPanel.layers" />:
-                <span wicket:id="layers"></span>
-            </div>
-        </div>
-    </div>
-</wicket:panel>
-</body>
+        <div wicket:id="removedObjects"><wicket:message key="ConfirmRemovalPanel.removedObjects">The following cached Layers will be removed</wicket:message>:
+        <div class="gn-unordered-list-class plain-ul"><div class="gn-list-item-class" wicket:id="workspacesRemoved"><wicket:message key="ConfirmRemovalPanel.workspaces"/>: <span wicket:id="workspaces"/></div><div class="gn-list-item-class plain-li" wicket:id="storesRemoved"><wicket:message key="ConfirmRemovalPanel.stores"/>:
+                <span wicket:id="stores"/></div><div class="gn-list-item-class" wicket:id="layersRemoved"><wicket:message key="ConfirmRemovalPanel.layers"/>:
+                <span wicket:id="layers"/></div><div class="gn-list-item-class" wicket:id="groupsRemoved"><wicket:message key="ConfirmRemovalPanel.groups"/>:
+                <span wicket:id="groups"/></div></div></div>
+        <div wicket:id="modifiedObjects"><wicket:message key="ConfirmRemovalPanel.modifiedObjects">The following objects will be modified as a result</wicket:message>:
+        <div class="gn-unordered-list-class plain-ul"><div class="gn-list-item-class" wicket:id="layersModified"><wicket:message key="ConfirmRemovalPanel.layers"/>:
+                <span wicket:id="layers"/></div></div></div>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

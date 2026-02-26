@@ -1,62 +1,67 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-    <fieldset>
-        <legend><span><wicket:message key="OpenAISettings">OpenAI Settings</wicket:message></span></legend>
-        <div class="gn-unordered-list-class">
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-LlmSettingsPanel">
+        <fieldset>
+          <legend>
+            <span>
+              <wicket:message key="OpenAISettings">OpenAI Settings</wicket:message>
+            </span>
+          </legend>
+          <div class="gn-unordered-list-class">
             <div class="gn-list-item-class">
-                <label for="apiKey">
-                    <wicket:message key="openAIKey">OpenAI Key:</wicket:message>
-                </label>
-                <input class="w-sm" wicket:id="apiKey" id="apiKey" type="text"/>
+              <label for="apiKey">
+                <wicket:message key="openAIKey">OpenAI Key:</wicket:message>
+              </label>
+              <input class="w-sm" wicket:id="apiKey" id="apiKey" type="text"/>
             </div>
             <div class="gn-list-item-class">
-                <label for="expireAfterAccessMinutes">
-                    <wicket:message key="expireAfterAccessMinutes">Cache Expiry Time in Minutes:</wicket:message>
-                </label>
-                <input class="w-sm" wicket:id="expireAfterAccessMinutes" id="expireAfterAccessMinutes"
-                       type="text"/>
+              <label for="expireAfterAccessMinutes">
+                <wicket:message key="expireAfterAccessMinutes">Cache Expiry Time in Minutes:</wicket:message>
+              </label>
+              <input class="w-sm" wicket:id="expireAfterAccessMinutes" id="expireAfterAccessMinutes" type="text"/>
             </div>
             <div class="gn-list-item-class">
-                <label for="cacheSize">
-                    <wicket:message key="llmCacheSize">Maximum Cache Size:</wicket:message>
-                </label>
-                <input class="w-sm" wicket:id="cacheSize" id="cacheSize" type="text"/>
+              <label for="cacheSize">
+                <wicket:message key="llmCacheSize">Maximum Cache Size:</wicket:message>
+              </label>
+              <input class="w-sm" wicket:id="cacheSize" id="cacheSize" type="text"/>
             </div>
             <div class="gn-list-item-class">
-                <label for="returnSize">
-                    <wicket:message key="returnSize">Maximum number of features to return (Negative means no limit):
+              <label for="returnSize">
+                <wicket:message key="returnSize">Maximum number of features to return (Negative means no limit):
                     </wicket:message>
-                </label>
-                <input class="w-sm" wicket:id="returnSize" id="returnSize" type="text"/>
+              </label>
+              <input class="w-sm" wicket:id="returnSize" id="returnSize" type="text"/>
             </div>
             <div class="gn-list-item-class">
-                <label for="sampleData">
-                    <wicket:message key="sampleData">Number of Sample Records to Add to Context:</wicket:message>
-                </label>
-                <input class="w-sm" wicket:id="sampleData" id="sampleData" type="text"/>
+              <label for="sampleData">
+                <wicket:message key="sampleData">Number of Sample Records to Add to Context:</wicket:message>
+              </label>
+              <input class="w-sm" wicket:id="sampleData" id="sampleData" type="text"/>
             </div>
             <div class="gn-list-item-class">
-                <label for="chatModel">
-                    <wicket:message key="chatModel">Chat Model:</wicket:message>
-                </label>
-                <select class="field" wicket:id="chatModel" id="chatModel"/>
+              <label for="chatModel">
+                <wicket:message key="chatModel">Chat Model:</wicket:message>
+              </label>
+              <select class="field" wicket:id="chatModel" id="chatModel"/>
             </div>
             <div class="gn-list-item-class">
-                <label for="ecqlPrompt">
-                    <wicket:message key="ecqlPrompt">Prompt to Get ECQL:</wicket:message>
-                </label>
-                <input class="w-sm" wicket:id="ecqlPrompt" id="ecqlPrompt" type="text"/>
+              <label for="ecqlPrompt">
+                <wicket:message key="ecqlPrompt">Prompt to Get ECQL:</wicket:message>
+              </label>
+              <input class="w-sm" wicket:id="ecqlPrompt" id="ecqlPrompt" type="text"/>
             </div>
             <div class="gn-list-item-class">
-                <label for="layersPrompt">
-                    <wicket:message key="layersPrompt">Prompt to Get Layers:</wicket:message>
-                </label>
-                <input class="w-sm" wicket:id="layersPrompt" id="layersPrompt" type="text"/>
+              <label for="layersPrompt">
+                <wicket:message key="layersPrompt">Prompt to Get Layers:</wicket:message>
+              </label>
+              <input class="w-sm" wicket:id="layersPrompt" id="layersPrompt" type="text"/>
             </div>
-        </div>
-    </fieldset>
-</wicket:panel>
-</body>
+          </div>
+        </fieldset>
+      </div>
+    </wicket:panel>
+  </body>
 </html>
-

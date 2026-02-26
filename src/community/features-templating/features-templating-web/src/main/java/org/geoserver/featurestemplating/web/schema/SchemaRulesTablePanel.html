@@ -1,15 +1,24 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head>
-    <title><wicket:message key="schemaRules">Schema Rules</wicket:message></title>
-</head>
-<body>
-<wicket:panel>
-    <fieldset>
-        <div class="gn-unordered-list-class">
-            <div class="gn-list-item-class"> <a class="remove-link" href="#" wicket:id="removeSelected"><wicket:message key="removeSelected" /></a></div>
-        </div>
-    </fieldset>
-    <div id="table" wicket:id="table"></div>
-</wicket:panel>
-</body>
+  <head>
+    <title>
+      <wicket:message key="schemaRules">Schema Rules</wicket:message>
+    </title>
+  </head>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-SchemaRulesTablePanel">
+        <fieldset>
+          <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class">
+              <a class="remove-link" href="#" wicket:id="removeSelected">
+                <wicket:message key="removeSelected"/>
+              </a>
+            </div>
+          </div>
+        </fieldset>
+        <div id="table" wicket:id="table"/>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

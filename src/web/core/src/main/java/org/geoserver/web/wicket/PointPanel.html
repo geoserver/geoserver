@@ -1,22 +1,27 @@
-<html>
-<head>
-<title><wicket:message key="title">Point Panel</wicket:message></title>
-</head>
-<body>
-<wicket:panel>
-   <div class="gn-unordered-list-class clearfix">
-     <div class="gn-list-item-class float-start">
-      <label for="x" wicket:id="xL">x</label>
-      <input wicket:id="x" id="x" type="text" class="w-md"/>
+<?xml version="1.0"?>
+<html xmlns:wicket="http://wicket.apache.org/">
+  <head>
+    <title>
+      <wicket:message key="title">Point Panel</wicket:message>
+    </title>
+  </head>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-PointPanel">
+        <div class="gn-unordered-list-class clearfix">
+          <div class="gn-list-item-class float-start">
+            <label for="x" wicket:id="xL">x</label>
+            <input wicket:id="x" id="x" type="text" class="w-md"/>
+          </div>
+          <div class="gn-list-item-class float-start">
+         &#xA0;
      </div>
-     <div class="gn-list-item-class float-start">
-       &nbsp;
-     </div>
-     <div class="gn-list-item-class float-start">
-      <label for="y" wicket:id="yL">y</label>
-      <input wicket:id="y" id="y" type="text" class="w-md"/>
-     </div>
-    </div>
-</wicket:panel>
-</body>
+          <div class="gn-list-item-class float-start">
+            <label for="y" wicket:id="yL">y</label>
+            <input wicket:id="y" id="y" type="text" class="w-md"/>
+          </div>
+        </div>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

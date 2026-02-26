@@ -1,75 +1,100 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-  <wicket:panel>
-     <fieldset>
-      <legend>
-        <span><wicket:message key="GeoServerTileLayerEditor.title">Tile caching configuration</wicket:message></span>
-      </legend>
-      <div class="gn-unordered-list-class">
-        <div class="gn-list-item-class choiceItem">
-          <input id="createTileLayer" wicket:id="createTileLayer" type="checkbox"/>
-          <label for="createTileLayer" wicket:id="createTileLayerLabel">Create a cached Layer for this Layer/Group</label>
-        </div>
-        <div class="gn-list-item-class" wicket:id="container">
-          <div wicket:id="configs">
-            <div class="gn-unordered-list-class">
-              <div class="gn-list-item-class choiceItem">
-                <input id="tileCacheEnabled" wicket:id="enabled" type="checkbox"/>
-                <label for="enabled"><wicket:message key="enabled">Enable tile caching</wicket:message></label>
-              </div>
-              <div class="gn-list-item-class">
-	            <label for="blobStoreId"><wicket:message key="blobStoreId"></wicket:message></label>
-	            <select wicket:id="blobStoreId" id="blobStoreId"></select>
-	          </div>
-              <div class="gn-list-item-class">
-                <label><wicket:message key="metaTiling">Meta tiling factors</wicket:message></label>
-                <select class="select" id="metaTilingX" wicket:id="metaTilingX"></select>
-                <wicket:message key="metaTilingX">Tiles wide by </wicket:message>
-                <select class="select" id="metaTilingY" wicket:id="metaTilingY"></select>
-                <wicket:message key="metaTilingY">Tiles high</wicket:message>
-              </div>
-              <div class="gn-list-item-class">
-                <label><wicket:message key="gutter">Gutter size:</wicket:message></label>
-                <select class="select" id="gutter" wicket:id="gutter"></select>
-                <br>
-              </div>
-              <div class="gn-list-item-class choiceItem">
-                <span class="fieldname"><wicket:message key="cacheFormats">Cache formats:</wicket:message></span>
-                <div wicket:id="cacheFormatsGroup">
-                  <div wicket:id="cacheFormats" class="p-1">
-                    <input wicket:id="cacheFormatsOption" type="checkbox"/>
-                    <label for="cacheFormatsOption" wicket:id="name">[this is where name will be]</label>
-                  </div></div>
-              </div>
-              <div class="gn-list-item-class">
-                <label for="expireCache"><wicket:message key="expireCache">Expire server cache after n seconds (set to 0 to use source setting)</wicket:message></label>
-                <input id="tileExpireCache" wicket:id="expireCache" class="field w-md" type="text"/>
-              </div>
-              <div class="gn-list-item-class">
-                <label for="expireClients"><wicket:message key="expireClients">Expire client cache after n seconds (set to 0 to use server setting)</wicket:message></label>
-                <input id="tileExpireClients" wicket:id="expireClients" class="field w-md" type="text"/>
-              </div>
-              <div class="gn-list-item-class">
-                <label class="text"><wicket:message key="skipOnWarning">SkipOnWarning</wicket:message></label>
-                <span wicket:id="warningSkips"></span>
-              </div>
-              <div class="gn-list-item-class">
-                <label><wicket:message key="parameterFilters">ParameterFilters:</wicket:message></label>
-                <span wicket:id="parameterFilters"></span>
-              </div>
-              <div class="gn-list-item-class">
-                <label><wicket:message key="cachedGridsets">Cached Grid Sets:</wicket:message></label>
-                <span wicket:id="cachedGridsets"></span>
+  <head/>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-GeoServerTileLayerEditor">
+        <fieldset>
+          <legend>
+            <span>
+              <wicket:message key="GeoServerTileLayerEditor.title">Tile caching configuration</wicket:message>
+            </span>
+          </legend>
+          <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class choiceItem">
+              <input id="createTileLayer" wicket:id="createTileLayer" type="checkbox"/>
+              <label for="createTileLayer" wicket:id="createTileLayerLabel">Create a cached Layer for this Layer/Group</label>
+            </div>
+            <div class="gn-list-item-class" wicket:id="container">
+              <div wicket:id="configs">
+                <div class="gn-unordered-list-class">
+                  <div class="gn-list-item-class choiceItem">
+                    <input id="tileCacheEnabled" wicket:id="enabled" type="checkbox"/>
+                    <label for="enabled">
+                      <wicket:message key="enabled">Enable tile caching</wicket:message>
+                    </label>
+                  </div>
+                  <div class="gn-list-item-class">
+                    <label for="blobStoreId">
+                      <wicket:message key="blobStoreId"/>
+                    </label>
+                    <select wicket:id="blobStoreId" id="blobStoreId"/>
+                  </div>
+                  <div class="gn-list-item-class">
+                    <label>
+                      <wicket:message key="metaTiling">Meta tiling factors</wicket:message>
+                    </label>
+                    <select class="select" id="metaTilingX" wicket:id="metaTilingX"/>
+                    <wicket:message key="metaTilingX">Tiles wide by </wicket:message>
+                    <select class="select" id="metaTilingY" wicket:id="metaTilingY"/>
+                    <wicket:message key="metaTilingY">Tiles high</wicket:message>
+                  </div>
+                  <div class="gn-list-item-class">
+                    <label>
+                      <wicket:message key="gutter">Gutter size:</wicket:message>
+                    </label>
+                    <select class="select" id="gutter" wicket:id="gutter"/>
+                    <br/>
+                  </div>
+                  <div class="gn-list-item-class choiceItem">
+                    <span class="fieldname">
+                      <wicket:message key="cacheFormats">Cache formats:</wicket:message>
+                    </span>
+                    <div wicket:id="cacheFormatsGroup">
+                      <div wicket:id="cacheFormats" class="p-1">
+                        <input wicket:id="cacheFormatsOption" type="checkbox"/>
+                        <label for="cacheFormatsOption" wicket:id="name">[this is where name will be]</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="gn-list-item-class">
+                    <label for="expireCache">
+                      <wicket:message key="expireCache">Expire server cache after n seconds (set to 0 to use source setting)</wicket:message>
+                    </label>
+                    <input id="tileExpireCache" wicket:id="expireCache" class="field w-md" type="text"/>
+                  </div>
+                  <div class="gn-list-item-class">
+                    <label for="expireClients">
+                      <wicket:message key="expireClients">Expire client cache after n seconds (set to 0 to use server setting)</wicket:message>
+                    </label>
+                    <input id="tileExpireClients" wicket:id="expireClients" class="field w-md" type="text"/>
+                  </div>
+                  <div class="gn-list-item-class">
+                    <label class="text">
+                      <wicket:message key="skipOnWarning">SkipOnWarning</wicket:message>
+                    </label>
+                    <span wicket:id="warningSkips"/>
+                  </div>
+                  <div class="gn-list-item-class">
+                    <label>
+                      <wicket:message key="parameterFilters">ParameterFilters:</wicket:message>
+                    </label>
+                    <span wicket:id="parameterFilters"/>
+                  </div>
+                  <div class="gn-list-item-class">
+                    <label>
+                      <wicket:message key="cachedGridsets">Cached Grid Sets:</wicket:message>
+                    </label>
+                    <span wicket:id="cachedGridsets"/>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </fieldset>
+        <!-- the confirm removal of existing tile layer and its associated cache dialog -->
+        <div wicket:id="confirmRemovalDialog"/>
       </div>
-    </fieldset>
-
-    <!-- the confirm removal of existing tile layer and its associated cache dialog -->
-    <div wicket:id="confirmRemovalDialog"></div>
-  </wicket:panel>
-</body>
+    </wicket:panel>
+  </body>
 </html>

@@ -1,44 +1,55 @@
-<html>
-<body>
-<wicket:panel>
-  <fieldset>
-    <div wicket:id="panelTitle"/>
-    <div class="gn-unordered-list-class">
-      <div class="gn-list-item-class">
-        <div class="gn-unordered-list-class action-group">
-          <div class="gn-list-item-class"> <a class="add-link" wicket:id="addLayer"><wicket:message key="addLayer">Add Layer...</wicket:message></a></div>
-          <div class="gn-list-item-class"> <a class="add-link" wicket:id="addLayerGroup"><wicket:message key="addLayerGroup">Add Layer Group...</wicket:message></a></div>
-          <div class="gn-list-item-class">
-            <a class="add-link" wicket:id="addStyleGroup"><wicket:message key="addStyleGroup">Add Style Group...</wicket:message></a>
-            <a href="#" wicket:id="styleGroupHelp" class="help-link"></a>
+<?xml version="1.0"?>
+<html xmlns:wicket="http://wicket.apache.org/">
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-LayerGroupEntryPanel">
+        <fieldset>
+          <div wicket:id="panelTitle"/>
+          <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class">
+              <div class="gn-unordered-list-class action-group">
+                <div class="gn-list-item-class">
+                  <a class="add-link" wicket:id="addLayer">
+                    <wicket:message key="addLayer">Add Layer...</wicket:message>
+                  </a>
+                </div>
+                <div class="gn-list-item-class">
+                  <a class="add-link" wicket:id="addLayerGroup">
+                    <wicket:message key="addLayerGroup">Add Layer Group...</wicket:message>
+                  </a>
+                </div>
+                <div class="gn-list-item-class">
+                  <a class="add-link" wicket:id="addStyleGroup">
+                    <wicket:message key="addStyleGroup">Add Style Group...</wicket:message>
+                  </a>
+                  <a href="#" wicket:id="styleGroupHelp" class="help-link"/>
+                </div>
+              </div>
+            </div>
+            <div class="gn-list-item-class">
+              <div wicket:id="layers"/>
+            </div>
           </div>
-        </div>
+        </fieldset>
+        <div wicket:id="popup"/>
+        <div wicket:id="dialog"/>
       </div>
-      <div class="gn-list-item-class">
-        <div wicket:id="layers"></div>
-      </div>
-    </div>
-  </fieldset>
-  <div wicket:id="popup"></div>
-  <div wicket:id="dialog"></div>
-</wicket:panel>
-
-<wicket:fragment wicket:id="defaultStyle">
-  <input type="checkbox" wicket:id="checkbox"/>
-</wicket:fragment>
-
-<wicket:fragment wicket:id="bigLegend">
-  <legend>
-    <span><wicket:message key="layers">Layers</wicket:message></span>
-    <a href="#" wicket:id="layersHelp" class="help-link"></a>
-  </legend>
-</wicket:fragment>
-
-<wicket:fragment wicket:id="smallLegend">
-  <legend>
-    <wicket:message key="layers">Layers</wicket:message>
-  </legend>
-</wicket:fragment>
-</body>
+    </wicket:panel>
+    <wicket:fragment wicket:id="defaultStyle">
+      <input type="checkbox" wicket:id="checkbox"/>
+    </wicket:fragment>
+    <wicket:fragment wicket:id="bigLegend">
+      <legend>
+        <span>
+          <wicket:message key="layers">Layers</wicket:message>
+        </span>
+        <a href="#" wicket:id="layersHelp" class="help-link"/>
+      </legend>
+    </wicket:fragment>
+    <wicket:fragment wicket:id="smallLegend">
+      <legend>
+        <wicket:message key="layers">Layers</wicket:message>
+      </legend>
+    </wicket:fragment>
+  </body>
 </html>
-

@@ -1,42 +1,63 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/" >
-<body>
-	<wicket:panel>
-		<fieldset>
-		<div class="gn-unordered-list-class">
-			<div class="gn-list-item-class">
-			    <legend><span><wicket:message key="storage"/></span></legend>
-
-				<label for="bucket"><wicket:message key="bucket"/></label>
-				<input id="bucket" wicket:id="bucket" type="text" />
-				
-				<label for="prefix"><wicket:message key="prefix"/></label>
-				<input id="prefix" wicket:id="prefix" type="text" />
-			</div>
-			<div class="gn-list-item-class">
-			    <legend><span><wicket:message key="authentication"/></span></legend>
-
-				<label for="useDefaultCredentialsChain"><wicket:message key="useDefaultCredentialsChain"/></label>
-				<input id="useDefaultCredentialsChain" wicket:id="useDefaultCredentialsChain" type="checkbox"/>
-	
-				<label for="apiKey"><wicket:message key="apiKey"/></label>
-				<input id="apiKey" wicket:id="apiKey" type="password" />
-				</div>
-			<div class="gn-list-item-class">
-			    <legend><span><wicket:message key="advanced"/></span></legend>
-
-				<label for="projectId"><wicket:message key="projectId"/></label>
-				<input id="projectId" wicket:id="projectId" type="text" />
-	
-				<label for="quotaProjectId"><wicket:message key="quotaProjectId"/></label>
-				<input id="quotaProjectId" wicket:id="quotaProjectId" type="text" />
-	
-				<label for="endpointUrl"><wicket:message key="endpointUrl"/></label>
-				<input id="endpointUrl" wicket:id="endpointUrl" type="text"  />
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-GcsBlobStorePanel">
+        <fieldset>
+          <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class">
+              <legend>
+                <span>
+                  <wicket:message key="storage"></wicket:message>
+                </span>
+              </legend>
+              <label for="bucket">
+                <wicket:message key="bucket"></wicket:message>
+              </label>
+              <input id="bucket" wicket:id="bucket" type="text" />
+              <label for="prefix">
+                <wicket:message key="prefix"></wicket:message>
+              </label>
+              <input id="prefix" wicket:id="prefix" type="text" />
             </div>
-        </div>
-		</fieldset>
-	</wicket:panel>
-</body>
+            <div class="gn-list-item-class">
+              <legend>
+                <span>
+                  <wicket:message key="authentication"></wicket:message>
+                </span>
+              </legend>
+              <label for="useDefaultCredentialsChain">
+                <wicket:message key="useDefaultCredentialsChain"></wicket:message>
+              </label>
+              <input id="useDefaultCredentialsChain" wicket:id="useDefaultCredentialsChain" type="checkbox" />
+              <label for="apiKey">
+                <wicket:message key="apiKey"></wicket:message>
+              </label>
+              <input id="apiKey" wicket:id="apiKey" type="password" />
+            </div>
+            <div class="gn-list-item-class">
+              <legend>
+                <span>
+                  <wicket:message key="advanced"></wicket:message>
+                </span>
+              </legend>
+              <label for="projectId">
+                <wicket:message key="projectId"></wicket:message>
+              </label>
+              <input id="projectId" wicket:id="projectId" type="text" />
+              <label for="quotaProjectId">
+                <wicket:message key="quotaProjectId"></wicket:message>
+              </label>
+              <input id="quotaProjectId" wicket:id="quotaProjectId" type="text" />
+              <label for="endpointUrl">
+                <wicket:message key="endpointUrl"></wicket:message>
+              </label>
+              <input id="endpointUrl" wicket:id="endpointUrl" type="text" />
+            </div>
+          </div>
+        </fieldset>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

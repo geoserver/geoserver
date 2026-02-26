@@ -1,25 +1,32 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head>
-    <title><wicket:message key="templateRules">Template Rules</wicket:message></title>
-</head>
-<body>
-<wicket:panel>
-    <fieldset>
-        <div class="gn-unordered-list-class">
-            <div class="gn-list-item-class"> <a class="remove-link" href="#" wicket:id="removeSelected"><wicket:message key="removeSelected" /></a></div>
-        </div>
-    </fieldset>
-    <div id="table" wicket:id="table"></div>
-
-    <!--wicket:fragment wicket:id="header">
+  <head>
+    <title>
+      <wicket:message key="templateRules">Template Rules</wicket:message>
+    </title>
+  </head>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-TemplateRulesTablePanel">
+        <fieldset>
+          <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class">
+              <a class="remove-link" href="#" wicket:id="removeSelected">
+                <wicket:message key="removeSelected"/>
+              </a>
+            </div>
+          </div>
+        </fieldset>
+        <div id="table" wicket:id="table"/>
+        <!--wicket:fragment wicket:id="header">
         <div class="gn-unordered-list-class">
             <div class="gn-list-item-class"> <a class="add-link" href="#" wicket:id="addNew"><wicket:message key="addNew" /></a></div>
             <div class="gn-list-item-class"> <a class="remove-link" href="#" wicket:id="removeSelected"><wicket:message key="removeSelected" /></a></div>
         </div>
     </wicket:fragment-->
-
-    <!-- the cascade delete confirmation dialog -->
-    <!--div wicket:id="dialog"></div-->
-</wicket:panel>
-</body>
+        <!-- the cascade delete confirmation dialog -->
+        <!--div wicket:id="dialog"></div-->
+      </div>
+    </wicket:panel>
+  </body>
 </html>

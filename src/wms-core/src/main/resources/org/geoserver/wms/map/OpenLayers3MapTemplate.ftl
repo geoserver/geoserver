@@ -2,8 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="${relBaseUrl}/openlayers3/ol.css" type="text/css">
-    <link rel="stylesheet" href="${relBaseUrl}/openlayers3/layout.css" type="text/css">
+    <link rel="stylesheet" href="${relBaseUrl}/openlayers3/ol.css" type="text/css"/>
+    <link rel="stylesheet" href="${relBaseUrl}/openlayers3/layout.css" type="text/css"/>
     <script src="${relBaseUrl}/openlayers3/ol.js" type="text/javascript"></script>
     <script src="${relBaseUrl}/webresources/wms/OpenLayers3Map.js" type="text/javascript"></script>
     <title>OpenLayers map preview</title>

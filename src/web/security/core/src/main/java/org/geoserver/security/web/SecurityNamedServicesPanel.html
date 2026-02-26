@@ -1,26 +1,25 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-  <div wicket:id="feedback">
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-SecurityNamedServicesPanel">
+        <div wicket:id="feedback">
   </div>
-
-  <div class="gn-unordered-list-class action-group">
-    <div class="gn-list-item-class">
-      <a class="add-link" wicket:id="add">
-        <wicket:message key="addNew"></wicket:message>
-      </a>
-    </div>
-    <div class="gn-list-item-class">
-      <a class="remove-link" wicket:id="remove">
-        <wicket:message key="removeSelected"></wicket:message>
-      </a>
-    </div>
-  </div>
-
-  <div wicket:id="table"></div>
-
-  <div wicket:id="dialog"></div>
-
-</wicket:panel>
-</body>
+        <div class="gn-unordered-list-class action-group">
+          <div class="gn-list-item-class">
+            <a class="add-link" wicket:id="add">
+              <wicket:message key="addNew"/>
+            </a>
+          </div>
+          <div class="gn-list-item-class">
+            <a class="remove-link" wicket:id="remove">
+              <wicket:message key="removeSelected"/>
+            </a>
+          </div>
+        </div>
+        <div wicket:id="table"/>
+        <div wicket:id="dialog"/>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

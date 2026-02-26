@@ -1,27 +1,34 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<wicket:panel>
-<div class="gn-unordered-list-class">
-  <div class="gn-list-item-class">
-    <label for="srsNameStyle"><wicket:message key="WFSAdminPage$GMLPanel.srsStyle">SRS Style</wicket:message></label>
-    <select class="select" wicket:id="srsNameStyle"></select>
-  </div>
-    <div class="gn-list-item-class">
-        <div class="choiceItem">
-            <input type="checkbox" wicket:id="overrideGMLAttributes"/>
-            <label for="overrideAbstractFeatureTypeAttributes">
-                <wicket:message key="WFSAdminPage$GMLPanel.overrideGMLAttributes">Override GML Attributes</wicket:message>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-WFSAdminPage_GMLPanel">
+        <div class="gn-unordered-list-class">
+          <div class="gn-list-item-class">
+            <label for="srsNameStyle">
+              <wicket:message key="WFSAdminPage$GMLPanel.srsStyle">SRS Style</wicket:message>
             </label>
+            <select class="select" wicket:id="srsNameStyle"/>
+          </div>
+          <div class="gn-list-item-class">
+            <div class="choiceItem">
+              <input type="checkbox" wicket:id="overrideGMLAttributes"/>
+              <label for="overrideAbstractFeatureTypeAttributes">
+                <wicket:message key="WFSAdminPage$GMLPanel.overrideGMLAttributes">Override GML Attributes</wicket:message>
+              </label>
+            </div>
+          </div>
+          <div class="gn-list-item-class">
+            <div class="choiceItem">
+              <input wicket:id="forceGmlMimeType" type="checkbox"/>
+              <label wicket:id="forceGmlMimeTypeLabel"/>
+            </div>
+          </div>
+          <div class="gn-list-item-class">
+            <select class="select" wicket:id="mimeTypeToForce"/>
+          </div>
         </div>
-    </div>
-    <div class="gn-list-item-class">
-        <div class="choiceItem">
-            <input wicket:id="forceGmlMimeType" type="checkbox"/>
-            <label wicket:id="forceGmlMimeTypeLabel"></label>
-        </div>
-    </div>
-    <div class="gn-list-item-class">
-        <select class="select" wicket:id="mimeTypeToForce"></select>
-    </div>
-</div>
-</wicket:panel>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

@@ -1,26 +1,28 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-    <div wicket:id="importDialog"></div>
-
-            <fieldset>
-                <legend>
-                    <span><wicket:message key="header"></wicket:message></span>
-                </legend>
-                <div class="gn-unordered-list-class">
-                    <div class="gn-list-item-class">
-                        <select wicket:id="geonetworkName" /> <input
-							wicket:id="textfield" class="w-lg" type="text" /> <a href="#"
-							wicket:id="link"> <wicket:message key="actionImport"></wicket:message>
-						</a>
-                        <span wicket:id="importFeedback"></span>
-                    </div>
-                </div>
-            </fieldset>
-
-</wicket:panel>
-</body>
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-ImportGeonetworkPanel">
+        <div wicket:id="importDialog"></div>
+        <fieldset>
+          <legend>
+            <span>
+              <wicket:message key="header"></wicket:message>
+            </span>
+          </legend>
+          <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class">
+              <select wicket:id="geonetworkName"></select>
+              <input wicket:id="textfield" class="w-lg" type="text" />
+              <a href="#" wicket:id="link">
+                <wicket:message key="actionImport"></wicket:message>
+              </a>
+              <span wicket:id="importFeedback"></span>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

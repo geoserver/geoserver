@@ -1,50 +1,55 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-  <div class="group">
-   <div class="gn-unordered-list-class">
-    <div class="gn-list-item-class">
-      <label for="host"><wicket:message key="host">host</wicket:message> *</label> 
-      <input type="text" wicket:id="host" size="32" />
-    </div>
-    <div class="gn-list-item-class">
-      <label for="port"><wicket:message key="port">port</wicket:message> *</label> 
-      <input type="text" wicket:id="port" size="6" />
-    </div>
-   </div>
-  </div>
-
-  <div class="group">
-   <div class="gn-unordered-list-class">
-    <div class="gn-list-item-class">
-      <label for="database"><wicket:message key="database">database</wicket:message> *</label>
-      <input type="text" wicket:id="database" size="32" />
-    </div>
-    <div class="gn-list-item-class">
-      <label for="schema"><wicket:message key="schema">schema</wicket:message></label>
-      <input type="text" wicket:id="schema" size="32" />
-    </div>
-   </div>
-  </div>
-  <div class="group">
-   <div class="gn-unordered-list-class">
-    <div class="gn-list-item-class">
-      <label for="username"><wicket:message key="username">user</wicket:message> *</label> 
-      <input type="text" wicket:id="username" size="32" />
-    </div>
-    <div class="gn-list-item-class">
-      <label for="password"><wicket:message key="password">password</wicket:message></label> 
-      <input type="password" wicket:id="password" size="32" />
-    </div>
-   </div>
-  </div>
-  
-  <a href="#" wicket:id="connectionPoolLink"><wicket:message key="connectionPooling">conn pool</wicket:message></a>
-  
-  <div wicket:id="connPoolPanelContainer">
-    <div class="gn-unordered-list-class" wicket:id="connPoolPanel"></div>
-  </div>
-
-</wicket:panel>
-</body>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-BasicDbParamPanel">
+        <div class="group">
+          <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class">
+              <label for="host"><wicket:message key="host">host</wicket:message> *</label>
+              <input type="text" wicket:id="host" size="32"/>
+            </div>
+            <div class="gn-list-item-class">
+              <label for="port"><wicket:message key="port">port</wicket:message> *</label>
+              <input type="text" wicket:id="port" size="6"/>
+            </div>
+          </div>
+        </div>
+        <div class="group">
+          <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class">
+              <label for="database"><wicket:message key="database">database</wicket:message> *</label>
+              <input type="text" wicket:id="database" size="32"/>
+            </div>
+            <div class="gn-list-item-class">
+              <label for="schema">
+                <wicket:message key="schema">schema</wicket:message>
+              </label>
+              <input type="text" wicket:id="schema" size="32"/>
+            </div>
+          </div>
+        </div>
+        <div class="group">
+          <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class">
+              <label for="username"><wicket:message key="username">user</wicket:message> *</label>
+              <input type="text" wicket:id="username" size="32"/>
+            </div>
+            <div class="gn-list-item-class">
+              <label for="password">
+                <wicket:message key="password">password</wicket:message>
+              </label>
+              <input type="password" wicket:id="password" size="32"/>
+            </div>
+          </div>
+        </div>
+        <a href="#" wicket:id="connectionPoolLink">
+          <wicket:message key="connectionPooling">conn pool</wicket:message>
+        </a>
+        <div wicket:id="connPoolPanelContainer">
+          <div class="gn-unordered-list-class" wicket:id="connPoolPanel"/>
+        </div>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

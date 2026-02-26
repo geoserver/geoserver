@@ -1,52 +1,69 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head>
+  <head>
     <title>
-        <wicket:message key="title">Schema data panel</wicket:message>
+      <wicket:message key="title">Schema data panel</wicket:message>
     </title>
-</head>
-<body>
-<wicket:panel>
-    <div class="clearfix pt-4">
-        <fieldset class="float-start features-templating-info-fieldset">
+  </head>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-SchemaInfoDataPanel">
+        <div class="clearfix pt-4">
+          <fieldset class="float-start features-templating-info-fieldset">
             <legend>
-                <span><wicket:message key="schemaInfoData">Schema Info</wicket:message></span>
+              <span>
+                <wicket:message key="schemaInfoData">Schema Info</wicket:message>
+              </span>
             </legend>
             <div class="gn-unordered-list-class">
-                <div class="gn-list-item-class">
-                    <label for="schemaName"><wicket:message key="schemaName"></wicket:message></label>
-                    <input id="schemaName" wicket:id="schemaName" type="text" />
-                </div>
-                <div class="gn-list-item-class">
-                    <label for="extension"><wicket:message key="extension"></wicket:message></label>
-                    <select wicket:id="extension" id="extension" />
-                </div>
-                <div class="gn-list-item-class">
-                    <label for="workspace"><wicket:message key="workspace"></wicket:message></label>
-                    <select wicket:id="workspace" id="workspace" />
-                </div>
-
-                <div class="gn-list-item-class">
-                    <label for="featureTypeInfo"><wicket:message key="featureTypeInfo"></wicket:message></label>
-                    <select wicket:id="featureTypeInfo" id="featureTypeInfo" />
-                </div>
-
-                <div class="pt-4">
-                    <fieldset class="mb-0">
-                        <legend>
-                            <span><wicket:message key="schemaContentSpan">Schema definition</wicket:message></span>
-                        </legend>
-                        <div class="gn-unordered-list-class">
-                            <div class="gn-list-item-class">
-                                <label for="filename"><wicket:message key="schemaFile">Schema file</wicket:message></label>
-                                <input type="file" id="filename" wicket:id="filename"/>
-                                <a href="#" wicket:id="upload"><wicket:message key="upload">Upload</wicket:message></a>
-                            </div>
-                        </div>
-                    </fieldset>
-                </div>
+              <div class="gn-list-item-class">
+                <label for="schemaName">
+                  <wicket:message key="schemaName"/>
+                </label>
+                <input id="schemaName" wicket:id="schemaName" type="text"/>
+              </div>
+              <div class="gn-list-item-class">
+                <label for="extension">
+                  <wicket:message key="extension"/>
+                </label>
+                <select wicket:id="extension" id="extension"/>
+              </div>
+              <div class="gn-list-item-class">
+                <label for="workspace">
+                  <wicket:message key="workspace"/>
+                </label>
+                <select wicket:id="workspace" id="workspace"/>
+              </div>
+              <div class="gn-list-item-class">
+                <label for="featureTypeInfo">
+                  <wicket:message key="featureTypeInfo"/>
+                </label>
+                <select wicket:id="featureTypeInfo" id="featureTypeInfo"/>
+              </div>
+              <div class="pt-4">
+                <fieldset class="mb-0">
+                  <legend>
+                    <span>
+                      <wicket:message key="schemaContentSpan">Schema definition</wicket:message>
+                    </span>
+                  </legend>
+                  <div class="gn-unordered-list-class">
+                    <div class="gn-list-item-class">
+                      <label for="filename">
+                        <wicket:message key="schemaFile">Schema file</wicket:message>
+                      </label>
+                      <input type="file" id="filename" wicket:id="filename"/>
+                      <a href="#" wicket:id="upload">
+                        <wicket:message key="upload">Upload</wicket:message>
+                      </a>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
             </div>
-        </fieldset>
-    </div>
-</wicket:panel>
-</body>
+          </fieldset>
+        </div>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

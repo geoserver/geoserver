@@ -1,15 +1,23 @@
-<wicket:panel>
-    <!-- Keep the top label if needed elsewhere -->
-    <label wicket:for="paramValue"><span wicket:id="paramName">bar</span></label>
-
-    <div wicket:id="group" class="radio-group-param">
-        <div class="gn-unordered-list-class">
+<?xml version="1.0"?>
+<html xmlns:wicket="http://wicket.apache.org/">
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-RadioGroupParamPanel">
+        <!-- Keep the top label if needed elsewhere -->
+        <label wicket:for="paramValue">
+          <span wicket:id="paramName">bar</span>
+        </label>
+        <div wicket:id="group" class="radio-group-param">
+          <div class="gn-unordered-list-class">
             <div class="gn-list-item-class" wicket:id="choices">
-                <input type="radio" wicket:id="paramValue"/>
-                <label wicket:for="paramValue">
-                    <span wicket:id="label">paramValue</span>
-                </label>
+              <input type="radio" wicket:id="paramValue"/>
+              <label wicket:for="paramValue">
+                <span wicket:id="label">paramValue</span>
+              </label>
             </div>
+          </div>
         </div>
-    </div>
-</wicket:panel>
+      </div>
+    </wicket:panel>
+  </body>
+</html>

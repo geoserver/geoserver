@@ -1,28 +1,39 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-<form name="theForm">
-  <wicket:panel>
-
-    <fieldset>
-      <legend><span><wicket:message key="dggsSettings">DGGS Settings</wicket:message></span></legend>
-      <div class="gn-unordered-list-class">
-        <div class="gn-list-item-class">
-          <label for="minResolution"><wicket:message key="minResolution">minResolution</wicket:message></label>
-          <input id="minResolution" type="text" wicket:id="minResolution"></input>
+  <head/>
+  <body>
+    <form name="theForm">
+      <wicket:panel>
+        <div class="gs-panel-DGGSConfigPanel">
+          <fieldset>
+            <legend>
+              <span>
+                <wicket:message key="dggsSettings">DGGS Settings</wicket:message>
+              </span>
+            </legend>
+            <div class="gn-unordered-list-class">
+              <div class="gn-list-item-class">
+                <label for="minResolution">
+                  <wicket:message key="minResolution">minResolution</wicket:message>
+                </label>
+                <input id="minResolution" type="text" wicket:id="minResolution"/>
+              </div>
+              <div class="gn-list-item-class">
+                <label for="maxResolution">
+                  <wicket:message key="maxResolution">maxResolution</wicket:message>
+                </label>
+                <input id="maxResolution" type="text" wicket:id="maxResolution"/>
+              </div>
+              <div class="gn-list-item-class">
+                <label for="resolutionOffset">
+                  <wicket:message key="resolutionOffset">resOffset</wicket:message>
+                </label>
+                <input id="resolutionOffset" type="text" wicket:id="resolutionOffset"/>
+              </div>
+            </div>
+          </fieldset>
         </div>
-        <div class="gn-list-item-class">
-          <label for="maxResolution"><wicket:message key="maxResolution">maxResolution</wicket:message></label>
-          <input id="maxResolution" type="text" wicket:id="maxResolution"></input>
-        </div>
-        <div class="gn-list-item-class">
-          <label for="resolutionOffset"><wicket:message key="resolutionOffset">resOffset</wicket:message></label>
-          <input id="resolutionOffset" type="text" wicket:id="resolutionOffset"></input>
-        </div>
-      </div>
-    </fieldset>
-
-  </wicket:panel>
-</form>
-</body>
+      </wicket:panel>
+    </form>
+  </body>
 </html>

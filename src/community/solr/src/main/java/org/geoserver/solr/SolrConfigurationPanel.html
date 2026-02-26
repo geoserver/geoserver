@@ -1,17 +1,19 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-	<wicket:panel>
-		<div wicket:id="modal"></div>
-		<div wicket:id="solrPanel"></div>
-
-		<wicket:fragment wicket:id="solrPanelFragment">
-			<div class="h-sm">
-				<a href="#" wicket:id="edit"> <wicket:message key="edit">Configure SOLR fields</wicket:message>
-				</a>
-			</div>
-		</wicket:fragment>
-		
-	</wicket:panel>
-</body>
+  <head/>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-SolrConfigurationPanel">
+        <div wicket:id="modal"/>
+        <div wicket:id="solrPanel"/>
+        <wicket:fragment wicket:id="solrPanelFragment">
+          <div class="h-sm">
+            <a href="#" wicket:id="edit">
+              <wicket:message key="edit">Configure SOLR fields</wicket:message>
+            </a>
+          </div>
+        </wicket:fragment>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

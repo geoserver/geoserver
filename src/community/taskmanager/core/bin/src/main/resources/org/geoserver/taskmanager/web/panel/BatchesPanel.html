@@ -1,24 +1,34 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:wicket="http://wicket.apache.org/">
-<body>
-	<wicket:panel>
-		<div wicket:id="dialog"></div>
-		
-		<wicket:fragment wicket:id="iconFragment">
-	        <img wicket:id="enabledIcon" />
-	    </wicket:fragment>
-
-		<div class="gn-unordered-list-class links-above-table">
-			<div class="gn-list-item-class"> <a class="add-link" href="#" wicket:id="addNew"><wicket:message key="addNew" /></a></div>
-			<div class="gn-list-item-class"> <a class="remove-link" href="#" wicket:id="removeSelected"><wicket:message key="removeSelected" /></a></div>
-			<div class="gn-list-item-class"> <a class="refresh-link" href="#" wicket:id="refresh"><wicket:message key="refresh" /></a></div>
-		</div>
-
-		<form wicket:id="form">
-			<div wicket:id="batchesPanel"></div>
-		</form>
-	</wicket:panel>
-</body>
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-BatchesPanel">
+        <div wicket:id="dialog"></div>
+        <wicket:fragment wicket:id="iconFragment">
+          <img wicket:id="enabledIcon" />
+        </wicket:fragment>
+        <div class="gn-unordered-list-class links-above-table">
+          <div class="gn-list-item-class">
+            <a class="add-link" href="#" wicket:id="addNew">
+              <wicket:message key="addNew"></wicket:message>
+            </a>
+          </div>
+          <div class="gn-list-item-class">
+            <a class="remove-link" href="#" wicket:id="removeSelected">
+              <wicket:message key="removeSelected"></wicket:message>
+            </a>
+          </div>
+          <div class="gn-list-item-class">
+            <a class="refresh-link" href="#" wicket:id="refresh">
+              <wicket:message key="refresh"></wicket:message>
+            </a>
+          </div>
+        </div>
+        <form wicket:id="form">
+          <div wicket:id="batchesPanel"></div>
+        </form>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

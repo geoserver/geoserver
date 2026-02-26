@@ -1,51 +1,54 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">	
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/" >
-<body>
-<wicket:panel>
-	<wicket:extend>
-
-		<form wicket:id="selector">
-			<wicket:message key="typeOfBlobStore"/> <select wicket:id="typeOfBlobStore"></select>
-		</form>
-
-		<div wicket:id="blobConfigContainer">
-
-			<form wicket:id="blobStoreForm">
-				<wicket:message key="blobConfig"/>
-
-				<fieldset>
-					<div class="choiceItem">
-						<label for="name"><wicket:message key="name"/></label>
-						<input id="name" wicket:id="name" type="text" />
-					</div>
-					<div class="choiceItem">
-						<label for="enabled"><wicket:message key="enabled"/></label>
-						<input id="enabled" wicket:id="enabled" type="checkbox" />
-					</div>
-					<div class="choiceItem">
-						<label for="default"><wicket:message key="default"/></label>
-						<input id="default" wicket:id="default" type="checkbox" />
-					</div>
-
-					<span wicket:id="blobSpecificPanel"></span>
-
-					<div class="button-group toolbar-sticky selfclear">
-						<a href="#" class="form-button-save button primary" wicket:id="save"><wicket:message key="save"/></a>
-						<a href="#" class="form-button-cancel button outline-danger" wicket:id="cancel"><wicket:message key="cancel"/></a>
-					</div>
-
-					<label><wicket:message key="required"/></label>
-
-				</fieldset>
-			</form>
-
-		</div>
-
-		<div wicket:id="confirmDisableDialog"></div>
-	</wicket:extend>
-  
-  
-</wicket:panel>
-</body>
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-BlobStorePage">
+        <wicket:extend>
+          <form wicket:id="selector">
+            <wicket:message key="typeOfBlobStore"></wicket:message>
+            <select wicket:id="typeOfBlobStore"></select>
+          </form>
+          <div wicket:id="blobConfigContainer">
+            <form wicket:id="blobStoreForm">
+              <wicket:message key="blobConfig"></wicket:message>
+              <fieldset>
+                <div class="choiceItem">
+                  <label for="name">
+                    <wicket:message key="name"></wicket:message>
+                  </label>
+                  <input id="name" wicket:id="name" type="text" />
+                </div>
+                <div class="choiceItem">
+                  <label for="enabled">
+                    <wicket:message key="enabled"></wicket:message>
+                  </label>
+                  <input id="enabled" wicket:id="enabled" type="checkbox" />
+                </div>
+                <div class="choiceItem">
+                  <label for="default">
+                    <wicket:message key="default"></wicket:message>
+                  </label>
+                  <input id="default" wicket:id="default" type="checkbox" />
+                </div>
+                <span wicket:id="blobSpecificPanel"></span>
+                <div class="button-group toolbar-sticky selfclear">
+                  <a href="#" class="form-button-save button primary" wicket:id="save">
+                    <wicket:message key="save"></wicket:message>
+                  </a>
+                  <a href="#" class="form-button-cancel button outline-danger" wicket:id="cancel">
+                    <wicket:message key="cancel"></wicket:message>
+                  </a>
+                </div>
+                <label>
+                  <wicket:message key="required"></wicket:message>
+                </label>
+              </fieldset>
+            </form>
+          </div>
+          <div wicket:id="confirmDisableDialog"></div>
+        </wicket:extend>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

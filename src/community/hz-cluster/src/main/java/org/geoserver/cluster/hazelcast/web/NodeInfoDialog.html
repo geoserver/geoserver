@@ -1,33 +1,38 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-  <wicket:panel>
-   <div class="padding-1em">
-   <h3><span wicket:id="ip"></span></h3>
-   <form>
-     <div class="gn-unordered-list-class">
-        <div class="gn-list-item-class">
-          <label>Hazelcast Group</label>
-          <span wicket:id="groupName"></span>
-        </div>
-        <div class="gn-list-item-class">
-          <label>Hostname</label>
-          <span wicket:id="host"></span>
-        </div>
-        <div class="gn-list-item-class">
-          <label>Port</label>
-          <span wicket:id="port"></span>
-        </div>
-        <div class="gn-list-item-class">
-          <label>Members</label>
-            <div class="gn-unordered-list-class" wicket:id="cluster">
-              <div class="gn-list-item-class" wicket:id="members">
-                 <span wicket:id="label"></span>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-NodeInfoDialog">
+        <div class="padding-1em">
+          <h3>
+            <span wicket:id="ip"/>
+          </h3>
+          <form>
+            <div class="gn-unordered-list-class">
+              <div class="gn-list-item-class">
+                <label>Hazelcast Group</label>
+                <span wicket:id="groupName"/>
+              </div>
+              <div class="gn-list-item-class">
+                <label>Hostname</label>
+                <span wicket:id="host"/>
+              </div>
+              <div class="gn-list-item-class">
+                <label>Port</label>
+                <span wicket:id="port"/>
+              </div>
+              <div class="gn-list-item-class">
+                <label>Members</label>
+                <div class="gn-unordered-list-class" wicket:id="cluster">
+                  <div class="gn-list-item-class" wicket:id="members">
+                    <span wicket:id="label"/>
+                  </div>
+                </div>
               </div>
             </div>
+          </form>
         </div>
-     </div>
-   </form>
-   </div>
-   </wicket:panel>
- </body>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

@@ -1,14 +1,33 @@
-<html>
+<?xml version="1.0"?>
+<html xmlns:wicket="http://wicket.apache.org/">
   <body>
     <wicket:panel>
-     <div class="gn-unordered-list-class">
-       <div class="gn-list-item-class"> <label><wicket:message key="rootLayer">Root Layer</wicket:message></label></div>
-       <div class="gn-list-item-class"> <a class="add-link" wicket:id="add"><wicket:message key="setRootLayer">Set Root Layer...</wicket:message></a></div>
-	   <div class="gn-list-item-class"> <input wicket:id="rootLayer" id="rootLayer" type="text" /></div>
-	   <div class="gn-list-item-class"> <label for="rootLayerStyle"><wicket:message key="rootLayerStyle">Root Layer Style</wicket:message></label></div>
-	   <div class="gn-list-item-class"> <select wicket:id="rootLayerStyle"></select></div>
-     </div>
-     <div wicket:id="popup"></div>
+      <div class="gs-panel-RootLayerEntryPanel">
+        <div class="gn-unordered-list-class">
+          <div class="gn-list-item-class">
+            <label>
+              <wicket:message key="rootLayer">Root Layer</wicket:message>
+            </label>
+          </div>
+          <div class="gn-list-item-class">
+            <a class="add-link" wicket:id="add">
+              <wicket:message key="setRootLayer">Set Root Layer...</wicket:message>
+            </a>
+          </div>
+          <div class="gn-list-item-class">
+            <input wicket:id="rootLayer" id="rootLayer" type="text"/>
+          </div>
+          <div class="gn-list-item-class">
+            <label for="rootLayerStyle">
+              <wicket:message key="rootLayerStyle">Root Layer Style</wicket:message>
+            </label>
+          </div>
+          <div class="gn-list-item-class">
+            <select wicket:id="rootLayerStyle"/>
+          </div>
+        </div>
+        <div wicket:id="popup"/>
+      </div>
     </wicket:panel>
   </body>
 </html>

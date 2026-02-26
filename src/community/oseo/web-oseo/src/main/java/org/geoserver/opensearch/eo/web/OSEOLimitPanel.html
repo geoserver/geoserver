@@ -1,33 +1,36 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-    <form id="form" wicket:id="form">
-        <fieldset>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-OSEOLimitPanel">
+        <form id="form" wicket:id="form">
+          <fieldset>
             <!--legend><span><wicket:message key="AttributeTypeInfoEditPanel.details">Details</wicket:message></span>
             </legend-->
             <div class="gn-unordered-list-class">
-                <div class="gn-list-item-class" wicket:id="collectionContainer">
-                    <label for="collection">
-                        <wicket:message key="OSEOSecurityPage.th.collection">collection</wicket:message>
-                    </label>
-                    <select id="collection" wicket:id="collection"></select>
-                </div>
-                <div class="gn-list-item-class">
-                    <label for="cqlFilter">
-                        <wicket:message key="OSEOSecurityPage.th.cqlFilter">CQL Filter</wicket:message>
-                    </label>
-                    <textarea id="cqlFilter" type="text" wicket:id="cqlFilter" class="cql"></textarea>
-                </div>
-                <div class="gn-list-item-class">
-                    <label for="roles">
-                        <wicket:message key="OSEOSecurityPage.th.roles">Roles</wicket:message>
-                    </label>
-                    <div wicket:id="roles"></div>
-                </div>
+              <div class="gn-list-item-class" wicket:id="collectionContainer">
+                <label for="collection">
+                  <wicket:message key="OSEOSecurityPage.th.collection">collection</wicket:message>
+                </label>
+                <select id="collection" wicket:id="collection"/>
+              </div>
+              <div class="gn-list-item-class">
+                <label for="cqlFilter">
+                  <wicket:message key="OSEOSecurityPage.th.cqlFilter">CQL Filter</wicket:message>
+                </label>
+                <textarea id="cqlFilter" type="text" wicket:id="cqlFilter" class="cql"/>
+              </div>
+              <div class="gn-list-item-class">
+                <label for="roles">
+                  <wicket:message key="OSEOSecurityPage.th.roles">Roles</wicket:message>
+                </label>
+                <div wicket:id="roles"/>
+              </div>
             </div>
-        </fieldset>
-        <div wicket:id="dialogFeedback"></div>
-    </form>
-</wicket:panel>
-</body>
+          </fieldset>
+          <div wicket:id="dialogFeedback"/>
+        </form>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

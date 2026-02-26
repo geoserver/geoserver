@@ -1,29 +1,55 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-	<wicket:panel>
-	    <div wicket:id="dialog"></div>
-		<form wicket:id="form">
-		  <div class="gn-unordered-list-class">
-			<div class="gn-list-item-class"> <label for="workspace"><wicket:message key="workspace" /></label>
-			 <input id="workspace" wicket:id="workspace" type="text"></input> </div>
-			<div class="gn-list-item-class"> <label for="configuration"><wicket:message key="configuration" /></label>
-			 <input id="configuration" wicket:id="configuration" type="text" /></div>
-            <div class="gn-list-item-class"> <label for="name"><wicket:message key="name" /></label>
-             <input id="name" wicket:id="name" type="text" /> </div>
-             <div class="gn-list-item-class"> <label wicket:id="batchesFound"></label> </div>
-            <div class="gn-list-item-class"> <label for="startDelay"><wicket:message key="startDelay" /></label>
-             <input id="startDelay" wicket:id="startDelay" type="number" class="number" /> </div>
-            <div class="gn-list-item-class"> <label for="betweenDelay"><wicket:message key="betweenDelay" /></label>
-             <input id="betweenDelay" wicket:id="betweenDelay" type="number" class="number" /> </div>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-BulkRunPanel">
+        <div wicket:id="dialog"></div>
+        <form wicket:id="form">
+          <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class">
+              <label for="workspace">
+                <wicket:message key="workspace"></wicket:message>
+              </label>
+              <input id="workspace" wicket:id="workspace" type="text" />
+            </div>
+            <div class="gn-list-item-class">
+              <label for="configuration">
+                <wicket:message key="configuration"></wicket:message>
+              </label>
+              <input id="configuration" wicket:id="configuration" type="text" />
+            </div>
+            <div class="gn-list-item-class">
+              <label for="name">
+                <wicket:message key="name"></wicket:message>
+              </label>
+              <input id="name" wicket:id="name" type="text" />
+            </div>
+            <div class="gn-list-item-class">
+              <label wicket:id="batchesFound"></label>
+            </div>
+            <div class="gn-list-item-class">
+              <label for="startDelay">
+                <wicket:message key="startDelay"></wicket:message>
+              </label>
+              <input id="startDelay" wicket:id="startDelay" type="number" class="number" />
+            </div>
+            <div class="gn-list-item-class">
+              <label for="betweenDelay">
+                <wicket:message key="betweenDelay"></wicket:message>
+              </label>
+              <input id="betweenDelay" wicket:id="betweenDelay" type="number" class="number" />
+            </div>
             <div class="gn-list-item-class">
               <div class="button-group selfclear">
-                   <a href="#" wicket:id="run"><wicket:message key="run"/></a>
+                <a href="#" wicket:id="run">
+                  <wicket:message key="run"></wicket:message>
+                </a>
               </div>
             </div>
-         </div>
-	  </form>
-	</wicket:panel>
-</body>
+          </div>
+        </form>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

@@ -1,27 +1,37 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-
-  <wicket:panel>
-    <div class="gn-unordered-list-class">
-			<div class="gn-list-item-class">
-				<fieldset>
-					<legend>
-						<span><wicket:message key="wcseo">wcseo</wicket:message></span>
-					</legend>
-					<div class="gn-unordered-list-class">
-						<div class="gn-list-item-class choiceItem"><input type="checkbox" wicket:id="enabled"></input> <label
-							for="enabled"><wicket:message
-									key="enabled">enable</wicket:message></label></div>
-						<div class="gn-list-item-class">
-						<div class="gn-list-item-class"> <label><wicket:message key="defaultCount">defaultCount</wicket:message></label>
-							<input type="text" wicket:id="defaultCount" class="field" /></div>
-                    </div>
-                    </div>
-
-                </fieldset>
+  <head/>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-WCSEOAdminPanel">
+        <div class="gn-unordered-list-class">
+          <div class="gn-list-item-class">
+            <fieldset>
+              <legend>
+                <span>
+                  <wicket:message key="wcseo">wcseo</wicket:message>
+                </span>
+              </legend>
+              <div class="gn-unordered-list-class">
+                <div class="gn-list-item-class choiceItem">
+                  <input type="checkbox" wicket:id="enabled"/>
+                  <label for="enabled">
+                    <wicket:message key="enabled">enable</wicket:message>
+                  </label>
+                </div>
+                <div class="gn-list-item-class">
+                  <div class="gn-list-item-class">
+                    <label>
+                      <wicket:message key="defaultCount">defaultCount</wicket:message>
+                    </label>
+                    <input type="text" wicket:id="defaultCount" class="field"/>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+          </div>
         </div>
-    </div>
-  </wicket:panel>
-</body>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

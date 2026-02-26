@@ -1,72 +1,97 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
   <body>
-   <wicket:panel>
-     <div class="gn-unordered-list-class">
-       <div class="gn-list-item-class">
-         <label for="name"><wicket:message key="name">Name</wicket:message></label>
-         <input wicket:id="name" id="name" type="text" />
-       </div>
-       <div class="gn-list-item-class choiceItem">
-         <input id="basic-enabled" wicket:id="enabled" type="checkbox"/>
-         <label for="basic-enabled"><wicket:message key="enabled">Enabled</wicket:message></label>
-       </div>
-       <div class="gn-list-item-class choiceItem">
-         <input id="basic-advertised" wicket:id="advertised" type="checkbox"/>
-         <label for="basic-advertised"><wicket:message key="advertised">Advertised</wicket:message></label>
-       </div>
-       <div class="gn-list-item-class">
-         <div wicket:id="titleAndAbstract"/>
-       </div>
-       <div class="gn-list-item-class">
-         <label for="workspace"><wicket:message key="workspace">Workspace</wicket:message></label>
-         <select wicket:id="workspace"></select>
-       </div>
-       <div class="gn-list-item-class">
-         <label><wicket:message key="bounds">Bounds</wicket:message></label>
-         <div wicket:id="bounds" class="selfclear"></div>
-       </div>
-       <div class="gn-list-item-class">
-         <input wicket:id="generateBounds" type="submit" wicket:message="value:generateBounds"/>
-         <input wicket:id="generateBoundsFromCRS" type="submit" wicket:message="value:generateBoundsFromSRS"/>
-       </div>
-       <div class="gn-list-item-class">
-         <label for="mode"><wicket:message key="mode">Mode</wicket:message></label>
-         <select wicket:id="mode"></select>
-       </div>
-       <div class="gn-list-item-class choiceItem">
-         <input id="queryable" type="checkbox" wicket:id="queryable" />
-         <label for="queryable"><wicket:message key="queryable">Queryable</wicket:message></label>
-       </div>
-	   <div class="gn-list-item-class" wicket:id="rootLayerContainer">
-	   	 <div wicket:id="rootLayer"></div>
-	   </div>
-       <div class="gn-list-item-class">
-         <div wicket:id="layers"></div>
-       </div>
-       <div class="gn-list-item-class">
-         <div wicket:id="layerGroupStyles"></div>
-       </div>
-       <div class="gn-list-item-class">
-        <fieldset>
-          <legend><span><wicket:message key="metadataLinks">Metadata links</wicket:message></span></legend>
-          <div class="gn-unordered-list-class">
-            <div class="gn-list-item-class">
-              <div wicket:id="metadataLinks"></div>
-            </div>
+    <wicket:panel>
+      <div class="gs-panel-LayerGroupEditPage_LayerGroupTab">
+        <div class="gn-unordered-list-class">
+          <div class="gn-list-item-class">
+            <label for="name">
+              <wicket:message key="name">Name</wicket:message>
+            </label>
+            <input wicket:id="name" id="name" type="text"/>
           </div>
-        </fieldset>
-       </div>
-       <div class="gn-list-item-class">
-         <fieldset>
-           <legend><span><wicket:message key="keywords">Keywords</wicket:message></span></legend>
-           <div class="gn-unordered-list-class">
-             <div class="gn-list-item-class">
-               <div wicket:id="keywords"></div>
-             </div>
-           </div>
-         </fieldset>
-       </div>
-     </div>
-   </wicket:panel>
+          <div class="gn-list-item-class choiceItem">
+            <input id="basic-enabled" wicket:id="enabled" type="checkbox"/>
+            <label for="basic-enabled">
+              <wicket:message key="enabled">Enabled</wicket:message>
+            </label>
+          </div>
+          <div class="gn-list-item-class choiceItem">
+            <input id="basic-advertised" wicket:id="advertised" type="checkbox"/>
+            <label for="basic-advertised">
+              <wicket:message key="advertised">Advertised</wicket:message>
+            </label>
+          </div>
+          <div class="gn-list-item-class">
+            <div wicket:id="titleAndAbstract"/>
+          </div>
+          <div class="gn-list-item-class">
+            <label for="workspace">
+              <wicket:message key="workspace">Workspace</wicket:message>
+            </label>
+            <select wicket:id="workspace"/>
+          </div>
+          <div class="gn-list-item-class">
+            <label>
+              <wicket:message key="bounds">Bounds</wicket:message>
+            </label>
+            <div wicket:id="bounds" class="selfclear"/>
+          </div>
+          <div class="gn-list-item-class">
+            <input wicket:id="generateBounds" type="submit" wicket:message="value:generateBounds"/>
+            <input wicket:id="generateBoundsFromCRS" type="submit" wicket:message="value:generateBoundsFromSRS"/>
+          </div>
+          <div class="gn-list-item-class">
+            <label for="mode">
+              <wicket:message key="mode">Mode</wicket:message>
+            </label>
+            <select wicket:id="mode"/>
+          </div>
+          <div class="gn-list-item-class choiceItem">
+            <input id="queryable" type="checkbox" wicket:id="queryable"/>
+            <label for="queryable">
+              <wicket:message key="queryable">Queryable</wicket:message>
+            </label>
+          </div>
+          <div class="gn-list-item-class" wicket:id="rootLayerContainer">
+            <div wicket:id="rootLayer"/>
+          </div>
+          <div class="gn-list-item-class">
+            <div wicket:id="layers"/>
+          </div>
+          <div class="gn-list-item-class">
+            <div wicket:id="layerGroupStyles"/>
+          </div>
+          <div class="gn-list-item-class">
+            <fieldset>
+              <legend>
+                <span>
+                  <wicket:message key="metadataLinks">Metadata links</wicket:message>
+                </span>
+              </legend>
+              <div class="gn-unordered-list-class">
+                <div class="gn-list-item-class">
+                  <div wicket:id="metadataLinks"/>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+          <div class="gn-list-item-class">
+            <fieldset>
+              <legend>
+                <span>
+                  <wicket:message key="keywords">Keywords</wicket:message>
+                </span>
+              </legend>
+              <div class="gn-unordered-list-class">
+                <div class="gn-list-item-class">
+                  <div wicket:id="keywords"/>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+    </wicket:panel>
   </body>
 </html>

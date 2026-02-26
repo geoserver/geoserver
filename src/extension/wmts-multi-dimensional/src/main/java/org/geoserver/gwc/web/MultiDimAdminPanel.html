@@ -1,32 +1,37 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-<form name="theForm">
-    <wicket:panel>
-        <div class="gn-unordered-list-class">
+  <head/>
+  <body>
+    <form name="theForm">
+      <wicket:panel>
+        <div class="gs-panel-MultiDimAdminPanel">
+          <div class="gn-unordered-list-class">
             <div class="gn-list-item-class">
-                <fieldset>
-                    <legend>
-                        <span><wicket:message key="MultiDimAdminPanel.title">multidim</wicket:message></span>
-                    </legend>
-                    <div class="gn-unordered-list-class">
-                        <div class="gn-list-item-class">
-                            <label for="defaultExpandLimit">
-                                <wicket:message key="defaultExpandLimit">defaultExpandLimit</wicket:message>
-                            </label>
-                            <input id="defaultExpandLimit" type="text" wicket:id="defaultExpandLimit"/>
-                        </div>
-                        <div class="gn-list-item-class">
-                            <label for="maxExpandLimit">
-                                <wicket:message key="maxExpandLimit">maxExpandLimit</wicket:message>
-                            </label>
-                            <input id="maxExpandLimit" type="text" wicket:id="maxExpandLimit"/>
-                        </div>
-                    </div>
-                </fieldset>
+              <fieldset>
+                <legend>
+                  <span>
+                    <wicket:message key="MultiDimAdminPanel.title">multidim</wicket:message>
+                  </span>
+                </legend>
+                <div class="gn-unordered-list-class">
+                  <div class="gn-list-item-class">
+                    <label for="defaultExpandLimit">
+                      <wicket:message key="defaultExpandLimit">defaultExpandLimit</wicket:message>
+                    </label>
+                    <input id="defaultExpandLimit" type="text" wicket:id="defaultExpandLimit"/>
+                  </div>
+                  <div class="gn-list-item-class">
+                    <label for="maxExpandLimit">
+                      <wicket:message key="maxExpandLimit">maxExpandLimit</wicket:message>
+                    </label>
+                    <input id="maxExpandLimit" type="text" wicket:id="maxExpandLimit"/>
+                  </div>
+                </div>
+              </fieldset>
             </div>
+          </div>
         </div>
-    </wicket:panel>
-</form>
-</body>
+      </wicket:panel>
+    </form>
+  </body>
 </html>

@@ -1,110 +1,156 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-<form>
-  <wicket:panel>
-    <h3><wicket:message key="title">Basic Settings</wicket:message></h3>
-        <fieldset>
-          <legend><span><wicket:message key="basicResourceInfo">Basic Resource Info</wicket:message></span></legend>
-          <div class="gn-unordered-list-class">
-            <div class="gn-list-item-class info-link">
-              <em>
-                <b><wicket:message key="storeName">Store Name</wicket:message>:</b>
-                <span wicket:id="storeName"></span>
-              </em>
-            </div>
-            <div class="gn-list-item-class info-link">
-              <em>
-                <b><wicket:message key="nativeName">Native Name</wicket:message>:</b>
-                <span wicket:id="nativeName"></span>
-              </em>
-            </div>
-            <div class="gn-list-item-class">
-              <label for="name"><wicket:message key="name">Name</wicket:message></label>
-              <input id="name" type="text" wicket:id="name"/>
-            </div>
-            <div class="gn-list-item-class choiceItem">
-              <input id="basic-enabled" wicket:id="enabled" type="checkbox"/>
-              <label for="basic-enabled"><wicket:message key="enabled">Enabled</wicket:message></label>
-            </div>
-	        <div class="gn-list-item-class choiceItem">
-	          <input id="basic-advertised" wicket:id="advertised" type="checkbox"/>
-	          <label for="basic-advertised"><wicket:message key="advertised">Advertised</wicket:message></label>
-	        </div>
-            <div class="gn-list-item-class">
-              <div wicket:id="titleAndAbstract"/>
-            </div>
-          </div>
-        </fieldset>
-        <fieldset>
-          <legend><span><wicket:message key="keywords">Keywords</wicket:message></span></legend>
-          <div wicket:id="keywords"></div>
-        </fieldset>
-        <fieldset>
-          <legend><span><wicket:message key="metadataLinks">Metadata links</wicket:message></span></legend>
-          <div class="gn-unordered-list-class">
-            <div class="gn-list-item-class">
-              <div wicket:id="metadataLinks"></div>
-            </div>
-          </div>
-        </fieldset>
-        <fieldset>
-          <legend><span><wicket:message key="dataLinks">Data links</wicket:message></span></legend>
-          <div class="gn-unordered-list-class">
-            <div class="gn-list-item-class">
-              <div wicket:id="dataLinks"></div>
-            </div>
-          </div>
-        </fieldset>
-
-      <form wicket:id="referencingForm">
-
-        <fieldset>
-          <legend><span><wicket:message key="coordinateReferenceSystems">Coordinate Reference Systems</wicket:message></span></legend>
-          <div class="gn-unordered-list-class">
-            <div class="gn-list-item-class">
-              <label for="nativeSRS"><wicket:message key="nativeSRS">Native SRS</wicket:message></label>
-              <span id="nativeSRS", wicket:id="nativeSRS"></span>
-            </div>
-            <div class="gn-list-item-class">
-              <label for="declaredSRS"><wicket:message key="declaredSRS">Declared SRS</wicket:message></label>
-              <span id="declaredSRS" wicket:id="declaredSRS"></span>
-            </div>
-            <div class="gn-list-item-class">
-              <label for="srsHandling"><wicket:message key="srsHandling">SRS handling</wicket:message></label>
-              <select id="srsHandling" wicket:id="srsHandling"></select>
-            </div>
-          </div>
-        </fieldset>
-        <fieldset>
-          <legend><span><wicket:message key="boundingBoxes">Bounding Boxes</wicket:message></span></legend>
-          <div class="gn-unordered-list-class">
-            <div class="gn-list-item-class">
-              <label for="nativeBoundingBox"><wicket:message key="nativeBbox">Native BBox</wicket:message></label>
-              <div id="nativeBoundingBox" wicket:id="nativeBoundingBox"></div>
-              <div id="nativeBBoxControls" class="bounding-box-controls">
-                <a href="#" wicket:id="computeNative">
-                    <wicket:message key="computeFromData">Compute from data</wicket:message>
-                </a>
-                <a href="#" wicket:id="computeLatLonFromNativeSRS">
-                    <wicket:message key="computeFromSRS">Compute from SRS bounds</wicket:message>
-                </a>
+  <head/>
+  <body>
+    <form>
+      <wicket:panel>
+        <div class="gs-panel-BasicResourceConfig">
+          <h3>
+            <wicket:message key="title">Basic Settings</wicket:message>
+          </h3>
+          <fieldset>
+            <legend>
+              <span>
+                <wicket:message key="basicResourceInfo">Basic Resource Info</wicket:message>
+              </span>
+            </legend>
+            <div class="gn-unordered-list-class">
+              <div class="gn-list-item-class info-link">
+                <em>
+                  <b><wicket:message key="storeName">Store Name</wicket:message>:</b>
+                  <span wicket:id="storeName"/>
+                </em>
               </div>
-
+              <div class="gn-list-item-class info-link">
+                <em>
+                  <b><wicket:message key="nativeName">Native Name</wicket:message>:</b>
+                  <span wicket:id="nativeName"/>
+                </em>
+              </div>
+              <div class="gn-list-item-class">
+                <label for="name">
+                  <wicket:message key="name">Name</wicket:message>
+                </label>
+                <input id="name" type="text" wicket:id="name"/>
+              </div>
+              <div class="gn-list-item-class choiceItem">
+                <input id="basic-enabled" wicket:id="enabled" type="checkbox"/>
+                <label for="basic-enabled">
+                  <wicket:message key="enabled">Enabled</wicket:message>
+                </label>
+              </div>
+              <div class="gn-list-item-class choiceItem">
+                <input id="basic-advertised" wicket:id="advertised" type="checkbox"/>
+                <label for="basic-advertised">
+                  <wicket:message key="advertised">Advertised</wicket:message>
+                </label>
+              </div>
+              <div class="gn-list-item-class">
+                <div wicket:id="titleAndAbstract"/>
+              </div>
             </div>
-            <div class="gn-list-item-class">
-              <label for="latLonBoundingBox"><wicket:message key="latLonBbox">Lat/Lon BBOX</wicket:message></label>
-              <div id="latLonBoundingBox" wicket:id="latLonBoundingBox"></div>
-              <a href="#" wicket:id="computeLatLon" class="computeLink"><wicket:message key="computeFromNativeBounds">Compute from native bounds</wicket:message></a>
+          </fieldset>
+          <fieldset>
+            <legend>
+              <span>
+                <wicket:message key="keywords">Keywords</wicket:message>
+              </span>
+            </legend>
+            <div wicket:id="keywords"/>
+          </fieldset>
+          <fieldset>
+            <legend>
+              <span>
+                <wicket:message key="metadataLinks">Metadata links</wicket:message>
+              </span>
+            </legend>
+            <div class="gn-unordered-list-class">
+              <div class="gn-list-item-class">
+                <div wicket:id="metadataLinks"/>
+              </div>
             </div>
-          </div>
-        </fieldset>
-       </form>
-    </wicket:panel>
-    <div class="button-group toolbar-sticky selfclear">
-      <input class="form-button-save" wicket:id="submit" type="submit"/><wicket:message key="save"/>
-      <input class="form-button-cancel" wicket:id="cancel" type="submit"/><wicket:message key="cancel"/>
-    </div>
-  </form>
-</body>
+          </fieldset>
+          <fieldset>
+            <legend>
+              <span>
+                <wicket:message key="dataLinks">Data links</wicket:message>
+              </span>
+            </legend>
+            <div class="gn-unordered-list-class">
+              <div class="gn-list-item-class">
+                <div wicket:id="dataLinks"/>
+              </div>
+            </div>
+          </fieldset>
+          <form wicket:id="referencingForm">
+            <fieldset>
+              <legend>
+                <span>
+                  <wicket:message key="coordinateReferenceSystems">Coordinate Reference Systems</wicket:message>
+                </span>
+              </legend>
+              <div class="gn-unordered-list-class">
+                <div class="gn-list-item-class">
+                  <label for="nativeSRS">
+                    <wicket:message key="nativeSRS">Native SRS</wicket:message>
+                  </label>
+                  <span id="nativeSRS" wicket:id="nativeSRS"/>
+                </div>
+                <div class="gn-list-item-class">
+                  <label for="declaredSRS">
+                    <wicket:message key="declaredSRS">Declared SRS</wicket:message>
+                  </label>
+                  <span id="declaredSRS" wicket:id="declaredSRS"/>
+                </div>
+                <div class="gn-list-item-class">
+                  <label for="srsHandling">
+                    <wicket:message key="srsHandling">SRS handling</wicket:message>
+                  </label>
+                  <select id="srsHandling" wicket:id="srsHandling"/>
+                </div>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>
+                <span>
+                  <wicket:message key="boundingBoxes">Bounding Boxes</wicket:message>
+                </span>
+              </legend>
+              <div class="gn-unordered-list-class">
+                <div class="gn-list-item-class">
+                  <label for="nativeBoundingBox">
+                    <wicket:message key="nativeBbox">Native BBox</wicket:message>
+                  </label>
+                  <div id="nativeBoundingBox" wicket:id="nativeBoundingBox"/>
+                  <div id="nativeBBoxControls" class="bounding-box-controls">
+                    <a href="#" wicket:id="computeNative">
+                      <wicket:message key="computeFromData">Compute from data</wicket:message>
+                    </a>
+                    <a href="#" wicket:id="computeLatLonFromNativeSRS">
+                      <wicket:message key="computeFromSRS">Compute from SRS bounds</wicket:message>
+                    </a>
+                  </div>
+                </div>
+                <div class="gn-list-item-class">
+                  <label for="latLonBoundingBox">
+                    <wicket:message key="latLonBbox">Lat/Lon BBOX</wicket:message>
+                  </label>
+                  <div id="latLonBoundingBox" wicket:id="latLonBoundingBox"/>
+                  <a href="#" wicket:id="computeLatLon" class="computeLink">
+                    <wicket:message key="computeFromNativeBounds">Compute from native bounds</wicket:message>
+                  </a>
+                </div>
+              </div>
+            </fieldset>
+          </form>
+        </div>
+      </wicket:panel>
+      <div class="button-group toolbar-sticky selfclear">
+        <input class="form-button-save" wicket:id="submit" type="submit"/>
+        <wicket:message key="save"/>
+        <input class="form-button-cancel" wicket:id="cancel" type="submit"/>
+        <wicket:message key="cancel"/>
+      </div>
+    </form>
+  </body>
 </html>

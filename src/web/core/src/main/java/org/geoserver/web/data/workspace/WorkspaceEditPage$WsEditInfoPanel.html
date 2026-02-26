@@ -1,44 +1,56 @@
-<html  xmlns:wicket="http://wicket.apache.org/">
-<head>
+<?xml version="1.0"?>
+<html xmlns:wicket="http://wicket.apache.org/">
+  <head>
 
 </head>
-<body>
-<wicket:panel >
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-WorkspaceEditPage_WsEditInfoPanel">
         <div class="gn-unordered-list-class">
-            <div class="gn-list-item-class">
-                <label for="name"><wicket:message key="name">Name</wicket:message></label>
-                <input wicket:id="name" id="name" type="text" />
+          <div class="gn-list-item-class">
+            <label for="name">
+              <wicket:message key="name">Name</wicket:message>
+            </label>
+            <input wicket:id="name" id="name" type="text"/>
+          </div>
+          <div class="gn-list-item-class">
+            <label for="uri">
+              <wicket:message key="namespaceURI">Namespace URI</wicket:message>
+            </label>
+            <input wicket:id="uri" id="uri" type="text"/>
+            <div class="instruct">
+              <wicket:message key="namespaceUriAssocWithWorkspace">The namespace uri associated with this workspace</wicket:message>
             </div>
-            <div class="gn-list-item-class">
-                <label for="uri"><wicket:message key="namespaceURI">Namespace URI</wicket:message></label>
-                <input wicket:id="uri" id="uri" type="text" />
-                <div class="instruct"><wicket:message key="namespaceUriAssocWithWorkspace">The namespace uri associated with this workspace</wicket:message></div>
-            </div>
-            <div class="gn-list-item-class choiceItem">
-                <input wicket:id="default" id="default" type="checkbox"/> <label for="default"><wicket:message key="defaultWorkspace">Default workspace</wicket:message></label>
-            </div>
-            <div class="gn-list-item-class choiceItem">
-                <input wicket:id="isolated" id="isolated" type="checkbox"/>
-                <label for="isolated">
-                    <wicket:message key="isolatedWorkspace">Isolated workspace</wicket:message>
-                </label>
-            </div>
-            <!-- Commented out waiting for a consistent work to be done on the other edit pages
+          </div>
+          <div class="gn-list-item-class choiceItem">
+            <input wicket:id="default" id="default" type="checkbox"/>
+            <label for="default">
+              <wicket:message key="defaultWorkspace">Default workspace</wicket:message>
+            </label>
+          </div>
+          <div class="gn-list-item-class choiceItem">
+            <input wicket:id="isolated" id="isolated" type="checkbox"/>
+            <label for="isolated">
+              <wicket:message key="isolatedWorkspace">Isolated workspace</wicket:message>
+            </label>
+          </div>
+          <!-- Commented out waiting for a consistent work to be done on the other edit pages
             <div class="gn-list-item-class">
               <h3><wicket:message key="stores">Stores</wicket:message></h3>
               <div wicket:id="storeTable"></div>
             </div>
             -->
-            <div class="gn-list-item-class">
-                <div id="tableBody" class="clearfix pt-4">
-                    <div wicket:id="services" class="pt-3">
+          <div class="gn-list-item-class">
+            <div id="tableBody" class="clearfix pt-4">
+              <div wicket:id="services" class="pt-3">
                     </div>
-                    <div wicket:id="settings" class="pt-3">
+              <div wicket:id="settings" class="pt-3">
                     </div>
-                </div>
             </div>
+          </div>
         </div>
-    <div wicket:id="dialog"></div>
-</wicket:panel>
-</body>
+        <div wicket:id="dialog"/>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

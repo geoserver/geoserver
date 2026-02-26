@@ -1,26 +1,31 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-<wicket:panel>
-    <div class="gn-unordered-list-class">
-        <div class="gn-list-item-class">
+  <head/>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-SchemaRulesTabPanel">
+        <div class="gn-unordered-list-class">
+          <div class="gn-list-item-class">
             <div class="pt-4">
-                <fieldset class="mb-0">
-                    <legend>
-                        <span><wicket:message key="ruleList">Layer Schema Rules</wicket:message></span>
-                    </legend>
-            <div wicket:id="schemaRules" id="rulesTable"/>
-                </fieldset>
+              <fieldset class="mb-0">
+                <legend>
+                  <span>
+                    <wicket:message key="ruleList">Layer Schema Rules</wicket:message>
+                  </span>
+                </legend>
+                <div wicket:id="schemaRules" id="rulesTable"/>
+              </fieldset>
             </div>
-        </div>
-        <div class="gn-list-item-class">
+          </div>
+          <div class="gn-list-item-class">
             <div class="pt-4">
-                <fieldset class="mb-0">
-                    <div wicket:id="schemaRuleConfiguration" id="schemaRuleConfiguration"/>
-                </fieldset>
+              <fieldset class="mb-0">
+                <div wicket:id="schemaRuleConfiguration" id="schemaRuleConfiguration"/>
+              </fieldset>
             </div>
+          </div>
         </div>
-    </div>
-</wicket:panel>
-</body>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

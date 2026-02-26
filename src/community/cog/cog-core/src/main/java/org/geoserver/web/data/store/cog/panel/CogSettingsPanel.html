@@ -1,27 +1,33 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-<wicket:panel>
-    <fieldset>
-        <div><legend>
-        <wicket:message key="CogSettings.globalSettingsTitle">COG Settings</wicket:message>
-        </legend>
-        </div>
-        <div wicket:id="container">
-        <div class="gn-unordered-list-class">
-            <!--li class="choiceItem">
+  <head/>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-CogSettingsPanel">
+        <fieldset>
+          <div>
+            <legend>
+              <wicket:message key="CogSettings.globalSettingsTitle">COG Settings</wicket:message>
+            </legend>
+          </div>
+          <div wicket:id="container">
+            <div class="gn-unordered-list-class">
+              <!--li class="choiceItem">
                 <input id="useCachingStream" type="checkbox" wicket:id="useCachingStream" />
                 <label for="useCachingStream" class="checkbox">
                     <wicket:message key="CogSettings.useCachingStream">use Caching Stream</wicket:message>
                 </label>
             </li-->
-            <div class="gn-list-item-class">
-                <label for="rangeReaderSettings"><wicket:message key="CogSettings.rangeReaderSettings">Range Reader Settings</wicket:message></label>
-                <select id="rangeReaderSettings" class="field checkbox" wicket:id="rangeReaderSettings" />
+              <div class="gn-list-item-class">
+                <label for="rangeReaderSettings">
+                  <wicket:message key="CogSettings.rangeReaderSettings">Range Reader Settings</wicket:message>
+                </label>
+                <select id="rangeReaderSettings" class="field checkbox" wicket:id="rangeReaderSettings"/>
+              </div>
             </div>
-        </div>
-    </div>
+          </div>
         </fieldset>
-</wicket:panel>
-</body>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

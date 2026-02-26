@@ -1,45 +1,47 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-FileUploadPanel">
         <div wicket:id="dialog"></div>
         <span wicket:id="feedback"></span>
         <fieldset>
-            <legend>
-                <wicket:message key="locationTitle"/>
-            </legend>
+          <legend>
+            <wicket:message key="locationTitle"></wicket:message>
+          </legend>
+          <div>
+            <label for="fileServiceSelection">
+              <wicket:message key="fileServiceSelection"></wicket:message>
+            </label>
+            <select id="fileServiceSelection" wicket:id="fileServiceSelection"></select>
             <div>
-                <label for="fileServiceSelection">
-                    <wicket:message key="fileServiceSelection"/>
-                </label>
-                <select id="fileServiceSelection"  wicket:id="fileServiceSelection" />
-                <div>
-                    <label for="folderSelection" class="horizontal">
-                        <wicket:message key="folderSelection"/>
-                    </label>
-                    <select id="folderSelection" wicket:id="folderSelection" />
-                    <a class="add-link" href="#" wicket:id="addNew">
-                        <wicket:message key="addNew"/>
-                    </a>
-                </div>
+              <label for="folderSelection" class="horizontal">
+                <wicket:message key="folderSelection"></wicket:message>
+              </label>
+              <select id="folderSelection" wicket:id="folderSelection"></select>
+              <a class="add-link" href="#" wicket:id="addNew">
+                <wicket:message key="addNew"></wicket:message>
+              </a>
             </div>
+          </div>
         </fieldset>
         <fieldset>
-            <legend>
-                <wicket:message key="uploadTitle"/>
-            </legend>
-            <p>
-                <label for="fileInput">
-                    <wicket:message key="fileInput"/>
-                </label>
-                <input id="fileInput" wicket:id="fileInput" type="file"/>
-               <input id="checkbox" wicket:id="prepare" type="checkbox" class="inline" ></input>
-               <label for="prepare" class="inline">
-               	 	<wicket:message key="prepare"/>
-               </label>
-            </p>
+          <legend>
+            <wicket:message key="uploadTitle"></wicket:message>
+          </legend>
+          <p>
+            <label for="fileInput">
+              <wicket:message key="fileInput"></wicket:message>
+            </label>
+            <input id="fileInput" wicket:id="fileInput" type="file" />
+            <input id="checkbox" wicket:id="prepare" type="checkbox" class="inline" />
+            <label for="prepare" class="inline">
+              <wicket:message key="prepare"></wicket:message>
+            </label>
+          </p>
         </fieldset>
-</wicket:panel>
-</body>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

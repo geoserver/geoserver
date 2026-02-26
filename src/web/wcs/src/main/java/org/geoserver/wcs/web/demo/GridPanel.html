@@ -1,35 +1,40 @@
-<html>
-<head>
-<title><wicket:message key="title">Grid Panel</wicket:message></title>
-</head>
-<body>
-<wicket:panel>
-  <div class="gn-unordered-list-class clearfix">
-    <div class="gn-list-item-class float-start">
-      <label for="minX">
-        <wicket:message key="minX">minX</wicket:message>
-      </label>
-      <input wicket:id="minX" id="minX" type="text" size="12"/>
-    </div>
-    <div class="gn-list-item-class float-start">
-      <label for="minY">
-        <wicket:message key="minY">Min Y</wicket:message>
-      </label>
-      <input wicket:id="minY" id="minY" type="text" size="12"/>
-    </div>
-    <div class="gn-list-item-class float-start">
-      <label for="maxX">
-        <wicket:message key="maxX">Max X</wicket:message>
-      </label>
-      <input wicket:id="maxX" id="maxX" type="text" size="12"/>
-    </div>
-    <div class="gn-list-item-class float-start">
-      <label for="maxY">
-        <wicket:message key="maxY">Max Y</wicket:message>
-      </label>
-      <input wicket:id="maxY" id="maxY" type="text" size="12"/>
-    </div>
-  </div>
-</wicket:panel>
-</body>
+<?xml version="1.0"?>
+<html xmlns:wicket="http://wicket.apache.org/">
+  <head>
+    <title>
+      <wicket:message key="title">Grid Panel</wicket:message>
+    </title>
+  </head>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-GridPanel">
+        <div class="gn-unordered-list-class clearfix">
+          <div class="gn-list-item-class float-start">
+            <label for="minX">
+              <wicket:message key="minX">minX</wicket:message>
+            </label>
+            <input wicket:id="minX" id="minX" type="text" size="12"/>
+          </div>
+          <div class="gn-list-item-class float-start">
+            <label for="minY">
+              <wicket:message key="minY">Min Y</wicket:message>
+            </label>
+            <input wicket:id="minY" id="minY" type="text" size="12"/>
+          </div>
+          <div class="gn-list-item-class float-start">
+            <label for="maxX">
+              <wicket:message key="maxX">Max X</wicket:message>
+            </label>
+            <input wicket:id="maxX" id="maxX" type="text" size="12"/>
+          </div>
+          <div class="gn-list-item-class float-start">
+            <label for="maxY">
+              <wicket:message key="maxY">Max Y</wicket:message>
+            </label>
+            <input wicket:id="maxY" id="maxY" type="text" size="12"/>
+          </div>
+        </div>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

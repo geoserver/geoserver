@@ -1,22 +1,21 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-  <form wicket:id="form">
-  
-      <div class="gn-unordered-list-class">
-        <div class="gn-list-item-class">
-          <label for="connType"><wicket:message key="connType">connType</wicket:message> *</label>
-          <select class="field" wicket:id="connType" id="connType"></select>
-        </div>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-AbstractDbPanel">
+        <form wicket:id="form">
+          <div class="gn-unordered-list-class">
+            <div class="gn-list-item-class">
+              <label for="connType"><wicket:message key="connType">connType</wicket:message> *</label>
+              <select class="field" wicket:id="connType" id="connType"/>
+            </div>
+          </div>
+          <div wicket:id="paramPanelContainer">
+            <div class="gn-unordered-list-class" wicket:id="paramPanels"/>
+          </div>
+          <div wicket:id="advancedPanel"/>
+        </form>
       </div>
-      
-      <div wicket:id="paramPanelContainer">
-        <div class="gn-unordered-list-class" wicket:id="paramPanels"></div>
-      </div>
-      
-      <div wicket:id="advancedPanel"></div>
-  
-  </form>
-</wicket:panel>
-</body>
+    </wicket:panel>
+  </body>
 </html>

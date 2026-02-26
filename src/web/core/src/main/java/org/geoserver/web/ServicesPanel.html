@@ -1,20 +1,23 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-  <div wicket:id="serviceDescriptions">
-    <h3 wicket:id="title" />
-    <p class="serviceDescription" wicket:id="description"></p>
-    <div class="service-links">
-      <div wicket:id="links">
-        <a wicket:id="serviceLink">
-          <div class="link-bordered">
-            <span class="serviceProtocol" wicket:id="serviceProtocol"></span>
-            <span class="serviceVersion" wicket:id="serviceVersion"></span>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-ServicesPanel">
+        <div wicket:id="serviceDescriptions">
+          <h3 wicket:id="title"/>
+          <p class="serviceDescription" wicket:id="description"/>
+          <div class="service-links">
+            <div wicket:id="links">
+              <a wicket:id="serviceLink">
+                <div class="link-bordered">
+                  <span class="serviceProtocol" wicket:id="serviceProtocol"/>
+                  <span class="serviceVersion" wicket:id="serviceVersion"/>
+                </div>
+              </a>
+            </div>
           </div>
-        </a>
+        </div>
       </div>
-    </div>
-  </div>
-</wicket:panel>
-</body>
+    </wicket:panel>
+  </body>
 </html>

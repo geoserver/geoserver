@@ -1,16 +1,23 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-    <div class="gn-unordered-list-class">
-        <div class="gn-list-item-class">
-            <select id="languages" class="select w-md" wicket:id="languages" multiple="multiple"></select>
-            <button wicket:id="removeLanguages" type="submit"><wicket:message key="removeSelected">Remove selected</wicket:message></button>
-        </div>
-        <div class="gn-list-item-class">
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-LanguagesEditor">
+        <div class="gn-unordered-list-class">
+          <div class="gn-list-item-class">
+            <select id="languages" class="select w-md" wicket:id="languages" multiple="multiple"/>
+            <button wicket:id="removeLanguages" type="submit">
+              <wicket:message key="removeSelected">Remove selected</wicket:message>
+            </button>
+          </div>
+          <div class="gn-list-item-class">
             <select id="selectLanguage" type="text" wicket:id="selectLanguage"/>
+          </div>
         </div>
-    </div>
-    <button wicket:id="addLanguage" type="submit"> <wicket:message key="addLanguage">Add</wicket:message> </button>
-</wicket:panel>
-</body>
+        <button wicket:id="addLanguage" type="submit">
+          <wicket:message key="addLanguage">Add</wicket:message>
+        </button>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

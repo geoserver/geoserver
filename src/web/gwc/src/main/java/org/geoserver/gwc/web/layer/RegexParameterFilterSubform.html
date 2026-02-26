@@ -1,20 +1,23 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-<wicket:panel>
-  <div class="py-1 me-3 align-top d-inline-block">
-    <label>
-      <wicket:message key="defaultValue">Default Value</wicket:message>
-    </label>
-    <input type="text" wicket:id="defaultValue"/>
-  </div>
-  <div class="py-1 me-3 align-top d-inline-block">
-    <label>
-      <wicket:message key="regularExpression">Regular Expression</wicket:message>
-    </label>
-    <input type="text" wicket:id="regex"/>
-  </div>
-  <div class="py-1 align-top d-inline-block" wicket:id="normalize"></div>
-</wicket:panel>
-</body>
+  <head/>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-RegexParameterFilterSubform">
+        <div class="py-1 me-3 align-top d-inline-block">
+          <label>
+            <wicket:message key="defaultValue">Default Value</wicket:message>
+          </label>
+          <input type="text" wicket:id="defaultValue"/>
+        </div>
+        <div class="py-1 me-3 align-top d-inline-block">
+          <label>
+            <wicket:message key="regularExpression">Regular Expression</wicket:message>
+          </label>
+          <input type="text" wicket:id="regex"/>
+        </div>
+        <div class="py-1 align-top d-inline-block" wicket:id="normalize"/>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

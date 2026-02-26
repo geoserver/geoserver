@@ -8,9 +8,9 @@
   ~ application directory.
   ~
   -->
-<body>
 <wicket:head>
 </wicket:head>
+<body>
 <wicket:extend>
     <div id="jwt-headers">
         <fieldset>
@@ -22,13 +22,13 @@
             <wicket:message key="userNameHeaderAttributeName"></wicket:message>
         </label>
         <input class="field" wicket:id="userNameHeaderAttributeName" type="text"/>
-        <br>
+        <br/>
         <label>
             <wicket:message key="formatUserName"></wicket:message>
         </label>
         <select class="select" id="userNameFormatSelect"
                 wicket:id="userNameFormatChoice"></select>
-        <br>
+        <br/>
         <!-- visibility of this DIV is control with JS, above.
               If formatUserName = "STRING" - don't show
               Otherwise (JSON or JWT), then show.
@@ -40,7 +40,7 @@
             <input class="field" wicket:id="userNameJsonPath" type="text"/>
         </div>
 
-        <br>
+        <br/>
         <legend>
             <span><wicket:message key="validateTokenHeader"></wicket:message></span>
             <a class="help-link" href="#" wicket:id="validateTokenHelp"></a>

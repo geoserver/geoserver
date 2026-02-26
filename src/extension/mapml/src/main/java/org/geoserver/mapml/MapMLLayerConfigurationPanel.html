@@ -1,158 +1,176 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<head></head>
-<body>
-<form name="theForm">
-    <wicket:panel>
-        <h3>
+  <head/>
+  <body>
+    <form name="theForm">
+      <wicket:panel>
+        <div class="gs-panel-MapMLLayerConfigurationPanel">
+          <h3>
             <wicket:message key="mapmlSectionHeading">MapML Settings</wicket:message>
-        </h3>
-        <div class="gn-unordered-list-class">
+          </h3>
+          <div class="gn-unordered-list-class">
             <div class="gn-list-item-class">
+              <fieldset>
+                <legend>
+                  <span>
+                    <wicket:message key="mapmlLicenseSection">License Info</wicket:message>
+                  </span>
+                </legend>
+                <div class="gn-unordered-list-class">
+                  <div class="gn-list-item-class">
+                    <label for="licenseTitle">
+                      <wicket:message key="mapmlLicenseTitle">License Title</wicket:message>
+                    </label>
+                    <input id="licenseTitle" wicket:id="licenseTitle" type="text"/>
+                  </div>
+                  <div class="gn-list-item-class">
+                    <label for="licenseLink">
+                      <wicket:message key="mapmlLicenseLink">License Link</wicket:message>
+                    </label>
+                    <input id="licenseLink" wicket:id="licenseLink" type="text"/>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+            <div class="gn-list-item-class">
+              <fieldset>
+                <legend>
+                  <span>
+                    <wicket:message key="mapmlTileSection">Tile Config</wicket:message>
+                  </span>
+                </legend>
+                <div class="gn-unordered-list-class choiceList">
+                  <div class="gn-list-item-class">
+                    <input id="useTiles" wicket:id="useTiles" type="checkbox"/>
+                    <label for="useTiles">
+                      <wicket:message key="mapmlUseTiles">Use Tiles</wicket:message>
+                    </label>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+            <div wicket:id="RemoteClientRequestsConfiguration">
+              <!-- It's illegal to have this div here -->
+              <div class="gn-list-item-class">
                 <fieldset>
-                    <legend>
-                        <span><wicket:message key="mapmlLicenseSection">License Info</wicket:message></span>
-                    </legend>
-                    <div class="gn-unordered-list-class">
-                        <div class="gn-list-item-class">
-                            <label for="licenseTitle">
-                                <wicket:message key="mapmlLicenseTitle">License Title</wicket:message>
-                            </label>
-                            <input id="licenseTitle" wicket:id="licenseTitle" type="text"></input>
-                        </div>
-                        <div class="gn-list-item-class">
-                            <label for="licenseLink">
-                                <wicket:message key="mapmlLicenseLink">License Link</wicket:message>
-                            </label>
-                            <input id="licenseLink" wicket:id="licenseLink" type="text"></input>
-                        </div>
+                  <legend>
+                    <span>
+                      <wicket:message key="mapmlClientRequestsSection">Client Requests</wicket:message>
+                    </span>
+                  </legend>
+                  <div class="gn-unordered-list-class choiceList">
+                    <div class="gn-list-item-class">
+                      <input id="useRemote" wicket:id="useRemote" type="checkbox"/>
+                      <label for="useRemote">
+                        <wicket:message key="mapmlUseRemote">Remote</wicket:message>
+                      </label>
                     </div>
+                  </div>
                 </fieldset>
+              </div>
             </div>
             <div class="gn-list-item-class">
-                <fieldset>
-                    <legend>
-                        <span><wicket:message key="mapmlTileSection">Tile Config</wicket:message></span>
-                    </legend>
-                    <div class="gn-unordered-list-class choiceList">
-                        <div class="gn-list-item-class">
-                            <input id="useTiles" wicket:id="useTiles" type="checkbox"></input>
-                            <label for="useTiles">
-                                <wicket:message key="mapmlUseTiles">Use Tiles</wicket:message>
-                            </label>
-                        </div>
-                    </div>
-                </fieldset>
-            </div>
-            <div wicket:id="RemoteClientRequestsConfiguration"> <!-- It's illegal to have this div here -->
-            <div class="gn-list-item-class">
-                <fieldset>
-                    <legend>
-                        <span><wicket:message key="mapmlClientRequestsSection">Client Requests</wicket:message></span>
-                    </legend>
-                    <div class="gn-unordered-list-class choiceList">
-                        <div class="gn-list-item-class">
-                            <input id="useRemote" wicket:id="useRemote" type="checkbox"></input>
-                            <label for="useRemote">
-                                <wicket:message key="mapmlUseRemote">Remote</wicket:message>
-                            </label>
-                        </div>
-                    </div>
-                </fieldset>
-            </div>
+              <fieldset>
+                <legend>
+                  <span>
+                    <wicket:message key="mapmlVectorSection">Vector Config</wicket:message>
+                  </span>
+                </legend>
+                <div class="gn-unordered-list-class choiceList">
+                  <div class="gn-list-item-class">
+                    <input id="useFeatures" wicket:id="useFeatures" type="checkbox"/>
+                    <label for="useFeatures">
+                      <wicket:message key="mapmlUseFeatures">Use Features</wicket:message>
+                    </label>
+                  </div>
+                </div>
+              </fieldset>
             </div>
             <div class="gn-list-item-class">
-                <fieldset>
-                    <legend>
-                        <span><wicket:message key="mapmlVectorSection">Vector Config</wicket:message></span>
-                    </legend>
-                    <div class="gn-unordered-list-class choiceList">
-                        <div class="gn-list-item-class">
-                            <input id="useFeatures" wicket:id="useFeatures" type="checkbox"></input>
-                            <label for="useFeatures">
-                                <wicket:message key="mapmlUseFeatures">Use Features</wicket:message>
-                            </label>
-                        </div>
-                    </div>
-                </fieldset>
+              <fieldset>
+                <legend>
+                  <span>
+                    <wicket:message key="mapmlMultiExtentSection">Sub-layer Config</wicket:message>
+                  </span>
+                </legend>
+                <div class="gn-unordered-list-class choiceList">
+                  <div class="gn-list-item-class">
+                    <input id="multiextent" wicket:id="useMultiExtents" type="checkbox"/>
+                    <label for="multiextent">
+                      <wicket:message key="mapmlUseMultiExtents">Expose sub-layers in layer control</wicket:message>
+                    </label>
+                  </div>
+                </div>
+              </fieldset>
             </div>
             <div class="gn-list-item-class">
-                <fieldset>
-                    <legend>
-                        <span><wicket:message key="mapmlMultiExtentSection">Sub-layer Config</wicket:message></span>
-                    </legend>
-                    <div class="gn-unordered-list-class choiceList">
-                      <div class="gn-list-item-class">
-                        <input id="multiextent" wicket:id="useMultiExtents" type="checkbox"></input>
-                        <label for="multiextent">
-                          <wicket:message key="mapmlUseMultiExtents">Expose sub-layers in layer control</wicket:message>
-                        </label>
-                      </div>
-                    </div>
-                </fieldset>
+              <fieldset>
+                <legend>
+                  <span>
+                    <wicket:message key="mapmlDimensionSection">Dimension Config</wicket:message>
+                  </span>
+                </legend>
+                <div class="gn-unordered-list-class">
+                  <div class="gn-list-item-class">
+                    <label for="dimension">
+                      <wicket:message key="mapmlDimension">Dimension</wicket:message>
+                    </label>
+                    <select id="dimension" wicket:id="dimension"/>
+                  </div>
+                </div>
+              </fieldset>
             </div>
             <div class="gn-list-item-class">
-                <fieldset>
-                    <legend>
-                        <span><wicket:message key="mapmlDimensionSection">Dimension Config</wicket:message></span>
-                    </legend>
-                    <div class="gn-unordered-list-class">
-                        <div class="gn-list-item-class">
-                            <label for="dimension">
-                                <wicket:message key="mapmlDimension">Dimension</wicket:message>
-                            </label>
-                            <select id="dimension" wicket:id="dimension"></select>
-                        </div>
-                    </div>
-                </fieldset>
-            </div>
-            <div class="gn-list-item-class">
-                <fieldset>
-                    <legend>
-                        <span><wicket:message key="mapmlFeatureCaptionSection">Map text and attributes to &lt;featurecaption&gt;</wicket:message></span>
-                    </legend>
-                    <div class="gn-unordered-list-class">
-                        <!--                            <div class="gn-list-item-class">
+              <fieldset>
+                <legend>
+                  <span>
+                    <wicket:message key="mapmlFeatureCaptionSection">Map text and attributes to &lt;featurecaption&gt;</wicket:message>
+                  </span>
+                </legend>
+                <div class="gn-unordered-list-class">
+                  <!--                            <div class="gn-list-item-class">
                                                         <label for="featurecaptionattributes"><wicket:message key="mapmlFeatureCaption">Available Attributes</wicket:message></label>
                                                         <select id="featurecaptionattributes" wicket:id="featurecaptionattributes"></select>
                                                     </div>-->
-                        <div class="gn-list-item-class">
-                            <label for="featurecaptionattributes">
-                                <wicket:message key="mapmlFeatureCaption">Available Attributes</wicket:message>
-                            </label>
-                            <select id="featurecaptionattributes" class="select w-md"
-                                    wicket:id="featurecaptionattributes" multiple="multiple"></select>
-                        </div>
-                        <div class="gn-list-item-class">
-                            <label for="featureCaptionTemplate">
-                                <wicket:message key="mapmlFeatureCaptionTemplate">Feature Caption Template String (enter
-                                    text including &#36;{attribute-name} placeholders for attribute names
+                  <div class="gn-list-item-class">
+                    <label for="featurecaptionattributes">
+                      <wicket:message key="mapmlFeatureCaption">Available Attributes</wicket:message>
+                    </label>
+                    <select id="featurecaptionattributes" class="select w-md" wicket:id="featurecaptionattributes" multiple="multiple"/>
+                  </div>
+                  <div class="gn-list-item-class">
+                    <label for="featureCaptionTemplate">
+                      <wicket:message key="mapmlFeatureCaptionTemplate">Feature Caption Template String (enter
+                                    text including ${attribute-name} placeholders for attribute names
                                     [case-sensitive] in the feature caption)
                                 </wicket:message>
-                            </label>
-                            <textarea id="featureCaptionTemplate" wicket:id="featureCaptionTemplate"
-                                      class="field" rows="5" cols="30"></textarea>
-                            <script src="mapml/js/feature-caption-selector.js" type="text/javascript"></script>
-                        </div>
-                    </div>
-                </fieldset>
+                    </label>
+                    <textarea id="featureCaptionTemplate" wicket:id="featureCaptionTemplate" class="field" rows="5" cols="30"/>
+                    <script src="mapml/js/feature-caption-selector.js" type="text/javascript"/>
+                  </div>
+                </div>
+              </fieldset>
             </div>
             <div class="gn-list-item-class">
-                <fieldset>
-                    <legend>
-                        <span><wicket:message key="mapmlDefaultMimeSection">Default Mimetype</wicket:message></span>
-                    </legend>
-                    <div class="gn-unordered-list-class">
-                        <div class="gn-list-item-class">
-                            <label for="mime">
-                                <wicket:message key="mapmlDefaultMime">Mime</wicket:message>
-                            </label>
-                            <select id="mime" wicket:id="mime"></select>
-                        </div>
-                    </div>
-                </fieldset>
+              <fieldset>
+                <legend>
+                  <span>
+                    <wicket:message key="mapmlDefaultMimeSection">Default Mimetype</wicket:message>
+                  </span>
+                </legend>
+                <div class="gn-unordered-list-class">
+                  <div class="gn-list-item-class">
+                    <label for="mime">
+                      <wicket:message key="mapmlDefaultMime">Mime</wicket:message>
+                    </label>
+                    <select id="mime" wicket:id="mime"/>
+                  </div>
+                </div>
+              </fieldset>
             </div>
+          </div>
         </div>
-    </wicket:panel>
-</form>
-</body>
+      </wicket:panel>
+    </form>
+  </body>
 </html>

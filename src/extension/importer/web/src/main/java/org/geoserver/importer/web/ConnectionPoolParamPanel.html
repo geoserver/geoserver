@@ -1,35 +1,47 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<wicket:panel>
-   <div class="gn-unordered-list-class">
-    <div class="gn-list-item-class primary"><label for="minConnection"><wicket:message key="minConnection">minConnection</wicket:message></label>
-    <input
-      type="text"
-      wicket:id="minConnection"
-      size="6" /></div>
-    <div class="gn-list-item-class secondary"><label for="maxConnection"><wicket:message key="maxConnection">maxConnection</wicket:message></label>
-    <input
-      type="text"
-      wicket:id="maxConnection"
-      size="6" /></div>
-    <div class="gn-list-item-class clearBoth"><label for="fetchSize"><wicket:message key="fetchSize">fetchSize</wicket:message></label>
-    <input
-      type="text"
-      wicket:id="fetchSize"
-      size="6" /></div>
-    <div class="gn-list-item-class"> <label for="timeout"><wicket:message key="timeout">timeout</wicket:message></label> <input
-      type="text"
-      wicket:id="timeout"
-      size="6" /></div>
-    <div class="gn-list-item-class choiceItem"><input
-      type="checkbox"
-      wicket:id="validate" /> <label
-      for="validate"><wicket:message key="validate">validate</wicket:message></label></div>
-    <div class="gn-list-item-class choiceItem" wicket:id="psContainer"><input
-      type="checkbox"
-      wicket:id="preparedStatements" /> <label
-      for="preparedStatements"><wicket:message key="preparedStatements">preparedStatements</wicket:message></label></div>
-   </div>
-  </wicket:panel>
-</body>
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-ConnectionPoolParamPanel">
+        <div class="gn-unordered-list-class">
+          <div class="gn-list-item-class primary">
+            <label for="minConnection">
+              <wicket:message key="minConnection">minConnection</wicket:message>
+            </label>
+            <input type="text" wicket:id="minConnection" size="6"/>
+          </div>
+          <div class="gn-list-item-class secondary">
+            <label for="maxConnection">
+              <wicket:message key="maxConnection">maxConnection</wicket:message>
+            </label>
+            <input type="text" wicket:id="maxConnection" size="6"/>
+          </div>
+          <div class="gn-list-item-class clearBoth">
+            <label for="fetchSize">
+              <wicket:message key="fetchSize">fetchSize</wicket:message>
+            </label>
+            <input type="text" wicket:id="fetchSize" size="6"/>
+          </div>
+          <div class="gn-list-item-class">
+            <label for="timeout">
+              <wicket:message key="timeout">timeout</wicket:message>
+            </label>
+            <input type="text" wicket:id="timeout" size="6"/>
+          </div>
+          <div class="gn-list-item-class choiceItem">
+            <input type="checkbox" wicket:id="validate"/>
+            <label for="validate">
+              <wicket:message key="validate">validate</wicket:message>
+            </label>
+          </div>
+          <div class="gn-list-item-class choiceItem" wicket:id="psContainer">
+            <input type="checkbox" wicket:id="preparedStatements"/>
+            <label for="preparedStatements">
+              <wicket:message key="preparedStatements">preparedStatements</wicket:message>
+            </label>
+          </div>
+        </div>
+      </div>
+    </wicket:panel>
+  </body>
 </html>

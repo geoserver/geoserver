@@ -1,56 +1,54 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
-<body>
-   <wicket:panel>
-      <br><wicket:message key="jsonPath"></wicket:message> <br>
-      <input wicket:id="tokenRolesClaim" class="field" type="text" /><br>
-
-      <label class="padTopLarge" >
-         <wicket:message key="roleConverterTitle"></wicket:message>
-      </label>
-      <!--
+  <body>
+    <wicket:panel>
+      <div class="gs-panel-OAuth2LoginAuthProviderPanel_TokenClaimPanel">
+        <br />
+        <wicket:message key="jsonPath"></wicket:message>
+        <br />
+        <input wicket:id="tokenRolesClaim" class="field" type="text" />
+        <br />
+        <label class="padTopLarge">
+          <wicket:message key="roleConverterTitle"></wicket:message>
+        </label>
+<!--
         `oninput` fires when user changes the value - this will
         update the summary table.
       -->
-      <input type="text" class="field width95" id="roleConverterString"
-             wicket:id="roleConverterString"/>
-
-      <label>
-         <wicket:message key="roleConverterHint"></wicket:message>
-      </label>
-      <div class="display-flex">
-         <input class="field autoTopBottom" id="onlyExternalListedRoles"
-                type="checkbox" wicket:id="onlyExternalListedRoles"/>
-         <label class="padLeftSmall"  >
+        <input type="text" class="field width95" id="roleConverterString" wicket:id="roleConverterString" />
+        <label>
+          <wicket:message key="roleConverterHint"></wicket:message>
+        </label>
+        <div class="display-flex">
+          <input class="field autoTopBottom" id="onlyExternalListedRoles" type="checkbox" wicket:id="onlyExternalListedRoles" />
+          <label class="padLeftSmall">
             <wicket:message key="roleConverterOnlyListedExternalRoles"></wicket:message>
-         </label>
-      </div>
-
-      <div id="roleConverterStringDiv" class="padTopLarge">
-         <table id="roleConverterStringTable">
+          </label>
+        </div>
+        <div id="roleConverterStringDiv" class="padTopLarge">
+          <table id="roleConverterStringTable">
             <thead>
-            <tr>
-               <th class="textAlignCenter">
-                  <wicket:message key="externalRoleTitle"/>
-               </th>
-               <th class="textAlignCenter">
-                  <wicket:message key="gsRoleTitle"/>
-               </th>
-            </tr>
+              <tr>
+                <th class="textAlignCenter">
+                  <wicket:message key="externalRoleTitle"></wicket:message>
+                </th>
+                <th class="textAlignCenter">
+                  <wicket:message key="gsRoleTitle"></wicket:message>
+                </th>
+              </tr>
             </thead>
             <tbody id="roleConverterStringTbody">
 
             </tbody>
-         </table>
-
-         <div class="display-flex justifyContentCenter fontSize10"  >
+          </table>
+          <div class="display-flex justifyContentCenter fontSize10">
             <div>
-               <wicket:message key="roleConverterTableTitle"/>
+              <wicket:message key="roleConverterTableTitle"></wicket:message>
             </div>
-         </div>
+          </div>
+        </div>
       </div>
-
-   </wicket:panel>
-</body>
+    </wicket:panel>
+  </body>
 </html>

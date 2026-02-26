@@ -1,20 +1,29 @@
+<?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-<body>
-<form name="theForm">
-<wicket:panel>
-  <fieldset>
-    <legend><span><wicket:message key="coverageParameters">Coverage Parameters</wicket:message></span></legend>
-    <div class="gn-unordered-list-class">
-      <div class="gn-list-item-class">
-        <div wicket:id="parameters">
-          <span wicket:id="parameterPanel">x</span>
+  <body>
+    <form name="theForm">
+      <wicket:panel>
+        <div class="gs-panel-CoverageResourceConfigurationPanel">
+          <fieldset>
+            <legend>
+              <span>
+                <wicket:message key="coverageParameters">Coverage Parameters</wicket:message>
+              </span>
+            </legend>
+            <div class="gn-unordered-list-class">
+              <div class="gn-list-item-class">
+                <div wicket:id="parameters">
+                  <span wicket:id="parameterPanel">x</span>
+                </div>
+                <div wicket:id="editCoverageViewContainer">
+                  <a wicket:id="editCoverageView">Edit Coverage View</a>
+                </div>
+              </div>
+            </div>
+          </fieldset>
         </div>
-        <div wicket:id="editCoverageViewContainer"><a wicket:id="editCoverageView">Edit Coverage View</a></div>
-      </div>
-    </div>
-  </fieldset>
-</wicket:panel>
-<button type="submit"></button>
-</form>
-</body>
+      </wicket:panel>
+      <button type="submit"/>
+    </form>
+  </body>
 </html>

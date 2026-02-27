@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <html xmlns:wicket="http://wicket.apache.org/">
-  <head/>
+<head>
+</head>
   <body>
     <wicket:panel>
       <div class="gs-panel-GridSubsetsEditor">
@@ -27,16 +28,18 @@
                   <label wicket:id="gridSet"/>
                 </td>
                 <td>
-                  <div class="text-nowrap"><select class="select" id="zoomStart" wicket:id="zoomStart"/>
-            /
-            <select class="select" id="zoomStop" wicket:id="zoomStop"/>
-          </div>
+                      <div class="minmax text-nowrap">
+                          <select class="select" id="zoomStart" wicket:id="zoomStart"/>
+                          /
+                         <select class="select" id="zoomStop" wicket:id="zoomStop"/>
+                       </div>
                 </td>
                 <td>
-                  <div class="text-nowrap"><select class="select" id="minCachedLevel" wicket:id="minCachedLevel"/>
-            /
-            <select class="select" id="maxCachedLevel" wicket:id="maxCachedLevel"/>
-          </div>
+                      <div class="minmax text-nowrap">
+                          <select class="select" id="minCachedLevel" wicket:id="minCachedLevel"/>
+                          /
+                          <select class="select" id="maxCachedLevel" wicket:id="maxCachedLevel"/>
+                      </div>
                 </td>
                 <td>
                   <span wicket:id="bounds"/>

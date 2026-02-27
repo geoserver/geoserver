@@ -22,10 +22,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.TimeZone;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -525,18 +527,23 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
 
     /**
      * Once sqlite is initialized (geopackage) changing the jvm timezone does nothing, this adapts the expected value to
-     * the current timezone instead of GMT
+     * the current timezone instead of GMT. GeoPackage converts to GMT using GeoTools DateTimeParser based on
+     * java.util.Date, resulting in different offsets then using Instand and ZonedDateTime. See GEOT-7870.
      */
     private String adjustExpectedForCurrentTimezone(String expectedGMT) {
-        TimeZone tz = TimeZone.getDefault();
-        int offsetHours = tz.getOffset(System.currentTimeMillis()) / (1000 * 60 * 60);
-
         return Arrays.stream(expectedGMT.split(","))
                 .map(String::trim)
                 .map(ts -> {
                     Instant instant = Instant.parse(ts);
+                    String dateText = ts.substring(0, ts.indexOf("T")) + "T00:00:00";
+                    ZonedDateTime dateTime = LocalDateTime.parse(dateText)
+                            .atZone(Clock.systemDefaultZone().getZone());
+                    int offset = dateTime.getOffset().getTotalSeconds();
+
                     // Adjust by the offset
-                    return instant.minusSeconds(offsetHours * 3600).toString().replace("Z", ".000Z");
+                    Instant adjusted = instant.minusSeconds(offset);
+
+                    return adjusted.toString().replace("Z", ".000Z");
                 })
                 .collect(Collectors.joining(","));
     }

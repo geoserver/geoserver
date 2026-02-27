@@ -18,6 +18,7 @@ import org.geoserver.platform.Service;
 import org.geoserver.web.ServiceDescription;
 import org.geoserver.web.ServiceDescriptionProvider;
 import org.geoserver.web.ServiceLinkDescription;
+import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 
 /** Provide description of CSW services for welcome page. */
@@ -75,10 +76,17 @@ public class CSWServiceDescriptionProvider extends ServiceDescriptionProvider {
             return links;
         }
 
+        CSWInfo info = info(workspaceInfo, layerInfo);
+        List<Version> disabledVersions = (info != null) ? info.getDisabledVersions() : null;
+
         List<Service> extensions = GeoServerExtensions.extensions(Service.class);
 
         for (Service service : extensions) {
             if (service.getService() instanceof WebCatalogService) {
+                if (disabledVersions != null && disabledVersions.contains(service.getVersion())) {
+                    continue;
+                }
+
                 String link;
                 if (service.getOperations().contains("GetCapabilities")) {
                     link = getCapabilitiesURL(workspaceInfo, layerInfo, service);

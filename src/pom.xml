@@ -2116,7 +2116,10 @@
       </build>
     </profile>
 
-    <!-- Dependency vulnerability checks -->
+    <!--
+       Dependency vulnerability checks. Run with:
+       mvn initialize dependency-check:aggregate -Prelease,pending,dependencycheck -nsu -fae -DnvdApiKey=<your nvd api key>
+    -->
     <profile>
       <id>dependencycheck</id>
       <build>
@@ -2124,7 +2127,7 @@
           <plugin>
             <groupId>org.owasp</groupId>
             <artifactId>dependency-check-maven</artifactId>
-            <version>7.1.1</version>
+            <version>12.2.0</version>
             <executions>
               <execution>
                 <goals>

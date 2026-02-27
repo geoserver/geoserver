@@ -45,7 +45,7 @@ How often should I upgrade GeoServer
 
 GeoServer operates with a time boxed release cycle, maintaining “stable” and “maintenance” releases, over the course of a year.
 
-* Plan to upgrade GeoServer **at lesat twice a year** as new stable releases are made.
+* Plan to upgrade GeoServer **at least twice a year** as new stable releases are made.
 
   Once the release you are using has entered "maintenance" it is a good idea to upgrade (before the release is no longer supported).
   
@@ -59,7 +59,7 @@ GeoServer operates with a time boxed release cycle, maintaining “stable” and
   
 * Monitor release announcements in case a new release is made that provides "Security Considerations" guidance.
   
-  It is always advisable to stay update with security patches. The blog post will indicate when the update is urgent,
+  It is always advisable to stay up to date with security patches. The blog post will indicate when the update is urgent,
   and several releases will be made concurrently (for both stable and maintenance) when urgent action is required.
 
   .. note:: Do not wait for a release to fall out of support before upgrading. Doing so
@@ -82,7 +82,7 @@ Forgetting to include an Extension
 
 The most common difficulty when updating GeoServer is forgetting to include an extension.
   
-* This may result in the application being unable to startup, as it attempts to read
+* This may result in the application being unable to start up, as it attempts to read
   a configuration file without the corresponding extension that understands the setting.
 
 * This may result in missing functionality, for example forgetting to install an output format
@@ -101,7 +101,7 @@ If it has been a while since you have upgraded GeoServer be cautious when upgrad
       
       * GeoServer 2.28.0
       
-      You may also make a note of the versions of Java to download:
+      You may also make a note of the version of Java to download:
       
       * OpenJDK 17
    
@@ -114,13 +114,13 @@ If it has been a while since you have upgraded GeoServer be cautious when upgrad
       during startup due to an improvement in startup performance.
       
       A wide a range of *Content Security Policy* restrictions have been introduced, and very clear instructions
-      noted to double check `proxy_base_url` is correct (as GeoServer user interface will now detect and block a
-      misconfigured system). The application proeprty `org.geoserver.web.csp.strict=false` available to temporarily 
+      noted to double check `proxy_base_url` is correct (as the GeoServer user interface will now detect and block a
+      misconfigured system). The application property `org.geoserver.web.csp.strict=false` is available to temporarily 
       disable this safety measure if you are locked out.
       
       Installation of Java 11 is required.
       
-      Out of an abundance of caution testing raster layers is advisable due to wholsale change of
+      Out of an abundance of caution testing raster layers is advisable due to wholesale change of
       the image processing engine.
 
    3. Review the logs during startup, and test to ensure the application is working as expected.
@@ -135,7 +135,7 @@ If it has been a while since you have upgraded GeoServer be cautious when upgrad
       * GeoServer 2.27.3
       * GeoServer 2.28.0
       
-      You may also make a note of the versions of Java to download:
+      You may also make a note of the version of Java to download:
       
       * OpenJDK 17
       
@@ -154,8 +154,8 @@ If it has been a while since you have upgraded GeoServer be cautious when upgrad
         during startup due to an improvement in startup performance.
         
         A wide a range of *Content Security Policy* restrictions have been introduced, and very clear instructions
-        noted to double check `proxy_base_url` is correct (as GeoServer user interface will now detect and block a
-        misconfigured system). The application proeprty `org.geoserver.web.csp.strict=false` available to temporarily 
+        noted to double check `proxy_base_url` is correct (as the GeoServer user interface will now detect and block a
+        misconfigured system). The application property `org.geoserver.web.csp.strict=false` is available to temporarily 
         disable this safety measure if you are locked out.
      
         *Review the logs during startup, and test to ensure the application is working as expected.*

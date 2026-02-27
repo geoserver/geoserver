@@ -2,8 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="${relBaseUrl}/openlayers3/ol.css" type="text/css"/>
-    <link rel="stylesheet" href="${relBaseUrl}/openlayers3/layout.css" type="text/css"/>
+    <link rel="stylesheet" href="${relBaseUrl}/openlayers3/ol.css" type="text/css">
+    <link rel="stylesheet" href="${relBaseUrl}/openlayers3/layout.css" type="text/css">
     <script src="${relBaseUrl}/openlayers3/ol.js" type="text/javascript"></script>
     <script src="${relBaseUrl}/webresources/wms/OpenLayers3Map.js" type="text/javascript"></script>
     <title>OpenLayers map preview</title>
@@ -13,7 +13,7 @@
     <div id="sidebar">
       <div id="brand">
         <a wicket:id="home" id="logo" href="#"></a>
-        <button id="sidebar-menu" class="button">
+        <button id="navigation-menu">
           <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'>
             <path stroke='currentColor' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22' />
           </svg>

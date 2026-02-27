@@ -42,6 +42,12 @@
       <groupId>org.apereo.cas.client</groupId>
       <artifactId>cas-client-core</artifactId>
       <version>4.0.4</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>bcpkix-jdk15on</artifactId>
+          <groupId>org.bouncycastle</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
   </dependencies>

@@ -561,6 +561,11 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         return "WMS";
     }
 
+    @Override
+    protected String getServiceType() {
+        return "WMS";
+    }
+
     private class WatermarkPositionRenderer extends ChoiceRenderer {
 
         @Override

@@ -143,6 +143,8 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         form.add(new KeywordsEditor("keywords", LiveCollectionModel.list(new PropertyModel<>(infoModel, "keywords"))));
         form.add(new TextField<>("fees"));
         form.add(new TextField<>("accessConstraints"));
+        form.add(new DisabledVersionsPanel(
+                "disabledVersions", new PropertyModel<>(infoModel, "disabledVersions"), getServiceType()));
 
         build(infoModel, form);
 
@@ -276,6 +278,12 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
 
     /** The string to use when representing this service to users. Subclasses must override. */
     protected abstract String getServiceName();
+
+    /**
+     * The service type identifier (e.g., "WMS", "WFS", "WCS"). Used to retrieve available versions from the service
+     * registry. Subclasses must override.
+     */
+    protected abstract String getServiceType();
 
     class ServiceModel<T extends ServiceInfo> extends LoadableDetachableModel<T> {
 

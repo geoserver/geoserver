@@ -11,23 +11,28 @@ import static org.junit.Assert.assertNotNull;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.logging.Level;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geotools.util.logging.Logging;
+import org.geotools.util.Version;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class WMSDisabledTest extends WMSTestSupport {
 
+    /** Tests that a disabled version returns an exception */
     @Test
-    public void testDisabledServiceResponse() throws Exception {
-        Logging.getLogger("org.geoserver.ows").setLevel(Level.OFF);
+    public void testDisabledVersionReturnsException() throws Exception {
         WMSInfo wms = getGeoServer().getService(WMSInfo.class);
-        wms.setEnabled(false);
+        wms.setEnabled(true);
+        wms.getDisabledVersions().clear();
+        wms.getDisabledVersions().add(new Version("1.3.0"));
         getGeoServer().save(wms);
 
-        Document doc = getAsDOM("wms?service=WMS&version=1.1.1&request=getCapabilities");
+        // request disabled version -> should fail
+        Document doc = getAsDOM("wms?service=WMS&version=1.3.0&request=GetCapabilities");
         assertEquals("ows:ExceptionReport", doc.getDocumentElement().getNodeName());
+
+        wms.getDisabledVersions().clear();
+        getGeoServer().save(wms);
     }
 
     @Test
@@ -57,6 +62,23 @@ public class WMSDisabledTest extends WMSTestSupport {
                 + "&height=250"
                 + "&srs=EPSG:4326");
         assertEquals("ServiceExceptionReport", doc.getDocumentElement().getNodeName());
+    }
+
+    /** Tests that an enabled version still works when another version is disabled */
+    @Test
+    public void testEnabledVersionStillWorks() throws Exception {
+        WMSInfo wms = getGeoServer().getService(WMSInfo.class);
+        wms.setEnabled(true);
+        wms.getDisabledVersions().clear();
+        wms.getDisabledVersions().add(new Version("1.1.1"));
+        getGeoServer().save(wms);
+
+        // request enabled version -> should succeed
+        Document doc = getAsDOM("wms?service=WMS&version=1.3.0&request=GetCapabilities");
+        assertEquals("WMS_Capabilities", doc.getDocumentElement().getNodeName());
+
+        wms.getDisabledVersions().clear();
+        getGeoServer().save(wms);
     }
 
     /** Tests WMS service enabled on layer-resource */

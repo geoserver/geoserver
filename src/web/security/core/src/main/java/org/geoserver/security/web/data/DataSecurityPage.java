@@ -95,7 +95,9 @@ public class DataSecurityPage extends AbstractSecurityPage {
                 new Model<>(CATALOG_MODES),
                 new CatalogModeRenderer());
         catalogModeChoice.add(new FormComponentUpdatingBehavior() {});
-        catalogModeChoice.setSuffix(" ");
+        // Wrap each radio input + label pair in a <div>...</div>
+        catalogModeChoice.setPrefix("<div>");
+        catalogModeChoice.setSuffix("</div>");
         form.add(catalogModeChoice);
 
         // Filesystem sandbox configuration, available only if the system administrator did
@@ -142,20 +144,9 @@ public class DataSecurityPage extends AbstractSecurityPage {
         String css =
                 """
                  #catalogMode {
-                         display:block;
-                         padding-top: 0.5em;
-                       }
-                       #catalogMode input {
-                          display: block;
-                          float: left;
-                          clear:left;
-                          padding-top:0.5em;
-                          margin-bottom: 0.5em;
-                       }
-                       #catalogMode label {
-                          clear:right;
-                          margin-bottom: 0.5em;
-                       }\
+                    display:block;
+                    padding-top: 0.5em;
+                }\
                 """;
         response.render(CssHeaderItem.forCSS(css, "org-geoserver-security-web-data-DataSecurityPage-1"));
     }

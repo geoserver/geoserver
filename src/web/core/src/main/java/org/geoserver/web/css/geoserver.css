@@ -1075,7 +1075,7 @@ Feedback Message Styles
 #ajaxFeedback {
   position: fixed;
   right: 20px;
-  top: 10px;
+  top: 55px;
   z-index: 100;
 }
 
@@ -1204,8 +1204,8 @@ Style editor
   display: block;
   position: fixed;
   z-index: 20;
-  top: 1.5rem;
-  right: 1.5rem;
+  top: 4.25rem;
+  right: 2rem;
 }
 #fullscreen-div img {
   display: block;
@@ -1979,4 +1979,20 @@ label.gs-switch-label {
 .bounding-box-controls {
     display:flex;
     flex-direction: column;
+}
+
+/* Tables - dnd */
+tr.dnd-drop-center td {
+  background-color: var(--gs-secondary-bg-subtle) !important;
+}
+div.dnd-theme-web tr {
+  cursor: move; /* fallback if grab cursor is unsupported */
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+}
+div.value-wide {
+  border: 1px solid var(--gs-border-color);
+  padding: 0.25em;
+  width: fit-content;
 }

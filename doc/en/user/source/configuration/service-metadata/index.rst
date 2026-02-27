@@ -35,4 +35,6 @@ These elements are described in the following table. Though these field types ar
      - Describes any constraints imposed by the service provider on the service. The keyword NONE is reserved to indicate no access constraints are imposed and fits most cases.
    * - Keywords
      - List of terms that are associated with the service to aid in cataloging and searching.
+   * - Disabled Versions
+     - Allows selectively disabling specific protocol versions for the service. Disabled versions will not be advertised on the GeoServer home page, and requests targeting a disabled version will be rejected with a service exception. When a request is made without specifying a version, the server will negotiate to the highest enabled version. This setting can be configured independently at the global and workspace level.
 

@@ -123,6 +123,9 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
         if (service.getVersions() == null) {
             ((WPSInfoImpl) service).setVersions(new ArrayList<>());
         }
+        if (service.getDisabledVersions() == null) {
+            ((WPSInfoImpl) service).setDisabledVersions(new ArrayList<>());
+        }
         if (service.getVersions().isEmpty()) {
             service.getVersions().add(new Version("1.0.0"));
         }

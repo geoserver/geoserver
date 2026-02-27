@@ -68,4 +68,9 @@ public class CSWAdminPage extends BaseServiceAdminPage<CSWInfo> {
     protected String getServiceName() {
         return "CSW";
     }
+
+    @Override
+    protected String getServiceType() {
+        return "CSW";
+    }
 }

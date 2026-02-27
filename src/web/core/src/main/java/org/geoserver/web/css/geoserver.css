@@ -306,8 +306,8 @@ body {
 
 /* End Utilities */
 
-form .gn-list-item-class,
-fieldset .gn-list-item-class,
+form .gs-list-item-class,
+fieldset .gs-list-item-class,
 fieldset > * {
   margin-bottom: 0.5rem;
 }
@@ -1964,7 +1964,7 @@ label.gs-switch-label {
   }
 }
 
-.gs-panel-EnvelopePanel .gn-unordered-list-class {
+.gs-panel-EnvelopePanel .gs-unordered-list-class {
     display: flex;
     flex-direction: row;
 }

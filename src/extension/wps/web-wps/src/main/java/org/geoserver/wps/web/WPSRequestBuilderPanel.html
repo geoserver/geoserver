@@ -3,16 +3,16 @@
   <body>
     <wicket:panel>
       <div class="gs-panel-WPSRequestBuilderPanel">
-        <div class="gn-unordered-list-class">
-          <div class="gn-list-item-class">
+        <div class="gs-unordered-list-class">
+          <div class="gs-list-item-class">
             <fieldset>
               <legend>
                 <span>
                   <wicket:message key="process">choose process</wicket:message>
                 </span>
               </legend>
-              <div class="gn-unordered-list-class">
-                <div class="gn-list-item-class">
+              <div class="gs-unordered-list-class">
+                <div class="gs-list-item-class">
                   <!--  <label for="name"><wicket:message key="name">process</wicket:message></label> -->
                   <select wicket:id="process"/>
                   <p wicket:id="descriptionContainer"><span wicket:id="processDescription"/> 
@@ -21,15 +21,15 @@
               </div>
             </fieldset>
           </div>
-          <div class="gn-list-item-class" wicket:id="inputContainer">
+          <div class="gs-list-item-class" wicket:id="inputContainer">
             <fieldset>
               <legend>
                 <span>
                   <wicket:message key="inputs">inputs</wicket:message>
                 </span>
               </legend>
-              <div class="gn-unordered-list-class">
-                <div class="gn-list-item-class mb-2" wicket:id="inputs">
+              <div class="gs-unordered-list-class">
+                <div class="gs-list-item-class mb-2" wicket:id="inputs">
                   <label wicket:id="param"/>
                   <span wicket:id="paramDescription"/>
                   <br/>
@@ -38,42 +38,42 @@
               </div>
             </fieldset>
           </div>
-          <div class="gn-list-item-class" wicket:id="outputContainer">
+          <div class="gs-list-item-class" wicket:id="outputContainer">
             <fieldset>
               <legend>
                 <span>
                   <wicket:message key="outputs">outputs</wicket:message>
                 </span>
               </legend>
-              <div class="gn-unordered-list-class">
-                <div class="gn-list-item-class mb-2" wicket:id="outputs"><label wicket:id="param"/><span wicket:id="paramDescription"/><br/><input class="field d-inline" type="checkbox" wicket:id="include"/> Generate <select wicket:id="mime"/>
+              <div class="gs-unordered-list-class">
+                <div class="gs-list-item-class mb-2" wicket:id="outputs"><label wicket:id="param"/><span wicket:id="paramDescription"/><br/><input class="field d-inline" type="checkbox" wicket:id="include"/> Generate <select wicket:id="mime"/>
             </div>
               </div>
             </fieldset>
           </div>
-          <div class="gn-list-item-class" wicket:id="authenticationContainer">
+          <div class="gs-list-item-class" wicket:id="authenticationContainer">
             <fieldset>
               <legend>
                 <span>
                   <wicket:message key="authentication">authentication</wicket:message>
                 </span>
               </legend>
-              <div class="gn-unordered-list-class">
-                <div class="gn-list-item-class choiceItem">
+              <div class="gs-unordered-list-class">
+                <div class="gs-list-item-class choiceItem">
                   <input type="checkbox" wicket:id="authenticate" id="authenticate"/>
                   <label for="authenticate">
                     <wicket:message key="authenticate">authenticate</wicket:message>
                   </label>
                 </div>
-                <div class="gn-list-item-class" wicket:id="userpwdContainer">
-                  <div class="gn-unordered-list-class">
-                    <div class="gn-list-item-class">
+                <div class="gs-list-item-class" wicket:id="userpwdContainer">
+                  <div class="gs-unordered-list-class">
+                    <div class="gs-list-item-class">
                       <label>
                         <wicket:message key="username">username</wicket:message>
                       </label>
                       <input type="text" size="30" name="username" wicket:id="username" id="WPSusername"/>
                     </div>
-                    <div class="gn-list-item-class">
+                    <div class="gs-list-item-class">
                       <label>
                         <wicket:message key="password">password</wicket:message>
                       </label>

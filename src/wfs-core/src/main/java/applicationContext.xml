@@ -63,7 +63,8 @@
 	<!-- http url mapping -->
 	<bean id="wfsURLMapping"
         class="org.geoserver.ows.OWSHandlerMapping">
-        <constructor-arg ref="catalog"/> 
+        <constructor-arg ref="catalog"/>
+		<property name="order" value="-100"/>
 		<property name="alwaysUseFullPath" value="true"/>
 		<property name="interceptors">
 			<list>

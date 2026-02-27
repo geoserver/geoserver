@@ -247,7 +247,7 @@ body {
 .table-header form {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: baseline;
 }
 
 .table-header form > div {
@@ -1854,20 +1854,13 @@ label.gs-switch-label {
   display: block;
 }
 /* Default: show anonymous icon, hide initials */
-.gs-user-avatar .gs-user-initials {
-  display: none;
-}
-.gs-user-avatar .gs-user-icon-anonymous {
-  display: inline-flex;
-}
-.gs-user-avatar:has(.gs-user-initials:not(:empty)) .gs-user-initials {
-  display: inline-flex;
-  max-width: 1ch;
-  overflow: hidden;
-  white-space: nowrap;
-}
+.gs-user-avatar .gs-user-initials,
 .gs-user-avatar:has(.gs-user-initials:not(:empty)) .gs-user-icon-anonymous {
   display: none;
+}
+.gs-user-avatar .gs-user-icon-anonymous,
+.gs-user-avatar:has(.gs-user-initials:not(:empty)) .gs-user-initials {
+  display: inline-flex;
 }
 .gs-user-dropdown-info ul {
   display: block;
@@ -2034,4 +2027,55 @@ label.gs-switch-label {
   height: auto;
   display: flex;
   align-items: center;
+}
+
+@media (max-width: 768px) {
+  /* Mobile table header */
+  .table-header form {
+    flex-direction: column;
+  }
+
+  /* Mobile card table */
+  table.gs-mobile-card-table > thead {
+    display: none;
+  }
+  table.gs-mobile-card-table > tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+  }
+  table.gs-mobile-card-table > tbody > tr {
+    display: flex;
+    flex-direction: column;
+    padding: 0.5em;
+    border: 1px solid var(--gs-border-color);
+    border-radius: var(--gs-border-radius);
+    background-color: var(--gs-body-bg);
+  }
+  table.gs-mobile-card-table > tbody > tr:first-child {
+    margin-top: 0.5em;
+  }
+  table.gs-mobile-card-table > tbody > tr > td {
+    padding: 0;
+    border-bottom-width: 0;
+    box-shadow: none;
+  }
+  table.gs-mobile-card-table > tbody > tr > td + td {
+    margin-top: 0.5em;
+  }
+  table.gs-mobile-card-table td > * {
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
+    margin-bottom: 0;
+  }
+  table.gs-mobile-card-table .field-name {
+    font-weight: 800;
+  }
+  table.gs-mobile-card-table .field-value {
+    font-weight: 400;
+  }
+  table.gs-mobile-card-table > tbody tr th.selection {
+    display: none;
+  }
 }

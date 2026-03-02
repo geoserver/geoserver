@@ -339,10 +339,6 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         add(bottomFeedbackPanel = new FeedbackPanel("bottomFeedback"));
         bottomFeedbackPanel.setOutputMarkupId(true);
 
-        // ajax feedback image
-        add(new Image(
-                "ajaxFeedbackImage", new PackageResourceReference(GeoServerBasePage.class, "img/ajax-loader.gif")));
-
         add(new WebMarkupContainer(HEADER_PANEL));
 
         // allow the subclasses to initialize before getTitle/getDescription are called

@@ -6,22 +6,22 @@
     <wicket:extend>
         <fieldset>
         <legend><span><wicket:message key="connectionSettingsLegend">Web Service Setting</wicket:message></span></legend>
-        <div class="gn-unordered-list-class">
+        <div class="gs-unordered-list-class">
         
-            <div class="gn-list-item-class"> <label for="connectionURL"><wicket:message key="connectionURL"></wicket:message></label> <input type="text"
+            <div class="gs-list-item-class"> <label for="connectionURL"><wicket:message key="connectionURL"></wicket:message></label> <input type="text"
                 id="connectionURL" wicket:id="connectionURL" /></div>
-            <div class="gn-list-item-class"> <label for="connectionTimeOut"><wicket:message
+            <div class="gs-list-item-class"> <label for="connectionTimeOut"><wicket:message
                         key="connectionTimeOut"></wicket:message></label> <input type="text"
                 id="connectionTimeOut" wicket:id="connectionTimeOut" />
             </div>
-            <div class="gn-list-item-class"> <label for="readTimeoutOut"><wicket:message
+            <div class="gs-list-item-class"> <label for="readTimeoutOut"><wicket:message
                         key="readTimeoutOut"></wicket:message></label> <input type="text"
                 id="readTimeoutOut" wicket:id="readTimeoutOut" /></div>
-            <div class="gn-list-item-class choiceItem">
+            <div class="gs-list-item-class choiceItem">
                  <input type="checkbox" id="useHeader" wicket:id="useHeader" />
                  <label for="useHeader"><span><wicket:message key="useHeader"></wicket:message></span></label>
             </div>
-            <div class="gn-list-item-class choiceItem">
+            <div class="gs-list-item-class choiceItem">
                 <input type="checkbox" id="allowHTTPConnection" wicket:id="allowHTTPConnection" />
                 <label for="allowHTTPConnection"><span><wicket:message key="allowHTTPConnection"></wicket:message></span></label>
             </div>
@@ -33,12 +33,12 @@
 <!--         <div id="authorizationOption" wicket:id="authorizationOption"></div> -->
 <!--         </div> -->
         <div id="authorizationOption" wicket:id="authorizationOption">
-        <div class="gn-unordered-list-class choiceList">
-          <div class="gn-list-item-class">
+        <div class="gs-unordered-list-class choiceList">
+          <div class="gs-list-item-class">
             <input id="roleService" wicket:id="roleService" type="radio"></input>
             <label for="roleService">Use Existing Role Service</label>
           </div>
-          <div class="gn-list-item-class">
+          <div class="gs-list-item-class">
             <input id="webResponse" wicket:id="webResponse" type="radio"></input>
             <label for="webResponse">Read Roles from Web Response</label>
           </div>
@@ -46,13 +46,13 @@
       </div>
         </fieldset>
         <div  id="webAuthorizationContainer" wicket:id="webAuthorizationContainer">
-        <div class="gn-list-item-class">
+        <div class="gs-list-item-class">
                  <label for="roleRegex"><wicket:message key="roleRegex"></wicket:message></label>
                  <input type="text" id="roleRegex" wicket:id="roleRegex" />
         </div>
         </div>
         <div  id="roleAuthorizationContainer" wicket:id="roleAuthorizationContainer">
-        <div class="gn-list-item-class">
+        <div class="gs-list-item-class">
                 <label for="roleServiceName"><wicket:message key="roleService"></wicket:message></label>
                 <select id="roleServiceName" wicket:id="roleServiceName"></select>
         </div>

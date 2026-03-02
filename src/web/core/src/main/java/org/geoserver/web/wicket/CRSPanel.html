@@ -8,14 +8,16 @@
   <body>
     <wicket:panel>
       <div class="gs-panel-CRSPanel">
-        <!--form wicket:id="form"-->
-        <input wicket:id="srs" type="text"/>
-        <!--button wicket:id="lookup">Lookup</button-->
-        <button wicket:id="find">
-          <wicket:message key="find">Find...</wicket:message>
-        </button>
-        <a wicket:id="wkt" wicket:message="title:CRSPanel.wktLink"><span wicket:id="wktLabel"/>...</a>
-        <!--/form-->
+        <div class="gs-input-group">
+          <!--form wicket:id="form"-->
+          <input wicket:id="srs" type="text"/>
+          <!--button wicket:id="lookup">Lookup</button-->
+          <button class="outline-primary" wicket:id="find">
+            <wicket:message key="find">Find...</wicket:message>
+          </button>
+          <a class="button outline-primary" wicket:id="wkt" wicket:message="title:CRSPanel.wktLink"><span wicket:id="wktLabel"/>...</a>
+          <!--/form-->
+        </div>
         <div wicket:id="popup"/>
         <div class="page-pane selfclear">
           <wicket:child/>

@@ -154,8 +154,10 @@
         </div>
         <div class="gn-list-item-class">
           <label><wicket:message key="watermarkUrl">Watermark URL</wicket:message></label>
-          <input wicket:id="watermark.uRL" class="field" type="text"></input>
-          <a href="#" wicket:id="chooser"><wicket:message key="browse">...</wicket:message></a>
+          <div class="gs-input-group">
+            <input wicket:id="watermark.uRL" class="field" type="text"></input>
+            <a class="button outline-primary" href="#" wicket:id="chooser"><wicket:message key="browse">...</wicket:message></a>
+          </div>
         </div>
         <div class="gn-list-item-class">
           <label><wicket:message key="watermarkTransparency">Watermark Transparency (0 - 100)</wicket:message></label>

@@ -28,8 +28,10 @@
               <label for="globalQuota">
                 <wicket:message key="setGlobalQuota">Set cache disk quota to:</wicket:message>
               </label>
-              <input class="w-sm" wicket:id="globalQuota" id="globalQuota" type="text"/>
-              <select class="text" id="globalQuotaUnits" wicket:id="globalQuotaUnits"/>
+              <div class="gs-input-group">
+                <input class="w-sm" wicket:id="globalQuota" id="globalQuota" type="text"/>
+                <select class="text" id="globalQuotaUnits" wicket:id="globalQuotaUnits"/>
+              </div>
               <div wicket:id="globalQuotaProgressBar"/>
             </div>
             <div class="gn-list-item-class">

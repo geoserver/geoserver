@@ -4,11 +4,20 @@
 <wicket:extend>
     <div class="w-wide">
        <form wicket:id="form" class="clearfix">
-         <div class="float-start"><wicket:message key="maxLines">max console lines</wicket:message>&#160;<input type="number" wicket:id="lines"/></div>
-         <div class="float-end"><a class="button" href="#" wicket:id="refresh"><wicket:message key="refresh">refresh</wicket:message></a></div>
+         <div class="float-start">
+          <wicket:message key="maxLines">max console lines</wicket:message>&#160;
+          <div class="gs-input-group">
+            <input type="number" wicket:id="lines"/>
+            <a class="button" href="#" wicket:id="refresh">
+              <wicket:message key="refresh">refresh</wicket:message>
+            </a>
+          </div>
+        </div>
        </form>
        <div><textarea readonly="readonly" wicket:id="logs"></textarea></div>
-       <a class="button" href="#" wicket:id="download"><wicket:message key="download">download full log file</wicket:message></a>
+       <div class="button-group">
+         <a class="button" href="#" wicket:id="download"><wicket:message key="download">download full log file</wicket:message></a>
+       </div>
     </div>
 </wicket:extend>
 </body>

@@ -12,10 +12,12 @@
         <div>
           <span>
             <wicket:message key="addDefaultGridSet">Add default GridSet</wicket:message>
-            <select class="select mw-100" id="availableGridsets" wicket:id="availableGridsets"/>
-            <a href="#" wicket:id="addGridset">
-              <img wicket:id="addIcon"/>
-            </a>
+            <div class="gs-input-group">
+              <select class="select mw-100" id="availableGridsets" wicket:id="availableGridsets"/>
+              <a class="button add-selected-btn" href="#" wicket:id="addGridset">
+                <img wicket:id="addIcon"/>
+              </a>
+            </div>
           </span>
         </div>
       </div>

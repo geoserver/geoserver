@@ -50,10 +50,12 @@
           <div>
             <span>
               <wicket:message key="addGridSubsetFor">Add Grid Subset for GridSet</wicket:message>
-              <select class="select" id="availableGridsets" wicket:id="availableGridsets"/>
-              <a href="#" wicket:id="addGridSubset">
-                <span wicket:id="addIcon"/>
-              </a>
+              <div class="gs-input-group">
+                <select class="select" id="availableGridsets" wicket:id="availableGridsets"/>
+                <a class="button add-selected-btn" href="#" wicket:id="addGridSubset">
+                  <span wicket:id="addIcon"/>
+                </a>
+              </div>
             </span>
           </div>
         </div>

@@ -53,7 +53,7 @@
   --gs-font-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --gs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --gs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
-  --gs-body-font-family: var(--gs-font-sans-serif);
+  --gs-body-font-family: Tahoma, "Lucida Sans Unicode", "Lucida Grande", Verdana, sans-serif;
   --gs-body-font-size: 1rem;
   --gs-body-font-weight: 400;
   --gs-body-line-height: 1.5;
@@ -212,7 +212,7 @@ body {
 
 .page-header {
   padding-top: 1rem;
-  position: sticky;
+  position: relative;
   top: 0;
   background-color: var(--gs-body-bg);
   z-index: 15;
@@ -240,8 +240,10 @@ body {
   top: 0;
   z-index: 10;
   background-color: var(--gs-body-bg);
-  padding: 0.5rem 0;
   border-bottom: 1px solid var(--gs-border-color);
+}
+.table-header:has(*) {
+  padding: 0.5rem 0;
 }
 
 .table-header form {
@@ -784,7 +786,7 @@ table > tbody > tr:nth-of-type(odd) > * {
 .action-group {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 1rem;
   padding: 0;
   margin: 0;
   list-style: none;
@@ -1072,11 +1074,25 @@ Feedback Message Styles
   color: var(--gs-danger-text-emphasis);
 }
 
-#ajaxFeedback {
-  position: fixed;
-  right: 20px;
-  top: 10px;
-  z-index: 100;
+/* Spinner */
+.gs-spinner {
+  width: 1.875rem;
+  height: 1.875rem;
+}
+.gs-spinner::before {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 3px solid var(--gs-border-color);
+  border-top-color: var(--gs-primary);
+  border-radius: 50%;
+  animation: gs-spinner 0.8s linear infinite;
+}
+@keyframes gs-spinner {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* button bar in forms */
@@ -1204,8 +1220,8 @@ Style editor
   display: block;
   position: fixed;
   z-index: 20;
-  top: 1.5rem;
-  right: 1.5rem;
+  top: 4.25rem;
+  right: 2rem;
 }
 #fullscreen-div img {
   display: block;
@@ -1857,14 +1873,9 @@ label.gs-switch-label {
 .gs-user-avatar .gs-user-initials {
   display: none;
 }
-.gs-user-avatar .gs-user-icon-anonymous {
-  display: inline-flex;
-}
+.gs-user-avatar .gs-user-icon-anonymous,
 .gs-user-avatar:has(.gs-user-initials:not(:empty)) .gs-user-initials {
   display: inline-flex;
-  max-width: 1ch;
-  overflow: hidden;
-  white-space: nowrap;
 }
 .gs-user-avatar:has(.gs-user-initials:not(:empty)) .gs-user-icon-anonymous {
   display: none;
@@ -1972,6 +1983,22 @@ label.gs-switch-label {
 .bounding-box-controls {
     display:flex;
     flex-direction: column;
+}
+
+/* Tables - dnd */
+tr.dnd-drop-center td {
+  background-color: var(--gs-secondary-bg-subtle) !important;
+}
+div.dnd-theme-web tr {
+  cursor: move; /* fallback if grab cursor is unsupported */
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+}
+div.value-wide {
+  border: 1px solid var(--gs-border-color);
+  padding: 0.25em;
+  width: fit-content;
 }
 
 /*-----------

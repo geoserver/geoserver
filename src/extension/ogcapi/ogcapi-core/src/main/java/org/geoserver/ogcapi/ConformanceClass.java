@@ -9,7 +9,7 @@ public class ConformanceClass {
     public static final String CORE = "http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/core";
     public static final String HTML = "http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/html";
     public static final String JSON = "http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/json";
-    public static final String OAS3 = "http://www.opengis.net/spec/ogcapi-common/1.0/conf/oas30";
+    public static final String OAS3 = "http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/oas30";
 
     public static final String COLLECTIONS = "http://www.opengis.net/spec/ogcapi-common-2/1.0/conf/collections";
     public static final String GEODATA = "http://www.opengis.net/spec/ogcapi-common-2/1.0/conf/geodata";
@@ -31,7 +31,7 @@ public class ConformanceClass {
     /** Ids filter conformance class for "OGC API - Features - Part n: Query by IDs" */
     public static final String IDS = "http://www.opengis.net/spec/ogcapi-features-1/1.1/conf/ids";
 
-    public static final String ECQL_TEXT = "http://geoserver.org/spec/ecql/1.0/conf/ecql-text";
+    public static final String ECQL_TEXT = "http://geoserver.org/spec/ecql/1.0/req/ecql-text";
 
     /** Search conformance class for "OGC API - Features - Part 5: Search (PROPOSAL DRAFT)" */
     public static final String SEARCH = "http://www.opengis.net/spec/ogcapi-features-5/1.0/conf/search";
@@ -53,7 +53,7 @@ public class ConformanceClass {
 
     // requires implementation of all the operators, basic comparisons do work against temporal data
     // too
-    public static final String CQL2_TEMPORAL = "http://www.opengis.net/spec/cql2/1.0/conf/temporal-operators";
+    public static final String CQL2_TEMPORAL = "http://www.opengis.net/spec/cql2/1.0/conf/temporal-functions";
     public static final String CQL2_PROPERTY_PROPERTY = "http://www.opengis.net/spec/cql2/1.0/conf/property-property";
     public static final String CQL2_FUNCTIONS = "http://www.opengis.net/spec/cql2/1.0/conf/functions";
     public static final String CQL2_ARITHMETIC = "http://www.opengis.net/spec/cql2/1.0/conf/arithmetic";

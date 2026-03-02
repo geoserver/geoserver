@@ -309,8 +309,8 @@ public class NewLayerPage extends GeoServerSecuredPage {
     void updateSpecialFunctionPanels(StoreInfo store) {
         // at the moment just assume every store can create types
         try {
-            createTypeContainer.setVisible(store instanceof DataStoreInfo dsi
-                    && ((DataStoreInfo) store).getDataStore(null) instanceof DataStore);
+            createTypeContainer.setVisible(
+                    store instanceof DataStoreInfo dsi && dsi.getDataStore(null) instanceof DataStore);
         } catch (IOException e) {
             LOGGER.log(Level.FINEST, e.getMessage());
         }

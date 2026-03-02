@@ -74,6 +74,9 @@ plugins:
       cover_subtitle: Version 3.0
       output_path: pdf/geoserver-developer-manual.pdf
 
+hooks:
+  - hooks/download_files.py
+
 markdown_extensions:
   - admonition
   - pymdownx.details

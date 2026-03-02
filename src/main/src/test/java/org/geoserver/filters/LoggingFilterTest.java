@@ -189,7 +189,6 @@ public class LoggingFilterTest {
                 }
                 res.setContentType("text/plain");
 
-                @SuppressWarnings("PMD.CloseResource")
                 ServletOutputStream os = res.getOutputStream();
                 os.print(echo.toString());
             }

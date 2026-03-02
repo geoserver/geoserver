@@ -110,7 +110,6 @@ public class FileStrategy implements ServiceStrategy {
             // copy result to the real output stream
             try (InputStream copy = new BufferedInputStream(new FileInputStream(temp))) {
 
-                @SuppressWarnings("PMD.CloseResource") // managed by servlet container
                 OutputStream out = response.getOutputStream();
                 out = new BufferedOutputStream(out, 1024 * 1024);
 

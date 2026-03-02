@@ -1,0 +1,15 @@
+{
+  "version": 8,
+  "name": "simple-polygon-transparent",
+  "layers": [
+    {
+      "id": "polygon-transparent",
+      "type": "fill",
+      "paint": {
+        "fill-outline-color": "#FFFFFF",
+        "fill-color": "#000080",
+        "fill-opacity": 0.5
+      }
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+title: 'YSLD Cook Book: Optimized label placement'
+feature-styles:
+- name: name
+  rules:
+  - symbolizers:
+    - line:
+        stroke-color: '#FF0000'
+        stroke-width: 1
+    - text:
+        label: ${name}
+        fill-color: '#000000'
+        placement: line
+        offset: 0
+        x-followLine: true
+        x-maxAngleDelta: 90
+        x-maxDisplacement: 400
+        x-repeat: 150

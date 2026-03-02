@@ -1,0 +1,14 @@
+title: 'YSLD Cook Book: Hatching fill'
+feature-styles:
+- name: name
+  rules:
+  - symbolizers:
+    - polygon:
+        fill-color: '#808080'
+        fill-graphic:
+          size: 16
+          symbols:
+          - mark:
+              shape: shape://times
+              stroke-color: '#990099'
+              stroke-width: 1

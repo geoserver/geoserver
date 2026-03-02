@@ -1,0 +1,70 @@
+name: MkDocs Documentation
+
+on:
+  push:
+    branches: [3.0, 2.28.x]
+    paths:
+      - 'doc/**'
+      - '.github/workflows/mkdocs.yml'
+  pull_request:
+    branches: [3.0, 2.28.x]
+    paths:
+      - 'doc/**'
+      - '.github/workflows/mkdocs.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+      
+      - name: Install MkDocs dependencies
+        run: |
+          pip install mkdocs mkdocs-material mkdocs-macros-plugin mkdocs-with-pdf pymdown-extensions
+      
+      - name: Build User Manual
+        working-directory: doc/en/user
+        run: |
+          mkdocs build --strict
+      
+      - name: Build Developer Manual
+        working-directory: doc/en/developer
+        run: |
+          mkdocs build --strict
+      
+      - name: Build Documentation Guide
+        working-directory: doc/en/docguide
+        run: |
+          mkdocs build --strict
+      
+      - name: Build Chinese Documentation
+        working-directory: doc/zhCN
+        run: |
+          mkdocs build --strict
+      
+      - name: Prepare GitHub Pages output
+        run: |
+          mkdir -p gh-pages-output/en
+          cp -r doc/en/user/site gh-pages-output/en/user
+          cp -r doc/en/developer/site gh-pages-output/en/developer
+          cp -r doc/en/docguide/site gh-pages-output/en/docguide
+          mkdir -p gh-pages-output/zhCN
+          cp -r doc/zhCN/site gh-pages-output/zhCN/user
+      
+      - name: Deploy to GitHub Pages
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/3.0' || github.ref == 'refs/heads/2.28.x')
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./gh-pages-output
+          destination_dir: ${{ github.ref_name }}

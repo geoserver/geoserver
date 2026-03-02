@@ -1,0 +1,57 @@
+.. note:: Voting on GeoServer Improvement Proposal (GSIP)
+   
+   #. Proposals may be made by any interested party (PSC, Non-PSC, committer,user,etc...).
+   
+      All community members are encouraged to review proposals, and provide their support and feedback.
+   
+   #. Each PSC member may vote one of the following in support of the proposal:
+   
+      * +1 : For
+      * +0: Mildly for, but mostly indifferent
+      * -0: Mildly against, but mostly indifferent
+      * -1 : Against, accompanied with a detailed reason of being against
+   
+   #. Voting remains open for ten days or until all PSC members have cast their vote.
+   
+      * At the end of ten days time any remaining votes are assumed to be +0.
+      
+      * Any active PSC member can during ten days request an extension of voting for
+        an additional ten days; the voting period can only be extended once.
+
+      * Any PSC member who votes "-1" against a proposal must provide a
+        reasonable explanation as to why.
+        
+      * Any PSC member who votes "-1" against a proposal has a limited time to
+        provide constructive feedback as to how their -1 vote can be addressed.
+        
+        The GSIP author must incorporate any reasonable feedback into the proposal.
+
+        The PSC member who voted "-1" must consider whether their feedback has been
+        addressed and whether they wish to change their vote.
+           
+   #. Voting results:
+      
+      * A vote of "+1" means support for a proposal
+      * The neutral votes "+0", "0", and "-0" all count the same as "0" but permit PSC members
+        to indicate a slight tendency for, neutral, or against a proposal respectively
+      * A vote of "-1" means opposition to the proposal
+
+      A unanimous response is:
+      
+      * Successful: No -1 votes against it, or
+      * Unsuccessful: No +1 votes for it.
+   
+   #. A GSIP is accepted if it receives:
+
+      * at least 30% "+1" votes, and
+      * no "-1" votes (or all feedback from any "-1" votes has been addressed and any "-1" voters have changed their votes)
+   
+   #. In the event of an *successful non unanimous* vote, the following steps are taken:
+ 
+      * Each member who votes -1 *may* supply an alternative with which the original author can use to rework the proposal in order to satisfy that PSC member.
+      * If at least one -1 voting PSC member supplies some alternative criteria, the original author must rework the proposal and resubmit, and the voting process starts again from scratch.
+      * If no -1 voters are able to supply alternative criteria, the proposal is accepted.
+   
+   #. In the event of an *unsuccessful* vote, the author may choose to rework and submit.
+      
+      A proposal may not be resubmitted after being rejected three times.

@@ -1,0 +1,19 @@
+# GeoWebCache REST API
+
+This section discusses the GeoWebCache REST API, an interface for working programmatically with the integrated GeoWebCache without the need for a GUI.
+
+The GeoWebCache REST endpoint when integrated with GeoServer is available at:
+
+    <GEOSERVER_HOME>/gwc/rest/
+
+For example:
+
+    http://example.com:8080/geoserver/gwc/rest/
+
+<div class="grid cards" markdown>
+
+- [GeowebcacheRestLayers](layers.md)
+- [GeowebcacheRestSeed](seed.md)
+- [GeowebcacheRestDiskquota](diskquota.md)
+
+</div>

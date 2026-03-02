@@ -5,7 +5,6 @@
 
     <bean id="hzHomePageContentProvider" 
           class="org.geoserver.cluster.hazelcast.web.HazelcastHomePageContentProvider">
-      <constructor-arg ref="hzCluster"/>
     </bean>
 
    <bean id="hzSynchronizerInitializer" 

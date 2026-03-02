@@ -1,0 +1,95 @@
+site_name: GeoServer 用户手册
+site_url: https://docs.geoserver.org/3.0/zhCN/user/
+repo_url: https://github.com/geoserver/geoserver
+repo_name: geoserver/geoserver
+edit_uri: edit/main/doc/zhCN/user/docs/
+
+docs_dir: docs
+site_dir: target/html
+
+theme:
+  name: material
+  custom_dir: ../../themes/geoserver
+  logo: img/geoserver-logo.png
+  favicon: img/geoserver.ico
+  language: zh
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue
+      accent: light-blue
+      toggle:
+        icon: material/brightness-7
+        name: 切换到深色模式
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue
+      accent: light-blue
+      toggle:
+        icon: material/brightness-4
+        name: 切换到浅色模式
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.tracking
+    - navigation.indexes
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.action.edit
+
+extra:
+  version: "3.0"
+  release: "3.0.0"
+  version_selector:
+    - version: latest
+      title: 最新版 (3.0)
+      aliases: []
+    - version: "3.0"
+      title: "3.0"
+      aliases: []
+    - version: "2.28.x"
+      title: "2.28.x"
+      aliases: []
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/geoserver/geoserver
+    - icon: fontawesome/solid/globe
+      link: https://geoserver.org
+
+plugins:
+  - search:
+      lang: zh
+  - macros:
+      render_by_default: false
+  - with-pdf:
+      enabled_if_env: ENABLE_PDF_EXPORT
+      author: GeoServer Project
+      copyright: Copyright © 2024 Open Source Geospatial Foundation
+      cover_title: GeoServer 用户手册
+      cover_subtitle: 版本 3.0
+      output_path: pdf/geoserver-user-manual-zh.pdf
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+# Navigation will be added after conversion from nav_generated.yml
+nav:
+  - 首页: index.md

@@ -45,7 +45,7 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - Review conversion logs for warnings and errors
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 15.1, 15.2_
 
-  - [ ] 2.2 Update mkdocs.yml configurations
+  - [x] 2.2 Update mkdocs.yml configurations
     - Merge generated navigation from nav_generated.yml into mkdocs.yml for each manual
     - Configure mkdocs-macros-plugin with version and release variables
     - Configure pymdownx extensions (tabbed, superfences, admonition)

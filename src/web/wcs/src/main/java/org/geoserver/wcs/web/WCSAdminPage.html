@@ -7,13 +7,13 @@
 			<span><wicket:message
 		key="processing">processing</wicket:message></span>
 		</legend>
-		<div class="gn-unordered-list-class">
-			<div class="gn-list-item-class choiceItem"><input class="field" type="checkbox"
+		<div class="gs-unordered-list-class">
+			<div class="gs-list-item-class choiceItem"><input class="field" type="checkbox"
 				wicket:id="subsamplingEnabled"></input> <label for="subsamplingEnabled"><wicket:message
 				key="subsampling">subsampling</wicket:message></label></div>
-			<div class="gn-list-item-class"> <label><wicket:message key="overviewPolicy">overview</wicket:message></label>
+			<div class="gs-list-item-class"> <label><wicket:message key="overviewPolicy">overview</wicket:message></label>
 			<select wicket:id="overviewPolicy" class="field"></select></div>
-			<div class="gn-list-item-class choiceItem"><input wicket:id="latLon" type="checkbox"></input> <label for="latLon"><wicket:message
+			<div class="gs-list-item-class choiceItem"><input wicket:id="latLon" type="checkbox"></input> <label for="latLon"><wicket:message
 				key="latLonOrder">subsampling</wicket:message></label></div>
 		</div>
 	</fieldset>
@@ -23,13 +23,13 @@
 			<span><wicket:message
 		key="resourceLimits">ResourceConsumptionLimits</wicket:message></span>
 		</legend>
-		<div class="gn-unordered-list-class">
-			<div class="gn-list-item-class"> <label><wicket:message key="maxInputMemory">maxinput</wicket:message></label>
+		<div class="gs-unordered-list-class">
+			<div class="gs-list-item-class"> <label><wicket:message key="maxInputMemory">maxinput</wicket:message></label>
 			<input type="text" wicket:id="maxInputMemory" class="field" /></div>
-			<div class="gn-list-item-class"> <label><wicket:message key="maxOutputMemory">maxoutput</wicket:message></label>
+			<div class="gs-list-item-class"> <label><wicket:message key="maxOutputMemory">maxoutput</wicket:message></label>
 			<input type="text" wicket:id="maxOutputMemory" class="field" />
 			</div>
-			<div class="gn-list-item-class">
+			<div class="gs-list-item-class">
 				<label><wicket:message key="maxRequestedDimensionValues">Max requested dimension values</wicket:message></label>
 				<input type="text" wicket:id="maxRequestedDimensionValues" class="field"/>
 			</div>
@@ -40,8 +40,8 @@
 		<legend>
 			<span><wicket:message key="limitedSRSList">LimitedSRSlist</wicket:message></span>
 		</legend>
-		<div class="gn-unordered-list-class">
-			<div class="gn-list-item-class">
+		<div class="gs-unordered-list-class">
+			<div class="gs-list-item-class">
 				<textarea class="input" rows="10" cols="30" wicket:id="srs"></textarea>
 			</div>
 		</div>
@@ -55,8 +55,8 @@
 
 	<fieldset>
 		<legend><span><wicket:message key="compressionSettings">Compression Settings</wicket:message></span></legend>
-		<div class="gn-unordered-list-class">
-			<div class="gn-list-item-class"> <label><wicket:message key="defaultDeflateCompressionLevel">defaultDeflateCompressionLevel</wicket:message></label>
+		<div class="gs-unordered-list-class">
+			<div class="gs-list-item-class"> <label><wicket:message key="defaultDeflateCompressionLevel">defaultDeflateCompressionLevel</wicket:message></label>
 			<input type="text" wicket:id="defaultDeflateCompressionLevel" class="field" /></div>
 		</div>
 	</fieldset>

@@ -48,8 +48,8 @@ public class ConformanceClass {
     // right now includes also accent insensitive under this clause
     public static final String CQL2_CASE_INSENSITIVE =
             "http://www.opengis.net/spec/cql2/1.0/conf/case-insensitive-comparison";
-    public static final String CQL2_BASIC_SPATIAL = "http://www.opengis.net/spec/cql2/1.0/conf/basic-spatial-operators";
-    public static final String CQL2_SPATIAL = "http://www.opengis.net/spec/cql2/1.0/conf/spatial-operators";
+    public static final String CQL2_BASIC_SPATIAL = "http://www.opengis.net/spec/cql2/1.0/conf/basic-spatial-functions";
+    public static final String CQL2_SPATIAL = "http://www.opengis.net/spec/cql2/1.0/conf/spatial-functions";
 
     // requires implementation of all the operators, basic comparisons do work against temporal data
     // too

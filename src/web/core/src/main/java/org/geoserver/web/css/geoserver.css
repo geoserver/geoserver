@@ -1985,6 +1985,19 @@ label.gs-switch-label {
     flex-direction: column;
 }
 
+
+.gs-grid-table {
+    display: grid;
+    width: 100%;
+    grid-template-columns: 1fr 1fr;
+}
+
+
+.gs-grid-table-cell {
+    padding: 10px;
+    border: var(--gs-border-width) solid var(--gs-border-color);
+}
+
 /* Tables - dnd */
 tr.dnd-drop-center td {
   background-color: var(--gs-secondary-bg-subtle) !important;

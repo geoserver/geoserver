@@ -9,7 +9,7 @@ public class ConformanceClass {
     public static final String CORE = "http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/core";
     public static final String HTML = "http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/html";
     public static final String JSON = "http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/json";
-    public static final String OAS3 = "http://www.opengis.net/spec/ogcapi-common/1.0/req/oas30";
+    public static final String OAS3 = "http://www.opengis.net/spec/ogcapi-common/1.0/conf/oas30";
 
     public static final String COLLECTIONS = "http://www.opengis.net/spec/ogcapi-common-2/1.0/conf/collections";
     public static final String GEODATA = "http://www.opengis.net/spec/ogcapi-common-2/1.0/conf/geodata";
@@ -26,37 +26,37 @@ public class ConformanceClass {
             "http://www.opengis.net/spec/ogcapi-features-3/1.0/conf/features-filter";
 
     /** Sorting conformance class from OGC API - Records. */
-    public static final String SORTBY = "http://www.opengis.net/spec/ogcapi-records-1/1.0/req/sorting";
+    public static final String SORTBY = "http://www.opengis.net/spec/ogcapi-records-1/1.0/conf/sorting";
 
     /** Ids filter conformance class for "OGC API - Features - Part n: Query by IDs" */
-    public static final String IDS = "http://www.opengis.net/spec/ogcapi-features-1/1.1/req/ids";
+    public static final String IDS = "http://www.opengis.net/spec/ogcapi-features-1/1.1/conf/ids";
 
-    public static final String ECQL_TEXT = "http://geoserver.org/spec/ecql/1.0/req/ecql-text";
+    public static final String ECQL_TEXT = "http://geoserver.org/spec/ecql/1.0/conf/ecql-text";
 
     /** Search conformance class for "OGC API - Features - Part 5: Search (PROPOSAL DRAFT)" */
-    public static final String SEARCH = "http://www.opengis.net/spec/ogcapi-features-5/1.0/req/search";
+    public static final String SEARCH = "http://www.opengis.net/spec/ogcapi-features-5/1.0/conf/search";
 
     /** CQL2 encoding conformance classes */
-    public static final String CQL2_TEXT = "http://www.opengis.net/spec/cql2/1.0/req/cql2-text";
+    public static final String CQL2_TEXT = "http://www.opengis.net/spec/cql2/1.0/conf/cql2-text";
 
-    public static final String CQL2_JSON = "http://www.opengis.net/spec/cql2/1.0/req/cql2-json";
+    public static final String CQL2_JSON = "http://www.opengis.net/spec/cql2/1.0/conf/cql2-json";
 
     /** CQL2 capabilities conformance classes */
-    public static final String CQL2_BASIC = "http://www.opengis.net/spec/cql2/1.0/req/basic-cql2";
+    public static final String CQL2_BASIC = "http://www.opengis.net/spec/cql2/1.0/conf/basic-cql2";
 
-    public static final String CQL2_ADVANCED = "http://www.opengis.net/spec/cql2/1.0/req/advanced-comparison-operators";
+    public static final String CQL2_ADVANCED = "http://www.opengis.net/spec/cql2/1.0/conf/advanced-comparison-operators";
     // right now includes also accent insensitive under this clause
     public static final String CQL2_CASE_INSENSITIVE =
-            "http://www.opengis.net/spec/cql2/1.0/req/case-insensitive-comparison";
-    public static final String CQL2_BASIC_SPATIAL = "http://www.opengis.net/spec/cql2/1.0/req/basic-spatial-operators";
-    public static final String CQL2_SPATIAL = "http://www.opengis.net/spec/cql2/1.0/req/spatial-operators";
+            "http://www.opengis.net/spec/cql2/1.0/conf/case-insensitive-comparison";
+    public static final String CQL2_BASIC_SPATIAL = "http://www.opengis.net/spec/cql2/1.0/conf/basic-spatial-operators";
+    public static final String CQL2_SPATIAL = "http://www.opengis.net/spec/cql2/1.0/conf/spatial-operators";
 
     // requires implementation of all the operators, basic comparisons do work against temporal data
     // too
-    public static final String CQL2_TEMPORAL = "http://www.opengis.net/spec/cql2/1.0/req/temporal-operators";
-    public static final String CQL2_PROPERTY_PROPERTY = "http://www.opengis.net/spec/cql2/1.0/req/property-property";
-    public static final String CQL2_FUNCTIONS = "http://www.opengis.net/spec/cql2/1.0/req/functions";
-    public static final String CQL2_ARITHMETIC = "http://www.opengis.net/spec/cql2/1.0/req/arithmetic";
+    public static final String CQL2_TEMPORAL = "http://www.opengis.net/spec/cql2/1.0/conf/temporal-operators";
+    public static final String CQL2_PROPERTY_PROPERTY = "http://www.opengis.net/spec/cql2/1.0/conf/property-property";
+    public static final String CQL2_FUNCTIONS = "http://www.opengis.net/spec/cql2/1.0/conf/functions";
+    public static final String CQL2_ARITHMETIC = "http://www.opengis.net/spec/cql2/1.0/conf/arithmetic";
 
     /** Property selection */
     public static final String PROPERTY_SELECTION =

@@ -1984,9 +1984,9 @@ label.gs-switch-label {
 
 .gs-grid-table-cell {
     padding: 10px;
-    border: 1px solid #ccc;
-    /*text-align: center;*/
+    border: var(--gs-border-width) solid var(--gs-border-color);
 }
+
 /*-----------
  Input group
 ------------*/

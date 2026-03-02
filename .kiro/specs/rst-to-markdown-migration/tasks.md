@@ -1,0 +1,315 @@
+# Implementation Plan: RST to Markdown Migration
+
+## Overview
+
+This plan executes the one-time migration of GeoServer documentation from RST/Sphinx to Markdown/MkDocs across 6 phases over 14 days. The conversion tool (petersmythe/translate) already exists; this project focuses on executing conversion, validating results, committing changes, and managing the transition for branches 3.0 and 2.28.x.
+
+## Tasks
+
+- [ ] 1. Phase 1: Preparation and Setup (Days 1-2)
+  - [x] 1.1 Create migration branches and setup environment
+    - Create migration branch from 3.0: `git checkout -b migration/3.0-rst-to-md main`
+    - Create migration branch from 2.28.x: `git checkout -b migration/2.28-x-rst-to-md 2.28.x`
+    - Install Python dependencies: mkdocs, mkdocs-material, mkdocs-macros-plugin, mkdocs-with-pdf, pymdown-extensions
+    - Clone petersmythe/translate tool to local environment
+    - _Requirements: 1.1, 1.5_
+
+  - [x] 1.2 Create migration orchestration script (migration.py)
+    - Implement MigrationOrchestrator class with convert_all_files(), validate_conversion(), generate_config(), create_summary_report()
+    - Implement TranslationToolWrapper to execute petersmythe/translate on RST files
+    - Configure directive mappings (guilabel, menuselection, file, code-block, note, warning, tip, only)
+    - Configure variable substitutions (|version|, |release|)
+    - _Requirements: 1.2, 1.3, 1.4, 1.6_
+
+  - [x] 1.3 Create validation scripts
+    - Implement RoundTripValidator class to compare Sphinx HTML vs MkDocs HTML
+    - Implement LinkValidator to check internal links, external links, and anchors
+    - Implement ImageValidator to verify image references and identify screenshots
+    - Create validation report generator
+    - _Requirements: 5.1, 5.2, 5.3, 5.4, 6.1, 6.2, 6.3, 6.4, 6.5_
+
+  - [x] 1.4 Test conversion locally on sample files
+    - Select 5-10 representative RST files from user manual
+    - Run conversion on sample files
+    - Manually review converted Markdown for quality
+    - Verify directive conversions work correctly
+    - Adjust directive mappings if needed
+    - _Requirements: 1.2, 1.3, 1.4, 5.5, 5.6_
+
+- [ ] 2. Phase 2: 3.0 Branch Conversion (Days 3-5)
+  - [x] 2.1 Execute full conversion on 3.0 branch
+    - Switch to migration/3.0-rst-to-md branch
+    - Run migration.py to convert all RST files in doc/en/user/, doc/en/developer/, doc/en/docguide/
+    - Convert Chinese documentation in doc/zhCN/
+    - Generate mkdocs.yml configurations with navigation structure
+    - Review conversion logs for warnings and errors
+    - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 15.1, 15.2_
+
+  - [ ] 2.2 Update mkdocs.yml configurations
+    - Merge generated navigation from nav_generated.yml into mkdocs.yml for each manual
+    - Configure mkdocs-macros-plugin with version and release variables
+    - Configure pymdownx extensions (tabbed, superfences, admonition)
+    - Configure theme branding (logo, colors, dark mode)
+    - Configure version selector with versions: 3.0, 2.28.x, latest
+    - Configure PDF generation with mkdocs-with-pdf plugin
+    - Configure social links (GitHub, geoserver.org)
+    - Update doc/zhCN/mkdocs.yml with Chinese language settings
+    - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 14.1, 14.2, 14.3, 14.4, 14.5, 14.6, 14.7, 15.3, 16.1, 16.2, 16.3, 17.1, 17.2, 17.3, 17.4, 17.6_
+
+  - [ ] 2.3 Create build hooks for download files
+    - Create hooks/download_files.py with on_pre_build() and on_files() functions
+    - Implement scan_download_links() to find download references in Markdown
+    - Implement copy_download_files() to copy files from src/ to docs output
+    - Configure download_sources in mkdocs.yml extra section
+    - Test download links work in built documentation
+    - _Requirements: 18.1, 18.2, 18.3, 18.4, 18.5_
+
+  - [ ] 2.4 Update GitHub Actions workflow for post-migration builds
+    - Modify .github/workflows/mkdocs.yml to remove conversion steps
+    - Remove "Install pandoc" step
+    - Remove "Install mkdocs-translate" step
+    - Remove "Convert RST to Markdown" step
+    - Keep "Build all MkDocs sites" step (builds from source Markdown)
+    - Keep "Deploy to GitHub Pages" step
+    - Update workflow trigger branches to [3.0, 2.28.x]
+    - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7_
+
+  - [ ] 2.5 Commit converted files (DO NOT remove RST yet)
+    - Stage all converted Markdown files
+    - Stage updated mkdocs.yml files
+    - Stage hooks/download_files.py
+    - Stage updated .github/workflows/mkdocs.yml
+    - Commit with message: "Convert 3.0 documentation from RST to Markdown"
+    - DO NOT commit temporary conversion files (target/, convert/)
+    - DO NOT remove RST files yet (removal happens after validation in Phase 3)
+    - _Requirements: 2.1, 2.2, 2.5, 3.8_
+
+- [ ] 3. Phase 3: Validation and Quality Assurance (Days 6-8)
+  - [ ] 3.1 Build and compare HTML outputs
+    - Build Sphinx HTML from original RST files: `cd doc/en && make html`
+    - Build MkDocs HTML from converted Markdown: `cd doc/en/user && mkdocs build`
+    - Run RoundTripValidator to compare rendered pages side-by-side
+    - Identify major rendering problems (tables, missing sections, broken formatting)
+    - Document comparison results
+    - _Requirements: 5.1, 5.2, 5.3, 5.4_
+
+  - [ ] 3.2 Manual review of directive conversions
+    - Review guilabel conversions (should be bold text)
+    - Review menuselection conversions (should be bold with arrow separator)
+    - Review file conversions (should be inline code)
+    - Review admonition formatting (note, warning, tip)
+    - Review code block formatting and syntax highlighting
+    - Review conditional content (only snapshot/release → tabbed)
+    - **NOTE from Task 1.4 testing:** Conditional content (.. only:: directive) currently converts to admonition blocks (!!! abstract "Release"/"Nightly Build") instead of pymdownx.tabbed syntax (=== "Release"). This is functional but not ideal. Evaluate if manual conversion to tabbed syntax is needed, or if admonition format is acceptable.
+    - **NOTE from Task 1.4 testing:** Variable substitutions (|version|, |release|) are NOW AUTOMATICALLY HANDLED by the migration.py postprocessor. The script detects files using {{ version }} or {{ release }} and automatically adds render_macros: true frontmatter. Verify frontmatter was added correctly during review.
+    - **NOTE from Task 1.4 testing:** Interpreted text roles (e.g., :website:`text <url>`, :developer:`text <url>`) are NOW AUTOMATICALLY CONVERTED by the migration.py postprocessor. The script converts common roles (website, developer, user, api, geotools, wiki, geos/JIRA, docguide, download_*) to proper Markdown links. **ENHANCEMENT COMPLETED**: Enhanced postprocessor now handles 99%+ of all interpreted text roles automatically (364 roles converted in 2.28.x branch). Only ~54 edge cases remain for manual review. Verify conversions are correct and check for any remaining unknown roles during manual review.
+    - Fix critical rendering issues
+    - _Requirements: 5.5, 5.6_
+
+  - [ ] 3.3 Validate navigation structure
+    - Verify navigation hierarchy matches original Sphinx structure
+    - Test navigation tabs, sections, and expansion
+    - Verify breadcrumbs work correctly
+    - Test "Back to top" functionality
+    - _Requirements: 5.7, 7.7_
+
+  - [ ] 3.4 Validate link integrity
+    - Run LinkValidator on built HTML
+    - Fix all broken internal links
+    - Fix all broken anchor links
+    - Verify all image references exist
+    - Document any broken external links (don't fix)
+    - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7_
+
+  - [ ] 3.5 Test builds and deployment
+    - Push migration branch to GitHub
+    - Trigger GitHub Actions workflow
+    - Verify HTML builds successfully for user, developer, and docguide manuals
+    - Verify no build errors or warnings
+    - Verify GitHub Pages preview is accessible
+    - Test documentation on desktop browsers (Chrome, Firefox, Safari)
+    - Test documentation on mobile browsers
+    - Verify search functionality works with English queries
+    - Verify search functionality works with Chinese queries
+    - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 15.6_
+
+  - [ ] 3.6 Test PDF generation
+    - Build PDFs with ENABLE_PDF_EXPORT=1
+    - Verify PDF generated for User Manual
+    - Verify PDF generated for Developer Manual
+    - Verify PDF generated for Documentation Guide
+    - Review PDF formatting (table of contents, code blocks, images)
+    - _Requirements: 17.1, 17.2, 17.3, 17.4, 17.5_
+
+  - [ ] 3.7 Remove RST infrastructure after successful validation
+    - Remove doc/en/user/source/ directory (RST files)
+    - Remove doc/en/developer/source/ directory (RST files)
+    - Remove doc/en/docguide/source/ directory (RST files)
+    - Remove doc/zhCN/source/ directory (RST files)
+    - Remove doc/en/requirements.txt (Sphinx dependencies)
+    - Remove doc/en/build.xml (Ant build script)
+    - Update doc/en/pom.xml to remove Sphinx build profiles
+    - Remove .github/workflows/docs.yml (old Sphinx workflow)
+    - Commit removals with message: "Remove RST infrastructure after migration to Markdown"
+    - _Requirements: 20.1, 20.2, 20.3, 20.4, 20.5, 20.6, 20.7_
+
+  - [ ] 3.8 Create migration summary report
+    - Count total RST files converted
+    - Count total lines of documentation converted
+    - List unconverted directives or issues
+    - Document conversion time
+    - List files removed (RST sources, Sphinx config)
+    - List files added (Markdown docs, updated workflows)
+    - _Requirements: 19.1, 19.2, 19.3, 19.4, 19.5, 19.6_
+
+  - [ ] 3.9 Create pull request for 3.0 branch
+    - Create PR: "Migrate 3.0 documentation from RST to Markdown"
+    - Include migration summary report in PR description
+    - Document known minor issues
+    - Request review from documentation maintainers
+    - _Requirements: 2.3, 2.4, 5.9, 19.7_
+
+- [ ] 4. Checkpoint - Ensure 3.0 migration is complete
+  - Ensure all validation passes, all tests pass, PR is ready for review. Ask the user if questions arise.
+
+- [ ] 5. Phase 4: 2.28.x Branch Conversion (Days 9-11)
+  - [ ] 5.1 Execute full conversion on 2.28.x branch
+    - Switch to migration/2.28-x-rst-to-md branch
+    - Run migration.py to convert all RST files in doc/en/user/, doc/en/developer/, doc/en/docguide/
+    - Convert Chinese documentation in doc/zhCN/
+    - Generate mkdocs.yml configurations with navigation structure
+    - Review conversion logs for warnings and errors
+    - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 15.1, 15.2_
+
+  - [ ] 5.2 Update mkdocs.yml configurations for 2.28.x
+    - Apply same configuration as 3.0 branch (theme, plugins, extensions)
+    - Update version variables to 2.28.x
+    - Configure version selector with correct version number
+    - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 16.1, 16.2, 16.3_
+
+  - [ ] 5.3 Update GitHub Actions workflow for 2.28.x
+    - Apply same workflow changes as 3.0 branch
+    - Verify workflow triggers on 2.28.x branch
+    - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7_
+
+  - [ ] 5.4 Commit converted files for 2.28.x (DO NOT remove RST yet)
+    - Stage all converted Markdown files
+    - Stage updated mkdocs.yml files
+    - Stage updated .github/workflows/mkdocs.yml
+    - Commit with message: "Convert 2.28.x documentation from RST to Markdown"
+    - _Requirements: 2.1, 2.2, 2.5_
+
+  - [ ] 5.5 Validate 2.28.x conversion
+    - Run same validation steps as 3.0 branch (HTML comparison, link validation, build tests)
+    - Fix any issues specific to 2.28.x branch
+    - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7_
+
+  - [ ] 5.6 Remove RST infrastructure for 2.28.x after validation
+    - Remove all RST source directories and Sphinx configuration
+    - Commit removals with message: "Remove RST infrastructure after migration to Markdown"
+    - _Requirements: 20.1, 20.2, 20.3, 20.4, 20.5, 20.6, 20.7_
+
+  - [ ] 5.7 Create migration summary report for 2.28.x
+    - Generate same report as 3.0 branch
+    - _Requirements: 19.1, 19.2, 19.3, 19.4, 19.5, 19.6_
+
+  - [ ] 5.8 Create pull request for 2.28.x branch
+    - Create PR: "Migrate 2.28.x documentation from RST to Markdown"
+    - Include migration summary report in PR description
+    - _Requirements: 2.3, 2.4, 19.7_
+
+- [ ] 6. Checkpoint - Ensure 2.28.x migration is complete
+  - Ensure all validation passes, all tests pass, PR is ready for review. Ask the user if questions arise.
+
+- [ ] 7. Phase 5: Jenkins Analysis and OSGeo Deployment (Days 12-13)
+  - [ ] 7.1 Document Jenkins build process
+    - Access Jenkins build logs for documentation builds
+    - Document all Jenkins build steps
+    - Identify deployment targets used by Jenkins
+    - Compare Jenkins steps with GitHub Actions workflow
+    - Document any gaps or differences
+    - Create Jenkins analysis document
+    - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 8.7_
+
+  - [ ] 7.2 Update GitHub Actions workflow if gaps found
+    - Add any missing critical functionality from Jenkins
+    - Test updated workflow
+    - _Requirements: 8.6_
+
+  - [ ] 7.3 Configure OSGeo server deployment
+    - Add SSH credentials to GitHub Secrets (GEOSERVER_DOCS_SSH_KEY)
+    - Add deployment step to .github/workflows/mkdocs.yml
+    - Configure deployment to geoserverdocs@geo-docs.geoserver.org:2223
+    - Configure remote path: /var/www/geoserverdocs/$VER
+    - Configure "latest" symlink for 3.0 branch
+    - Replicate Jenkins deployment process (ZIP transfer + unzip)
+    - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5, 9.6_
+
+  - [ ] 7.4 Test OSGeo deployment on migration branch
+    - Deploy to test path on OSGeo server
+    - Verify URL structure matches existing docs
+    - Verify all files deployed correctly
+    - Verify "latest" symlink works
+    - _Requirements: 9.6, 9.7_
+
+- [ ] 8. Phase 6: Documentation Updates and Screenshot QA Prep (Day 14)
+  - [ ] 8.1 Update Documentation Guide for Markdown
+    - Update doc/en/docguide/ with Markdown syntax guide
+    - Document Markdown equivalents for RST directives (guilabel, menuselection, file, download, code-block, note, warning, tip, only)
+    - Provide examples of each directive conversion
+    - Document variable substitution using mkdocs-macros-plugin
+    - Document conditional content using pymdownx.tabbed
+    - Document local development workflow (mkdocs serve, mkdocs build)
+    - _Requirements: 10.1, 10.2, 10.3, 10.4, 10.5, 10.7_
+
+  - [ ] 8.2 Update doc/en/README.md
+    - Remove Sphinx build instructions
+    - Add MkDocs build instructions
+    - Document local development setup
+    - _Requirements: 10.6_
+
+  - [ ] 8.3 Test local development workflow
+    - Test `mkdocs serve` command for live preview
+    - Verify browser auto-reload on file changes
+    - Test `mkdocs build` command for local builds
+    - Measure and compare build time vs Sphinx
+    - Document setup steps in README
+    - _Requirements: 13.1, 13.2, 13.3, 13.4, 13.5_
+
+  - [ ] 8.4 Update steering documentation
+    - Check if .kiro/steering/ exists
+    - If exists, update with migration information
+    - Document new MkDocs build process
+    - Document how to contribute to Markdown documentation
+    - Document GitHub Actions workflow
+    - Remove references to Sphinx
+    - _Requirements: 11.1, 11.2, 11.3, 11.4, 11.5, 11.6_
+
+  - [ ] 8.5 Generate screenshot QA report
+    - Run ImageValidator to scan all images in documentation
+    - Classify images as screenshots, diagrams, or other
+    - Generate screenshot QA report listing all screenshots by page
+    - Create tracking spreadsheet for screenshot updates
+    - _Requirements: 12.3, 12.4_
+
+  - [ ] 8.6 Brief AfriGIS team on screenshot updates
+    - Document how to replace screenshots in Markdown
+    - Provide clear instructions for screenshot file paths and naming
+    - Explain that ALL screenshots will need updating for GS3 UI
+    - Explain Phase 1 begins mid-March when GS3 UI work begins
+    - Explain Phase 2 must complete before 15 April release
+    - _Requirements: 12.1, 12.2, 12.5, 12.6, 12.7_
+
+- [ ] 9. Final Checkpoint - Migration Complete
+  - Ensure all PRs are created, all documentation is updated, all validation passes. Ask the user if questions arise.
+
+## Notes
+
+- This is a project execution workflow, not software development
+- Conversion tool (petersmythe/translate) already exists - we're using it, not building it
+- RST infrastructure removal happens AFTER validation succeeds (Phase 3, task 3.7)
+- Screenshot updates are coordinated but not executed in this migration (separate QA process)
+- All tasks reference specific requirements for traceability
+- Checkpoints ensure validation at key milestones
+- 3.0 branch is converted first, then 2.28.x branch
+- Total timeline: 14 days across 6 phases

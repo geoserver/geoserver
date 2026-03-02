@@ -884,6 +884,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
      *
      * @param name The name of the password policy configuration.
      */
+    @SuppressWarnings("PMD.DoubleCheckedLocking")
     public PasswordValidator loadPasswordValidator(String name) throws IOException {
         PasswordValidator validator = passwordValidators.get(name);
         if (validator == null) {

@@ -345,8 +345,6 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                 for (Iterator descriptors = opRegistry.getDescriptors(mode).iterator();
                         descriptors != null && descriptors.hasNext(); ) {
                     RegistryElementDescriptor red = (RegistryElementDescriptor) descriptors.next();
-                    int factoryCount = 0;
-                    int unregisteredCount = 0;
                     // look for all the factories for that operation
                     for (Iterator factories = opRegistry.getFactoryIterator(mode, red.getName());
                             factories != null && factories.hasNext(); ) {
@@ -354,9 +352,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                         if (factory == null) {
                             continue;
                         }
-                        factoryCount++;
                         if (webappClassLoader.equals(factory.getClass().getClassLoader())) {
-                            boolean unregistered = false;
                             // we need to scan against all "products" to unregister the factory
                             List orderedProductList = opRegistry.getOrderedProductList(mode, red.getName());
                             if (orderedProductList != null) {
@@ -372,15 +368,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                                     }
                                 }
                             }
-                            if (unregistered) {
-                                unregisteredCount++;
-                            }
                         }
-                    }
-
-                    // if all the factories were unregistered, get rid of the descriptor as well
-                    if (factoryCount > 0 && unregisteredCount == factoryCount) {
-                        opRegistry.unregisterDescriptor(red);
                     }
                 }
             }

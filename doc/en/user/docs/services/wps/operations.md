@@ -2,6 +2,7 @@
 
 The WPS 1.0.0 standard defines three operations for the discovery and execution of geospatial processes, and GeoServer extends these with two further vendor or pseudo-operations. The operations are:
 
+|  |  |
 |----|----|
 | **Operation** | **Description** |
 | [GetCapabilities](#wps_getcaps) | Retrieves details of the service offering, including service metadata and metadata describing the available processes |

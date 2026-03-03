@@ -24,6 +24,7 @@ This exercise makes use of the `ne:populated_places` layer.
 1.  Navigate to the **Styles** page.
 2.  Click **Add a new style** and choose the following:
 
+|            |                             |
 |------------|-----------------------------|
 | Name:      | ``point_example`` |
 | Workspace: | ``No workspace``  |

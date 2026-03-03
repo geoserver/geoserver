@@ -13,6 +13,7 @@ The SLD specification defines two alternative label placement strategies which c
 
 When `<PointPlacement>` is used the geometry is labelled at a single **label point**. For lines, this point lies at the middle of the visible portion of the line. For polygons, the point is the centroid of the visible portion of the polygon. The position of the label relative to the label point can be controlled by the following sub-elements:
 
+|  |  |
 |----|----|
 | **Element** | **Description** |
 | `<AnchorPoint>` | Determines the placement of the label relative to the label point. Values given as decimals between 0-1. |
@@ -238,6 +239,7 @@ The `group` option allows displaying a single label for multiple features in a l
 
 Grouping works by collecting all features with the same label text, then choosing a representative geometry for the group, according to the following rules:
 
+|  |  |
 |----|----|
 | **Geometry** | **Label Point** |
 | Point Set | The first point inside the view rectangle is used. |
@@ -382,6 +384,7 @@ By default labels are subject to **conflict resolution**, meaning the renderer w
 
 GeoServer will remove labels if they are a particularly bad fit for the geometry they are labeling.
 
+|  |  |
 |----|----|
 | **Geometry** | **Goodness of Fit Algorithm** |
 | Point | Always returns 1.0 since the label is at the point |
@@ -402,6 +405,7 @@ GeoServer normally tries to place labels horizontally within a polygon, and give
 <VendorOption name="polygonAlign">mbr</VendorOption>
 ```
 
+|  |  |
 |----|----|
 | **Option** | **Description** |
 | `manual` | The default value. Only a rotation manually specified in the `<Rotation>` tag will be used |
@@ -416,6 +420,7 @@ When a `<Graphic>` is specified for a label by default it is displayed at its na
 <VendorOption name="graphic-resize">stretch</VendorOption>
 ```
 
+|  |  |
 |----|----|
 | **Option** | **Description** |
 | `none` | Graphic is displayed at its native size (default) |

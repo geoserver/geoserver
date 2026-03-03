@@ -27,6 +27,7 @@ If all is configured properly you should be able to navigate to <http://localhos
 
 Next we will create a template which allows us to specify the temporal aspects of the dataset. The schema of our dataset looks like:
 
+|            |                                         |
 |------------|-----------------------------------------|
 | INET_P100n | Number of internet users per 100 people |
 | NAME       | Name of country                         |
@@ -89,6 +90,7 @@ ${DATETIME_ATTRIBUTE_NAME.value?date("M?d%y")}
 
 So when must you specify the date format in this manner? The following table illustrates the **date** formats that GeoServer can understand. Note that the '-' character can be one of any of the following characters: '/' (forward slash), ' ' (space), '.' (period), ',' (comma)
 
+|                 |             |
 |-----------------|-------------|
 | **Date Format** | **Example** |
 | yyyy-MM-dd      | 2007-06-20  |
@@ -100,6 +102,7 @@ So when must you specify the date format in this manner? The following table ill
 
 The set of **date time** formats which GeoServer can be understand is formed by appending the timestamp formats `hh:mm` and `hh:mm:ss` to the entries in the above table:
 
+|                      |                      |
 |----------------------|----------------------|
 | **DateTime Format**  | **Example**          |
 | yyyy-MM-dd hh:mm     | 2007-06-20 12:30     |

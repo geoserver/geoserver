@@ -26,6 +26,7 @@ GeoServer makes the determination on whether to render a layer as raster or vect
 
 The following table shows the values of this threshold for various values of the `kmscore` parameter:
 
+|             |                               |
 |-------------|-------------------------------|
 | **kmscore** | **Maximum \# of features**    |
 | 0           | Force overlay/raster output   |

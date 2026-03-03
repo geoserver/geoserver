@@ -15,6 +15,7 @@ which would produce four 20x20 icons that graphically represent the rules of the
 
 The following table lists the whole set of GetLegendGraphic parameters that can be used.
 
+|  |  |  |
 |----|----|----|
 | **Parameter** | **Required** | **Description** |
 | *REQUEST* | Required | Value must be "GetLegendGraphic". |

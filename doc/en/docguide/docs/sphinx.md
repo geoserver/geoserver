@@ -6,6 +6,7 @@ This page contains syntax rules, tips, and tricks for using Sphinx and reStructu
 
 A reStructuredText document is written in plain text. Without the need for complex formatting, one can be composed simply, just like one would any plain text document. For basic formatting, see this table:
 
+|            |                                   |             |
 |------------|-----------------------------------|-------------|
 | **Format** | **Syntax**                        | **Output**  |
 | Italics    | `*italics*` (single asterisk)     | *italics*   |

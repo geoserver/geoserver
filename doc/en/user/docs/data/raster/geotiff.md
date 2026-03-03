@@ -14,6 +14,7 @@ By default, **GeoTIFF** will be an option in the **Raster Data Sources** list wh
 ![](images/geotiffconfigure.png)
 *Configuring a GeoTIFF data store*
 
+|  |  |
 |----|----|
 | **Option** | **Description** |
 | `Workspace` | Name of the workspace to contain the GeoTIFF store. This will also be the prefix of the raster layer created from the store. |

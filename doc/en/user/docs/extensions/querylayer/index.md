@@ -46,6 +46,7 @@ Filter functions are widely supported in GeoServer, so cross-layer filtering can
 
 The extension provides the following filter functions to support cross-layer filtering.
 
+|  |  |  |
 |----|----|----|
 | **Name** | **Arguments** | **Description** |
 | querySingle | `layer` : String, `attribute` : String, `filter` : String | Queries the specified `layer` applying the specified [ECQL](../../filter/ecql_reference.md) `filter` and returns the value of `attribute` from the first feature in the result set. The layer name must be qualified (e.g. `topp:states`). If no filtering is desired use the filter `INCLUDE`. |

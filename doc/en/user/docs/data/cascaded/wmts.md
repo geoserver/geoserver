@@ -16,6 +16,7 @@ To connect to an external WMTS, it is necessary to load it as a new store. To st
 ![](images/wmtsconfigure.png)
 *Configuring a new external WTMS store*
 
+|  |  |
 |----|----|
 | **Option** | **Description** |
 | **Workspace** | Name of the workspace to contain the store. This will also be the prefix of all of the layer names published from the store. |

@@ -17,6 +17,7 @@ The following examples use the `topp:states` sample layer shipped with GeoServer
 
 The attributes used in the filter examples are those included in the layer. For example, the following are the attribute names and values for the Colorado feature:
 
+|               |              |
 |---------------|--------------|
 | **Attribute** | **states.6** |
 | STATE_NAME    | Colorado     |

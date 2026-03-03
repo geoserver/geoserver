@@ -8,6 +8,7 @@ Whenever a data store backed by a database is added to GeoServer an internal con
 
 ## Connection pool options
 
+|  |  |
 |----|----|
 | max connections | The maximum number of connections the pool can hold. When the maximum number of connections is exceeded, additional requests that require a database connection will be halted until a connection from the pool becomes available. The maximum number of connections limits the number of concurrent requests that can be made against the database. |
 | min connections | The minimum number of connections the pool will hold. This number of connections is held even when there are no active requests. When this number of connections is exceeded due to serving requests additional connections are opened until the pool reaches its maximum size (described above). |

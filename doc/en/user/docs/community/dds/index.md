@@ -36,6 +36,7 @@ For a client application to use a BIL layer, it must know the data encoding of t
 
 The BIL output format can be configured for each layer in the Publishing tab of the layer configuration. The plugin supports the following options:
 
+|  |  |
 |----|----|
 | **Option** | **Description** |
 | `Default encoding` | The data encoding to use if the request does not specify an encoding. For example, application/bil does not specify the response encoding, while application/bil16 does specify an encoding. Default: use same encoding as layer source files. |

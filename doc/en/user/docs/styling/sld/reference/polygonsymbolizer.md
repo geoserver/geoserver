@@ -6,6 +6,7 @@ A **PolygonSymbolizer** styles features as **polygons**. Polygons are two-dimens
 
 A `<PolygonSymbolizer>` contains an optional `<Geometry>` element, and two elements `<Fill>` and `<Stroke>` for specifying styling:
 
+|              |               |                                                 |
 |--------------|---------------|-------------------------------------------------|
 | **Tag**      | **Required?** | **Description**                                 |
 | `<Geometry>` | No            | Specifies the geometry to be rendered.          |
@@ -26,6 +27,7 @@ The `<Stroke>` element specifies the styling for the **border** of a polygon. Th
 
 The `<Fill>` element specifies the styling for the **interior** of a polygon. It can contain the sub-elements:
 
+|  |  |  |
 |----|----|----|
 | **Tag** | **Required?** | **Description** |
 | `<GraphicFill>` | No | Renders the fill of the polygon with a repeated pattern. |
@@ -43,6 +45,7 @@ The `name` **attribute** indicates what aspect of styling an element specifies, 
 
 The following parameters are supported:
 
+|  |  |  |
 |----|----|----|
 | **Parameter** | **Required?** | **Description** |
 | `name="fill"` | No | Specifies the fill color, in the form `#RRGGBB`. Default is grey (`#808080`). |

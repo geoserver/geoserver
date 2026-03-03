@@ -13,6 +13,7 @@ To begin, navigate to **Stores --> Add a new store --> Directory of spatial file
 ![](images/directory.png)
 *Adding a directory of spatial files as a store*
 
+|  |  |
 |----|----|
 | **Option** | **Description** |
 | **Workspace** | Name of the workspace to contain the store. This will also be the prefix of all of the layer names created from shapefiles in the store. |

@@ -14,6 +14,7 @@ By default, **WorldImage** will be an option in the **Raster Data Sources** list
 ![](images/worldimageconfigure.png)
 *Configuring a WorldImage data store*
 
+|                    |                 |
 |--------------------|-----------------|
 | **Option**         | **Description** |
 | `Workspace`        |                 |

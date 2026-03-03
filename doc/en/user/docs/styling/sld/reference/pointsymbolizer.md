@@ -6,6 +6,7 @@ A **PointSymbolizer** styles features as **points**. Points are depicted as grap
 
 A `<PointSymbolizer>` contains an optional `<Geometry>` element, and a required `<Graphic>` element specifying the point symbology.
 
+|              |               |                                             |
 |--------------|---------------|---------------------------------------------|
 | **Tag**      | **Required?** | **Description**                             |
 | `<Geometry>` | No            | Specifies the geometry to be rendered.      |
@@ -23,6 +24,7 @@ Symbology is specified using a `<Graphic>` element. The symbol is specified by e
 
 There are five possible sub-elements of the `<Graphic>` element. One of `<ExternalGraphic>` or `<Mark>` must be specified; the others are optional.
 
+|  |  |  |
 |----|----|----|
 | **Tag** | **Required?** | **Description** |
 | `<ExternalGraphic>` | No (when using `<Mark>`) | Specifies an external image file to use as the symbol. |
@@ -37,6 +39,7 @@ There are five possible sub-elements of the `<Graphic>` element. One of `<Extern
 
 The `<ExternalGraphic>` element has the sub-elements:
 
+|  |  |  |
 |----|----|----|
 | **Tag** | **Required?** | **Description** |
 | `<OnlineResource>` | Yes | The `xlink:href` attribute specifies the location of the image file. The value can be either a URL or a local pathname relative to the SLD directory. The value can contain CQL expressions delimited by `${ }`. The attribute `xlink:type="simple"` is also required. The element does not contain any content. |
@@ -48,6 +51,7 @@ The `<ExternalGraphic>` element has the sub-elements:
 
 The `<Mark>` element has the sub-elements:
 
+|  |  |  |
 |----|----|----|
 | **Tag** | **Required?** | **Description** |
 | `<WellKnownName>` | No | The name of the shape. Standard SLD shapes are `circle`, `square`, `triangle`, `star`, `cross`, or `x`. Default is `square`. |

@@ -237,6 +237,7 @@ This example shows a gradient interpolated across eight different colors.
 
 A `<ColorMap>` can include up to 255 `<ColorMapEntry>` elements. This example has eight entries (**lines 4-13**):
 
+|                  |           |           |              |
 |------------------|-----------|-----------|--------------|
 | **Entry number** | **Value** | **Color** | **RGB code** |
 | 1                | 95        | Black     | `#000000`    |

@@ -78,6 +78,7 @@ Use the checkbox **Enable All Statistics** to start and stop the collecting and 
 
 The available system information is:
 
+|  |  |  |
 |----|----|----|
 | **Info** | **Example** | **Description** |
 | Operating system | Linux Mint 18 | Name of the operating system and the used version |

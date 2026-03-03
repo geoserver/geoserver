@@ -19,6 +19,7 @@ To begin, navigate to **Stores --> Add a new store --> Shapefile**.
 ![](images/shapefile.png)
 *Adding a shapefile as a store*
 
+|  |  |
 |----|----|
 | **Option** | **Description** |
 | **Workspace** | Name of the workspace to contain the store. This will also be the prefix of the layer created from the store. |

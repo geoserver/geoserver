@@ -38,6 +38,7 @@ First let's gather the data that we'll be publishing.
 
 5.  Locate **Basic Resource Info** and define the layer:
 
+|  |  |
 |----|----|
 | Name | ``basemap`` |
 | Title | ``Basemap`` |

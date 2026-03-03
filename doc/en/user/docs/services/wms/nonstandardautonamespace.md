@@ -18,6 +18,7 @@ for example:
 
 The WMS standard provide projections with IDs in the range 42001 to 42005.
 
+|       |                                              |
 |-------|----------------------------------------------|
 | ID    | Projection                                   |
 | 42001 | Universal Transverse Mercator                |
@@ -28,6 +29,7 @@ The WMS standard provide projections with IDs in the range 42001 to 42005.
 
 GeoServer also supports some non-standard coordinate reference systems. These are
 
+|       |               |
 |-------|---------------|
 | ID    | Projection    |
 | 97001 | Gnomonic      |

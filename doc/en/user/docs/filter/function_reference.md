@@ -8,6 +8,7 @@ Unless otherwise specified, none of the filter functions in this reference are u
 
 ## Function argument type reference
 
+|  |  |
 |----|----|
 | **Type** | **Description** |
 | Double | Floating point number, 8 bytes, IEEE 754. Ranges from 4.94065645841246544e-324d to 1.79769313486231570e+308d |
@@ -21,6 +22,7 @@ Unless otherwise specified, none of the filter functions in this reference are u
 
 ## Comparison functions
 
+|  |  |  |
 |----|----|----|
 | **Name** | **Arguments** | **Description** |
 | between | `num`:Number, `low`:Number, `high`:Number | returns true if `low` <= `num` <= `high` |
@@ -38,6 +40,7 @@ Unless otherwise specified, none of the filter functions in this reference are u
 
 ## Control functions
 
+|  |  |  |
 |----|----|----|
 | **Name** | **Arguments** | **Description** |
 | if_then_else | `condition`:Boolean, `x`:Object, `y`: Object | Returns `x` if the condition is true, `y` otherwise |
@@ -64,12 +67,14 @@ Example usage in a default Symbolizer:
 </PointSymbolizer>
 ```
 
+|  |  |  |
 |----|----|----|
 | **Name** | **Arguments** | **Description** |
 | env | `variable`:String | Returns the value of the environment variable `variable`. |
 
 ## Feature functions
 
+|  |  |  |
 |----|----|----|
 | **Name** | **Arguments** | **Description** |
 | id | `feature`:Feature | returns the identifier of the feature |
@@ -81,6 +86,7 @@ Example usage in a default Symbolizer:
 
 For more information about the precise meaning of the spatial relationships consult the [OGC Simple Feature Specification for SQL](http://www.opengeospatial.org/standards/sfs)
 
+|  |  |  |
 |----|----|----|
 | **Name** | **Arguments** | **Description** |
 | contains | `a`:Geometry, `b`:Geometry | Returns true if the geometry `a` contains `b` |
@@ -98,6 +104,7 @@ For more information about the precise meaning of the spatial relationships cons
 
 ## Geometric functions
 
+|  |  |  |
 |----|----|----|
 | **Name** | **Arguments** | **Description** |
 | area | `geometry`:Geometry | The area of the specified geometry. Works in a Cartesian plane, the result will be in the same unit of measure as the geometry coordinates (which also means the results won't make any sense for geographic data) |
@@ -144,6 +151,7 @@ For more information about the precise meaning of the spatial relationships cons
 
 ## Math functions
 
+|  |  |  |
 |----|----|----|
 | **Name** | **Arguments** | **Description** |
 | abs | `value`:Integer | The absolute value of the specified Integer `value` |
@@ -181,6 +189,7 @@ For more information about the precise meaning of the spatial relationships cons
 
 String functions generally will accept any type of value for `String` arguments. Non-string values will be converted into a string representation automatically.
 
+|  |  |  |
 |----|----|----|
 | **Name** | **Arguments** | **Description** |
 | Concatenate | `s1`:String, `s2`:String, \... | Concatenates any number of strings. Non-string arguments are allowed. |
@@ -205,6 +214,7 @@ String functions generally will accept any type of value for `String` arguments.
 
 ## Parsing and formatting functions
 
+|  |  |  |
 |----|----|----|
 | **Name** | **Arguments** | **Description** |
 | dateFormat | `format`:String, `date`:Timestamp | Formats the specified date according to the provided format. The format syntax can be found in the [Java SimpleDateFormat javadocs](http://java.sun.com/javase/6/docs/api/java/text/SimpleDateFormat.html) |
@@ -217,6 +227,7 @@ String functions generally will accept any type of value for `String` arguments.
 
 ## Temporal functions
 
+|  |  |  |
 |----|----|----|
 | **Name** | **Arguments** | **Description** |
 | dateDifference | `a`:Date, `b`:Date, `timeUnits`:String | Computes the difference between two date (as a-b) and return a result in a specific time units. `timeUnits` is optional, representing the desired time units result. Default as milliseconds. Possible values are `s` (seconds), `m` (minutes), `h` (hours), `d` (days). |

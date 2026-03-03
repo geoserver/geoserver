@@ -32,6 +32,7 @@ Once the extension is properly installed **ImagePyramid** will be an option in t
 ![](images/imagepyramidconfigure.png)
 *Configuring an ImagePyramid data store*
 
+|                    |                 |
 |--------------------|-----------------|
 | **Option**         | **Description** |
 | `Workspace`        |                 |

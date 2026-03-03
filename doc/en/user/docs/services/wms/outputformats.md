@@ -10,6 +10,7 @@ where `<format>` is any of the options below.
 
     The list of output formats supported by a GeoServer instance can be found by a WMS [GetCapabilities](reference.md) request.
 
+|  |  |  |
 |----|----|----|
 | **Format** | **Syntax** | **Notes** |
 | PNG | `format=image/png` | Default |

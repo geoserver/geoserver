@@ -6,6 +6,7 @@ The WCS processing chain can be tuned in respect of how raster overviews and rea
 
 The overview policy has four possible values:
 
+|  |  |  |
 |----|----|----|
 | **Option** | **Description** | **Version** |
 | **Lower resolution overview** | Looks up the two overviews with a resolution closest to the one requested and chooses the one at the lower resolution. | 2.0.3 |
@@ -21,6 +22,7 @@ The request limit options allow the administrator to limit the resources consume
 
 The request limits limit the size of the image read from the source and the size of the image returned to the client. Both of these limits are to be considered a worst case scenario and are setup to make sure the server never gets asked to deal with too much data.
 
+|  |  |  |
 |----|----|----|
 | **Option** | **Description** | **Version** |
 | **Maximum input memory** | Sets the maximum amount of memory, in kilobytes, a GetCovearge request might use, at most, to read a coverage from the data source. The memory is computed as `rw * rh * pixelsize`, where `rw` and `rh` are the size of the raster to be read and `pixelsize` is the dimension or a pixel (e.g., a RGBA image will have 32bit pixels, a batimetry might have 16bit signed int ones) | 2.0.3 |

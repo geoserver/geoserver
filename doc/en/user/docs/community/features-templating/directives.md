@@ -12,6 +12,7 @@ The following constitutes a summary of all the template directives and it is mea
 
 The following are the directives available in JSON based templates.
 
+|  |  |  |
 |----|----|----|
 | **Usage** | **Syntax** | **Description** |
 | property interpolation | \${property} | specify it as an attribute value (`"json_attribute":"${property}"`) |
@@ -27,6 +28,7 @@ The following are the directives available in JSON based templates.
 
 The following are the directives available in XML based templates.
 
+|  |  |  |
 |----|----|----|
 | **Usage** | **Syntax** | **Description** |
 | property interpolation | \${property} | specify it either as an element value (`<element>${property}</element>`) or as an xml attribute value (`<element attribute:"${property}"/>`) |

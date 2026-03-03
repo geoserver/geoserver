@@ -9,6 +9,7 @@ To connect to an external WFS, it is necessary to load it as a new datastore. To
 ![](images/externalwfs.png)
 *Adding an external WFS as a store*
 
+|  |  |
 |----|----|
 | **Option** | **Description** |
 | **Workspace** | Name of the workspace to contain the store. This will also be the prefix of all of the layer names created from the store. |

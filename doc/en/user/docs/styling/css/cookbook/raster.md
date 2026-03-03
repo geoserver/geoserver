@@ -188,6 +188,7 @@ This example shows a gradient interpolated across eight different colors.
 
 This example is similar to the previous ones, and creates a color gradient between 8 colors as reported in the following table
 
+|                  |           |           |
 |------------------|-----------|-----------|
 | **Entry number** | **Value** | **Color** |
 | 1                | 95        | Black     |

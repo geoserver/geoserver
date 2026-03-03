@@ -206,6 +206,7 @@ You can configure the default service strategy by modifying the **`web.xml`** fi
 
 The possible strategies are:
 
+|  |  |
 |----|----|
 | **Strategy** | **Description** |
 | `SPEED` | Serves output right away. This is the fastest strategy, but proper OGC errors are usually omitted. |

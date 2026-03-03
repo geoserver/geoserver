@@ -49,6 +49,7 @@ This key provider calls an external URL to map the authentication key to the use
 
 The web service URL and some other parameters can be specified to configure the mapper in detail:
 
+|  |  |
 |----|----|
 | **Option** | **Description** |
 | `Web Service URL, with key placeholder` | the complete URL of the key mapping webservice, with a special placeholder ({key}) that will be replaced by the current authentication key |
@@ -60,6 +61,7 @@ The mapper will call the webservice using an HTTP GET request (webservice requir
 
 If a response is received, it is parsed using the configured regular expression to extract the username from it. New lines are automatically stripped from the response. Some examples of regular expression that can be used are:
 
+|  |  |
 |----|----|
 | **Regular Expression** | **Usage** |
 | `^\s*(.*)\s*$` | all text trimming spaces at both ends |

@@ -12,7 +12,6 @@ The request limit options allow the administrator to limit the resources consume
 
 The following table shows the option names, a description, and the minimum GeoServer version at which the option is available (older versions will ignore it if set).
 
-|  |  |  |
 |----|----|----|
 | **Option** | **Description** | **Version** |
 | **Max rendering memory (KB)** | Sets the maximum amount of memory a single GetMap request is allowed to use (in kilobytes). The limit is checked before request execution by estimating how much memory would be required to produce the output in the format requested. For example, for an image format the estimate is based on the size of the required rendering memory (which is determined by the image size, the pixel bit depth, and the number of active FeatureTypeStyles at the requested scale). If the estimated memory size is below the limit, the request is executed; otherwise it is cancelled. | 1.7.5 |
@@ -28,7 +27,6 @@ When setting the above limits it is suggested that peak conditions be taken into
 
 The following table shows examples of reasonable values for the request limits:
 
-|  |  |  |
 |----|----|----|
 | **Option** | **Value** | **Rationale** |
 | maxRequestMemory | 16384 | 16MB are sufficient to render a 2048x2048 image at 4 bytes per pixel (full color and transparency), or a 8x8 meta-tile when using GeoWebCache or TileCache. Note that the rendering process uses a separate memory buffer for each FeatureTypeStyle in an SLD, so this also affects the maximum image size. For example, if an SLD contains two FeatureTypeStyle elements in order to draw cased lines for a highway, the maximum image size will be limited to 1448x1448 (the memory requirement increases with the product of the image dimensions, so halving the memory decreases image dimensions by only about 30%) |
@@ -37,7 +35,6 @@ The following table shows examples of reasonable values for the request limits:
 
 ## LayerGroup Capabilities Settings
 
-|  |  |
 |----|----|
 | **Option** | **Description** |
 | Default LayerGroup Style In GetCapabilities | Enable/disable the encoding of the default LayerGroup style in GetCapabilties responses for LayerGroup with mode Named Tree, Container Tree, Earth Observation Tree. Single and Opaque groups are not affected by the option and will always show the default style. By default the option is set to enabled. |

@@ -8,7 +8,6 @@ A **NamedLayer** specifies an existing layer to be styled, and the styling to ap
 
 The `<NamedLayer>` element contains the following elements:
 
-|  |  |  |
 |----|----|----|
 | **Tag** | **Required?** | **Description** |
 | `<Name>` | Yes | The name of the layer to be styled. (Ignored in catalog styles.) |
@@ -22,7 +21,6 @@ A **UserLayer** defines a new layer to be styled, and the styling to apply to it
 
 The `<UserLayer>` element contains the following elements:
 
-|  |  |  |
 |----|----|----|
 | **Tag** | **Required?** | **Description** |
 | `<Name>` | No | The name for the layer being defined |

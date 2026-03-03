@@ -203,7 +203,6 @@ Both parameters can also be specified via the REST API, see [Cleaning schemas on
 
 MongoDB objects may contain nested elements and nested collections. The following three functions make possible to select nested elements and link nested collections using a JSON path:
 
-|  |  |  |
 |----|----|----|
 | **Function** | **Example** | **Description** |
 | jsonSelect | jsonSelect('contact.mail') | Used to retrieve the value for the mapping from a MongoDB object. |

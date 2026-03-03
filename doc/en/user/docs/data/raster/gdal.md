@@ -269,11 +269,9 @@ Such that, in the end, you will have the following folders hierarchy tree:
 |       +---charts
 |       |   \---nitf
 |       |           italy_2015.ntf
-|       |
 |       \---satellite
 |           +---ecw
 |           |       orthofoto_2014.ecw
-|           |
 |           \---landsat
 |               \---mrsid
 |                       N-32-40_2000.sid

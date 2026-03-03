@@ -32,7 +32,6 @@ Once the extension is properly installed **Oracle** appears as an option in the 
 ![](images/oracleconfigure.png)
 *Configuring an Oracle datastore*
 
-|  |  |
 |----|----|
 | **Option** | **Description** |
 | `host` | The Oracle server host name or IP address. |

@@ -16,7 +16,6 @@ The sections below describe the major language constructs. Each construct lists 
 
 A filter condition is a single predicate, or a logical combination of other conditions.
 
-|  |  |
 |----|----|
 | **Syntax** | **Description** |
 | [Predicate](ecql_reference.md#ecql_pred) | Single predicate expression |
@@ -28,7 +27,6 @@ A filter condition is a single predicate, or a logical combination of other cond
 
 Predicates are boolean-valued expressions which specify relationships between values.
 
-|  |  |
 |----|----|
 | **Syntax** | **Description** |
 | [Expression](ecql_reference.md#ecql_expr) `=` | `<>` | `<` | `<=` | `>` | `>=` [Expression](ecql_reference.md#ecql_expr) | Comparison operations |
@@ -44,7 +42,6 @@ Predicates are boolean-valued expressions which specify relationships between va
 
 Temporal predicates specify the relationship of a time-valued expression to a time or time period.
 
-|  |  |
 |----|----|
 | **Syntax** | **Description** |
 | ``ecql_expr`` `BEFORE` [Time](ecql_reference.rst#ecql_literal)_ | Tests whether a time value is before a point in time |
@@ -57,7 +54,6 @@ Temporal predicates specify the relationship of a time-valued expression to a ti
 
 Spatial predicates specify the relationship between geometric values. Topological spatial predicates (`INTERSECTS`, `DISJOINT`, `CONTAINS`, `WITHIN`, `TOUCHES` `CROSSES`, `OVERLAPS` and `RELATE`) are defined in terms of the DE-9IM model described in the OGC [Simple Features for SQL](http://www.opengeospatial.org/standards/sfs) specification.
 
-|  |  |
 |----|----|
 | **Syntax** | **Description** |
 | `INTERSECTS(`[Expression](ecql_reference.md#ecql_expr) `,` [Expression](ecql_reference.md#ecql_expr) `)` | Tests whether two geometries intersect. The converse of `DISJOINT` |
@@ -77,7 +73,6 @@ Spatial predicates specify the relationship between geometric values. Topologica
 
 An expression specifies a attribute, literal, or computed value. The type of the value is determined by the nature of the expression. The standard [PEMDAS](http://en.wikipedia.org/wiki/Order_of_operations#Mnemonics) order of evaluation is used.
 
-|  |  |
 |----|----|
 | **Syntax** | **Description** |
 | [Attribute](ecql_reference.md#ecql_attr) | Name of a feature attribute |
@@ -98,7 +93,6 @@ An attribute name denotes the value of a feature attribute.
 
 Literals specify constant values of various types.
 
-|  |  |
 |----|----|
 | **Type** | **Description** |
 | *Number* | Integer or floating-point number. Scientific notation is supported. |
@@ -112,7 +106,6 @@ Literals specify constant values of various types.
 
 Specifies a period of time, in several different formats.
 
-|  |  |
 |----|----|
 | **Syntax** | **Description** |
 | [Time](ecql_reference.rst#ecql_literal) `/` [Time](ecql_reference.rst#ecql_literal) | Period specified by a start and end time |

@@ -10,7 +10,6 @@ While lines can also seem to be simple shapes, having length but no width, there
 
 The [lines layer](artifacts/sld_cookbook_line.zip) used in the examples below contains road information for a fictional country. For reference, the attribute table for the points in this layer is included below.
 
-|                      |                      |                       |
 |----------------------|----------------------|-----------------------|
 | **fid** (Feature ID) | **name** (Road name) | **type** (Road class) |
 | line.1               | Latway               | highway               |
@@ -593,7 +592,6 @@ There are three types of road classes in our fictional country, ranging from bac
 
 The three rules are designed as follows:
 
-|                |                      |                   |          |
 |----------------|----------------------|-------------------|----------|
 | **Rule order** | **Rule name / type** | **Color**         | **Size** |
 | 1              | local-road           | `#009933` (green) | 2        |
@@ -669,7 +667,6 @@ It is often desirable to make shapes larger at higher zoom levels when creating 
 
 This style contains three rules. The three rules are designed as follows:
 
-|                |               |                                |                |
 |----------------|---------------|--------------------------------|----------------|
 | **Rule order** | **Rule name** | **Scale denominator**          | **Line width** |
 | 1              | Large         | 1:180,000,000 or less          | 6              |

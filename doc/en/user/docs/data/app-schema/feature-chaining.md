@@ -97,7 +97,6 @@ The ENVIRONMENT_OWNER column in CGI_TermValue view corresponds to the ID column 
 
 **Geologic Event property file:**
 
-|  |  |  |  |  |
 |----|----|----|----|----|
 | **id** | **GEOLOGIC_UNIT_ID:String** | **ghminage:String** | **ghmaxage:String** | **ghage_cdspace:String** |
 | ge.26931120 | gu.25699 | Oligocene | Paleocene | <urn:cgi:classifierScheme:ICS:StratChart:2008> |
@@ -107,7 +106,6 @@ The ENVIRONMENT_OWNER column in CGI_TermValue view corresponds to the ID column 
 
 **CGI Term Value property file:**
 
-|  |  |  |  |
 |----|----|----|----|
 | **id** | **VALUE:String** | **PROCESS_OWNER:String** | **ENVIRONMENT_OWNER:String** |
 | 3 | fluvial | NULL | ge.26931120 |
@@ -265,7 +263,6 @@ In Geologic Unit mapping file:
 
 **Composition Part property file:**
 
-|  |  |  |  |
 |----|----|----|----|
 | **id** | **COMPONENT_ROLE:String** | **PROPORTION:String** | **GEOLOGIC_UNIT_ID:String** |
 | cp.167775491936278812 | interbedded component | significant | gu.25699 |

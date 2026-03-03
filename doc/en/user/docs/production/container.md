@@ -10,7 +10,6 @@ Java web containers such as [Tomcat](http://tomcat.apache.org) or [Jetty](https:
 
 Set the following performance settings in the Java virtual machine (JVM) for your container. These settings are not specific to any container.
 
-|  |  |
 |----|----|
 | **Option** | **Description** |
 | `-Xms128m` | By starting with a larger heap GeoServer will not need to pause and ask the operating system for more memory during heavy load. The setting `-Xms128m` will tell the virtual machine to acquire grab a 128m heap memory on initial startup. |

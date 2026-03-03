@@ -39,7 +39,6 @@ line:
 1.  Navigate to the **Styles** page.
 2.  Click **Add a new style** and choose the following:
 
-|                          |                            |
 |--------------------------|----------------------------|
 | New style name:          | ``line_example`` |
 | Workspace for new layer: | Leave blank                |

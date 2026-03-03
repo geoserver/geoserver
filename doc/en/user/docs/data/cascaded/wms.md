@@ -14,7 +14,6 @@ To connect to an external WMS, it is necessary to load it as a new store. To sta
 ![](images/wmsconfigure.png)
 *Configuring a new external WMS store*
 
-|  |  |
 |----|----|
 | **Option** | **Description** |
 | **Workspace** | Name of the workspace to contain the store. This will also be the prefix of all of the layer names published from the store. **The workspace name on the remote WMS is not cascaded.** |

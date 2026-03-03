@@ -29,7 +29,6 @@ The **binary comparison operators** are:
 
 They contain the elements:
 
-|  |  |  |
 |----|----|----|
 | **Element** | **Required?** | **Description** |
 | [Expression](filter_reference.md#filter_expression) | Yes | The first value to compare. Often a `<PropertyName>`. |
@@ -41,7 +40,6 @@ Binary comparison operator elements may include an optional `matchCase` attribut
 
 The `<PropertyIsLike>` operator matches a string property value against a text **pattern**. It contains the elements:
 
-|  |  |  |
 |----|----|----|
 | **Element** | **Required?** | **Description** |
 | `<PropertyName>` | Yes | Contains a string specifying the name of the property to test |
@@ -57,7 +55,6 @@ The pattern is specified by a sequence of regular characters and three special p
 
 The `<PropertyIsNull>` operator tests whether a property value is null. It contains the element:
 
-|  |  |  |
 |----|----|----|
 | **Element** | **Required?** | **Description** |
 | `<PropertyName>` | Yes | contains a string specifying the name of the property to be tested |
@@ -66,7 +63,6 @@ The `<PropertyIsNull>` operator tests whether a property value is null. It conta
 
 The `<PropertyIsBetween>` operator tests whether an expression value lies within a range given by a lower and upper bound (inclusive). It contains the elements:
 
-|  |  |  |
 |----|----|----|
 | **Element** | **Required?** | **Description** |
 | [Expression](filter_reference.md#filter_expression) | Yes | The value to test |
@@ -92,7 +88,6 @@ These operators test topological spatial relationships using the standard OGC Si
 
 These contains the elements:
 
-|  |  |  |
 |----|----|----|
 | **Element** | **Required?** | **Description** |
 | `<PropertyName>` | Yes | Contains a string specifying the name of the geometry-valued property to be tested. |
@@ -107,7 +102,6 @@ These operators test distance relationships between a geometry property and a ge
 
 They contain the elements:
 
-|  |  |  |
 |----|----|----|
 | **Element** | **Required?** | **Description** |
 | `<PropertyName>` | Yes | Contains a string specifying the name of the property to be tested. If omitted, the *default geometry attribute* is assumed. |
@@ -118,7 +112,6 @@ They contain the elements:
 
 The `<BBOX>` operator tests whether a geometry-valued property intersects a fixed bounding box. It contains the elements:
 
-|  |  |  |
 |----|----|----|
 | **Element** | **Required?** | **Description** |
 | `<PropertyName>` | No | Contains a string specifying the name of the property to be tested. If omitted, the *default geometry attribute* is assumed. |
@@ -233,7 +226,6 @@ The `<PropertyName>` element refers to the value of a feature attribute. It cont
 
 The `<Literal>` element specifies a constant value. It contains data of one of the following types:
 
-|  |  |
 |----|----|
 | **Type** | **Description** |
 | Numeric | A string representing a numeric value (integer or decimal). |

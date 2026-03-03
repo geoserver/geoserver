@@ -14,7 +14,6 @@ By default, **ArcGrid** will be an option in the **Raster Data Sources** list wh
 ![](images/arcgridconfigure.png)
 *Configuring an ArcGrid data store*
 
-|                    |                 |
 |--------------------|-----------------|
 | **Option**         | **Description** |
 | `Workspace`        |                 |

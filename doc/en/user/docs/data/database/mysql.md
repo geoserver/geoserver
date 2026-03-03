@@ -36,7 +36,6 @@ Once the extension is properly installed `MySQL` will show up as an option when 
 ![](images/mysqlconfigure.png)
 *Configuring a MySQL data store*
 
-|  |  |
 |----|----|
 | `host` | The mysql server host name or ip address. |
 | `port` | The port on which the mysql server is accepting connections. |

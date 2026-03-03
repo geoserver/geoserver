@@ -29,7 +29,6 @@ The `env` function can be used in an SLD anywhere an OGC expression is allowed. 
 
 GeoServer has predefined variables which provide information about specific properties of the request output. These are useful when SLD parameters need to depend on output dimensions. The predefined variables are:
 
-|  |  |  |
 |----|----|----|
 | **Name** | **Type** | **Description** |
 | `wms_bbox` | `ReferencedEnvelope` | the georeferenced extent of the request output |

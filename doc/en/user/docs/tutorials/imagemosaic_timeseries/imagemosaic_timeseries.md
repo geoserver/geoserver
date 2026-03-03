@@ -70,7 +70,6 @@ Otherwise the usage of a shapefile could be useful in development and test envir
 
 Here is shown an example of datastore.properties suitable for Postgis.
 
-|  |  |  |
 |----|----|----|
 | **Parameter** | **Mandatory** | **Description** |
 | *SPI* | **Y** | The factory class used for the datastore e.g. org.geotools.data.postgis.PostgisNGDataStoreFactory |
@@ -92,7 +91,6 @@ Here is shown an example of datastore.properties suitable for Postgis.
 
 #### indexer.properties
 
-|  |  |  |
 |----|----|----|
 | **Parameter** | **Mandatory** | **Description** |
 | *TimeAttribute* | N | Specifies the name of the time-variant attribute |
@@ -106,7 +104,6 @@ Here is shown an example of datastore.properties suitable for Postgis.
 
 #### timeregex.properties
 
-|  |  |  |
 |----|----|----|
 | **Parameter** | **Mandatory** | **Description** |
 | *regex* | Y | Specifies the pattern used for extracting the information from the file |

@@ -73,7 +73,6 @@ The attachments include also the GIF outputs, whose size, appearance and generat
 
 As we can see, depending on the choice we have a variation on the image quality, size and generation time (which has been recorded using the FasterFox Firefox extension timer, with the browser sitting on the same box as the server). Using `palette=xxx` provides the best match in speed and size, though using the built-in internet safe palette altered the colors. Then again, the real gain can be seen only by assuming a certain connection speed between the server and the client, and adding the time required to move the image to the client. The following table provides some results:
 
-|  |  |  |  |  |  |  |
 |----|----|----|----|----|----|----|
 | **Configuration** | **GT(s)** | **File size (kb)** | **TT 256kbit/s** | **TT 1MBit/s** | **TT 4MBit/s** | **TT 20MBit/s** |
 | tiger-ny-png | 0,36 | 257 | 8,39 | 2,42 | 0,87 | 0,46 |

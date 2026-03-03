@@ -12,7 +12,6 @@ To add a GRIB data store the user must go to **Stores --> Add New Store --> GRIB
 ![](gribconfigure.png)
 *Configuring a GRIB data store*
 
-|                    |                 |
 |--------------------|-----------------|
 | **Option**         | **Description** |
 | `Workspace`        |                 |

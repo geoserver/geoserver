@@ -2,7 +2,6 @@
 
 The Features Templating plug-in works by allowing us to define a What You See Is What You Get template, that will be applied on a stream of features respecting the defined content negotiation rules. Both Simple and Complex features are supported. The following services and operations are supported:
 
-|                 |                |
 |-----------------|----------------|
 | **Service**     | **Operation**  |
 | WFS             | GetFeature     |

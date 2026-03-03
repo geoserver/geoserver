@@ -6,7 +6,6 @@ A **LineSymbolizer** styles features as **lines**. Lines are one-dimensional geo
 
 A `<LineSymbolizer>` contains an optional `<Geometry>` element, and a required `<Stroke>` element specifying the line symbology.
 
-|  |  |  |
 |----|----|----|
 | **Tag** | **Required?** | **Description** |
 | `<Geometry>` | No | Specifies the geometry to be rendered. |
@@ -23,7 +22,6 @@ Any kind of geometry may be styled with a `<LineSymbolizer>`. Point geometries a
 
 The `<Stroke>` element specifies the styling of a line. There are three elements that can be included inside the `<Stroke>` element.
 
-|  |  |  |
 |----|----|----|
 | **Tag** | **Required?** | **Description** |
 | `<GraphicFill>` | No | Renders the pixels of the line with a repeated pattern. |
@@ -48,7 +46,6 @@ The `name` **attribute** indicates what aspect of styling an element specifies, 
 
 The following parameters are supported:
 
-|  |  |  |
 |----|----|----|
 | **Parameter** | **Required?** | **Description** |
 | `name="stroke"` | No | Specifies the solid color given to the line, in the form `#RRGGBB`. Default is black (`#000000`). |

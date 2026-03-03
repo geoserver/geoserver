@@ -21,7 +21,6 @@ WMS provides a standard interface for requesting a geospatial map image. The ben
 
 WMS requests can perform the following operations:
 
-|  |  |
 |----|----|
 | **Operation** | **Description** |
 | [GetCapabilities](#wms_getcap) | Retrieves metadata about the service, including supported operations and parameters, and a list of the available layers |
@@ -36,7 +35,6 @@ The **GetCapabilities** operation requests metadata about the operations, servic
 
 The parameters for the GetCapabilities operation are:
 
-|  |  |  |
 |----|----|----|
 | **Parameter** | **Required?** | **Description** |
 | `service` | Yes | Service name. Value is `WMS`. |
@@ -45,7 +43,6 @@ The parameters for the GetCapabilities operation are:
 
 GeoServer provides the following vendor-specific parameters for the GetCapabilities operation. They are fully documented in the [WMS vendor parameters](vendor.md) section.
 
-|  |  |  |
 |----|----|----|
 | **Parameter** | **Required?** | **Description** |
 | `namespace` | No | limits response to layers in a given namespace |
@@ -63,7 +60,6 @@ There are three parameters being passed to the WMS server, `service=wms`, `versi
 
 The response is a Capabilities XML document that is a detailed description of the WMS service. It contains three main sections:
 
-|  |  |
 |----|----|
 | **Service** | Contains service metadata such as the service name, keywords, and contact information for the organization operating the server. |
 | **Request** | Describes the operations the WMS service provides and the parameters and output formats for each operation. If desired GeoServer can be configured to disable support for certain WMS operations. |
@@ -77,7 +73,6 @@ The response is a map image, or other map output artifact, depending on the form
 
 The standard parameters for the GetMap operation are:
 
-|  |  |  |
 |----|----|----|
 | **Parameter** | **Required?** | **Description** |
 | `service` | Yes | Service name. Value is `WMS`. |
@@ -153,7 +148,6 @@ The one advantage of `GetFeatureInfo` is that the request uses an (x,y) pixel va
 
 The standard parameters for the GetFeatureInfo operation are:
 
-|  |  |  |
 |----|----|----|
 | **Parameter** | **Required?** | **Description** |
 | `service` | Yes | Service name. Value is `WMS`. |
@@ -176,7 +170,6 @@ The standard parameters for the GetFeatureInfo operation are:
 
 GeoServer supports a number of output formats for the `GetFeatureInfo` response. Server-styled HTML is the most commonly-used format. For maximum control and customisation the client should use GML3 and style the raw data itself. The supported formats are:
 
-|  |  |  |
 |----|----|----|
 | **Format** | **Syntax** | **Notes** |
 | TEXT | `info_format=text/plain` | Simple text output. (The default format) |
@@ -188,7 +181,6 @@ GeoServer supports a number of output formats for the `GetFeatureInfo` response.
 
 GeoServer provides the following vendor-specific parameters for the GetFeatureInfo operation. They are fully documented in the [WMS vendor parameters](vendor.md) section.
 
-|  |  |  |
 |----|----|----|
 | **Parameter** | **Required?** | **Description** |
 | `buffer` | No | width of search radius around query point (in pixels). |
@@ -294,7 +286,6 @@ The **DescribeLayer** operation is used primarily by clients that understand SLD
 
 The standard parameters for the DescribeLayer operation are:
 
-|  |  |  |
 |----|----|----|
 | **Parameter** | **Required?** | **Description** |
 | `service` | Yes | Service name. Value is `WMS`. |
@@ -305,7 +296,6 @@ The standard parameters for the DescribeLayer operation are:
 
 GeoServer supports a number of output formats for the `DescribeLayer` response. Server-styled HTML is the most commonly-used format. The supported formats are:
 
-|  |  |  |
 |----|----|----|
 | **Format** | **Syntax** | **Notes** |
 | TEXT | `output_format=text/xml` | Same as default. |
@@ -368,7 +358,6 @@ The **GetLegendGraphic** operation provides a mechanism for generating legend gr
 
 Formats in which WMS can report exceptions. The supported values for exceptions are:
 
-|  |  |  |
 |----|----|----|
 | **Format** | **Syntax** | **Notes** |
 | XML | `EXCEPTIONS=application/vnd.ogc.se_xml` | XML output. (The default format) |

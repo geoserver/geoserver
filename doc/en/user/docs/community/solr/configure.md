@@ -34,7 +34,6 @@ Once the extension is properly installed `SOLR` will show up as an option when c
 ![](images/solr_configuration.png)
 *Configuring a SOLR data store*
 
-|            |                                                               |
 |------------|---------------------------------------------------------------|
 | `solr_url` | Provide a link to the SOLR server that provides the documents |
 
@@ -50,7 +49,6 @@ Once the layer name is chosen, the usual layer configuration panel will appear, 
 ![](images/solr_fieldlist.png)
 *The layer field list configuration*
 
-|  |  |
 |----|----|
 | `Is empty` | Read only fields, checked if the field has no values in the documents associated to this layer |
 | `Use` | Used to select the fields that will make up this layer features |

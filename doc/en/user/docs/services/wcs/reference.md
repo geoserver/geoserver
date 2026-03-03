@@ -14,7 +14,6 @@ WCS provides a standard interface for how to request the raster source of a geos
 
 WCS can perform the following operations:
 
-|  |  |
 |----|----|
 | **Operation** | **Description** |
 | [GetCapabilities](#wcs_getcap) | Retrieves a list of the server's data, as well as valid WCS operations and parameters |

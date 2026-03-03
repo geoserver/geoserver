@@ -6,7 +6,6 @@ Polygons are two dimensional shapes that contain both an outer edge (or "stroke"
 
 The [polygons layer](../../sld/cookbook/artifacts/sld_cookbook_polygon.zip) used below contains county information for a fictional country. For reference, the attribute table for the polygons is included below.
 
-|                      |                        |                      |
 |----------------------|------------------------|----------------------|
 | **fid** (Feature ID) | **name** (County name) | **pop** (Population) |
 | polygon.1            | Irony County           | 412234               |
@@ -252,7 +251,6 @@ Each polygon in our fictional country has a population that is represented by th
 
 The three rules are designed as follows:
 
-|                |               |                          |           |
 |----------------|---------------|--------------------------|-----------|
 | **Rule order** | **Rule name** | **Population** ("pop") | **Color** |
 | 1              | SmallPop      | Less than 200,000        | `#66FF66` |
@@ -317,7 +315,6 @@ Zoom levels (or more accurately, scale denominators) refer to the scale of the m
 
 This style contains three rules, defined as follows:
 
-|  |  |  |  |  |
 |----|----|----|----|----|
 | **Rule order** | **Rule name** | **Scale denominator** | **Stroke width** | **Label display?** |
 | 1 | Large | 1:100,000,000 or less | 7 | Yes |

@@ -14,7 +14,6 @@ When the extension has been installed, **GeoPackage** will be an option in the *
 ![](images/geopackageconfigure.png)
 *Configuring a GeoPackage Vector data store*
 
-|  |  |
 |----|----|
 | **Option** | **Description** |
 | **database** | URI specifying geopackage file. |

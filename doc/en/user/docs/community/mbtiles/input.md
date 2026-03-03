@@ -10,7 +10,6 @@ When the extension has been installed, :guilabel:MBTiles` will be an option in t
 ![](images/mbtilesconfigure.png)
 *Configuring an MBTiles data source*
 
-|  |  |
 |----|----|
 | **Option** | **Description** |
 | `Workspace` | Name of the workspace to contain the MBTiles Mosaic store. This will also be the prefix of the raster layers created from the store. |
@@ -29,7 +28,6 @@ When the extension has been installed, **MBTiles with vector tiles** will be an 
 ![](images/mbtiles-vector-configure.png)
 *Configuring an MBTiles data store*
 
-|            |                          |
 |------------|--------------------------|
 | **Option** | **Description**          |
 | `database` | Path to the MBTiles file |

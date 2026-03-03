@@ -36,7 +36,6 @@ First let's gather the data that we'll be publishing.
 
 4.  Locate **Style Data** and define the style:
 
-|           |                          |
 |-----------|--------------------------|
 | Name      | ``background`` |
 | Workspace | `tutorial`               |

@@ -347,7 +347,6 @@ Here is a short list of supported **pageSizes**:
 
 | name   | width | height |
 |        |       |        |
-|        |       |        |
 | ------ | ----- | ------ |
 | LETTER | 612   | 792    |
 |        |       |        |

@@ -22,7 +22,6 @@ See also the [PointSymbolizer](../reference/pointsymbolizer.md) reference for fu
 
 The SLD specification mandates the support of the following symbols:
 
-|  |  |
 |----|----|
 | **Name** | **Description** |
 | `square` | A square |
@@ -39,7 +38,6 @@ The shape symbols set adds extra symbols that are not part of the basic set.
 1.  To enable ensure that the WMS Settings ****Mark Factory Precedence`has`ShapeMarkFactory`` selected.
 2.  The shape symbols are prefixed by `shape://`
 
-|  |  |
 |----|----|
 | **Name** | **Description** |
 | `shape://vertline` | A vertical line (suitable for hatch fills or to make railroad symbols) |
@@ -61,7 +59,6 @@ The weather symbols are prefixed by the `extshape://` protocol in the SLD:
 1.  To enable ensure that the WMS Settings ****Mark Factory Precedence`has`MeteoMarkFactory`` selected.
 2.  These symbols are:
 
-|  |  |  |
 |----|----|----|
 | **Name** | **Description** | **Produces** |
 | `extshape://triangle` | cold front | ![triangle](images/triangle.png) |
@@ -72,7 +69,6 @@ The weather symbols are prefixed by the `extshape://` protocol in the SLD:
 
 3.  You can use `extshape://` for a few additional built-in shapes:
 
-|                     |             |
 |---------------------|-------------|
 | `extshape://narrow` | North Arrow |
 | `extshape://sarrow` | South Arrow |
@@ -84,7 +80,6 @@ More complex symbols like Wind Barbs can be created with the `windbarbs://` pref
 1.  To enable ensure that the WMS Settings ****Mark Factory Precedence`has`WindBarbsmFactory`` selected.
 2.  There are some examples:
 
-|  |  |
 |----|----|
 | **Name** | **Description** |
 | `windbarbs://default(15)[kts]` | *15* wind intensity with *[kts]* unit of measure |

@@ -30,7 +30,6 @@ Once the extension is properly installed `SingleStore` will show up as an option
 ![](images/singlestoreconfigure2.png)
 *Configuring a SingleStore data store*
 
-|  |  |
 |----|----|
 | `host` | The SingleStore server host name or ip address. |
 | `port` | The port on which the SingleStore server is accepting connections. |

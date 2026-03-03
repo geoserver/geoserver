@@ -10,7 +10,6 @@ The most important aspect of regionation is to decide how to determine which fea
 
 Regionation strategies sets how to determine which features should be shown at any given time or zoom level. There are five types of regionation strategies:
 
-|  |  |
 |----|----|
 | **Strategy** | **Description** |
 | `best_guess` | (*default*) The actual strategy is determined by the type of data being operated on. If the data consists of points, the `random` strategy is used. If the data consists of lines or polygons, the `geometry` strategy is used. |

@@ -62,7 +62,6 @@ There are still a couple of tweaks we can make. The default is to create a 'soli
 
 We also have a few options for how Google Earth interprets the height field. By default, the height is interpreted as relative to the ground, but we can also set the heights relative to sea level, or to be ignored (useful for reverting to the 'flat' look without erasing your template). This is controlled with a format option named altitudeMode, whose values are summarized below.
 
-|                  |                                              |
 |------------------|----------------------------------------------|
 | **altitudeMode** | **Purpose**                                  |
 | altitudeMode     | Interpret height as relative to ground level |

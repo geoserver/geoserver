@@ -10,7 +10,6 @@ The relationship between stored query parameters and the schema returned by the 
 
 When you set up a layer based on a stored query, you have to select which stored query to cascade and what values are passed to each parameter. Cascaded stored queries can leverage view parameters passed to the query. This is similar to how arbitrary parameters are passed to [SQL Views](../database/sqlview.md). GeoServer supports multiple strategies to pass these values. See below for a full list.
 
-|  |  |
 |----|----|
 | **Parameter type** | **Explanation** |
 | **No mapping** | The value of the view parameter will be passed as is to the stored query. No parameter will be passed if there is no view parameter of the same name. |
@@ -27,7 +26,6 @@ Parameter mappings configured as CQL expressions are evaluated for each request 
 
 The context contains the following properties that may be used in the expressions:
 
-|  |  |
 |----|----|
 | **Property name** | **Explanation** |
 | `bboxMinX` `bboxMinY` `bboxMaxX` `bboxMaxY` | Evaluates to a corner coordinate of the full extent of the query |

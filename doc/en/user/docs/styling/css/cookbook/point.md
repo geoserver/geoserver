@@ -6,7 +6,6 @@ While points are seemingly the simplest type of shape, possessing only position 
 
 The [points layer](../../sld/cookbook/artifacts/sld_cookbook_point.zip) used for the examples below contains name and population information for the major cities of a fictional country. For reference, the attribute table for the points in this layer is included below.
 
-|                      |                      |                      |
 |----------------------|----------------------|----------------------|
 | **fid** (Feature ID) | **name** (City name) | **pop** (Population) |
 | point.1              | Borfin               | 157860               |
@@ -268,7 +267,6 @@ This style shows how the basic mark setup (red circle, default size) can be over
 
 The three rules are designed as follows:
 
-|                |               |                          |          |
 |----------------|---------------|--------------------------|----------|
 | **Rule order** | **Rule name** | **Population** ("pop") | **Size** |
 | 1              | SmallPop      | Less than 50,000         | 8        |
@@ -324,7 +322,6 @@ It is often desirable to make shapes larger at higher zoom levels when creating 
 
 This style contains three rules matching the scale. The three rules are designed as follows:
 
-|                |               |                              |                |
 |----------------|---------------|------------------------------|----------------|
 | **Rule order** | **Rule name** | **Scale denominator**        | **Point size** |
 | 1              | Large         | 1:16,000,000 or less         | 12             |

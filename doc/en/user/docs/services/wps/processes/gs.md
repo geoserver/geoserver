@@ -14,7 +14,6 @@ The aggregation process is used to perform common aggregation functions (sum, av
 
 The process parameters are described in the table bellow:
 
-|  |  |  |  |
 |----|----|----|----|
 | **Parameter** | **Description** | **Mandatory** | **Multiple** |
 | `features` | Input feature collection. | yes | no |
@@ -61,7 +60,6 @@ The value of ``AggregationResults`` attribute should be read in a tabular way. T
 
 This result should be interpreted like this:
 
-|          |         |                   |           |           |
 |----------|---------|-------------------|-----------|-----------|
 | **Max**  | **Min** | **Average**       | **Sum**   | **Count** |
 | 29760021 | 453588  | 5038397.020408163 | 246881454 | 49        |
@@ -125,7 +123,6 @@ Since there is a group by attribute the result contains a row for each different
 
 This result should be interpreted like this:
 
-|                |                    |           |
 |----------------|--------------------|-----------|
 | **Sub Region** | **Average**        | **count** |
 | N Eng          | 2201157.1666666665 | 6         |

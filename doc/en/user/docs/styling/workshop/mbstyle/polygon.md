@@ -36,7 +36,6 @@ This exercise makes use of the `ne:states_provinces_shp` layer.
 1.  Navigate to **Styles**.
 2.  Create a new style ``polygon_example``.
 
-|            |                               |
 |------------|-------------------------------|
 | Name:      | ``polygon_example`` |
 | Workspace: | ``No workspace``    |

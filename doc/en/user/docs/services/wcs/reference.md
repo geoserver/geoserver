@@ -17,15 +17,15 @@ WCS can perform the following operations:
 |  |  |
 |----|----|
 | **Operation** | **Description** |
-| [GetCapabilities](#getcapabilities) | Retrieves a list of the server's data, as well as valid WCS operations and parameters |
-| [DescribeCoverage](#describecoverage) | Retrieves an XML document that fully describes the request coverages. |
-| [GetCoverage](#getcoverage) | Returns a coverage in a well-known format. Like a WMS GetMap request, but with several extensions to support the retrieval of coverages. |
+| [GetCapabilities](#wcs_getcap) | Retrieves a list of the server's data, as well as valid WCS operations and parameters |
+| [DescribeCoverage](#wcs_describecoverage) | Retrieves an XML document that fully describes the request coverages. |
+| [GetCoverage](#wcs_getcoverage) | Returns a coverage in a well-known format. Like a WMS GetMap request, but with several extensions to support the retrieval of coverages. |
 
 !!! note
 
     The following examples show the 1.1 protocol, the full specification for versions 1.0, 1.1 and 2.0 are available on the [OGC website](http://www.opengeospatial.org/standards/wcs)
 
-### GetCapabilities {: #wCs_getcap }
+###  GetCapabilities {: #wcs_getcap }
 
 The **GetCapabilities** operation is a request to a WCS server for a list of what operations and services ("capabilities") are being offered by that server.
 

@@ -5,7 +5,7 @@ The Coverage Access Settings page in the Server menu in the [Web administration 
 ![](img/raster_access.png)
 *Raster Access Settings*
 
-## Memory Use {: #ImageIO_settings }
+##  Memory Use {: #imageio_settings }
 
 WMS requests usually produce relatively small images whilst WCS requests may frequently deal with bigger datasets. Caching the image in memory before encoding it may be helpful when the size of the image isn't too big. For a huge image (as one produced by a big WCS request) it would be better instead caching through a temporary file with respect to caching in memory. This section allows to specify a threshold image size to let GeoServer decide whether to use a [MemoryCacheImageOutputStream](http://docs.oracle.com/javase/1.5.0/docs/api/javax/imageio/stream/MemoryCacheImageOutputStream.html/) or [FileCacheImageOutputStream](http://docs.oracle.com/javase/1.5.0/docs/api/javax/imageio/stream/FileCacheImageOutputStream.html/) when encoding the images.
 

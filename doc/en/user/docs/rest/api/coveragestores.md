@@ -47,7 +47,7 @@ The `purge` parameter is used to customize the delete of files on disk (in case 
 - `metadata`-Delete only auxiliary files and metadata. It's recommended when data files (such as granules) should not be deleted from disk.
 - `all`-Purge everything related to that store (metadata and granules).
 
-#### `quietOnNotFound` {: #rest_api_coveragestores_quietOnNotFound }
+####  `quietOnNotFound` {: #rest_api_coveragestores_quietonnotfound }
 
 The `quietOnNotFound` parameter avoids to log an Exception when the coverage store is not present. Note that 404 status code will be returned anyway.
 

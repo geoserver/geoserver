@@ -82,26 +82,26 @@ This page lists the supported rendering properties. See [CSS value types](valuet
 | `halo-radius` | length | The size of a halo to display around the lettering (to enhance readability). This is *required* to activate the halo feature. | yes |
 | `halo-color` | color | The color for the halo | yes |
 | `halo-opacity` | percentage | The opacity of the halo, from 0 (fully transparent) to 1.0 (fully opaque). | yes |
-| `label-padding` | length | The amount of 'padding' space to provide around labels. Labels will not be rendered closer together than this threshold. This is equivalent to the [spaceAround](#labeling_space_around) vendor parameter. | no |
-| `label-group` | one of: `true` or `false` | If true, the render will treat features with the same label text as a single feature for the purpose of labelling. This is equivalent to the [group](#labeling_group) vendor parameter. | no |
-| `label-max-displacement` | length | If set, this is the maximum displacement that the renderer will apply to a label. Labels that need larger displacements to avoid collisions will simply be omitted. This is equivalent to the [maxDisplacement](#labeling_max_displacement) vendor parameter. | no |
+| `label-padding` | length | The amount of 'padding' space to provide around labels. Labels will not be rendered closer together than this threshold. This is equivalent to the **spaceAround** vendor parameter. | no |
+| `label-group` | one of: `true` or `false` | If true, the render will treat features with the same label text as a single feature for the purpose of labelling. This is equivalent to the **group** vendor parameter. | no |
+| `label-max-displacement` | length | If set, this is the maximum displacement that the renderer will apply to a label. Labels that need larger displacements to avoid collisions will simply be omitted. This is equivalent to the **maxDisplacement** vendor parameter. | no |
 
 ## Text symbology (labelling) - part 2 {: #css_properties_text2 }
 
 | Property | Type | Meaning | Accepts Expression? |
 |----|----|----|----|
 | `label-min-group-distance` | length | This is equivalent to the minGroupDistance vendor parameter in SLD. | no |
-| `label-repeat` | length | If set, the renderer will repeat labels at this interval along a line. This is equivalent to the [repeat](#labeling_repeat) vendor parameter. | no |
-| `label-all-group` | one of `true` or `false` | when using grouping, whether to label only the longest line that could be built by merging the lines forming the group, or also the other ones. This is equivalent to the [allGroup](#labeling_all_group) vendor parameter. | no |
+| `label-repeat` | length | If set, the renderer will repeat labels at this interval along a line. This is equivalent to the **repeat** vendor parameter. | no |
+| `label-all-group` | one of `true` or `false` | when using grouping, whether to label only the longest line that could be built by merging the lines forming the group, or also the other ones. This is equivalent to the **allGroup** vendor parameter. | no |
 | `label-remove-overlaps` | one of `true` or `false` | If enabled, the renderer will remove overlapping lines within a group to avoid duplicate labels. This is equivalent to the removeOverlaps vendor parameter. | no |
 | `label-allow-overruns` | one of `true` or `false` | Determines whether the renderer will show labels that are longer than the lines being labelled. This is equivalent to the allowOverrun vendor parameter. | no |
-| `label-follow-line` | one of `true` or `false` | If enabled, the render will curve labels to follow the lines being labelled. This is equivalent to the [followLine](#labeling_follow_line) vendor parameter. | no |
-| `label-max-angle-delta` | one of `true` or `false` | The maximum amount of curve allowed between two characters of a label; only applies when 'follow-line: true' is set. This is equivalent to the [maxAngleDelta](#labeling_max_angle_delta) vendor parameter. | no |
-| `label-auto-wrap` | length | Labels will be wrapped to multiple lines if they exceed this length in pixels. This is equivalent to the [autoWrap](#labeling_autowrap) vendor parameter. | no |
-| `label-force-ltr` | one of `true` or `false` | By default, the renderer will flip labels whose normal orientation would cause them to be upside-down. Set this parameter to false if you are using some icon character label like an arrow to show a line's direction. This is equivalent to the [forceLeftToRight](#labeling_force_left_to_right) vendor parameter. | no |
-| `label-conflict-resolution` | one of `true` or `false` | Set this to false to disable label conflict resolution, allowing overlapping labels to be rendered. This is equivalent to the [conflictResolution](#labeling_conflict_resolution) vendor parameter. | no |
-| `label-fit-goodness` | scale | The renderer will omit labels that fall below this "match quality" score. The scoring rules differ for each geometry type. This is equivalent to the [goodnessOfFit](#labeling_goodness_of_fit) vendor parameter. | no |
-| `label-priority` | expression | Specifies an expression to use in determining which features to prefer if there are labelling conflicts. This is equivalent to the [Priority](#labeling_priority) SLD extension. | yes |
+| `label-follow-line` | one of `true` or `false` | If enabled, the render will curve labels to follow the lines being labelled. This is equivalent to the **followLine** vendor parameter. | no |
+| `label-max-angle-delta` | one of `true` or `false` | The maximum amount of curve allowed between two characters of a label; only applies when 'follow-line: true' is set. This is equivalent to the **maxAngleDelta** vendor parameter. | no |
+| `label-auto-wrap` | length | Labels will be wrapped to multiple lines if they exceed this length in pixels. This is equivalent to the **autoWrap** vendor parameter. | no |
+| `label-force-ltr` | one of `true` or `false` | By default, the renderer will flip labels whose normal orientation would cause them to be upside-down. Set this parameter to false if you are using some icon character label like an arrow to show a line's direction. This is equivalent to the **forceLeftToRight** vendor parameter. | no |
+| `label-conflict-resolution` | one of `true` or `false` | Set this to false to disable label conflict resolution, allowing overlapping labels to be rendered. This is equivalent to the **conflictResolution** vendor parameter. | no |
+| `label-fit-goodness` | scale | The renderer will omit labels that fall below this "match quality" score. The scoring rules differ for each geometry type. This is equivalent to the **goodnessOfFit** vendor parameter. | no |
+| `label-priority` | expression | Specifies an expression to use in determining which features to prefer if there are labelling conflicts. This is equivalent to the **Priority** SLD extension. | yes |
 
 ## Text symbology (labelling) - part 3 {: #css_properties_text3 }
 

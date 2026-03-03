@@ -292,7 +292,7 @@ Graphic symbols are rendered so that the center of the graphic extent lies on th
 
 In standard SLD, the `Mark/WellKnowName` element and the `ExternalGraphic/OnlineResource/@xlink:href` attribute are fixed strings. This means they have the same value for all rendered features. When the symbols to be displayed vary depending on feature attributes this restriction leads to very verbose styling, as a separate `Rule` and `Symbolizer` must be used for each different symbol.
 
-GeoServer improves this by allowing [CQL expressions](#filter_ecql_reference) to be embedded inside the content of both `WellKnownName` and `OnlineResource/@xlink:href`. When the names of the symbols can be derived from the feature attribute values, this provides much more compact styling. CQL expressions can be embedded in a `<WellKnownName>` content string or an `<OnlineResource>` `xlink:href` attribute by using the syntax:
+GeoServer improves this by allowing [CQL expressions](../../../filter/ecql_reference.md) to be embedded inside the content of both `WellKnownName` and `OnlineResource/@xlink:href`. When the names of the symbols can be derived from the feature attribute values, this provides much more compact styling. CQL expressions can be embedded in a `<WellKnownName>` content string or an `<OnlineResource>` `xlink:href` attribute by using the syntax:
 
     ${<cql expression>}
 

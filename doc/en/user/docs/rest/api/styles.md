@@ -62,7 +62,7 @@ The `purge` parameter specifies whether the underlying SLD file for the style sh
 
 The `recurse` parameter removes references to the specified style in existing layers. Allowed values for this parameter are "true" or "false". The default value is "false".
 
-#### `quietOnNotFound` {: #rest_api_styles_quietOnNotFound }
+####  `quietOnNotFound` {: #rest_api_styles_quietonnotfound }
 
 The `quietOnNotFound` parameter avoids to log an Exception when the style is not present. Note that 404 status code will be returned anyway.
 

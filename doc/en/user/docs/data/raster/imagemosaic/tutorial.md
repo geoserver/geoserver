@@ -12,7 +12,7 @@ This is a process very similar to creating a featuretype. More specifically, one
 
 2.  Select **ImageMosaic** under **Raster Data Source**:
 
-    ![](images/imagemosaiccreate.png)
+    ![](../images/imagemosaiccreate.png)
     *ImageMosaic in the list of raster data stores*
 
 3.  In order to create a new mosaic it is necessary to choose a workspace and store name in the **Basic Store Info** section, as well as a URL in the **Connection Parameters** section. Valid URLs include:
@@ -24,7 +24,7 @@ This is a process very similar to creating a featuretype. More specifically, one
 4.  Click **Save**:
 
     ``` raw_markdown
-    ![](images/imagemosaicconfigure.png)
+    ![](../images/imagemosaicconfigure.png)
     *Configuring an ImageMosaic data store*
     ```
 

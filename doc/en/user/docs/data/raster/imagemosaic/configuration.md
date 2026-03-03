@@ -242,10 +242,10 @@ In case the temporal information is spread along the whole file path, an additio
 
 By default, **ImageMosaic** will be an option in the **Raster Data Sources** list when creating a new data store.
 
-![](images/imagemosaiccreate.png)
+![](../images/imagemosaiccreate.png)
 *ImageMosaic in the list of raster data stores*
 
-![](images/imagemosaicconfigure.png)
+![](../images/imagemosaicconfigure.png)
 *Configuring an ImageMosaic data store*
 
 | Parameter | Description |

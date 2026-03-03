@@ -42,7 +42,7 @@ Controls a particular coverage in a given coverage store and workspace.
 
 The `recurse` parameter recursively deletes all layers referenced by the specified coverage. Permitted values for this parameter are "true" or "false". The default value is "false".
 
-#### `quietOnNotFound` {: #rest_api_coverages_quietOnNotFound }
+####  `quietOnNotFound` {: #rest_api_coverages_quietonnotfound }
 
 The `quietOnNotFound` parameter avoids to log an Exception when the coverage is not present. Note that 404 status code will be returned anyway.
 
@@ -107,6 +107,6 @@ Returns a single granule and allows for its removal.
 
 ### Parameters
 
-#### `quietOnNotFound` {: #rest_api_structuredcoverages_quietOnNotFound }
+####  `quietOnNotFound` {: #rest_api_structuredcoverages_quietonnotfound }
 
 The `quietOnNotFound` parameter avoids to log an Exception when the granule is not present. Note that 404 status code will be returned anyway.

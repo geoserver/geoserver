@@ -24,10 +24,10 @@ WMS requests can perform the following operations:
 |  |  |
 |----|----|
 | **Operation** | **Description** |
-| [GetCapabilities](#getcapabilities) | Retrieves metadata about the service, including supported operations and parameters, and a list of the available layers |
+| [GetCapabilities](#wms_getcap) | Retrieves metadata about the service, including supported operations and parameters, and a list of the available layers |
 | [GetMap](reference.md#wms_getmap) | Retrieves a map image for a specified area and content |
-| [GetFeatureInfo](#getfeatureinfo) | Retrieves the underlying data, including geometry and attribute values, for a pixel location on a map |
-| [DescribeLayer](#describelayer) | Indicates the WFS or WCS to retrieve additional information about the layer. |
+| [GetFeatureInfo](#wms_getfeatureinfo) | Retrieves the underlying data, including geometry and attribute values, for a pixel location on a map |
+| [DescribeLayer](#wms_describelayer) | Indicates the WFS or WCS to retrieve additional information about the layer. |
 | [GetLegendGraphic](get_legend_graphic/index.md) | Retrieves a generated legend for a map |
 
 ### GetCapabilities {: #wms_getcap }
@@ -172,7 +172,7 @@ The standard parameters for the GetFeatureInfo operation are:
 | `y` or `j` | Yes | Y ordinate of query point on map, in pixels. 0 is the top. `j` is the parameter key used in WMS 1.3.0. |
 | `exceptions` | No | Format in which to report exceptions. The default value is `application/vnd.ogc.se_xml`. |
 
-**Note:** If you are sending a GetFeatureInfo request against a layergroup, all the layers in that layergroup must be set as "Queryable" to get a result (See [WMS Settings on Layers page](#data_webadmin_layers))
+**Note:** If you are sending a GetFeatureInfo request against a layergroup, all the layers in that layergroup must be set as "Queryable" to get a result (See [WMS Settings on Layers page](../../data/webadmin/layers.md))
 
 GeoServer supports a number of output formats for the `GetFeatureInfo` response. Server-styled HTML is the most commonly-used format. For maximum control and customisation the client should use GML3 and style the raw data itself. The supported formats are:
 

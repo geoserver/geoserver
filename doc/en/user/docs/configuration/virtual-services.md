@@ -141,12 +141,12 @@ The above request results in an exception. Since the request feature type `tiger
 
 Workspace services can be configured to override service configuration for an individual workspace.
 
-![](data/webadmin/img/workspace_services.png)
+![](../data/webadmin/img/workspace_services.png)
 *Workspace services*
 
 Each workspace service can be configured with their own title, abstract and service settings. This can also be used to enable/disable specific services on a workspace by workspace basis to control what virtual services are available.
 
-![](data/webadmin/img/workspace_wms_settings.png)
+![](../data/webadmin/img/workspace_wms_settings.png)
 *Workspace Service Settings*
 
 For more information see [Workspace Services](../data/webadmin/workspaces.md#workspace_services).
@@ -202,7 +202,7 @@ Layer services use the configuration provided by [workspace services](../data/we
 
 Additionally you may choose to [disable specific layer services](../data/webadmin/layers.md#data_webadmin_layers_services) to control which services are available for this layer.
 
-> ![](data/webadmin/img/service_layer.png)
+> ![](../data/webadmin/img/service_layer.png)
 > *Disabled Services Settings*
 
 WMS Configuration offers configuration of [Root Layer in Capabilities](../data/webadmin/layers.md#data_webadmin_layers_root) only when a single layer is to be listed for a layer service:

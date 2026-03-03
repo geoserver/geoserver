@@ -34,7 +34,7 @@ Controls a particular layer group.
 
 ### Parameters
 
-#### `quietOnNotFound` {: #rest_api_layergroups_quietOnNotFound }
+####  `quietOnNotFound` {: #rest_api_layergroups_quietonnotfound }
 
 The `quietOnNotFound` parameter avoids to log an Exception when the layergroup is not present. Note that 404 status code will be returned anyway.
 

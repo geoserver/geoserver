@@ -46,7 +46,7 @@ GeoFence Server extension is provided as two mutually exclusive packages, to be 
 >
 > 3.  Add the following system variable among the JVM startup options (location varies depending on installation type): `-Dgwc.context.suffix=gwc` to avoid conflicts with GWC pages.
 >
-> 4.  [Configure the plugin](#Configure the plugin)
+> 4.  **Configure the plugin**
 >
 > 5.  Restart GeoServer
 

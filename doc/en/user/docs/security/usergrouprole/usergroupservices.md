@@ -16,7 +16,7 @@ By default, GeoServer support three types of user/group services:
 - [JDBC](#security_rolesystem_usergroupjdbc)---User/group service persisted in database via JDBC
 - [LDAP](#security_rolesystem_usergroupldap)---User/group service obtained from an LDAP repository
 
-Other services can be added to GeoServer, such as that provided by the [AuthKey](#authkey) extension.
+Other services can be added to GeoServer, such as that provided by the **AuthKey** extension.
 
 ## XML user/group service {: #security_rolesystem_usergroupxml }
 

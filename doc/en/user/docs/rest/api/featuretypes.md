@@ -79,6 +79,6 @@ When specifying the Projection Policy in a FeatureType defined in the request bo
 | Keep native                  | NONE                  |
 | Reproject native to declared | REPROJECT_TO_DECLARED |
 
-#### `quietOnNotFound` {: #rest_api_featuretypes_quietOnNotFound }
+####  `quietOnNotFound` {: #rest_api_featuretypes_quietonnotfound }
 
 The `quietOnNotFound` parameter avoids to log an Exception when the feature type is not present. Note that 404 status code will be returned anyway.

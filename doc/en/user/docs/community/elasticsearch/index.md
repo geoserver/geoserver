@@ -504,7 +504,7 @@ After deploying the customized plugin, the new geohash grid computer can be used
                   <ogc:Literal>NewName</ogc:Literal>
                 </ogc:Function>
 
-## FAQ {: #FAQ }
+##  FAQ {: #faq }
 
 - By default, arrays are returned directly, which is suitable for many output formats including GeoJSON. When using CSV output format with layers containing arrays it's necessary to set the `array_encoding` store parameter to `CSV`. Note however when using the `CSV` array encoding that only the first value will be returned.
 - When updating from pre-2.11.0 versions of the plugin it may be necessary to reload older layers to enable full aggregation and time support. Missing aggregation data or errors of the form `IllegalArgumentException: Illegal pattern component` indicate a layer reload is necessary. In this case the layer must be removed and re-added to GeoServer (e.g. a feature type reload will not be sufficient).

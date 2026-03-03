@@ -2,7 +2,7 @@
 
 In YSLD, a Feature Style is a block of styling [Rules](rules.md). The Feature Style is applied to a single feature type and drawn in an off-screen buffer.
 
-![](img/feature-style.*)
+![](img/feature-style.svg)
 *The feature style element*
 
 **The purpose of a Feature Style is to specify drawing order.** The buffer for the first Feature Style will be drawn first, while buffer for the second Feature Style will be processed after that, etc. When drawing is complete the buffers will composed into the final drawn map.
@@ -21,7 +21,7 @@ Consider the following hierarchy:
 
 In this case, the rules contained inside Feature Style 1 will be processed and their [symbolizers](symbolizers/index.md) drawn first. After Rule 1a and 1b are processed, the renderer will move on to Feature Style 2, where Rule 2a, 2b, and 2c will then be processed and their symbolizers drawn.
 
-![](img/feature-style-order.*)
+![](img/feature-style-order.svg)
 *Feature style order*
 
 ## Drawing order
@@ -40,7 +40,7 @@ Feature style 1 will draw an off-screen buffer:
 2.  Rule 1a is applied to the second feature, followed by rule 1b
 3.  Rule 1a is applied to the third feature, followed by rule 1b
 
-![](img/draw-order-buffer1.*)
+![](img/draw-order-buffer1.svg)
 *Feature style 1 buffer*
 
 Feature style 2 will draw an off-screen buffer:
@@ -49,7 +49,7 @@ Feature style 2 will draw an off-screen buffer:
 2.  Rule 2a is applied to the second feature, followed by rule 2b and then rule 2c
 3.  Rule 2a is applied to the third feature, followed by rule 2b and then rule 2c
 
-![](img/draw-order-buffer2.*)
+![](img/draw-order-buffer2.svg)
 *Feature style 2 buffer*
 
 This final map is produced by composition:
@@ -58,7 +58,7 @@ This final map is produced by composition:
 2.  The buffer for feature style 2 is drawn
 3.  Any labeling is drawn on top
 
-![](img/draw-order-map.*)
+![](img/draw-order-map.svg)
 *Composition of both feature styles*
 
 **If you need a rule to apply on top of other rules, use a second feature style.** A useful case for this is for lines representing bridges or overpasses. In order to ensure that the bridge lines always display on "top" of other lines (which in a display that includes, they would need to be applied using a second feature style.)
@@ -119,37 +119,37 @@ Alpha compositing controls how buffers are merged using the transparent areas of
 | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `copy`             | Only the source will be present in the output.                                                                                                                                                              |
 |                    |                                                                                                                                                                                                             |
-|                    | ![image](img/composite-source.*)                                                                                                                                                                            |
+|                    | ![image](img/composite-source.svg)                                                                                                                                                                            |
 | `destination`      | Only the destination will be present in the output.                                                                                                                                                         |
 |                    |                                                                                                                                                                                                             |
-|                    | ![image](img/composite-destination.*)                                                                                                                                                                       |
+|                    | ![image](img/composite-destination.svg)                                                                                                                                                                       |
 | `source-over`      | The source is drawn over the destination, and the destination is visible where the source is transparent. Opposite of `destination-over`. This is the default value for x-composite.                        |
 |                    |                                                                                                                                                                                                             |
-|                    | ![image](img/composite-source-over.*)                                                                                                                                                                       |
+|                    | ![image](img/composite-source-over.svg)                                                                                                                                                                       |
 | `destination-over` | The source is drawn below the destination, and is visible only when the destination is transparent. Opposite of `source-over`.                                                                              |
 |                    |                                                                                                                                                                                                             |
-|                    | ![image](img/composite-destination-over.*)                                                                                                                                                                  |
+|                    | ![image](img/composite-destination-over.svg)                                                                                                                                                                  |
 | `source-in`        | The source is visible only when overlapping some non-transparent pixel of the destination. This allows the background map to act as a mask for the layer/feature being drawn. Opposite of `destination-in`. |
 |                    |                                                                                                                                                                                                             |
-|                    | ![image](img/composite-source-in.*)                                                                                                                                                                         |
+|                    | ![image](img/composite-source-in.svg)                                                                                                                                                                         |
 | `destination-in`   | The destination is retained only when overlapping some non transparent pixel in the source. This allows the layer/feature to be drawn to act as a mask for the background map. Opposite of `source-in`.     |
 |                    |                                                                                                                                                                                                             |
-|                    | ![image](img/composite-destination-in.*)                                                                                                                                                                    |
+|                    | ![image](img/composite-destination-in.svg)                                                                                                                                                                    |
 | `source-out`       | The source is retained only in areas where the destination is transparent. This acts as a reverse mask when compared to `source-in`.                                                                        |
 |                    |                                                                                                                                                                                                             |
-|                    | ![image](img/composite-source-out.*)                                                                                                                                                                        |
+|                    | ![image](img/composite-source-out.svg)                                                                                                                                                                        |
 | `destination-out`  | The destination is retained only in areas where the source is transparent. This acts as a reverse mask when compared to `destination-in`.                                                                   |
 |                    |                                                                                                                                                                                                             |
-|                    | ![image](img/composite-destination-out.*)                                                                                                                                                                   |
+|                    | ![image](img/composite-destination-out.svg)                                                                                                                                                                   |
 | `source-atop`      | The destination is drawn fully, while the source is drawn only where it intersects the destination.                                                                                                         |
 |                    |                                                                                                                                                                                                             |
-|                    | ![image](img/composite-source-atop.*)                                                                                                                                                                       |
+|                    | ![image](img/composite-source-atop.svg)                                                                                                                                                                       |
 | `destination-atop` | The source is drawn fully, and the destination is drawn over the source only where it intersects it.                                                                                                        |
 |                    |                                                                                                                                                                                                             |
-|                    | ![image](img/composite-destination-atop.*)                                                                                                                                                                  |
+|                    | ![image](img/composite-destination-atop.svg)                                                                                                                                                                  |
 | `xor`              | "Exclusive Or" mode. Each pixel is rendered only if either the source or the destination is not blank, but not both.                                                                                      |
 |                    |                                                                                                                                                                                                             |
-|                    | ![image](img/composite-xor.*)                                                                                                                                                                               |
+|                    | ![image](img/composite-xor.svg)                                                                                                                                                                               |
 
 **Color blending**
 
@@ -262,17 +262,17 @@ feature-styles:
 
 To draw the inner lines always on top of the outer lines we need to control the **z-order**. The `outer_rule` is encased in its own feature style and drawn into a distinct "Outer line" buffer. Next the `inner_rule` is encased in its own feature style and drawn into a distinct "Inner line" buffer.
 
-![](img/line-casing-buffers.*)
+![](img/line-casing-buffers.svg)
 *Feature style buffers*
 
 During composition these two off-screen buffers are combined into the final map.
 
-![](img/line-casing-map.*)
+![](img/line-casing-map.svg)
 *Final map composition*
 
 When drawn, the outer line has a width of 8 pixels and the inner line has a width of 6 pixels, so the line "border" is 1 pixel (on each side).
 
-![](img/fs_roadcasing.*)
+![](img/fs_roadcasing.png)
 *Example showing road casing*
 
 ### First match

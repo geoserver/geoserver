@@ -64,7 +64,7 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - Test download links work in built documentation
     - _Requirements: 18.1, 18.2, 18.3, 18.4, 18.5_
 
-  - [ ] 2.4 Update GitHub Actions workflow for post-migration builds
+  - [x] 2.4 Update GitHub Actions workflow for post-migration builds
     - Modify .github/workflows/mkdocs.yml to remove conversion steps
     - Remove "Install pandoc" step
     - Remove "Install mkdocs-translate" step
@@ -74,7 +74,7 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - Update workflow trigger branches to [3.0, 2.28.x]
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7_
 
-  - [ ] 2.5 Commit converted files (DO NOT remove RST yet)
+  - [x] 2.5 Commit converted files (DO NOT remove RST yet)
     - Stage all converted Markdown files
     - Stage updated mkdocs.yml files
     - Stage hooks/download_files.py
@@ -85,13 +85,25 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - _Requirements: 2.1, 2.2, 2.5, 3.8_
 
 - [ ] 3. Phase 3: Validation and Quality Assurance (Days 6-8)
-  - [ ] 3.1 Build and compare HTML outputs
+  - [x] 3.1 Build and compare HTML outputs
     - Build Sphinx HTML from original RST files: `cd doc/en && make html`
     - Build MkDocs HTML from converted Markdown: `cd doc/en/user && mkdocs build`
     - Run RoundTripValidator to compare rendered pages side-by-side
     - Identify major rendering problems (tables, missing sections, broken formatting)
     - Document comparison results
+    - **COMPLETED**: Identified 2,071 missing images and 128 broken anchors
+    - **FIXED**: All 2,071 image path issues resolved (100% success rate)
+    - **REMAINING**: 124 broken anchor links need investigation
     - _Requirements: 5.1, 5.2, 5.3, 5.4_
+
+  - [x] 3.1.1 Fix remaining broken anchor links (124 issues)
+    - **REMINDER**: 124 broken anchor links remain from task 3.1
+    - Investigate anchor generation differences between Sphinx and MkDocs
+    - Review auto-generated anchors from headings
+    - Fix cross-document references with incorrect syntax
+    - Add missing anchors to target documents where needed
+    - Verify all internal navigation works correctly
+    - _Requirements: 6.1, 6.2, 6.3_
 
   - [ ] 3.2 Manual review of directive conversions
     - Review guilabel conversions (should be bold text)
@@ -162,63 +174,74 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - List files added (Markdown docs, updated workflows)
     - _Requirements: 19.1, 19.2, 19.3, 19.4, 19.5, 19.6_
 
-  - [ ] 3.9 Create pull request for 3.0 branch
-    - Create PR: "Migrate 3.0 documentation from RST to Markdown"
+  - [ ] 3.9 Create pull request for 2.28.x branch
+    - Create PR: "Migrate 2.28.x documentation from RST to Markdown"
     - Include migration summary report in PR description
     - Document known minor issues
     - Request review from documentation maintainers
     - _Requirements: 2.3, 2.4, 5.9, 19.7_
 
-- [ ] 4. Checkpoint - Ensure 3.0 migration is complete
+- [ ] 4. Checkpoint - Ensure 2.28.x migration is complete
   - Ensure all validation passes, all tests pass, PR is ready for review. Ask the user if questions arise.
 
-- [ ] 5. Phase 4: 2.28.x Branch Conversion (Days 9-11)
-  - [ ] 5.1 Execute full conversion on 2.28.x branch
-    - Switch to migration/2.28-x-rst-to-md branch
+- [ ] 5. Phase 4: 3.0 (main) Branch Conversion (Days 9-11)
+  - [ ] 5.1 Execute full conversion on 3.0 branch
+    - Switch to migration/3.0-rst-to-md branch
     - Run migration.py to convert all RST files in doc/en/user/, doc/en/developer/, doc/en/docguide/
     - Convert Chinese documentation in doc/zhCN/
     - Generate mkdocs.yml configurations with navigation structure
     - Review conversion logs for warnings and errors
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 15.1, 15.2_
 
-  - [ ] 5.2 Update mkdocs.yml configurations for 2.28.x
-    - Apply same configuration as 3.0 branch (theme, plugins, extensions)
-    - Update version variables to 2.28.x
+  - [ ] 5.2 Update mkdocs.yml configurations for 3.0
+    - Apply same configuration as 2.28.x branch (theme, plugins, extensions)
+    - Update version variables to 3.0
     - Configure version selector with correct version number
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 16.1, 16.2, 16.3_
 
-  - [ ] 5.3 Update GitHub Actions workflow for 2.28.x
-    - Apply same workflow changes as 3.0 branch
-    - Verify workflow triggers on 2.28.x branch
+  - [ ] 5.3 Update GitHub Actions workflow for 3.0
+    - Apply same workflow changes as 2.28.x branch
+    - Verify workflow triggers on 3.0 branch
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7_
 
-  - [ ] 5.4 Commit converted files for 2.28.x (DO NOT remove RST yet)
+  - [ ] 5.4 Commit converted files for 3.0 (DO NOT remove RST yet)
     - Stage all converted Markdown files
     - Stage updated mkdocs.yml files
     - Stage updated .github/workflows/mkdocs.yml
-    - Commit with message: "Convert 2.28.x documentation from RST to Markdown"
+    - Commit with message: "Convert 3.0 documentation from RST to Markdown"
     - _Requirements: 2.1, 2.2, 2.5_
 
-  - [ ] 5.5 Validate 2.28.x conversion
-    - Run same validation steps as 3.0 branch (HTML comparison, link validation, build tests)
-    - Fix any issues specific to 2.28.x branch
+  - [ ] 5.5 Validate 3.0 conversion
+    - Run same validation steps as 2.28.x branch (HTML comparison, link validation, build tests)
+    - Fix any issues specific to 3.0 branch
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7_
 
-  - [ ] 5.6 Remove RST infrastructure for 2.28.x after validation
+  - [ ] 5.5.1 Fix image paths and wildcard references for 3.0 branch
+    - Run fix_image_paths.py to convert absolute paths to relative
+    - Run fix_anchor_case.py to fix anchor case sensitivity
+    - Run fix_variable_substitution.py to replace variable placeholders
+    - Run fix_overcorrected_paths.py to remove excessive ../ prefixes
+    - Run fix_all_image_paths.py for comprehensive multi-strategy fix
+    - Run fix_wildcard_images.py to replace wildcard image references with .svg
+    - Run fix_ysld_image_paths.py to fix YSLD reference image paths
+    - Verify all 2,071 images are fixed (expect 100% success rate)
+    - _Requirements: 5.1, 5.2, 5.3, 5.4, 6.4, 6.5_
+
+  - [ ] 5.6 Remove RST infrastructure for 3.0 after validation
     - Remove all RST source directories and Sphinx configuration
     - Commit removals with message: "Remove RST infrastructure after migration to Markdown"
     - _Requirements: 20.1, 20.2, 20.3, 20.4, 20.5, 20.6, 20.7_
 
-  - [ ] 5.7 Create migration summary report for 2.28.x
-    - Generate same report as 3.0 branch
+  - [ ] 5.7 Create migration summary report for 3.0
+    - Generate same report as 2.28.x branch
     - _Requirements: 19.1, 19.2, 19.3, 19.4, 19.5, 19.6_
 
-  - [ ] 5.8 Create pull request for 2.28.x branch
-    - Create PR: "Migrate 2.28.x documentation from RST to Markdown"
+  - [ ] 5.8 Create pull request for 3.0 branch
+    - Create PR: "Migrate 3.0 documentation from RST to Markdown"
     - Include migration summary report in PR description
     - _Requirements: 2.3, 2.4, 19.7_
 
-- [ ] 6. Checkpoint - Ensure 2.28.x migration is complete
+- [ ] 6. Checkpoint - Ensure 3.0 migration is complete
   - Ensure all validation passes, all tests pass, PR is ready for review. Ask the user if questions arise.
 
 - [ ] 7. Phase 5: Jenkins Analysis and OSGeo Deployment (Days 12-13)

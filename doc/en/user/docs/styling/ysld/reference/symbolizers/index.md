@@ -8,7 +8,7 @@ Symbolizers are contained inside [rules](../rules.md). A rule can contain one or
 
     The most common use case for multiple symbolizers is a geometry (point/line/polygon) symbolizer to draw the features plus a text symbolizer for labeling these features.
     
-    ![](img/symbolizers.*)
+    ![](img/symbolizers.svg)
     *Use of multiple symbolizers*
 
 ## Drawing order
@@ -37,24 +37,24 @@ When drawing three points these symbolizers will be applied in order on each fea
 
 1.  Feature 1 is drawn as a square, followed by a triangle:
 
-    ![](img/symbolizer-order1.*)
+    ![](img/symbolizer-order1.svg)
     *Feature 1 buffer rendering*
 
 2.  Feature 2 is drawn as a square, followed by a triangle. Notice the slight overlap with Feature 1:
 
-    ![](img/symbolizer-order2.*)
+    ![](img/symbolizer-order2.svg)
     *Feature 2 buffer rendering*
 
 3.  Feature 3 is drawn as a square, followed by a triangle:
 
-    ![](img/symbolizer-order3.*)
+    ![](img/symbolizer-order3.svg)
     *Feature 3 buffer rendering*
 
 !!! note
 
     In the final image, Feature 1 and Feature 2 have a slight overlap. This overlap is determined by data order which we have no control over. If you need to control the overlap review the [Feature Styles](../featurestyles.md) section on managing "z-order".
     
-    ![](img/symbolizer-order4.*)
+    ![](img/symbolizer-order4.svg)
     *Feature style controlling z-order*
 
 ## Matching symbolizers and geometries

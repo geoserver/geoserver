@@ -1167,7 +1167,7 @@ The **symbol** layer with the **label** property are used to label Point Locatio
 
     !!! note
 
-        Answer [discussed](#mbstyle.point.a1) at the end of the workbook.
+        Answer [discussed](../point/index.md#mbstyle.point.a1) at the end of the workbook.
 
 ### Explore Dynamic Symbolization {: #mbstyle.point.q2 }
 
@@ -1284,6 +1284,6 @@ The **symbol** layer with the **label** property are used to label Point Locatio
 
     !!! note
 
-        Answer [provided](#mbstyle.point.a2) at the end of the workbook.
+        Answer [provided](../point/index.md#mbstyle.point.a2) at the end of the workbook.
 
 > 1.  Challenge: Use the **Interpolate** function to smoothly change the mark **size** based on city population.

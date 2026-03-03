@@ -10,7 +10,7 @@ render_macros: true
 
 The current data directory location is always shown on the [Status](../configuration/status.md) page.
 
-![](configuration/img/server_status.png)
+![](../configuration/img/server_status.png)
 *Status Page (default tab)*
 
 ## Default data directory location
@@ -55,9 +55,9 @@ To make [upgrading](../installation/upgrade.md) easier, **Web Archive** users sh
 
 | Platform | Example location                                            |
 |----------|-------------------------------------------------------------|
-| Linux    | [|data_directory_linux|](##SUBST##|data_directory_linux|) |
-| Windows  | [|data_directory_win|](##SUBST##|data_directory_win|)     |
-| MacOS    | [|data_directory_mac|](##SUBST##|data_directory_mac|)     |
+| Linux    | [|data_directory_linux|](/var/lib/geoserver_data) |
+| Windows  | [|data_directory_win|](C:\ProgramData\GeoServer\Data)     |
+| MacOS    | [|data_directory_mac|](/Users/username/Library/Application Support/GeoServer/data_dir)     |
 
 ## Creating a new data directory
 

@@ -35,7 +35,7 @@ The next step is to create a workspace for the geopackage. A workspace is a fold
 
 3.  Navigate to **Data --> Workspaces**.
 
-    ![](data/webadmin/img/data_workspaces.png)
+    ![](../../data/webadmin/img/data_workspaces.png)
     *Workspaces page*
 
 4.  Click the **Add new workspace** button to display the **New Workspace** page.

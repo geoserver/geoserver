@@ -16,7 +16,7 @@ The Db2 spatial support implements the OGC specification "Simple Features for SQ
 
 A free of charge copy of Db2 can be downloaded from <https://www.ibm.com/analytics/db2/trials>.
 
-## Installing the Db2 extension {: #Db2_install }
+##  Installing the Db2 extension {: #db2_install }
 
 !!! warning
 

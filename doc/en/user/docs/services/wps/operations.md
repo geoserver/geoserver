@@ -5,7 +5,7 @@ The WPS 1.0.0 standard defines three operations for the discovery and execution 
 |  |  |
 |----|----|
 | **Operation** | **Description** |
-| [GetCapabilities](#getcapabilities) | Retrieves details of the service offering, including service metadata and metadata describing the available processes |
+| [GetCapabilities](#wps_getcaps) | Retrieves details of the service offering, including service metadata and metadata describing the available processes |
 | [DescribeProcess](#describeprocess) | Retrieves a description of a WPS process available through the service |
 | [Execute](#execute) | A request to perform the process with specified input values and required output data items |
 | [Dismiss](#dismiss) (vendor extension) | Used to cancel the execution of a process |

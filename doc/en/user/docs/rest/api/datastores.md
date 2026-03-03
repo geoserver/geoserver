@@ -39,7 +39,7 @@ Controls a particular data store in a given workspace.
 
 The `recurse` parameter recursively deletes all layers referenced by the specified data store. Allowed values for this parameter are "true" or "false". The default value is "false".
 
-#### `quietOnNotFound` {: #rest_api_datastores_quietOnNotFound }
+####  `quietOnNotFound` {: #rest_api_datastores_quietonnotfound }
 
 The `quietOnNotFound` parameter avoids to log an Exception when the data store is not present. Note that 404 status code will be returned anyway.
 

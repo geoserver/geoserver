@@ -38,7 +38,7 @@ Controls a particular layer.
 
 The `recurse` parameter recursively deletes all styles referenced by the specified layer. Allowed values for this parameter are "true" or "false". The default value is "false".
 
-#### `quietOnNotFound` {: #rest_api_layers_quietOnNotFound }
+####  `quietOnNotFound` {: #rest_api_layers_quietonnotfound }
 
 The `quietOnNotFound` parameter avoids to log an Exception when the layer is not present. Note that 404 status code will be returned anyway.
 

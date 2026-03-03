@@ -2,7 +2,7 @@
 
 This plugin brings in the ability to write GeoPackage files in GeoServer using WPS. Reading GeoPackage files is part of the core functionality of GeoServer, and does not require this extension.
 
-For WMS and WFS GeoPackage output, see the [GeoPKG Output](#geopkgoutput) extension.
+For WMS and WFS GeoPackage output, see the [GeoPKG Output](community/geopkg/output.md) extension.
 
 [GeoPackage](http://www.opengeospatial.org/projects/groups/geopackageswg/) is an SQLite based standard format that is able to hold multiple vector and raster data layers in a single file.
 

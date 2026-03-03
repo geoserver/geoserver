@@ -34,7 +34,7 @@ Controls a particular namespace.
 
 ### Parameters
 
-#### `quietOnNotFound` {: #rest_api_namespaces_quietOnNotFound }
+####  `quietOnNotFound` {: #rest_api_namespaces_quietonnotfound }
 
 The `quietOnNotFound` parameter avoids to log an Exception when the Namespace is not present. Note that 404 status code will be returned anyway.
 

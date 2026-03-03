@@ -578,7 +578,7 @@ The key properties **mark** and **label** are required to label Point locations.
 
     !!! note
 
-        Answer [discussed](#ysld.point.a1) at the end of the workbook.
+        Answer [discussed](../point/index.md#ysld.point.a1) at the end of the workbook.
 
 ### Explore Dynamic Symbolization {: #css.point.q2 }
 
@@ -649,7 +649,7 @@ The key properties **mark** and **label** are required to label Point locations.
 
     !!! note
 
-        Answer [provided](#ysld.point.a2) at the end of the workbook.
+        Answer [provided](../point/index.md#ysld.point.a2) at the end of the workbook.
 
 > 1.  Challenge: Use the **Interpolate** function to smoothly change **mark-size** based on city population.
 
@@ -689,7 +689,7 @@ The key properties **mark** and **label** are required to label Point locations.
 
     !!! note
 
-        Answer [provided](#ysld.point.a3) at the end of the workbook.
+        Answer [provided](../point/index.md#ysld.point.a3) at the end of the workbook.
 
 ### Explore True Type Fonts
 

@@ -121,4 +121,4 @@ The `usgs:dem` layer used for this exercise:
 
     !!! note
 
-        Discussion [provided](#mbstyle.raster.a4) at the end of the workbook.
+        Discussion [provided](../raster/index.md#mbstyle.raster.a4) at the end of the workbook.

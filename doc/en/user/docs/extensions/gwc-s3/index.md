@@ -1,6 +1,6 @@
 # GWC S3 BlobStore plugin
 
-This plugin supports the use of the [AWS](https://aws.amazon.com) Simple Storage Service ([Amazon S3](https://aws.amazon.com/s3/)) as storage medium for [GWC](#gwc_webadmin).
+This plugin supports the use of the [AWS](https://aws.amazon.com) Simple Storage Service ([Amazon S3](https://aws.amazon.com/s3/)) as storage medium for **GWC**.
 
 <div class="grid cards" markdown>
 

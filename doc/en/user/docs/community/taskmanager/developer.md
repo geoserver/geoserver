@@ -50,7 +50,7 @@ public interface TaskType extends Named {
 }
 ```
 
-A ParameterInfo object contains a name, a [type](#parameter-type), whether they are required, and which other parameters they depend on (for example, a database table depends on a database).
+A ParameterInfo object contains a name, a [type](#parameter-types), whether they are required, and which other parameters they depend on (for example, a database table depends on a database).
 
 The Task context looks as follows:
 

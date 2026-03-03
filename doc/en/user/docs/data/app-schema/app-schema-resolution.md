@@ -21,7 +21,7 @@ The order of sources used to resolve application schemas is:
 
 1.  [OASIS Catalog](#oasis-catalog)
 2.  [Classpath](#classpath)
-3.  [Cache](#cache)
+3.  [Cache]
 
 Every attempt to load a schema works down this list, so imports can be resolved from sources other than that used for the originating document. For example, an application schema in the cache that references a schema found in the catalog will use the version in the catalog, rather than caching it. This allows users to supply unpublished or modified schemas sourced from, for example, the catalog, at the cost of interoperability (how do WFS clients get them?).
 
@@ -33,7 +33,7 @@ An [OASIS XML Catalog](http://www.oasis-open.org/committees/entity/spec-2001-08-
 
 Earlier versions of the app-schema plugin required all schemas to be present in the catalog. This is no longer the case. Because the catalog is searched first, existing catalog-based deployments will continue to work as before.
 
-To migrate an existing GeoServer app-schema deployment that uses an OASIS Catalog to instead use cached downloads (see [Cache](#cache) below), remove all `catalog` elements from your mapping files and restart GeoServer.
+To migrate an existing GeoServer app-schema deployment that uses an OASIS Catalog to instead use cached downloads (see [Cache] below), remove all `catalog` elements from your mapping files and restart GeoServer.
 
 ## Classpath
 

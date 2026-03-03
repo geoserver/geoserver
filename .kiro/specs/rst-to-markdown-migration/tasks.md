@@ -244,6 +244,13 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
       - Run fix_include_paths.py to fix paths to be relative to docs directory (if needed)
       - Verify YSLD reference pages, service vendor option pages, and other pages with includes render correctly
       - Check that included content appears in the rendered pages (not showing as literal `{% include %}` text)
+    - **FIX INCLUDE STATEMENT ISSUES** (CRITICAL - learned from 2.28.x branch):
+      - **Issue 1: Include statements in code blocks** - Run fix_all_include_issues.py to wrap includes in code blocks with `{%raw%}...{%endraw%}` tags (prevents mkdocs-macros from processing example code)
+      - **Issue 2: Include paths outside docs directory** - Script will comment out includes like `../../../../LICENSE.md` (mkdocs-macros cannot include files outside docs directory)
+      - **Issue 3: Nested include statements** - Manually fix any `{% {% include %} %}` patterns to `{%raw%}{% include %}{%endraw%}` in code blocks
+      - **Issue 4: Include with start/end parameters** - Run fix_include_with_params.py to fix invalid Jinja2 syntax like `{% include "file" start="..." end="..." %}` (Jinja2 does not support start/end parameters)
+      - **Files typically affected**: workshop files (css.md, mbstyle.md, ysld.md), configuration examples, developer guide
+      - **Verification**: Check GitHub Actions logs for "Macro Syntax Error" or "Macro Rendering Error" messages
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7_
 
   - [ ] 5.5.1 Fix image paths and wildcard references for 3.0 branch

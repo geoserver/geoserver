@@ -47,10 +47,11 @@ jobs:
         run: |
           mkdocs build
       
-      - name: Build Chinese Documentation
-        working-directory: doc/zhCN/user
-        run: |
-          mkdocs build
+      # Chinese documentation not yet converted - skip for now
+      # - name: Build Chinese Documentation
+      #   working-directory: doc/zhCN/user
+      #   run: |
+      #     mkdocs build
       
       - name: Prepare GitHub Pages output
         run: |
@@ -58,8 +59,9 @@ jobs:
           cp -r doc/en/user/site gh-pages-output/en/user
           cp -r doc/en/developer/site gh-pages-output/en/developer
           cp -r doc/en/docguide/site gh-pages-output/en/docguide
-          mkdir -p gh-pages-output/zhCN
-          cp -r doc/zhCN/user/site gh-pages-output/zhCN/user
+          # Chinese documentation not yet converted - skip for now
+          # mkdir -p gh-pages-output/zhCN
+          # cp -r doc/zhCN/user/site gh-pages-output/zhCN/user
       
       - name: Deploy to GitHub Pages
         if: github.event_name == 'push' && (github.ref == 'refs/heads/3.0' || github.ref == 'refs/heads/2.28.x')

@@ -125,7 +125,7 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - Test "Back to top" functionality
     - _Requirements: 5.7, 7.7_
 
-  - [ ] 3.4 Validate link integrity
+  - [x] 3.4 Validate link integrity
     - Run LinkValidator on built HTML
     - Fix all broken internal links
     - Fix all broken anchor links

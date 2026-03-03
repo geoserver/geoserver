@@ -117,7 +117,7 @@ The [GeoServer website](https://geoserver.org/) is managed as a [GitHub Pages re
 
         * A regular sandbox can be configured from the **Security > Data** screen, and is used to limit individual workspace administrators into ``<sandbox>/<workspace>`` folders to avoid accessing each other's files.
 
-          ![](/img/posts/2.26/filesystem-sandbox.png)
+        ![Filesystem Sandbox](https://geoserver.org/img/posts/2.26/filesystem-sandbox.png)
 
         Thanks to Andrea (GeoSolutions) for this important improvement at the bequest of [Munich RE](https://www.munichre.com/en.html).
 

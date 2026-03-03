@@ -1,0 +1,30 @@
+Broken Links - Detailed Report
+======================================================================
+
+
+MALFORMED_URL (6 issues)
+----------------------------------------------------------------------
+
+File: cite-test-guide\index.html:3332
+Link: http://
+Text: http://
+
+File: cite-test-guide\index.html:3397
+Link: http://
+Text: http://
+
+File: cite-test-guide\index.html:3446
+Link: http://
+Text: http://
+
+File: cite-test-guide\index.html:3508
+Link: http://
+Text: http://
+
+File: cite-test-guide\index.html:3581
+Link: http://
+Text: http://
+
+File: cite-test-guide\index.html:3620
+Link: http://
+Text: http://

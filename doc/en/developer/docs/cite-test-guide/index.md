@@ -293,7 +293,7 @@ Requirements:
     - click on the **Sign in** button and enter the user and password.
     - after creating the session, and choosing the test, enter the following parameters:
 
-    1.  `Capabilities URL` <http://><ip-of-the-GeoServer>:8080/geoserver/wfs?request=getcapabilities&service=wfs&version=1.0.0
+    1.  `Capabilities URL` `http://<ip-of-the-GeoServer>:8080/geoserver/wfs?request=getcapabilities&service=wfs&version=1.0.0`
 
     2.  `Enable tests with multiple namespaces` tests included
 
@@ -358,7 +358,7 @@ Requirements: - GeoServer - teamengine - PostgreSQL - PostGIS
     - click on the **Sign in** button and enter the user and password.
     - after creating the session, and choosing the test, enter the following parameters:
 
-    1.  `Capabilities URL` <http://><ip-of-the-GeoServer>:8080/geoserver/wfs?service=wfs&request=getcapabilities&version=1.1.0
+    1.  `Capabilities URL` `http://<ip-of-the-GeoServer>:8080/geoserver/wfs?service=wfs&request=getcapabilities&version=1.1.0`
 
     2.  `Supported Conformance Classes`:
 
@@ -397,7 +397,7 @@ Requirements: - GeoServer - teamengine - PostgreSQL - PostGIS
 
     1.  `Capabilities URL`
 
-        > <http://><ip-of-the-GeoServer>:8080/geoserver/wms?service=wms&request=getcapabilities&version=1.1.1
+        > `http://<ip-of-the-GeoServer>:8080/geoserver/wms?service=wms&request=getcapabilities&version=1.1.1`
 
     2.  `UpdateSequence Values`:
 
@@ -445,7 +445,7 @@ Requirements: - GeoServer - teamengine - PostgreSQL - PostGIS
 
     1.  `Capabilities URL`:
 
-        > <http://><ip-of-the-GeoServer>:8080/geoserver/wcs?service=wcs&request=getcapabilities&version=1.0.0
+        > `http://<ip-of-the-GeoServer>:8080/geoserver/wcs?service=wcs&request=getcapabilities&version=1.0.0`
 
     2.  `MIME Header Setup`: "image/tiff"
 
@@ -501,7 +501,7 @@ Requirements: - GeoServer - teamengine - PostgreSQL - PostGIS
 
     1.  `Capabilities URL`:
 
-        > <http://><ip-of-the-GeoServer>:8080/geoserver/wcs
+        > `http://<ip-of-the-GeoServer>:8080/geoserver/wcs`
 
     Click `Next`
 
@@ -532,7 +532,7 @@ Requirements: - GeoServer - teamengine - PostgreSQL - PostGIS
 
     1.  `Capabilities URL`:
 
-        > <http://><ip-of-the-GeoServer>:8080/geoserver/wms?service=wms&request=getcapabilities&version=1.3.0
+        > `http://<ip-of-the-GeoServer>:8080/geoserver/wms?service=wms&request=getcapabilities&version=1.3.0`
 
     2.  `UpdateSequence Values`:
 

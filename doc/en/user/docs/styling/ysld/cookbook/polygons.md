@@ -35,7 +35,8 @@ This example shows a polygon filled in blue.
 [Download the "Simple polygon" YSLD](artifacts/polygon_simplepolygon.ysld)
 
 ~~~yaml
-{%raw%}{%endraw%}{% include "styling/ysld/cookbook/artifacts/polygon_simplepolygon.ysld" %}
+<!-- Malformed include statement: styling/ysld/cookbook/artifacts/polygon_simplepolygon.ysld -->
+<!-- TODO: Fix or remove -->
 ~~~
 
 ### Details
@@ -58,7 +59,8 @@ This example adds a 2 pixel white stroke to the [Simple polygon](polygons.md#ysl
 [Download the "Simple polygon with stroke" YSLD](artifacts/polygon_simplepolygonwithstroke.ysld)
 
 ~~~yaml
-{%raw%}{%endraw%}{% include "styling/ysld/cookbook/artifacts/polygon_simplepolygonwithstroke.ysld" %}
+<!-- Malformed include statement: styling/ysld/cookbook/artifacts/polygon_simplepolygonwithstroke.ysld -->
+<!-- TODO: Fix or remove -->
 ~~~
 
 ### Details
@@ -77,7 +79,8 @@ This example builds on the [Simple polygon with stroke](polygons.md#ysld_cookboo
 [Download the "Transparent polygon" YSLD](artifacts/polygon_transparentpolygon.ysld)
 
 ~~~yaml
-{%raw%}{%endraw%}{% include "styling/ysld/cookbook/artifacts/polygon_transparentpolygon.ysld" %}
+<!-- Malformed include statement: styling/ysld/cookbook/artifacts/polygon_transparentpolygon.ysld -->
+<!-- TODO: Fix or remove -->
 ~~~
 
 ### Details
@@ -96,7 +99,8 @@ This example fills the polygons with a tiled graphic.
 [Download the "Graphic fill" YSLD](artifacts/polygon_graphicfill.ysld)
 
 ~~~yaml
-{%raw%}{%endraw%}{% include "styling/ysld/cookbook/artifacts/polygon_graphicfill.ysld" %}
+<!-- Malformed include statement: styling/ysld/cookbook/artifacts/polygon_graphicfill.ysld -->
+<!-- TODO: Fix or remove -->
 ~~~
 
 ### Details
@@ -118,7 +122,8 @@ This example fills the polygons with a hatching pattern.
 [Download the "Hatching fill" YSLD](artifacts/polygon_hatchingfill.ysld)
 
 ~~~yaml
-{%raw%}{%endraw%}{% include "styling/ysld/cookbook/artifacts/polygon_hatchingfill.ysld" %}
+<!-- Malformed include statement: styling/ysld/cookbook/artifacts/polygon_hatchingfill.ysld -->
+<!-- TODO: Fix or remove -->
 ~~~
 
 ### Details
@@ -137,7 +142,8 @@ This example shows a text label on the polygon. In the absence of any other cust
 [Download the "Polygon with default label" YSLD](artifacts/polygon_polygonwithdefaultlabel.ysld)
 
 ~~~yaml
-{%raw%}{%endraw%}{% include "styling/ysld/cookbook/artifacts/polygon_polygonwithdefaultlabel.ysld" %}
+<!-- Malformed include statement: styling/ysld/cookbook/artifacts/polygon_polygonwithdefaultlabel.ysld -->
+<!-- TODO: Fix or remove -->
 ~~~
 
 ### Details
@@ -156,7 +162,8 @@ This example alters the look of the [Polygon with default label](polygons.md#ysl
 [Download the "Label halo" YSLD](artifacts/polygon_labelhalo.ysld)
 
 ~~~yaml
-{%raw%}{%endraw%}{% include "styling/ysld/cookbook/artifacts/polygon_labelhalo.ysld" %}
+<!-- Malformed include statement: styling/ysld/cookbook/artifacts/polygon_labelhalo.ysld -->
+<!-- TODO: Fix or remove -->
 ~~~
 
 ### Details
@@ -175,7 +182,8 @@ This example improves the label style from the [Polygon with default label](poly
 [Download the "Polygon with styled label" YSLD](artifacts/polygon_polygonwithstyledlabel.ysld)
 
 ~~~yaml
-{%raw%}{%endraw%}{% include "styling/ysld/cookbook/artifacts/polygon_polygonwithstyledlabel.ysld" %}
+<!-- Malformed include statement: styling/ysld/cookbook/artifacts/polygon_polygonwithstyledlabel.ysld -->
+<!-- TODO: Fix or remove -->
 ~~~
 
 ### Details
@@ -198,7 +206,8 @@ This example styles the polygons differently based on the "pop" (Population) att
 [Download the "Attribute-based polygon" YSLD](artifacts/polygon_attributebasedpolygon.ysld)
 
 ~~~yaml
-{%raw%}{%endraw%}{% include "styling/ysld/cookbook/artifacts/polygon_attributebasedpolygon.ysld" %}
+<!-- Malformed include statement: styling/ysld/cookbook/artifacts/polygon_attributebasedpolygon.ysld -->
+<!-- TODO: Fix or remove -->
 ~~~
 
 ### Details
@@ -243,7 +252,8 @@ This example alters the style of the polygon at different zoom levels.
 [Download the "Zoom-based polygon" YSLD](artifacts/polygon_zoombasedpolygon.ysld)
 
 ~~~yaml
-{%raw%}{%endraw%}{% include "styling/ysld/cookbook/artifacts/polygon_zoombasedpolygon.ysld" %}
+<!-- Malformed include statement: styling/ysld/cookbook/artifacts/polygon_zoombasedpolygon.ysld -->
+<!-- TODO: Fix or remove -->
 ~~~
 
 ### Details

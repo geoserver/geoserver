@@ -69,17 +69,38 @@ The web archive distribution of GeoServer is tested with Tomcat. Use the followi
 
 1.  Uncomment the following `<filter>` in **`webapps/geoserver/WEB-INF/web.xml`**:
 
-    ~~~
-    <!-- Include path goes outside docs directory: ../../../../src/web/app/src/main/webapp/WEB-INF/web.xml -->
-<!-- TODO: Copy file to docs directory or use alternative approach -->
+    ~~~xml
+    <!-- Uncomment following filter to enable CORS in Tomcat. Do not forget the second config block further down. -->
+    <!--
+    <filter>
+       <filter-name>cross-origin</filter-name>
+       <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
+       <init-param>
+         <param-name>cors.allowed.origins</param-name>
+         <param-value>*</param-value>
+       </init-param>
+       <init-param>
+         <param-name>cors.allowed.methods</param-name>
+         <param-value>GET,POST,PUT,DELETE,HEAD,OPTIONS</param-value>
+       </init-param>
+       <init-param>
+         <param-name>cors.allowed.headers</param-name>
+         <param-value>*</param-value>
+       </init-param>
+    </filter>
+    -->
     ~~~
 
 2.  Uncomment the following `<filter-mapping>`:
 
-    ~~~
-    <!-- Include with start/end not supported: ../../../../src/web/app/src/main/webapp/WEB-INF/web.xml -->
-<!-- Extract: from "<!-- Uncomment following filter-mapping to enable CORS" to "-->" -->
-<!-- TODO: Copy relevant section to docs directory -->
+    ~~~xml
+    <!-- Uncomment following filter-mapping to enable CORS -->
+    <!--
+    <filter-mapping>
+        <filter-name>cross-origin</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    -->
     ~~~
 
 3.  Restart

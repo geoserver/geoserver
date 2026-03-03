@@ -7,23 +7,27 @@ render_macros: true
 ## Fema example
 
 ~~~html
-{%raw%}{%endraw%}{% include "community/gsr/feature_layer/layers-featurelayer-fema.html" %}
+<!-- Malformed include statement: community/gsr/feature_layer/layers-featurelayer-fema.html -->
+<!-- TODO: Fix or remove -->
 ~~~
 
 ## Point example
 
 ~~~html
-{%raw%}{%endraw%}{% include "community/gsr/feature_layer/layers-featurelayer-point.html" %}
+<!-- Malformed include statement: community/gsr/feature_layer/layers-featurelayer-point.html -->
+<!-- TODO: Fix or remove -->
 ~~~
 
 ## Polygon example
 
 ~~~html
-{%raw%}{%endraw%}{% include "community/gsr/feature_layer/layers-featurelayer-polygon.html" %}
+<!-- Malformed include statement: community/gsr/feature_layer/layers-featurelayer-polygon.html -->
+<!-- TODO: Fix or remove -->
 ~~~
 
 ## Polygon non cors example
 
 ~~~html
-{%raw%}{%endraw%}{% include "community/gsr/feature_layer/layers-featurelayer-polygon-noncors.html" %}
+<!-- Malformed include statement: community/gsr/feature_layer/layers-featurelayer-polygon-noncors.html -->
+<!-- TODO: Fix or remove -->
 ~~~

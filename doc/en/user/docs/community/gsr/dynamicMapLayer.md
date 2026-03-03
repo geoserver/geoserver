@@ -7,11 +7,13 @@ render_macros: true
 ## Dynamic Map Layer
 
 ~~~html
-{%raw%}{%endraw%}{% include "community/gsr/dynamic_map_layer/layers-dynamicmaplayer.html" %}
+<!-- Malformed include statement: community/gsr/dynamic_map_layer/layers-dynamicmaplayer.html -->
+<!-- TODO: Fix or remove -->
 ~~~
 
 ## Dynamic Map Layer Wholeservice
 
 ~~~html
-{%raw%}{%endraw%}{% include "community/gsr/dynamic_map_layer/layers-dynamicmaplayer-wholeservice.html" %}
+<!-- Malformed include statement: community/gsr/dynamic_map_layer/layers-dynamicmaplayer-wholeservice.html -->
+<!-- TODO: Fix or remove -->
 ~~~

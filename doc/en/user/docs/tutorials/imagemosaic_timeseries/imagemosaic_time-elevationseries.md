@@ -34,7 +34,8 @@ Here the user can specify the information that needs GeoServer for creating the 
 In this case the time values are stored in the column ingestion as shown in the previous tutorial but now is mandatory specify the elevation column too.
 
 ~~~
-{%raw%}{%endraw%}{% include "tutorials/imagemosaic_timeseries/src/indexerWithElevation.properties" %}
+<!-- Malformed include statement: tutorials/imagemosaic_timeseries/src/indexerWithElevation.properties -->
+<!-- TODO: Fix or remove -->
 ~~~
 
 ### elevationregex.properties:
@@ -52,7 +53,8 @@ an example of filename, that is used in this tutorial is:
 The GeoServer ImageMosaic plugin scans the filename and search for the first occurrence that match with the pattern specified. Here the content of **elevationregex.properties**:
 
 ~~~
-{%raw%}{%endraw%}{% include "tutorials/imagemosaic_timeseries/src/elevationregex.properties" %}
+<!-- Malformed include statement: tutorials/imagemosaic_timeseries/src/elevationregex.properties -->
+<!-- TODO: Fix or remove -->
 ~~~
 
 ### timeregex.properties:
@@ -64,7 +66,8 @@ As you can see the time in this dataset is specified as ISO8601 format:
 Instead of the form **yyyymmdd** as in the previous tutorial. So the regex to specify in timeregex.properties is:
 
 ~~~
-{%raw%}{%endraw%}{% include "tutorials/imagemosaic_timeseries/src/timeregexForElevation.properties" %}
+<!-- Malformed include statement: tutorials/imagemosaic_timeseries/src/timeregexForElevation.properties -->
+<!-- TODO: Fix or remove -->
 ~~~
 
 ## Coverage based on filestore

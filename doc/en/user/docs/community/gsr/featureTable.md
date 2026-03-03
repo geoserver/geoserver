@@ -5,5 +5,6 @@ render_macros: true
 # Feature Table Example
 
 ~~~html
-{%raw%}{%endraw%}{% include "community/gsr/feature_table/featuretable.html" %}
+<!-- Malformed include statement: community/gsr/feature_table/featuretable.html -->
+<!-- TODO: Fix or remove -->
 ~~~

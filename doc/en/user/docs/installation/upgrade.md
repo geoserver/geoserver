@@ -157,7 +157,7 @@ Due to the above compatibility issues, **some** layers based on underlying GRIB 
 2.  If using a datastore.properties connecting to an actual DB, clean up the tables from the DB
     - Assuming that all the GRIB files belonging to the same ImageMosaic are affected by the same issue, you can delete the related tables and allow the imageMosaic reconfiguration to recreate them.
     - Based on the above example, the naming convention is that granules for VariableA are stored on table named VariableA and so on.
-3.  Recreate the indexer.xml and [auxiliary.xml]{#auxiliary.xml} file as reported in the [NetCDF documentation](https://docs.geoserver.org/main/en/user/extensions/netcdf/netcdf.html#setting-up-a-basic-mosaic) . (At the end, GRIB file are served through the NetCDF libraries)
+3.  Recreate the indexer.xml and {%raw%}[auxiliary.xml]{#auxiliary.xml}{%endraw%} file as reported in the [NetCDF documentation](https://docs.geoserver.org/main/en/user/extensions/netcdf/netcdf.html#setting-up-a-basic-mosaic) . (At the end, GRIB file are served through the NetCDF libraries)
 
 #### Configuration cleanup
 

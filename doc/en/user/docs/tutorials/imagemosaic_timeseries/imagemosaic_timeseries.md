@@ -152,7 +152,8 @@ This part showsn an entire MOSAIC_DIR configuration.
 #### datastore.properties:
 
 ~~~
-{%raw%}{%endraw%}{% include "tutorials/imagemosaic_timeseries/src/datastore.properties" %}
+<!-- Malformed include statement: tutorials/imagemosaic_timeseries/src/datastore.properties -->
+<!-- TODO: Fix or remove -->
 ~~~
 
 !!! note
@@ -262,7 +263,8 @@ After this steps the new layer is available in GeoServer. GeoServer will create 
 #### Generated property file:
 
 ~~~
-{%raw%}{%endraw%}{% include "tutorials/imagemosaic_timeseries/src/snow.properties" %}
+<!-- Malformed include statement: tutorials/imagemosaic_timeseries/src/snow.properties -->
+<!-- TODO: Fix or remove -->
 ~~~
 
 !!! note

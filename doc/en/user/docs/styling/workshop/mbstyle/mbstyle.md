@@ -100,7 +100,8 @@ The MBStyle extension is built with the same GeoServer rendering engine in mind,
 Here is an example [SLD file](../files/airports0.sld) for reference:
 
 ~~~xml
-{%raw%}{%endraw%}{% include "../files/airports0.sld" %}
+<!-- Malformed include statement: ../files/airports0.sld -->
+<!-- TODO: Fix or remove -->
 ~~~
 
 ### MBStyle Style
@@ -108,7 +109,8 @@ Here is an example [SLD file](../files/airports0.sld) for reference:
 Here is the same example as [MBStyle](../files/airports0.json):
 
 ~~~json
-{%raw%}{%endraw%}{% include "../files/airports0.json" %}
+<!-- Malformed include statement: ../files/airports0.json -->
+<!-- TODO: Fix or remove -->
 ~~~
 
 We use a point symbolizer to indicate we want this content drawn as a **Point** (line 16 in the SLD, line 8 in the MBStyle). The point symbolizer declares an external graphic, which contains the URL ``airports.svg`` indicating the image that should be drawn (line 20 in the SLD, line 10 in the MBStyle).

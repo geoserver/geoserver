@@ -24,11 +24,11 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ContextRelativeResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.visit.IVisitor;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.web.GeoServerApplication;
-import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.netcdf.NetCDFSettingsContainer.ExtraVariable;
 import org.geoserver.web.netcdf.NetCDFSettingsContainer.GlobalAttribute;
 import org.geoserver.web.netcdf.NetCDFSettingsContainer.VariableAttribute;
@@ -65,11 +65,10 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
 
     protected final TextField<Integer> compressionLevel;
 
-    public static final PackageResourceReference ADD_ICON =
-            new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/add.png");
+    public static final ResourceReference ADD_ICON = new ContextRelativeResourceReference("img/icons/silk/add.png");
 
-    public static final PackageResourceReference DELETE_ICON =
-            new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/delete.png");
+    public static final ResourceReference DELETE_ICON =
+            new ContextRelativeResourceReference("img/icons/silk/delete.png");
 
     protected final DropDownChoice<DataPacking> dataPacking;
 

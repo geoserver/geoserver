@@ -15,7 +15,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ContextRelativeResourceReference;
 import org.geoserver.security.csp.CSPConfiguration;
 import org.geoserver.security.csp.CSPPolicy;
 import org.geoserver.web.CatalogIconFactory;
@@ -136,7 +136,7 @@ public class CSPPolicyPanel extends Panel {
 
         private Component removeLink(String id, CSPPolicy policy) {
             ImageAjaxLink<Void> link =
-                    new ImageAjaxLink<>(id, new PackageResourceReference(getClass(), "../img/icons/silk/delete.png")) {
+                    new ImageAjaxLink<>(id, new ContextRelativeResourceReference("img/icons/silk/delete.png")) {
                         @Serial
                         private static final long serialVersionUID = 190400999968840349L;
 

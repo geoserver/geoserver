@@ -38,7 +38,10 @@ import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.DynamicImageResource;
+import org.apache.wicket.request.resource.IResource;
 import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
+import org.apache.wicket.request.resource.caching.IStaticCacheableResource;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.web.GeoServerApplication;
@@ -298,8 +301,17 @@ public class MapPreviewPage extends GeoServerBasePage {
         protected byte[] getImageData(Attributes attributes) {
             PreviewLayer layer = itemModel.getObject();
             try {
-                return IOUtils.toByteArray(
-                        layer.getIcon().getResource().getResourceStream().getInputStream());
+                ResourceReference imageReference = layer.getIcon();
+                IResource image = imageReference.getResource();
+
+                if (image instanceof IStaticCacheableResource) {
+                    IStaticCacheableResource staticImage = (IStaticCacheableResource) image;
+
+                    return IOUtils.toByteArray(staticImage.getResourceStream().getInputStream());
+                } else {
+                    throw new RuntimeException("Image "
+                            + imageReference.getClass().getSimpleName() + " is not a static cacheable resource");
+                }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

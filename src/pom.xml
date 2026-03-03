@@ -48,6 +48,7 @@
     <module>restconfig-wfs</module>
     <module>restconfig-wms</module>
     <module>restconfig-wmts</module>
+    <module>theme</module>
     <module>web</module>
     <module>community</module>
     <module>extension</module>
@@ -272,6 +273,11 @@
         <artifactId>gs-main</artifactId>
         <version>${gs.version}</version>
         <classifier>tests</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.geoserver</groupId>
+        <artifactId>gs-theme</artifactId>
+        <version>${gs.version}</version>
       </dependency>
       <dependency>
         <groupId>org.geoserver</groupId>

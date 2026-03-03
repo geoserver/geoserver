@@ -38,7 +38,9 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.ContextRelativeResourceReference;
 import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.importer.ImportTask;
@@ -200,14 +202,14 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
         }
     }
 
-    static class StatusIconModel extends StatusModel<PackageResourceReference> {
+    static class StatusIconModel extends StatusModel<ResourceReference> {
 
         StatusIconModel(IModel model) {
             super(model);
         }
 
         @Override
-        public PackageResourceReference getObject() {
+        public ResourceReference getObject() {
             ImportTask.State state = (ImportTask.State) chained.getObject();
             switch (state) {
                 case READY:
@@ -220,9 +222,9 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
                 case NO_CRS:
                 case NO_FORMAT:
                 case BAD_FORMAT:
-                    return new PackageResourceReference(GeoServerApplication.class, "img/icons/silk/error.png");
+                    return new ContextRelativeResourceReference("img/icons/silk/error.png");
                 case ERROR:
-                    return new PackageResourceReference(GeoServerApplication.class, "img/icons/silk/delete.png");
+                    return new ContextRelativeResourceReference("img/icons/silk/delete.png");
                 case CANCELED:
                 case PENDING:
                 default:

@@ -13,7 +13,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ContextRelativeResourceReference;
 
 /**
  * A panel with two arrows, up and down, supposed to reorder items in a container (a table)
@@ -60,7 +60,7 @@ public class UpDownPanel<T> extends Panel {
 
         upLink =
                 new ImageAjaxLink<Void>(
-                        "up", new PackageResourceReference(getClass(), "../img/icons/silk/arrow_up.png")) {
+                        "up", new ContextRelativeResourceReference("/img/icons/silk/arrow_up.png", false)) {
                     @Serial
                     private static final long serialVersionUID = 2377129539852597050L;
 
@@ -91,7 +91,7 @@ public class UpDownPanel<T> extends Panel {
 
         downLink =
                 new ImageAjaxLink<Void>(
-                        "down", new PackageResourceReference(getClass(), "../img/icons/silk/arrow_down.png")) {
+                        "down", new ContextRelativeResourceReference("/img/icons/silk/arrow_down.png", false)) {
                     @Serial
                     private static final long serialVersionUID = -1770135905138092575L;
 

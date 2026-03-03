@@ -16,7 +16,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
@@ -72,7 +72,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
         if (property == StoreProvider.DATA_TYPE) {
             final StoreInfo storeInfo = itemModel.getObject();
 
-            PackageResourceReference storeIcon = icons.getStoreIcon(storeInfo);
+            ResourceReference storeIcon = icons.getStoreIcon(storeInfo);
 
             Fragment f = new Fragment(id, "iconFragment", this);
             f.add(new CachingImage("storeIcon", storeIcon));
@@ -84,7 +84,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
             return storeNameLink(id, itemModel);
         } else if (property == ENABLED) {
             final StoreInfo storeInfo = itemModel.getObject();
-            PackageResourceReference enabledIcon;
+            ResourceReference enabledIcon;
             if (storeInfo.isEnabled()) {
                 enabledIcon = icons.getEnabledIcon();
             } else {

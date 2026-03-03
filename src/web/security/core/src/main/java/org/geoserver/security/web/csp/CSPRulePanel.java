@@ -16,11 +16,10 @@ import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ContextRelativeResourceReference;
 import org.geoserver.security.csp.CSPPolicy;
 import org.geoserver.security.csp.CSPRule;
 import org.geoserver.web.CatalogIconFactory;
-import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.wicket.GeoServerDataProvider.BeanProperty;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDataProvider.PropertyPlaceholder;
@@ -117,7 +116,7 @@ public class CSPRulePanel extends Panel {
             } else if (property == DESCRIPTION) {
                 return new Icon(
                                 id,
-                                new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/information.png"),
+                                new ContextRelativeResourceReference("img/icons/silk/information.png"),
                                 Model.of((String) property.getModel(itemModel).getObject()))
                         .setOutputMarkupId(true);
             } else if (property == REMOVE) {
@@ -146,7 +145,7 @@ public class CSPRulePanel extends Panel {
 
         private Component removeLink(String id, CSPRule rule) {
             ImageAjaxLink<Void> link =
-                    new ImageAjaxLink<>(id, new PackageResourceReference(getClass(), "../img/icons/silk/delete.png")) {
+                    new ImageAjaxLink<>(id, new ContextRelativeResourceReference("img/icons/silk/delete.png")) {
                         @Serial
                         private static final long serialVersionUID = -3140594684451087223L;
 

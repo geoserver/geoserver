@@ -1,0 +1,17 @@
+/*
+ ----------------------------------------------------------
+
+
+This is the panel-specific .css file for the panel defined in class OAuth2LoginAuthProviderPanel$DiscoveryPanel
+
+The panel's html will be contained in a <div class='gs-panel-OAuth2LoginAuthProviderPanel_DiscoveryPanel'>
+
+Your css selectors should look like this to avoid modifying styles outside the panel:
+
+.gs-panel-OAuth2LoginAuthProviderPanel_DiscoveryPanel ...specific css selector... {
+      ... styling ...
+}
+
+
+ ----------------------------------------------------------
+*/

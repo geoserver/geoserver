@@ -165,19 +165,19 @@ Note also that tile request are sensitive to the other rules (user based, ip bas
 
 Assuming the server we want to protect has 4 cores a sample configuration could be:
 
-~~~properties
+```properties
 <!-- Malformed include statement: extensions/controlflow/controlflow.properties -->
 <!-- TODO: Fix or remove -->
-~~~
+```
 
 ## Debugging control flow
 
 The control flow module logs its activity to the GeoServer log file, with a few logs per request at INFO level, and more logs at FINE level, for each flow controller. The following logging configuration file enables both levels, specifically for control-flow:
 
-~~~xml
+```xml
 <!-- Malformed include statement: extensions/controlflow/CONTROL_FLOW_LOGGING.xml -->
 <!-- TODO: Fix or remove -->
-~~~
+```
 
 An example output, filtered on a the single thread `http-nio-8080-exec-8` and a single WFS 1.0.0 GetFeature request follows:
 

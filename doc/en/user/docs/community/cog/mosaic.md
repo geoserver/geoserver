@@ -23,10 +23,10 @@ Based on the above key points, we can setup the following configuration files:
 
 This contains the main configuration to index the datasets composing the ImageMosaic.
 
-~~~
+```
 <!-- Malformed include statement: community/cog/src/modisvi/indexer.properties -->
 <!-- TODO: Fix or remove -->
-~~~
+```
 
 Relevant parts:
 
@@ -39,19 +39,19 @@ Relevant parts:
 
 The previous indexer refers to a time dimension and the related time column in the index's schema that will get populated by extracting the time value from the filename (the 8 digits, representing YEAR, MONTH, DAY) using the regex specified in the timeregex.properties file. An example of sample file for this collection as stored on the S3 bucket is 2018.01.01.tif so the time regex will reflect that. Note the 3 groups of digits and the 'format' of the date.
 
-~~~
+```
 <!-- Malformed include statement: community/cog/src/modisvi/timeregex.properties -->
 <!-- TODO: Fix or remove -->
-~~~
+```
 
 ### datastore.properties:
 
 Due to the amount of available datasets, storing the ImageMosaic index on a DBMS is recommended, i.e. a PostGIS DB. See ``**`datastore.properties``** <../../data/raster/imagemosaic/configuration.rst#mosaic_datastore_properties>`_ section of the ImageMosaic documentation for more info. Make sure that a DB with the name reported in the datastore is available
 
-~~~
+```
 <!-- Malformed include statement: community/cog/src/modisvi/datastore.properties -->
 <!-- TODO: Fix or remove -->
-~~~
+```
 
 Once the 3 files have been setup, create a zip archive with them and let's name it modisvi.zip. (Note that the files need to be in the root of the zip files, not into a subdirectory)
 

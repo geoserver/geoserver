@@ -69,7 +69,7 @@ The web archive distribution of GeoServer is tested with Tomcat. Use the followi
 
 1.  Uncomment the following `<filter>` in **`webapps/geoserver/WEB-INF/web.xml`**:
 
-    ~~~xml
+    ```xml
     <!-- Uncomment following filter to enable CORS in Tomcat. Do not forget the second config block further down. -->
     <!--
     <filter>
@@ -89,11 +89,11 @@ The web archive distribution of GeoServer is tested with Tomcat. Use the followi
        </init-param>
     </filter>
     -->
-    ~~~
+    ```
 
 2.  Uncomment the following `<filter-mapping>`:
 
-    ~~~xml
+    ```xml
     <!-- Uncomment following filter-mapping to enable CORS -->
     <!--
     <filter-mapping>
@@ -101,7 +101,7 @@ The web archive distribution of GeoServer is tested with Tomcat. Use the followi
         <url-pattern>/*</url-pattern>
     </filter-mapping>
     -->
-    ~~~
+    ```
 
 3.  Restart
 
@@ -111,7 +111,7 @@ The standalone distributions of GeoServer include the Jetty application server. 
 
 1.  Uncomment the following `<filter>` in **`webapps/geoserver/WEB-INF/web.xml`**:
 
-    ~~~xml
+    ```xml
     <filter>
        <filter-name>cross-origin</filter-name>
        <filter-class>org.eclipse.jetty.servlets.CrossOriginFilter</filter-class>
@@ -132,15 +132,15 @@ The standalone distributions of GeoServer include the Jetty application server. 
          <param-value>*</param-value>
        </init-param>
      </filter>
-    ~~~
+    ```
 
 2.  Uncomment the following `<filter-mapping>`:
 
-    ~~~xml
+    ```xml
     <filter-mapping>
         <filter-name>cross-origin</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-    ~~~
+    ```
 
 3.  Restart

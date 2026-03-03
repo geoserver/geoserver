@@ -39,10 +39,10 @@ Counts the total number of states, sum all the number of persons, computes the a
 
 Request:
 
-~~~xml
+```xml
 {%raw%}{%endraw%}<!-- Include path goes outside docs directory: ../../../../../../../data/release/demo/WPS_aggregate_1.0.xml -->
 <!-- TODO: Copy file to docs directory or use alternative approach -->
-~~~
+```
 
 The result:
 
@@ -95,10 +95,10 @@ This example count the number of states and the population average grouped by re
 
 Request:
 
-~~~xml
+```xml
 {%raw%}{%endraw%}<!-- Include path goes outside docs directory: ../../../../../../../data/release/demo/WPS_aggregate_groupby_1.0.xml -->
 <!-- TODO: Copy file to docs directory or use alternative approach -->
-~~~
+```
 
 The result:
 

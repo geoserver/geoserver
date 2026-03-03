@@ -6,28 +6,28 @@ render_macros: true
 
 ## Fema example
 
-~~~html
+```html
 <!-- Malformed include statement: community/gsr/feature_layer/layers-featurelayer-fema.html -->
 <!-- TODO: Fix or remove -->
-~~~
+```
 
 ## Point example
 
-~~~html
+```html
 <!-- Malformed include statement: community/gsr/feature_layer/layers-featurelayer-point.html -->
 <!-- TODO: Fix or remove -->
-~~~
+```
 
 ## Polygon example
 
-~~~html
+```html
 <!-- Malformed include statement: community/gsr/feature_layer/layers-featurelayer-polygon.html -->
 <!-- TODO: Fix or remove -->
-~~~
+```
 
 ## Polygon non cors example
 
-~~~html
+```html
 <!-- Malformed include statement: community/gsr/feature_layer/layers-featurelayer-polygon-noncors.html -->
 <!-- TODO: Fix or remove -->
-~~~
+```

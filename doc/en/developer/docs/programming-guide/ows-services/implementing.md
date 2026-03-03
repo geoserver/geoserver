@@ -13,9 +13,9 @@ The first step in creating our plug-in is setting up a maven project for it. The
 1.  Create a new directory called **`hello`** anywhere on your file system.
 2.  Add a maven pom called **`pom.xml`** to the **`hello`** directory:
 
-~~~xml
+```xml
 {% include "programming-guide/ows-services/hello/pom.xml" %}
-~~~
+```
 
 1.  Create a java source directory, **`src/main/java`** under the **`hello`** directory:
 
@@ -31,17 +31,17 @@ A plug-in is a collection of extensions realized as spring beans. In this exampl
 
 1.  Create a class called **HelloWorld**:
 
-~~~java
+```java
 {% include "programming-guide/ows-services/hello/src/main/java/HelloWorld.java" %}
-~~~
+```
 
 The service is relatively simple. It provides a method sayHello(..) which takes a HttpServletRequest, and a HttpServletResponse. The parameter list for this function is automatically discovered by the org.geoserver.ows.Dispatcher.
 
 1.  Create an **`applicationContext.xml`** declaring the above class as a bean.
 
-~~~xml
+```xml
 {% include "programming-guide/ows-services/hello/src/main/java/applicationContext.xml" %}
-~~~
+```
 
 At this point the hello project should look like the following:
 

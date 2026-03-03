@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<!DOCTYPE catalog PUBLIC "-//OASIS//DTD Entity Resolution XML Catalog V1.0//EN" "http://www.oasis-open.org/committees/entity/release/1.0/catalog.dtd">
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">  
+    <!-- these mappings are to allow local XML IDE validation - geoserver loads these automatically and doesnt try to resolve then -->
+    <rewriteURI uriStartString="http://schemas.opengis.net/sweCommon/2.0/" rewritePrefix="../../../test-classes/test-data/schemas/sweCommon/2.0/"/>
+    <rewriteURI uriStartString="http://schemas.opengis.net/waterml/DR/2.0/" rewritePrefix="../../../test-classes/test-data/schemas/waterml/DR/2.0/"/>
+    <rewriteURI uriStartString="http://schemas.opengis.net/gmlcov/1.0/" rewritePrefix="../../../test-classes/test-data/schemas/gmlcov/1.0/"/>
+</catalog>

@@ -36,7 +36,6 @@ import java.net.URLDecoder;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -67,13 +66,15 @@ import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
-import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerLoader;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.kvp.URIKvpParser;
+import org.geoserver.ows.util.OwsUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.test.ows.KvpRequestReaderTestSupport;
@@ -95,6 +96,8 @@ import org.geotools.util.DateRange;
 import org.geotools.util.logging.Logging;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.Test;
 
 @SuppressWarnings("unchecked")
@@ -103,7 +106,6 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     private static final Logger LOG = Logging.getLogger(GetMapKvpRequestReaderTest.class);
 
     GetMapKvpRequestReader reader;
-
     WMS wms;
 
     Dispatcher dispatcher;
@@ -114,11 +116,10 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
             + "</Filter><PolygonSymbolizer><Fill><CssParameter name=\"fill\">#FF0000</CssParameter></Fill>"
             + "</PolygonSymbolizer></Rule><Rule><LineSymbolizer><Stroke/></LineSymbolizer></Rule>"
             + "</FeatureTypeStyle></UserStyle></UserLayer></StyledLayerDescriptor>";
+    private static WMSInfo defaultWmsInfo;
 
     @Override
-    protected void oneTimeSetUp() throws Exception {
-        super.oneTimeSetUp();
-
+    protected void onSetUp(SystemTestData testData) throws Exception {
         CatalogFactory cf = getCatalog().getFactory();
         CatalogBuilder cb = new CatalogBuilder(getCatalog());
         LayerGroupInfo gi = cf.createLayerGroup();
@@ -145,27 +146,29 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         gi3.getStyles().add(getCatalog().getStyleByName("raster"));
         cb.calculateLayerGroupBounds(gi3);
         getCatalog().add(gi3);
+
+        defaultWmsInfo = new WMSInfoImpl();
+        OwsUtils.copy(getGeoServer().getService(WMSInfo.class), defaultWmsInfo, WMSInfo.class);
     }
 
-    @Override
-    protected void oneTimeTearDown() throws Exception {
-        super.oneTimeTearDown();
+    @AfterClass
+    public static void oneTimeTearDown() throws Exception {
         // reset the legacy flag so that other tests are not getting affected by it
         GeoServerLoader.setLegacy(false);
     }
 
-    @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+    @Before
+    public void setup() throws Exception {
+        revertService(WMSInfo.class, null);
 
         dispatcher = (Dispatcher) applicationContext.getBean("dispatcher");
         GeoServer geoserver = getGeoServer();
         WMSInfo wmsInfo = geoserver.getService(WMSInfo.class);
-        WMSInfoImpl impl = (WMSInfoImpl) ModificationProxy.unwrap(wmsInfo);
-
-        impl.setAllowedURLsForAuthForwarding(Collections.singletonList("http://localhost/geoserver/rest/sldurl"));
-        wms = new WMS(geoserver);
-        reader = new GetMapKvpRequestReader(wms);
+        wmsInfo.getAllowedURLsForAuthForwarding().clear();
+        wmsInfo.getAllowedURLsForAuthForwarding().add("http://localhost/geoserver/rest/sldurl");
+        geoserver.save(wmsInfo);
+        wms = GeoServerExtensions.bean(WMS.class);
+        reader = GeoServerExtensions.bean(GetMapKvpRequestReader.class);
     }
 
     @After
@@ -518,11 +521,9 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     @Test
     public void testSldCache() throws Exception {
         WMS wms = new WMS(getGeoServer());
-        WMSInfo oldInfo = wms.getGeoServer().getService(WMSInfo.class);
-        WMSInfo info = new WMSInfoImpl();
+        WMSInfo info = wms.getGeoServer().getService(WMSInfo.class);
         info.setCacheConfiguration(new CacheConfiguration(true));
-        getGeoServer().remove(oldInfo);
-        getGeoServer().add(info);
+        getGeoServer().save(info);
         URL sld = GetMapKvpRequestReader.class.getResource("BasicPolygonsLibraryDefault.sld");
         StringBuilder builder = new StringBuilder();
         try (BufferedReader in = new BufferedReader(new InputStreamReader(sld.openStream()))) {
@@ -685,7 +686,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         // Connection for specified external SLD fails while retrieving SLD
         HashMap kvp = new HashMap<>();
 
-        URL url = new URL("http://hostthatdoesnotexist/");
+        URL url = new URL("http://127.0.0.2"); // 127.0.0.2 is actually not addressable
 
         kvp.put("sld", URLDecoder.decode(url.toExternalForm(), "UTF-8"));
         kvp.put("layers", getLayerId(BASIC_POLYGONS));

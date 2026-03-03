@@ -34,6 +34,7 @@ import org.geoserver.test.onlineTest.setup.AppSchemaTestPostgisSetup;
 import org.geoserver.test.onlineTest.support.AbstractReferenceDataSetup;
 import org.geoserver.util.IOUtils;
 import org.geotools.data.complex.AppSchemaDataAccessTest;
+import org.geotools.util.SuppressFBWarnings;
 import org.geotools.xml.resolver.SchemaCatalog;
 import org.locationtech.jts.geom.Envelope;
 
@@ -204,7 +205,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData implement
     /** @param catalogLocation file location relative to test-data dir. */
     protected void setSchemaCatalog(String catalogLocation) {
         if (catalogLocation != null) {
-            URL resolvedCatalogLocation = getClass().getResource(TEST_DATA + catalogLocation);
+            URL resolvedCatalogLocation = AbstractAppSchemaMockData.class.getResource(TEST_DATA + catalogLocation);
             if (resolvedCatalogLocation == null) {
                 throw new RuntimeException("Test catalog location must be relative to test-data directory!");
             }
@@ -259,7 +260,6 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData implement
      * @param namespacePrefix namespace prefix of the WFS feature type
      * @param typeName local name of the WFS feature type
      * @param fileName short name of the file in test-data to copy
-     * @param data mock data root directory
      */
     private void copyFileToFeatureTypeDir(String namespacePrefix, String typeName, String fileName) throws IOException {
         try (InputStream input = openResource(fileName)) {
@@ -557,7 +557,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData implement
      */
     public void addStyle(String styleId, String fileName) {
         layerStyles.put(styleId, styleId + ".sld");
-        try (InputStream styleContents = getClass().getResourceAsStream(TEST_DATA + fileName)) {
+        try (InputStream styleContents = AbstractAppSchemaMockData.class.getResourceAsStream(TEST_DATA + fileName)) {
             File to = new File(styles, styleId + ".sld");
             IOUtils.copy(styleContents, to);
         } catch (IOException e) {
@@ -702,6 +702,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData implement
      * @param mappingFileName Mapping file to be copied
      * @return Modified content string
      */
+    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
     private String modifyOnlineMappingFileContent(String mappingFileName) throws Exception {
         try (InputStream is = openResource(mappingFileName);
                 BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
@@ -729,15 +730,13 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData implement
                                         "appschema/stations.gpkg");
                                 File[] stations = Objects.requireNonNull(data.listFiles(getAppschema()))[0].listFiles(
                                         getGpkgFile());
-                                File resourceFile = null;
                                 if (stations.length > 0) {
-                                    resourceFile = stations[0];
+                                    File resourceFile = stations[0];
+                                    geopkgDir = resourceFile.toURI().toString();
+                                    String DB_PARAMS = AppSchemaTestGeopackageSetup.DB_PARAMS.replace(
+                                            "PATH_TO_BE_REPLACED", geopkgDir);
+                                    content.append(DB_PARAMS);
                                 }
-
-                                geopkgDir = resourceFile.toURI().toString();
-                                String DB_PARAMS = AppSchemaTestGeopackageSetup.DB_PARAMS.replace(
-                                        "PATH_TO_BE_REPLACED", geopkgDir);
-                                content.append(DB_PARAMS);
                             }
                         } else {
                             // copy content

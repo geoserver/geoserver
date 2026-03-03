@@ -1,0 +1,92 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:swe="http://www.opengis.net/swe/2.0" targetNamespace="http://www.opengis.net/swe/2.0" elementFormDefault="qualified" attributeFormDefault="unqualified" version="2.0.0">
+    <annotation>
+        <documentation>SWE Common Data Model schema for specifying parameters of simple encoding methods (Text, XML). See requirements class http://www.opengis.net/spec/SWE/2.0/req/xsd-simple-encodings/
+        
+        SWE Common is an OGC Standard.
+        Copyright (c) 2010 Open Geospatial Consortium, Inc. All Rights Reserved. 
+        To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+        </documentation>
+    </annotation>
+    <include schemaLocation="basic_types.xsd"/>
+    <!-- ================================================= -->
+    <element abstract="true" name="AbstractEncoding" substitutionGroup="swe:AbstractSWE" type="swe:AbstractEncodingType"/>
+    <complexType abstract="true" name="AbstractEncodingType">
+        <complexContent>
+            <extension base="swe:AbstractSWEType"/>
+        </complexContent>
+    </complexType>
+    <complexType name="AbstractEncodingPropertyType">
+        <sequence minOccurs="0">
+            <element ref="swe:AbstractEncoding"/>
+        </sequence>
+        <attributeGroup ref="swe:AssociationAttributeGroup"/>
+    </complexType>
+    <complexType abstract="true" name="AbstractEncodingPropertyByValueType">
+        <sequence>
+            <element ref="swe:AbstractEncoding"/>
+        </sequence>
+    </complexType><!-- ================================================= -->
+    <element name="XMLEncoding" substitutionGroup="swe:AbstractEncoding" type="swe:XMLEncodingType">
+        <annotation>
+            <documentation>Parameters of the XML encoding method</documentation>
+        </annotation>
+    </element>
+    <complexType name="XMLEncodingType">
+        <complexContent>
+            <extension base="swe:AbstractEncodingType"/>
+        </complexContent>
+    </complexType>
+    <complexType name="XMLEncodingPropertyType">
+        <sequence minOccurs="0">
+            <element ref="swe:XMLEncoding"/>
+        </sequence>
+        <attributeGroup ref="swe:AssociationAttributeGroup"/>
+    </complexType>
+    <complexType name="XMLEncodingPropertyByValueType">
+        <sequence>
+            <element ref="swe:XMLEncoding"/>
+        </sequence>
+    </complexType><!-- ================================================= -->
+    <element name="TextEncoding" substitutionGroup="swe:AbstractEncoding" type="swe:TextEncodingType">
+        <annotation>
+            <documentation>Parameters of the text encoding method</documentation>
+        </annotation>
+    </element>
+    <complexType name="TextEncodingType">
+        <complexContent>
+            <extension base="swe:AbstractEncodingType">
+                <attribute default="true" name="collapseWhiteSpaces" type="boolean" use="optional">
+                    <annotation>
+                        <documentation>Indicates whether white spaces (i.e. space, tab, CR, LF) should be collapsed with separators when parsing the data stream</documentation>
+                    </annotation>
+                </attribute>
+                <attribute default="." name="decimalSeparator" type="string" use="optional">
+                    <annotation>
+                        <documentation>Character used as the decimal separator</documentation>
+                    </annotation>
+                </attribute>
+                <attribute name="tokenSeparator" type="string" use="required">
+                    <annotation>
+                        <documentation>Character sequence used as the token separator (i.e. between two successive values)</documentation>
+                    </annotation>
+                </attribute>
+                <attribute name="blockSeparator" type="string" use="required">
+                    <annotation>
+                        <documentation>Character sequence used as the block separator (i.e. between two successive blocks in the data set. The end of a block is reached once all values from the data tree have been encoded once)</documentation>
+                    </annotation>
+                </attribute>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="TextEncodingPropertyType">
+        <sequence minOccurs="0">
+            <element ref="swe:TextEncoding"/>
+        </sequence>
+        <attributeGroup ref="swe:AssociationAttributeGroup"/>
+    </complexType>
+    <complexType name="TextEncodingPropertyByValueType">
+        <sequence>
+            <element ref="swe:TextEncoding"/>
+        </sequence>
+    </complexType>
+</schema>

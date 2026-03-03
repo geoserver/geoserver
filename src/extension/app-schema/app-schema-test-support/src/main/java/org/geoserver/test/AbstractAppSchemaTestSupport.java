@@ -390,13 +390,13 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
      */
     protected File findFile(String path, File root) {
         File target = null;
-        List<File> files = Arrays.asList(root.listFiles());
+        File[] files = Objects.requireNonNull(root.listFiles());
         String[] steps = path.split("/");
         for (int i = 0; i < steps.length; i++) {
             for (File file : files) {
                 if (file.getName().equals(steps[i])) {
                     if (i < steps.length - 1) {
-                        return findFile(path.substring(steps[i].length() + 1, path.length()), file);
+                        return findFile(path.substring(steps[i].length() + 1), file);
                     } else {
                         return file;
                     }
@@ -454,7 +454,6 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
      * <p>If validation fails, a {@link RuntimeException} is thrown with detail containing the failure messages. The
      * failure messages are also logged.
      *
-     * @param path request path (typically "wfs")
      * @param xml the XML instance document
      * @throws RuntimeException if validation fails
      */
@@ -560,6 +559,9 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
             original = lDialect.createPreparedFilterToSQL();
             // disable prepared statements to have literals actually encoded in the SQL
             ((PreparedFilterToSQL) original).setPrepareEnabled(false);
+        } else {
+            throw new IllegalArgumentException(
+                    "nested filters encoding requires the source datastore be backed by a JDBCDataStore with a SQLDialect that supports FilterToSQL");
         }
         original.setFeatureType((SimpleFeatureType) mapping.getSource().getSchema());
 
@@ -590,7 +592,7 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
      * @return the content of the resource as text
      */
     protected String readResource(String resourcePath) {
-        try (InputStream input = NormalizedMultiValuesTest.class.getResourceAsStream(resourcePath)) {
+        try (InputStream input = AbstractAppSchemaTestSupport.class.getResourceAsStream(resourcePath)) {
             return IOUtils.toString(input);
         } catch (Exception exception) {
             throw new RuntimeException("Error reading resource '%s'.".formatted(resourcePath));

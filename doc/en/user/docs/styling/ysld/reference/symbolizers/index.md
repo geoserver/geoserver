@@ -82,14 +82,8 @@ The following is the basic syntax common to all symbolizers. Note that the conte
 
 Where:
 
-{%
-   include-markdown "./include/symbol.md"
-%}
+{% include "styling/ysld/reference/symbolizers/include/symbol.md" %}
 
-{%
-   include-markdown "./include/composite.md"
-%}
+{% include "styling/ysld/reference/symbolizers/include/composite.md" %}
 
-{%
-   include-markdown "./include/inclusion.md"
-%}
+{% include "styling/ysld/reference/symbolizers/include/inclusion.md" %}

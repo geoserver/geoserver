@@ -1,7 +1,5 @@
 # Feature Table Example
 
 ~~~html
-{% 
-  include "./feature_table/featuretable.html"
-%}
+{% include "community/gsr/feature_table/featuretable.html" %}
 ~~~

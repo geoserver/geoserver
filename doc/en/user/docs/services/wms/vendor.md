@@ -2,9 +2,7 @@
 
 WMS vendor parameters are non-standard request parameters that are defined by an implementation to provide enhanced capabilities. GeoServer supports a variety of vendor-specific parameters.
 
-{%
-   include-markdown "./../generic_vendor_options.txt"
-%}
+{% include "services/generic_vendor_options.txt" %}
 
 ## GetCapabilities Request
 

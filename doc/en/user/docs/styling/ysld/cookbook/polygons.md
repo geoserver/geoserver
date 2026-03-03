@@ -31,9 +31,7 @@ This example shows a polygon filled in blue.
 [Download the "Simple polygon" YSLD](artifacts/polygon_simplepolygon.ysld)
 
 ~~~yaml
-{% 
-  include "./artifacts/polygon_simplepolygon.ysld"
-%}
+{% include "styling/ysld/cookbook/artifacts/polygon_simplepolygon.ysld" %}
 ~~~
 
 ### Details
@@ -56,9 +54,7 @@ This example adds a 2 pixel white stroke to the [Simple polygon](polygons.md#ysl
 [Download the "Simple polygon with stroke" YSLD](artifacts/polygon_simplepolygonwithstroke.ysld)
 
 ~~~yaml
-{% 
-  include "./artifacts/polygon_simplepolygonwithstroke.ysld"
-%}
+{% include "styling/ysld/cookbook/artifacts/polygon_simplepolygonwithstroke.ysld" %}
 ~~~
 
 ### Details
@@ -77,9 +73,7 @@ This example builds on the [Simple polygon with stroke](polygons.md#ysld_cookboo
 [Download the "Transparent polygon" YSLD](artifacts/polygon_transparentpolygon.ysld)
 
 ~~~yaml
-{% 
-  include "./artifacts/polygon_transparentpolygon.ysld"
-%}
+{% include "styling/ysld/cookbook/artifacts/polygon_transparentpolygon.ysld" %}
 ~~~
 
 ### Details
@@ -98,9 +92,7 @@ This example fills the polygons with a tiled graphic.
 [Download the "Graphic fill" YSLD](artifacts/polygon_graphicfill.ysld)
 
 ~~~yaml
-{% 
-  include "./artifacts/polygon_graphicfill.ysld"
-%}
+{% include "styling/ysld/cookbook/artifacts/polygon_graphicfill.ysld" %}
 ~~~
 
 ### Details
@@ -122,9 +114,7 @@ This example fills the polygons with a hatching pattern.
 [Download the "Hatching fill" YSLD](artifacts/polygon_hatchingfill.ysld)
 
 ~~~yaml
-{% 
-  include "./artifacts/polygon_hatchingfill.ysld"
-%}
+{% include "styling/ysld/cookbook/artifacts/polygon_hatchingfill.ysld" %}
 ~~~
 
 ### Details
@@ -143,9 +133,7 @@ This example shows a text label on the polygon. In the absence of any other cust
 [Download the "Polygon with default label" YSLD](artifacts/polygon_polygonwithdefaultlabel.ysld)
 
 ~~~yaml
-{% 
-  include "./artifacts/polygon_polygonwithdefaultlabel.ysld"
-%}
+{% include "styling/ysld/cookbook/artifacts/polygon_polygonwithdefaultlabel.ysld" %}
 ~~~
 
 ### Details
@@ -164,9 +152,7 @@ This example alters the look of the [Polygon with default label](polygons.md#ysl
 [Download the "Label halo" YSLD](artifacts/polygon_labelhalo.ysld)
 
 ~~~yaml
-{% 
-  include "./artifacts/polygon_labelhalo.ysld"
-%}
+{% include "styling/ysld/cookbook/artifacts/polygon_labelhalo.ysld" %}
 ~~~
 
 ### Details
@@ -185,9 +171,7 @@ This example improves the label style from the [Polygon with default label](poly
 [Download the "Polygon with styled label" YSLD](artifacts/polygon_polygonwithstyledlabel.ysld)
 
 ~~~yaml
-{% 
-  include "./artifacts/polygon_polygonwithstyledlabel.ysld"
-%}
+{% include "styling/ysld/cookbook/artifacts/polygon_polygonwithstyledlabel.ysld" %}
 ~~~
 
 ### Details
@@ -210,9 +194,7 @@ This example styles the polygons differently based on the "pop" (Population) att
 [Download the "Attribute-based polygon" YSLD](artifacts/polygon_attributebasedpolygon.ysld)
 
 ~~~yaml
-{% 
-  include "./artifacts/polygon_attributebasedpolygon.ysld"
-%}
+{% include "styling/ysld/cookbook/artifacts/polygon_attributebasedpolygon.ysld" %}
 ~~~
 
 ### Details
@@ -257,9 +239,7 @@ This example alters the style of the polygon at different zoom levels.
 [Download the "Zoom-based polygon" YSLD](artifacts/polygon_zoombasedpolygon.ysld)
 
 ~~~yaml
-{% 
-  include "./artifacts/polygon_zoombasedpolygon.ysld"
-%}
+{% include "styling/ysld/cookbook/artifacts/polygon_zoombasedpolygon.ysld" %}
 ~~~
 
 ### Details

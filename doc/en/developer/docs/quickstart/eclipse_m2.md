@@ -4,9 +4,7 @@ This guide is designed to get developers up and running as quick as possible. Fo
 
 [M2Eclipse](https://www.eclipse.org/m2e/) provides tight integration for Apache Maven into the Eclipse IDE.
 
-{%
-   include-markdown "./checkout.txt"
-%}
+{% include "quickstart/checkout.txt" %}
 
 ## Eclipse Maven builder
 

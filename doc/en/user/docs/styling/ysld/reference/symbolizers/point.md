@@ -43,13 +43,9 @@ The full syntax of a point symbolizer is:
 
 where:
 
-{%
-   include-markdown "./include/stroke.md"
-%}
+{% include "styling/ysld/reference/symbolizers/include/stroke.md" %}
 
-{%
-   include-markdown "./include/fill.md"
-%}
+{% include "styling/ysld/reference/symbolizers/include/fill.md" %}
 
 | Property | Required? | Description | Default value |
 |----|----|----|----|
@@ -64,27 +60,19 @@ where:
 | `opacity` | No | Specifies the level of transparency. Value of `0` means entirely transparent, while `1` means entirely opaque. Only affects graphics referenced by the `external` parameter; the opacity of `mark` symbols is controlled by the `fill-opacity` and `stroke-opacity` of the mark. | `1` |
 | `rotation` | No | Value (in degrees) or rotation of the mark. Larger values increase counter-clockwise rotation. A value of `180` will make the mark upside-down. | `0` |
 
-{%
-   include-markdown "./include/symbol.md"
-%}
+{% include "styling/ysld/reference/symbolizers/include/symbol.md" %}
 
 The following properties are equivalent to SLD "vendor options".
 
-{%
-   include-markdown "./include/misc.md"
-%}
+{% include "styling/ysld/reference/symbolizers/include/misc.md" %}
 
 Additional "vendor options" properties for [Color compositing and color blending](../../../sld/extensions/composite-blend/index.md):
 
-{%
-   include-markdown "./include/composite.md"
-%}
+{% include "styling/ysld/reference/symbolizers/include/composite.md" %}
 
 Additional "vendor options" properties for [Rendering Selection](../../../sld/extensions/rendering-selection.md):
 
-{%
-   include-markdown "./include/inclusion.md"
-%}
+{% include "styling/ysld/reference/symbolizers/include/inclusion.md" %}
 
 ## Examples
 

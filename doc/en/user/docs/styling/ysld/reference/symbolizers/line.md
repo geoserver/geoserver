@@ -29,29 +29,19 @@ The full syntax of a line symbolizer is:
 
 where:
 
-{%
-   include-markdown "./include/stroke.md"
-%}
+{% include "styling/ysld/reference/symbolizers/include/stroke.md" %}
 
 | Property | Required? | Description | Default value |
 |----|----|----|----|
 | `offset` | No | Value in pixels for moving the drawn line relative to the location of the feature. | `0` |
 
-{%
-   include-markdown "./include/symbol.md"
-%}
+{% include "styling/ysld/reference/symbolizers/include/symbol.md" %}
 
-{%
-   include-markdown "./include/misc.md"
-%}
+{% include "styling/ysld/reference/symbolizers/include/misc.md" %}
 
-{%
-   include-markdown "./include/composite.md"
-%}
+{% include "styling/ysld/reference/symbolizers/include/composite.md" %}
 
-{%
-   include-markdown "./include/inclusion.md"
-%}
+{% include "styling/ysld/reference/symbolizers/include/inclusion.md" %}
 
 ## Examples
 

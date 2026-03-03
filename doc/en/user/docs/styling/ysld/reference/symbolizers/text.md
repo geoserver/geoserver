@@ -104,9 +104,7 @@ The following properties allow for a graphic to be displayed in addition to just
 | `opacity` | No | Specifies the level of transparency for the graphic. Value of `0` means entirely transparent, while `1` means entirely opaque. | `1` |
 | `rotation` | No | Value (in degrees) or rotation of the graphic. Larger values increase counter-clockwise rotation. A value of `180` will make the graphic upside-down. | `0` |
 
-{%
-   include-markdown "./include/symbol.md"
-%}
+{% include "styling/ysld/reference/symbolizers/include/symbol.md" %}
 
 The following properties are equivalent to SLD "vendor options".
 
@@ -134,9 +132,7 @@ The following properties are equivalent to SLD "vendor options".
 | `x-charSpacing` | No | The option controls the amount of space between characters, a positive value increases it, a negative value shrinks it (and will eventually make characters overlap). The value is specified in pixels. | 0 |
 | `x-wordSpacing` | No | The option controls the amount of space between words, for this option only positive values (or zero) are accepted. The value is specified in pixels. | 0 |
 
-{%
-   include-markdown "./include/composite.md"
-%}
+{% include "styling/ysld/reference/symbolizers/include/composite.md" %}
 
 ## Examples
 

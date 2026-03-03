@@ -45,9 +45,7 @@ To make a GSIP:
     GSIP [template](gsip_template.txt):
 
     ~~~text
-    {% 
-      include "./gsip_template.txt"
-    %}
+    {% include "policies/gsip_template.txt" %}
     ~~~
 
 5.  Fill in the information in the page template, and click `Save` when complete.
@@ -56,9 +54,7 @@ To make a GSIP:
 
 One of the duties of the [GeoServer Project Steering Committee](psc.md) is to vote on GSIPs. The voting process works as follows:
 
-{%
-   include-markdown "./gsip_voting.txt"
-%}
+{% include "policies/gsip_voting.txt" %}
 
 ## GSIP FAQ
 

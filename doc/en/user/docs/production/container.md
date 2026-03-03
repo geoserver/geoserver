@@ -77,7 +77,9 @@ The web archive distribution of GeoServer is tested with Tomcat. Use the followi
 2.  Uncomment the following `<filter-mapping>`:
 
     ~~~
-    {% include "../../../../src/web/app/src/main/webapp/WEB-INF/web.xml" start="<!-- Uncomment following filter-mapping to enable CORS" end="-->" %}
+    <!-- Include with start/end not supported: ../../../../src/web/app/src/main/webapp/WEB-INF/web.xml -->
+<!-- Extract: from "<!-- Uncomment following filter-mapping to enable CORS" to "-->" -->
+<!-- TODO: Copy relevant section to docs directory -->
     ~~~
 
 3.  Restart

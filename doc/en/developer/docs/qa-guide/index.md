@@ -35,7 +35,9 @@ The actual plugin configuration and execution is defined as:
 Rules are configured in our build [build/qa/pmd-ruleset.xml](https://github.com/geoserver/geoserver/blob/main/build/qa/pmd-ruleset.xml):
 
 ~~~xml
-{%raw%}{% include "../../../../build/qa/pmd-ruleset.xml" start="</description>" end="</ruleset>" %}
+{%raw%}<!-- Include with start/end not supported: ../../../../build/qa/pmd-ruleset.xml -->
+<!-- Extract: from "</description>" to "</ruleset>" -->
+<!-- TODO: Copy relevant section to docs directory -->
 ~~~
 
 In order to activate the ***PMD*** checks, use the `-Ppmd` profile:

@@ -43,9 +43,8 @@ The table can be given a different name. In that case, the (schema qualified) na
 
 The following table describes the meaning of each column in the metadata table.
 
-|  |  |
-|----|----|
 | **Column** | **Description** |
+|----|----|
 | **table_schema** | Name of the database schema in which the table is located. |
 | **table_name** | Name of the table or view to be published |
 | **pk_column** | Name of a column used to form the feature IDs |

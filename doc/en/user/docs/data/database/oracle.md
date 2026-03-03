@@ -32,9 +32,8 @@ Once the extension is properly installed **Oracle** appears as an option in the 
 ![](images/oracleconfigure.png)
 *Configuring an Oracle datastore*
 
-|  |  |
-|----|----|
 | **Option** | **Description** |
+|----|----|
 | `host` | The Oracle server host name or IP address. |
 | `port` | The port on which the Oracle server is accepting connections (often this is port 1521). |
 | `database` | The name of the database to connect to. By default this is interpreted as a SID name. To connect to a Service, prefix the name with a `/`. |

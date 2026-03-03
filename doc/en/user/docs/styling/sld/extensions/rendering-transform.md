@@ -4,9 +4,8 @@
 
 The following table lists examples of various kinds of rendering transformations available in GeoServer:
 
-|  |  |
-|----|----|
 | **Type** | **Examples** |
+|----|----|
 | Raster-to-Vector | **Contour** extracts contours from a DEM raster. **RasterAsPointCollections** extracts a vector field from a multi-band raster |
 | Vector-to-Raster | **BarnesSurfaceInterpolation** computes a surface from scattered data points. **Heatmap** computes a heatmap surface from weighted data points. |
 | Vector-to-Vector | **PointStacker** aggregates dense point data into clusters. |

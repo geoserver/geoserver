@@ -16,9 +16,8 @@ The sections below describe the major language constructs. Each construct lists 
 
 A filter condition is a single predicate, or a logical combination of other conditions.
 
-|  |  |
-|----|----|
 | **Syntax** | **Description** |
+|----|----|
 | [Predicate](ecql_reference.md#ecql_pred) | Single predicate expression |
 | [Condition](ecql_reference.md#ecql_cond) `AND` | `OR` [Condition](ecql_reference.md#ecql_cond) | Conjunction or disjunction of conditions |
 | `NOT` [Condition](ecql_reference.md#ecql_cond) | Negation of a condition |
@@ -28,9 +27,8 @@ A filter condition is a single predicate, or a logical combination of other cond
 
 Predicates are boolean-valued expressions which specify relationships between values.
 
-|  |  |
-|----|----|
 | **Syntax** | **Description** |
+|----|----|
 | [Expression](ecql_reference.md#ecql_expr) `=` | `<>` | `<` | `<=` | `>` | `>=` [Expression](ecql_reference.md#ecql_expr) | Comparison operations |
 | [Expression](ecql_reference.md#ecql_expr) **[** `NOT` **]** `BETWEEN` [Expression](ecql_reference.md#ecql_expr) `AND` [Expression](ecql_reference.md#ecql_expr) | Tests whether a value lies in or outside a range (inclusive) |
 | [Expression](ecql_reference.md#ecql_expr) **[** `NOT` **]** `LIKE` | `ILIKE` *like-pattern* | Simple pattern matching. *like-pattern* uses the `%` character as a wild-card for any number of characters. `ILIKE` does case-insensitive matching. |
@@ -44,9 +42,8 @@ Predicates are boolean-valued expressions which specify relationships between va
 
 Temporal predicates specify the relationship of a time-valued expression to a time or time period.
 
-|  |  |
-|----|----|
 | **Syntax** | **Description** |
+|----|----|
 | ``ecql_expr`` `BEFORE` [Time](ecql_reference.rst#ecql_literal)_ | Tests whether a time value is before a point in time |
 | [Expression](ecql_reference.md#ecql_expr) `BEFORE OR DURING` [Time Period](ecql_reference.md#ecql_period) | Tests whether a time value is before or during a time period |
 | [Expression](ecql_reference.md#ecql_expr) `DURING` [Time Period](ecql_reference.md#ecql_period) | Tests whether a time value is during a time period |
@@ -57,9 +54,8 @@ Temporal predicates specify the relationship of a time-valued expression to a ti
 
 Spatial predicates specify the relationship between geometric values. Topological spatial predicates (`INTERSECTS`, `DISJOINT`, `CONTAINS`, `WITHIN`, `TOUCHES` `CROSSES`, `OVERLAPS` and `RELATE`) are defined in terms of the DE-9IM model described in the OGC [Simple Features for SQL](http://www.opengeospatial.org/standards/sfs) specification.
 
-|  |  |
-|----|----|
 | **Syntax** | **Description** |
+|----|----|
 | `INTERSECTS(`[Expression](ecql_reference.md#ecql_expr) `,` [Expression](ecql_reference.md#ecql_expr) `)` | Tests whether two geometries intersect. The converse of `DISJOINT` |
 | `DISJOINT(`[Expression](ecql_reference.md#ecql_expr) `,` [Expression](ecql_reference.md#ecql_expr) `)` | Tests whether two geometries are disjoint. The converse of `INTERSECTS` |
 | `CONTAINS(`[Expression](ecql_reference.md#ecql_expr) `,` [Expression](ecql_reference.md#ecql_expr) `)` | Tests whether the first geometry topologically contains the second. The converse of `WITHIN` |
@@ -77,9 +73,8 @@ Spatial predicates specify the relationship between geometric values. Topologica
 
 An expression specifies a attribute, literal, or computed value. The type of the value is determined by the nature of the expression. The standard [PEMDAS](http://en.wikipedia.org/wiki/Order_of_operations#Mnemonics) order of evaluation is used.
 
-|  |  |
-|----|----|
 | **Syntax** | **Description** |
+|----|----|
 | [Attribute](ecql_reference.md#ecql_attr) | Name of a feature attribute |
 | [Literal](ecql_reference.md#ecql_literal) | Literal value |
 | [Expression](ecql_reference.md#ecql_expr) `+` | `-` | `*` | `/` [Expression](ecql_reference.md#ecql_expr) | Arithmetic operations |
@@ -98,9 +93,8 @@ An attribute name denotes the value of a feature attribute.
 
 Literals specify constant values of various types.
 
-|  |  |
-|----|----|
 | **Type** | **Description** |
+|----|----|
 | *Number* | Integer or floating-point number. Scientific notation is supported. |
 | *Boolean* | `TRUE` or `FALSE` |
 | *String* | String literal delimited by single quotes. To include a single quote in the string use two single-quotes: `''` |
@@ -112,9 +106,8 @@ Literals specify constant values of various types.
 
 Specifies a period of time, in several different formats.
 
-|  |  |
-|----|----|
 | **Syntax** | **Description** |
+|----|----|
 | [Time](ecql_reference.rst#ecql_literal) `/` [Time](ecql_reference.rst#ecql_literal) | Period specified by a start and end time |
 | [Duration](ecql_reference.rst#ecql_literal) `/` [Time](ecql_reference.rst#ecql_literal) | Period specified by a duration before a given time |
 | [Time](ecql_reference.rst#ecql_literal) `/` [Duration](ecql_reference.rst#ecql_literal) | Period specified by a duration after a given time |

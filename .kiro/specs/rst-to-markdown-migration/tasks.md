@@ -230,6 +230,17 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - Run same validation steps as 2.28.x branch (HTML comparison, link validation, build tests)
     - Fix any issues specific to 3.0 branch
     - **FIX USER MANUAL INDEX**: Update doc/en/user/docs/index.md to use grid cards format (like developer/docguide manuals) instead of definition list format. The conversion tool incorrectly converted RST definition lists to Markdown definition lists instead of grid cards.
+    - **FIX GRID CARD TITLES** (CRITICAL - learned from 2.28.x branch):
+      - **Issue**: The conversion tool creates malformed grid card titles by concatenating section names with page titles
+      - **Examples of malformed titles**:
+        - `[Programming GuideConfigIndex](config/index.md)` should be `[Config](config/index.md)`
+        - `[ExtensionsAuthkeyIndex](authkey/index.md)` should be `[Authkey](authkey/index.md)`
+        - `[SecurityWebadminSettings](settings.md)` should be `[Settings](settings.md)`
+      - **Root cause**: The conversion tool is using RST toctree entry IDs instead of actual page titles
+      - **PROPER FIX FOR 3.0**: Modify the conversion tool (migration.py or petersmythe/translate) to extract clean titles from RST source files BEFORE conversion, not after
+      - **Temporary workaround**: If proper fix cannot be implemented, run fix_grid_card_titles.py after conversion (fixes 669 titles in 121 files for 2.28.x)
+      - **Verification**: Check https://petersmythe.github.io/geoserver/migration/3.0/en/developer/programming-guide/ - menu cards should show "Config", "OWS Services", "REST Services", etc., NOT "Programming GuideConfigIndex", "Programming GuideOws ServicesIndex", etc.
+      - **Files typically affected**: All index.md files with `<div class="grid cards">` blocks (218 files total in 2.28.x branch)
     - **FIX MISSING VERSION NUMBERS**: Add version/release macros to index files that were dropped during conversion:
       - doc/en/user/docs/index.md: Add `{{ version }}` after "GeoServer" in intro paragraph
       - doc/en/developer/docs/index.md: Add `{{ version }}` after "GeoServer" in intro paragraph
@@ -251,6 +262,18 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
       - **Issue 4: Include with start/end parameters** - Run fix_include_with_params.py to fix invalid Jinja2 syntax like `{% include "file" start="..." end="..." %}` (Jinja2 does not support start/end parameters)
       - **Files typically affected**: workshop files (css.md, mbstyle.md, ysld.md), configuration examples, developer guide
       - **Verification**: Check GitHub Actions logs for "Macro Syntax Error" or "Macro Rendering Error" messages
+    - **FIX TILDE CODE FENCES** (CRITICAL - learned from 2.28.x branch):
+      - **Issue**: MkDocs requires backticks (```) for code fences, not tildes (~~~)
+      - **Solution**: Run fix_tilde_fences.py to replace all ~~~ with ``` throughout documentation
+      - **Files typically affected**: Any files with code blocks (container.md, configuration examples, etc.)
+      - **Verification**: Check deployed pages for visible ~~~ characters or malformed code blocks
+    - **FIX BLANK HEADER ROW TABLES** (CRITICAL - learned from 2.28.x branch):
+      - **Issue**: Tables with blank first row (empty cells) followed by separator row render incorrectly
+      - **Root cause**: Conversion tool creates tables with pattern: blank row → separator → actual headers → data
+      - **Solution**: Run fix_blank_header_tables.py to remove blank first rows from all tables
+      - **Files affected**: 104 files across all three manuals (212 tables total in 2.28.x branch)
+      - **Common locations**: SLD reference pages, cookbook examples, workshop tutorials, filter references, service configuration
+      - **Verification**: Check that tables display headers correctly without empty rows above them
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7_
 
   - [ ] 5.5.1 Fix image paths and wildcard references for 3.0 branch

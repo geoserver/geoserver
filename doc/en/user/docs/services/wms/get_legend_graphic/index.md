@@ -15,9 +15,8 @@ which would produce four 20x20 icons that graphically represent the rules of the
 
 The following table lists the whole set of GetLegendGraphic parameters that can be used.
 
-|  |  |  |
-|----|----|----|
 | **Parameter** | **Required** | **Description** |
+|----|----|----|
 | *REQUEST* | Required | Value must be "GetLegendGraphic". |
 | *LAYER* | Required | Layer for which to produce legend graphic. |
 | *STYLE* | Optional | Style of layer for which to produce legend graphic. If not present, the default style is selected. The style may be any valid style available for a layer, including non-SLD internally-defined styles. |

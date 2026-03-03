@@ -14,9 +14,8 @@ By default, **GeoTIFF** will be an option in the **Raster Data Sources** list wh
 ![](images/geotiffconfigure.png)
 *Configuring a GeoTIFF data store*
 
-|  |  |
-|----|----|
 | **Option** | **Description** |
+|----|----|
 | `Workspace` | Name of the workspace to contain the GeoTIFF store. This will also be the prefix of the raster layer created from the store. |
 | `Data Source Name` | Name of the GeoTIFF as it will be known to GeoServer. This can be different from the filename. The combination of the workspace name and this name will be the full layer name (ex: world:landbase) |
 | `Description` | A full free-form description of the GeoTIFF store. |

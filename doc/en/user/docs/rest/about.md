@@ -172,9 +172,8 @@ The HTML representation of the system data is equal to the `System status` tab r
 
 The XML and JSON representations are quite similar. For each system information metric, the following attributes will be available:
 
-|  |  |
-|----|----|
 | **Name** | **Description** |
+|----|----|
 | name | name of the metric |
 | available | TRUE if the system information value is available |
 | description | description of this system information |

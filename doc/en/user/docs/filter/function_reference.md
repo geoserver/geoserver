@@ -8,9 +8,8 @@ Unless otherwise specified, none of the filter functions in this reference are u
 
 ## Function argument type reference
 
-|  |  |
-|----|----|
 | **Type** | **Description** |
+|----|----|
 | Double | Floating point number, 8 bytes, IEEE 754. Ranges from 4.94065645841246544e-324d to 1.79769313486231570e+308d |
 | Float | Floating point number, 4 bytes, IEEE 754. Ranges from 1.40129846432481707e-45 to 3.40282346638528860e+38. Smaller range and less accurate than Double. |
 | Integer | Integer number, ranging from -2,147,483,648 to 2,147,483,647 |
@@ -22,9 +21,8 @@ Unless otherwise specified, none of the filter functions in this reference are u
 
 ## Comparison functions
 
-|  |  |  |
-|----|----|----|
 | **Name** | **Arguments** | **Description** |
+|----|----|----|
 | between | `num`:Number, `low`:Number, `high`:Number | returns true if `low` <= `num` <= `high` |
 | equalTo | `a`:Object, `b`:Object | Can be used to compare for equality two numbers, two strings, two dates, and so on |
 | greaterEqualThan | `x`:Object, `y`:Object | Returns true if `x` >= `y`. Parameters can be either numbers or strings (in the second case lexicographic ordering is used) |
@@ -40,9 +38,8 @@ Unless otherwise specified, none of the filter functions in this reference are u
 
 ## Control functions
 
-|  |  |  |
-|----|----|----|
 | **Name** | **Arguments** | **Description** |
+|----|----|----|
 | if_then_else | `condition`:Boolean, `x`:Object, `y`: Object | Returns `x` if the condition is true, `y` otherwise |
 
 ## Environment function
@@ -67,16 +64,14 @@ Example usage in a default Symbolizer:
 </PointSymbolizer>
 ```
 
-|  |  |  |
-|----|----|----|
 | **Name** | **Arguments** | **Description** |
+|----|----|----|
 | env | `variable`:String | Returns the value of the environment variable `variable`. |
 
 ## Feature functions
 
-|  |  |  |
-|----|----|----|
 | **Name** | **Arguments** | **Description** |
+|----|----|----|
 | id | `feature`:Feature | returns the identifier of the feature |
 | PropertyExists | `f`:Feature, `propertyName`:String | Returns `true` if `f` has a property named `propertyName` |
 | property | `f`:Feature, `propertyName`:String | Returns the value of the property `propertyName`. Allows property names to be computed or specified by [Variable substitution in SLD](../styling/sld/extensions/substitution.md). |
@@ -86,9 +81,8 @@ Example usage in a default Symbolizer:
 
 For more information about the precise meaning of the spatial relationships consult the [OGC Simple Feature Specification for SQL](http://www.opengeospatial.org/standards/sfs)
 
-|  |  |  |
-|----|----|----|
 | **Name** | **Arguments** | **Description** |
+|----|----|----|
 | contains | `a`:Geometry, `b`:Geometry | Returns true if the geometry `a` contains `b` |
 | crosses | `a`:Geometry, `b`:Geometry | Returns true if `a` crosses `b` |
 | disjoint | `a`:Geometry, `b`:Geometry | Returns true if the two geometries are disjoint, false otherwise |
@@ -104,9 +98,8 @@ For more information about the precise meaning of the spatial relationships cons
 
 ## Geometric functions
 
-|  |  |  |
-|----|----|----|
 | **Name** | **Arguments** | **Description** |
+|----|----|----|
 | area | `geometry`:Geometry | The area of the specified geometry. Works in a Cartesian plane, the result will be in the same unit of measure as the geometry coordinates (which also means the results won't make any sense for geographic data) |
 | boundary | `geometry`:Geometry | Returns the boundary of a geometry |
 | boundaryDimension | `geometry`:Geometry | Returns the number of dimensions of the geometry boundary |
@@ -151,9 +144,8 @@ For more information about the precise meaning of the spatial relationships cons
 
 ## Math functions
 
-|  |  |  |
-|----|----|----|
 | **Name** | **Arguments** | **Description** |
+|----|----|----|
 | abs | `value`:Integer | The absolute value of the specified Integer `value` |
 | abs_2 | `value`:Long | The absolute value of the specified Long `value` |
 | abs_3 | `value`:Float | The absolute value of the specified Float `value` |
@@ -189,9 +181,8 @@ For more information about the precise meaning of the spatial relationships cons
 
 String functions generally will accept any type of value for `String` arguments. Non-string values will be converted into a string representation automatically.
 
-|  |  |  |
-|----|----|----|
 | **Name** | **Arguments** | **Description** |
+|----|----|----|
 | Concatenate | `s1`:String, `s2`:String, \... | Concatenates any number of strings. Non-string arguments are allowed. |
 | strAbbreviate | `sentence`:String, `lower`:Integer, `upper`:Integer, `append`:String | Abbreviates the sentence at first space beyond `lower` (or at `upper` if no space). Appends `append` if string is abbreviated. |
 | strCapitalize | `sentence`:String | Fully capitalizes the sentence. For example, "HoW aRe YOU?" will be turned into "How Are You?" |
@@ -214,9 +205,8 @@ String functions generally will accept any type of value for `String` arguments.
 
 ## Parsing and formatting functions
 
-|  |  |  |
-|----|----|----|
 | **Name** | **Arguments** | **Description** |
+|----|----|----|
 | dateFormat | `format`:String, `date`:Timestamp | Formats the specified date according to the provided format. The format syntax can be found in the [Java SimpleDateFormat javadocs](http://java.sun.com/javase/6/docs/api/java/text/SimpleDateFormat.html) |
 | dateParse | `format`:String, `dateString`:String | Parses a date from a `dateString` formatted according to the `format` specification. The format syntax can be found in the [Java SimpleDateFormat javadocs](http://java.sun.com/javase/6/docs/api/java/text/SimpleDateFormat.html) |
 | numberFormat | `format`:String, `number`:Double, `locale`:String | Formats the number according to the specified `format` using the default locale or the one provided as an optional argument. The format syntax can be found in the [Java DecimalFormat javadocs](http://java.sun.com/javase/6/docs/api/java/text/DecimalFormat.html) |
@@ -227,9 +217,8 @@ String functions generally will accept any type of value for `String` arguments.
 
 ## Temporal functions
 
-|  |  |  |
-|----|----|----|
 | **Name** | **Arguments** | **Description** |
+|----|----|----|
 | dateDifference | `a`:Date, `b`:Date, `timeUnits`:String | Computes the difference between two date (as a-b) and return a result in a specific time units. `timeUnits` is optional, representing the desired time units result. Default as milliseconds. Possible values are `s` (seconds), `m` (minutes), `h` (hours), `d` (days). |
 | now | None | Returns the current time as a Date |
 

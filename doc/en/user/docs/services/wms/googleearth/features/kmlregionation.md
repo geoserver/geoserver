@@ -10,9 +10,8 @@ The most important aspect of regionation is to decide how to determine which fea
 
 Regionation strategies sets how to determine which features should be shown at any given time or zoom level. There are five types of regionation strategies:
 
-|  |  |
-|----|----|
 | **Strategy** | **Description** |
+|----|----|
 | `best_guess` | (*default*) The actual strategy is determined by the type of data being operated on. If the data consists of points, the `random` strategy is used. If the data consists of lines or polygons, the `geometry` strategy is used. |
 | `external-sorting` | Creates a temporary auxiliary database within GeoServer. It takes slightly extra time to build the index upon first request. |
 | `native-sorting` | Uses the default sorting algorithm of the backend where the data is hosted. It is faster than external-sorting, but will only work with PostGIS datastores. |

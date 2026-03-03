@@ -8,9 +8,8 @@ Labelling is a complex operation, and effective labelling is crucial to obtainin
 
 A `<TextSymbolizer>` contains the following elements:
 
-|  |  |  |
-|----|----|----|
 | **Tag** | **Required?** | **Description** |
+|----|----|----|
 | `<Geometry>` | No | The geometry to be labelled. |
 | `<Label>` | No | The text content for the label. |
 | `<Font>` | No | The font information for the label. |
@@ -39,9 +38,8 @@ The `<Font>` element specifies the font to be used for the label. A set of `<Css
 
 The `name` **attribute** indicates what aspect of the font is described, using the standard CSS/SVG font model. The **content** of the element supplies the value of the font parameter. The value may contain [expressions](pointsymbolizer.md#sld_reference_parameter_expressions).
 
-|  |  |  |
-|----|----|----|
 | **Parameter** | **Required?** | **Description** |
+|----|----|----|
 | `name="font-family"` | No | The family name of the font to use for the label. Default is `Times`. |
 | `name="font-style"` | No | The style of the font. Options are `normal`, `italic`, and `oblique`. Default is `normal`. |
 | `name="font-weight"` | No | The weight of the font. Options are `normal` and `bold`. Default is `normal`. |
@@ -51,9 +49,8 @@ The `name` **attribute** indicates what aspect of the font is described, using t
 
 The `<LabelPlacement>` element specifies the placement of the label relative to the geometry being labelled. There are two possible sub-elements: `<PointPlacement>` or `<LinePlacement>`. Exactly one of these must be specified.
 
-|                    |               |                                       |
-|--------------------|---------------|---------------------------------------|
 | **Tag**            | **Required?** | **Description**                       |
+|--------------------|---------------|---------------------------------------|
 | `<PointPlacement>` | No            | Labels a geometry at a single point   |
 | `<LinePlacement>`  | No            | Labels a geometry along a linear path |
 
@@ -61,9 +58,8 @@ The `<LabelPlacement>` element specifies the placement of the label relative to 
 
 The `<PointPlacement>` element indicates the label is placed at a labelling point derived from the geometry being labelled. The position of the label relative to the labelling point may be controlled by the following sub-elements:
 
-|  |  |  |
-|----|----|----|
 | **Tag** | **Required?** | **Description** |
+|----|----|----|
 | `<AnchorPoint>` | No | The location within the label bounding box that is aligned with the label point. The location is specified by `<AnchorPointX>` and `<AnchorPointY>` sub-elements, with values in the range [0..1]. Values may contain [expressions](pointsymbolizer.md#sld_reference_parameter_expressions). |
 | `<Displacement>` | No | Specifies that the label point should be offset from the original point. The offset is specified by `<DisplacementX>` and `<DisplacementY>` sub-elements, with values in pixels. Values may contain [expressions](pointsymbolizer.md#sld_reference_parameter_expressions). Default is `(0, 0)`. |
 | `<Rotation>` | No | The rotation of the label in clockwise degrees (negative values are counterclockwise). Value may contain [expressions](pointsymbolizer.md#sld_reference_parameter_expressions). Default is `0`. |
@@ -74,9 +70,8 @@ The anchor point justification, displacement offsetting, and rotation are applie
 
 The `<LinePlacement>` element indicates the label is placed along a linear path derived from the geometry being labelled. The position of the label relative to the linear path may be controlled by the following sub-element:
 
-|  |  |  |
-|----|----|----|
 | **Tag** | **Required?** | **Description** |
+|----|----|----|
 | `<PerpendicularOffset>` | No | The offset from the linear path, in pixels. Positive values offset to the left of the line, negative to the right. Value may contain [expressions](pointsymbolizer.md#sld_reference_parameter_expressions). Default is `0`. |
 
 The appearance of text along linear paths can be further controlled by the vendor options `followLine`, `maxDisplacement`, `repeat`, `labelAllGroup`, and `maxAngleDelta`. These are described in [Labeling](labeling.md).
@@ -85,9 +80,8 @@ The appearance of text along linear paths can be further controlled by the vendo
 
 A halo creates a colored background around the label text, which improves readability in low contrast situations. Within the `<Halo>` element there are two sub-elements which control the appearance of the halo:
 
-|  |  |  |
-|----|----|----|
 | **Tag** | **Required?** | **Description** |
+|----|----|----|
 | `<Radius>` | No | The halo radius, in pixels. Value may contain [expressions](pointsymbolizer.md#sld_reference_parameter_expressions). Default is `1`. |
 | `<Fill>` | No | The color and opacity of the halo via `CssParameter` elements for `fill` and `fill-opacity`. See [Fill](polygonsymbolizer.md#sld_reference_fill) for full syntax. The parameter values may contain [expressions](pointsymbolizer.md#sld_reference_parameter_expressions). Default is a **white** fill (`#FFFFFF`) at **100%** opacity. |
 

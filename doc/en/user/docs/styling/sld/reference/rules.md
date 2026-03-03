@@ -6,9 +6,8 @@ Styling **rules** define the portrayal of features. A rule combines a [filter](f
 
 The `<Rule>` element contains the following elements:
 
-|  |  |  |
-|----|----|----|
 | **Tag** | **Required?** | **Description** |
+|----|----|----|
 | `<Name>` | No | Specifies a name for the rule. |
 | `<Title>` | No | Specifies a title for the rule. The title is used in display lists and legends. |
 | `<Abstract>` | No | Specifies an abstract describing the rule. |
@@ -32,9 +31,8 @@ Scale ranges are specified by using **scale denominators**. These values corresp
 
 Two optional elements specify the scale range for a rule:
 
-|  |  |  |
-|----|----|----|
 | **Tag** | **Required?** | **Description** |
+|----|----|----|
 | `<MinScaleDenominator>` | No | Specifies the minimum scale denominator (inclusive) for the scale range in which this rule applies. If present, the rule applies at the given scale and all smaller scales. |
 | `<MaxScaleDenominator>` | No | Specifies the maximum scale denominator (exclusive) for the scale range in which this rule applies. If present, the rule applies at scales larger than the given scale. |
 

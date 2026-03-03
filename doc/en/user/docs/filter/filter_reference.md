@@ -29,9 +29,8 @@ The **binary comparison operators** are:
 
 They contain the elements:
 
-|  |  |  |
-|----|----|----|
 | **Element** | **Required?** | **Description** |
+|----|----|----|
 | [Expression](filter_reference.md#filter_expression) | Yes | The first value to compare. Often a `<PropertyName>`. |
 | [Expression](filter_reference.md#filter_expression) | Yes | The second value to compare |
 
@@ -41,9 +40,8 @@ Binary comparison operator elements may include an optional `matchCase` attribut
 
 The `<PropertyIsLike>` operator matches a string property value against a text **pattern**. It contains the elements:
 
-|  |  |  |
-|----|----|----|
 | **Element** | **Required?** | **Description** |
+|----|----|----|
 | `<PropertyName>` | Yes | Contains a string specifying the name of the property to test |
 | `<Literal>` | Yes | Contains a pattern string to be matched |
 
@@ -57,18 +55,16 @@ The pattern is specified by a sequence of regular characters and three special p
 
 The `<PropertyIsNull>` operator tests whether a property value is null. It contains the element:
 
-|  |  |  |
-|----|----|----|
 | **Element** | **Required?** | **Description** |
+|----|----|----|
 | `<PropertyName>` | Yes | contains a string specifying the name of the property to be tested |
 
 #### PropertyIsBetweeen operator
 
 The `<PropertyIsBetween>` operator tests whether an expression value lies within a range given by a lower and upper bound (inclusive). It contains the elements:
 
-|  |  |  |
-|----|----|----|
 | **Element** | **Required?** | **Description** |
+|----|----|----|
 | [Expression](filter_reference.md#filter_expression) | Yes | The value to test |
 | `<LowerBoundary>` | Yes | Contains an [Expression](filter_reference.md#filter_expression) giving the lower bound of the range |
 | `<UpperBoundary>` | Yes | Contains an [Expression](filter_reference.md#filter_expression) giving the upper bound of the range |
@@ -92,9 +88,8 @@ These operators test topological spatial relationships using the standard OGC Si
 
 These contains the elements:
 
-|  |  |  |
-|----|----|----|
 | **Element** | **Required?** | **Description** |
+|----|----|----|
 | `<PropertyName>` | Yes | Contains a string specifying the name of the geometry-valued property to be tested. |
 | *GML Geometry* | Yes | A GML literal value specifying the geometry to test against |
 
@@ -107,9 +102,8 @@ These operators test distance relationships between a geometry property and a ge
 
 They contain the elements:
 
-|  |  |  |
-|----|----|----|
 | **Element** | **Required?** | **Description** |
+|----|----|----|
 | `<PropertyName>` | Yes | Contains a string specifying the name of the property to be tested. If omitted, the *default geometry attribute* is assumed. |
 | *GML Geometry* | Yes | A literal value specifying a geometry to compute the distance to. This may be either a geometry or an envelope in GML 3 format |
 | `<Distance>` | Yes | Contains the numeric value for the distance tolerance. The element may include an optional `units` attribute. |
@@ -118,9 +112,8 @@ They contain the elements:
 
 The `<BBOX>` operator tests whether a geometry-valued property intersects a fixed bounding box. It contains the elements:
 
-|  |  |  |
-|----|----|----|
 | **Element** | **Required?** | **Description** |
+|----|----|----|
 | `<PropertyName>` | No | Contains a string specifying the name of the property to be tested. If omitted, the *default geometry attribute* is assumed. |
 | `<gml:Box>` | Yes | A GML Box literal value specifying the bounding box to test against |
 
@@ -233,9 +226,8 @@ The `<PropertyName>` element refers to the value of a feature attribute. It cont
 
 The `<Literal>` element specifies a constant value. It contains data of one of the following types:
 
-|  |  |
-|----|----|
 | **Type** | **Description** |
+|----|----|
 | Numeric | A string representing a numeric value (integer or decimal). |
 | Boolean | A boolean value of `true` or `false`. |
 | String | A string value. XML-incompatible text may be included by using **character entities** or `<![CDATA[` `]]>` delimiters. |

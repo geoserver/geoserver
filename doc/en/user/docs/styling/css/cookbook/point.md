@@ -6,9 +6,8 @@ While points are seemingly the simplest type of shape, possessing only position 
 
 The [points layer](../../sld/cookbook/artifacts/sld_cookbook_point.zip) used for the examples below contains name and population information for the major cities of a fictional country. For reference, the attribute table for the points in this layer is included below.
 
-|                      |                      |                      |
-|----------------------|----------------------|----------------------|
 | **fid** (Feature ID) | **name** (City name) | **pop** (Population) |
+|----------------------|----------------------|----------------------|
 | point.1              | Borfin               | 157860               |
 | point.2              | Supox City           | 578231               |
 | point.3              | Ruckis               | 98159                |
@@ -268,9 +267,8 @@ This style shows how the basic mark setup (red circle, default size) can be over
 
 The three rules are designed as follows:
 
-|                |               |                          |          |
-|----------------|---------------|--------------------------|----------|
 | **Rule order** | **Rule name** | **Population** ("pop") | **Size** |
+|----------------|---------------|--------------------------|----------|
 | 1              | SmallPop      | Less than 50,000         | 8        |
 | 2              | MediumPop     | 50,000 to 100,000        | 12       |
 | 3              | LargePop      | Greater than 100,000     | 16       |
@@ -324,9 +322,8 @@ It is often desirable to make shapes larger at higher zoom levels when creating 
 
 This style contains three rules matching the scale. The three rules are designed as follows:
 
-|                |               |                              |                |
-|----------------|---------------|------------------------------|----------------|
 | **Rule order** | **Rule name** | **Scale denominator**        | **Point size** |
+|----------------|---------------|------------------------------|----------------|
 | 1              | Large         | 1:16,000,000 or less         | 12             |
 | 2              | Medium        | 1:16,000,000 to 1:32,000,000 | 8              |
 | 3              | Small         | Greater than 1:32,000,000    | 4              |

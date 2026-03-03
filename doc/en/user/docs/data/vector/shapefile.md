@@ -19,9 +19,8 @@ To begin, navigate to **Stores --> Add a new store --> Shapefile**.
 ![](images/shapefile.png)
 *Adding a shapefile as a store*
 
-|  |  |
-|----|----|
 | **Option** | **Description** |
+|----|----|
 | **Workspace** | Name of the workspace to contain the store. This will also be the prefix of the layer created from the store. |
 | **Data Source Name** | Name of the shapefile as known to GeoServer. Can be different from the filename. The combination of the workspace name and this name will be the full layer name (ex: topp:states). |
 | **Description** | Description of the shapefile/store. |

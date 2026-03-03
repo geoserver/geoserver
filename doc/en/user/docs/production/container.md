@@ -10,9 +10,8 @@ Java web containers such as [Tomcat](http://tomcat.apache.org) or [Jetty](https:
 
 Set the following performance settings in the Java virtual machine (JVM) for your container. These settings are not specific to any container.
 
-|  |  |
-|----|----|
 | **Option** | **Description** |
+|----|----|
 | `-Xms128m` | By starting with a larger heap GeoServer will not need to pause and ask the operating system for more memory during heavy load. The setting `-Xms128m` will tell the virtual machine to acquire grab a 128m heap memory on initial startup. |
 | `-Xmx756M` | Defines an upper limit on how much heap memory Java will request from the operating system (use more if you have excess memory). By default, the JVM will use 1/4 of available system memory. The setting `-Xms756m` allocates 756MB of memory to GeoServer. |
 | `-XX:SoftRefLRUPolicyMSPerMB=36000` | Increases the lifetime of "soft references" in GeoServer. GeoServer uses soft references to cache datastore, spatial reference systems, and other data structures. By increasing this value to `36000` (which is 36 seconds) these values will stay in memory longer increasing the effectiveness of the cache. |

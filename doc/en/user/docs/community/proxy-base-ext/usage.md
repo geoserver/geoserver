@@ -8,9 +8,8 @@ Proxy Base Extension rules allow the matching of the URLs for alteration based o
 
 A Proxy Base Extension rule is defined by three mandatory attributes:
 
-|  |  |
-|----|----|
 | **Attribute** | **Description** |
+|----|----|
 | `Position` | The priority of the rule, the lower the number the higher the priority. Rules are applied on a first match basis. |
 | `Matcher` | The pattern used to match against paths. Regular expressions can be used to achieve matches. |
 | `Transformer` | The transformation that will be applied to the entire URL. Literal expressions can be used to achieve transformations based on matching header values. |
@@ -37,9 +36,8 @@ Rules can be managed and tested with simulated headers in the rules management U
 ![](images/proxy_base_rule_config.png)
 *Rules management UI*
 
-|  |  |
-|----|----|
 | **Attribute** | **Description** |
+|----|----|
 | `Position` | The priority of the rule, the lower the number the higher the priority. Rules are applied on a first match basis. |
 | `Matcher` | The pattern used to match against paths. Regular expressions can be used to achieve matches. |
 | `Transformer` | The transformation that will be applied to the entire URL. Literal expressions can be used to achieve transformations based on matching header values. |

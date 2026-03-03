@@ -49,9 +49,8 @@ Inside this directory, there are four directories:
     docguide/
     theme/
 
-|  |  |
-|----|----|
 | **Directory** | **Description** |
+|----|----|
 | **`user`** | User Manual source files |
 | **`developer`** | Developer Manual source files |
 | **`docguide`** | Documentation Guide source files (this is what you are reading now) |

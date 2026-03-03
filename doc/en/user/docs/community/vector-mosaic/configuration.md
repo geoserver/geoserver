@@ -8,9 +8,8 @@ When the extension has been installed, ``Vector Mosaic Data Store`` will be an o
 ![](images/vector-mosaic-vector-configure.png)
 *Configuring an Vector Mosaic data source*
 
-|  |  |
-|----|----|
 | **Option** | **Description** |
+|----|----|
 | `Workspace` | Name of the workspace to contain the Vector Mosaic store. |
 | `Data Source Name` | Name of the Vector Mosaic Store as it will be known to GeoServer. |
 | `Description` | A full free-form description of the Vector Mosaic store. |

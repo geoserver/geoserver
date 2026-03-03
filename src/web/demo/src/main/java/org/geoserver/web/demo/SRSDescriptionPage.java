@@ -63,8 +63,8 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
 
     /** Initializes the OpenLayers map when the page loads */
     @Override
-    public void renderHead(IHeaderResponse headerResponse) {
-        super.renderHead(headerResponse);
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
         String onLoadJsCall = "var map = null;\n"
                 + "            \n"
                 + "            function initMap(srs, units, bbox, resolution){\n"
@@ -115,7 +115,7 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
                 + ", "
                 + jsMaxResolution
                 + ")";
-        headerResponse.render(new OnDomReadyHeaderItem(onLoadJsCall));
+        response.render(new OnDomReadyHeaderItem(onLoadJsCall));
     }
 
     public SRSDescriptionPage(PageParameters params) {

@@ -145,11 +145,11 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
     }
 
     @Override
-    public void renderHead(IHeaderResponse header) {
-        super.renderHead(header);
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
         try {
-            renderHeaderCss(header);
-            renderHeaderScript(header);
+            renderHeaderCss(response);
+            renderHeaderScript(response);
         } catch (IOException | TemplateException e) {
             throw new WicketRuntimeException(e);
         }

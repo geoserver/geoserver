@@ -142,10 +142,11 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     + "    }\n"
                     + "});";
             response.render(new OnDomReadyHeaderItem(enableSpectrum));
-//if the panel-specific CSS file contains actual css then have the browser load the css 
+            // if the panel-specific CSS file contains actual css then have the browser load the css
             if (!isCssEmpty) {
                 response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
-                        new org.apache.wicket.request.resource.PackageResourceReference(getClass(), getClass().getSimpleName() + ".css")));
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
             }
         }
     }

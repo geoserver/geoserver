@@ -55,10 +55,10 @@ public class WebUtils {
      * <p>ie. <br>
      * LayerAccessDataRulePanel.java <br>
      * LayerAccessDataRulePanel.html <br>
-     * LayerAccessDataRulePanel.css <--- this one <br>
+     * LayerAccessDataRulePanel.css &lt;--- this one <br>
      *
-     * <p>1. if file doesn't exist? --> true <br>
-     * 2. if file is just comments --> true <br>
+     * <p>1. if file doesn't exist? --&gt; true <br>
+     * 2. if file is just comments --&gt; true <br>
      * 3. otherwise false <br>
      *
      * <p>in almost all cases, if this returns false, do not include the .css file in the header since its "empty".

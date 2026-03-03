@@ -155,10 +155,11 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
         } catch (IOException | TemplateException e) {
             throw new WicketRuntimeException(e);
         }
-//if the panel-specific CSS file contains actual css then have the browser load the css 
+        // if the panel-specific CSS file contains actual css then have the browser load the css
         if (!isCssEmpty) {
             response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
-                    new org.apache.wicket.request.resource.PackageResourceReference(getClass(), getClass().getSimpleName() + ".css")));
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
         }
     }
 

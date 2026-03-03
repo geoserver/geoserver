@@ -148,10 +148,11 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         // Make the line numbers look good
         response.render(CssHeaderItem.forReference(
                 new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/css/codemirrorlinenos.css")));
-//if the panel-specific CSS file contains actual css then have the browser load the css 
+        // if the panel-specific CSS file contains actual css then have the browser load the css
         if (!isCssEmpty) {
             response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
-                    new org.apache.wicket.request.resource.PackageResourceReference(getClass(), getClass().getSimpleName() + ".css")));
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
         }
     }
 
@@ -225,10 +226,11 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
             }
 
             response.render(OnDomReadyHeaderItem.forScript(getInitJavascript()));
-//if the panel-specific CSS file contains actual css then have the browser load the css 
+            // if the panel-specific CSS file contains actual css then have the browser load the css
             if (!isCssEmpty) {
                 response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
-                        new org.apache.wicket.request.resource.PackageResourceReference(getClass(), getClass().getSimpleName() + ".css")));
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
             }
         }
 

@@ -30,12 +30,14 @@ public class PointPanel extends FormComponentPanel<Point> {
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
         super.renderHead(response);
-        //if the panel-specific CSS file contains actual css then have the browser load the css 
+        // if the panel-specific CSS file contains actual css then have the browser load the css
         if (!isCssEmpty) {
             response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
-                    new org.apache.wicket.request.resource.PackageResourceReference(getClass(), getClass().getSimpleName() + ".css")));
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
         }
     }
+
     @Serial
     private static final long serialVersionUID = -1046819530873258172L;
 

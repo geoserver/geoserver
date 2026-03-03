@@ -1,0 +1,111 @@
+{
+  "navigation_tabs": [
+    {
+      "text": "GeoServer User Manual",
+      "href": "."
+    },
+    {
+      "text": "Introduction",
+      "href": "introduction/"
+    },
+    {
+      "text": "Installation",
+      "href": "installation/"
+    },
+    {
+      "text": "Gettingstarted",
+      "href": "gettingstarted/"
+    },
+    {
+      "text": "Webadmin",
+      "href": "webadmin/"
+    },
+    {
+      "text": "Data",
+      "href": "data/"
+    },
+    {
+      "text": "Styling",
+      "href": "styling/"
+    },
+    {
+      "text": "Services",
+      "href": "services/"
+    },
+    {
+      "text": "Filter",
+      "href": "filter/"
+    },
+    {
+      "text": "Configuration",
+      "href": "configuration/"
+    },
+    {
+      "text": "Datadirectory",
+      "href": "datadirectory/"
+    },
+    {
+      "text": "Production",
+      "href": "production/"
+    },
+    {
+      "text": "Rest",
+      "href": "rest/"
+    },
+    {
+      "text": "Security",
+      "href": "security/"
+    },
+    {
+      "text": "Geowebcache",
+      "href": "geowebcache/"
+    },
+    {
+      "text": "Extensions",
+      "href": "extensions/"
+    },
+    {
+      "text": "Community",
+      "href": "community/"
+    },
+    {
+      "text": "Tutorials",
+      "href": "tutorials/"
+    }
+  ],
+  "navigation_hierarchy": {
+    "0": 1,
+    "1": 17,
+    "2": 79,
+    "3": 19,
+    "4": 4
+  },
+  "breadcrumbs": [
+    {
+      "page": "data/webadmin/layers.html",
+      "has_breadcrumbs": false,
+      "error": "Page not found"
+    },
+    {
+      "page": "styling/sld/cookbook/points.html",
+      "has_breadcrumbs": false,
+      "error": "Page not found"
+    },
+    {
+      "page": "services/wms/reference.html",
+      "has_breadcrumbs": false,
+      "error": "Page not found"
+    }
+  ],
+  "back_to_top": {
+    "elements_found": 1,
+    "has_navigation_top_feature": true
+  },
+  "issues": [],
+  "summary": {
+    "total_checks": 5,
+    "passed_checks": 5,
+    "success_rate": 100.0,
+    "overall_status": "PASS"
+  }
+}

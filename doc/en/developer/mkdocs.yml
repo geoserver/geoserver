@@ -9,7 +9,7 @@ site_dir: target/html
 
 theme:
   name: material
-  custom_dir: ../../themes/geoserver
+  custom_dir: ../themes/geoserver
   logo: img/geoserver-logo.png
   favicon: img/geoserver.ico
   palette:
@@ -66,13 +66,13 @@ plugins:
       lang: en
   - macros:
       render_by_default: false
-  - with-pdf:
-      enabled_if_env: ENABLE_PDF_EXPORT
-      author: GeoServer Project
-      copyright: Copyright © 2024 Open Source Geospatial Foundation
-      cover_title: GeoServer Developer Manual
-      cover_subtitle: Version 3.0
-      output_path: pdf/geoserver-developer-manual.pdf
+  # - with-pdf:
+  #     enabled_if_env: ENABLE_PDF_EXPORT
+  #     author: GeoServer Project
+  #     copyright: Copyright © 2024 Open Source Geospatial Foundation
+  #     cover_title: GeoServer Developer Manual
+  #     cover_subtitle: Version 3.0
+  #     output_path: pdf/geoserver-developer-manual.pdf
 
 hooks:
   - hooks/download_files.py

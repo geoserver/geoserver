@@ -36,6 +36,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.test.http.MockHttpClient;
 import org.geoserver.test.http.MockHttpResponse;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -60,11 +61,25 @@ public class WMSStoreTest extends CatalogRESTTestSupport {
         CatalogBuilder cb = new CatalogBuilder(catalog);
         cb.setWorkspace(catalog.getWorkspaceByName("sf"));
         WMSStoreInfo wms = cb.buildWMSStore("demo");
-        wms.setCapabilitiesURL(capabilities);
+        configureDemoStore(wms);
         catalog.add(wms);
         cb.setStore(wms);
         WMSLayerInfo layer = cb.buildWMSLayer("world4326");
         catalog.add(layer);
+    }
+
+    @Before
+    public void resetDemo() {
+        WMSStoreInfo wms = getCatalog().getWMSStoreByName("demo");
+        configureDemoStore(wms);
+        getCatalog().save(wms);
+    }
+
+    private static void configureDemoStore(WMSStoreInfo wms) {
+        wms.setEnabled(true);
+        wms.setCapabilitiesURL(capabilities);
+        wms.setUsername("demouser");
+        wms.setPassword("demopwd");
     }
 
     @BeforeClass
@@ -327,6 +342,139 @@ public class WMSStoreTest extends CatalogRESTTestSupport {
         MockHttpServletResponse response = putAsServletResponse(
                 RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores/nonExistant", xml, "text/xml");
         assertEquals(404, response.getStatus());
+    }
+
+    @Test
+    public void testPutUnsetUserPasswordJSON() throws Exception {
+        String json =
+                """
+            {
+               "wmsStore": {
+                 "name": "demo",
+                 "user": null,
+                 "password": null
+               }
+            }\
+            """;
+
+        MockHttpServletResponse response = putAsServletResponse(
+                RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores/demo", json, "application/json");
+        assertEquals(200, response.getStatus());
+
+        WMSStoreInfo wsi = catalog.getStoreByName("sf", "demo", WMSStoreInfo.class);
+
+        assertTrue(wsi.isEnabled());
+        assertNull(wsi.getUsername());
+        assertNull(wsi.getPassword());
+    }
+
+    @Test
+    public void testPutUnsetUserPasswordXML() throws Exception {
+        String xml =
+                """
+            <wmsStore>
+              <name>demo</name>
+              <user xsi:nil="true"/>
+              <password xsi:nil="true"/>
+            </wmsStore>\
+            """;
+
+        MockHttpServletResponse response =
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores/demo", xml, "text/xml");
+        assertEquals(200, response.getStatus());
+
+        WMSStoreInfo wsi = catalog.getStoreByName("sf", "demo", WMSStoreInfo.class);
+
+        assertTrue(wsi.isEnabled());
+        assertNull(wsi.getUsername());
+        assertNull(wsi.getPassword());
+    }
+
+    @Test
+    public void testEmptyElement() throws Exception {
+        String xml =
+                """
+            <wmsStore>
+              <name>demo</name>
+              <user/>
+              <password/>
+            </wmsStore>\
+            """;
+
+        MockHttpServletResponse response =
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores/demo", xml, "text/xml");
+        assertEquals(200, response.getStatus());
+
+        WMSStoreInfo wsi = catalog.getStoreByName("sf", "demo", WMSStoreInfo.class);
+
+        assertTrue(wsi.isEnabled());
+        // without the nil marker it should be an empty string, not null
+        assertEquals("", wsi.getUsername());
+        assertEquals("", wsi.getPassword());
+    }
+
+    @Test
+    public void testNullTrackingIsolation() throws Exception {
+        // unsets the user and password
+        testPutUnsetUserPasswordXML();
+
+        // now set them back, make sure there is no dirty null tracking context left around
+        String xml =
+                """
+            <wmsStore>
+              <name>demo</name>
+              <user>alibaba</user>
+              <password>open sesame</password>
+            </wmsStore>\
+            """;
+
+        MockHttpServletResponse response =
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores/demo", xml, "text/xml");
+        assertEquals(200, response.getStatus());
+
+        WMSStoreInfo wsi = catalog.getStoreByName("sf", "demo", WMSStoreInfo.class);
+        assertTrue(wsi.isEnabled());
+        assertEquals("alibaba", wsi.getUsername());
+        assertEquals("open sesame", wsi.getPassword());
+    }
+
+    @Test
+    public void testNullTrackingErrorIsolation() throws Exception {
+        // send an invalid XML triggering error during parsing, that should mark some properties as null
+        String brokenXml =
+                """
+            <wmsStore>
+              <name>demo</name>
+              <user xsi:nil="true"/>
+              <password xsi:nil="true"/>
+              <unbalancedTag>
+            </wmsStore>\
+            """;
+
+        MockHttpServletResponse response = putAsServletResponse(
+                RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores/demo", brokenXml, "text/xml");
+        // a 4xx would be better but this is the current REST general behavior, for now just make sure it's not a 500
+        // due to some dirty null tracking context
+        assertEquals(500, response.getStatus());
+
+        // now set them back, make sure there is no dirty null tracking context left around
+        String xml =
+                """
+            <wmsStore>
+              <name>demo</name>
+              <user>alibaba</user>
+              <password>open sesame</password>
+            </wmsStore>\
+            """;
+
+        response =
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores/demo", xml, "text/xml");
+        assertEquals(200, response.getStatus());
+
+        WMSStoreInfo wsi = catalog.getStoreByName("sf", "demo", WMSStoreInfo.class);
+        assertTrue(wsi.isEnabled());
+        assertEquals("alibaba", wsi.getUsername());
+        assertEquals("open sesame", wsi.getPassword());
     }
 
     @Test

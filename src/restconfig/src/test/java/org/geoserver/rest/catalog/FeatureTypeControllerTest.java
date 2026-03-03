@@ -456,6 +456,21 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
     }
 
     @Test
+    public void testNullifyAbstract() throws Exception {
+        FeatureTypeInfo ft = catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature");
+        ft.setAbstract("the abstract");
+        catalog.save(ft);
+
+        String xml = "<featureType><abstract xsi:nil=\"true\"/></featureType>";
+        MockHttpServletResponse response = putAsServletResponse(
+                BASEPATH + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature", xml, "text/xml");
+        assertEquals(200, response.getStatus());
+
+        ft = catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature");
+        assertNull(ft.getAbstract());
+    }
+
+    @Test
     public void testPutWithoutStore() throws Exception {
         String xml = "<featureType>" + "<title>new title</title>" + "</featureType>";
         MockHttpServletResponse response =

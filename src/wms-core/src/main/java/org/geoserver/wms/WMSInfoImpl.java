@@ -13,6 +13,7 @@ import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.config.impl.ServiceInfoImpl;
+import org.geoserver.config.util.patch.PatchProperty;
 import org.geoserver.util.InternationalStringUtils;
 import org.geotools.api.util.InternationalString;
 import org.geotools.util.GrowableInternationalString;
@@ -26,6 +27,7 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     List<String> allowedURLsForAuthForwarding = new ArrayList<>();
 
+    @PatchProperty("bBOXForEachCRS")
     Boolean bboxForEachCRS;
 
     WatermarkInfo watermark = new WatermarkInfoImpl();

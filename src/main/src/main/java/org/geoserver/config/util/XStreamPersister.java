@@ -289,12 +289,6 @@ public class XStreamPersister {
 
         // control the order in which fields are sorted
         SortableFieldKeySorter sorter = new SortableFieldKeySorter();
-        // sorter.registerFieldOrder( DefaultCatalogDAO.class, new String[]{ "workspaces",
-        // "namespaces", "stores", "styles",
-        /* these we actually omit, but the sorter needs them specified */
-        //    "layerGroups", "resources", "maps", "defaultStores", "listeners", "layers",
-        // "resourcePool", "resourceLoader", "LOGGER" } );
-
         ReflectionProvider reflectionProvider = new CustomReflectionProvider(new FieldDictionary(sorter));
         // new Sun14ReflectionProvider( new FieldDictionary( sorter  ) );
         if (streamDriver != null) {

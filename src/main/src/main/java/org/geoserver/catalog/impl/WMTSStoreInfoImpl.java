@@ -9,6 +9,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.WMTSStoreInfo;
+import org.geoserver.config.util.patch.PatchProperty;
 import org.geotools.api.util.ProgressListener;
 import org.geotools.ows.wmts.WebMapTileServer;
 
@@ -22,7 +23,10 @@ public class WMTSStoreInfoImpl extends StoreInfoImpl implements WMTSStoreInfo {
     public static final int DEFAULT_READ_TIMEOUT = 60;
 
     String capabilitiesURL;
+
+    @PatchProperty("username")
     private String user;
+
     private String password;
     private int maxConnections;
     private int readTimeout;

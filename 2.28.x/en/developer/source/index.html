@@ -1,0 +1,3696 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://docs.geoserver.org/3.0/en/developer/source/">
+      
+      
+        <link rel="prev" href="../tools/">
+      
+      
+        <link rel="next" href="../quickstart/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../img/geoserver.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.3">
+    
+    
+      
+        <title>Source Code - GeoServer Developer Manual</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#source-code" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="GeoServer Developer Manual" class="md-header__button md-logo" aria-label="GeoServer Developer Manual" data-md-component="logo">
+      
+  <img src="../img/geoserver-logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            GeoServer Developer Manual
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Source Code
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/geoserver/geoserver" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geoserver/geoserver
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  GeoServer Developer Manual
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../introduction/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Introduction
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../tools/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Tools
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Source Code
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../quickstart/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Quickstart
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../maven-guide/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Maven Guide
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../eclipse-guide/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Eclipse Guide
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../qa-guide/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Automatic Quality Assurance checks
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../programming-guide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Programming Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../release/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Release
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../cite-test-guide/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  CITE Test Guide
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../translation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Translating GeoServer
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../policies/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Policies
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../installer/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Build Windows installer
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="GeoServer Developer Manual" class="md-nav__button md-logo" aria-label="GeoServer Developer Manual" data-md-component="logo">
+      
+  <img src="../img/geoserver-logo.png" alt="logo">
+
+    </a>
+    GeoServer Developer Manual
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/geoserver/geoserver" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geoserver/geoserver
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GeoServer Developer Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Source Code
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Source Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#git" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Git
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gitconfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Git client configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Git client configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#line-endings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Line endings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#file-paths" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File paths
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#committing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Committing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#repository-distribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Repository distribution
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#repository-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Repository structure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Repository structure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#primary-branches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Primary branches
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#release-tags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Release tags
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feature-branches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Feature branches
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#codebase-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Codebase structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#source_workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Development workflow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Development workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#updating-from-canonical" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Updating from canonical
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#making-local-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Making local changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pushing-changes-to-canonical" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pushing changes to canonical
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#working-with-feature-branches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Working with feature branches
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#merging-feature-branches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Merging feature branches
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#porting-changes-between-primary-branches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Porting changes between primary branches
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cleaning-up-feature-branches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cleaning up feature branches
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cleaning up feature branches">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#interactive-rebase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interactive rebase
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#merge-with-squash" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Merge with squash
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#more-useful-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        More useful reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../quickstart/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Quickstart
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quickstart/maven/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Maven Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quickstart/intellij/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IntelliJ QuickStart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quickstart/eclipse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Maven Eclipse Plugin Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quickstart/eclipse_m2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Eclipse M2 Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../maven-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Maven Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../eclipse-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Eclipse Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../qa-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Automatic Quality Assurance checks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../programming-guide/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Programming Guide
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Programming Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../programming-guide/config/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Config
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9_2" id="__nav_9_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Config
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../programming-guide/config/geoserver/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GeoServer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../programming-guide/config/catalog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Catalogue API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../programming-guide/config/resource/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Resource API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../programming-guide/ows-services/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ows Services
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9_3" id="__nav_9_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Ows Services
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../programming-guide/ows-services/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OWS Services Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../programming-guide/ows-services/implementing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementing a simple OWS service
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../programming-guide/rest-services/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rest Services
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9_4" id="__nav_9_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Rest Services
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../programming-guide/rest-services/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../programming-guide/rest-services/implementing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementing a RESTful Service
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../programming-guide/rest-services/implementing-map/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementing a RESTful Service with Maps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../programming-guide/rest-services/implementing-reflection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementing a RESTful Service with Reflection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../programming-guide/rest-services/implementing-mapper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementing a REST PathMapper
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../programming-guide/web-ui/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web Ui
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9_5" id="__nav_9_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Web Ui
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../programming-guide/web-ui/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../programming-guide/web-ui/implementing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementing a Wicket UI Extension
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../programming-guide/wicket-pages/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wicket Development In GeoServer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../programming-guide/extension-points/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extension Points
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../programming-guide/wps-services/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wps Services
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9_8" id="__nav_9_8_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Wps Services
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../programming-guide/wps-services/design-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WPS design guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../programming-guide/wps-services/implementing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementing a WPS Process
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../programming-guide/wps-services/implement-rendertrans/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementing a Rendering Transformation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../programming-guide/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../programming-guide/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../programming-guide/app-schema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    App-Schema Online Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../release/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Release
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release/schedule/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Schedule
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release/guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Testing Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release/guide/old/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Manual Release (Deprecated)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cite-test-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CITE Test Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../translation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Translating GeoServer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_13" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../policies/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Policies
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_13" id="__nav_13_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Policies
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../policies/community-process/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Community Process
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../policies/psc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Steering Committee
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../policies/gsip/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GeoServer Improvement Proposals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../policies/committing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Committing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../policies/pull_request/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pull Requests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../policies/review/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Review
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../policies/community-modules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Community Modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../policies/service_providers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Service Providers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../policies/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security Procedure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Build Windows installer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#git" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Git
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gitconfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Git client configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Git client configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#line-endings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Line endings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#file-paths" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File paths
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#committing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Committing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#repository-distribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Repository distribution
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#repository-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Repository structure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Repository structure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#primary-branches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Primary branches
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#release-tags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Release tags
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feature-branches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Feature branches
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#codebase-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Codebase structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#source_workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Development workflow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Development workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#updating-from-canonical" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Updating from canonical
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#making-local-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Making local changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pushing-changes-to-canonical" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pushing changes to canonical
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#working-with-feature-branches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Working with feature branches
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#merging-feature-branches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Merging feature branches
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#porting-changes-between-primary-branches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Porting changes between primary branches
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cleaning-up-feature-branches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cleaning up feature branches
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cleaning up feature branches">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#interactive-rebase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interactive rebase
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#merge-with-squash" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Merge with squash
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#more-useful-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        More useful reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/geoserver/geoserver/edit/main/doc/en/developer/docs/source.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="source-code">Source Code<a class="headerlink" href="#source-code" title="Permanent link">&para;</a></h1>
+<p>The GeoServer source code is located on GitHub at <a href="https://github.com/geoserver/geoserver">https://github.com/geoserver/geoserver</a>.</p>
+<p>To clone the repository:</p>
+<div class="highlight"><pre><span></span><code>% git clone git://github.com/geoserver/geoserver.git geoserver
+</code></pre></div>
+<p>To list available branches in the repository:</p>
+<div class="highlight"><pre><span></span><code>% git branch
+   2.15.x
+   2.16.x
+ * main
+</code></pre></div>
+<p>To switch to the 2.16.x branch above:</p>
+<div class="highlight"><pre><span></span><code>% git checkout 2.16.x
+</code></pre></div>
+<h2 id="git">Git<a class="headerlink" href="#git" title="Permanent link">&para;</a></h2>
+<p>Git is a distributed version control system with a steep learning curve. Luckily there is lots of great documentation around. Before continuing developers should take the time to educate themselves about git. The following are good references:</p>
+<ul>
+<li><a href="http://git-scm.com/book/">The Git Book</a></li>
+<li><a href="http://www.sbf5.com/~cduan/technical/git/">A nice introduction</a></li>
+<li><a href="https://help.github.com/en/articles/about-pull-requests">Git Pull Requests</a></li>
+</ul>
+<h2 id="gitconfig">Git client configuration<a class="headerlink" href="#gitconfig" title="Permanent link">&para;</a></h2>
+<p>To review global settings:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>$<span class="w"> </span>git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>--get-regexp<span class="w"> </span>core.*
+</code></pre></div>
+<p>On Linux and Windows machines:</p>
+<div class="highlight"><pre><span></span><code>core.autocrlf input
+core.safecrlf true
+</code></pre></div>
+<p>On macOS using decomposed unicode paths, and a default APFS case-insensitive file system:</p>
+<div class="highlight"><pre><span></span><code>core.autocrlf input
+core.safecrlf true
+core.ignorecase false
+core.precomposeunicode true
+</code></pre></div>
+<p>We recommend making these changes to <code>--global</code> (or <code>--system</code>) as they reflect the operating system and file system on your local machine.</p>
+<p>Some useful reading on this subject:</p>
+<ul>
+<li><a href="https://git-scm.com/docs/git-config">git config</a> (git)</li>
+</ul>
+<h3 id="line-endings">Line endings<a class="headerlink" href="#line-endings" title="Permanent link">&para;</a></h3>
+<p>When a repository is shared across different platforms it is necessary to have a strategy in place for dealing with file line endings. In general git is pretty good about dealing this without explicit configuration but to be safe developers should set the <code>core.autocrlf</code> setting to "input":</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$<span class="w"> </span>git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>core.autocrlf<span class="w"> </span>input
+</code></pre></div>
+<p>The value "input" respects the line ending form as present in the git repository.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is also a good idea, especially for Windows users, to set the <code>core.safecrlf</code> option to "true":</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>$<span class="w"> </span>git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>core.safecrlf<span class="w"> </span><span class="nb">true</span>
+</code></pre></div>
+<p>This will prevent commits that may potentially modify file line endings.</p>
+</div>
+<p>Some useful reading on this subject:</p>
+<ul>
+<li><a href="https://help.github.com/articles/dealing-with-line-endings">Configuring Git to handle line endings</a> (GitHub)</li>
+<li><a href="http://stackoverflow.com/questions/170961/whats-the-best-crlf-handling-strategy-with-git">What's the best CRLF (carriage return, line feed) handling strategy with Git?</a> (Stack Overflow)</li>
+<li><a href="https://adaptivepatchwork.com/2012/03/01/mind-the-end-of-your-line/">Mind the end of the End of Your Line</a> (Tim Clem)</li>
+</ul>
+<h3 id="file-paths">File paths<a class="headerlink" href="#file-paths" title="Permanent link">&para;</a></h3>
+<p>For those working on non case-sensitive, please keep in mind that our repository is case-sensitive:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$<span class="w"> </span>git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>core.ignorecase<span class="w"> </span><span class="nb">false</span>
+</code></pre></div>
+<p>Take extra care when adding files to prevent problems for others. To correct a file added with the wrong case:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$<span class="w"> </span>git<span class="w"> </span>mv<span class="w"> </span>--cached<span class="w"> </span>HttpHandler.java<span class="w"> </span>HTTPHandler.java
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>File paths can use two different representations of select unicode characters:</p>
+<table>
+<thead>
+<tr>
+<th>Representation</th>
+<th>Example</th>
+<th>Operating System Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Precomposed form</td>
+<td><code>Ü</code></td>
+<td>Linux, Windows</td>
+</tr>
+<tr>
+<td>Decomposed form</td>
+<td><code>U</code> + <code>¨</code></td>
+<td>macOS</td>
+</tr>
+</tbody>
+</table>
+<p>Files committed in decomposed form show up as untracked (even with no modification made).</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$<span class="w"> </span>git<span class="w"> </span>status
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Untracked files:
+   (use &quot;git add &lt;file&gt;...&quot; to include in what will be committed)
+
+   ...
+
+   &quot;Entit\303\251G\303\251n\303\251rique/&quot;
+</code></pre></div>
+<p>GeoServer requires macOS users to use the following setting:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span>git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>core.precomposeunicode<span class="w"> </span><span class="nb">true</span>
+</code></pre></div>
+<p>This setting converts paths to precomposed form when adding files to the repository.</p>
+<p>To fix a file added in decomposed form it must be removed:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>core.precomposeunicode<span class="w"> </span><span class="nb">false</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>mv<span class="w"> </span>EntitéGénérique<span class="w"> </span>/tmp/EntitéGénérique
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>git<span class="w"> </span>rm<span class="w"> </span>EntitéGénérique
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Remove EntitéGénérique with decomposed filename&quot;</span>
+</code></pre></div>
+<p>And then added:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>core.precomposeunicode<span class="w"> </span><span class="nb">true</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>mv<span class="w"> </span>/tmp/EntitéGénérique<span class="w"> </span>EntitéGénérique
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>git<span class="w"> </span>add<span class="w"> </span>EntitéGénérique
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Restore EntitéGénérique with precomposed filename&quot;</span>
+</code></pre></div>
+</div>
+<p>Some useful reading on this subject:</p>
+<ul>
+<li><a href="https://www.git-tower.com/help/mac/faq-and-tips/faq/unicode-filenames">Untracked filenames with unicode names</a></li>
+</ul>
+<h2 id="committing">Committing<a class="headerlink" href="#committing" title="Permanent link">&para;</a></h2>
+<p>In order to commit the following steps must be taken:</p>
+<ol>
+<li>Configure your git client for cross platform projects. See <a href="./#gitconfig">notes</a> below.</li>
+<li>Register for commit access as described <a href="../policies/committing/">here</a>.</li>
+<li>Fork the canonical GeoServer repository into your github account.</li>
+<li>Clone the forked repository to create a local repository</li>
+<li>Create a remote reference to the canonical repository using a non-read only URL (<code>git@github.com:geoserver/geoserver.git</code>).</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The next section describes how the git repositories are distributed for the project and how to manage local repository remote references.</p>
+</div>
+<h2 id="repository-distribution">Repository distribution<a class="headerlink" href="#repository-distribution" title="Permanent link">&para;</a></h2>
+<p>Git is a distributed versioning system which means there is strictly no notion of a single central repository, but many distributed ones. For GeoServer these are:</p>
+<ul>
+<li>The <strong>canonical</strong> repository located on GitHub that serves as the official authoritative copy of the source code for project</li>
+<li>Developers' <strong>forked</strong> repositories on GitHub. These repositories generally contain everything in the canonical repository, as well any feature or topic branches a developer is working on and wishes to back up or share.</li>
+<li>Developers' <strong>local</strong> repositories on their own systems. This is where development work is actually done.</li>
+</ul>
+<p>Even though there are numerous copies of the repository they can all interoperate because they share a common history. This is the magic of git!</p>
+<p>In order to interoperate with other repositories hosted on GitHub, a local repository must contain <em>remote references</em> to them. A local repository typically contains the following remote references:</p>
+<ul>
+<li>A remote called <strong>origin</strong> that points to the developers' forked GitHub repository.</li>
+<li>A remote called <strong>upstream</strong> that points to the canonical GitHub repository.</li>
+<li>Optionally, some remotes that point to other developers' forked repositories on GitHub.</li>
+</ul>
+<p>To set up a local repository in this manner:</p>
+<ol>
+<li>
+<p>Clone your fork of the canonical repository (where "bob" is replaced with your GitHub account name):</p>
+<div class="highlight"><pre><span></span><code>% git clone git@github.com:bob/geoserver.git geoserver
+% cd geoserver
+</code></pre></div>
+</li>
+<li>
+<p>Create the <code>upstream</code> remote pointing to the canonical repository:</p>
+<div class="highlight"><pre><span></span><code>% git remote add upstream git@github.com:geoserver/geoserver.git
+</code></pre></div>
+<p>Or if your account does not have push access to the canonical repository use the read-only url:</p>
+<div class="highlight"><pre><span></span><code>% git remote add upstream git://github.com/geoserver/geoserver.git
+</code></pre></div>
+</li>
+<li>
+<p>Optionally, create remotes pointing to other developer's forks. These remotes are typically read-only:</p>
+<div class="highlight"><pre><span></span><code>% git remote add aaime git://github.com/aaime/geoserver.git
+% git remote add jdeolive git://github.com/jdeolive/geoserver.git
+</code></pre></div>
+</li>
+</ol>
+<h2 id="repository-structure">Repository structure<a class="headerlink" href="#repository-structure" title="Permanent link">&para;</a></h2>
+<p>A git repository contains a number of branches. These branches fall into three categories:</p>
+<ol>
+<li><strong>Primary</strong> branches that correspond to major versions of the software</li>
+<li><strong>Release</strong> branches that are used to manage releases of the primary branches</li>
+<li><strong>Feature</strong> or topic branches that developers do development on</li>
+</ol>
+<h3 id="primary-branches">Primary branches<a class="headerlink" href="#primary-branches" title="Permanent link">&para;</a></h3>
+<p>Primary branches are present in all repositories and correspond to the main release streams of the project. These branches consist of:</p>
+<ul>
+<li>The <strong>main</strong> branch that is the current unstable development version of the project</li>
+<li>The current <strong>stable</strong> branch that is the current stable development version of the project</li>
+<li>The branches for previous stable versions</li>
+</ul>
+<p>For example at present these branches are:</p>
+<ul>
+<li><strong>main</strong> - The 2.17.x release stream, where unstable development such as major new features take place</li>
+<li><strong>2.16.x</strong> - The 2.16.x release stream, where stable development such as bug fixing and stable features take place</li>
+<li><strong>2.15.x</strong> - The 2.15.x release stream, which is at end-of-life and has no active development</li>
+</ul>
+<h3 id="release-tags">Release tags<a class="headerlink" href="#release-tags" title="Permanent link">&para;</a></h3>
+<p>Release tags are used to mark releases from the stable or maintenance branches. These can be used to create a release branch if an emergency patch needs to be made:</p>
+<ul>
+<li>2.15-M0</li>
+<li>2.15-RC</li>
+<li>2.15.0</li>
+<li>2.15.1</li>
+</ul>
+<p>Release tags are only used during a versioned release of the software. At any given time a release branch corresponds to the exact state of the last release from that branch. During release these branches are tagged.</p>
+<p>Release branches are also present in all repositories.</p>
+<h3 id="feature-branches">Feature branches<a class="headerlink" href="#feature-branches" title="Permanent link">&para;</a></h3>
+<p>Feature branches are what developers use for day-to-day development. This can include small-scale bug fixes or major new features. Feature branches serve as a staging area for work that allows a developer to freely commit to them without affecting the primary branches. For this reason feature branches generally only live in a developer's local repository, and possibly their remote forked repository. Feature branches are never pushed up into the canonical repository.</p>
+<p>When a developer feels a particular feature is complete enough the feature branch is merged into a primary branch, usually <code>main</code>. If the work is suitable for the current stable branch the changeset can be ported back to the stable branch as well. This is explained in greater detail in the <a href="./#source_workflow">Development workflow</a> section.</p>
+<h2 id="codebase-structure">Codebase structure<a class="headerlink" href="#codebase-structure" title="Permanent link">&para;</a></h2>
+<p>Each branch has the following structure:</p>
+<div class="highlight"><pre><span></span><code>build/
+doc/
+src/
+data/
+</code></pre></div>
+<ul>
+<li><code>build</code> - release and continuous integration scripts</li>
+<li><code>doc</code> - sources for the user and developer guides</li>
+<li><code>src</code> - java sources for GeoServer itself</li>
+<li><code>data</code> - a variety of GeoServer data directories / configurations</li>
+</ul>
+<h2 id="source_workflow">Development workflow<a class="headerlink" href="#source_workflow" title="Permanent link">&para;</a></h2>
+<p>This section contains examples of workflows a developer will typically use on a daily basis. To follow these examples it is crucial to understand the phases that a changeset goes though in the git workflow. The lifecycle of a single changeset is:</p>
+<ol>
+<li>The change is made in a developer's local repository.</li>
+<li>The change is <strong>staged</strong> for commit.</li>
+<li>The staged change is <strong>committed</strong>.</li>
+<li>The committed changed is <strong>pushed</strong> up to a remote repository</li>
+</ol>
+<p>There are many variations on this general workflow. For instance, it is common to make many local commits and then push them all up in batch to a remote repository. Also, for brevity multiple local commits may be <em>squashed</em> into a single final commit.</p>
+<h3 id="updating-from-canonical">Updating from canonical<a class="headerlink" href="#updating-from-canonical" title="Permanent link">&para;</a></h3>
+<p>Generally developers always work on a recent version of the official source code. The following example shows how to pull down the latest changes for the main development branch from the canonical repository:</p>
+<div class="highlight"><pre><span></span><code>% git checkout main
+% git pull upstream main
+</code></pre></div>
+<p>Similarly for the stable branch:</p>
+<div class="highlight"><pre><span></span><code>% git checkout 2.2.x
+% git pull upstream 2.2.x
+</code></pre></div>
+<h3 id="making-local-changes">Making local changes<a class="headerlink" href="#making-local-changes" title="Permanent link">&para;</a></h3>
+<p>As mentioned above, git has a two-phase workflow in which changes are first staged and then committed locally. For example, to change, stage and commit a single file:</p>
+<div class="highlight"><pre><span></span><code>% git checkout main
+# do some work on file x
+% git add x
+% git commit -m &quot;commit message&quot; x
+</code></pre></div>
+<p>Again there are many variations but generally the staging process involves using <code>git add</code> to stage files that have been added or modified, and <code>git rm</code> to stage files that have been deleted. <code>git mv</code> is used to move files and stage the changes in one step.</p>
+<p>At any time you can run <code>git status</code> to check what files have been changed in the working area and what has been staged for commit. It also shows the current branch, which is useful when switching frequently between branches.</p>
+<h3 id="pushing-changes-to-canonical">Pushing changes to canonical<a class="headerlink" href="#pushing-changes-to-canonical" title="Permanent link">&para;</a></h3>
+<p>Once a developer has made some local commits they generally will want to push them up to a remote repository. For the primary branches these commits should always be pushed up to the canonical repository. If they are for some reason not suitable to be pushed to the canonical repository then the work should not be done on a primary branch, but on a feature branch.</p>
+<p>For example, to push a local bug fix up to the canonical <code>main</code> branch:</p>
+<div class="highlight"><pre><span></span><code>% git checkout main
+# make a change
+% git add/rm/mv ...
+% git commit -m &quot;making change x&quot;
+% git pull upstream main
+% git push upstream main
+</code></pre></div>
+<p>The example shows the practice of first pulling from canonical before pushing to it. Developers should <strong>always</strong> do this. In fact, if there are commits in canonical that have not been pulled down, by default git will not allow you to push the change until you have pulled those commits.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A <strong>merge commit</strong> may occur when one branch is merged with another. A merge commit occurs when two branches are merged and the merge is not a "fast-forward" merge. This happens when the target branch has changed since the commits were created. Fast-forward merges are worth <a href="http://git-scm.com/book/en/Git-Branching-Basic-Branching-and-Merging">reading about</a>.</p>
+<p>An easy way to avoid merge commits is to do a "rebase" when pulling down changes:</p>
+<div class="highlight"><pre><span></span><code>% git pull --rebase upstream main
+</code></pre></div>
+<p>The rebase makes local changes appear in git history after the changes that are pulled down. This allows the following merge to be fast-forward. This is not a required practice since merge commits are fairly harmless, but they should be avoided where possible since they clutter up the commit history and make the git log harder to read.</p>
+</div>
+<h3 id="working-with-feature-branches">Working with feature branches<a class="headerlink" href="#working-with-feature-branches" title="Permanent link">&para;</a></h3>
+<p>As mentioned before, it is always a good idea to work on a feature branch rather than directly on a primary branch. A classic problem every developer who has used a version control system has run into is when they have worked on a feature locally and made a ton of changes, but then need to switch context to work on some other feature or bug fix. The developer tries to make the fix in the midst of the other changes and ends up committing a file that should not have been changed. Feature branches are the remedy for this problem.</p>
+<p>To create a new feature branch off the main branch:</p>
+<div class="highlight"><pre><span></span><code>% git checkout -b my_feature main
+% # make some changes
+% git add/rm, etc...
+% git commit -m &quot;first part of my_feature&quot;
+</code></pre></div>
+<p>Rinse, wash, repeat. The nice about thing about using a feature branch is that it is easy to switch context to work on something else. Just <code>git checkout</code> whatever other branch you need to work on, and then return to the feature branch when ready.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When a branch is checked out, all the files in the working area are modified to reflect the current state of the branch. When using development tools which cache the state of the project (such as Eclipse) it may be necessary to refresh their state to match the file system. If the branch is very different it may even be necessary to perform a rebuild so that build artifacts match the modified source code.</p>
+</div>
+<h3 id="merging-feature-branches">Merging feature branches<a class="headerlink" href="#merging-feature-branches" title="Permanent link">&para;</a></h3>
+<p>Once a developer is done with a feature branch it must be merged into one of the primary branches and pushed up to the canonical repository. The way to do this is with the <code>git merge</code> command:</p>
+<div class="highlight"><pre><span></span><code>% git checkout main
+% git merge my_feature
+</code></pre></div>
+<p>It's as easy as that. After the feature branch has been merged into the primary branch push it up as described before:</p>
+<div class="highlight"><pre><span></span><code>% git pull --rebase upstream main
+% git push upstream main
+</code></pre></div>
+<h3 id="porting-changes-between-primary-branches">Porting changes between primary branches<a class="headerlink" href="#porting-changes-between-primary-branches" title="Permanent link">&para;</a></h3>
+<p>Often a single change (such as a bug fix) has to be committed to multiple branches. Unfortunately primary branches <strong>cannot</strong> be merged with the <code>git merge</code> command. Instead we use <code>git cherry-pick</code>.</p>
+<p>As an example consider making a change to main:</p>
+<div class="highlight"><pre><span></span><code>% git checkout main
+% # make the change
+% git add/rm/etc... 
+% git commit -m &quot;fixing bug GEOS-XYZ&quot;
+% git pull --rebase upstream main
+% git push upstream main
+</code></pre></div>
+<p>We want to backport the bug fix to the stable branch as well. To do so we have to note the commit id of the change we just made on main. The <code>git log</code> command will provide this. Let's assume the commit id is "123". Backporting to the stable branch then becomes:</p>
+<div class="highlight"><pre><span></span><code>% git checkout 2.2.x
+% git cherry-pick 123
+% git pull --rebase upstream 2.2.x
+% git push upstream 2.2.x
+</code></pre></div>
+<h3 id="cleaning-up-feature-branches">Cleaning up feature branches<a class="headerlink" href="#cleaning-up-feature-branches" title="Permanent link">&para;</a></h3>
+<p>Consider the following situation. A developer has been working on a feature branch and has gone back and forth to and from it making commits here and there. The result is that the feature branch has accumulated a number of commits on it. But all the commits are related, and what we want is really just one commit.</p>
+<p>This is easy with git and you have two options:</p>
+<ol>
+<li>Do an <strong>interactive rebase</strong> on the feature branch</li>
+<li>Do a <strong>merge with squash</strong></li>
+</ol>
+<h4 id="interactive-rebase">Interactive rebase<a class="headerlink" href="#interactive-rebase" title="Permanent link">&para;</a></h4>
+<p>Rebasing allows us to rewrite the commits on a branch, deleting commits we don't want, or merging commits that should really be done. You can read more about interactive rebasing <a href="http://git-scm.com/book/en/Git-Tools-Rewriting-History#Changing-Multiple-Commit-Messages">here</a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Much care should be taken with rebasing. You should <strong>never</strong> rebase commits that are public (that is, commits that have been copied outside your local repository). Rebasing public commits changes branch history and results in the inability to merge with other repositories.</p>
+</div>
+<p>The following example shows an interactive rebase on a feature branch:</p>
+<div class="highlight"><pre><span></span><code>% git checkout my_feature
+% git log
+</code></pre></div>
+<p>The git log shows the current commit on the branch is commit "123". We make some changes and commit the result:</p>
+<div class="highlight"><pre><span></span><code>% git commit &quot;fixing bug x&quot; # results in commit 456
+</code></pre></div>
+<p>We realize we forgot to stage a change before committing, so we add the file and commit:</p>
+<div class="highlight"><pre><span></span><code>% git commit -m &quot;oops, forgot to commit that file&quot; # results in commit 678
+</code></pre></div>
+<p>Then we notice a small mistake, so we fix and commit again:</p>
+<div class="highlight"><pre><span></span><code>% git commit -m &quot;darn, made a typo&quot; # results in commit #910
+</code></pre></div>
+<p>At this point we have three commits when what we really want is one. So we rebase, specifying the revision immediately prior to the first commit:</p>
+<div class="highlight"><pre><span></span><code>% git rebase -i 123
+</code></pre></div>
+<p>This invokes an editor that allows indicating which commits should be combined. Git then <em>squashes</em> the commits into an equivalent single commit. After this we can merge the cleaned-up feature branch into main as usual:</p>
+<div class="highlight"><pre><span></span><code>% git checkout main
+% git merge my_feature
+</code></pre></div>
+<p>Again, be sure to read up on this feature before attempting to use it. And again, <strong>never rebase a public commit</strong>.</p>
+<h4 id="merge-with-squash">Merge with squash<a class="headerlink" href="#merge-with-squash" title="Permanent link">&para;</a></h4>
+<p>The <code>git merge</code> command takes an option <code>--squash</code> that performs the merge against the working area but does not commit the result to the target branch. This squashes all the commits from the feature branch into a single changeset that is staged and ready to be committed:</p>
+<div class="highlight"><pre><span></span><code>% git checkout main
+% git merge --squash my_feature
+% git commit -m &quot;implemented feature x&quot;
+</code></pre></div>
+<h2 id="more-useful-reading">More useful reading<a class="headerlink" href="#more-useful-reading" title="Permanent link">&para;</a></h2>
+<p>The content in this section is not intended to be a comprehensive introduction to git. There are many things not covered that are invaluable to day-to-day work with git. Some more useful info:</p>
+<ul>
+<li><a href="http://webdeveloperplus.com/general/10-useful-advanced-git-commands/">10 useful git commands</a></li>
+<li><a href="http://git-scm.com/book/en/Git-Tools-Stashing">Git stashing</a></li>
+<li><a href="http://docs.geotools.org/latest/developer/procedures/git.html">GeoTools git primer</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/geoserver/geoserver" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://geoserver.org" target="_blank" rel="noopener" title="geoserver.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M351.9 280H161c2.9 64.5 17.2 123.9 37.5 167.4 11.4 24.5 23.7 41.8 35.1 52.4 11.2 10.5 18.9 12.2 22.9 12.2s11.7-1.7 22.9-12.2c11.4-10.6 23.7-28 35.1-52.4 20.3-43.5 34.6-102.9 37.5-167.4zm-191-48h190.9c-2.8-64.5-17.1-123.9-37.4-167.4-11.4-24.4-23.7-41.8-35.1-52.4C268.1 1.7 260.4 0 256.4 0s-11.7 1.7-22.9 12.2c-11.4 10.6-23.7 28-35.1 52.4-20.3 43.5-34.6 102.9-37.5 167.4m-48 0c3.5-85.6 25.6-165.1 57.9-217.3C78.7 47.3 10.9 131.2 1.5 232zM1.5 280c9.4 100.8 77.2 184.7 169.3 217.3-32.3-52.2-54.4-131.7-57.9-217.3zm398.4 0c-3.5 85.6-25.6 165.1-57.9 217.3 92.1-32.7 159.9-116.5 169.3-217.3zm111.4-48C501.9 131.2 434.1 47.3 342 14.7c32.3 52.2 54.4 131.7 57.9 217.3z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "navigation.tracking", "navigation.indexes", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "3.0"}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

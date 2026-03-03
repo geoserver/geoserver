@@ -1,0 +1,108 @@
+#!/bin/sh
+#
+# /etc/init.d/tgtd
+#
+### BEGIN INIT INFO
+# Provides:          geoserver
+# Required-Start:    $remote_fs $network
+# Should-Start:
+# Required-Stop:     $remote_fs $network     
+# Should-Stop:
+# Default-Start:     3 5
+# Default-Stop:      
+# Short-Description: geoserver test deployment
+# Description:       Starts and stops geoserver
+### END INIT INFO
+
+#
+#
+
+
+# Source LSB init functions
+. /etc/rc.status
+
+rc_reset
+
+
+PORT=9080
+STOPPORT=9079
+SUFFIX=_test
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+NAME=geoserver${SUFFIX}
+SCRIPTNAME=/etc/init.d/$NAME
+LOCKFILE="/var/lock/subsys/${NAME}"
+RETVAL=0
+
+JAVA_HOME=/usr/lib64/jvm/jre
+GEOSERVER_DATA_DIR=/home/geoserver/data_dir${SUFFIX}
+GEOSERVER_USER=geoserver
+GEOSERVER_HOME=/home/geoserver/geoserver-2.0.1
+
+
+# Read configuration variable file if it is present
+[ -r /etc/default/$NAME ] && . /etc/default/$NAME
+
+
+
+case "$1" in
+  start)
+	ps -ef | grep -v grep |  grep "${GEOSERVER_DATA_DIR}"  > /dev/null
+        RETVAL=$?
+        if [ $RETVAL -eq 0 ]; then
+		echo "${NAME} is alread running "
+	else
+		echo  "Starting ${NAME} "
+		echo `date` >> $GEOSERVER_DATA_DIR/serverlog
+		cd "$GEOSERVER_HOME"
+		su "$GEOSERVER_USER" -c "$JAVA_HOME/bin/java -server -DGEOSERVER_DATA_DIR=$GEOSERVER_DATA_DIR -Djava.awt.headless=true -Djetty.port=$PORT -DSTOP.PORT=$STOPPORT -DSTOP.KEY=geoserver -jar start.jar >> $GEOSERVER_DATA_DIR/serverlog 2>&1 &"
+
+		RETVAL=$?
+		if [ $RETVAL -eq 0 ]; then 
+			touch "${LOCKFILE}"
+		else
+			echo "Failure starting  ${NAME}"
+		fi
+	fi
+        ;;
+  stop)
+        ps -ef | grep -v grep |  grep "${GEOSERVER_DATA_DIR}"  > /dev/null
+        RETVAL=$?
+        if [ $RETVAL -eq 0 ]; then
+		echo  "Stopping ${NAME} "
+	        echo `date` >> $GEOSERVER_DATA_DIR/serverlog
+		cd "$GEOSERVER_HOME"
+		su "$GEOSERVER_USER" -c "$JAVA_HOME/bin/java -DSTOP.PORT=$STOPPORT -DSTOP.KEY=geoserver -jar start.jar --stop >> $GEOSERVER_DATA_DIR/serverlog 2>&1"
+
+	        RETVAL=$?
+        	if [ $RETVAL -eq 0 ]; then
+                	rm "${LOCKFILE}"
+	        else
+        	        echo "Failure stopping  ${NAME}"
+	        fi
+	else
+		echo "${NAME} is not running"
+	fi
+        ;;
+
+
+  restart|reload)
+        $0 stop
+	sleep 5
+        $0 start
+        ;;
+  status)
+	ps -ef | grep -v grep |  grep "${GEOSERVER_DATA_DIR}"  > /dev/null
+        RETVAL=$?
+        if [ $RETVAL -eq 0 ]; then
+        	echo "$NAME is running."
+    	else
+        	echo "$NAME is not running."
+	fi
+
+        ;;
+  *)
+        echo $"Usage: $0 {start|stop|restart|status}"
+        exit 1
+esac
+rc_exit

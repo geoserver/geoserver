@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
+
+<HTML>
+<BODY LANG="en-US" DIR="LTR">
+<P>
+Contains interfaces and base classes for representing the LDAP schema domain
+model.  We model the following LDAP schema objects:
+</P>
+
+<ul>
+  <li>attributeTypes</li>
+  <li>dITContentRules</li>
+  <li>dItStructureRules</li>
+  <li>matchingRules</li>
+  <li>matchingRuleUses</li>
+  <li>nameForms</li>
+  <li>objectClasses</li>
+  <li>syntaxes</li>
+</ul>
+
+<p>
+An interface is defined for each type of schema object.  All these interfaces
+extend from a common root interface: SchemaObject.  Other interfaces have been
+added to associate some useful behavoir with these objects.  These interfaces
+are listed below:
+</p>
+
+<ul>
+  <li>Normalizer</li>
+  <li>Comparator [from SDK]</li>
+  <li>SyntaxChecker</li>
+</ul>
+
+<p>
+These interfaces are primitive constructs that help define what some schema
+objects like a syntax or a matchingRule is in terms of use.  Namely these
+constructs determine how schema objects are applied.  For example a syntax exists
+not only as an OID to be implemented internally by some directory server.  It
+exists to constrain the values of attributes which are associated with the
+syntax.  This function is defined by the SyntaxChecker interface.  All syntaxes
+have a value checker that can apply the syntax to the value to determine if the
+value is accepted by the syntax.  A SyntaxChecker is nothing but a lexical
+pattern matcher like a regular expression.
+</p>
+
+<p>
+Normalizers and Comparators play an important role in controlling matching and
+hence giving meaning to matchingRules.  They respectively define how values are
+to be reduced to a canonical form and how they are to be compared to match
+filter assertions to values while conducting a search.  This is a very important
+aspect of the directory and unfortunately it is the least understood.  These
+two interfaces give tangible meaning to what a matchingRule is about making a
+matchingRule definition more than just an OID tag or place holder but something
+that can be used.
+</p>
+
+<p>
+The extra interfaces above are not SchemaObjects although they play a critical
+role in defining how schema objects are applied.  SchemaObjects are those that
+you actually get back from a directory server and are part of the protocol.
+Within a server environment the relevant schema objects will have valid
+SyntaxCheckers, Normalizers and Comparators.  However outside of the this
+environment these properties MAY be undefined.   We hope to make it defined
+on the client side as well if desired.
+</p>
+
+
+<p>
+  Here's what the OID of each element means according to [<a href=
+  "http://www.ietf.org/internet-drafts/draft-ietf-ldapbis-models-11.txt">MODELS
+  </a>]:
+</p>
+
+<table>
+  <tr><th>Schema Description</th><th>Numericoid Description</th></tr>
+  <tr><td>ObjectClass</td>
+    <td>numericoid is object identifier assigned to this object class;</td>
+  </tr>
+  <tr><td>AttributeType</td>
+    <td>numericoid is object identifier assigned to this attribute type;</td>
+  </tr>
+  <tr><td>MatchingRule</td>
+    <td>numericoid is object identifier assigned to this matching rule;</td>
+  </tr>
+  <tr><td>MatchingRuleUse</td>
+    <td>numericoid is the object identifier of the matching rule associated
+      with this matching rule use description; matching rule uses are [0-1]:[1]
+      cardinality with their respective matchingRule.
+    </td>
+  </tr>
+  <tr><td>Syntax</td>
+    <td>numericoid is object identifier assigned to this LDAP syntax;</td>
+  </tr>
+  <tr><td>DitContentRule</td>
+    <td>numericoid is the object identifier of the structural object class
+      associated with this DIT content rule;
+    </td>
+  </tr>
+  <tr><td>DitStructureRule</td>
+    <td>this now something very special and needs further investigation</td>
+  </tr>
+  <tr><td>NameForm</td>
+    <td>numericoid is object identifier which identifies this name form;</td>
+  </tr>
+</table>
+
+</BODY>
+</HTML>

@@ -1,0 +1,3 @@
+../../../../../src/release/extensions/h2/h2-LICENSE.md
+../../../../../src/release/extensions/h2/h2-README.md
+../../../../../src/release/ext-h2.xml

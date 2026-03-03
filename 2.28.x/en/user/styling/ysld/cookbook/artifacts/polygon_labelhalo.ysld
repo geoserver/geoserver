@@ -1,0 +1,16 @@
+title: 'YSLD Cook Book: Label halo'
+feature-styles:
+- name: name
+  rules:
+  - symbolizers:
+    - polygon:
+        stroke-color: '#FFFFFF'
+        stroke-width: 2
+        fill-color: '#40FF40'
+    - text:
+        label: ${name}
+        halo:
+          fill-color: '#FFFFFF'
+          radius: 3
+        placement:
+          type: point

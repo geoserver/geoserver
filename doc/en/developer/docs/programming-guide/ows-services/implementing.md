@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Implementing a simple OWS service
 
 This section explains How to Create a Simple GeoServer OWS service for GeoServer using the following scenario. The service should supply a capabilities document which advertises a single operation called "sayHello". The result of a sayHello operation is the simple string "Hello World".

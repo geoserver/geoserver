@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Point symbolizer
 
 The point symbolizer is used to style point features or centroids of non-point features.

@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Community Modules
 
 This document describes the GeoServer community module process. It is a guide that describes how the GeoServer project takes in contributions from the community.

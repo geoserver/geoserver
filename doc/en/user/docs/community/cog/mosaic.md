@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # ImageMosaic example with Modis COG datasets
 
 ## Introduction

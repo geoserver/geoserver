@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Using the ImageMosaic plugin for raster time-series data
 
 ## Introduction

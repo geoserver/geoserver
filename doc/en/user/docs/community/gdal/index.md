@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # GDAL based WCS Output Format
 
 The gdal_translate based output format leverages the availability of the gdal_translate command to allow the generation of more output formats than GeoServer can natively produce. The basic idea is to dump to the file system a file that gdal_translate can translate, invoke it, zip and return the output of the translation.

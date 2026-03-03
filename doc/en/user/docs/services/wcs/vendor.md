@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # WCS Vendor Parameters
 
 WCS vendor parameters are non-standard request parameters that are defined by an implementation to provide enhanced capabilities.

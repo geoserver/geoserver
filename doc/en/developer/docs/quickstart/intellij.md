@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # IntelliJ QuickStart
 
 {% include "quickstart/checkout.txt" %}

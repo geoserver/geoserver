@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Symbolizers
 
 The basic unit of visualization is the symbolizer. There are five types of symbolizers: **Point**, **Line**, **Polygon**, **Raster**, and **Text**.

@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # GeoServer processes
 
 GeoServer WPS includes a few processes created especially for use with GeoServer. These are usually GeoServer-specific functions, such as bounds and reprojection. They use an internal connection to the GeoServer WFS/WCS, not part of the WPS specification, for reading and writing data.

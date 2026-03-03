@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Feature Table Example
 
 ~~~html

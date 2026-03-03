@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Advanced log configuration
 
 GeoServer uses the Log4J framework for logging, which is configured by selecting a logging profile (in the [global settings](globalsettings.md#config_globalsettings_log_location)).

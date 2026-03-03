@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Maven Eclipse Plugin Quickstart
 
 This guide is designed to get developers up and running as quick as possible. For a more comprehensive guide see the [Eclipse Guide](../eclipse-guide/index.md).

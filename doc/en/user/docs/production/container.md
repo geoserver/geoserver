@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Container Considerations
 
 Java web containers such as [Tomcat](http://tomcat.apache.org) or [Jetty](https://www.eclipse.org/jetty/) ship with configurations that allow for fast startup, but don't always deliver the best performance.

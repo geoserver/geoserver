@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Polygon symbolizer
 
 The polygon symbolizer styles polygon (2-dimensional) features. It contains facilities for the stroke (outline) of a feature as well as the fill (inside) of a feature.

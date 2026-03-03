@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Text symbolizer
 
 The text symbolizer styles labels of vector features. Labels can consist of text strings and/or graphics.

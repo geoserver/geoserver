@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # CSS Quickstart
 
 In the last section, we saw how the OGC defines style using XML documents (called SLD files).

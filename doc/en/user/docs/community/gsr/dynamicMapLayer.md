@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Dynamic Map Layer Examples
 
 ## Dynamic Map Layer

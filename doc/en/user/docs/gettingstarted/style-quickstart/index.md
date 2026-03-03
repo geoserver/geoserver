@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Publishing a style
 
 This tutorial walks through the steps of defining a style and associating it with a layer for use.

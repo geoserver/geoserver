@@ -67,15 +67,6 @@ plugins:
   - macros:
       render_by_default: true
       include_dir: docs
-  - with-pdf:
-      enabled_if_env: ENABLE_PDF_EXPORT
-      author: GeoServer Project
-      copyright: Copyright © 2024 Open Source Geospatial Foundation
-      cover_title: GeoServer User Manual
-      cover_subtitle: Version 3.0
-      output_path: pdf/geoserver-user-manual.pdf
-      custom_template_path: ../themes/geoserver
-      css: ../themes/geoserver/pdf-fixes.css
 
 hooks:
   - hooks/download_files.py

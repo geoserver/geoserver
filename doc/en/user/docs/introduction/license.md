@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # License
 
 For complete license information [NOTICE.txt](../../../../licenses/NOTICE.md).

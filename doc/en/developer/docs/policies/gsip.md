@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # GeoServer Improvement Proposals
 
 GeoServer Improvements Proposals (GSIP) are the formal mechanism used to manage major changes to GeoServer in a responsible fashion. Examples of changes which are managed by the GSIP process include:

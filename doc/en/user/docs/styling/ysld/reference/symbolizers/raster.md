@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Raster symbolizer
 
 The raster symbolizer styles raster (coverage) layers. A raster is an array of information with each cell in the array containing one or more values, stored as "bands".

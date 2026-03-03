@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Automatic Quality Assurance checks
 
 The GeoServer builds on Github Actions and <https://build.geoserver.org/> apply [PMD](https://pmd.github.io/) and [Error Prone](https://errorprone.info/) checks on the code base and will fail the build in case of rule violation.

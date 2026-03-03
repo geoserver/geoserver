@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Polygons
 
 Next we look at how MBStyle styling can be used to represent polygons.

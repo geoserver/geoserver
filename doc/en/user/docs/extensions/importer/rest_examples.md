@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Importer REST API examples
 
 ## Mass configuring a directory of shapefiles

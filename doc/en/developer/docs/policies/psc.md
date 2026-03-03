@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Project Steering Committee
 
 Welcome to the GeoServer organizational system. As with any open source project, we start with people.

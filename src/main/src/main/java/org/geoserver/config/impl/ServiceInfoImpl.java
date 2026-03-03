@@ -16,6 +16,7 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
+import org.geoserver.config.util.patch.PatchProperty;
 import org.geoserver.util.InternationalStringUtils;
 import org.geotools.api.util.InternationalString;
 import org.geotools.util.GrowableInternationalString;
@@ -39,8 +40,10 @@ public class ServiceInfoImpl implements ServiceInfo {
 
     protected String maintainer;
 
+    @PatchProperty("abstract")
     protected String abstrct;
 
+    @PatchProperty("abstract")
     protected GrowableInternationalString internationalAbstract;
 
     protected String accessConstraints;

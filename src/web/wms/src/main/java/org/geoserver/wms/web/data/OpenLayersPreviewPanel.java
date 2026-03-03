@@ -63,6 +63,8 @@ import org.geotools.util.logging.Logging;
 // TODO: WICKET 9 test this page
 public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeaderContributor {
 
+    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+
     @Serial
     private static final long serialVersionUID = -8742721113748106000L;
 
@@ -152,6 +154,11 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
             renderHeaderScript(response);
         } catch (IOException | TemplateException e) {
             throw new WicketRuntimeException(e);
+        }
+//if the panel-specific CSS file contains actual css then have the browser load the css 
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(getClass(), getClass().getSimpleName() + ".css")));
         }
     }
 

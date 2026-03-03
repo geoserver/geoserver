@@ -49,6 +49,8 @@ import org.geowebcache.grid.GridSetBroker;
 
 class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
 
+    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+
     @Serial
     private static final long serialVersionUID = 5098470663723800345L;
 
@@ -145,6 +147,11 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
         super.renderHead(response);
         response.render(CssHeaderItem.forReference(
                 new PackageResourceReference(getClass(), getClass().getSimpleName() + ".css")));
+//if the panel-specific CSS file contains actual css then have the browser load the css 
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(getClass(), getClass().getSimpleName() + ".css")));
+        }
     }
 
     public GridSubsetsEditor(final String id, final IModel<Set<XMLGridSubset>> model) {

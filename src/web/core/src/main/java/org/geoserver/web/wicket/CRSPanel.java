@@ -49,6 +49,18 @@ import org.geotools.util.logging.Logging;
  */
 @SuppressWarnings("serial")
 public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
+
+    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        //if the panel-specific CSS file contains actual css then have the browser load the css 
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
     private static Logger LOGGER = Logging.getLogger(CRSPanel.class);
 
     @Serial
@@ -374,6 +386,8 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
      * Panel for displaying the well known text for a CRS.
      */
     public static class WKTPanel extends Panel {
+
+        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
 
         public WKTPanel(String id, CoordinateReferenceSystem crs) {
             super(id);

@@ -217,6 +217,18 @@ public class AuthenticationPage extends AbstractSecurityPage {
 
     static class AuthenticationChainPanel extends FormComponentPanel<SecurityManagerConfig> {
 
+        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            //if the panel-specific CSS file contains actual css then have the browser load the css 
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
         public AuthenticationChainPanel(String id) {
             super(id, new Model<>());
 
@@ -225,6 +237,18 @@ public class AuthenticationPage extends AbstractSecurityPage {
     }
 
     class AuthFilterChainPanel extends FormComponentPanel<GeoServerSecurityFilterChain> {
+
+        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            //if the panel-specific CSS file contains actual css then have the browser load the css 
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
 
         DropDownChoice<HTTPMethod> httpMethodChoice;
         TextField<String> urlPathField, chainTestResultField;

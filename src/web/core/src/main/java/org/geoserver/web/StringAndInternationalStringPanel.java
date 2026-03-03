@@ -16,6 +16,18 @@ import org.apache.wicket.validation.IValidator;
 /** A reusable component for values that can be provided both as a TextField and as an i18n editable table. */
 public class StringAndInternationalStringPanel extends Panel {
 
+    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        //if the panel-specific CSS file contains actual css then have the browser load the css 
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
     /**
      * Create using id to generate labelKey, stringProperty, internationalProperty.
      *

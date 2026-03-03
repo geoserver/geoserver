@@ -24,6 +24,18 @@ import org.geoserver.web.GeoServerApplication;
 @SuppressWarnings("serial")
 public class RolePaletteFormComponent extends PaletteFormComponent<GeoServerRole> {
 
+    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        //if the panel-specific CSS file contains actual css then have the browser load the css 
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
     private final SubmitLink addRoleLink;
 
     public RolePaletteFormComponent(String id, IModel<List<GeoServerRole>> model) {

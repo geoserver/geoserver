@@ -1,30 +1,17 @@
-.status_bar {
-	width: 200px;
-	height: 10px;
-	float: left;
-	margin: 4px;
-	background-color: #e8e6e6;
-	border: 1px solid #555;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
-	border-radius: 5px;
+/*
+ ----------------------------------------------------------
+
+
+This is the panel-specific .css file for the panel defined in class StatusBar
+
+The panel's html will be contained in a <div class='gs-panel-StatusBar'>
+
+Your css selectors should look like this to avoid modifying styles outside the panel:
+
+.gs-panel-StatusBar ...specific css selector... {
+      ... styling ...
 }
 
-.statusBarProgress {
-	position: absolute;
-	z-index: 3;
-	background-color: green;
-	height: 10px;
-	width: 50px;
-	left: 5px;
-	border-left: inherit;
-}
 
-.statusBarExcess {
-	position: absolute;
-	z-index: 4;
-	background-color: red;
-	height: 10px;
-	width: 50px;
-	left: 50px;
-}
+ ----------------------------------------------------------
+*/

@@ -337,6 +337,18 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
     //
     class NoCRSPanel extends Panel {
 
+        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            //if the panel-specific CSS file contains actual css then have the browser load the css 
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
         public NoCRSPanel(String id, final IModel<ImportTask> model) {
             super(id, model);
 
@@ -380,6 +392,18 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
     }
 
     static class LayerLinkPanel extends Panel {
+
+        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            //if the panel-specific CSS file contains actual css then have the browser load the css 
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
         public LayerLinkPanel(String id, final IModel<ImportTask> model) {
             super(id);
 
@@ -413,6 +437,7 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
     }
 
     class LayerPreviewPanel extends Panel {
+        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
         public LayerPreviewPanel(String id, IModel<ImportTask> model) {
             super(id);
 
@@ -442,6 +467,11 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
                     + "');\n"
                     + "    window.open(select.options[select.selectedIndex].value);\n"
                     + "});"));
+//if the panel-specific CSS file contains actual css then have the browser load the css 
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(getClass(), getClass().getSimpleName() + ".css")));
+            }
         }
 
         static class PreviewLink implements Serializable {
@@ -468,6 +498,18 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
     }
 
     static class AdvancedOptionPanel extends Panel {
+
+        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            //if the panel-specific CSS file contains actual css then have the browser load the css 
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
         public AdvancedOptionPanel(String id, IModel<ImportTask> model) {
             super(id);
 
@@ -481,6 +523,18 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
     }
 
     static class ErrorPanel extends Panel {
+
+        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            //if the panel-specific CSS file contains actual css then have the browser load the css 
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
         GSModalWindow popupWindow;
 
         public ErrorPanel(String id, IModel<ImportTask> model) {
@@ -499,6 +553,18 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
     }
 
     static class ExceptionPanel extends Panel {
+
+        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            //if the panel-specific CSS file contains actual css then have the browser load the css 
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
 
         public ExceptionPanel(String id, final Exception ex) {
             super(id);

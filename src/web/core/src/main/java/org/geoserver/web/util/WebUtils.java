@@ -14,14 +14,17 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import org.apache.wicket.Component;
 import org.apache.wicket.Localizer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
@@ -37,6 +40,61 @@ import org.geotools.util.logging.Logging;
 public class WebUtils {
 
     static final Logger LOGGER = Logging.getLogger(WebUtils.class);
+
+    /**
+     * This is a regex to find simple comments like /* ... *\/ (including multiline). In CSS, this is the only official
+     * comment style
+     */
+    static final Pattern patternSimpleComment = Pattern.compile("/\\*[^*]*\\*+(?:[^/*][^*]*\\*+)*/", Pattern.DOTALL);
+
+    static final Pattern patternWhiteSpace = Pattern.compile("\\s+", Pattern.DOTALL);
+
+    /**
+     * This looks for the "sidecar" .css file for a Wicket Panel class.
+     *
+     * <p>ie. <br>
+     * LayerAccessDataRulePanel.java <br>
+     * LayerAccessDataRulePanel.html <br>
+     * LayerAccessDataRulePanel.css <--- this one <br>
+     *
+     * <p>1. if file doesn't exist? --> true <br>
+     * 2. if file is just comments --> true <br>
+     * 3. otherwise false <br>
+     *
+     * <p>in almost all cases, if this returns false, do not include the .css file in the header since its "empty".
+     *
+     * @param clazz
+     * @return true if this is an "empty" css file
+     */
+    public static boolean IsWicketCssFileEmpty(Class<?> clazz) {
+        try {
+            PackageResourceReference packageResourceReference =
+                    new PackageResourceReference(clazz, clazz.getSimpleName() + ".css");
+            try (var stream =
+                    packageResourceReference.getResource().getResourceStream().getInputStream()) {
+                var text = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+                text = patternSimpleComment.matcher(text).replaceAll("");
+                text = patternWhiteSpace.matcher(text).replaceAll("");
+                return text.isEmpty();
+            }
+        } catch (Exception e) {
+            return true; // error -> probably doesn't exist
+        }
+    }
+
+    /**
+     * removes simple comments (/* ... *\/) and white space from text.
+     *
+     * <p>If the string is just white space and comments, then this will return "".
+     *
+     * @param text text (typically with comments)
+     * @return text without comments and white space removed.
+     */
+    protected String removeComments(String text) {
+        text = patternSimpleComment.matcher(text).replaceAll("");
+        text = patternWhiteSpace.matcher(text).replaceAll("");
+        return text;
+    }
 
     /**
      * Utility method for localizing strings using Wicket i18n subsystem. Useful if your model needs to be localized and

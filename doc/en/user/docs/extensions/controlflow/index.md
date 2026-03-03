@@ -166,9 +166,7 @@ Note also that tile request are sensitive to the other rules (user based, ip bas
 Assuming the server we want to protect has 4 cores a sample configuration could be:
 
 ~~~properties
-{% 
-  include "extensions/controlflow/controlflow.properties"
-%}
+{% include "extensions/controlflow/controlflow.properties" %}
 ~~~
 
 ## Debugging control flow

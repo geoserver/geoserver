@@ -238,9 +238,7 @@ The following properties must hold true in order to promote a community module:
             Follow the [h2-LICENSE.md](../../../../src/release/extensions/h2/h2-LICENSE.md) example:
 
             ~~~markdown
-            {% 
-              include "../../../../src/release/extensions/h2/h2-LICENSE.md"
-            %}
+            {% include "../../../../src/release/extensions/h2/h2-LICENSE.md" %}
             ~~~
 
         2.  A readme called **`<module>-README.md`** which contains instructions on how to install the extension.
@@ -248,9 +246,7 @@ The following properties must hold true in order to promote a community module:
             Follow the [h2-README.md](../../../../src/release/extensions/h2/h2-README.md) example:
 
             ~~~markdown
-            {% 
-              include "../../../../src/release/extensions/h2/h2-README.md"
-            %}
+            {% include "../../../../src/release/extensions/h2/h2-README.md" %}
             ~~~
 
             !!! warning
@@ -266,9 +262,7 @@ The following properties must hold true in order to promote a community module:
         Follow the example of [ext-h2-xml](../../../../src/release/ext-h2.xml):
 
         ~~~xml
-        {% 
-          include "../../../../src/release/ext-h2.xml"
-        %}
+        {% include "../../../../src/release/ext-h2.xml" %}
         ~~~
 
         - Add additional `include` elements in the root folder (outputDirectory empty) for the jar dependencies of the module

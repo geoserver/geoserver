@@ -240,9 +240,7 @@ As noted above, YSLD has a one-to-one correspondence with SLD, it merely uses a 
 Here is an example [SLD file](../files/airports0.sld) for reference:
 
 ~~~xml
-{% 
-  include "../files/airports0.sld"
-%}
+{% include "../files/airports0.sld" %}
 ~~~
 
 ### YSLD Style
@@ -250,9 +248,7 @@ Here is an example [SLD file](../files/airports0.sld) for reference:
 Here is the same example as [YSLD](../files/airports0.ysld):
 
 ~~~yaml
-{% 
-  include "../files/airports0.ysld"
-%}
+{% include "../files/airports0.ysld" %}
 ~~~
 
 We use a point symbolizer to indicate we want this content drawn as a **Point** (line 16 in the SLD, line 5 in the YSLD). The point symbolizer declares an external graphic, which contains the URL ``airports.svg`` indicating the image that should be drawn (line 20 in the SLD, line 9 in the YSLD).

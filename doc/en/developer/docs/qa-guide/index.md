@@ -25,20 +25,13 @@ The plugin version is managed in the pluginManagement section.
 The actual plugin configuration and execution is defined as:
 
 ~~~xml
-{% 
-  include "../../../../src/pom.xml"
-   start="<!-- doc-include-pmd-plugin-start"
-%}
+{% include "../../../../src/pom.xml" start="<!-- doc-include-pmd-plugin-start" %}
 ~~~
 
 Rules are configured in our build [build/qa/pmd-ruleset.xml](https://github.com/geoserver/geoserver/blob/main/build/qa/pmd-ruleset.xml):
 
 ~~~xml
-{% 
-  include "../../../../build/qa/pmd-ruleset.xml"
-   start="</description>"
-   end="</ruleset>"
-%}
+{% include "../../../../build/qa/pmd-ruleset.xml" start="</description>" end="</ruleset>" %}
 ~~~
 
 In order to activate the ***PMD*** checks, use the `-Ppmd` profile:
@@ -105,10 +98,7 @@ The [Error Prone](https://errorprone.info/) checker runs a compiler plugin.
 In order to activate the Error Prone checks, use the "-Perrorprone":
 
 ~~~xml
-{% 
-  include "../../../../src/pom.xml"
-   end="</profile>"
-%}
+{% include "../../../../src/pom.xml" end="</profile>" %}
 ~~~
 
 Any failure to comply with the "Error Prone" rules will show up as a compile error in the build output, e.g. (example taken from GeoTools):
@@ -135,10 +125,7 @@ The plugin version is managed in the pluginManagement section.
 The actual plugin configuration and execution is defined as:
 
 ~~~xml
-{% 
-  include "../../../../src/pom.xml"
-   start="<!-- doc-include-spotbugs-plugin-start"
-%}
+{% include "../../../../src/pom.xml" start="<!-- doc-include-spotbugs-plugin-start" %}
 ~~~
 
 Any failure to comply with the rules will show up as a compile error, e.g.:
@@ -160,9 +147,7 @@ In case an invalid report is given, an annotation on the class/method/variable c
 or if it's a general one that should be ignored, the [build/qa/spotbugs-exclude.xml](https://github.com/geoserver/geoserver/blob/main/build/qa/spotbugs-exclude.xml) file can be modified.
 
 ~~~xml
-{% 
-  include "../../../../build/qa/spotbugs-exclude.xml"
-%}
+{% include "../../../../build/qa/spotbugs-exclude.xml" %}
 ~~~
 
 ## Spotless
@@ -174,10 +159,7 @@ The plugin version is managed in the pluginManagement section.
 The actual plugin configuration and execution is defined as:
 
 ~~~xml
-{% 
-  include "../../../../src/pom.xml"
-   start="<!-- doc-include-spotless-plugin-start"
-%}
+{% include "../../../../src/pom.xml" start="<!-- doc-include-spotless-plugin-start" %}
 ~~~
 
 This has been setup for incremental checking, with hidden **`.spotless-index`** files used determine when files were last checked.
@@ -219,10 +201,7 @@ The plugin version is managed in the pluginManagement section.
 The actual plugin configuration and execution is defined as:
 
 ~~~xml
-{% 
-  include "../../../../src/pom.xml"
-   start="<!-- doc-include-sortpom-plugin-start"
-%}
+{% include "../../../../src/pom.xml" start="<!-- doc-include-sortpom-plugin-start" %}
 ~~~
 
 The plugin is attached to verification phase to sort **`pom.xml`** files.
@@ -258,18 +237,13 @@ The plugin version is managed in the pluginManagement section.
 The actual plugin configuration and execution is defined as:
 
 ~~~xml
-{% 
-  include "../../../../src/pom.xml"
-   start="<!-- doc-include-checkstyle-plugin-start"
-%}
+{% include "../../../../src/pom.xml" start="<!-- doc-include-checkstyle-plugin-start" %}
 ~~~
 
 The checkstyle ruleset checks the following:
 
 ~~~xml
-{% 
-  include "../../../../build/qa/checkstyle.xml"
-%}
+{% include "../../../../build/qa/checkstyle.xml" %}
 ~~~
 
 To run the plugin directly:

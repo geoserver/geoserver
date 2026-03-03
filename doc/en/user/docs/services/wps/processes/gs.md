@@ -36,9 +36,7 @@ Counts the total number of states, sum all the number of persons, computes the a
 Request:
 
 ~~~xml
-{% 
-  include "../../../../../../../data/release/demo/WPS_aggregate_1.0.xml"
-%}
+{% include "../../../../../../../data/release/demo/WPS_aggregate_1.0.xml" %}
 ~~~
 
 The result:
@@ -93,9 +91,7 @@ This example count the number of states and the population average grouped by re
 Request:
 
 ~~~xml
-{% 
-  include "../../../../../../../data/release/demo/WPS_aggregate_groupby_1.0.xml"
-%}
+{% include "../../../../../../../data/release/demo/WPS_aggregate_groupby_1.0.xml" %}
 ~~~
 
 The result:

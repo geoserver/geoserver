@@ -111,16 +111,36 @@ The standalone distributions of GeoServer include the Jetty application server. 
 
 1.  Uncomment the following `<filter>` in **`webapps/geoserver/WEB-INF/web.xml`**:
 
-    ~~~
-    <!-- Include path goes outside docs directory: ../../../../src/web/app/src/main/webapp/WEB-INF/web.xml -->
-<!-- TODO: Copy file to docs directory or use alternative approach -->
+    ~~~xml
+    <filter>
+       <filter-name>cross-origin</filter-name>
+       <filter-class>org.eclipse.jetty.servlets.CrossOriginFilter</filter-class>
+       <init-param>
+         <param-name>chainPreflight</param-name>
+         <param-value>false</param-value>
+       </init-param>
+       <init-param>
+         <param-name>allowedOrigins</param-name>
+         <param-value>*</param-value>
+       </init-param>
+       <init-param>
+         <param-name>allowedMethods</param-name>
+         <param-value>GET,POST,PUT,DELETE,HEAD,OPTIONS</param-value>
+       </init-param>
+       <init-param>
+         <param-name>allowedHeaders</param-name>
+         <param-value>*</param-value>
+       </init-param>
+     </filter>
     ~~~
 
 2.  Uncomment the following `<filter-mapping>`:
 
-    ~~~
-    <!-- Include path goes outside docs directory: ../../../../src/web/app/src/main/webapp/WEB-INF/web.xml -->
-<!-- TODO: Copy file to docs directory or use alternative approach -->
+    ~~~xml
+    <filter-mapping>
+        <filter-name>cross-origin</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
     ~~~
 
 3.  Restart

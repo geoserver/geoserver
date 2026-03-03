@@ -7,9 +7,13 @@ package org.geoserver.config.util;
 
 import com.thoughtworks.xstream.io.HierarchicalStreamDriver;
 import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
+import com.thoughtworks.xstream.io.xml.XppDriver;
 import java.util.ArrayList;
 import java.util.List;
 import org.codehaus.jettison.mapped.Configuration;
+import org.geoserver.config.util.patch.NullAwareJettisonMappedXmlDriver;
+import org.geoserver.config.util.patch.PatchContext;
+import org.geoserver.config.util.patch.PatchTrackingDriver;
 import org.geoserver.platform.GeoServerExtensions;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -51,6 +55,9 @@ public class XStreamPersisterFactory implements ApplicationContextAware {
 
     /** Creates an instance configured to persist XML. */
     public XStreamPersister createXMLPersister() {
+        if (PatchContext.isActive()) {
+            return buildPersister(new PatchTrackingDriver(new XppDriver()));
+        }
         return buildPersister(null);
     }
 
@@ -78,7 +85,14 @@ public class XStreamPersisterFactory implements ApplicationContextAware {
         // needed for Jettison 1.4.1
         Configuration configuration = new Configuration();
         configuration.setRootElementArrayWrapper(false);
-        JettisonMappedXmlDriver driver = new JettisonMappedXmlDriver(configuration, alwaysSerializeCollectionsAsArray);
+        configuration.setReadNullAsString(true);
+        HierarchicalStreamDriver driver;
+        if (PatchContext.isActive()) {
+            driver = new PatchTrackingDriver(
+                    new NullAwareJettisonMappedXmlDriver(configuration, alwaysSerializeCollectionsAsArray));
+        } else {
+            driver = new JettisonMappedXmlDriver(configuration, alwaysSerializeCollectionsAsArray);
+        }
         return buildPersister(driver);
     }
 

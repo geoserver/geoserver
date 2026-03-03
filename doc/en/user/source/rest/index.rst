@@ -9,6 +9,8 @@ REST is an acronym for "`REpresentational State Transfer <http://en.wikipedia.or
 
 Operations on resources are implemented with the standard primitives of HTTP:  GET to read; and PUT, POST, and DELETE to write changes. Each resource is represented as a URL, such as ``http://GEOSERVER_HOME/rest/workspaces/topp``.
 
+.. note:: The GeoServer REST API interprets PUT as a partial update, instead of a full replacement. This means that when you send a PUT request to update a resource, you only need to include the fields that you want to change, and the existing values for the other fields will be preserved.
+          In order to un-set a field, you'll have to explicitly mark it as null, using the ``xsi:nil="true"`` attribute in the XML representation, and an explicit ``null`` value in the JSON representation.
 
 API
 ---

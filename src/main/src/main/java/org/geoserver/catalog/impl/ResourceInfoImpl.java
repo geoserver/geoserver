@@ -20,6 +20,7 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
+import org.geoserver.config.util.patch.PatchProperty;
 import org.geoserver.util.InternationalStringUtils;
 import org.geotools.api.feature.type.Name;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
@@ -50,6 +51,7 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
 
     protected String description;
 
+    @PatchProperty("abstract")
     protected String _abstract;
 
     protected List<KeywordInfo> keywords = new ArrayList<>();

@@ -460,6 +460,21 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         assertNotNull(style.getDateModified());
     }
 
+    @Test
+    public void testNullifyVersion() throws Exception {
+        StyleInfo style = catalog.getStyleByName("Ponds");
+        assertNotNull(style.getFormatVersion());
+
+        String xml = "<style><name>Ponds</name><formatVersion xsi:nil=\"true\"/></style>";
+
+        MockHttpServletResponse response =
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/styles/Ponds", xml.getBytes(), "text/xml");
+        assertEquals(200, response.getStatus());
+
+        style = catalog.getStyleByName("Ponds");
+        assertNull(style.getFormatVersion());
+    }
+
     /** Test for getting style with metadataMap value via Rest GET, XML format. */
     @Test
     public void testGetWithMetadataAsXML() throws Exception {

@@ -7,6 +7,7 @@ package org.geoserver.opensearch.eo;
 import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.config.impl.ServiceInfoImpl;
+import org.geoserver.config.util.patch.PatchProperty;
 import org.geoserver.opensearch.eo.security.EOCollectionAccessLimitInfo;
 import org.geoserver.opensearch.eo.security.EOProductAccessLimitInfo;
 
@@ -16,6 +17,7 @@ public class OSEOInfoImpl extends ServiceInfoImpl implements OSEOInfo {
 
     String openSearchAccessStoreId;
 
+    @PatchProperty("maximumRecordsPerPage")
     int maximumRecords = DEFAULT_MAXIMUM_RECORDS;
 
     int recordsPerPage = DEFAULT_RECORDS_PER_PAGE;

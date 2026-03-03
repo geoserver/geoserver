@@ -62,6 +62,8 @@ public class WMTSStoreTest extends CatalogRESTTestSupport {
         CatalogBuilder cb = new CatalogBuilder(catalog);
         cb.setWorkspace(catalog.getWorkspaceByName("sf"));
         WMTSStoreInfo wmts = cb.buildWMTSStore("demo");
+        wmts.setUsername("username");
+        wmts.setPassword("password");
         wmts.setCapabilitiesURL(capabilities);
         catalog.add(wmts);
         cb.setStore(wmts);
@@ -321,6 +323,23 @@ public class WMTSStoreTest extends CatalogRESTTestSupport {
         assertEquals(readTimeout, wsi.getReadTimeout());
         assertEquals(connectTimeout, wsi.getConnectTimeout());
         assertEquals(useConnectionPooling, wsi.isUseConnectionPooling());
+    }
+
+    @Test
+    public void testPutUnsetUserPasswordXML() throws Exception {
+        String xml = "<wmtsStore>\n" + "  <name>demo</name>\n"
+                + "  <user xsi:nil=\"true\"/>\n"
+                + "  <password xsi:nil=\"true\"/>\n"
+                + "</wmtsStore>";
+
+        MockHttpServletResponse response =
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/sf/wmtsstores/demo", xml, "text/xml");
+        assertEquals(200, response.getStatus());
+
+        WMTSStoreInfo wsi = catalog.getStoreByName("sf", "demo", WMTSStoreInfo.class);
+
+        assertNull(wsi.getUsername());
+        assertNull(wsi.getPassword());
     }
 
     @Test

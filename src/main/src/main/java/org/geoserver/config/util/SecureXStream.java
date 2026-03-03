@@ -73,6 +73,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geoserver.config.util.patch.PatchContext;
+import org.geoserver.config.util.patch.PatchTrackingMapper;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.api.feature.type.Name;
 import org.geotools.api.filter.Filter;
@@ -188,7 +190,11 @@ public class SecureXStream extends XStream {
 
     @Override
     protected MapperWrapper wrapMapper(MapperWrapper next) {
-        return new DetailedSecurityExceptionWrapper(next);
+        MapperWrapper wrapper = new DetailedSecurityExceptionWrapper(next);
+        if (PatchContext.isActive()) {
+            wrapper = new PatchTrackingMapper(wrapper);
+        }
+        return wrapper;
     }
 
     /**

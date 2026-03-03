@@ -7,11 +7,14 @@ package org.geoserver.opensearch.eo.security;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import org.geoserver.config.util.patch.PatchProperty;
 
 /** Base implementation for EO access limit configuration, with elements shared amongst Collections and Products. */
 public abstract class EOAccessLimitsInfoImpl implements EOAccessLimitInfo {
 
+    @PatchProperty("CQLFilter")
     protected String cqlFilter;
+
     protected List<String> roles = new ArrayList<>();
 
     protected EOAccessLimitsInfoImpl() {}

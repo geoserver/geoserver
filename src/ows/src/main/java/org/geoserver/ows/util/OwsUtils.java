@@ -276,6 +276,17 @@ public class OwsUtils {
      * @param clazz The class of source and target.
      */
     public static <T> void copy(T source, T target, Class<? extends T> clazz) {
+        copy(source, target, clazz, PropertyCopyPolicy.DEFAULT_POLICY);
+    }
+
+    /**
+     * Copies properties from one object to another.
+     *
+     * @param source The source object.
+     * @param target The target object.
+     * @param clazz The class of source and target.
+     */
+    public static <T> void copy(T source, T target, Class<? extends T> clazz, PropertyCopyPolicy copyPolicy) {
         ClassProperties properties = getClassProperties(clazz);
         for (String p : properties.properties()) {
             Method getter = properties.getter(p, null);
@@ -293,11 +304,14 @@ public class OwsUtils {
             }
 
             try {
-                Object newValue = getter.invoke(source, null);
-                if (newValue == null) {
+                Object newValue = getter.invoke(source);
+                // check with the copy policy if we should copy this value over or not, and then allow the policy to map
+                // the value before copying it if needed (e.g. to handle explicit nulls in patch operations)
+                if (!copyPolicy.shouldCopy(p, source, target, newValue)) {
                     continue;
-                    // TODO: make this a flag whether to overwrite with null values
                 }
+                newValue = copyPolicy.mapValue(p, source, target, newValue);
+
                 if (setter == null) {
                     if (Collection.class.isAssignableFrom(type)) {
                         updateCollectionProperty(target, (Collection) newValue, getter);

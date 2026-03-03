@@ -13,7 +13,9 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.JAIInfo;
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.config.util.patch.PatchContext;
 import org.geoserver.ows.util.OwsUtils;
+import org.geoserver.ows.util.PropertyCopyPolicy;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geoserver.rest.wrapper.RestWrapper;
@@ -59,7 +61,8 @@ public class SettingsController extends AbstractGeoServerController {
             })
     public void settingsPut(@RequestBody GeoServerInfo geoServerInfo) {
         GeoServerInfo original = geoServer.getGlobal();
-        OwsUtils.copy(geoServerInfo, original, GeoServerInfo.class);
+        PropertyCopyPolicy copyPolicy = PatchContext.getCopyPolicy();
+        OwsUtils.copy(geoServerInfo, original, GeoServerInfo.class, copyPolicy);
         geoServer.save(original);
     }
 

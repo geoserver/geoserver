@@ -215,6 +215,10 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - Run same validation steps as 2.28.x branch (HTML comparison, link validation, build tests)
     - Fix any issues specific to 3.0 branch
     - **FIX USER MANUAL INDEX**: Update doc/en/user/docs/index.md to use grid cards format (like developer/docguide manuals) instead of definition list format. The conversion tool incorrectly converted RST definition lists to Markdown definition lists instead of grid cards.
+    - **FIX MISSING VERSION NUMBERS**: Add version/release macros to index files that were dropped during conversion:
+      - doc/en/user/docs/index.md: Add `{{ version }}` after "GeoServer" in intro paragraph
+      - doc/en/developer/docs/index.md: Add `{{ version }}` after "GeoServer" in intro paragraph
+      - doc/en/docguide/docs/index.md: Add `{{ release }}` after "GeoServer" in intro paragraph
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7_
 
   - [ ] 5.5.1 Fix image paths and wildcard references for 3.0 branch

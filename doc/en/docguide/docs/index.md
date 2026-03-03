@@ -1,6 +1,6 @@
 # Home
 
-This guide covers creating and maintaining the User Manual and Developer Manual. If you are interested in writing documentation for GeoServer, this guide is for you.
+This guide covers creating and maintaining the GeoServer {{ release }} User Manual and Developer Manual. If you are interested in writing documentation for GeoServer, this guide is for you.
 
 <div class="grid cards" markdown>
 

@@ -21,20 +21,18 @@ import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.AbstractFormValidator;
-import org.apache.wicket.markup.html.image.Image;
+import org.apache.wicket.markup.html.image.ContextImage;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.string.Strings;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.ProductClass;
-import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.data.store.StoreListChoiceRenderer;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
@@ -226,8 +224,7 @@ public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
             }
         };
         f.add(link);
-        Image image =
-                new Image("image", new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/delete.png"));
+        ContextImage image = new ContextImage("image", "img/icons/silk/delete.png");
         link.add(image);
         return f;
     }

@@ -4,7 +4,7 @@
  */
 package org.geoserver.gwc.web;
 
-import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.geowebcache.layer.TileLayer;
 
 /**
@@ -24,5 +24,5 @@ public interface GWCTileLayerIconCustomizer {
      * Returns the appropriate icon for the specified layer type. Returns {@link GWCIconFactory#UNKNOWN_ICON} if unknown
      * so that another customizer implementation could try finding a proper one.
      */
-    PackageResourceReference getLayerIcon(TileLayer layer);
+    ResourceReference getLayerIcon(TileLayer layer);
 }

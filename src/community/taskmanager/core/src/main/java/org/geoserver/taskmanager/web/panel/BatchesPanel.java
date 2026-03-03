@@ -22,12 +22,11 @@ import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.Configuration;
 import org.geoserver.taskmanager.util.FrequencyUtil;
@@ -302,12 +301,13 @@ public class BatchesPanel extends Panel {
                                     }
 
                                 } else if (property == BatchesModel.ENABLED) {
-                                    PackageResourceReference icon =
+                                    CatalogIconFactory icons = CatalogIconFactory.get();
+                                    ResourceReference icon =
                                             itemModel.getObject().isEnabled()
-                                                    ? CatalogIconFactory.get().getEnabledIcon()
-                                                    : CatalogIconFactory.get().getDisabledIcon();
+                                                    ? icons.getEnabledIcon()
+                                                    : icons.getDisabledIcon();
                                     Fragment f = new Fragment(id, "iconFragment", BatchesPanel.this);
-                                    f.add(new Image("enabledIcon", icon));
+                                    f.add(icons.getIcon("enabledIcon", icon));
                                     return f;
                                 } else if (property == BatchesModel.FREQUENCY) {
                                     return new Label(

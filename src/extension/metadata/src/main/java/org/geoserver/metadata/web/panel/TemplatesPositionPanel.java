@@ -12,10 +12,9 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ContextRelativeResourceReference;
 import org.geoserver.metadata.data.model.MetadataTemplate;
 import org.geoserver.metadata.web.MetadataTemplateTracker;
-import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -46,8 +45,7 @@ public class TemplatesPositionPanel extends Panel {
             GeoServerTablePanel<MetadataTemplate> tablePanel) {
         super(id, model);
         ImageAjaxLink<Object> upLink =
-                new ImageAjaxLink<>(
-                        "up", new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/arrow_up.png")) {
+                new ImageAjaxLink<>("up", new ContextRelativeResourceReference("img/icons/silk/arrow_up.png")) {
                     @Serial
                     private static final long serialVersionUID = -4165434301439054175L;
 
@@ -77,9 +75,7 @@ public class TemplatesPositionPanel extends Panel {
         add(upLink);
 
         ImageAjaxLink<Object> downLink =
-                new ImageAjaxLink<>(
-                        "down",
-                        new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/arrow_down.png")) {
+                new ImageAjaxLink<>("down", new ContextRelativeResourceReference("img/icons/silk/arrow_down.png")) {
                     @Serial
                     private static final long serialVersionUID = -8005026702401617344L;
 

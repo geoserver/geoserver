@@ -10,7 +10,13 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.wicket.markup.html.WebComponent;
+import org.apache.wicket.markup.html.image.ContextImage;
+import org.apache.wicket.markup.html.image.Image;
+import org.apache.wicket.request.resource.ContextRelativeResource;
+import org.apache.wicket.request.resource.ContextRelativeResourceReference;
 import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
@@ -22,6 +28,7 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.web.data.resource.DataStorePanelInfo;
+import org.geoserver.web.wicket.CachingImage;
 import org.geotools.api.coverage.grid.Format;
 import org.geotools.api.data.DataAccessFactory;
 import org.geotools.api.feature.type.GeometryDescriptor;
@@ -34,7 +41,7 @@ import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
-/** Utility class used to lookup icons for various catalog objects */
+/** Utility class used to lookup icons, including for various catalog objects. */
 @SuppressWarnings("serial")
 public class CatalogIconFactory implements Serializable {
 
@@ -64,14 +71,14 @@ public class CatalogIconFactory implements Serializable {
     public static final PackageResourceReference GEOMETRY_ICON =
             new PackageResourceReference(GeoServerBasePage.class, "img/icons/geosilk/vector.png");
 
-    public static final PackageResourceReference UNKNOWN_ICON =
-            new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/error.png");
+    public static final ResourceReference UNKNOWN_ICON =
+            new ContextRelativeResourceReference("img/icons/silk/error.png");
 
     public static final PackageResourceReference GROUP_ICON =
             new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/layers.png");
 
-    public static final PackageResourceReference DISABLED_ICON =
-            new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/error.png");
+    public static final ResourceReference DISABLED_ICON =
+            new ContextRelativeResourceReference("img/icons/silk/error.png");
 
     public static final PackageResourceReference ENABLED_ICON =
             new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/tick.png");
@@ -86,9 +93,37 @@ public class CatalogIconFactory implements Serializable {
         // private constructor, this is a singleton
     }
 
+    /**
+     * Checks if the image reference and returns an CachingImage, Image or a ContextImage as appropriate.
+     *
+     * @see org.geoserver.web.wicket.Icon
+     * @param id Wicket id for the image component
+     * @param imageRef Icon reference
+     * @return CachingImage, Image or ContextImage depending on the type of the resource reference.
+     */
+    public WebComponent getIcon(String id, ResourceReference imageRef) {
+        if (id == null) {
+            id = "image";
+        }
+        if (imageRef == null) {
+            imageRef = UNKNOWN_ICON;
+        }
+        if (imageRef instanceof PackageResourceReference) {
+            return new CachingImage(id, imageRef);
+        } else if (imageRef instanceof ContextRelativeResourceReference) {
+            ContextRelativeResource resource = ((ContextRelativeResourceReference) imageRef).getResource();
+            String path = (String) resource.getCacheKey();
+            path = path.substring(path.indexOf("//") + 2);
+
+            return new ContextImage(id, path);
+        } else {
+            return new Image(id, imageRef);
+        }
+    }
+
     /** Returns the appropriate icon for the specified layer */
-    public PackageResourceReference getLayerIcon(LayerInfo info) {
-        PackageResourceReference icon = UNKNOWN_ICON;
+    public ResourceReference getLayerIcon(LayerInfo info) {
+        ResourceReference icon = UNKNOWN_ICON;
         if (info.getType() == PublishedType.VECTOR) icon = VECTOR_ICON;
         else if (info.getType() == PublishedType.RASTER) icon = RASTER_ICON;
         return icon;
@@ -98,7 +133,7 @@ public class CatalogIconFactory implements Serializable {
      * Returns the appropriate icon for the specified layer. This one distinguishes the geometry type inside vector
      * layers.
      */
-    public PackageResourceReference getSpecificLayerIcon(LayerInfo info) {
+    public ResourceReference getSpecificLayerIcon(LayerInfo info) {
         if (info.getType() == PublishedType.RASTER) {
             return RASTER_ICON;
         } else if (info.getType() == PublishedType.VECTOR) {
@@ -119,7 +154,7 @@ public class CatalogIconFactory implements Serializable {
     }
 
     /** Returns the vector icon associated to the specified geometry descriptor */
-    public PackageResourceReference getVectoryIcon(GeometryDescriptor gd) {
+    public ResourceReference getVectoryIcon(GeometryDescriptor gd) {
         if (gd == null) {
             return GEOMETRY_ICON;
         }
@@ -145,7 +180,7 @@ public class CatalogIconFactory implements Serializable {
      *
      * @see #getStoreIcon(Class)
      */
-    public PackageResourceReference getStoreIcon(final StoreInfo storeInfo) {
+    public ResourceReference getStoreIcon(final StoreInfo storeInfo) {
 
         Catalog catalog = storeInfo.getCatalog();
         final ResourcePool resourcePool = catalog.getResourcePool();
@@ -188,7 +223,7 @@ public class CatalogIconFactory implements Serializable {
      *
      * @param factoryClass either a {@link DataAccessFactory} or a {@link Format} class
      */
-    public PackageResourceReference getStoreIcon(Class<?> factoryClass) {
+    public ResourceReference getStoreIcon(Class<?> factoryClass) {
         // look for the associated panel info if there is one
         final List<DataStorePanelInfo> infos = GeoServerApplication.get().getBeansOfType(DataStorePanelInfo.class);
 
@@ -224,12 +259,12 @@ public class CatalogIconFactory implements Serializable {
     }
 
     /** Returns a reference to a general purpose icon to indicate an enabled/properly configured resource */
-    public PackageResourceReference getEnabledIcon() {
+    public ResourceReference getEnabledIcon() {
         return ENABLED_ICON;
     }
 
     /** Returns a reference to a general purpose icon to indicate a disabled/missconfigured/unreachable resource */
-    public PackageResourceReference getDisabledIcon() {
+    public ResourceReference getDisabledIcon() {
         return DISABLED_ICON;
     }
 }

@@ -106,7 +106,7 @@
     <property name="descriptionKey" value="GeoServerHomePage.description" />
     <property name="componentClass" value="org.geoserver.web.GeoServerHomePage" />
     <property name="category" ref="aboutStatusCategory" />
-    <property name="icon" value="img/logo-icon.svg" />
+    <property name="icon" value="/img/logo-icon.svg" />
     <property name="order" value="5" />
   </bean>
   <bean id="statusMenuPage" class="org.geoserver.web.MenuPageInfo">
@@ -142,7 +142,7 @@
     <property name="descriptionKey" value="AboutGeoServerPage.description" />
     <property name="componentClass" value="org.geoserver.web.AboutGeoServerPage" />
     <property name="category" ref="aboutStatusCategory" />
-    <property name="icon" value="img/icons/silk/help.png" />
+    <property name="icon" value="/img/icons/silk/help.png" />
     <property name="order" value="25" />
   </bean>
   <bean id="globalSettingsMenuPage" class="org.geoserver.web.MenuPageInfo">

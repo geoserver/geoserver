@@ -28,10 +28,12 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.head.PriorityHeaderItem;
+import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.image.ContextImage;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.ExternalLink;
@@ -458,9 +460,14 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 
         link.add(AttributeModifier.replace("title", new StringResourceModel(info.getDescriptionKey(), null, null)));
         link.add(new Label("link.label", new StringResourceModel(info.getTitleKey(), null, null)));
-        Image image;
+        WebComponent image;
         if (info.getIcon() != null) {
-            image = new Image("link.icon", new PackageResourceReference(info.getComponentClass(), info.getIcon()));
+            if (info.getIcon().startsWith("/")) {
+                String contextPath = info.getIcon().substring(1);
+                image = new ContextImage("link.icon", contextPath);
+            } else {
+                image = new Image("link.icon", new PackageResourceReference(info.getComponentClass(), info.getIcon()));
+            }
         } else {
             image = new Image(
                     "link.icon", new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/wrench.png"));
@@ -479,24 +486,31 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     @Override
     public void renderHead(IHeaderResponse response) {
 
-        // includes jquery, required by the placeholder plugin (wicket only include jquery if he
-        // need it)
+        // includes jquery, required by the placeholder plugin (wicket only include jquery if needed)
         response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(JQueryResourceReference.INSTANCE_3)));
-        response.render(CssReferenceHeaderItem.forReference(
-                new PackageResourceReference(GeoServerBasePage.class, "css/blueprint/print.css"), "print"));
-        response.render(CssReferenceHeaderItem.forReference(
-                new PackageResourceReference(GeoServerBasePage.class, "css/geoserver.css"), "screen, projection"));
-        response.render(JavaScriptHeaderItem.forReference(
-                new PackageResourceReference(GeoServerBasePage.class, "js/geoserver.js")));
-        response.render(JavaScriptHeaderItem.forReference(
-                new PackageResourceReference(GeoServerBasePage.class, "js/jquery.placeholder.js")));
-        response.render(JavaScriptHeaderItem.forReference(
-                new PackageResourceReference(GeoServerBasePage.class, "js/jquery.fullscreen.js")));
+        response.render(CssReferenceHeaderItem.forUrl("css/blueprint/print.css", "print"));
+        response.render(CssReferenceHeaderItem.forUrl("css/geoserver.css", "screen, projection"));
+        //        response.render(CssReferenceHeaderItem.forReference(
+        //                new PackageResourceReference(GeoServerBasePage.class, "css/blueprint/print.css"), "print"));
+        //        response.render(CssReferenceHeaderItem.forReference(
+        //                new PackageResourceReference(GeoServerBasePage.class, "css/geoserver.css"), "screen,
+        // projection"));
 
-        response.render(JavaScriptHeaderItem.forReference(
-                new PackageResourceReference(GeoServerBasePage.class, "js/jquery.hide.ajaxFeedback.js")));
+        response.render(JavaScriptHeaderItem.forUrl("js/geoserver.js"));
+        response.render(JavaScriptHeaderItem.forUrl("js/jquery.placeholder.js"));
+        response.render(JavaScriptHeaderItem.forUrl("js/jquery.fullscreen.js"));
+        response.render(JavaScriptHeaderItem.forUrl("js/jquery.hide.ajaxFeedback.js"));
 
-        // due to Content-security-policy, JS must be rendered by Wicket.  This inits the textboxes
+        //        response.render(JavaScriptHeaderItem.forReference(
+        //                new PackageResourceReference(GeoServerBasePage.class, "js/geoserver.js")));
+        //        response.render(JavaScriptHeaderItem.forReference(
+        //                new PackageResourceReference(GeoServerBasePage.class, "js/jquery.placeholder.js")));
+        //        response.render(JavaScriptHeaderItem.forReference(
+        //                new PackageResourceReference(GeoServerBasePage.class, "js/jquery.fullscreen.js")));
+        //        response.render(JavaScriptHeaderItem.forReference(
+        //                new PackageResourceReference(GeoServerBasePage.class, "js/jquery.hide.ajaxFeedback.js")));
+
+        // Due to CSPontent-security-policy, JS must be rendered by Wicket.  This inits the textboxes
         // for placeholders.
         response.render(OnDomReadyHeaderItem.forScript("$('input, textarea').placeholder();"));
 

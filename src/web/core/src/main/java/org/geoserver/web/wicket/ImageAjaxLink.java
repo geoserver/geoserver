@@ -9,10 +9,11 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.attributes.IAjaxCallListener;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
+import org.geoserver.web.CatalogIconFactory;
 
 /**
  * A panel which encapsulates a link containing a image and an optional label.
@@ -35,16 +36,16 @@ public abstract class ImageAjaxLink<T> extends Panel {
         }
     }
 
-    protected Image image;
+    protected WebComponent image;
     protected AjaxLink<T> link;
 
     /** Constructs the panel with a link containing an image. */
-    public ImageAjaxLink(String id, PackageResourceReference imageRef) {
+    public ImageAjaxLink(String id, ResourceReference imageRef) {
         this(id, imageRef, "");
     }
 
     /** Constructs the panel with a link containing an image and a label. */
-    public ImageAjaxLink(String id, PackageResourceReference imageRef, String label) {
+    public ImageAjaxLink(String id, ResourceReference imageRef, String label) {
         super(id);
         link = new AjaxLink<>("link") {
             @Override
@@ -59,7 +60,8 @@ public abstract class ImageAjaxLink<T> extends Panel {
             }
         };
         add(link);
-        link.add(image = new CachingImage("image", imageRef));
+        image = CatalogIconFactory.get().getIcon("image", imageRef);
+        link.add(image);
         link.add(new Label("label", label));
     }
 
@@ -68,7 +70,7 @@ public abstract class ImageAjaxLink<T> extends Panel {
     }
 
     /** Returns the image contained in this link (allows playing with its attributes) */
-    public Image getImage() {
+    public WebComponent getImage() {
         return image;
     }
 

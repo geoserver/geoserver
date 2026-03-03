@@ -2,10 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
-
 # OGC API - Maps
 
 A [OGC API - Maps](https://github.com/opengeospatial/ogcapi-maps) based on the current early specification draft, delivering partial functionality:

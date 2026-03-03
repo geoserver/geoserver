@@ -2,10 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
-
 # HTML Templates
 
 Built-in templates are used for html generation.

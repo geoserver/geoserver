@@ -2,10 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
-
 # WPS JDBC
 
 The WPS JDBC extension is a WPS status storage for asynchronous requests. Main advantages are:

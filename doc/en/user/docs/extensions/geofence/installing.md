@@ -2,10 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
-
 # Installing the GeoServer GeoFence extension
 
 For version 2.15 and later, use the standard procedure to install an extension.

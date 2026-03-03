@@ -2,10 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
-
 # Windows installer
 
 The Windows installer provides an easy way to set up GeoServer on your system, as it requires no configuration files to be edited or command line settings.

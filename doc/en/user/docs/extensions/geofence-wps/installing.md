@@ -2,10 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
-
 # Installing the GeoServer GeoFence WPS Integration
 
 1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [geofence-wps](https://build.geoserver.org/geoserver/main/ext-latest/geofence-wps)

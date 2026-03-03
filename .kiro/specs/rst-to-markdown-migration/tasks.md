@@ -105,7 +105,7 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - Verify all internal navigation works correctly
     - _Requirements: 6.1, 6.2, 6.3_
 
-  - [ ] 3.2 Manual review of directive conversions
+  - [x] 3.2 Manual review of directive conversions
     - Review guilabel conversions (should be bold text)
     - Review menuselection conversions (should be bold with arrow separator)
     - Review file conversions (should be inline code)

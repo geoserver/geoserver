@@ -2,10 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
-
 # Data directory location
 
 The current data directory location is always shown on the [Status](../configuration/status.md) page.

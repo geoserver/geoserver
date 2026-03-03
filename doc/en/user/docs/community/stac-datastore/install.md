@@ -2,10 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
-
 # Installing the STAC data store
 
 The STAC store community module is listed among the other community modules on the GeoServer download page.

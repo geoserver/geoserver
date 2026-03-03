@@ -2,10 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
-
 # Installing the Smart Data Loader extension
 
 The Smart Data Loader extension is listed among the other extension downloads on the GeoServer download page.

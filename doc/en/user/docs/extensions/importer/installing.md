@@ -2,10 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
-
 # Installing the Importer extension
 
 1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [importer](https://build.geoserver.org/geoserver/main/ext-latest/importer)

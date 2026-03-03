@@ -2,10 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
-
 # Installing the Monitor Extension
 
 The monitor extension is not part of the GeoServer core and must be installed as a plug-in. To install:

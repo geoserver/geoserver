@@ -2,10 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
-
 # Installing the GeoServer GeoFence Server extension
 
 !!! warning

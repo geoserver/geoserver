@@ -2,10 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
-
 # Installing the GWC S3 extension
 
 The GWC S3 extension is listed among the other extension downloads on the GeoServer download page.

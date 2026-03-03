@@ -2,10 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
-
 # MongoDB Data Store
 
 This module provides support for MongoDB data store. This extension is build on top of [GeoTools MongoDB plugin

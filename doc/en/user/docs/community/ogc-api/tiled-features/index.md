@@ -2,10 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
-
 # OGC API - Tiled features demonstration
 
 This module provides an example of extending the OGC API - Features module with a building block from OGC API - Tiles, used for tiled access to raw vector data (the vector tiles modules is included).

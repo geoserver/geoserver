@@ -2,10 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
-
 # OGC API - Coverages
 
 A [OGC API - Coverages](https://github.com/opengeospatial/ogcapi-coverages) based on an earlier specification draft, delivering partial functionality:

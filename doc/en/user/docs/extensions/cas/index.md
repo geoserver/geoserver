@@ -2,10 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
-
 # CAS integration
 
 The CAS module allows to integrate GeoServer with the [Central Authentication Service (CAS)](https://www.apereo.org/projects/cas) Single Sign On (SSO), in particular, using standard tickets and proxy tickets.

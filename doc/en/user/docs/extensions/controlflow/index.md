@@ -2,10 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
-
 # Control flow module
 
 The `control-flow` module for GeoServer allows the administrator to control the amount of concurrent requests actually executing inside the server, as well as giving an opportunity to slow down users making too many requests. This kind of control is useful for a number of reasons:

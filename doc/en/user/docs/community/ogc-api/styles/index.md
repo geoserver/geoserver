@@ -2,10 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
-
 # OGC API - Styles
 
 A [OGC Styles API](https://github.com/opengeospatial/ogcapi-styles) based on the early draft of this specification.

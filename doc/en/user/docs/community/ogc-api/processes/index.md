@@ -2,10 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
-
 # OGC API - Processes
 
 A [OGC API - Processes](https://github.com/opengeospatial/ogcapi-processes) based on the current specification draft, delivering the following functionality:

@@ -2,10 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
-
 # Installing the Schemaless Mongo module
 
 1.  Download [mongodb-schemaless](https://build.geoserver.org/geoserver/main/community-latest/mongodb-schemaless) nightly GeoServer community module.

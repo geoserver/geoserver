@@ -2,10 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
-
 # OGC Testbed Experiments
 
 The following modules are part of the OGC Testbed experiments.

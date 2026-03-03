@@ -2,10 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
-
 # YSLD Extension Installation
 
 ## Installing YSLD extension

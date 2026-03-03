@@ -2,10 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
-
 # Web archive
 
 GeoServer is packaged as a standalone Web Archive (**`geoserver.war`**) file for use with existing application servers such as [Apache Tomcat](https://tomcat.apache.org/) and [Jetty](https://jetty.org/).

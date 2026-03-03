@@ -2,10 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
-
 # Installing Catalog Services for Web (CSW)
 
 The CSW extension is listed among the other extension downloads on the GeoServer download page.

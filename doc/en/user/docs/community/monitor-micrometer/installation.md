@@ -2,10 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
-
 # Installing the Monitor Micrometer Extension
 
 1.  Visit the [website download](https://geoserver.org/download) page and download [monitor-micrometer](https://build.geoserver.org/geoserver/main/community-latest/monitor-micrometer).

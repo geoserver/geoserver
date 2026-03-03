@@ -2,10 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
-
 # OGC API - Tiles
 
 A [OGC Tiles API](https://github.com/opengeospatial/OGC-API-Tiles) delivering both tiled data (vector tiles) and tiled maps (classic map tiles).

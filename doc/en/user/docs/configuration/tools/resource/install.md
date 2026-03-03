@@ -2,10 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
-
 # Installing the GeoServer Web Resource extension
 
 The **Resource Brower** tool is provided by the web-resource extension is listed on the GeoServer download page.

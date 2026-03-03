@@ -14,8 +14,8 @@ Each section uses data created especially for the MBStyle Cookbook, with shapefi
 
 <div class="grid cards" markdown>
 
-- [StylingMbstyleCookbookPoints](points.md)
-- [StylingMbstyleCookbookLines](lines.md)
-- [StylingMbstyleCookbookPolygons](polygons.md)
+- [Points](points.md)
+- [Lines](lines.md)
+- [Polygons](polygons.md)
 
 </div>

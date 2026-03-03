@@ -4,9 +4,9 @@ This section discusses the Catalog Services for Web (CSW) ISO Metadata Profile e
 
 <div class="grid cards" markdown>
 
-- [ExtensionsCsw IsoInstalling](installing.md)
-- [ExtensionsCsw IsoMapping](mapping.md)
-- [ExtensionsCsw IsoQueryables](queryables.md)
-- [ExtensionsCsw IsoTutorial](tutorial.md)
+- [Installing Catalog Services for Web (CSW) - ISO Metadata Profile](installing.md)
+- [CSW ISO Metadata Profile Mapping File](mapping.md)
+- [CSW ISO Metadata Profile Queryables](queryables.md)
+- [Catalog Services for the Web (CSW) ISO Metadata tutorial](tutorial.md)
 
 </div>

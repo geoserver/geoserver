@@ -41,8 +41,8 @@ Finally, you can test printing in this `sample page
 
 <div class="grid cards" markdown>
 
-- [ExtensionsPrintingConfiguration](configuration.md)
-- [ExtensionsPrintingProtocol](protocol.md)
+- [General structure](configuration.md)
+- [info.json](protocol.md)
 - [ExtensionsPrintingFaq](faq.md)
 
 </div>

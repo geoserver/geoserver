@@ -10,9 +10,9 @@ The following sections describe how each set of GeoServer resources administers 
 
 <div class="grid cards" markdown>
 
-- [SecurityAuthChain](chain.md)
-- [SecurityAuthWeb](web.md)
-- [SecurityAuthOwsrest](owsrest.md)
-- [SecurityAuthProviders](providers.md)
+- [Authentication chain](chain.md)
+- [Authenticating to the Web Admin Interface](web.md)
+- [Authentication to OWS and REST services](owsrest.md)
+- [Authentication providers](providers.md)
 
 </div>

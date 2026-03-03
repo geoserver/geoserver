@@ -17,8 +17,8 @@ For each request, the following metrics are recorded:
 
 <div class="grid cards" markdown>
 
-- [CommunityMonitor MicrometerInstallation](installation.md)
-- [CommunityMonitor MicrometerConfiguration](configuration.md)
-- [CommunityMonitor MicrometerUsage](usage.md)
+- [Installing the Monitor Micrometer Extension](installation.md)
+- [Monitor Micrometer Configuration](configuration.md)
+- [Usage of the Monitor Micrometer Extension](usage.md)
 
 </div>

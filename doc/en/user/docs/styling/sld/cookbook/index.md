@@ -15,9 +15,9 @@ Each section uses data created especially for the SLD Cookbook, with shapefiles 
 
 <div class="grid cards" markdown>
 
-- [StylingSldCookbookPoints](points.md)
-- [StylingSldCookbookLines](lines.md)
-- [StylingSldCookbookPolygons](polygons.md)
-- [StylingSldCookbookRasters](rasters.md)
+- [Points](points.md)
+- [Lines](lines.md)
+- [Polygons](polygons.md)
+- [Rasters](rasters.md)
 
 </div>

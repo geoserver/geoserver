@@ -4,7 +4,7 @@ The `JDBCConfig module` enhances the scalability performance of the GeoServer Ca
 
 <div class="grid cards" markdown>
 
-- [CommunityJdbcconfigInstalling](installing.md)
-- [CommunityJdbcconfigConfiguration](configuration.md)
+- [Installing JDBCConfig](installing.md)
+- [JDBCConfig configuration](configuration.md)
 
 </div>

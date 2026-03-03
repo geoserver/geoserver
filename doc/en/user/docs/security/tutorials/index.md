@@ -2,13 +2,13 @@
 
 <div class="grid cards" markdown>
 
-- [SecurityTutorialsLdapIndex](ldap/index.md)
-- [SecurityTutorialsActivedirectoryIndex](activedirectory/index.md)
-- [SecurityTutorialsDigestIndex](digest/index.md)
-- [SecurityTutorialsCertIndex](cert/index.md)
-- [SecurityTutorialsJ2EeIndex](j2ee/index.md)
-- [SecurityTutorialsHttpheaderproxyIndex](httpheaderproxy/index.md)
-- [SecurityTutorialsCredentialsfromheadersIndex](credentialsfromheaders/index.md)
-- [SecurityTutorialsCasIndex](cas/index.md)
+- [Authentication with LDAP](ldap/index.md)
+- [Authentication with LDAP against ActiveDirectory](activedirectory/index.md)
+- [Configuring Digest Authentication](digest/index.md)
+- [Configuring X.509 Certificate Authentication](cert/index.md)
+- [Configuring J2EE Authentication](j2ee/index.md)
+- [Configuring HTTP Header Proxy Authentication](httpheaderproxy/index.md)
+- [Configuring Apache HTTPD Session Integration](credentialsfromheaders/index.md)
+- [Authentication with CAS](cas/index.md)
 
 </div>

@@ -4,7 +4,7 @@ This plugin brings the possibility to authenticate users using an external authe
 
 <div class="grid cards" markdown>
 
-- [CommunityWeb Service AuthInstall](install.md)
-- [CommunityWeb Service AuthConfiguration](configuration.md)
+- [Installing the HTTP Based Authorization plug-in](install.md)
+- [HTTP Based Authorization configuration](configuration.md)
 
 </div>

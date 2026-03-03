@@ -24,7 +24,7 @@ If you are using [OAUTH2/OIDC Access Tokens](https://www.oauth.com/oauth2-server
 
 <div class="grid cards" markdown>
 
-- [CommunityJwt HeadersInstalling](installing.md)
-- [CommunityJwt HeadersConfiguration](configuration.md)
+- [Installing JWT Headers](installing.md)
+- [JWT Headers configuration](configuration.md)
 
 </div>

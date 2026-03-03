@@ -4,9 +4,9 @@ This tutorial introduces GeoServer OAuth2 support and walks through the process 
 
 <div class="grid cards" markdown>
 
-- [CommunityOauth2Installing](installing.md)
-- [CommunityOauth2Google](google.md)
-- [CommunityOauth2Oauth2](oauth2.md)
-- [CommunityOauth2Oidc](oidc.md)
+- [Installing an OAuth2 Protocol](installing.md)
+- [Configure the Google authentication provider](google.md)
+- [Configure the GeoServer OAuth2 filter](oauth2.md)
+- [OpenID connect authentication](oidc.md)
 
 </div>

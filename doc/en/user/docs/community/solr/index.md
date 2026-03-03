@@ -16,8 +16,8 @@ The following pages shows how to use the SOLR data store.
 
 <div class="grid cards" markdown>
 
-- [CommunitySolrConfigure](configure.md)
-- [CommunitySolrLoad](load.md)
-- [CommunitySolrOptimize](optimize.md)
+- [SOLR layer configuration](configure.md)
+- [Loading spatial data into SOLR](load.md)
+- [Optimize rendering of complex polygons](optimize.md)
 
 </div>

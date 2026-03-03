@@ -4,8 +4,8 @@ Tools page to manage data directory resources including icons, fonts, and config
 
 <div class="grid cards" markdown>
 
-- [ConfigurationToolsResourceInstall](install.md)
-- [ConfigurationToolsResourceBrowser](browser.md)
-- [ConfigurationToolsResourceExamples](examples.md)
+- [Installing the GeoServer Web Resource extension](install.md)
+- [Resource Browser](browser.md)
+- [Resource Browser Examples](examples.md)
 
 </div>

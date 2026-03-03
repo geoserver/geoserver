@@ -4,10 +4,10 @@ This section describes the GeoServer Backup and Restore plugin functionality and
 
 <div class="grid cards" markdown>
 
-- [CommunityBackuprestoreInstallation](installation.md)
-- [CommunityBackuprestoreUsagegui](usagegui.md)
-- [CommunityBackuprestoreUsagerest](usagerest.md)
-- [CommunityBackuprestoreExtensions](extensions.md)
-- [CommunityBackuprestoreUsecases](usecases.md)
+- [Installation](installation.md)
+- [Usage Via GeoServer's User Interface](usagegui.md)
+- [Usage Via GeoServer's REST API](usagerest.md)
+- [Backup and Restore Extension for the management of ImageMosaic indexers](extensions.md)
+- [Use Cases](usecases.md)
 
 </div>

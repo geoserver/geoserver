@@ -10,7 +10,7 @@ The GeoServer GeoPackage extension also allows to create a completely custom mad
 
 <div class="grid cards" markdown>
 
-- [CommunityGeopkgInstalling](installing.md)
-- [CommunityGeopkgOutput](output.md)
+- [Installing the GeoServer GeoPackage extension](installing.md)
+- [GeoPackage WPS Process](output.md)
 
 </div>

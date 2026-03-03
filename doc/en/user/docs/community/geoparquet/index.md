@@ -6,7 +6,7 @@ This section describes the GeoParquet community module, which adds support for r
 
 <div class="grid cards" markdown>
 
-- [CommunityGeoparquetInstalling](installing.md)
-- [CommunityGeoparquetConfiguration](configuration.md)
+- [Installing the GeoParquet Extension](installing.md)
+- [Configuring GeoParquet Data Stores](configuration.md)
 
 </div>

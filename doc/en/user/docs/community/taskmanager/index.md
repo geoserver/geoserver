@@ -4,8 +4,8 @@ The GeoServer Task Manager is a tool that allows scheduled tasks and batches to 
 
 <div class="grid cards" markdown>
 
-- [CommunityTaskmanagerBasic](basic.md)
-- [CommunityTaskmanagerUser](user.md)
-- [CommunityTaskmanagerDeveloper](developer.md)
+- [Basic Concepts](basic.md)
+- [TaskManager User Guide](user.md)
+- [Developer's Guide](developer.md)
 
 </div>

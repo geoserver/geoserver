@@ -4,11 +4,11 @@ Security in GeoServer is based on a **role-based system**, with roles created to
 
 <div class="grid cards" markdown>
 
-- [SecurityUsergrouproleUsergroups](usergroups.md)
-- [SecurityUsergrouproleUsergroupservices](usergroupservices.md)
-- [SecurityUsergrouproleRoles](roles.md)
-- [SecurityUsergrouproleRoleservices](roleservices.md)
-- [SecurityUsergrouproleRolesource](rolesource.md)
-- [SecurityUsergrouproleInteraction](interaction.md)
+- [Users and Groups](usergroups.md)
+- [User/group services](usergroupservices.md)
+- [Roles](roles.md)
+- [Role services](roleservices.md)
+- [Role source and role calculation](rolesource.md)
+- [Interaction between user/group and role services](interaction.md)
 
 </div>

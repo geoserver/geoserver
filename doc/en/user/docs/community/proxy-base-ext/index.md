@@ -4,7 +4,7 @@ This extension allows the replacement of URLs in the response of a web service r
 
 <div class="grid cards" markdown>
 
-- [CommunityProxy Base ExtInstall](install.md)
-- [CommunityProxy Base ExtUsage](usage.md)
+- [Installing the Proxy Base extension](install.md)
+- [Using the Proxy Base Extension module](usage.md)
 
 </div>

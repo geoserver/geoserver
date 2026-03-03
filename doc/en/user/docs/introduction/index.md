@@ -6,9 +6,9 @@ For those who wish to get started with GeoServer right away, feel free to skip t
 
 <div class="grid cards" markdown>
 
-- [IntroductionOverview](overview.md)
-- [IntroductionHistory](history.md)
-- [IntroductionGettinginvolved](gettinginvolved.md)
-- [IntroductionLicense](license.md)
+- [Overview](overview.md)
+- [History](history.md)
+- [Getting involved](gettinginvolved.md)
+- [License](license.md)
 
 </div>

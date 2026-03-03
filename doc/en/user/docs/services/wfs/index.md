@@ -4,12 +4,12 @@ This section describes the Web Feature Service (WFS).
 
 <div class="grid cards" markdown>
 
-- [ServicesWfsWebadmin](webadmin.md)
-- [ServicesWfsBasics](basics.md)
-- [ServicesWfsReference](reference.md)
-- [ServicesWfsOutputformats](outputformats.md)
-- [ServicesWfsVendor](vendor.md)
-- [ServicesWfsSchemamapping](schemamapping.md)
+- [WFS settings](webadmin.md)
+- [WFS basics](basics.md)
+- [WFS reference](reference.md)
+- [WFS output formats](outputformats.md)
+- [WFS vendor parameters](vendor.md)
+- [WFS schema mapping](schemamapping.md)
 - [ServicesWfsAxis Order](axis_order.md)
 
 </div>

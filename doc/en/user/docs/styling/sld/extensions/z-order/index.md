@@ -4,7 +4,7 @@ Starting with GeoServer 2.8.0 it is possible to control the order in which the f
 
 <div class="grid cards" markdown>
 
-- [StylingSldExtensionsZ OrderSyntax](syntax.md)
-- [StylingSldExtensionsZ OrderExample](example.md)
+- [Enabling z-ordering in a single FeatureTypeStyle](syntax.md)
+- [Z ordering single layer example](example.md)
 
 </div>

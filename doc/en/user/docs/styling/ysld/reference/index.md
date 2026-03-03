@@ -6,19 +6,19 @@ As YSLD is heavily modeled on [YAML](http://yaml.org), it may be useful to refer
 
 <div class="grid cards" markdown>
 
-- [StylingYsldReferenceStructure](structure.md)
-- [StylingYsldReferenceFeaturestyles](featurestyles.md)
-- [StylingYsldReferenceRules](rules.md)
-- [StylingYsldReferenceSymbolizersIndex](symbolizers/index.md)
-- [StylingYsldReferenceSymbolizersLine](symbolizers/line.md)
-- [StylingYsldReferenceSymbolizersPolygon](symbolizers/polygon.md)
-- [StylingYsldReferenceSymbolizersPoint](symbolizers/point.md)
-- [StylingYsldReferenceSymbolizersRaster](symbolizers/raster.md)
-- [StylingYsldReferenceSymbolizersText](symbolizers/text.md)
-- [StylingYsldReferenceScalezoom](scalezoom.md)
-- [StylingYsldReferenceFilters](filters.md)
-- [StylingYsldReferenceFunctions](functions.md)
-- [StylingYsldReferenceVariables](variables.md)
-- [StylingYsldReferenceTransforms](transforms.md)
+- [Structure](structure.md)
+- [Feature Styles](featurestyles.md)
+- [Rules](rules.md)
+- [Symbolizers](symbolizers/index.md)
+- [Line symbolizer](symbolizers/line.md)
+- [Polygon symbolizer](symbolizers/polygon.md)
+- [Point symbolizer](symbolizers/point.md)
+- [Raster symbolizer](symbolizers/raster.md)
+- [Text symbolizer](symbolizers/text.md)
+- [Scale and zoom](scalezoom.md)
+- [Filters](filters.md)
+- [Functions](functions.md)
+- [Define and reuse YAML Variables](variables.md)
+- [Transforms](transforms.md)
 
 </div>

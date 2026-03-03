@@ -12,10 +12,10 @@ Alongside raw KML, GeoServer can generate KMZ (compressed KML) responses by requ
 
 <div class="grid cards" markdown>
 
-- [ServicesWmsGoogleearthOverview](overview.md)
-- [ServicesWmsGoogleearthQuickstart](quickstart.md)
-- [ServicesWmsGoogleearthKmlstyling](kmlstyling.md)
-- [ServicesWmsGoogleearthTutorialsIndex](tutorials/index.md)
-- [ServicesWmsGoogleearthFeaturesIndex](features/index.md)
+- [Overview](overview.md)
+- [Quickstart](quickstart.md)
+- [KML Styling](kmlstyling.md)
+- [Tutorials](tutorials/index.md)
+- [Features](features/index.md)
 
 </div>

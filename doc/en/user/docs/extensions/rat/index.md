@@ -16,7 +16,7 @@ In this section:
 
 <div class="grid cards" markdown>
 
-- [ExtensionsRatInstalling](installing.md)
-- [ExtensionsRatUsing](using.md)
+- [Installing the RAT module](installing.md)
+- [Using the RAT Module](using.md)
 
 </div>

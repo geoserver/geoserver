@@ -4,7 +4,7 @@ This extension supports GeoPKG as an output format for both WFS (vectors) and WM
 
 <div class="grid cards" markdown>
 
-- [ExtensionsGeopkg OutputInstall](install.md)
-- [ExtensionsGeopkg OutputUsage](usage.md)
+- [Installing the GeoPackage Output Extension](install.md)
+- [Using the GeoPackage Output Extension](usage.md)
 
 </div>

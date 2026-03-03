@@ -4,6 +4,6 @@ This section discusses the WFS [FlatGeobuf.org](https://flatgeobuf.org/) input a
 
 <div class="grid cards" markdown>
 
-- [CommunityFlatgeobufInstalling](installing.md)
+- [Installing WFS FlatGeobuf output format](installing.md)
 
 </div>

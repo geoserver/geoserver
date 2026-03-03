@@ -99,9 +99,9 @@ The examples will show step-by-step procedures to configure and deploy the whole
 
 <div class="grid cards" markdown>
 
-- [CommunityRemote WpsInstall Geoserver](install_geoserver.md)
-- [CommunityRemote WpsInstall Xmpp](install_xmpp.md)
-- [CommunityRemote WpsInstall Python](install_python.md)
-- [CommunityRemote WpsRunning Example](running_example.md)
+- [Deployment And Setup Of GeoServer With WPS Remote Plugin](install_geoserver.md)
+- [Installation Of OpenFire XMPP Server To Exchange Messages](install_xmpp.md)
+- [Deployment And Setup Of The XMPP Python Wrappers](install_python.md)
+- [A Remote "Gdal Contour" Process Binding Example](running_example.md)
 
 </div>

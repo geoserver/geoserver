@@ -15,8 +15,8 @@ GeoServer supports "vector tile" output in addition to the more standard image t
 
 <div class="grid cards" markdown>
 
-- [ExtensionsVectortilesInstall](install.md)
-- [ExtensionsVectortilesOptions](options.md)
-- [ExtensionsVectortilesTutorial](tutorial.md)
+- [Installing the Vector Tiles Extension](install.md)
+- [Vector Tiles Generation Options](options.md)
+- [Vector tiles tutorial](tutorial.md)
 
 </div>

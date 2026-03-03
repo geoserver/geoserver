@@ -8,7 +8,7 @@ This plugin adds a vector data store that can connect to a STAC API, delivering 
 
 <div class="grid cards" markdown>
 
-- [CommunityStac DatastoreInstall](install.md)
-- [CommunityStac DatastoreData Store](data-store.md)
+- [Installing the STAC data store](install.md)
+- [STAC data store](data-store.md)
 
 </div>

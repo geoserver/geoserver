@@ -13,9 +13,9 @@ This cookbook provides examples of some of the available process. Unless otherwi
 
 <div class="grid cards" markdown>
 
-- [ServicesWpsProcessesGeo](geo.md)
-- [ServicesWpsProcessesGs](gs.md)
-- [ServicesWpsProcessesChaining](chaining.md)
+- [Geometry Processes](geo.md)
+- [GeoServer processes](gs.md)
+- [Process chaining](chaining.md)
 
 </div>
 

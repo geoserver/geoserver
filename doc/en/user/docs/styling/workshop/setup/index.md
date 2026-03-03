@@ -4,7 +4,7 @@ Content:
 
 <div class="grid cards" markdown>
 
-- [StylingWorkshopSetupInstall](install.md)
-- [StylingWorkshopSetupData](data.md)
+- [Extension Install](install.md)
+- [Course Data](data.md)
 
 </div>

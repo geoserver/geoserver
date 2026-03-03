@@ -2,9 +2,9 @@
 
 <div class="grid cards" markdown>
 
-- [ServicesWmsGoogleearthTutorialsKmlplacemarkIndex](kmlplacemark/index.md)
-- [ServicesWmsGoogleearthTutorialsHeightsHeights](heights/heights.md)
-- [ServicesWmsGoogleearthTutorialsTimeTime](time/time.md)
-- [ServicesWmsGoogleearthTutorialsSuperoverlaysgwc](superoverlaysgwc.md)
+- [KML Placemark Templates](kmlplacemark/index.md)
+- [Heights Templates](heights/heights.md)
+- [Time](time/time.md)
+- [Super-Overlays and GeoWebCache](superoverlaysgwc.md)
 
 </div>

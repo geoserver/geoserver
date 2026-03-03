@@ -14,11 +14,11 @@ There are many ways to install GeoServer on your system. This section will discu
 
 <div class="grid cards" markdown>
 
-- [InstallationLinux](linux.md)
+- [Linux binary](linux.md)
 - [InstallationWin Binary](win_binary.md)
 - [InstallationWin Installer](win_installer.md)
-- [InstallationWar](war.md)
-- [InstallationDocker](docker.md)
-- [InstallationUpgrade](upgrade.md)
+- [Web archive](war.md)
+- [Docker Container](docker.md)
+- [Upgrading existing versions](upgrade.md)
 
 </div>

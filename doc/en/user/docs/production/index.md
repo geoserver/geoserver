@@ -4,13 +4,13 @@ GeoServer is geared towards many different uses, from a simple test server to th
 
 <div class="grid cards" markdown>
 
-- [ProductionJava](java.md)
-- [ProductionContainer](container.md)
-- [ProductionConfig](config.md)
-- [ProductionData](data.md)
-- [ProductionLinuxscript](linuxscript.md)
-- [ProductionMisc](misc.md)
-- [ProductionTroubleshooting](troubleshooting.md)
-- [ProductionIdentify](identify.md)
+- [Java Considerations](java.md)
+- [Container Considerations](container.md)
+- [Configuration Considerations](config.md)
+- [Data Considerations](data.md)
+- [Linux init scripts](linuxscript.md)
+- [Other Considerations](misc.md)
+- [Troubleshooting](troubleshooting.md)
+- [Make cluster nodes identifiable from the GUI](identify.md)
 
 </div>

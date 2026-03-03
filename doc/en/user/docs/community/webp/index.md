@@ -49,7 +49,7 @@ Because native libraries are used, not all platforms are supported. For those su
 
 <div class="grid cards" markdown>
 
-- [CommunityWebpInstalling](installing.md)
-- [CommunityWebpWebp Processing](webp_processing.md)
+- [Installing WMS WebP output format](installing.md)
+- [WebP Processing](webp_processing.md)
 
 </div>

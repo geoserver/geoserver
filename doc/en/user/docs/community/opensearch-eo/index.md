@@ -2,14 +2,14 @@
 
 <div class="grid cards" markdown>
 
-- [CommunityOpensearch EoIntro](intro.md)
-- [CommunityOpensearch EoInstallation](installation.md)
-- [CommunityOpensearch EoConfiguration](configuration.md)
-- [CommunityOpensearch EoSecurity](security.md)
-- [CommunityOpensearch EoDatabase](database.md)
-- [CommunityOpensearch EoAutomation](automation.md)
-- [CommunityOpensearch EoStac](STAC.md)
-- [CommunityOpensearch EoTemplates](templates.md)
-- [CommunityOpensearch EoUpgrading](upgrading.md)
+- [Introduction to OpenSearch for EO](intro.md)
+- [Installing the OpenSearch for EO module](installation.md)
+- [Configuring the OpenSearch module](configuration.md)
+- [OpenSearch/STAC security](security.md)
+- [The JDBC store database structure](database.md)
+- [Automation with the administration REST API](automation.md)
+- [The STAC extension](STAC.md)
+- [OpenSearch/STAC JSON templates](templates.md)
+- [Upgrading from previous version](upgrading.md)
 
 </div>

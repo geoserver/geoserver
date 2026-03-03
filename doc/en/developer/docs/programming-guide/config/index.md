@@ -4,8 +4,8 @@ This section provides an overview of GeoServer configuration including the data 
 
 <div class="grid cards" markdown>
 
-- [Programming GuideConfigGeoserver](geoserver.md)
-- [Programming GuideConfigCatalog](catalog.md)
-- [Programming GuideConfigResource](resource.md)
+- [GeoServer](geoserver.md)
+- [Catalogue API](catalog.md)
+- [Resource API](resource.md)
 
 </div>

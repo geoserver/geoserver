@@ -4,8 +4,8 @@ The `Keycloak module` allows GeoServer to work with a [keycloak service](https:/
 
 <div class="grid cards" markdown>
 
-- [CommunityKeycloakInstallation](installation.md)
-- [CommunityKeycloakAuthentication](authentication.md)
-- [CommunityKeycloakKeycloak Role Service](keycloak_role_service.md)
+- [Installing Keycloak](installation.md)
+- [Authentication with Keycloak](authentication.md)
+- [Keycloak Role Service](keycloak_role_service.md)
 
 </div>

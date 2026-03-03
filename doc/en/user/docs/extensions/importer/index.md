@@ -15,12 +15,12 @@ This section will discuss the Importer extension.
 
 <div class="grid cards" markdown>
 
-- [ExtensionsImporterInstalling](installing.md)
-- [ExtensionsImporterConfiguring](configuring.md)
-- [ExtensionsImporterUsing](using.md)
-- [ExtensionsImporterGuireference](guireference.md)
-- [ExtensionsImporterFormats](formats.md)
-- [ExtensionsImporterRest Reference](rest_reference.md)
-- [ExtensionsImporterRest Examples](rest_examples.md)
+- [Installing the Importer extension](installing.md)
+- [Configuring the Importer extension](configuring.md)
+- [Using the Importer extension](using.md)
+- [Importer interface reference](guireference.md)
+- [Supported data formats](formats.md)
+- [REST API](rest_reference.md)
+- [Importer REST API examples](rest_examples.md)
 
 </div>

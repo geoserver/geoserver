@@ -4,9 +4,9 @@ This section describes how coordinate reference systems (CRS) are handled in Geo
 
 <div class="grid cards" markdown>
 
-- [ConfigurationCrshandlingConfigurecrs](configurecrs.md)
-- [ConfigurationCrshandlingCustomcrs](customcrs.md)
-- [ConfigurationCrshandlingCoordtransforms](coordtransforms.md)
-- [ConfigurationCrshandlingManualepsg](manualepsg.md)
+- [Coordinate Reference System Configuration](configurecrs.md)
+- [Custom CRS Definitions](customcrs.md)
+- [Coordinate Operations](coordtransforms.md)
+- [Manually editing the EPSG database](manualepsg.md)
 
 </div>

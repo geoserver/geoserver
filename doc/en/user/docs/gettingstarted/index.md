@@ -4,13 +4,13 @@ This section contains short tutorials for common tasks in GeoServer to get new u
 
 <div class="grid cards" markdown>
 
-- [GettingstartedWeb Admin QuickstartIndex](web-admin-quickstart/index.md)
-- [GettingstartedGeopkg QuickstartIndex](geopkg-quickstart/index.md)
-- [GettingstartedImage QuickstartIndex](image-quickstart/index.md)
-- [GettingstartedGroup QuickstartIndex](group-quickstart/index.md)
-- [GettingstartedStyle QuickstartIndex](style-quickstart/index.md)
-- [GettingstartedPreflight QuickstartIndex](preflight-quickstart/index.md)
-- [GettingstartedShapefile QuickstartIndex](shapefile-quickstart/index.md)
-- [GettingstartedPostgis QuickstartIndex](postgis-quickstart/index.md)
+- [Using the web administration interface](web-admin-quickstart/index.md)
+- [Publishing a GeoPackage](geopkg-quickstart/index.md)
+- [Publishing a Image](image-quickstart/index.md)
+- [Publishing a Layer Group](group-quickstart/index.md)
+- [Publishing a style](style-quickstart/index.md)
+- [Preflight Checklist](preflight-quickstart/index.md)
+- [Publishing a shapefile](shapefile-quickstart/index.md)
+- [Publishing a PostGIS table](postgis-quickstart/index.md)
 
 </div>

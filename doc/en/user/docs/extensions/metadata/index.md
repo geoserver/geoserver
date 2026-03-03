@@ -4,10 +4,10 @@ The `Metadata module` adds a fully customizable metadata tab to the layer config
 
 <div class="grid cards" markdown>
 
-- [ExtensionsMetadataConfiguration](configuration.md)
-- [ExtensionsMetadataUiconfiguration](uiconfiguration.md)
-- [ExtensionsMetadataAdvanced](advanced.md)
-- [ExtensionsMetadataUser](user.md)
+- [Getting Started](configuration.md)
+- [Fields configuration](uiconfiguration.md)
+- [Advanced Configuration](advanced.md)
+- [User Guide](user.md)
 
 </div>
 

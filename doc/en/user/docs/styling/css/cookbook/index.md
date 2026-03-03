@@ -15,9 +15,9 @@ Each section uses data created especially for the Cookbooks (both CSS and SLD), 
 
 <div class="grid cards" markdown>
 
-- [StylingCssCookbookPoint](point.md)
-- [StylingCssCookbookLine](line.md)
-- [StylingCssCookbookPolygon](polygon.md)
-- [StylingCssCookbookRaster](raster.md)
+- [Points](point.md)
+- [Lines](line.md)
+- [Polygons](polygon.md)
+- [Rasters](raster.md)
 
 </div>

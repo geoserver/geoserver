@@ -8,11 +8,11 @@ GeoServer connects to and publishes data from a wide variety of sources. This se
 
 <div class="grid cards" markdown>
 
-- [DataWebadminIndex](webadmin/index.md)
-- [DataVectorIndex](vector/index.md)
-- [DataRasterIndex](raster/index.md)
-- [DataDatabaseIndex](database/index.md)
-- [DataCascadedIndex](cascaded/index.md)
+- [Data settings](webadmin/index.md)
+- [Vector data](vector/index.md)
+- [Raster data](raster/index.md)
+- [Databases](database/index.md)
+- [Cascaded service data](cascaded/index.md)
 - [DataApp SchemaIndex](app-schema/index.md)
 
 </div>

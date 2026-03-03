@@ -2,14 +2,14 @@
 
 <div class="grid cards" markdown>
 
-- [PoliciesCommunity Process](community-process.md)
-- [PoliciesPsc](psc.md)
-- [PoliciesGsip](gsip.md)
-- [PoliciesCommitting](committing.md)
-- [PoliciesPull Request](pull_request.md)
-- [PoliciesReview](review.md)
-- [PoliciesCommunity Modules](community-modules.md)
-- [PoliciesService Providers](service_providers.md)
-- [PoliciesSecurity](security.md)
+- [Community Process](community-process.md)
+- [Project Steering Committee](psc.md)
+- [GeoServer Improvement Proposals](gsip.md)
+- [Committing](committing.md)
+- [Pull Requests](pull_request.md)
+- [Review](review.md)
+- [Community Modules](community-modules.md)
+- [Service Providers](service_providers.md)
+- [Security Procedure](security.md)
 
 </div>

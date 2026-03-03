@@ -71,7 +71,7 @@ The following describes the various processes, separating raw downloads from ren
 
 <div class="grid cards" markdown>
 
-- [ExtensionsWps DownloadRawdownload](rawDownload.md)
-- [ExtensionsWps DownloadMapanimationdownload](mapAnimationDownload.md)
+- [Raw data download processes](rawDownload.md)
+- [Rendered map/animation download processes](mapAnimationDownload.md)
 
 </div>

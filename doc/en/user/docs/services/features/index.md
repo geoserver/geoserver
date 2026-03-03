@@ -4,10 +4,10 @@ An [OGC API - Features](https://github.com/opengeospatial/ogcapi-features) servi
 
 <div class="grid cards" markdown>
 
-- [ServicesFeaturesInstall](install.md)
-- [ServicesFeaturesService](service.md)
-- [ServicesFeaturesConfig](config.md)
-- [ServicesFeaturesStatus](status.md)
-- [ServicesFeaturesTemplates](templates.md)
+- [OGC API Features Installation](install.md)
+- [Using OGC API - Features service](service.md)
+- [Configuration of OGC API - Features module](config.md)
+- [OGC API - Features Implementation status](status.md)
+- [HTML Templates](templates.md)
 
 </div>

@@ -21,7 +21,7 @@ This plugin includes support for serving complex features directly from Schemale
 
 <div class="grid cards" markdown>
 
-- [CommunitySchemaless FeaturesInstall](install.md)
-- [CommunitySchemaless FeaturesSchemaless MongoIndex](schemaless-mongo/index.md)
+- [Installing the Schemaless Mongo module](install.md)
+- [MongoDB Schemaless Support](schemaless-mongo/index.md)
 
 </div>

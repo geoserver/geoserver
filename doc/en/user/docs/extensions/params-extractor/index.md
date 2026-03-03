@@ -4,7 +4,7 @@ This module allow us to entering specific request parameters as URL path fragmen
 
 <div class="grid cards" markdown>
 
-- [ExtensionsParams ExtractorInstall](install.md)
-- [ExtensionsParams ExtractorUsage](usage.md)
+- [Installing the Parameter Extractor extension](install.md)
+- [Using the Parameters Extractor module](usage.md)
 
 </div>

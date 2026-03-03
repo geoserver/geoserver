@@ -6,8 +6,8 @@ MBTiles can both be used as a raster input datastore as well as an WMS [GetMap](
 
 <div class="grid cards" markdown>
 
-- [CommunityMbtilesInstalling](installing.md)
-- [CommunityMbtilesInput](input.md)
-- [CommunityMbtilesOutput](output.md)
+- [Installing the GeoServer MBTiles extension](installing.md)
+- [MBTiles Raster and Vector Data Stores](input.md)
+- [MBTiles Output Format](output.md)
 
 </div>

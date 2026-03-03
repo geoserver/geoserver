@@ -4,8 +4,8 @@ This module implements the WMTS multidimensional domain discovery extensions as 
 
 <div class="grid cards" markdown>
 
-- [ExtensionsWmts MultidimensionalInstall](install.md)
-- [ExtensionsWmts MultidimensionalUsage](usage.md)
-- [ExtensionsWmts MultidimensionalPerformance](performance.md)
+- [Installing the WMTS multidimensional extension](install.md)
+- [WMTS Multidimensional usage](usage.md)
+- [WMTS Multidimensional performance](performance.md)
 
 </div>

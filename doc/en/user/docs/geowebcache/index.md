@@ -10,12 +10,12 @@ For information about the standalone product, please see the [GeoWebCache homepa
 
 <div class="grid cards" markdown>
 
-- [GeowebcacheWebadminIndex](webadmin/index.md)
-- [GeowebcacheUsing](using.md)
-- [GeowebcacheConfig](config.md)
-- [GeowebcacheSeeding](seeding.md)
-- [GeowebcacheResponseheaders](responseheaders.md)
-- [GeowebcacheRestIndex](rest/index.md)
-- [GeowebcacheTroubleshooting](troubleshooting.md)
+- [GeoWebCache settings](webadmin/index.md)
+- [Using GeoWebCache](using.md)
+- [Configuration](config.md)
+- [Seeding and refreshing](seeding.md)
+- [HTTP Response Headers](responseheaders.md)
+- [GeoWebCache REST API](rest/index.md)
+- [Troubleshooting](troubleshooting.md)
 
 </div>

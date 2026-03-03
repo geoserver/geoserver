@@ -21,9 +21,9 @@ The root element for an SLD is `<StyledLayerDescriptor>`. It contains a **Layers
 
 <div class="grid cards" markdown>
 
-- [StylingSldReferenceSld](sld.md)
-- [StylingSldReferenceLayers](layers.md)
-- [StylingSldReferenceStyles](styles.md)
+- [StyledLayerDescriptor](sld.md)
+- [Layers](layers.md)
+- [Styles](styles.md)
 
 </div>
 
@@ -31,8 +31,8 @@ Styles contain **Rules** and **Filters** to determine sets of features to be sty
 
 <div class="grid cards" markdown>
 
-- [StylingSldReferenceRules](rules.md)
-- [StylingSldReferenceFilters](filters.md)
+- [Rules](rules.md)
+- [Filters](filters.md)
 
 </div>
 
@@ -48,11 +48,11 @@ Each symbolizer type has its own parameters to control styling.
 
 <div class="grid cards" markdown>
 
-- [StylingSldReferencePointsymbolizer](pointsymbolizer.md)
-- [StylingSldReferenceLinesymbolizer](linesymbolizer.md)
-- [StylingSldReferencePolygonsymbolizer](polygonsymbolizer.md)
-- [StylingSldReferenceTextsymbolizer](textsymbolizer.md)
-- [StylingSldReferenceLabeling](labeling.md)
-- [StylingSldReferenceRastersymbolizer](rastersymbolizer.md)
+- [PointSymbolizer](pointsymbolizer.md)
+- [LineSymbolizer](linesymbolizer.md)
+- [PolygonSymbolizer](polygonsymbolizer.md)
+- [TextSymbolizer](textsymbolizer.md)
+- [Labeling](labeling.md)
+- [RasterSymbolizer](rastersymbolizer.md)
 
 </div>

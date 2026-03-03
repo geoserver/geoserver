@@ -4,8 +4,8 @@
 
 <div class="grid cards" markdown>
 
-- [ExtensionsGeofenceInstalling](installing.md)
-- [ExtensionsGeofenceConfiguration](configuration.md)
-- [ExtensionsGeofenceCache](cache.md)
+- [Installing the GeoServer GeoFence extension](installing.md)
+- [GeoFence Admin GUI](configuration.md)
+- [GeoFence Cache REST](cache.md)
 
 </div>

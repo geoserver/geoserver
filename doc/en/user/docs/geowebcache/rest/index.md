@@ -12,8 +12,8 @@ For example:
 
 <div class="grid cards" markdown>
 
-- [GeowebcacheRestLayers](layers.md)
-- [GeowebcacheRestSeed](seed.md)
-- [GeowebcacheRestDiskquota](diskquota.md)
+- [Managing Layers](layers.md)
+- [Seeding and Truncating](seed.md)
+- [Disk Quota](diskquota.md)
 
 </div>

@@ -15,6 +15,7 @@ public class WorkspaceInfoImpl implements WorkspaceInfo, Serializable {
 
     protected String id;
     protected String name;
+
     protected boolean _default;
 
     protected MetadataMap metadata = new MetadataMap();

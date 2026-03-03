@@ -7,23 +7,23 @@ render_macros: true
 ## Fema example
 
 ~~~html
-{% include "community/gsr/feature_layer/layers-featurelayer-fema.html" %}
+{%raw%}{%endraw%}{% include "community/gsr/feature_layer/layers-featurelayer-fema.html" %}
 ~~~
 
 ## Point example
 
 ~~~html
-{% include "community/gsr/feature_layer/layers-featurelayer-point.html" %}
+{%raw%}{%endraw%}{% include "community/gsr/feature_layer/layers-featurelayer-point.html" %}
 ~~~
 
 ## Polygon example
 
 ~~~html
-{% include "community/gsr/feature_layer/layers-featurelayer-polygon.html" %}
+{%raw%}{%endraw%}{% include "community/gsr/feature_layer/layers-featurelayer-polygon.html" %}
 ~~~
 
 ## Polygon non cors example
 
 ~~~html
-{% include "community/gsr/feature_layer/layers-featurelayer-polygon-noncors.html" %}
+{%raw%}{%endraw%}{% include "community/gsr/feature_layer/layers-featurelayer-polygon-noncors.html" %}
 ~~~

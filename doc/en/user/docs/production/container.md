@@ -70,7 +70,8 @@ The web archive distribution of GeoServer is tested with Tomcat. Use the followi
 1.  Uncomment the following `<filter>` in **`webapps/geoserver/WEB-INF/web.xml`**:
 
     ~~~
-    {% include "../../../../src/web/app/src/main/webapp/WEB-INF/web.xml" %}
+    <!-- Include path goes outside docs directory: ../../../../src/web/app/src/main/webapp/WEB-INF/web.xml -->
+<!-- TODO: Copy file to docs directory or use alternative approach -->
     ~~~
 
 2.  Uncomment the following `<filter-mapping>`:
@@ -88,13 +89,15 @@ The standalone distributions of GeoServer include the Jetty application server. 
 1.  Uncomment the following `<filter>` in **`webapps/geoserver/WEB-INF/web.xml`**:
 
     ~~~
-    {% include "../../../../src/web/app/src/main/webapp/WEB-INF/web.xml" %}
+    <!-- Include path goes outside docs directory: ../../../../src/web/app/src/main/webapp/WEB-INF/web.xml -->
+<!-- TODO: Copy file to docs directory or use alternative approach -->
     ~~~
 
 2.  Uncomment the following `<filter-mapping>`:
 
     ~~~
-    {% include "../../../../src/web/app/src/main/webapp/WEB-INF/web.xml" %}
+    <!-- Include path goes outside docs directory: ../../../../src/web/app/src/main/webapp/WEB-INF/web.xml -->
+<!-- TODO: Copy file to docs directory or use alternative approach -->
     ~~~
 
 3.  Restart

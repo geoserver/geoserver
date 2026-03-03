@@ -152,7 +152,7 @@ This part showsn an entire MOSAIC_DIR configuration.
 #### datastore.properties:
 
 ~~~
-{% include "tutorials/imagemosaic_timeseries/src/datastore.properties" %}
+{%raw%}{%endraw%}{% include "tutorials/imagemosaic_timeseries/src/datastore.properties" %}
 ~~~
 
 !!! note
@@ -164,7 +164,7 @@ This part showsn an entire MOSAIC_DIR configuration.
 Here an example of the granules naming that satisfies the rule shown before:
 
 ~~~
-{% include "tutorials/imagemosaic_timeseries/src/tiffiles.out" %}
+{%raw%}{% include "tutorials/imagemosaic_timeseries/src/tiffiles.out" %}
 ~~~
 
 #### timeregex.properties:
@@ -172,7 +172,7 @@ Here an example of the granules naming that satisfies the rule shown before:
 In the timeregex property file you specify the pattern describing the date(time) part of the file names. In this example it consists simply of 8 digits as specified below.
 
 ~~~
-{% include "tutorials/imagemosaic_timeseries/src/timeregex.properties" %}
+{%raw%}{% include "tutorials/imagemosaic_timeseries/src/timeregex.properties" %}
 ~~~
 
 #### indexer.properties:
@@ -180,7 +180,7 @@ In the timeregex property file you specify the pattern describing the date(time)
 Here the user can specify the information that GeoServer uses to create the index table in the database. In this example, the time values are stored in the column ingestion.
 
 ~~~
-{% include "tutorials/imagemosaic_timeseries/src/indexer.properties" %}
+{%raw%}{% include "tutorials/imagemosaic_timeseries/src/indexer.properties" %}
 ~~~
 
 ## Create and Publish an ImageMosaic store:
@@ -262,7 +262,7 @@ After this steps the new layer is available in GeoServer. GeoServer will create 
 #### Generated property file:
 
 ~~~
-{% include "tutorials/imagemosaic_timeseries/src/snow.properties" %}
+{%raw%}{%endraw%}{% include "tutorials/imagemosaic_timeseries/src/snow.properties" %}
 ~~~
 
 !!! note

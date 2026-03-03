@@ -160,6 +160,7 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - _Requirements: 7.5, 14.7_
 
   - [ ] 3.6 Test PDF generation
+    - SKIP this obsolete requirement!!!
     - Build PDFs with ENABLE_PDF_EXPORT=1
     - Verify PDF generated for User Manual
     - Verify PDF generated for Developer Manual

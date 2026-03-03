@@ -48,7 +48,8 @@ Profiles in this folder that match **`*_LOGGING.*`** will be listed on the globa
 Here is an example, taken from the [DEFAULT_LOGGING.xml](../../../../src/main/src/main/resources/DEFAULT_LOGGING.xml) configuration, which enables additional GeoServer log messages to be included in the logs:
 
 ~~~xml
-{% include "../../../../src/main/src/main/resources/DEFAULT_LOGGING.xml" %}
+{%raw%}{%endraw%}<!-- Include path goes outside docs directory: ../../../../src/main/src/main/resources/DEFAULT_LOGGING.xml -->
+<!-- TODO: Copy file to docs directory or use alternative approach -->
 ~~~
 
 Any custom configuration can be setup to enable specific packages to emit logs at the desired logging level.
@@ -66,13 +67,15 @@ There are however a few rules to follow:
     As an example `-%i` is used with DefaultRolloverStrategy to produce a maximum of `3` backup files.
 
     ~~~xml
-    {% include "../../../../src/main/src/main/resources/DEFAULT_LOGGING.xml" %}
+    <!-- Include path goes outside docs directory: ../../../../src/main/src/main/resources/DEFAULT_LOGGING.xml -->
+<!-- TODO: Copy file to docs directory or use alternative approach -->
     ~~~
 
   - a `Console` appender writing to the standard output should be called `stdout` and again GeoServer will enable/disable it according to the configuration set in the [global settings](globalsettings.md#config_globalsettings_log_stdout)
 
     ~~~xml
-    {% include "../../../../src/main/src/main/resources/DEFAULT_LOGGING.xml" %}
+    <!-- Include path goes outside docs directory: ../../../../src/main/src/main/resources/DEFAULT_LOGGING.xml -->
+<!-- TODO: Copy file to docs directory or use alternative approach -->
     ~~~
 - Loggers are used to collect messages from geoserver components, and individual libraries used.
   - GeoServer Logger names match up with the package names in the project javadocs overview (available for download).

@@ -242,7 +242,8 @@ The following properties must hold true in order to promote a community module:
             Follow the [h2-LICENSE.md](../../../../src/release/extensions/h2/h2-LICENSE.md) example:
 
             ~~~markdown
-            {% include "../../../../src/release/extensions/h2/h2-LICENSE.md" %}
+            <!-- Include path goes outside docs directory: ../../../../src/release/extensions/h2/h2-LICENSE.md -->
+<!-- TODO: Copy file to docs directory or use alternative approach -->
             ~~~
 
         2.  A readme called **`<module>-README.md`** which contains instructions on how to install the extension.
@@ -250,7 +251,8 @@ The following properties must hold true in order to promote a community module:
             Follow the [h2-README.md](../../../../src/release/extensions/h2/h2-README.md) example:
 
             ~~~markdown
-            {% include "../../../../src/release/extensions/h2/h2-README.md" %}
+            <!-- Include path goes outside docs directory: ../../../../src/release/extensions/h2/h2-README.md -->
+<!-- TODO: Copy file to docs directory or use alternative approach -->
             ~~~
 
             !!! warning
@@ -266,7 +268,8 @@ The following properties must hold true in order to promote a community module:
         Follow the example of [ext-h2-xml](../../../../src/release/ext-h2.xml):
 
         ~~~xml
-        {% include "../../../../src/release/ext-h2.xml" %}
+        <!-- Include path goes outside docs directory: ../../../../src/release/ext-h2.xml -->
+<!-- TODO: Copy file to docs directory or use alternative approach -->
         ~~~
 
         - Add additional `include` elements in the root folder (outputDirectory empty) for the jar dependencies of the module

@@ -1,86 +1,109 @@
 #!/usr/bin/env python3
 """
-Fix include-markdown syntax to use mkdocs-macros include syntax.
+Fix multi-line {% include %} statements that cause macro syntax errors.
 
-The conversion tool incorrectly used {% include-markdown %} syntax from
-mkdocs-include-markdown-plugin instead of {% include %} from mkdocs-macros.
-
-This script converts:
-  {% include-markdown "./path/file.md" %}
-to:
-  {% include "./path/file.md" %}
-
-And also handles the special case with start/end parameters in license.md.
+This script converts multi-line include statements to single-line format
+which is required by mkdocs-macros plugin.
 """
 
+import os
 import re
 from pathlib import Path
 
-def fix_include_syntax(file_path):
-    """Fix include-markdown syntax in a single file."""
-    with open(file_path, 'r', encoding='utf-8') as f:
-        content = f.read()
+def fix_multiline_includes(content):
+    """
+    Fix multi-line {% include %} statements by converting them to single line.
     
-    original_content = content
+    Handles patterns like:
+    {% 
+      include "path"
+       start="..."
+       end="..."
+    %}
     
-    # Pattern 1: Simple include-markdown without parameters
-    # {% include-markdown "./path/file.md" %}
-    content = re.sub(
-        r'{%\s*include-markdown\s+"([^"]+)"\s*%}',
-        r'{% include "\1" %}',
-        content
-    )
+    Converts to:
+    {% include "path" start="..." end="..." %}
+    """
+    # Pattern to match multi-line include statements
+    # This matches {% followed by whitespace/newlines, then include, then parameters, then %}
+    pattern = r'{%\s+include\s+"([^"]+)"([^%]*?)%}'
     
-    # Pattern 2: include-markdown with start/end parameters (license.md case)
-    # Convert to regular include (mkdocs-macros doesn't support start/end)
-    # We'll just include the whole file
-    content = re.sub(
-        r'{%\s*include-markdown\s+"([^"]+)"\s+start="[^"]*"\s+end="[^"]*"\s*%}',
-        r'{% include "\1" %}',
-        content
-    )
-    
-    if content != original_content:
-        with open(file_path, 'w', encoding='utf-8') as f:
-            f.write(content)
-        return True
-    return False
-
-def main():
-    """Find and fix all files with include-markdown syntax."""
-    # Find all markdown files with include-markdown
-    doc_root = Path('doc')
-    files_to_fix = []
-    
-    for md_file in doc_root.rglob('*.md'):
-        with open(md_file, 'r', encoding='utf-8') as f:
-            content = f.read()
-            if 'include-markdown' in content:
-                files_to_fix.append(md_file)
-    
-    print(f"Found {len(files_to_fix)} files with include-markdown syntax:")
-    for file_path in files_to_fix:
-        print(f"  {file_path}")
-    
-    print("\nFixing files...")
-    fixed_count = 0
-    for file_path in files_to_fix:
-        if fix_include_syntax(file_path):
-            print(f"  ✓ Fixed: {file_path}")
-            fixed_count += 1
+    def replace_include(match):
+        path = match.group(1)
+        params = match.group(2)
+        
+        # Clean up the parameters - remove extra whitespace and newlines
+        params = re.sub(r'\s+', ' ', params).strip()
+        
+        # Build single-line include
+        if params:
+            return f'{{% include "{path}" {params} %}}'
         else:
-            print(f"  ✗ No changes: {file_path}")
+            return f'{{% include "{path}" %}}'
     
-    print(f"\nFixed {fixed_count} files")
+    # Replace all multi-line includes
+    fixed_content = re.sub(pattern, replace_include, content, flags=re.DOTALL)
     
-    # Special note about license.md
-    license_file = Path('doc/en/user/docs/introduction/license.md')
-    if license_file in files_to_fix:
-        print("\n⚠️  NOTE: license.md had start/end parameters that were removed.")
-        print("   mkdocs-macros doesn't support partial includes.")
-        print("   The entire LICENSE.md file will now be included.")
-        print("   You may need to manually adjust the LICENSE.md content or")
-        print("   edit license.md to include only the desired section.")
+    return fixed_content
+
+def process_file(filepath):
+    """Process a single file, fixing multi-line includes."""
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        # Check if file has multi-line includes
+        if re.search(r'{%\s+include', content):
+            fixed_content = fix_multiline_includes(content)
+            
+            # Only write if content changed
+            if fixed_content != content:
+                with open(filepath, 'w', encoding='utf-8') as f:
+                    f.write(fixed_content)
+                return True
+        
+        return False
+    except Exception as e:
+        print(f"Error processing {filepath}: {e}")
+        return False
+
+def find_and_fix_files(base_dir):
+    """Find all markdown files and fix multi-line include statements."""
+    base_path = Path(base_dir)
+    fixed_files = []
+    
+    # Search in user, developer, and docguide docs
+    for docs_dir in ['doc/en/user/docs', 'doc/en/developer/docs', 'doc/en/docguide/docs']:
+        docs_path = base_path / docs_dir
+        if not docs_path.exists():
+            print(f"Directory not found: {docs_path}")
+            continue
+        
+        print(f"\nSearching in {docs_dir}...")
+        
+        for md_file in docs_path.rglob('*.md'):
+            if process_file(md_file):
+                rel_path = md_file.relative_to(base_path)
+                fixed_files.append(str(rel_path))
+                print(f"  Fixed: {rel_path}")
+    
+    return fixed_files
 
 if __name__ == '__main__':
-    main()
+    import sys
+    
+    # Get workspace root (current directory or provided as argument)
+    workspace_root = sys.argv[1] if len(sys.argv) > 1 else '.'
+    
+    print(f"Fixing multi-line include statements in: {workspace_root}")
+    print("=" * 60)
+    
+    fixed_files = find_and_fix_files(workspace_root)
+    
+    print("\n" + "=" * 60)
+    print(f"Fixed {len(fixed_files)} files")
+    
+    if fixed_files:
+        print("\nFiles fixed:")
+        for f in fixed_files:
+            print(f"  - {f}")

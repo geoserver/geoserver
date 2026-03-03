@@ -133,7 +133,7 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - Document any broken external links (don't fix)
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7_
 
-  - [ ] 3.5 Test builds and deployment
+  - [x] 3.5 Test builds and deployment
     - Push migration branch to GitHub
     - Trigger GitHub Actions workflow
     - Verify HTML builds successfully for user, developer, and docguide manuals

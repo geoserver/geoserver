@@ -66,6 +66,7 @@ plugins:
       lang: en
   - macros:
       render_by_default: false
+      include_dir: docs
   # - with-pdf:
   #     enabled_if_env: ENABLE_PDF_EXPORT
   #     author: GeoServer Project

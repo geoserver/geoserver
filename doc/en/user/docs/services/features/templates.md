@@ -63,13 +63,9 @@ To override a template used to list features:
 
 Example showing how to customize a collections being listed:
 
-1.  The file **`ogc/features/collections.ftl`** lists published collection:
+1.  The file **`ogc/features/collections.ftl`** lists published collection.
 
-    ~~~
-    {% 
-      include "../../../../src/extension/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/collections.ftl"
-    %}
-    ~~~
+    See the built-in template at: [collections.ftl](../../../../src/extension/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/collections.ftl)
 
 2.  Save file to **`GEOSERVER_DATA_DIR/workspace/templates/ogc/collections.ftl`**, and rewrite as:
 

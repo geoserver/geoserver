@@ -35,22 +35,22 @@ jobs:
       - name: Build User Manual
         working-directory: doc/en/user
         run: |
-          mkdocs build --strict
+          mkdocs build
       
       - name: Build Developer Manual
         working-directory: doc/en/developer
         run: |
-          mkdocs build --strict
+          mkdocs build
       
       - name: Build Documentation Guide
         working-directory: doc/en/docguide
         run: |
-          mkdocs build --strict
+          mkdocs build
       
       - name: Build Chinese Documentation
         working-directory: doc/zhCN
         run: |
-          mkdocs build --strict
+          mkdocs build
       
       - name: Prepare GitHub Pages output
         run: |

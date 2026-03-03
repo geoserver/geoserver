@@ -167,7 +167,7 @@ Assuming the server we want to protect has 4 cores a sample configuration could 
 
 ~~~properties
 {% 
-  include "./controlflow.properties"
+  include "extensions/controlflow/controlflow.properties"
 %}
 ~~~
 

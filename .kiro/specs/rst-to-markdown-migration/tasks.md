@@ -232,6 +232,26 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - Verify all 2,071 images are fixed (expect 100% success rate)
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 6.4, 6.5_
 
+  - [ ] 5.5.2 Fix missing version/release macros throughout documentation (3.0 branch)
+    - **CRITICAL**: The conversion tool dropped |version| and |release| macros in ~79 locations
+    - Create automated fix script to restore {{ version }} and {{ release }} macros in:
+      - Extension installation instructions (download links, version warnings)
+      - Database connector installations (H2, MySQL, Oracle, SQL Server, DB2)
+      - Community module installations
+      - Service installations (WPS, CSW)
+      - Styling extension installations (CSS, YSLD, MBStyle)
+    - Common patterns to fix:
+      - "example: 2.28.0" → "example: {{ release }}"
+      - "example: 2.28.x" → "example: {{ version }}.x"
+      - "(for example 2.28.0)" → "(for example {{ release }})"
+      - "geoserver-2.28-" → "geoserver-{{ version }}-"
+      - "GeoServer 2.28" → "GeoServer {{ version }}"
+    - Run check_missing_version_macros.py to identify all missing macros
+    - Create and run automated fix script for systematic replacement
+    - Verify with check_missing_version_macros.py (should report 0 issues)
+    - Test locally that macros render correctly in built documentation
+    - _Requirements: 1.3, 1.4, 5.5, 5.6_
+
   - [ ] 5.6 Remove RST infrastructure for 3.0 after validation
     - Remove all RST source directories and Sphinx configuration
     - Commit removals with message: "Remove RST infrastructure after migration to Markdown"
@@ -341,3 +361,14 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
 - Checkpoints ensure validation at key milestones
 - 3.0 branch is converted first, then 2.28.x branch
 - Total timeline: 14 days across 6 phases
+
+- [ ] 10. Backport version/release macro fixes to 2.28.x branch (Optional)
+  - **OPTIONAL TASK**: After 3.0 branch macro fixes are complete and verified
+  - Review the automated fix script created for 3.0 branch (task 5.5.2)
+  - Adapt script for 2.28.x branch if needed (version numbers differ)
+  - Run check_missing_version_macros.py on 2.28.x branch to identify issues
+  - Apply automated fixes to 2.28.x branch
+  - Verify with check_missing_version_macros.py (should report 0 issues)
+  - Test locally that macros render correctly
+  - Commit and push changes to 2.28.x branch
+  - Note: This task can be deferred if 2.28.x branch is being deprecated soon

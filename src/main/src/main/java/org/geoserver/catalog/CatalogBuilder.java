@@ -25,9 +25,11 @@ import org.geoserver.catalog.impl.StoreInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.catalog.impl.WMSStoreInfoImpl;
 import org.geoserver.catalog.impl.WMTSStoreInfoImpl;
+import org.geoserver.config.util.patch.PatchContext;
 import org.geoserver.data.util.CoverageStoreUtils;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.ows.util.OwsUtils;
+import org.geoserver.ows.util.PropertyCopyPolicy;
 import org.geotools.api.coverage.ColorInterpretation;
 import org.geotools.api.coverage.grid.Format;
 import org.geotools.api.coverage.grid.GridEnvelope;
@@ -239,7 +241,8 @@ public class CatalogBuilder {
      * <p>Null values from the <tt>update</tt> object are ignored.
      */
     <T> void update(T original, T update, Class<T> clazz) {
-        OwsUtils.copy(update, original, clazz);
+        PropertyCopyPolicy copyPolicy = PatchContext.getCopyPolicy();
+        OwsUtils.copy(update, original, clazz, copyPolicy);
     }
 
     /** Builds a new data store. */

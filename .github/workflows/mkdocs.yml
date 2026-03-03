@@ -64,7 +64,7 @@ jobs:
           # cp -r doc/zhCN/user/target/html gh-pages-output/zhCN/user
       
       - name: Deploy to GitHub Pages
-        if: github.event_name == 'push' && (github.ref == 'refs/heads/3.0' || github.ref == 'refs/heads/2.28.x')
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/3.0' || github.ref == 'refs/heads/2.28.x' || startsWith(github.ref, 'refs/heads/migration/'))
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

@@ -4,70 +4,74 @@ GeoServer is an open source software server written in Java that allows users to
 
 This User Manual is a comprehensive guide to all aspects of using GeoServer. Whether you are a novice or a veteran user of this software, we hope that this documentation will be a helpful reference.
 
-[Introduction](introduction/index.md)
+<div class="grid cards" markdown>
 
-:   Learn about GeoServer.
+- **[Introduction](introduction/index.md)**
 
-[Installation](installation/index.md)
+    Learn about GeoServer.
 
-:   Install GeoServer for your platform.
+- **[Installation](installation/index.md)**
 
-[Getting started](gettingstarted/index.md)
+    Install GeoServer for your platform.
 
-:   Tutorials to help you get started with GeoServer.
+- **[Getting started](gettingstarted/index.md)**
 
-[Web administration interface](webadmin/index.md)
+    Tutorials to help you get started with GeoServer.
 
-:   Navigate the GeoServer graphical interface.
+- **[Web administration interface](webadmin/index.md)**
 
-[Data management](data/index.md)
+    Navigate the GeoServer graphical interface.
 
-:   Load and publish data from a variety of sources.
+- **[Data management](data/index.md)**
 
-[Styling](styling/index.md)
+    Load and publish data from a variety of sources.
 
-:   Styling and visualization for published layers in GeoServer.
+- **[Styling](styling/index.md)**
 
-[Services](services/index.md)
+    Styling and visualization for published layers in GeoServer.
 
-:   OGC services, the primary method of publishing data in GeoServer.
+- **[Services](services/index.md)**
 
-[Filtering](filter/index.md)
+    OGC services, the primary method of publishing data in GeoServer.
 
-:   Filter your requests and responses to increase efficiency.
+- **[Filtering](filter/index.md)**
 
-[Server configuration](configuration/index.md)
+    Filter your requests and responses to increase efficiency.
 
-:   Configuration options for GeoServer administrators.
+- **[Server configuration](configuration/index.md)**
 
-[GeoServer data directory](datadirectory/index.md)
+    Configuration options for GeoServer administrators.
 
-:   Settings and configuration files for GeoServer.
+- **[GeoServer data directory](datadirectory/index.md)**
 
-[Running in a production environment](production/index.md)
+    Settings and configuration files for GeoServer.
 
-:   Best practices for using GeoServer.
+- **[Running in a production environment](production/index.md)**
 
-[REST](rest/index.md)
+    Best practices for using GeoServer.
 
-:   Interact programmatically with GeoServer without using the graphical interface.
+- **[REST](rest/index.md)**
 
-[Security](security/index.md)
+    Interact programmatically with GeoServer without using the graphical interface.
 
-:   Secure and restrict access to data and services.
+- **[Security](security/index.md)**
 
-[GeoWebCache](geowebcache/index.md)
+    Secure and restrict access to data and services.
 
-:   Accelerate your GeoServer with tile caching.
+- **[GeoWebCache](geowebcache/index.md)**
 
-[Extensions](extensions/index.md)
+    Accelerate your GeoServer with tile caching.
 
-:   Add extra functionality to GeoServer with extensions.
+- **[Extensions](extensions/index.md)**
 
-[Community modules](community/index.md)
+    Add extra functionality to GeoServer with extensions.
 
-:   Add cutting-edge functionality to GeoServer with community modules.
+- **[Community modules](community/index.md)**
 
-[Tutorials](tutorials/index.md)
+    Add cutting-edge functionality to GeoServer with community modules.
 
-:   Other tips and tricks for getting the most out of your GeoServer instance.
+- **[Tutorials](tutorials/index.md)**
+
+    Other tips and tricks for getting the most out of your GeoServer instance.
+
+</div>

@@ -2,7 +2,7 @@ name: MkDocs Documentation
 
 on:
   push:
-    branches: [3.0, 2.28.x]
+    branches: [3.0, 2.28.x, 'migration/**']
     paths:
       - 'doc/**'
       - '.github/workflows/mkdocs.yml'

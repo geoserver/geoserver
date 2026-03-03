@@ -233,10 +233,16 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
       - doc/en/user/docs/index.md: Add `{{ version }}` after "GeoServer" in intro paragraph
       - doc/en/developer/docs/index.md: Add `{{ version }}` after "GeoServer" in intro paragraph
       - doc/en/docguide/docs/index.md: Add `{{ release }}` after "GeoServer" in intro paragraph
-    - **FIX INCLUDE SYNTAX**: The conversion tool used `{% include-markdown %}` syntax from mkdocs-include-markdown-plugin instead of `{% include %}` from mkdocs-macros:
-      - Run fix_include_syntax.py to convert all include-markdown to include syntax (34 files)
-      - Run fix_include_paths.py to fix paths to be relative to docs directory (27 files)
+    - **FIX MACRO RENDERING**: Files with `{{ version }}` or `{{ release }}` macros need `render_macros: true` frontmatter:
+      - Run fix_macro_rendering.py to add frontmatter to files missing it
+      - This fixes index.md files and any other files where macros appear as literal text
+      - Verify macros render correctly in built documentation (not showing as `{{ version }}`)
+    - **FIX INCLUDE SYNTAX**: The conversion tool may create multi-line `{% include %}` statements that cause macro syntax errors:
+      - Multi-line includes like `{% \n  include "path" \n%}` need to be converted to single-line `{% include "path" %}`
+      - Run fix_include_syntax.py to convert all multi-line includes to single-line format
+      - Run fix_include_paths.py to fix paths to be relative to docs directory (if needed)
       - Verify YSLD reference pages, service vendor option pages, and other pages with includes render correctly
+      - Check that included content appears in the rendered pages (not showing as literal `{% include %}` text)
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7_
 
   - [ ] 5.5.1 Fix image paths and wildcard references for 3.0 branch

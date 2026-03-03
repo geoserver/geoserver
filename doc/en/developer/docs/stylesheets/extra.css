@@ -1,0 +1,109 @@
+/* 
+ * GeoServer Documentation - Mobile Navigation Fixes
+ * 
+ * Fixes horizontal navigation tab overflow on mobile/narrow screens
+ * by converting tabs to a vertical scrollable menu on smaller viewports.
+ */
+
+/* Mobile navigation fix: Hide horizontal tabs on mobile, use hamburger menu instead */
+@media screen and (max-width: 76.1875em) {
+  /* Hide the horizontal navigation tabs on mobile/tablet */
+  .md-tabs {
+    display: none;
+  }
+  
+  /* Ensure the navigation drawer (hamburger menu) is available */
+  .md-nav--primary .md-nav__title {
+    display: block;
+  }
+  
+  /* Make sure all navigation items are accessible in the drawer */
+  .md-nav--primary .md-nav__list {
+    display: block;
+  }
+}
+
+/* Tablet-specific adjustments (768px - 1220px) */
+@media screen and (min-width: 48em) and (max-width: 76.1875em) {
+  /* On tablets, we can show tabs but with better wrapping */
+  .md-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .md-tabs__list {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+  
+  .md-tabs__item {
+    flex-shrink: 0;
+    min-width: auto;
+  }
+}
+
+/* Mobile-specific (< 768px): Force hamburger menu */
+@media screen and (max-width: 47.9375em) {
+  /* Completely hide tabs on mobile */
+  .md-tabs {
+    display: none !important;
+  }
+  
+  /* Ensure header doesn't reserve space for tabs */
+  .md-header {
+    height: auto;
+  }
+  
+  /* Make navigation drawer full-width on mobile */
+  .md-nav--primary {
+    width: 100%;
+  }
+}
+
+/* Desktop: Keep tabs but ensure they don't overflow */
+@media screen and (min-width: 76.25em) {
+  .md-tabs__list {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+  
+  .md-tabs__list::-webkit-scrollbar {
+    height: 4px;
+  }
+  
+  .md-tabs__list::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
+  }
+  
+  .md-tabs__item {
+    flex-shrink: 0;
+  }
+}
+
+/* Ensure navigation is accessible on all screen sizes */
+.md-nav__item {
+  padding: 0;
+}
+
+.md-nav__link {
+  display: block;
+  padding: 0.625em 0.8em;
+}
+
+/* Improve touch targets on mobile */
+@media screen and (max-width: 47.9375em) {
+  .md-nav__link {
+    padding: 0.875em 1em;
+    font-size: 0.9rem;
+  }
+  
+  .md-nav__item--nested > .md-nav__link {
+    font-weight: 600;
+  }
+}

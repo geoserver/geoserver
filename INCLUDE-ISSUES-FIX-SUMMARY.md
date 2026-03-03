@@ -154,11 +154,15 @@ All pages should render correctly without "Macro Syntax Error" messages.
 1. `fix_malformed_includes.py` - Initial attempt to fix malformed includes
 2. `fix_all_include_issues.py` - Comprehensive fix for code block includes and external paths
 3. `fix_include_with_params.py` - Fix includes with invalid start/end parameters
+4. `fix_incomplete_includes.py` - Fix incomplete includes and malformed {%raw%} tags
+5. `fix_anchor_syntax.py` - Fix {#anchor} syntax that conflicts with Jinja2
 
 ## Commits
 
 - **Commit 1**: da4ee8aef8 - "Fix include statement issues: escape code block examples and comment out external paths"
 - **Commit 2**: 217b69dc01 - "Fix include statements with start/end parameters and remaining nested includes"
+- **Commit 3**: a3a89e3ef0 - "Update tasks.md and summary with complete include fix documentation"
+- **Commit 4**: b23d88600f - "Fix remaining macro errors: incomplete includes, anchor syntax, and add missing XML content"
 - **Branch**: migration/2.28-x-rst-to-md
 - **Pushed**: Yes
 
@@ -179,11 +183,14 @@ For files that need to include LICENSE.md or other external files:
 
 ## Complete Fix Chain
 
-This issue required **FOUR separate fix types**:
+This issue required **SEVEN separate fix types**:
 1. Multi-line include syntax → single-line (10 files) - Previous fix
 2. Macro rendering for {{ version }} (3 files) - Previous fix
 3. Include frontmatter for {% include %} (36 files) - Previous fix
-4. **Code block includes** → wrapped in {%raw%} (15 files) ⭐ THIS FIX
-5. **External path includes** → commented out (5 files) ⭐ THIS FIX
-6. **Nested includes** → fixed manually (4 files) ⭐ THIS FIX
-7. **Include with start/end** → commented out (2 files) ⭐ THIS FIX
+4. **Code block includes** → wrapped in {%raw%} (15 files) ⭐ FIX #1
+5. **External path includes** → commented out (5 files) ⭐ FIX #2
+6. **Nested includes** → fixed manually (4 files) ⭐ FIX #3
+7. **Include with start/end** → commented out (2 files) ⭐ FIX #4
+8. **Incomplete includes** → fixed malformed {%raw%} tags (13 files) ⭐ FIX #5
+9. **Anchor syntax {#anchor}** → wrapped in {%raw%} (3 files) ⭐ FIX #6
+10. **Missing XML content** → manually added from source (1 file) ⭐ FIX #7

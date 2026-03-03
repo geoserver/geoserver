@@ -106,8 +106,7 @@ The [Error Prone](https://errorprone.info/) checker runs a compiler plugin.
 In order to activate the Error Prone checks, use the "-Perrorprone":
 
 ~~~xml
-<!-- Malformed include statement: ../../../../src/pom.xml -->
-<!-- TODO: Fix or remove -->
+{% include "../../../../src/pom.xml" %}
 ~~~
 
 Any failure to comply with the "Error Prone" rules will show up as a compile error in the build output, e.g. (example taken from GeoTools):

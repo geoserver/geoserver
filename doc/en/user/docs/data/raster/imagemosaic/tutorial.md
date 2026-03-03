@@ -272,7 +272,7 @@ To update an ImageMosaic through the file system:
 
     Please see the REST section for information on [Uploading a new image mosaic](../../../rest/imagemosaic.md).
 
-### Multi-resolution imagery with reprojection {#multi-crs-mosaic}
+### Multi-resolution imagery with reprojection {%raw%}{#multi-crs-mosaic}{%endraw%}
 
 As a general rule, we want to have the highest resolution granules shown \"on top\", with the lower-resolution granules filling in the gaps as necessary.
 

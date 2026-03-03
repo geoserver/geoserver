@@ -27,6 +27,12 @@ def fix_anchor_syntax(file_path):
     # Pattern 2: []{#anchor} {: #anchor } - heading anchor (Material for MkDocs syntax)
     pattern2 = r'(\[([^\]]*)\])\{#([^}]+)\}\s*\{:\s*#([^}]+)\s*\}'
     
+    # Pattern 3: ### Heading {#anchor} - heading with anchor
+    pattern3 = r'(^#{1,6}\s+[^\n]+?)\s+\{#([^}]+)\}'
+    
+    # Pattern 4: ::: {#anchor} - Pandoc-style div with anchor
+    pattern4 = r'^:::\s+\{#([^}]+)\}'
+    
     def replace_inline_anchor(match):
         full_match = match.group(0)
         text = match.group(2)
@@ -42,9 +48,28 @@ def fix_anchor_syntax(file_path):
         # Wrap in raw tags
         return f'{{%raw%}}[{text}]{{#{anchor1}}} {{: #{anchor2} }}{{%endraw%}}'
     
+    def replace_heading_with_anchor(match):
+        heading = match.group(1)
+        anchor = match.group(2)
+        # Wrap just the anchor part in raw tags
+        return f'{heading} {{%raw%}}{{#{anchor}}}{{%endraw%}}'
+    
+    def replace_div_anchor(match):
+        anchor = match.group(1)
+        # Wrap the entire div marker in raw tags
+        return f'{{%raw%}}::: {{#{anchor}}}{{%endraw%}}'
+    
     if re.search(pattern2, content):
         content = re.sub(pattern2, replace_heading_anchor, content)
         changes.append("Fixed heading anchor syntax with {: #anchor }")
+    
+    if re.search(pattern4, content, re.MULTILINE):
+        content = re.sub(pattern4, replace_div_anchor, content, flags=re.MULTILINE)
+        changes.append("Fixed Pandoc div with {#anchor} syntax")
+    
+    if re.search(pattern3, content, re.MULTILINE):
+        content = re.sub(pattern3, replace_heading_with_anchor, content, flags=re.MULTILINE)
+        changes.append("Fixed heading with {#anchor} syntax")
     
     if re.search(pattern1, content):
         content = re.sub(pattern1, replace_inline_anchor, content)

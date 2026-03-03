@@ -56,12 +56,12 @@ jobs:
       - name: Prepare GitHub Pages output
         run: |
           mkdir -p gh-pages-output/en
-          cp -r doc/en/user/site gh-pages-output/en/user
-          cp -r doc/en/developer/site gh-pages-output/en/developer
-          cp -r doc/en/docguide/site gh-pages-output/en/docguide
+          cp -r doc/en/user/target/html gh-pages-output/en/user
+          cp -r doc/en/developer/target/html gh-pages-output/en/developer
+          cp -r doc/en/docguide/target/html gh-pages-output/en/docguide
           # Chinese documentation not yet converted - skip for now
           # mkdir -p gh-pages-output/zhCN
-          # cp -r doc/zhCN/user/site gh-pages-output/zhCN/user
+          # cp -r doc/zhCN/user/target/html gh-pages-output/zhCN/user
       
       - name: Deploy to GitHub Pages
         if: github.event_name == 'push' && (github.ref == 'refs/heads/3.0' || github.ref == 'refs/heads/2.28.x')

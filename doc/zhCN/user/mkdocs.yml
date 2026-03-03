@@ -66,7 +66,7 @@ plugins:
   - search:
       lang: zh
   - macros:
-      render_by_default: false
+      render_by_default: true
       include_dir: docs
   - with-pdf:
       enabled_if_env: ENABLE_PDF_EXPORT

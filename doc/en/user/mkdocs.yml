@@ -68,6 +68,9 @@ plugins:
       include_dir: docs
       module_name: ../../version
 
+not_in_nav: |
+  styling/ysld/reference/symbolizers/include/*.md
+
 hooks:
   - ../../download_files.py
 

@@ -67,6 +67,10 @@ plugins:
       include_dir: docs
       module_name: ../../version
 
+not_in_nav: |
+  policies/gsip_voting.md
+  quickstart/checkout.md
+
 hooks:
   - ../../download_files.py
 

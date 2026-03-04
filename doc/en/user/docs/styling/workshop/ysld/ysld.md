@@ -271,7 +271,7 @@ To confirm everything works, let's reproduce the airports style above.
     > ```yaml
     > {%raw%}
     > {% 
-{%raw%}<!--     >   include "../files/airports0.ysld" -->{%endraw%}
+    >   include "../files/airports0.ysld"
     > %}
     > {%endraw%}
     > ```

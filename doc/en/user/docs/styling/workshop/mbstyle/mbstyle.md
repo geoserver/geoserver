@@ -130,7 +130,7 @@ To confirm everything works, let's reproduce the airports style above.
     > ```json
     > {%raw%}
     > {% 
-{%raw%}<!--     >   include "../files/airports0.json" -->{%endraw%}
+    >   include "../files/airports0.json"
     > %}
     > {%endraw%}
     > ```

@@ -1,6 +1,6 @@
 # IntelliJ QuickStart
 
-{% include-markdown "./checkout.txt" %}
+{% include "quickstart/checkout.md" %}
 
 ## Import modules into IntelliJ
 

@@ -83,7 +83,7 @@ A GeoServer Improvement Proposals (GSIPs) is needed for any action that:
 
 For more on making a proposal see [GeoServer Improvement Proposals](gsip.md).
 
-{% include-markdown "./gsip_voting.txt" %}
+{% include "policies/gsip_voting.md" %}
 
 ### Snap Decisions
 

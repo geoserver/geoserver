@@ -2,7 +2,7 @@
 
 The OpenSearch module supports full automation REST API that can be used to create collections, ingest products and eventually their granules. The full API is available at this URL:
 
-- [/oseo](api/opensearch-eo.yaml)
+- <!-- MISSING: /oseo (../../../../api/1.0.0/opensearch-eo.yaml) -->/oseo
 
 In general terms, one would:
 

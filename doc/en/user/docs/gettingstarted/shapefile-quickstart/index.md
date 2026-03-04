@@ -42,7 +42,7 @@ The next step is to create a workspace for the shapefile. A workspace is a conta
 
 5.  You will be prompted to enter a workspace **Name** and **Namespace URI**.
 
-    ![](new_workspace.png)
+    ![](img/new_workspace.png)
     *Configure a new workspace*
 
 6.  Enter the **Name** as `nyc` and the **Namespace URI** as `http://geoserver.org/nyc`.

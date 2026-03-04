@@ -322,7 +322,7 @@ Filters are encoded using [ECQL](../../../filter/ecql_reference.md), a rule with
 - LineSymbolizer
 
   A line symbolizer is represented as a list of metadata elements and the [stroke
-  parameters](../../sld/reference/linesymbolizer.md#css-parameters), it is possible for there to be a [graphic-stroke](../../../styling/sld/reference/linesymbolizer.md#sld_reference_linesymbolizer_graphicstroke) element too.
+  parameters](../../../styling/sld/reference/linesymbolizer.md#css-parameters), it is possible for there to be a [graphic-stroke](../../../styling/sld/reference/linesymbolizer.md#sld_reference_linesymbolizer_graphicstroke) element too.
 
   ``` javascript
   {"Line":     {
@@ -356,8 +356,8 @@ Filters are encoded using [ECQL](../../../filter/ecql_reference.md), a rule with
 - PolygonSymbolizer
 
   A polygon symbolizer contains [stroke
-  parameters](../../sld/reference/linesymbolizer.md#css-parameters) and [fill 
-  parameters](../../sld/reference/polygonsymbolizer.md#fill).
+  parameters](../../../styling/sld/reference/linesymbolizer.md#css-parameters) and [fill 
+  parameters](../../../styling/sld/reference/polygonsymbolizer.md#fill).
 
   ``` javascript
   {"Polygon":       {

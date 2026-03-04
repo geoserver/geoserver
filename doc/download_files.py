@@ -32,8 +32,9 @@ def scan_download_links(docs_dir: str) -> Set[Tuple[str, str]]:
     # Pattern to match Markdown links: [text](file.ext)
     # Matches common download file extensions
     # Excludes absolute paths starting with /
+    # Excludes macros containing {{
     link_pattern = re.compile(
-        r'\[([^\]]+)\]\(([^/)][^)]*\.(?:zip|xml|properties|sld|json|csv|yaml|yml|txt|sql|sh|bat|jar))\)',
+        r'\[([^\]]+)\]\(([^/){{][^){{]*\.(?:zip|xml|properties|sld|json|csv|yaml|yml|txt|sql|sh|bat|jar))\)',
         re.IGNORECASE
     )
     

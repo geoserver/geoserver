@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Styles
 
 The REST API allows you to list, create, upload, update, and delete styles in GeoServer.

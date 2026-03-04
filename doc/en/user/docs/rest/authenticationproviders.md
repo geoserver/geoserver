@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Auth Providers (How-To)
 
 The Security REST service lets administrators **list, create, update, delete, enable/disable, and re-order** authentication-provider configurations.

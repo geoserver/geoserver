@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Workspaces
 
 The REST API allows you to create and manage workspaces in GeoServer.

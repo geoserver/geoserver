@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Security
 
 The REST API allows you to adjust GeoServer security settings.

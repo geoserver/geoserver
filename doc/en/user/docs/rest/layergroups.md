@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Layer groups
 
 The REST API allows you to create and modify layer groups in GeoServer.

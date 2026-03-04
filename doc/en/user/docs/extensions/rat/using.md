@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Using the RAT Module
 
 The RAT modules adds facilities to explore a Raster Attribute Table, and generate styles based on a classification column of choice.

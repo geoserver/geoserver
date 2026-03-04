@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Auth Filters
 
 The REST API allows you to list, create, upload, update, and delete authFilters in GeoServer.

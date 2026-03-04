@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # URL Checks
 
 This REST API allows you to create and manage URL External Access Checks in GeoServer.

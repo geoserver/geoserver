@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Upgrading from previous version
 
 ## Removal of `htmlDescription`

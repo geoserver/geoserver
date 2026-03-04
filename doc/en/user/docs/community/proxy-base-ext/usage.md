@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Using the Proxy Base Extension module
 
 This extension allows the replacement of URLs in the response of a web service request with a different URL. This is useful in order to proxy a web service request to a different server, while still retaining the original URL in the response. An example of this is proxying a WMS request to a different server, but wanting to keep the original URL in the elements of the GetCapabilities response. E.g., rather than exposing WMS at: <http://myserver/geoserver/wms> The module allows exposing the service at: <http://wms.mycompany.com/> and making sure all backlinks in the Capabilities document point to such host.

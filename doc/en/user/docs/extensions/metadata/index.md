@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Metadata
 
 The `Metadata module` adds a fully customizable metadata tab to the layer configuration, allowing the user to have the layer configuration and layer metadata in one central place.

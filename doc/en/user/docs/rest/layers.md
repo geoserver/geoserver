@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Layers
 
 The REST API allows you to list, create, upload, update, and delete layers in GeoServer.

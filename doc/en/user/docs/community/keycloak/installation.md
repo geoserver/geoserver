@@ -7,7 +7,7 @@ render_macros: true
 To install the keycloak module:
 
 1.  To obtain the keycloak community module:
-    - If working with a {{ release }} nightly build, download the module: [keycloak](https://build.geoserver.org/geoserver/main/community-latest/keycloak)
+    - If working with a {{ release }} nightly build, download the module: [keycloak](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-keycloak-plugin.zip)
 
       Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

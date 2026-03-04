@@ -73,7 +73,7 @@ This filter allows gathering user credentials (username and password) from reque
 
 ## Authentication providers
 
-This section manages the ``security_auth_providers`` (adding, removing, and editing). The default authentication provider uses basic [username/password authentication](../auth/providers.rst#security_auth_provider_userpasswd)_. [JDBC](../auth/providers.md#security_auth_provider_jdbc) and [LDAP](../auth/providers.md#security_auth_provider_ldap) authentication can also be used.
+This section manages the ``security_auth_providers`` (adding, removing, and editing). The default authentication provider uses basic [username/password authentication](../auth/providers.md#security_auth_provider_userpasswd)_. [JDBC](../auth/providers.md#security_auth_provider_jdbc) and [LDAP](../auth/providers.md#security_auth_provider_ldap) authentication can also be used.
 
 Click **Add new** to create a new provider. Click an existing provider to edit its parameters.
 

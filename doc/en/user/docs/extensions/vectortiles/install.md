@@ -1,6 +1,6 @@
 # Installing the Vector Tiles Extension
 
-1.  From the [website download](https://geoserver.org/download) page, locate your release, and download: [vectortiles](https://build.geoserver.org/geoserver/main/ext-latest/vectortiles)
+1.  From the [website download](https://geoserver.org/download) page, locate your release, and download: [vectortiles](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-vectortiles-plugin.zip)
 
     !!! warning
 

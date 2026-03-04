@@ -7,7 +7,7 @@ render_macros: true
 To install the OIDC module:
 
 1.  To obtain the OIDC community module:
-    - If working with a {{ release }} nightly build, download the module: [sec-oidc](https://build.geoserver.org/geoserver/main/community-latest/sec-oidc)
+    - If working with a {{ release }} nightly build, download the module: [sec-oidc](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-sec-oidc-plugin.zip)
 
       Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

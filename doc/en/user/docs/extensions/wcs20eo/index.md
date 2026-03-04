@@ -11,7 +11,7 @@ Each grid layer exposing its inner structure will then expose a flag to enable i
 The steps to install the EO extension as the same as most other extensions:
 
 > - Go to the [website download](https://geoserver.org/download) page, locate the release used
-> - Look among the extensions for WCS 2.0 EO extension package to download: [wcs2_0-eo](https://build.geoserver.org/geoserver/main/ext-latest/wcs2_0-eo)
+> - Look among the extensions for WCS 2.0 EO extension package to download: [wcs2_0-eo](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-wcs2_0-eo-plugin.zip)
 > - Stop GeoServer (or the web container hosting it)
 > - Unpack the contents of the zip file in the geoserver **`WEB-INF/lib`** folder
 > - Restart GeoServer

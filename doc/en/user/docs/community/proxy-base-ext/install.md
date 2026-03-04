@@ -8,7 +8,7 @@ The Proxy Base extension is listed among the other extension downloads on the Ge
 
 The installation process is similar to other GeoServer extensions:
 
-1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [proxy-base-ext](https://build.geoserver.org/geoserver/main/ext-latest/proxy-base-ext)
+1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [proxy-base-ext](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-proxy-base-ext-plugin.zip)
 
     Verify that the version number in the filename (for example {{ release }} above) corresponds to the version of GeoServer you are running.
 

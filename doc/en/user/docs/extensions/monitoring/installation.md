@@ -6,7 +6,7 @@ render_macros: true
 
 The monitor extension is not part of the GeoServer core and must be installed as a plug-in. To install:
 
-1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [monitor](https://build.geoserver.org/geoserver/main/ext-latest/monitor)
+1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [monitor](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-monitor-plugin.zip)
 
     The download link will be in the **Extensions** section under **Other**.
 

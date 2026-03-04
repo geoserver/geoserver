@@ -4,7 +4,7 @@ render_macros: true
 
 # Installation
 
-1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [mapml](https://build.geoserver.org/geoserver/main/ext-latest/mapml)
+1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [mapml](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-mapml-plugin.zip)
 
     !!! warning
 

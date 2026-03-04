@@ -14,7 +14,7 @@ The control flow method does not normally reject requests, it just queues up tho
 
 ## Installation
 
-1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [control-flow](https://build.geoserver.org/geoserver/main/ext-latest/control-flow)
+1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [control-flow](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-control-flow-plugin.zip)
 
     !!! warning
 

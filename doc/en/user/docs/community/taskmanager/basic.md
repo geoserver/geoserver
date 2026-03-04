@@ -1,6 +1,6 @@
 # Basic Concepts
 
-The two main kinds of objects of the [Task Manager](index.html) are [configurations](#configurations) and [batches](#batches). Task Manager also allows the creation of [Templates](#templates) for configurations.
+The two main kinds of objects of the [Task Manager](index.md) are [configurations](#configurations) and [batches](#batches). Task Manager also allows the creation of [Templates](#templates) for configurations.
 
 ## Configurations
 
@@ -9,7 +9,7 @@ The configuration is the central object in the Task Manager. A configuration is 
 A configuration has a unique name, a description and a workspace. It contains three groups of objects:
 
 - `Attributes`: The attributes contain information about this configuration that can be shared between the different tasks of this configuration. An attribute has a name and a value. Each attribute is associated with at least one task parameter (see below). Attributes inherit their validation properties from their associated parameters, such as its accepted values and whether it is required.
-- `Tasks`: Each task configures an operation that can be executed on this configuration. Each task has a name that is unique within the configuration, a type and a list of parameters with each a name and a value. The full name of a task is donated as *configuration-name/task-name* (which serves as a unique identifier for the task). The task's type is chosen from a [list of available task types](user.html#task-types) which define different kinds of operations (for example: copy a database table, publish a layer, ..) and expects a list of parameters that each has a name and a type. A parameter may or may not be required. The parameter type defines the accepted values of the parameter. Parameter types are dependent types when the list of accepted values depends on the value of another parameter (for example: tables inside a database). A parameter value is either a literal or a reference to an attribute of the form `${attribute-name}`.
+- `Tasks`: Each task configures an operation that can be executed on this configuration. Each task has a name that is unique within the configuration, a type and a list of parameters with each a name and a value. The full name of a task is donated as *configuration-name/task-name* (which serves as a unique identifier for the task). The task's type is chosen from a [list of available task types](user.md#task-types) which define different kinds of operations (for example: copy a database table, publish a layer, ..) and expects a list of parameters that each has a name and a type. A parameter may or may not be required. The parameter type defines the accepted values of the parameter. Parameter types are dependent types when the list of accepted values depends on the value of another parameter (for example: tables inside a database). A parameter value is either a literal or a reference to an attribute of the form `${attribute-name}`.
 - `Batches`.
 
 ## Batches
@@ -26,7 +26,7 @@ Configuration batches that have a name starting with a `@`, are hidden from the 
 A batch can be run manually if the following conditions are met:
 
 - the list of tasks is non-empty;
-- the operating user has the security rights to do so (see [Security](user.html#security)).
+- the operating user has the security rights to do so (see [Security](user.md#security)).
 
 A batch will be run automatically on its scheduled time if the following conditions are met:
 
@@ -54,7 +54,7 @@ However, if T2 fails, the run would be
 
 *run T1 -> run T2 (failure) -> rollback T1*.
 
-Most tasks support `COMMIT/ROLLBACK` by creating temporary objects that only become definite objects after a `COMMIT`. The `ROLLBACK` phase then simply cleans up those temporary objects. However, some particular [task types](user.html#task-types) may not support the `COMMIT/ROLLBACK` mechanism (in which case running them is definite).
+Most tasks support `COMMIT/ROLLBACK` by creating temporary objects that only become definite objects after a `COMMIT`. The `ROLLBACK` phase then simply cleans up those temporary objects. However, some particular [task types](user.md#task-types) may not support the `COMMIT/ROLLBACK` mechanism (in which case running them is definite).
 
 The commit phase happens in opposite order because dependencies in the old version of the data often requires this. A concrete example may clear things up. Imagine that *T1* copies a database table *R* from one database to another, while *T2* creates a view *V* based on that table, so *V* depends on *R*. If the table and view already exist in older versions (*R_old* and *V_old*), they must not be removed until the `COMMIT` phase, so that their original state remains in the case of a `ROLLBACK`. During the `COMMIT` phase, *R_old* and *V_old* are removed, but it is not possible to remove *R_old* until *V_old* is removed. Therefore it is necessary to commit *T2* before *T1*.
 

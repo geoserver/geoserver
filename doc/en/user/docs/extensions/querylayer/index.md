@@ -8,7 +8,7 @@ Filter functions are widely supported in GeoServer, so cross-layer filtering can
 
 ## Installing the querylayer module
 
-- Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [querylayer](https://build.geoserver.org/geoserver/main/ext-latest/querylayer)
+- Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [querylayer](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-querylayer-plugin.zip)
 
   > :::: warning
   > ::: title

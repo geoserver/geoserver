@@ -241,7 +241,7 @@ By default this behavior is inherited from the global WMS service settings (**WM
 
 ### Services Settings {: #data_webadmin_layers_services }
 
-GeoServer publishes ``virtual_layer_services`` associated with each layer using the configuration provided by [workspace services](workspaces.rst#workspace_services)_, or default [global services](../../services/index.md). This configuration includes enable/disabled setting that determines if a service is available.
+GeoServer publishes ``virtual_layer_services`` associated with each layer using the configuration provided by [workspace services](workspaces.md#workspace_services)_, or default [global services](../../services/index.md). This configuration includes enable/disabled setting that determines if a service is available.
 
 For greater control the **Service Settings** allows specific services to be disabled.
 

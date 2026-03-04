@@ -1,6 +1,6 @@
 # Installing the GeoPackage Output Extension
 
-The GeoPackage Output extension is an official extension. Download the extension here - [geopkg-output](https://build.geoserver.org/geoserver/main/ext-latest/geopkg-output)
+The GeoPackage Output extension is an official extension. Download the extension here - [geopkg-output](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-geopkg-output-plugin.zip)
 
 1.  Download the extension for your version of GeoServer.
 

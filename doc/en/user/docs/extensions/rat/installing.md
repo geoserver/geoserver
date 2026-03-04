@@ -2,7 +2,7 @@
 
 To install the Raster Attribute Table support:
 
-1.  From the [website download](https://geoserver.org/download) page, locate your release, and download: [rat](https://build.geoserver.org/geoserver/main/ext-latest/rat)
+1.  From the [website download](https://geoserver.org/download) page, locate your release, and download: [rat](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-rat-plugin.zip)
 
     !!! warning
 

@@ -74,7 +74,7 @@ The following is a description of all available operators:
 
 Filters can be spatial in nature. Any valid spatial construction in [WKT (Well Known Text)](http://en.wikipedia.org/wiki/Well-known_text) can be used. Spatial filters include `INTERSECTS`, `DISJOINT`, `CONTAINS`, `WITHIN`, `TOUCHES`, `CROSSES`, `EQUALS`, `DWITHIN`, and `BBOX`. `NOT` can be added to negate the condition.
 
-For more details about these spatial filters and their syntax, please see the [GeoServer ECQL reference](../../../geoserver/filter/ecql_reference.html) or [uDig CQL reference](http://udig.github.io/docs/user/concepts/Constraint%20Query%20Language.html).
+For more details about these spatial filters and their syntax, please see the [GeoServer ECQL reference](../../../geoserver/filter/ecql_reference.md) or [uDig CQL reference](http://udig.github.io/docs/user/concepts/Constraint%20Query%20Language.html).
 
 ### Compound statements
 

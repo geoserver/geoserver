@@ -12,7 +12,7 @@ The WPS Download extension is listed among the other extension downloads on the 
 
 The installation process is similar to other GeoServer extensions:
 
-1.  From the [website download](https://geoserver.org/download) page, locate your release, and download: [wps-download](https://build.geoserver.org/geoserver/main/ext-latest/wps-download)
+1.  From the [website download](https://geoserver.org/download) page, locate your release, and download: [wps-download](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-wps-download-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

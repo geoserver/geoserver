@@ -12,9 +12,9 @@ The WPS Download NetCDF module depends on 3 extensions:
 
 If you haven't installed already, visit the [website download](https://geoserver.org/download) page, locate your release, and download:
 
-1.  [wps](https://build.geoserver.org/geoserver/main/ext-latest/wps) containing the WPS extension.
-2.  [wps-download](https://build.geoserver.org/geoserver/main/ext-latest/wps-download) containing the WPS Download extension.
-3.  [netcdf-out](https://build.geoserver.org/geoserver/main/ext-latest/netcdf-out) containing the NetCDF Output extension.
+1.  [wps](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-wps-plugin.zip) containing the WPS extension.
+2.  [wps-download](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-wps-download-plugin.zip) containing the WPS Download extension.
+3.  [netcdf-out](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-netcdf-out-plugin.zip) containing the NetCDF Output extension.
 
 Then:
 

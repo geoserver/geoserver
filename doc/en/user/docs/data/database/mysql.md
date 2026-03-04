@@ -16,7 +16,7 @@ render_macros: true
 
 ## Installing the MySQL extension {: #mysql_install }
 
-1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [mysql](https://build.geoserver.org/geoserver/main/ext-latest/mysql)
+1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [mysql](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-mysql-plugin.zip)
 
     !!! warning
 

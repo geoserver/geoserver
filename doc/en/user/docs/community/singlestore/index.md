@@ -8,7 +8,7 @@
 
 ## Installing the SingleStore extension {: #singlestore_install }
 
-1.  Download the singlestore community module from [singlestore](https://build.geoserver.org/geoserver/main/community-latest/singlestore)
+1.  Download the singlestore community module from [singlestore](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-singlestore-plugin.zip)
 
     !!! warning
 

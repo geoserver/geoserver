@@ -44,11 +44,11 @@ Temporal predicates specify the relationship of a time-valued expression to a ti
 
 | **Syntax** | **Description** |
 |----|----|
-| ``ecql_expr`` `BEFORE` [Time](ecql_reference.rst#ecql_literal)_ | Tests whether a time value is before a point in time |
+| ``ecql_expr`` `BEFORE` [Time](ecql_reference.md#ecql_literal)_ | Tests whether a time value is before a point in time |
 | [Expression](ecql_reference.md#ecql_expr) `BEFORE OR DURING` [Time Period](ecql_reference.md#ecql_period) | Tests whether a time value is before or during a time period |
 | [Expression](ecql_reference.md#ecql_expr) `DURING` [Time Period](ecql_reference.md#ecql_period) | Tests whether a time value is during a time period |
 | [Expression](ecql_reference.md#ecql_expr) `DURING OR AFTER` [Time Period](ecql_reference.md#ecql_period) | Tests whether a time value is during or after a time period |
-| ``ecql_expr`` `AFTER` [Time](ecql_reference.rst#ecql_literal)_ | Tests whether a time value is after a point in time |
+| ``ecql_expr`` `AFTER` [Time](ecql_reference.md#ecql_literal)_ | Tests whether a time value is after a point in time |
 
 ### Spatial Predicate {: #ecql_spat }
 
@@ -79,7 +79,7 @@ An expression specifies a attribute, literal, or computed value. The type of the
 | [Literal](ecql_reference.md#ecql_literal) | Literal value |
 | [Expression](ecql_reference.md#ecql_expr) `+` | `-` | `*` | `/` [Expression](ecql_reference.md#ecql_expr) | Arithmetic operations |
 | *function* `(` [ [Expression](ecql_reference.md#ecql_expr) { `,` [Expression](ecql_reference.md#ecql_expr) } ] `)` | Value computed by evaluation of a [filter function](function_reference.md) with zero or more arguments. |
-| `(` \| `[` [Expression](ecql_reference.rst#ecql_expr) `]` \| `)` | Bracketing with `(` or ```` controls evaluation order |
+| `(` \| `[` [Expression](ecql_reference.md#ecql_expr) `]` \| `)` | Bracketing with `(` or ```` controls evaluation order |
 
 ## Attribute {%raw%}{#ecql_attr}{%endraw%}
 
@@ -108,6 +108,6 @@ Specifies a period of time, in several different formats.
 
 | **Syntax** | **Description** |
 |----|----|
-| [Time](ecql_reference.rst#ecql_literal) `/` [Time](ecql_reference.rst#ecql_literal) | Period specified by a start and end time |
-| [Duration](ecql_reference.rst#ecql_literal) `/` [Time](ecql_reference.rst#ecql_literal) | Period specified by a duration before a given time |
-| [Time](ecql_reference.rst#ecql_literal) `/` [Duration](ecql_reference.rst#ecql_literal) | Period specified by a duration after a given time |
+| [Time](ecql_reference.md#ecql_literal) `/` [Time](ecql_reference.md#ecql_literal) | Period specified by a start and end time |
+| [Duration](ecql_reference.md#ecql_literal) `/` [Time](ecql_reference.md#ecql_literal) | Period specified by a duration before a given time |
+| [Time](ecql_reference.md#ecql_literal) `/` [Duration](ecql_reference.md#ecql_literal) | Period specified by a duration after a given time |

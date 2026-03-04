@@ -8,7 +8,7 @@ The **Resource Brower** tool is provided by the web-resource extension is listed
 
 To install web-resource extension:
 
-1.  From the [GeoServer Download](https://geoserver.org/download) page locate the release used and download: [web-resource](https://build.geoserver.org/geoserver/main/ext-latest/web-resource)
+1.  From the [GeoServer Download](https://geoserver.org/download) page locate the release used and download: [web-resource](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-web-resource-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

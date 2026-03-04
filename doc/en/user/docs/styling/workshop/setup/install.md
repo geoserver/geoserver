@@ -22,8 +22,8 @@ The **CSS extension** is distributed as a supported GeoServer extension. Extensi
 To download and install the required extensions by hand:
 
 1.  - From the [download page](https://geoserver.org/download) download:
-    - [css](https://build.geoserver.org/geoserver/main/ext-latest/css)
-    - [ysld](https://build.geoserver.org/geoserver/main/ext-latest/ysld)
+    - [css](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-css-plugin.zip)
+    - [ysld](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-ysld-plugin.zip)
 
     It is important to download the version that matches the GeoServer you are running.
 

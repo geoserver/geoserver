@@ -4,10 +4,10 @@ This module allows GeoServer to authenticate against the [OAuth2 Protocol](https
 
 In order to let the module work, it is mandatory to setup and configure an `oauth2-xxxx-extension`:
 
-- [sec-oauth2-google](https://build.geoserver.org/geoserver/main/community-latest/sec-oauth2-google)
-- [sec-oauth2-geonode](https://build.geoserver.org/geoserver/main/community-latest/sec-oauth2-geonode)
-- [sec-oauth2-github](https://build.geoserver.org/geoserver/main/community-latest/sec-oauth2-github)
-- [sec-oauth2-openid-connect](https://build.geoserver.org/geoserver/main/community-latest/sec-oauth2-openid-connect)
+- [sec-oauth2-google](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-sec-oauth2-google-plugin.zip)
+- [sec-oauth2-geonode](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-sec-oauth2-geonode-plugin.zip)
+- [sec-oauth2-github](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-sec-oauth2-github-plugin.zip)
+- [sec-oauth2-openid-connect](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-sec-oauth2-openid-connect-plugin.zip)
 
 Each ZIP files contains the oauth2-core extension, and the jars and the jars for the provider.
 

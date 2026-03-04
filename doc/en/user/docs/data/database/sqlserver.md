@@ -18,7 +18,7 @@ The extension supports SQL Server 2019 - 2022 and SQL Azure, older versions down
 
 ### GeoServer files
 
-1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [sqlserver](https://build.geoserver.org/geoserver/main/ext-latest/sqlserver)
+1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [sqlserver](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-sqlserver-plugin.zip)
 
     !!! warning
 

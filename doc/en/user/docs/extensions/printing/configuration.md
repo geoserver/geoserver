@@ -128,7 +128,7 @@ In general, PDF dimensions and positions are specified in points. 72 points == 1
 
 ### Getting Maps
 
-The list of {HOST_WHITELIST_DEFINITION} defines the allowed URLs for getting maps. Its format will be defined in [the next sub-section](configuration.html#host-whitelist-definition).
+The list of {HOST_WHITELIST_DEFINITION} defines the allowed URLs for getting maps. Its format will be defined in [the next sub-section](configuration.md#host-whitelist-definition).
 
 The formats element lists the values formats that the server permits.
 
@@ -157,7 +157,7 @@ You can have as many layouts as you want. Their name must be unique and will be 
 
 A layout can have a "titlePage" that will be added at the beginning of the generated document. It cannot contain any map.
 
-The "mainPage" section is mandatory and will be used once for each page requested. The details of a {PAGE_DEFINITION} section can be found [in another sub-section of this document](configuration.html#page-definition).
+The "mainPage" section is mandatory and will be used once for each page requested. The details of a {PAGE_DEFINITION} section can be found [in another sub-section of this document](configuration.md#page-definition).
 
 A layout "lastPage", will be added for the end of the document, and cannot contain any map.
 
@@ -304,7 +304,7 @@ metaData:
     ?     supportLegacyReader: false
 ```
 
-All fields are optional and can use global variables, as defined in the [Block definition](configuration.html#block-definition) chapter. Page specific variables are not accessible.
+All fields are optional and can use global variables, as defined in the [Block definition](configuration.md#block-definition) chapter. Page specific variables are not accessible.
 
 ## Page definition
 
@@ -434,7 +434,7 @@ Typical "fontEncoding" values are:
 - Identity-V (vertical UTF-8)
 - MacRoman
 
-The "font" must refer to a standard PDF font or a [declared font](configuration.html#fonts-definition).
+The "font" must refer to a standard PDF font or a [declared font](configuration.md#fonts-definition).
 
 ### HTML In Text Blocks
 
@@ -662,7 +662,7 @@ Allowed only within a *mainPage*.
     {...}
 ```
 
-Look [here](configuration.html#table-configuration) for how to specify the *tableConfig* field.
+Look [here](configuration.md#table-configuration) for how to specify the *tableConfig* field.
 
 The *columnWeigth* (MF_V1.2 only) allows to define a weight for the column width. If you specify it for one column, you have to specify it for all of them. The width of a given column is tableWidth*columnWeight/sum(columnWeight).
 

@@ -20,7 +20,7 @@ A free of charge copy of Db2 can be downloaded from <https://www.ibm.com/analyti
 
 ### GeoServer files
 
-1.  From the `download`{.interpreted-text role="website"} page locate the release of GeoServer you are running and download the Db2 extension: [db2](https://build.geoserver.org/geoserver/main/ext-latest/db2)
+1.  From the `download`{.interpreted-text role="website"} page locate the release of GeoServer you are running and download the Db2 extension: [db2](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-db2-plugin.zip)
 
     !!! warning
 

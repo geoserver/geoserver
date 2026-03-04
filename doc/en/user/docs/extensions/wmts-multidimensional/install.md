@@ -8,7 +8,7 @@ The WMS multidimensional extension is listed among the other extension downloads
 
 The installation process is similar to other GeoServer extensions:
 
-1.  Download the [wmts-multi-dimensional](https://build.geoserver.org/geoserver/main/ext-latest/wmts-multi-dimensional)
+1.  Download the [wmts-multi-dimensional](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-wmts-multi-dimensional-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

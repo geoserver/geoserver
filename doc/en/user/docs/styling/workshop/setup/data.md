@@ -31,7 +31,7 @@ To set up GeoServer yourself:
 1.  Download and unzip the following into your data directory:
 
     - [styling-workshop-vector.zip](http://echobase.boundlessgeo.com/~jgarnett/GeoServerStyling/styling-workshop-vector.zip)
-    - [styling-workshop-raster.zip](styling-workshop-raster.zip)
+    - <!-- MISSING: styling-workshop-raster.zip -->
 
     This will produce a **`raster`** and **`vector`** folder referenced in the following steps.
 

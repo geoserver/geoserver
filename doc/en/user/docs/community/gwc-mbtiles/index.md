@@ -4,7 +4,7 @@ This plugin allows adding a GWC MBTiles Layer to GeoServer's cached Tile Layers 
 
 ## Installation
 
-As a community module, make sure you have downloaded the [gwc-mbtiles](https://build.geoserver.org/geoserver/main/ext-latest/gwc-mbtiles)
+As a community module, make sure you have downloaded the [gwc-mbtiles](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-gwc-mbtiles-plugin.zip)
 
 To install the module, unpack the zip file contents into the GeoServer `WEB-INF/lib` directory and restart GeoServer.
 

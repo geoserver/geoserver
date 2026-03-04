@@ -156,9 +156,9 @@ The next example shows how to style an aerial image instead.
     *aerial.tiff*
     ```
 
-2.  Open GeoServer, **create a new Store** (see [Add a Store](../../data/webadmin/stores.rst#data_webadmin_stores_add_a_store)), **add a GeoTIFF Raster Data Source** to the Store and **connect** it to your `aerial.tif` file
+2.  Open GeoServer, **create a new Store** (see [Add a Store](../../data/webadmin/stores.md#data_webadmin_stores_add_a_store)), **add a GeoTIFF Raster Data Source** to the Store and **connect** it to your `aerial.tif` file
 
-3.  In GeoServer, **create a new Layer** (see [Add a Layer](../../data/webadmin/layers.rst#data_webadmin_layers_add_a_layer)) choosing the Store you have created in the previous step
+3.  In GeoServer, **create a new Layer** (see [Add a Layer](../../data/webadmin/layers.md#data_webadmin_layers_add_a_layer)) choosing the Store you have created in the previous step
 
 4.  Open QGIS (minimum version 3.4.5)
 

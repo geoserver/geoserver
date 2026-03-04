@@ -8,7 +8,7 @@ The CSS extension is listed among the other extension downloads on the GeoServer
 
 The installation process is similar to other GeoServer extensions:
 
-1.  Download the [css](https://build.geoserver.org/geoserver/main/ext-latest/css)
+1.  Download the [css](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-css-plugin.zip)
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 

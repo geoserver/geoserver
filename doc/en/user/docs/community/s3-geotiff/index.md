@@ -27,7 +27,7 @@ s3://landsat-pds/L8/001/002/LC80010022016230LGN00/LC80010022016230LGN00_B1.TIF?u
 
 ### Credentials
 
-Unless ``S3_USE_ANON`` is set to true the [default AWS client credential chain](<http://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html#using-the-default-credential-provider-chain>) is used.
+Unless ``S3_USE_ANON`` is set to true the [default AWS client credential chain](<http://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.md#using-the-default-credential-provider-chain>) is used.
 
 ## GeoTiffs hosted on other Amazon S3 compatible services
 

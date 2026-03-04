@@ -20,6 +20,7 @@ def define_env(env):
     # Update these values when releasing a new version
     env.variables['version'] = '2.28.x'
     env.variables['release'] = '2.28.2'
+    env.variables['snapshot'] = '2.28-SNAPSHOT'
     
     # Additional useful variables
     env.variables['geoserver_repo'] = 'https://github.com/geoserver/geoserver'

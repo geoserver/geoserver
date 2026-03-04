@@ -9,7 +9,7 @@ This module provides support for MongoDB data store. This extension is build on 
 
 ## Installation
 
-1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [mongodb](https://build.geoserver.org/geoserver/main/ext-latest/mongodb)
+1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [mongodb](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-mongodb-plugin.zip)
 
     The download link will be in the **Extensions** section under **Vector Formats**.
 

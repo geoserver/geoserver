@@ -24,7 +24,7 @@ The following image formats can be read by GeoServer using GDAL:
 
 From GeoServer version 2.2.x, GDAL must be installed as an extension. To install it:
 
-1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [gdal](https://build.geoserver.org/geoserver/main/ext-latest/gdal)
+1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [gdal](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-gdal-plugin.zip)
 
     !!! warning
 

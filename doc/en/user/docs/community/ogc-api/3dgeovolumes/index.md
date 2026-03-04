@@ -106,11 +106,11 @@ To override an OGC API 3D Feature template:
 
 1.  Create a directory for template overrides at **`GEOSERVER_DATA_DIR/templates/ogc/3dgeovolumes/v1`**
 2.  Create a file in this location, using the GeoServer {{ release }} examples below:
-    - [ogc/3dgeovolumes/v1/landingpage.ftl](../../../../src/community/ogcapi/ogcapi-3d-geovolumes/src/main/resources/org/geoserver/ogcapi/v1/geovolumes/landingPage.ftl)
-    - [ogc/3dgeovolumes/v1/collections.ftl](../../../../src/community/ogcapi/ogcapi-3d-geovolumes/src/main/resources/org/geoserver/ogcapi/v1/geovolumes/collections.ftl)
-    - [ogc/3dgeovolumes/v1/collection.ftl](../../../../src/community/ogcapi/ogcapi-3d-geovolumes/src/main/resources/org/geoserver/ogcapi/v1/geovolumes/collection.ftl)
-    - [ogc/3dgeovolumes/v1/i3sclient.ftl](../../../../src/community/ogcapi/ogcapi-3d-geovolumes/src/main/resources/org/geoserver/ogcapi/v1/geovolumes/i3sclient.ftl)
-    - [ogc/3dgeovolumes/v1/cesium.ftl](../../../../src/community/ogcapi/ogcapi-3d-geovolumes/src/main/resources/org/geoserver/ogcapi/v1/geovolumes/cesium.ftl)
+    - [ogc/3dgeovolumes/v1/landingpage.ftl](https://github.com/geoserver/geoserver/blob/main/src/community/ogcapi/ogcapi-3d-geovolumes/src/main/resources/org/geoserver/ogcapi/v1/geovolumes/landingPage.ftl)
+    - [ogc/3dgeovolumes/v1/collections.ftl](https://github.com/geoserver/geoserver/blob/main/src/community/ogcapi/ogcapi-3d-geovolumes/src/main/resources/org/geoserver/ogcapi/v1/geovolumes/collections.ftl)
+    - [ogc/3dgeovolumes/v1/collection.ftl](https://github.com/geoserver/geoserver/blob/main/src/community/ogcapi/ogcapi-3d-geovolumes/src/main/resources/org/geoserver/ogcapi/v1/geovolumes/collection.ftl)
+    - [ogc/3dgeovolumes/v1/i3sclient.ftl](https://github.com/geoserver/geoserver/blob/main/src/community/ogcapi/ogcapi-3d-geovolumes/src/main/resources/org/geoserver/ogcapi/v1/geovolumes/i3sclient.ftl)
+    - [ogc/3dgeovolumes/v1/cesium.ftl](https://github.com/geoserver/geoserver/blob/main/src/community/ogcapi/ogcapi-3d-geovolumes/src/main/resources/org/geoserver/ogcapi/v1/geovolumes/cesium.ftl)
 
 In particular, overriding the Cesium template allows to specify a custom access token, which will then enable the 3D terrain support. For example:
 

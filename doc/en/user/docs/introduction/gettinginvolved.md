@@ -30,7 +30,7 @@ Our official documentation is contained as part of our [official code repository
 
 !!! note
 
-    For typos and other small changes you can use the **Edit Page** link on any page. Please see [Quick Fix](../docguide/quickfix.html) example.
+    For typos and other small changes you can use the **Edit Page** link on any page. Please see [Quick Fix](../docguide/quickfix.md) example.
 
 ## GeoServer User
 

@@ -10,7 +10,7 @@ render_macros: true
 
 ## Installing the Pregeneralized Features extension
 
-1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [feature-pregeneralized](https://build.geoserver.org/geoserver/main/ext-latest/feature-pregeneralized)
+1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [feature-pregeneralized](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-feature-pregeneralized-plugin.zip)
 
     !!! warning
 

@@ -5,7 +5,7 @@
 To install the GeoServer Task Manager extension:
 
 1.  Download the extension from the [GeoServer Download
-    Page](https://geoserver.org/download) release page: [taskmanager-core](https://build.geoserver.org/geoserver/main/community-latest/taskmanager-core). For [S3 support](#s3-file-service), also install the plugin [taskmanager-s3](https://build.geoserver.org/geoserver/main/community-latest/taskmanager-s3)
+    Page](https://geoserver.org/download) release page: [taskmanager-core](https://build.geoserver.org/geoserver/main/community-latest/taskmanager-core). For [S3 support](#s3-file-service), also install the plugin [taskmanager-s3](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-taskmanager-s3-plugin.zip)
 2.  Extract this file and place the JARs in **`WEB-INF/lib`**.
 3.  Perform any configuration required by your servlet container, and then restart. On startup, Task Manager will create a configuration directory **`taskmanager`** in the GeoServer Data Directory. You will be able to see the Task Manager configuration pages from the GeoServer WebGUI menu.
 
@@ -242,7 +242,7 @@ Once you open a new or existing template, attributes, tasks and batches can be e
 
 ### Configurations
 
-From the [configurations](basic.html#configurations) page, new configurations can be created from scratch or from templates (or copied from existing configurations), existing configurations can be edited and removed.
+From the [configurations](basic.md#configurations) page, new configurations can be created from scratch or from templates (or copied from existing configurations), existing configurations can be edited and removed.
 
 ![](img/configurations.png)
 *configurations*
@@ -256,7 +256,7 @@ Once you open a new or existing configuration, attributes, tasks and batches can
 
 The attribute table adjusts automatically based on the information in the tasks table; and only the values must be filled in. In the task table, the name and parameters of each task can be edited, and new tasks can be created. Tasks can only be removed if they are not part of a batch any longer. Batches can only be removed if they are not running anywhere. When removing a task, you have to option to do a *clean-up*, which will attempt to remove all resources (database tables, files, layers) that were created by this task. If this (partially) fails, the task will still be removed and the user will be notified.
 
-Batches can be created and edited from here as well, however the configuration must exist in order to be able to do that (in case of a new configuration, you must click `apply` once before you can create new batches). New tasks must also be saved (again, via the `apply` button) before they can be added to a batch. In case that the [conditions](basic.html#batches) are met, batch runs can be started, and the status/history of current and past batch runs can be displayed. Current batch runs can be interrupted (which is not guaranteed to happen immediately).
+Batches can be created and edited from here as well, however the configuration must exist in order to be able to do that (in case of a new configuration, you must click `apply` once before you can create new batches). New tasks must also be saved (again, via the `apply` button) before they can be added to a batch. In case that the [conditions](basic.md#batches) are met, batch runs can be started, and the status/history of current and past batch runs can be displayed. Current batch runs can be interrupted (which is not guaranteed to happen immediately).
 
 #### Import/Export
 
@@ -264,12 +264,12 @@ It is also possible to import/export entire configurations to XML, for example t
 
 ### Batches
 
-From the [batches](basic.html#batches) page, new independent batches (not associated with a configuration) can be created, existing batches can be edited and removed. All existing batches - independent as well as belonging to a configuration - are shown, unless they are special (if they start with a `@`) or if the configuration has not yet been completed (see [initializing templates](basic.html#initializing-templates)).
+From the [batches](basic.md#batches) page, new independent batches (not associated with a configuration) can be created, existing batches can be edited and removed. All existing batches - independent as well as belonging to a configuration - are shown, unless they are special (if they start with a `@`) or if the configuration has not yet been completed (see [initializing templates](basic.md#initializing-templates)).
 
 ![](img/batches.png)
 *batches*
 
-In case that the [conditions](basic.html#batches) are met, batch runs can be started, and the status/history of current and past batch runs can be displayed. Current batch runs can be interrupted (which is not guaranteed to happen immediately).
+In case that the [conditions](basic.md#batches) are met, batch runs can be started, and the status/history of current and past batch runs can be displayed. Current batch runs can be interrupted (which is not guaranteed to happen immediately).
 
 ![](img/batchruns.png)
 *batchruns*

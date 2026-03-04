@@ -12,7 +12,7 @@ The installation process is similar to other GeoServer extensions:
 
     Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example {{ release }} above).
 
-2.  Make sure you have downloaded and installed the [app-schema](https://build.geoserver.org/geoserver/main/ext-latest/app-schema) extension.
+2.  Make sure you have downloaded and installed the [app-schema](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-app-schema-plugin.zip) extension.
 
 3.  Extract the contents of the archive into the **`WEB-INF/lib`** directory in GeoServer. Make sure you do not create any sub-directories during the extraction process.
 

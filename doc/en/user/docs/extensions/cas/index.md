@@ -10,7 +10,7 @@ The CAS module allows to integrate GeoServer with the [Central Authentication Se
 
 To install the CAS module:
 
-1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [cas](https://build.geoserver.org/geoserver/main/ext-latest/cas)
+1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [cas](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-cas-plugin.zip)
 
     The download link will be in the **Extensions** section under **Security**.
 

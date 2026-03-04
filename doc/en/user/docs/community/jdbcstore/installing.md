@@ -2,7 +2,7 @@
 
 To install the JDBCStore module:
 
-1.  Download the module: [jdbcstore](https://build.geoserver.org/geoserver/main/community-latest/jdbcstore)
+1.  Download the module: [jdbcstore](https://build.geoserver.org/geoserver/main/community-latest/geoserver-{{ snapshot }}-jdbcstore-plugin.zip)
 
     The JDBCStore plug-in automatically includes the [JDBCConfig](../jdbcconfig/index.md) plugin as well which will generally be run at the same time.
 

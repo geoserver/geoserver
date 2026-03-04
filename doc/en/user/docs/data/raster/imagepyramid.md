@@ -12,7 +12,7 @@ An image pyramid is several layers of an image rendered at various image sizes, 
 
 ## Installing the ImagePyramid extension {: #imagepyramid_install }
 
-1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [pyramid](https://build.geoserver.org/geoserver/main/ext-latest/pyramid)
+1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [pyramid](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-pyramid-plugin.zip)
 
     !!! warning
 

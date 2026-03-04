@@ -8,7 +8,7 @@ The Parameter Extractor extension is listed among the other extension downloads 
 
 The installation process is similar to other GeoServer extensions:
 
-1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [params-extractor](https://build.geoserver.org/geoserver/main/ext-latest/params-extractor)
+1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [params-extractor](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-params-extractor-plugin.zip)
 
     Verify that the version number in the filename (for example {{ release }} above) corresponds to the version of GeoServer you are running.
 

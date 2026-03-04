@@ -8,7 +8,7 @@ Reference:
 
 ## Installation
 
-- Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [printing](https://build.geoserver.org/geoserver/main/ext-latest/printing)
+- Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [printing](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-printing-plugin.zip)
 - Extract the contents of the ZIP archive into the **`/WEB-INF/lib/`** in the GeoServer webapp. For example, if you have installed the GeoServer binary to **`/opt/geoserver/`**, the printing extension JAR files should be placed in **`/opt/geoserver/webapps/geoserver/WEB-INF/lib/`**.
 - After extracting the extension, restart GeoServer in order for the changes to take effect. All further configuration can be done with GeoServer running.
 

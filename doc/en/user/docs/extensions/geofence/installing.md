@@ -6,7 +6,7 @@ render_macros: true
 
 For version 2.15 and later, use the standard procedure to install an extension.
 
-1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [geofence](https://build.geoserver.org/geoserver/main/ext-latest/geofence)
+1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [geofence](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-geofence-plugin.zip)
 
     The download link will be in the **Extensions** section under **Other**.
 

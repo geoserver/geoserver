@@ -1,6 +1,6 @@
 # Installing the IAU authority
 
-The IAU authority is an official extension. Download the extension here - [iau](https://build.geoserver.org/geoserver/main/ext-latest/iau)
+The IAU authority is an official extension. Download the extension here - [iau](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-iau-plugin.zip)
 
 1.  Download the extension for your version of GeoServer.
 

@@ -12,7 +12,7 @@ render_macros: true
 
 ## Installing the Oracle extension {: #oracle_install }
 
-1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [oracle](https://build.geoserver.org/geoserver/main/ext-latest/oracle)
+1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [oracle](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-oracle-plugin.zip)
 
     !!! warning
 

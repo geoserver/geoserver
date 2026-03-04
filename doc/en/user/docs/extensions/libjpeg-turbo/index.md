@@ -49,7 +49,7 @@ To perform the installation of the libjpeg-turbo binaries (or native library) yo
 > Before moving on make sure you installed the libjpeg-turbo binaries as per the section above.
 > ::::
 
-1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [libjpeg-turbo](https://build.geoserver.org/geoserver/main/ext-latest/libjpeg-turbo)
+1.  Visit the [website download](https://geoserver.org/download) page, locate your release, and download: [libjpeg-turbo](https://sourceforge.net/projects/geoserver/files/GeoServer/{{ release }}/extensions/geoserver-{{ release }}-libjpeg-turbo-plugin.zip)
 
     !!! warning
 

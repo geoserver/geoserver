@@ -19,12 +19,12 @@ To override an OGC API Features template:
 
 2.  Create a file in this location, using the GeoServer {{ release }} examples below:
 
-    - [ogc/features/v1/landingPage.ftl](../../../../src/extension/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/landingPage.ftl)
-    - [ogc/features/v1/collection.ftl](../../../../src/extension/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/collection.ftl)
-    - [ogc/features/v1/collection_include.ftl](../../../../src/extension/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/collection_include.ftl)
-    - [ogc/features/v1/collections.ftl](../../../../src/extension/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/collections.ftl)
-    - [ogc/features/v1/queryables.ftl](../../../../src/extension/ogcapi/ogcapi-core/src/main/resources/org/geoserver/ogcapi/queryables.ftl)
-    - [ogc/features/v1/functions.ftl](../../../../src/extension/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/functions.ftl)
+    - [ogc/features/v1/landingPage.ftl](https://github.com/geoserver/geoserver/blob/main/src/extension/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/landingPage.ftl)
+    - [ogc/features/v1/collection.ftl](https://github.com/geoserver/geoserver/blob/main/src/extension/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/collection.ftl)
+    - [ogc/features/v1/collection_include.ftl](https://github.com/geoserver/geoserver/blob/main/src/extension/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/collection_include.ftl)
+    - [ogc/features/v1/collections.ftl](https://github.com/geoserver/geoserver/blob/main/src/extension/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/collections.ftl)
+    - [ogc/features/v1/queryables.ftl](https://github.com/geoserver/geoserver/blob/main/src/extension/ogcapi/ogcapi-core/src/main/resources/org/geoserver/ogcapi/queryables.ftl)
+    - [ogc/features/v1/functions.ftl](https://github.com/geoserver/geoserver/blob/main/src/extension/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/functions.ftl)
 
     The above built-in examples are for GeoServer {{ release }}, please check for any changes when upgrading GeoServer.
 
@@ -51,11 +51,11 @@ To override a template used to list features:
 
 2.  Create a file in this location, using the GeoServer {{ release }} examples below:
 
-    - [ogc/features/getfeature-complex-content.ftl](../../../../src/extension/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/getfeature-complex-content.ftl)
-    - [ogc/features/getfeature-content.ftl](../../../../src/extension/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/getfeature-content.ftl)
-    - [ogc/features/getfeature-empty.ftl](../../../../src/extension/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/getfeature-empty.ftl)
-    - [ogc/features/getfeature-footer.ftl](../../../../src/extension/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/getfeature-footer.ftl)
-    - [ogc/features/getfeature-header.ftl](../../../../src/extension/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/getfeature-header.ftl)
+    - [ogc/features/getfeature-complex-content.ftl](https://github.com/geoserver/geoserver/blob/main/src/extension/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/getfeature-complex-content.ftl)
+    - [ogc/features/getfeature-content.ftl](https://github.com/geoserver/geoserver/blob/main/src/extension/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/getfeature-content.ftl)
+    - [ogc/features/getfeature-empty.ftl](https://github.com/geoserver/geoserver/blob/main/src/extension/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/getfeature-empty.ftl)
+    - [ogc/features/getfeature-footer.ftl](https://github.com/geoserver/geoserver/blob/main/src/extension/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/getfeature-footer.ftl)
+    - [ogc/features/getfeature-header.ftl](https://github.com/geoserver/geoserver/blob/main/src/extension/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/getfeature-header.ftl)
 
     The above built-in examples are for GeoServer {{ release }}, please check for any changes when upgrading GeoServer.
 
@@ -65,7 +65,7 @@ Example showing how to customize a collections being listed:
 
 1.  The file **`ogc/features/collections.ftl`** lists published collection.
 
-    See the built-in template at: [collections.ftl](../../../../src/extension/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/collections.ftl)
+    See the built-in template at: [collections.ftl](https://github.com/geoserver/geoserver/blob/main/src/extension/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/collections.ftl)
 
 2.  Save file to **`GEOSERVER_DATA_DIR/workspace/templates/ogc/collections.ftl`**, and rewrite as:
 

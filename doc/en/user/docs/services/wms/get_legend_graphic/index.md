@@ -55,7 +55,7 @@ Here is a description of the various parameters that can be used in `LEGEND_OPTI
 > - **columns** enables **multicolumn** layout when layout is **vertical**. The value is the maximum columns number of legend. The rows used are equal to the next greater integer of <total of icons>/<number of columns>.
 > - **rows** enables **multirow** layout when layout is **horizontal**. The value is the maximum rows number of legend. The columns used are equal to the next greater integer of <total of icons>/<number of rows>.
 > - **grouplayout** Orientation of groups of layer, possible values are **horizontal** and **vertical** (default if not specified).
-> - **countMatched** When set to true, adds at the end of each label the number of features matching that rule in the current map. Requires extra parameters, see details in the [dedicated section](index.md#content-dependent).
+> - **countMatched** When set to true, adds at the end of each label the number of features matching that rule in the current map. Requires extra parameters, see details in the [dedicated section](#content-dependent).
 > - **hideEmptyRules** When set to true hides rules that are not matching any feature.
 > - **wrap** When set to true word wraps long legend labels, leading to taller legends but less wide ones.
 > - **wrap_limit** when set, it wraps the legend label with the specified number of pixels.

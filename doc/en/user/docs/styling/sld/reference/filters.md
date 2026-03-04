@@ -15,7 +15,7 @@ Comparison operators are used to specify conditions on the non-spatial attribute
 > - `<PropertyIsGreaterThan>`
 > - `<PropertyIsGreaterThanOrEqualTo>`
 
-These operators contain two [filter expressions](filters.md#sld_filter_expression) to be compared. The first operand is often a `<PropertyName>`, but both operands may be any expression, function or literal value.
+These operators contain two [filter expressions](#sld_filter_expression) to be compared. The first operand is often a `<PropertyName>`, but both operands may be any expression, function or literal value.
 
 Binary comparison operators may include a `matchCase` attribute with the value `true` or `false`. If this attribute is `true` (which is the default), string comparisons are case-sensitive. If the attribute is specified and has the value `false` strings comparisons do not check case.
 
@@ -33,7 +33,7 @@ Other available **value comparison operators** are:
 
 `<PropertyIsNull>` tests whether a property value is null. It contains a single `<PropertyName>` element containing the name of the property containing the value to be tested.
 
-`<PropertyIsBetween>` tests whether an expression value lies within a range. It contains a [filter expression](filters.md#sld_filter_expression) providing the value to test, followed by the elements `<LowerBoundary>` and `<UpperBoundary>`, each containing a [filter expression](filters.md#sld_filter_expression).
+`<PropertyIsBetween>` tests whether an expression value lies within a range. It contains a [filter expression](#sld_filter_expression) providing the value to test, followed by the elements `<LowerBoundary>` and `<UpperBoundary>`, each containing a [filter expression](#sld_filter_expression).
 
 ### Examples
 

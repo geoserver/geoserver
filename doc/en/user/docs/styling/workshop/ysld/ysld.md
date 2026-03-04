@@ -177,7 +177,7 @@ In the above example the label is defined using the CQL Expression ``NAME``. Thi
 
 Reference:
 
-- [Filter Syntax](http://suite.opengeo.org/docs/latest/cartography/ysld/reference/filters.html) (YSLD Reference)
+- [Filter Syntax](http://suite.opengeo.org/docs/latest/cartography/ysld/reference/filters.md) (YSLD Reference)
 - [ECQL Reference](../../../filter/ecql_reference.md) (User Guide)
 
 ### Variables
@@ -228,7 +228,7 @@ The syntax for using a variable block is to prepend the variable name with ``<<:
 >   <<: *varblock
 > ```
 
-- [Variables](http://suite.opengeo.org/docs/latest/cartography/ysld/reference/variables.html) (YSLD Reference)
+- [Variables](http://suite.opengeo.org/docs/latest/cartography/ysld/reference/variables.md) (YSLD Reference)
 
 ## Compare YSLD to SLD
 

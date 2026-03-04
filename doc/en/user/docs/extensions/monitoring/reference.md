@@ -7,8 +7,8 @@ The following is a list of all the attributes of a request that are captured by 
 | Attribute | Description | Type |
 |----|----|----|
 | ID | Numeric identifier of the request. Every request is assigned an identifier upon its creation. | Numeric |
-| Status | Status of the request. See [notes](reference.md#status) below. | String |
-| Category | The type of request being made, for example an OGC service request, a REST call, etc\... See [notes](reference.md#category) below. | String |
+| Status | Status of the request. See [notes](#status) below. | String |
+| Category | The type of request being made, for example an OGC service request, a REST call, etc\... See [notes](#category) below. | String |
 | Start time | The time of the start of the request. | Timestamp |
 | End time | The time of the completion of the request. | Timestamp |
 | Total time | The total time spent handling the request, measured in milliseconds, equal to the end time - start time. | Numeric |

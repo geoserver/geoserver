@@ -29,7 +29,7 @@ Unless otherwise specified, none of the filter functions in this reference are u
 | greaterThan | `x`:Object, `y`:Object | Returns true if `x` > `y`. Parameters can be either numbers or strings (in the second case lexicographic ordering is used) |
 | in2, in3, in4, in5, in6, in7, in8, in9, in10 | `candidate`:Object, `v1`:Object, \..., `v9`:Object | Returns true if `candidate` is equal to one of the `v1`, \..., `v9` values. Use the function name matching the number of arguments specified. |
 | in | `candidate`:Object, `v1`:Object, `v2`:Object, \... | Works exactly the same as the in2, \..., in10 functions described above, but takes any number of values as input. |
-| isLike | `string`:String, `pattern`:String | Returns true if the string matches the specified pattern. For the full syntax of the pattern specification see the [Java Pattern class javadocs](http://java.sun.com/javase/6/docs/api/java/util/regex/Pattern.html) |
+| isLike | `string`:String, `pattern`:String | Returns true if the string matches the specified pattern. For the full syntax of the pattern specification see the [Java Pattern class javadocs](http://java.sun.com/javase/6/docs/api/java/util/regex/Pattern.md) |
 | isNull | `obj`:Object | Returns true the passed parameter is `null`, false otherwise |
 | lessThan | `x`:Object, `y`:Object | Returns true if `x` < `y`. Parameters can be either numbers or strings (in the second case lexicographic ordering is used |
 | lessEqualThan | `x`:Object, `y`:Object | Returns true if `x` <= `y`. Parameters can be either numbers or strings (in the second case lexicographic ordering is used |
@@ -193,8 +193,8 @@ String functions generally will accept any type of value for `String` arguments.
 | strIndexOf | `string`:String, `substring`:String | Returns the index within this string of the first occurrence of the specified substring, or `-1` if not found |
 | strLastIndexOf | `string`:String, `substring`:String | Returns the index within this string of the last occurrence of the specified substring, or `-1` if not found |
 | strLength | `string`:String | Returns the string length |
-| strMatches | `string`:String, `pattern`:String | Returns true if the string matches the specified regular expression. For the full syntax of the pattern specification see the [Java Pattern class javadocs](http://java.sun.com/javase/6/docs/api/java/util/regex/Pattern.html) |
-| strReplace | `string`:String, `pattern`:String, `replacement`:String, `global`: boolean | Returns the string with the pattern replaced with the given replacement text. If the `global` argument is `true` then all occurrences of the pattern will be replaced, otherwise only the first. For the full syntax of the pattern specification see the [Java Pattern class javadocs](http://java.sun.com/javase/6/docs/api/java/util/regex/Pattern.html) |
+| strMatches | `string`:String, `pattern`:String | Returns true if the string matches the specified regular expression. For the full syntax of the pattern specification see the [Java Pattern class javadocs](http://java.sun.com/javase/6/docs/api/java/util/regex/Pattern.md) |
+| strReplace | `string`:String, `pattern`:String, `replacement`:String, `global`: boolean | Returns the string with the pattern replaced with the given replacement text. If the `global` argument is `true` then all occurrences of the pattern will be replaced, otherwise only the first. For the full syntax of the pattern specification see the [Java Pattern class javadocs](http://java.sun.com/javase/6/docs/api/java/util/regex/Pattern.md) |
 | strStartsWith | `string`:String, `prefix`:String | Returns true if `string` starts with `prefix` |
 | strStripAccents | `string`:String | Removes diacritics (\~= accents) from a string. The case will not be altered. |
 | strSubstring | `string`:String, `begin`:Integer, `end`:Integer | Returns a new string that is a substring of this string. The substring begins at the specified `begin` and extends to the character at index `endIndex - 1` (indexes are zero-based). |
@@ -207,9 +207,9 @@ String functions generally will accept any type of value for `String` arguments.
 
 | **Name** | **Arguments** | **Description** |
 |----|----|----|
-| dateFormat | `format`:String, `date`:Timestamp | Formats the specified date according to the provided format. The format syntax can be found in the [Java SimpleDateFormat javadocs](http://java.sun.com/javase/6/docs/api/java/text/SimpleDateFormat.html) |
-| dateParse | `format`:String, `dateString`:String | Parses a date from a `dateString` formatted according to the `format` specification. The format syntax can be found in the [Java SimpleDateFormat javadocs](http://java.sun.com/javase/6/docs/api/java/text/SimpleDateFormat.html) |
-| numberFormat | `format`:String, `number`:Double, `locale`:String | Formats the number according to the specified `format` using the default locale or the one provided as an optional argument. The format syntax can be found in the [Java DecimalFormat javadocs](http://java.sun.com/javase/6/docs/api/java/text/DecimalFormat.html) |
+| dateFormat | `format`:String, `date`:Timestamp | Formats the specified date according to the provided format. The format syntax can be found in the [Java SimpleDateFormat javadocs](http://java.sun.com/javase/6/docs/api/java/text/SimpleDateFormat.md) |
+| dateParse | `format`:String, `dateString`:String | Parses a date from a `dateString` formatted according to the `format` specification. The format syntax can be found in the [Java SimpleDateFormat javadocs](http://java.sun.com/javase/6/docs/api/java/text/SimpleDateFormat.md) |
+| numberFormat | `format`:String, `number`:Double, `locale`:String | Formats the number according to the specified `format` using the default locale or the one provided as an optional argument. The format syntax can be found in the [Java DecimalFormat javadocs](http://java.sun.com/javase/6/docs/api/java/text/DecimalFormat.md) |
 | parseBoolean | `boolean`:String | Parses a string into a boolean. The empty string, `f`, `0.0` and `0` are considered false, everything else is considered true. |
 | parseDouble | `number`:String | Parses a string into a double. The number can be expressed in normal or scientific form. |
 | parseInt | `number`:String | Parses a string into an integer. |

@@ -155,8 +155,8 @@ The button for adding rules can be found at the top of the **Rule List** table a
 - A name that is unique among the rules within the specific policy must be provided in the **Name** text field when adding a new rule.
 - The **Description** text field provides an optional description to help administrators understand what the rule does.
 - The **Enabled** checkbox will enable/disable the rule.
-- The **Request Filter** text field contains the filter to apply to each user request to determine whether to add this rule's directives to the CSP header value. (see [Request Filters](csp.md#security_csp_filters) below)
-- The **Header Directives** text field contains the CSP directives to add to the header value when a request matches this rule's filter. (see [Header Directives](csp.md#security_csp_directives) below)
+- The **Request Filter** text field contains the filter to apply to each user request to determine whether to add this rule's directives to the CSP header value. (see [Request Filters](#security_csp_filters) below)
+- The **Header Directives** text field contains the CSP directives to add to the header value when a request matches this rule's filter. (see [Header Directives](#security_csp_directives) below)
 
 !!! note
 
@@ -194,7 +194,7 @@ Leaving the filter blank will cause this rule to match all requests and should o
 
 !!! warning
 
-    GeoServer gives administrators complete control over the CSP header directives and sources and does not attempt to parse or validate them so it is the administrator's responsibility to verify that the header is working as intended when modifying this field. See [System Administrator CSP Settings](csp.md#security_csp_references) for detailed information about valid Content Security Policy header directives and sources.
+    GeoServer gives administrators complete control over the CSP header directives and sources and does not attempt to parse or validate them so it is the administrator's responsibility to verify that the header is working as intended when modifying this field. See [System Administrator CSP Settings](#security_csp_references) for detailed information about valid Content Security Policy header directives and sources.
 
 Property keys can be used in the directives in the form `${key}` and they will be replaced with the property's value before being written to the header. Property keys must contain `GeoServer`, `GeoTools`, or `GeoWebCache` (case-insensitive) and property values must not contain special characters that are not allowed in valid CSP sources. Properties can be set either via Java system property, command line argument (-D), environment variable or web.xml init parameter. `geoserver.csp.remoteResources` and `geoserver.csp.frameAncestors` are special property keys that will use the value from their corresponding fields in the CSP configuration if they are not defined as properties.
 
@@ -219,7 +219,7 @@ Enter the URL to test in the **Test URL** text field and press the **Test** butt
 
 ### CSP Configuration Overrides
 
-The following settings override the [Configuring CSP](csp.md#security_csp_strict) described above:
+The following settings override the [Configuring CSP](#security_csp_strict) described above:
 
 - The `geoserver.csp.remoteResources` system property will override **Allowed sources for remote web resources** field if it has been set.
 - The `geoserver.csp.frameAncestors` system property will override **Allowed frame-ancestors directive sources** field if it has been set.
@@ -271,6 +271,6 @@ For more information see [Serving Static Files](../tutorials/staticfiles.md).
 
 See the following pages for details about CSP:
 
-- [OWASP Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html)
+- [OWASP Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.md)
 - [Mozilla Reference](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy)
-- [Wicket Reference](https://nightlies.apache.org/wicket/guide/10.x/single.html#_content_security_policy_csp)
+- [Wicket Reference](https://nightlies.apache.org/wicket/guide/10.x/single.md#_content_security_policy_csp)

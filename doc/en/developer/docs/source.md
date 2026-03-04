@@ -147,7 +147,7 @@ Some useful reading on this subject:
 
 In order to commit the following steps must be taken:
 
-1.  Configure your git client for cross platform projects. See [notes](source.md#gitconfig) below.
+1.  Configure your git client for cross platform projects. See [notes](#gitconfig) below.
 2.  Register for commit access as described [here](policies/committing.md).
 3.  Fork the canonical GeoServer repository into your github account.
 4.  Clone the forked repository to create a local repository
@@ -232,7 +232,7 @@ Release branches are also present in all repositories.
 
 Feature branches are what developers use for day-to-day development. This can include small-scale bug fixes or major new features. Feature branches serve as a staging area for work that allows a developer to freely commit to them without affecting the primary branches. For this reason feature branches generally only live in a developer's local repository, and possibly their remote forked repository. Feature branches are never pushed up into the canonical repository.
 
-When a developer feels a particular feature is complete enough the feature branch is merged into a primary branch, usually `main`. If the work is suitable for the current stable branch the changeset can be ported back to the stable branch as well. This is explained in greater detail in the [Development workflow](source.md#source_workflow) section.
+When a developer feels a particular feature is complete enough the feature branch is merged into a primary branch, usually `main`. If the work is suitable for the current stable branch the changeset can be ported back to the stable branch as well. This is explained in greater detail in the [Development workflow](#source_workflow) section.
 
 ## Codebase structure
 
@@ -417,4 +417,4 @@ The content in this section is not intended to be a comprehensive introduction t
 
 - [10 useful git commands](http://webdeveloperplus.com/general/10-useful-advanced-git-commands/)
 - [Git stashing](http://git-scm.com/book/en/Git-Tools-Stashing)
-- [GeoTools git primer](http://docs.geotools.org/latest/developer/procedures/git.html)
+- [GeoTools git primer](http://docs.geotools.org/latest/developer/procedures/git.md)

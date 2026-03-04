@@ -13,7 +13,7 @@ Set the following performance settings in the Java virtual machine (JVM) for you
 | `-XX:SoftRefLRUPolicyMSPerMB=36000` | Increases the lifetime of "soft references" in GeoServer. GeoServer uses soft references to cache datastore, spatial reference systems, and other data structures. By increasing this value to `36000` (which is 36 seconds) these values will stay in memory longer increasing the effectiveness of the cache. |
 | `-XX:+UseParallelGC` | This garbage collector **pauses the application while using several threads to recover memory**. Recommended if your GeoServer will be under light load and can tolerate pauses to clean up memory. |
 | `-XX:+UseParNewGC` | Enables use of the concurrent mark sweep (CMS) garbage collector **uses multiple threads to recover memory while the application is running**. Recommended for GeoServer under continuous use, with heap sizes of less than 6GB. |
-| `–XX:+UseG1GC` | The default garbage collector since Java 9. Enables use of the [Garbage First Garbage Collector (G1)](http://www.oracle.com/technetwork/java/javase/tech/g1-intro-jsp-135488.html) using **background threads to scan memory while the application is running** prior to cleanup. Recommended for GeoServer under continuous load and heap sizes of 6GB or more. Additionally you may experiment with `-XX:+UseStringDeduplicationJVM` to ask G1 to better manage common text strings in memory. |
+| `–XX:+UseG1GC` | The default garbage collector since Java 9. Enables use of the [Garbage First Garbage Collector (G1)](http://www.oracle.com/technetwork/java/javase/tech/g1-intro-jsp-135488.md) using **background threads to scan memory while the application is running** prior to cleanup. Recommended for GeoServer under continuous load and heap sizes of 6GB or more. Additionally you may experiment with `-XX:+UseStringDeduplicationJVM` to ask G1 to better manage common text strings in memory. |
 
 For more information about JVM configuration, see the article [Performance tuning garbage collection in Java](http://www.petefreitag.com/articles/gctuning/) and [The 4 Java Garbage Collectors](http://blog.takipi.com/garbage-collectors-serial-vs-parallel-vs-cms-vs-the-g1-and-whats-new-in-java-8/).
 
@@ -85,7 +85,7 @@ GeoServer provides a built-in configuration interface to enable CORS. This is th
 
 ### Manual Configuration (Tomcat only)
 
-While the UI method above is recommended, administrators using Tomcat may still configure CORS manually via **`web.xml`** if desired. Please note that enabling the manual configuration is not compatible with the built-in configuration. Running them simultaneously will result in multiple allow origin values and will cause browser CORS failures. For detailed options, see the [Tomcat CORS Filter documentation](https://tomcat.apache.org/tomcat-9.0-doc/config/filter.html#CORS_Filter).
+While the UI method above is recommended, administrators using Tomcat may still configure CORS manually via **`web.xml`** if desired. Please note that enabling the manual configuration is not compatible with the built-in configuration. Running them simultaneously will result in multiple allow origin values and will cause browser CORS failures. For detailed options, see the [Tomcat CORS Filter documentation](https://tomcat.apache.org/tomcat-9.0-doc/config/filter.md#CORS_Filter).
 
 1.  Uncomment the following `<filter>` in **`webapps/geoserver/WEB-INF/web.xml`**:
 

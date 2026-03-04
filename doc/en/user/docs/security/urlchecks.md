@@ -34,7 +34,7 @@ Use the **Enable/Disable URL Checks** enable this safety feature:
 
 The buttons for adding and removing URL checks can be found at the top of the **URL Check list** table.
 
-To add a URL Check, press the **Add new URL check** button. You will be prompted to enter URL check details (as described in [Editing a URL Check](urlchecks.md#security_urlchecks_edit) below).
+To add a URL Check, press the **Add new URL check** button. You will be prompted to enter URL check details (as described in [Editing a URL Check](#security_urlchecks_edit) below).
 
 ## Removing a regular expression based check
 

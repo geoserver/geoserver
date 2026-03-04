@@ -11,7 +11,7 @@ Styles are used to control the appearance of geospatial data. Styles for GeoServ
 
 ## Styles page {: #styling_webadmin_styles }
 
-On the Styles page, you can [add a new style](index.md#styling_webadmin_add), [remove a style](index.md#styling_webadmin_remove), or [view or edit an existing style](index.md#styling_webadmin_edit).
+On the Styles page, you can [add a new style](#styling_webadmin_add), [remove a style](#styling_webadmin_remove), or [view or edit an existing style](#styling_webadmin_edit).
 
 ![](img/styles.png)
 *Styles page*
@@ -23,7 +23,7 @@ The buttons for adding and removing a style can be found at the top of the **Sty
 ![](img/styles_add_delete.png)
 *Adding or removing a style*
 
-To add a new style, click **Add a new style** button. You will be redirected to the new style page, which is the same as the Style Editor [Data](index.md#styling_webadmin_edit_data) tab.
+To add a new style, click **Add a new style** button. You will be redirected to the new style page, which is the same as the Style Editor [Data](#styling_webadmin_edit_data) tab.
 
 The editor page provides several options for submitting a new style:
 
@@ -59,12 +59,12 @@ Click **OK** to remove the selected style(s).
 
 On the Styles page, click a style name to open the **Style Editor**.
 
-The Style Editor page presents the [style definition](index.md#styling_webadmin_edit_definition). The page contains four tabs with many configuration options:
+The Style Editor page presents the [style definition](#styling_webadmin_edit_definition). The page contains four tabs with many configuration options:
 
-- [Data](index.md#styling_webadmin_edit_data): Includes basic style information, the ability to generate a style, and legend details
-- [Publishing](index.md#styling_webadmin_edit_publishing): Displays which layers are using this style
-- [Layer Preview](index.md#styling_webadmin_edit_preview): Previews the style with an associated layer while editing
-- [Layer Attributes](index.md#styling_webadmin_edit_attributes): Displays a list of attributes for the associated layer
+- [Data](#styling_webadmin_edit_data): Includes basic style information, the ability to generate a style, and legend details
+- [Publishing](#styling_webadmin_edit_publishing): Displays which layers are using this style
+- [Layer Preview](#styling_webadmin_edit_preview): Previews the style with an associated layer while editing
+- [Layer Attributes](#styling_webadmin_edit_attributes): Displays a list of attributes for the associated layer
 
 ![](img/styles_editor_tabs.png)
 *Style Editor tabs*
@@ -75,7 +75,7 @@ At the bottom of the Style Editor page is a number of options:
 |----|----|
 | **Validate** | Will test the current style for correctness according to the **Format** option selected. For SLD styles, it will check compliance against the SLD schema. Mind, the parser might be able to read and work with a formally incorrect style. |
 | **Save** | Makes the changes to the style and returns to the Styles page |
-| **Apply** | Makes the changes to the style and remain on the Style Editor page. This is useful to update the [Layer Preview](index.md#styling_webadmin_edit_preview) tab. |
+| **Apply** | Makes the changes to the style and remain on the Style Editor page. This is useful to update the [Layer Preview](#styling_webadmin_edit_preview) tab. |
 | **Cancel** | Cancels all changes to the style and returns to the Styles page |
 
 ![](img/styles_editor_validate_buttons.png)

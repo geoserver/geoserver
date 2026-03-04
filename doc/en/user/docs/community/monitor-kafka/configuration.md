@@ -22,7 +22,7 @@ The default value is `memory`, in order to use Apache Kafka the `storage` config
 
 In addition you can set the topic name with the `kafka.topic` property. The default value is `geoserver-monitor`.
 
-You can set all the Kafka properties for a kafka producer by prefixing it with the `kafka` keyword e.g. set the acks to 1 with `kafka.acks=1`. For further details on the Kafka producer properties see the [Kafka documentation](https://kafka.apache.org/documentation.html#producerconfigs).
+You can set all the Kafka properties for a kafka producer by prefixing it with the `kafka` keyword e.g. set the acks to 1 with `kafka.acks=1`. For further details on the Kafka producer properties see the [Kafka documentation](https://kafka.apache.org/documentation.md#producerconfigs).
 
 The following is an example of the `monitor.properties` file configured to use Apache Kafka:
 

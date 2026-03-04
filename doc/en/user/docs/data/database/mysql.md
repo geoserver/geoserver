@@ -10,7 +10,7 @@ render_macros: true
 
 !!! note
 
-    GeoServer does not come built-in with support for MySQL; it must be installed through an extension. Proceed to [Installing the MySQL extension](mysql.md#mysql_install) for installation details.
+    GeoServer does not come built-in with support for MySQL; it must be installed through an extension. Proceed to [Installing the MySQL extension](#mysql_install) for installation details.
 
 !!! warning
 

@@ -82,7 +82,7 @@ geofenceEntityManagerFactory.jpaPropertyMap[hibernate.validationQuery]=SELECT 1
 
 !!! note
 
-    The ``PostgisDialect`` is deprecated and should be replaced according to the PostgreSQL version used. Please use the proper dialect as reported in the [hibernate summary page](https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/spatial/dialect/postgis/package-summary.html)
+    The ``PostgisDialect`` is deprecated and should be replaced according to the PostgreSQL version used. Please use the proper dialect as reported in the [hibernate summary page](https://docs.jboss.org/hibernate/orm/5.6/javadocs/org/hibernate/spatial/dialect/postgis/package-summary.md)
 
 !!! note
 

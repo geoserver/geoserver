@@ -19,10 +19,10 @@ Controls a particular layer.
 
 | Method | Action | Status code | Formats | Default Format | Parameters |
 |----|----|----|----|----|----|
-| GET | Return layer `l` | 200 | HTML, XML, JSON | HTML | [quietOnNotFound](layers.md#rest_api_layers_quietOnNotFound) |
+| GET | Return layer `l` | 200 | HTML, XML, JSON | HTML | [quietOnNotFound](#rest_api_layers_quietOnNotFound) |
 | POST |  | 405 |  |  |  |
 | PUT | Modify layer `l` | 200 | XML,JSON |  |  |
-| DELETE | Delete layer `l` | 200 |  |  | [recurse](layers.md#rest_api_layers_recurse) |
+| DELETE | Delete layer `l` | 200 |  |  | [recurse](#rest_api_layers_recurse) |
 
 ### Exceptions
 

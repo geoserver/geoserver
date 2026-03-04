@@ -73,7 +73,7 @@ Available data store configuration parameters are summarized in the following ta
 
 Basic authentication is supported through the `user` and `passwd` credential parameters. The provided user must have superuser privilege on the index to enable the mapping and alias requests performed during store initialization. Note that aliases must already be present on the Elasticsearch index. If you enter an alias which is not present, the plugin will not generate it for you. Optional `proxy_user` and `proxy_passwd` parameters can be used to specify an alternate user for document search (OGC service) requests. The proxy user can have restricted privileges on the index through document level security. If not provided the default user is used for all requests.
 
-The `runas_geoserver_user` flag can be used to enable Elasticsearch requests to be submitted on behalf of the authenticated GeoServer user. When the run-as mechanism is configured the plugin will add the `es-security-runas-user` header with the authenticated GeoServer username. See [X-Pack run-as documentation](https://www.elastic.co/guide/en/x-pack/current/run-as-privilege.html) for more information. Note the run-as mechanism is applied only to document search requests.
+The `runas_geoserver_user` flag can be used to enable Elasticsearch requests to be submitted on behalf of the authenticated GeoServer user. When the run-as mechanism is configured the plugin will add the `es-security-runas-user` header with the authenticated GeoServer username. See [X-Pack run-as documentation](https://www.elastic.co/guide/en/x-pack/current/run-as-privilege.md) for more information. Note the run-as mechanism is applied only to document search requests.
 
 For added security it is recommended to define `proxy_user` and `proxy_passwd` when using the run-as mechanism. The proxy user will be used when submitting requests on behalf of the GeoServer user and can have restricted privileges enabling access only to documents that all users can have access to. The plugin can optionally be deployed to require user credentials and proxy credentials and to force the use of `runas_geoserver_user` by setting the environment variable `org.geoserver.elasticsearch.xpack.force-runas`:
 
@@ -88,7 +88,7 @@ System properties are supported for SSL/TLS configuration:
     javax.net.ssl.keyStore
     javax.net.ssl.keyStorePassword
 
-See [HttpClientBuilder](https://hc.apache.org/httpcomponents-userClient-ga/httpclient/apidocs/org/apache/http/impl/userClient/HttpClientBuilder.html) documentation for available properties.
+See [HttpClientBuilder](https://hc.apache.org/httpcomponents-userClient-ga/httpclient/apidocs/org/apache/http/impl/userClient/HttpClientBuilder.md) documentation for available properties.
 
 For example, use `javax.net.ssl.trustStore[Password]` to validate server certificate:
 

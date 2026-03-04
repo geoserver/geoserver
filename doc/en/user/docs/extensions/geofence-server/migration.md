@@ -4,7 +4,7 @@
 
 In GeoServer 2.27, GeoFence dependency for H2 moved from major version 1 to 2.3.
 
-The file format in the new version is not fully compatible with the previous one, so you may want to follow the instructions on the [H2 migration page](https://www.h2database.com/html/migration-to-v2.html) to use the new H2 version.
+The file format in the new version is not fully compatible with the previous one, so you may want to follow the instructions on the [H2 migration page](https://www.h2database.com/html/migration-to-v2.md) to use the new H2 version.
 
 If you are using H2 as a backend for GeoFence, please note that this is strongly discouraged and you should move to postgres/postgis or other spatially enabled DBMS.
 

@@ -1,6 +1,6 @@
 # Sphinx Syntax
 
-This page contains syntax rules, tips, and tricks for using Sphinx and reStructuredText. For more information, please see this [comprehensive guide to reStructuredText](https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html), as well as the [Sphinx reStructuredText Primer](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html).
+This page contains syntax rules, tips, and tricks for using Sphinx and reStructuredText. For more information, please see this [comprehensive guide to reStructuredText](https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.md), as well as the [Sphinx reStructuredText Primer](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.md).
 
 ## Basic markup
 
@@ -77,11 +77,11 @@ Links to other pages should never be titled as "here". Sphinx makes this easy by
 
 Bad
 
-:   More information about linking can be found [here](sphinx.md#linking).
+:   More information about linking can be found [here](#linking).
 
 Good
 
-:   For more information, please see the section on [Linking](sphinx.md#linking).
+:   For more information, please see the section on [Linking](#linking).
 
 To insert a link to an external website:
 

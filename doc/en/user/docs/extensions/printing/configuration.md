@@ -122,13 +122,13 @@ dpis:
 
 ### DPI and PDF Dimensions
 
-A chosen DPI value from the above configuration is used in WMS GetMap requests as an added format_options (GeoServer) or map_resolution (MapServer) parameter. This is used for symbol/label-rescaling suitable for high resolution printouts, see [Geoserver format_options specification](https://docs.geoserver.org/stable/en/user/services/wms/vendor.html) (Geoserver 2.1) and [MapServer defresolution keyword](http://mapserver.org/development/rfc/ms-rfc-55.html) (MapServer 5.6) for more information.
+A chosen DPI value from the above configuration is used in WMS GetMap requests as an added format_options (GeoServer) or map_resolution (MapServer) parameter. This is used for symbol/label-rescaling suitable for high resolution printouts, see [Geoserver format_options specification](https://docs.geoserver.org/stable/en/user/services/wms/vendor.md) (Geoserver 2.1) and [MapServer defresolution keyword](http://mapserver.org/development/rfc/ms-rfc-55.md) (MapServer 5.6) for more information.
 
 In general, PDF dimensions and positions are specified in points. 72 points == 1 inch == 25.4 mm.
 
 ### Getting Maps
 
-The list of {HOST_WHITELIST_DEFINITION} defines the allowed URLs for getting maps. Its format will be defined in [the next sub-section](configuration.html#host-whitelist-definition).
+The list of {HOST_WHITELIST_DEFINITION} defines the allowed URLs for getting maps. Its format will be defined in [the next sub-section](#host-whitelist-definition).
 
 The formats element lists the values formats that the server permits.
 
@@ -157,7 +157,7 @@ You can have as many layouts as you want. Their name must be unique and will be 
 
 A layout can have a "titlePage" that will be added at the beginning of the generated document. It cannot contain any map.
 
-The "mainPage" section is mandatory and will be used once for each page requested. The details of a {PAGE_DEFINITION} section can be found [in another sub-section of this document](configuration.html#page-definition).
+The "mainPage" section is mandatory and will be used once for each page requested. The details of a {PAGE_DEFINITION} section can be found [in another sub-section of this document](#page-definition).
 
 A layout "lastPage", will be added for the end of the document, and cannot contain any map.
 
@@ -304,7 +304,7 @@ metaData:
     ?     supportLegacyReader: false
 ```
 
-All fields are optional and can use global variables, as defined in the [Block definition](configuration.html#block-definition) chapter. Page specific variables are not accessible.
+All fields are optional and can use global variables, as defined in the [Block definition](#block-definition) chapter. Page specific variables are not accessible.
 
 ## Page definition
 
@@ -393,7 +393,7 @@ Some virtual variables can be used:
 - \${now}: The current date and time as defined by the machine's locale.
 - \${now FORMAT}: The current date and time as defined by the FORMAT string. The syntax is here: <http://java.sun.com/j2se/1.5.0/docs/api/java/text/SimpleDateFormat.html>.
 - \${configDir}: The absolute path to the directory of the configuration file.
-- \${format PRINTF VAR}: Format the value of VAR using the provided [PRINTF format](http://java.sun.com/j2se/1.5.0/docs/api/java/util/Formatter.html#syntax) (for example: %,d).
+- \${format PRINTF VAR}: Format the value of VAR using the provided [PRINTF format](http://java.sun.com/j2se/1.5.0/docs/api/java/util/Formatter.md#syntax) (for example: %,d).
 
 All the blocks can have a condition attribute that takes a spec attribute name. If the attribute name exists and is not equal to "false" or "0", the block is drawn. Otherwise, it is ignored. An exclamation mark may precede the condition to invert it, exclamation mark is part of yaml syntax, than the expression should be in quotes.
 
@@ -430,7 +430,7 @@ Typical "fontEncoding" values are:
 - Identity-V (vertical UTF-8)
 - MacRoman
 
-The "font" must refer to a standard PDF font or a [declared font](configuration.html#fonts-definition).
+The "font" must refer to a standard PDF font or a [declared font](#fonts-definition).
 
 ### HTML In Text Blocks
 
@@ -658,7 +658,7 @@ Allowed only within a *mainPage*.
     {...}
 ```
 
-Look [here](configuration.html#table-configuration) for how to specify the *tableConfig* field.
+Look [here](#table-configuration) for how to specify the *tableConfig* field.
 
 The *columnWeigth* (MF_V1.2 only) allows to define a weight for the column width. If you specify it for one column, you have to specify it for all of them. The width of a given column is tableWidth*columnWeight/sum(columnWeight).
 
@@ -685,7 +685,7 @@ The **source** value defines the name of the entry in the root of the client's *
 
 With this spec you would have to define 3 columnDefs with the names **id**, **name** and **icon**. Each cell definition blocks have access to all the values of the current row.
 
-The spec part is filled automatically by the 2 MapFish widgets when their [grids](http://www.mapfish.org/apidoc/trunk/files/mapfish/widgets/print/Base-js.html#mapfish.widgets.print.Base.grids) parameter is set.
+The spec part is filled automatically by the 2 MapFish widgets when their [grids](http://www.mapfish.org/apidoc/trunk/files/mapfish/widgets/print/Base-js.md#mapfish.widgets.print.Base.grids) parameter is set.
 
 Here is a crazy example of columnDef that will show the name of the icon and it's bitmap side-by-side inside a single column:
 
@@ -763,7 +763,7 @@ Display each layers along with its classes (icons and labels).
 
 **horizontalAlignment** can be left, right or center (default) and aligns all items left, right or in the center.
 
-**iconMaxWidth**, **iconMaxHeight**, **defaultScale** with value of 0 indicate that the value will be ignored, i.e. the values are automatically set to the equivalent of Infinity, Infinity and 1 respectively. If the legends URL passed to MapFish (see <http://mapfish.org/doc/print/protocol.html#print-pdf>) are obtained from a WMS GetLegendGraphic request, the width/height are only indicative (even more when a label text is included with [LEGEND_OPTIONS/forceLabels parameter](https://docs.geoserver.org/stable/en/user/services/wms/get_legend_graphic/index.html#controlling-legend-appearance-with-legend-options)) and it would be safer, in order to preserve scale coherence between legends and map, to set **iconMaxWidth** and **iconMaxHeight** to zero.
+**iconMaxWidth**, **iconMaxHeight**, **defaultScale** with value of 0 indicate that the value will be ignored, i.e. the values are automatically set to the equivalent of Infinity, Infinity and 1 respectively. If the legends URL passed to MapFish (see <http://mapfish.org/doc/print/protocol.html#print-pdf>) are obtained from a WMS GetLegendGraphic request, the width/height are only indicative (even more when a label text is included with [LEGEND_OPTIONS/forceLabels parameter](https://docs.geoserver.org/stable/en/user/services/wms/get_legend_graphic/index.md#controlling-legend-appearance-with-legend-options)) and it would be safer, in order to preserve scale coherence between legends and map, to set **iconMaxWidth** and **iconMaxHeight** to zero.
 
 **textMaxWidth/Height** and **iconMaxWidth/Height** define how wide/high the text/icon cells of a legend item can be. At this point textMaxHeight is ignored.
 
@@ -775,7 +775,7 @@ if **maxWidth** is set the whole legend gets a maximum width, just like other bl
 
 if **maxHeight** is set the whole legend gets a maximum height. This forces more than one column to appear if the legend is higher than the specified value. This can be used to enable the multi-column layout. 0 makes the maxHeight= max value, i.e. the equivalent of infinity.
 
-if **defaultScale** is non null it means that the legend image will be scaled so it doesn't take the full space. This can be overriden for individual classes in the spec JSON sent to the print module by adding an attribute called 'scale' and giving it a number. In conjunction with iconMaxWidth/Height this can be used to control average and also maximum width/height. If **defaultScale** equals 1, one pixel is scaled to one point (1/72 inch) in generated PDF. By default, as GeoServer legends are generated with \~90 dpi resolution (exactly 25.4/0.28), setting **defaultScale** value to 0.7937 (72*0.28/25.4) produces legend icons of same size as corresponding map icons. As the [LEGEND_OPTIONS/dpi GeoServer parameter](https://docs.geoserver.org/stable/en/user/services/wms/get_legend_graphic/index.html#controlling-legend-appearance-with-legend-options) is not handled by MapFish, the resolution will necessary be \~91 dpi, which may cause visual quality difference with the map.
+if **defaultScale** is non null it means that the legend image will be scaled so it doesn't take the full space. This can be overriden for individual classes in the spec JSON sent to the print module by adding an attribute called 'scale' and giving it a number. In conjunction with iconMaxWidth/Height this can be used to control average and also maximum width/height. If **defaultScale** equals 1, one pixel is scaled to one point (1/72 inch) in generated PDF. By default, as GeoServer legends are generated with \~90 dpi resolution (exactly 25.4/0.28), setting **defaultScale** value to 0.7937 (72*0.28/25.4) produces legend icons of same size as corresponding map icons. As the [LEGEND_OPTIONS/dpi GeoServer parameter](https://docs.geoserver.org/stable/en/user/services/wms/get_legend_graphic/index.md#controlling-legend-appearance-with-legend-options) is not handled by MapFish, the resolution will necessary be \~91 dpi, which may cause visual quality difference with the map.
 
 For this to work, you need to set the **layerTree** config option on MF print widgets, more precisely the legends should be present in the print.pdf JSON request.
 

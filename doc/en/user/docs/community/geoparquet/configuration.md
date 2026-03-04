@@ -285,4 +285,4 @@ The bucket name often hints at the region (`overturemaps-us-west-2`), but you ca
 - [GeoParquet Specification](https://geoparquet.org/)
 - [Apache Parquet Documentation](https://parquet.apache.org/)
 - [Overture Maps Foundation](https://overturemaps.org/)
-- [AWS S3 Best Practices](https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance.html)
+- [AWS S3 Best Practices](https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance.md)

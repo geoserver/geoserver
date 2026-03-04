@@ -6,7 +6,7 @@ Configuration targets three distinct environments:
 
   In this environment the GeoServer Administrator already has console access, and many settings are available in the Web administration interface to define proxy base url, log file location, or what file directories may be used for storage, that assume general knowledge of the environments and the ability to create folders and adjust file permissions.
 
-  See [GeoServer Administrator Guidance](config.md#production_config_geoserver_admin)
+  See [GeoServer Administrator Guidance](#production_config_geoserver_admin)
 
 - Less common case: The GeoServer Administrator does not have any sort of console access, and the System Administrator define configuration settings using [application properties](../configuration/properties/index.md).
 
@@ -14,13 +14,13 @@ Configuration targets three distinct environments:
 
   This is most often seen when a system administrator is providing hosting for a GeoServer administrator. It is also seen when GeoServer is used in a container environment where Environmental Variables are used for integration defining settings such proxy base url and log file location.
 
-  See [System Administrator Guidance](config.md#production_config_system_admin)
+  See [System Administrator Guidance](#production_config_system_admin)
 
 - Less common case: Configuring GeoServer with Workspace Administrators, where individuals each manage their own workspace contents, and web services.
 
   This is often seen when a GeoServer Administrator configures workspaces for different projects or teams. Settings such as [Filesystem sandboxing](../security/sandbox.md) to limited directory access are established with this environment in mind.
 
-  See [GeoServer Workspace Admin Guidance](config.md#production_config_workspace_admin)
+  See [GeoServer Workspace Admin Guidance](#production_config_workspace_admin)
 
 !!! note
 
@@ -278,7 +278,7 @@ When both `frame-ancestors` and `X-Frame-Options` are present, browsers that sup
 
 ### X-Content-Type-Options Policy
 
-In order to mitigate MIME confusion attacks (which often results in Cross-Site Scripting), GeoServer defaults to setting the `X-Content-Type-Options: nosniff` HTTP header. See the [OWASP X-Content-Type-Options entry](https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html#x-content-type-options) for details.
+In order to mitigate MIME confusion attacks (which often results in Cross-Site Scripting), GeoServer defaults to setting the `X-Content-Type-Options: nosniff` HTTP header. See the [OWASP X-Content-Type-Options entry](https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.md#x-content-type-options) for details.
 
 If you wish to change this behavior you can do so through the following property:
 
@@ -288,7 +288,7 @@ This property can be set either via Java system property, command line argument 
 
 ### X-XSS-Protection Policy
 
-GeoServer supports setting the X-XSS-Protection HTTP header in order to control the built-in reflected XSS filtering that existed in some older browsers. This header is **NOT** enabled by default since it does not affect modern browsers. Enabling the header without specifying a policy will default to Spring Security's default of `0` (which is also the current OWASP recommendation). See the [OWASP X-XSS-Protection entry](https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html#x-xss-protection) for details.
+GeoServer supports setting the X-XSS-Protection HTTP header in order to control the built-in reflected XSS filtering that existed in some older browsers. This header is **NOT** enabled by default since it does not affect modern browsers. Enabling the header without specifying a policy will default to Spring Security's default of `0` (which is also the current OWASP recommendation). See the [OWASP X-XSS-Protection entry](https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.md#x-xss-protection) for details.
 
 If you wish to change this behavior you can do so through the following properties:
 
@@ -299,7 +299,7 @@ These properties can be set either via Java system property, command line argume
 
 ### Strict-Transport-Security Policy
 
-In order to reduce the possibility of man-in-the-middle attacks GeoServer supports setting the Strict-Transport-Security HTTP header. This header is **NOT** enabled by default and, when enabled, this header will only be set on HTTPS requests. If a policy has not been set, the default policy will be the same as Spring Security's default of `max-age=31536000 ; includeSubDomains`. See the [OWASP Strict-Transport-Security entry](https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html#strict-transport-security-hsts) for details.
+In order to reduce the possibility of man-in-the-middle attacks GeoServer supports setting the Strict-Transport-Security HTTP header. This header is **NOT** enabled by default and, when enabled, this header will only be set on HTTPS requests. If a policy has not been set, the default policy will be the same as Spring Security's default of `max-age=31536000 ; includeSubDomains`. See the [OWASP Strict-Transport-Security entry](https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.md#strict-transport-security-hsts) for details.
 
 If you wish to change this behavior you can do so through the following properties:
 

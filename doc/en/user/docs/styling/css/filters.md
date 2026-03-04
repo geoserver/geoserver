@@ -72,7 +72,7 @@ For example, to only render outlines for the states whose names start with lette
 
 !!! note
 
-    The current implementation of property filters uses ECQL syntax, described on the [GeoTools documentation](https://docs.geotools.org/latest/userguide/library/cql/index.html).
+    The current implementation of property filters uses ECQL syntax, described on the [GeoTools documentation](https://docs.geotools.org/latest/userguide/library/cql/index.md).
 
 ## Filtering on type
 

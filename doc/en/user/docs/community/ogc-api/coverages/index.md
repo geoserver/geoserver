@@ -26,7 +26,7 @@ Missing functionality at the time of writing, and known issues:
 
 | [OGC API - Coverages](https://github.com/opengeospatial/ogcapi-coverages) | Version | Implementation status |
 |----|----|----|
-| Part 1: Core | [Draft](https://docs.ogc.org/DRAFTS/19-087.html) | Implementation based on early specification draft, not yet updated to final version |
+| Part 1: Core | [Draft](https://docs.ogc.org/DRAFTS/19-087.md) | Implementation based on early specification draft, not yet updated to final version |
 
 ## Installing the GeoServer OGC API - Coverages module
 

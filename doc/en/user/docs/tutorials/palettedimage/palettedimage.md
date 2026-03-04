@@ -31,7 +31,7 @@ These output formats, if no other parameters are provided, do compute the optima
 
 Optimal palette computation is anyways a repetitive work that can be done up front: a user can compute the optimal palette once, and tell GeoServer to use it. There are three ways to do so:
 
-1.  Use the [internet safe palette](http://www.intuitive.com/coolweb/colors.html), a standard palette built in into GeoServer, by appending `palette=safe` to the `GetMap` request.
+1.  Use the [internet safe palette](http://www.intuitive.com/coolweb/colors.md), a standard palette built in into GeoServer, by appending `palette=safe` to the `GetMap` request.
 
 2.  Provide a palette by example. In this case, the user will generate an 256 color images using an external program (such as Photoshop), and then will save it into the `$GEOSERVER_DATA_DIR/palettes` directory. The sample file can be either in GIF or PNG format. If the file is named mypalette.gif or mypalette.png, the user will be able to refer it appending `palette=mypalette` to the GetMap request. GeoServer will load the palette from the file and use it.
 

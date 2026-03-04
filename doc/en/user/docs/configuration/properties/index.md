@@ -418,4 +418,4 @@ The HTTP client library respects the following java system properties:
 
 Reference:
 
-- [HttpClientBuilder](https://hc.apache.org/httpcomponents-client-4.5.x/current/httpclient/apidocs/index.html?org/apache/http/impl/client/HttpClientBuilder.html)
+- [HttpClientBuilder](https://hc.apache.org/httpcomponents-client-4.5.x/current/httpclient/apidocs/index.html?org/apache/http/impl/client/HttpClientBuilder.md)

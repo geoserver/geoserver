@@ -14,9 +14,9 @@ All contributors are asked to provide an assignment agreement for working on the
 
 GeoServer is grateful that organizations of all shapes and sizes support our project with in-kind participation of their employees. Extending commit access is made to individuals directly based on their expertise demonstrated over time.
 
-This agreement can be printed, signed, scanned and emailed to <info@osgeo.org> at Open Source Geospatial Foundation (OSGeo). [OSGeo](http://www.osgeo.org/content/foundation/about.html) is the non-profit which holds the GeoServer codebase for the community.
+This agreement can be printed, signed, scanned and emailed to <info@osgeo.org> at Open Source Geospatial Foundation (OSGeo). [OSGeo](http://www.osgeo.org/content/foundation/about.md) is the non-profit which holds the GeoServer codebase for the community.
 
-The [contribution licenses](http://www.osgeo.org/content/foundation/legal/licenses.html) are used by OSGeo projects seeking to assign copyright directly to the foundation. These licenses are directly derived from the Apache code contribution licenses (CLA V2.0 and CCLA v r190612).
+The [contribution licenses](http://www.osgeo.org/content/foundation/legal/licenses.md) are used by OSGeo projects seeking to assign copyright directly to the foundation. These licenses are directly derived from the Apache code contribution licenses (CLA V2.0 and CCLA v r190612).
 
 ### Community commit access
 
@@ -102,4 +102,4 @@ There is not much in the way of strict commit policies when it comes to committi
 
     Ensure that the IDE or editor used to edit source files is setup with proper formatting rules. This means spaces instead of tabs, 100 character line break, etc\...
 
-    If using Eclipse ensure you have configured it with the [template and formatter](http://docs.geotools.org/latest/developer/conventions/code/style.html#use-of-formatting-tools) used for GeoTools.
+    If using Eclipse ensure you have configured it with the [template and formatter](http://docs.geotools.org/latest/developer/conventions/code/style.md#use-of-formatting-tools) used for GeoTools.

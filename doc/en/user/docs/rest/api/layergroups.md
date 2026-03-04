@@ -19,7 +19,7 @@ Controls a particular layer group.
 
 | Method | Action | Status code | Formats | Default Format | Parameters |
 |----|----|----|----|----|----|
-| GET | Return layer group `lg` | 200 | HTML, XML, JSON | HTML | [quietOnNotFound](layergroups.md#rest_api_layergroups_quietOnNotFound) |
+| GET | Return layer group `lg` | 200 | HTML, XML, JSON | HTML | [quietOnNotFound](#rest_api_layergroups_quietOnNotFound) |
 | POST |  | 405 |  |  |  |
 | PUT | Modify layer group `lg` | 200 | XML,JSON |  |  |
 | DELETE | Delete layer group `lg` | 200 |  |  |  |
@@ -55,7 +55,7 @@ Controls a particular layer group in a given workspace.
 
 | Method | Action | Status code | Formats | Default Format |  |
 |----|----|----|----|----|----|
-| GET | Return layer group `lg` within workspace `ws` | 200 | HTML, XML, JSON | HTML | [quietOnNotFound](layergroups.md#rest_api_layergroups_quietOnNotFound) |
+| GET | Return layer group `lg` within workspace `ws` | 200 | HTML, XML, JSON | HTML | [quietOnNotFound](#rest_api_layergroups_quietOnNotFound) |
 | POST |  | 405 |  |  |  |
 | PUT | Modify layer group `lg` within workspace `ws` | 200 | XML,JSON |  |  |
 | DELETE | Delete layer group `lg` within workspace `ws` | 200 |  |  |  |

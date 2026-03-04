@@ -56,7 +56,7 @@ There is one layer for this style, which is the simplest possible situation. Sty
 
 ## Simple polygon with stroke {: #mbstyle_cookbook_polygons_simplepolygonwithstroke }
 
-This example adds a 1 pixel white outline to the [Simple polygon](polygons.md#mbstyle_cookbook_polygons_simplepolygon) example.
+This example adds a 1 pixel white outline to the [Simple polygon](#mbstyle_cookbook_polygons_simplepolygon) example.
 
 ![](../../sld/cookbook/images/polygon_simplepolygonwithstroke.png)
 *Simple polygon with stroke*
@@ -84,11 +84,11 @@ This example adds a 1 pixel white outline to the [Simple polygon](polygons.md#mb
 
 ### Details
 
-This example is similar to the [Simple polygon](polygons.md#mbstyle_cookbook_polygons_simplepolygon) example above, with the addition of `fill-outline` paint parameter (**line 9**). **Line 9** also sets the color of stroke to white (`'#FFFFFF'`), the `"fill-outline-color"` can only be 1 pixel, a limitation of MBStyle.
+This example is similar to the [Simple polygon](#mbstyle_cookbook_polygons_simplepolygon) example above, with the addition of `fill-outline` paint parameter (**line 9**). **Line 9** also sets the color of stroke to white (`'#FFFFFF'`), the `"fill-outline-color"` can only be 1 pixel, a limitation of MBStyle.
 
 ## Transparent polygon
 
-This example builds on the [Simple polygon with stroke](polygons.md#mbstyle_cookbook_polygons_simplepolygonwithstroke) example and makes the fill partially transparent by setting the opacity to 50%.
+This example builds on the [Simple polygon with stroke](#mbstyle_cookbook_polygons_simplepolygonwithstroke) example and makes the fill partially transparent by setting the opacity to 50%.
 
 ![](../../sld/cookbook/images/polygon_transparentpolygon.png)
 *Transparent polygon*
@@ -117,4 +117,4 @@ This example builds on the [Simple polygon with stroke](polygons.md#mbstyle_cook
 
 ### Details
 
-This example is similar to the [Simple polygon with stroke](polygons.md#mbstyle_cookbook_polygons_simplepolygonwithstroke) example, save for defining the fill's opacity in **line 11**. The value of 0.5 results in partially transparent fill that is 50% opaque. An opacity value of 1 would draw the fill as 100% opaque, while an opacity value of 0 would result in a completely transparent (0% opaque) fill. In this example, since the background is white, the dark blue looks lighter. Were the fill imposed on a dark background, the resulting color would be darker.
+This example is similar to the [Simple polygon with stroke](#mbstyle_cookbook_polygons_simplepolygonwithstroke) example, save for defining the fill's opacity in **line 11**. The value of 0.5 results in partially transparent fill that is 50% opaque. An opacity value of 1 would draw the fill as 100% opaque, while an opacity value of 0 would result in a completely transparent (0% opaque) fill. In this example, since the background is white, the dark blue looks lighter. Were the fill imposed on a dark background, the resulting color would be darker.

@@ -80,7 +80,7 @@ where `id` is the numeric identifier of a single request, and `format` specifies
     > - `application/zip`
     > - `application/vnd.ms-excel`
     
-    See the [HTTP specification](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html) for more information about the `Accept` header.
+    See the [HTTP specification](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.md) for more information about the `Accept` header.
 
 ### Request Set Query
 

@@ -27,9 +27,9 @@ There are five possible sub-elements of the `<Graphic>` element. One of `<Extern
 |----|----|----|
 | `<ExternalGraphic>` | No (when using `<Mark>`) | Specifies an external image file to use as the symbol. |
 | `<Mark>` | No (when using `<ExternalGraphic>`) | Specifies a named shape to use as the symbol. |
-| `<Opacity>` | No | Specifies the opacity (transparency) of the symbol. Values range from `0` (completely transparent) to `1` (completely opaque). Value may contain [expressions](pointsymbolizer.md#sld_reference_parameter_expressions). Default is `1` (opaque). |
-| `<Size>` | No | Specifies the size of the symbol, in pixels. When used with an image file, this specifies the height of the image, with the width being scaled accordingly. if omitted the native symbol size is used. Value may contain [expressions](pointsymbolizer.md#sld_reference_parameter_expressions). |
-| `<Rotation>` | No | Specifies the rotation of the symbol about its center point, in decimal degrees. Positive values indicate rotation in the clockwise direction, negative values indicate counter-clockwise rotation. Value may contain [expressions](pointsymbolizer.md#sld_reference_parameter_expressions). Default is `0`. |
+| `<Opacity>` | No | Specifies the opacity (transparency) of the symbol. Values range from `0` (completely transparent) to `1` (completely opaque). Value may contain [expressions](#sld_reference_parameter_expressions). Default is `1` (opaque). |
+| `<Size>` | No | Specifies the size of the symbol, in pixels. When used with an image file, this specifies the height of the image, with the width being scaled accordingly. if omitted the native symbol size is used. Value may contain [expressions](#sld_reference_parameter_expressions). |
+| `<Rotation>` | No | Specifies the rotation of the symbol about its center point, in decimal degrees. Positive values indicate rotation in the clockwise direction, negative values indicate counter-clockwise rotation. Value may contain [expressions](#sld_reference_parameter_expressions). Default is `0`. |
 
 ### ExternalGraphic
 

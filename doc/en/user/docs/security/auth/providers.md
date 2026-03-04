@@ -72,4 +72,4 @@ The provider takes the username/password from the incoming request and attempts 
 
 !!! note
 
-    To use the user/group service for password verification, please see the section on [Username/password authentication](providers.md#security_auth_provider_userpasswd).
+    To use the user/group service for password verification, please see the section on [Username/password authentication](#security_auth_provider_userpasswd).

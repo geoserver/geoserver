@@ -80,7 +80,7 @@ If using a function, it must evaluate to match the type expected by the property
 
 !!! note
 
-    The following discussion is taken from basic YAML syntax. Please refer to the [YAML specification](http://yaml.org/spec/1.2/spec.html) if necessary.
+    The following discussion is taken from basic YAML syntax. Please refer to the [YAML specification](http://yaml.org/spec/1.2/spec.md) if necessary.
 
 There are three types of objects in a YSLD document:
 

@@ -6,7 +6,7 @@ Filters are used to select features or other objects from the context in which t
 
 ## Condition {: #filter_condition }
 
-A condition is a single [Predicate](filter_reference.md#filter_predicate) element, or a combination of conditions by [Logical operators](filter_reference.md#filter_logical).
+A condition is a single [Predicate](#filter_predicate) element, or a combination of conditions by [Logical operators](#filter_logical).
 
 ## Predicate {: #filter_predicate }
 
@@ -31,8 +31,8 @@ They contain the elements:
 
 | **Element** | **Required?** | **Description** |
 |----|----|----|
-| [Expression](filter_reference.md#filter_expression) | Yes | The first value to compare. Often a `<PropertyName>`. |
-| [Expression](filter_reference.md#filter_expression) | Yes | The second value to compare |
+| [Expression](#filter_expression) | Yes | The first value to compare. Often a `<PropertyName>`. |
+| [Expression](#filter_expression) | Yes | The second value to compare |
 
 Binary comparison operator elements may include an optional `matchCase` attribute, with the value `true` or `false`. If this attribute is `true` (the default), string comparisons are case-sensitive. If the attribute is `false` strings comparisons do not check case.
 
@@ -65,9 +65,9 @@ The `<PropertyIsBetween>` operator tests whether an expression value lies within
 
 | **Element** | **Required?** | **Description** |
 |----|----|----|
-| [Expression](filter_reference.md#filter_expression) | Yes | The value to test |
-| `<LowerBoundary>` | Yes | Contains an [Expression](filter_reference.md#filter_expression) giving the lower bound of the range |
-| `<UpperBoundary>` | Yes | Contains an [Expression](filter_reference.md#filter_expression) giving the upper bound of the range |
+| [Expression](#filter_expression) | Yes | The value to test |
+| `<LowerBoundary>` | Yes | Contains an [Expression](#filter_expression) giving the lower bound of the range |
+| `<UpperBoundary>` | Yes | Contains an [Expression](#filter_expression) giving the upper bound of the range |
 
 ### Spatial operators
 
@@ -163,18 +163,18 @@ The `<BBOX>` operator tests whether a geometry-valued property intersects a fixe
 
 ## Logical operators {: #filter_logical }
 
-Logical operators are used to specify logical combinations of [Condition](filter_reference.md#filter_condition) elements (which may be either [Predicate](filter_reference.md#filter_predicate) elements or other **logical operators**). They may be nested to any depth.
+Logical operators are used to specify logical combinations of [Condition](#filter_condition) elements (which may be either [Predicate](#filter_predicate) elements or other **logical operators**). They may be nested to any depth.
 
 The following logical operators are available:
 
 > - `<And>` - computes the logical conjunction of the operands
 > - `<Or>` - computes the logical disjunction of the operands
 
-The content for `<And>` and `<Or>` is two operands given by [Condition](filter_reference.md#filter_condition) elements.
+The content for `<And>` and `<Or>` is two operands given by [Condition](#filter_condition) elements.
 
 > - `<Not>` - computes the logical negation of the operand
 
-The content for `<Not>` is a single operand given by a [Condition](filter_reference.md#filter_condition) element.
+The content for `<Not>` is a single operand given by a [Condition](#filter_condition) element.
 
 ### Examples
 
@@ -210,11 +210,11 @@ The **arithmetic operator** elements compute arithmetic operations on numeric va
 > - `<Mul>` - multiplies the two operands
 > - `<Div>` - divides the first operand by the second
 
-Each arithmetic operator element contains two [Expression](filter_reference.md#filter_expression) elements providing the operands.
+Each arithmetic operator element contains two [Expression](#filter_expression) elements providing the operands.
 
 ### Function
 
-The `<Function>` element specifies a filter function to be evaluated. The required `name` attribute gives the function name. The element contains a sequence of zero or more [Expression](filter_reference.md#filter_expression) elements providing the values of the function arguments.
+The `<Function>` element specifies a filter function to be evaluated. The required `name` attribute gives the function name. The element contains a sequence of zero or more [Expression](#filter_expression) elements providing the values of the function arguments.
 
 See the [Filter Function Reference](function_reference.md) for details of the functions provided by GeoServer.
 

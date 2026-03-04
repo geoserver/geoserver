@@ -8,7 +8,7 @@ This guide details the process of performing a GeoServer release.
 
 For any release (including release candidates) a GeoServer release requires the corresponding GeoTools and GeoWebCache releases. Therefore, before you start you should coordinate a release with these projects, either performing the release yourself or asking a volunteer to perform the release.
 
-- [GeoTools Release Guide](https://docs.geotools.org/latest/developer/procedures/release.html)
+- [GeoTools Release Guide](https://docs.geotools.org/latest/developer/procedures/release.md)
 - [GeoWebCache Release repo README.md](https://github.com/GeoWebCache/gwc-release)
 
 ### Notify developer group
@@ -119,10 +119,10 @@ The [GeoServer website](https://geoserver.org/) is managed as a [GitHub Pages re
 
           ![](/img/posts/2.26/filesystem-sandbox.png)
 
-        Thanks to Andrea (GeoSolutions) for this important improvement at the bequest of [Munich RE](https://www.munichre.com/en.html).
+        Thanks to Andrea (GeoSolutions) for this important improvement at the bequest of [Munich RE](https://www.munichre.com/en.md).
 
         - [GSIP 229 - File system access isolation](https://github.com/geoserver/geoserver/wiki/GSIP-229)
-        - [File system sandboxing](https://docs.geoserver.org/2.26.x/en/user/security/sandbox.html) (User Manual)
+        - [File system sandboxing](https://docs.geoserver.org/2.26.x/en/user/security/sandbox.md) (User Manual)
 
     For the initial release in a series there may be several new features to document in this manner.
 
@@ -321,7 +321,7 @@ to the SourceForge FRS server. Navigate to [SourceForge](https://sourceforge.net
 
 ## Cite Certification
 
-For a major (2.xx.0) release, follow the [instructions](https://docs.geoserver.org/main/en/developer/cite-test-guide/index.html#cite-certification) to obtain certification, and include it in the release notes below.
+For a major (2.xx.0) release, follow the [instructions](https://docs.geoserver.org/main/en/developer/cite-test-guide/index.md#cite-certification) to obtain certification, and include it in the release notes below.
 
 ## Release notes
 

@@ -6,8 +6,8 @@ The `GeoServer` interface is configured as a spring bean with access to:
 
 - [Catalogue API](catalog.md)
 - [Resource API](resource.md)
-- [GeoServerInfo](geoserver.md#config_geoserver_info)
-- [SettingsInfo](geoserver.md#config_settings)
+- [GeoServerInfo](#config_geoserver_info)
+- [SettingsInfo](#config_settings)
 
 Access to `GeoServer` configuration is available to spring beans during application startup and shutdown:
 

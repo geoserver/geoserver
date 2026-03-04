@@ -14,7 +14,7 @@ This tutorial shows how to use the geotools feature-pregeneralized module in Geo
 
 This module needs features with already generalized geometries, selecting the best fit geometry on demand.
 
-The full documentation is available in [GeoTools Pregeneralized Plugin](https://docs.geotools.org/latest/userguide/library/data/pregeneralized.html) documentation.
+The full documentation is available in [GeoTools Pregeneralized Plugin](https://docs.geotools.org/latest/userguide/library/data/pregeneralized.md) documentation.
 
 This tutorial will show two possible scenarios, explaining step by step what to do for using this module in GeoServer.
 

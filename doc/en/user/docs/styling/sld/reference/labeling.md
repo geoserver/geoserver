@@ -244,7 +244,7 @@ Grouping works by collecting all features with the same label text, then choosin
 | Line Set | Lines are joined together, clipped to the view rectangle, and the longest path is used. |
 | Polygon Set | Polygons are clipped to the view rectangle, and the largest polygon is used. |
 
-If desired the labeller can be forced to label every element in a group by specifying the [labelAllGroup](labeling.md#labeling_all_group) option.
+If desired the labeller can be forced to label every element in a group by specifying the [labelAllGroup](#labeling_all_group) option.
 
 !!! warning
 
@@ -262,7 +262,7 @@ When the `group` option is used, geometries with the same label are grouped toge
 
 ### labelAllGroup {: #labeling_all_group }
 
-The `labelAllGroup` option can be used in conjunction with the `group` option (see [Grouping Features (group)](labeling.md#labeling_group)). It causes *all* of the disjoint paths in a line group to be labeled, not just the longest one.
+The `labelAllGroup` option can be used in conjunction with the `group` option (see [Grouping Features (group)](#labeling_group)). It causes *all* of the disjoint paths in a line group to be labeled, not just the longest one.
 
 ``` xml
 <VendorOption name="labelAllGroup">true</VendorOption>
@@ -324,7 +324,7 @@ The `maxDisplacement` option controls the displacement of the label along a line
 
 For lines, normally GeoServer labels a line at its center point only. If this label conflicts with another one it may not be displayed at all. When this option is enabled the labeller will attempt to avoid conflic by using an alternate location within **maxDisplacement** pixels along the line from the pre-computed label point.
 
-If used in conjunction with [repeat](labeling.md#labeling_repeat), the value for `maxDisplacement` should always be **lower** than the value for `repeat`.
+If used in conjunction with [repeat](#labeling_repeat), the value for `maxDisplacement` should always be **lower** than the value for `repeat`.
 
 For points this causes the renderer to start circling around the point in search of a empty stop to place the label, step by step increasing the size of the circle until the max displacement is reached. The same happens for polygons, around the polygon labelling point (normally the centroid).
 
@@ -342,7 +342,7 @@ The `repeat` option determines how often GeoServer displays labels along a line.
 
 ### maxAngleDelta {: #labeling_max_angle_delta }
 
-When used in conjunction with [followLine](labeling.md#labeling_follow_line), the `maxAngleDelta` option sets the maximum angle, in degrees, between two subsequent characters in a curved label. Large angles create either visually disconnected words or overlapping characters. It is advised not to use angles larger than 30.
+When used in conjunction with [followLine](#labeling_follow_line), the `maxAngleDelta` option sets the maximum angle, in degrees, between two subsequent characters in a curved label. Large angles create either visually disconnected words or overlapping characters. It is advised not to use angles larger than 30.
 
 ``` xml
 <VendorOption name="maxAngleDelta">15</VendorOption>

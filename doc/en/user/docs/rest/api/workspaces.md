@@ -19,10 +19,10 @@ Controls a specific workspace.
 
 | Method | Action | Status code | Formats | Default Format | Parameters |
 |----|----|----|----|----|----|
-| GET | Return workspace `ws` | 200 | HTML, XML, JSON | HTML | [quietOnNotFound](workspaces.md#rest_api_workspaces_quietOnNotFound) |
+| GET | Return workspace `ws` | 200 | HTML, XML, JSON | HTML | [quietOnNotFound](#rest_api_workspaces_quietOnNotFound) |
 | POST |  | 405 |  |  |  |
 | PUT | 200 | Modify workspace `ws` | XML, JSON |  |  |
-| DELETE | 200 | Delete workspace `ws` | XML, JSON |  | [recurse](workspaces.md#rest_api_workspaces_recurse) |
+| DELETE | 200 | Delete workspace `ws` | XML, JSON |  | [recurse](#rest_api_workspaces_recurse) |
 
 ### Exceptions
 

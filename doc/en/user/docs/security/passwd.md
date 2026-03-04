@@ -11,7 +11,7 @@ A GeoServer configuration stores two types of passwords:
 
 As these passwords are typically stored on disk it is strongly recommended that they be encrypted and not stored as human-readable text. GeoServer security provides four schemes for encrypting passwords: **empty**, **plain text**, **Digest**, and **Password-based encryption (PBE)**.
 
-The password encryption scheme is specified as a global setting that affects the encryption of passwords used for external resources, and as an encryption scheme for each [user/group service](usergrouprole/usergroupservices.md). The encryption scheme for external resources has to be [reversible](passwd.md#security_passwd_reversible), while the user/group services can use any scheme.
+The password encryption scheme is specified as a global setting that affects the encryption of passwords used for external resources, and as an encryption scheme for each [user/group service](usergrouprole/usergroupservices.md). The encryption scheme for external resources has to be [reversible](#security_passwd_reversible), while the user/group services can use any scheme.
 
 ### Empty
 
@@ -23,7 +23,7 @@ Plain text passwords provide no encryption at all. In this case, passwords are h
 
 ### Digest
 
-Digest encryption is not reversible. It applies, 100,000 times through an iterative process, a SHA-256 [cryptographic hash function](http://en.wikipedia.org/wiki/Cryptographic_hash_function) to passwords. This scheme is "one-way" in that it is virtually impossible to reverse and obtain the original password from its hashed representation. Please see the section on [Reversible encryption](passwd.md#security_passwd_reversible) for more information on reversibility.
+Digest encryption is not reversible. It applies, 100,000 times through an iterative process, a SHA-256 [cryptographic hash function](http://en.wikipedia.org/wiki/Cryptographic_hash_function) to passwords. This scheme is "one-way" in that it is virtually impossible to reverse and obtain the original password from its hashed representation. Please see the section on [Reversible encryption](#security_passwd_reversible) for more information on reversibility.
 
 To protect from well known attacks, a random value called a [salt](http://en.wikipedia.org/wiki/Salt_%28cryptography%29) is added to the password when generating the key. For each digesting, a separate random salt is used. Digesting the same password twice results in different hashed representations.
 
@@ -55,7 +55,7 @@ For a reversible password to provide a meaningful level of security, access to t
 
 GeoServer uses its own keystore for this purpose named `geoserver.jceks` which is located in the `security` directory in the GeoServer data directory. This file is stored in the JCEKS format rather than the default JKS. JKS does not support storing shared keys.
 
-The GeoServer keystore is password protected with a [Keystore password](passwd.md#security_master_passwd). It is possible to access the contents of the keystore with external tools such as [keytool](https://docs.oracle.com/en/java/javase/17/docs/specs/man/keytool.html). For example, this following command would prompt for the keystore password and list the contents of the keystore:
+The GeoServer keystore is password protected with a [Keystore password](#security_master_passwd). It is possible to access the contents of the keystore with external tools such as [keytool](https://docs.oracle.com/en/java/javase/17/docs/specs/man/keytool.md). For example, this following command would prompt for the keystore password and list the contents of the keystore:
 
 ``` bash
 $ keytool -list -keystore geoserver.jceks -storetype "JCEKS"
@@ -65,7 +65,7 @@ $ keytool -list -keystore geoserver.jceks -storetype "JCEKS"
 
 It is also possible to set a **keystore password** for GeoServer. This password serves two purposes:
 
-- Protect access to the [keystore](passwd.md#security_passwd_keystore)
+- Protect access to the [keystore](#security_passwd_keystore)
 - Protect access to the optional [root account](root.md) login
 
 By default, the keystore password is generated and stored in a file named `security/masterpw.info` using plain text. When upgrading from an existing GeoServer data directory (versions 2.1.x and lower), the algorithm attempts to figure out the password of a user with the role `ROLE_ADMINISTRATOR`. If such a password is found and the password length is 8 characters at minimum, GeoServer uses this password as keystore password. Again, the name of the chosen user is found in `security/masterpw.info`.

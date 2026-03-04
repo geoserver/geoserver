@@ -4,7 +4,7 @@ GeoServer exists because of the efforts of people like you.
 
 There are many ways that you can help out with the GeoServer project. GeoServer fully embraces an open source development model that does not see a split between user and developer, producer and consumer, but instead sees everyone as a valuable contributor.
 
-GeoServer operates with full transparency with public [policies and procedures](https://docs.geoserver.org/latest/en/developer/policies/index.html). We look forward to working with you.
+GeoServer operates with full transparency with public [policies and procedures](https://docs.geoserver.org/latest/en/developer/policies/index.md). We look forward to working with you.
 
 ## Development
 
@@ -16,7 +16,7 @@ To learn more about contributing to the GeoServer codebase, we recommend reading
 
 !!! note
 
-    For [commit access](https://docs.geoserver.org/latest/en/developer/policies/committing.html) new developers can request to work on a community module immediately, or make contributions over time to earn a nomination for full commit access.
+    For [commit access](https://docs.geoserver.org/latest/en/developer/policies/committing.md) new developers can request to work on a community module immediately, or make contributions over time to earn a nomination for full commit access.
 
 ## Documentation
 
@@ -30,7 +30,7 @@ Our official documentation is contained as part of our [official code repository
 
 !!! note
 
-    For typos and other small changes you can use the **Edit Page** link on any page. Please see [Quick Fix](../docguide/quickfix.html) example.
+    For typos and other small changes you can use the **Edit Page** link on any page. Please see [Quick Fix](../docguide/quickfix.md) example.
 
 ## GeoServer User
 
@@ -60,7 +60,7 @@ The geoserver-security mailing list is for volunteers evaluating incoming securi
 
 !!! info "See Also"
 
-    The [Security Procedure](https://docs.geoserver.org/latest/en/developer/policies/security.html) page in the Developers Guide provides additional information on how security vulnerabilities are handled.
+    The [Security Procedure](https://docs.geoserver.org/latest/en/developer/policies/security.md) page in the Developers Guide provides additional information on how security vulnerabilities are handled.
 
 ## Reporting a Bug
 
@@ -95,7 +95,7 @@ If you are not in position to communicate in public, please consider [commercial
 
 We would like GeoServer available in as many languages as possible. The two areas of GeoServer to translate are the text that appears in the [Web administration interface](../webadmin/index.md) and this documentation.
 
-If you are interested in helping with this task, please read the [translation](https://docs.geoserver.org/latest/en/developer/translation.html) section of the developers manual, and let us know via communication channels above.
+If you are interested in helping with this task, please read the [translation](https://docs.geoserver.org/latest/en/developer/translation.md) section of the developers manual, and let us know via communication channels above.
 
 ## Suggest improvements
 

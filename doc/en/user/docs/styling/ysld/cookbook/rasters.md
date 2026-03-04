@@ -47,7 +47,7 @@ This example creates a smooth gradient between two colors corresponding to two e
 
 ## Transparent gradient
 
-This example creates the same two-color gradient as in the [Two-color gradient](rasters.md#ysld_cookbook_raster_twocolorgradient) as in the example above but makes the entire layer mostly transparent by setting a 30% opacity.
+This example creates the same two-color gradient as in the [Two-color gradient](#ysld_cookbook_raster_twocolorgradient) as in the example above but makes the entire layer mostly transparent by setting a 30% opacity.
 
 ![](../../sld/cookbook/images/raster_transparentgradient.png)
 *Transparent gradient*
@@ -73,7 +73,7 @@ feature-styles:
 
 ### Details
 
-This example is similar to the [Two-color gradient](rasters.md#ysld_cookbook_raster_twocolorgradient) example save for the addition of **line 7**, which sets the opacity of the layer to 0.3 (or 30% opaque). An opacity value of 1 means that the shape is drawn 100% opaque, while an opacity value of 0 means that the shape is rendered as completely transparent. The value of 0.3 means that the raster partially takes on the color and style of whatever is drawn beneath it. Since the background is white in this example, the colors generated from the `color-map` look lighter, but were the raster imposed on a dark background the resulting colors would be darker.
+This example is similar to the [Two-color gradient](#ysld_cookbook_raster_twocolorgradient) example save for the addition of **line 7**, which sets the opacity of the layer to 0.3 (or 30% opaque). An opacity value of 1 means that the shape is drawn 100% opaque, while an opacity value of 0 means that the shape is rendered as completely transparent. The value of 0.3 means that the raster partially takes on the color and style of whatever is drawn beneath it. Since the background is white in this example, the colors generated from the `color-map` look lighter, but were the raster imposed on a dark background the resulting colors would be darker.
 
 ## Brightness and contrast
 
@@ -106,7 +106,7 @@ feature-styles:
 
 ### Details
 
-This example is similar to the [Two-color gradient](rasters.md#ysld_cookbook_raster_twocolorgradient), save for the addition of the `contrast-enhancement` parameter on **lines 13-15**. **Line 14** normalizes the output by increasing the contrast to its maximum extent. **Line 15** then adjusts the brightness by a factor of 0.5. Since values less than 1 make the output brighter, a value of 0.5 makes the output twice as bright.
+This example is similar to the [Two-color gradient](#ysld_cookbook_raster_twocolorgradient), save for the addition of the `contrast-enhancement` parameter on **lines 13-15**. **Line 14** normalizes the output by increasing the contrast to its maximum extent. **Line 15** then adjusts the brightness by a factor of 0.5. Since values less than 1 make the output brighter, a value of 0.5 makes the output twice as bright.
 
 As with previous examples, **lines 8-12** determine the `color-map`, with **line 11** setting the lower bound (70) to be colored dark green (`'#008000'`) and **line 12** setting the upper bound (256) to be colored dark brown (`'#663333'`).
 

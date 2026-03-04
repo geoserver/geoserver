@@ -6,7 +6,7 @@ The module supports
 
 - SAP HANA 1 SPS 12
 - SAP HANA 2 (all SPS including the [free express edition](https://www.sap.com/sap-hana-express))
-- [SAP HANA Cloud](https://www.sap.com/products/hana/cloud.html)
+- [SAP HANA Cloud](https://www.sap.com/products/hana/cloud.md)
 
 ## Installing SAP HANA support {: #hana_install }
 

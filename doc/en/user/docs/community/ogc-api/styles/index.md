@@ -16,7 +16,7 @@ This service describes, retrieves and updates the styles present on the server. 
 
 | [OGC API - Styles](https://github.com/opengeospatial/ogcapi-styles) | Version | Implementation status |
 |----|----|----|
-| Part 1: Core | [Draft](http://docs.opengeospatial.org/DRAFTS/20-009.html) | Implementation based on early specification draft. |
+| Part 1: Core | [Draft](http://docs.opengeospatial.org/DRAFTS/20-009.md) | Implementation based on early specification draft. |
 
 ## Installing the GeoServer OGC API - Styles module
 

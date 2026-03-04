@@ -52,7 +52,7 @@ The following is the full list of custom response headers. Whenever GeoWebCache 
 
 ## Last-Modified and If-Modified-Since {: #gwc_lastmodifiedheaders }
 
-Well behaved HTTP 1.1 clients and server applications can make use of `Last-Modified` and `If-Modified-Since` HTTP control mechanisms to know when locally cached content is up to date, eliminating the need to download the same content again. This can result in considerable bandwidth savings. (See HTTP 1.1 [RFC 2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html), sections 14.29 and 14.25, for more information on these mechanisms.)
+Well behaved HTTP 1.1 clients and server applications can make use of `Last-Modified` and `If-Modified-Since` HTTP control mechanisms to know when locally cached content is up to date, eliminating the need to download the same content again. This can result in considerable bandwidth savings. (See HTTP 1.1 [RFC 2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.md), sections 14.29 and 14.25, for more information on these mechanisms.)
 
 GeoWebCache will write a `Last-Modified` HTTP response header when serving a tile image. The date is written as an RFC-1123 `HTTP-Date`:
 

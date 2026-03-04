@@ -181,7 +181,7 @@ If you are interested in helping out, please make contact via the [developer for
 
 Reference:
 
-- [community modules](https://docs.geoserver.org/latest/en/developer/policies/community-modules.html) (Developer Guide)
+- [community modules](https://docs.geoserver.org/latest/en/developer/policies/community-modules.md) (Developer Guide)
 
 !!! abstract "Nightly Build"
 

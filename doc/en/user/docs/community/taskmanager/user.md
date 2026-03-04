@@ -40,7 +40,7 @@ By default, Task Manager will create a H2 database in its configuration director
 
 The configuration directory also contains a Spring configuration file called `taskManager-applicationContext.xml` which allows more advanced configuration.
 
-TaskManager uses [Quartz Scheduler](http://www.quartz-scheduler.org). If you are running Task Manager in a clustered environment, you must configure Quartz to use a database as well as Task Manager. See the commented block in the Spring configuration and the [Quartz documentation](http://www.quartz-scheduler.org/documentation/quartz-2.3.0/configuration/ConfigJDBCJobStoreClustering.html) for further instructions. SQL Scripts to create the required database structures for Quartz can be found [here](https://github.com/quartz-scheduler/quartz/tree/quartz-2.3.x/quartz-core/src/main/resources/org/quartz/impl/jdbcjobstore). Task Manager can create its database automatically, or alternatively [this script](taskmanager.sql) can be used (note: the script was made for postgresql. For any other DBMS, the script might need to be modified, or alternatively, the database could be automatically created in a development environment and then copied for a production environment). It is fine to use a single database both for Quartz and Task Manager.
+TaskManager uses [Quartz Scheduler](http://www.quartz-scheduler.org). If you are running Task Manager in a clustered environment, you must configure Quartz to use a database as well as Task Manager. See the commented block in the Spring configuration and the [Quartz documentation](http://www.quartz-scheduler.org/documentation/quartz-2.3.0/configuration/ConfigJDBCJobStoreClustering.md) for further instructions. SQL Scripts to create the required database structures for Quartz can be found [here](https://github.com/quartz-scheduler/quartz/tree/quartz-2.3.x/quartz-core/src/main/resources/org/quartz/impl/jdbcjobstore). Task Manager can create its database automatically, or alternatively [this script](taskmanager.sql) can be used (note: the script was made for postgresql. For any other DBMS, the script might need to be modified, or alternatively, the database could be automatically created in a development environment and then copied for a production environment). It is fine to use a single database both for Quartz and Task Manager.
 
 Furthermore, a property should be added to the `taskmanager.properties` file each of the nodes except for one: `batchJobService.init=false`. This is necessary because otherwise all of the nodes will attempt to load all of the same batches in to the clustered quartz database at the same time at start-up, which is likely to cause issues. This initialisation needs to happen only once for the entire cluster.
 
@@ -231,7 +231,7 @@ Amazon AWS S3 buckets are also supported.
 </bean>
 ```
 
-Unless anonymous is set to true, the [default AWS client credential chain](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html#using-the-default-credential-provider-chain) is used.
+Unless anonymous is set to true, the [default AWS client credential chain](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.md#using-the-default-credential-provider-chain) is used.
 
 #### Prepare script
 
@@ -265,7 +265,7 @@ Once you open a new or existing template, attributes, tasks and batches can be e
 
 ### Configurations
 
-From the [configurations](basic.html#configurations) page, new configurations can be created from scratch or from templates (or copied from existing configurations), existing configurations can be edited and removed.
+From the [configurations](basic.md#configurations) page, new configurations can be created from scratch or from templates (or copied from existing configurations), existing configurations can be edited and removed.
 
 ![](img/configurations.png)
 *configurations*
@@ -279,7 +279,7 @@ Once you open a new or existing configuration, attributes, tasks and batches can
 
 The attribute table adjusts automatically based on the information in the tasks table; and only the values must be filled in. In the task table, the name and parameters of each task can be edited, and new tasks can be created. Tasks can only be removed if they are not part of a batch any longer. Batches can only be removed if they are not running anywhere. When removing a task, you have to option to do a *clean-up*, which will attempt to remove all resources (database tables, files, layers) that were created by this task. If this (partially) fails, the task will still be removed and the user will be notified.
 
-Batches can be created and edited from here as well, however the configuration must exist in order to be able to do that (in case of a new configuration, you must click `apply` once before you can create new batches). New tasks must also be saved (again, via the `apply` button) before they can be added to a batch. In case that the [conditions](basic.html#batches) are met, batch runs can be started, and the status/history of current and past batch runs can be displayed. Current batch runs can be interrupted (which is not guaranteed to happen immediately).
+Batches can be created and edited from here as well, however the configuration must exist in order to be able to do that (in case of a new configuration, you must click `apply` once before you can create new batches). New tasks must also be saved (again, via the `apply` button) before they can be added to a batch. In case that the [conditions](basic.md#batches) are met, batch runs can be started, and the status/history of current and past batch runs can be displayed. Current batch runs can be interrupted (which is not guaranteed to happen immediately).
 
 #### Import/Export
 
@@ -287,12 +287,12 @@ It is also possible to import/export entire configurations to XML, for example t
 
 ### Batches
 
-From the [batches](basic.html#batches) page, new independent batches (not associated with a configuration) can be created, existing batches can be edited and removed. All existing batches - independent as well as belonging to a configuration - are shown, unless they are special (if they start with a `@`) or if the configuration has not yet been completed (see [initializing templates](basic.html#initializing-templates)).
+From the [batches](basic.md#batches) page, new independent batches (not associated with a configuration) can be created, existing batches can be edited and removed. All existing batches - independent as well as belonging to a configuration - are shown, unless they are special (if they start with a `@`) or if the configuration has not yet been completed (see [initializing templates](basic.md#initializing-templates)).
 
 ![](img/batches.png)
 *batches*
 
-In case that the [conditions](basic.html#batches) are met, batch runs can be started, and the status/history of current and past batch runs can be displayed. Current batch runs can be interrupted (which is not guaranteed to happen immediately).
+In case that the [conditions](basic.md#batches) are met, batch runs can be started, and the status/history of current and past batch runs can be displayed. Current batch runs can be interrupted (which is not guaranteed to happen immediately).
 
 ![](img/batchruns.png)
 *batchruns*
@@ -300,7 +300,7 @@ In case that the [conditions](basic.html#batches) are met, batch runs can be sta
 ![](img/batchrun.png)
 *batchrun*
 
-Once you open a new or existing batch, one can add or remove tasks from it and change the order of the tasks. You can also enable/disable the batch (if disabled, the batch is not scheduled) and choose the scheduling time. The user can choose between a daily schedule (with time), weekly (with day of week and time), monthly (with day of month and time) or specify a custom [cron expression](http://www.quartz-scheduler.org/documentation/quartz-2.x/tutorials/crontrigger.html).
+Once you open a new or existing batch, one can add or remove tasks from it and change the order of the tasks. You can also enable/disable the batch (if disabled, the batch is not scheduled) and choose the scheduling time. The user can choose between a daily schedule (with time), weekly (with day of week and time), monthly (with day of month and time) or specify a custom [cron expression](http://www.quartz-scheduler.org/documentation/quartz-2.x/tutorials/crontrigger.md).
 
 ![](img/template-db-workflow-batch-sync.png)
 *batch synchronize*

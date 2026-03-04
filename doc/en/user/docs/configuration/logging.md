@@ -85,7 +85,7 @@ There are however a few rules to follow:
     </Logger>
     ```
 
-  - GeoTools Logger names match up with the package names in the [project javadocs overview](https://docs.geotools.org/latest/javadocs/overview-summary.html).
+  - GeoTools Logger names match up with the package names in the [project javadocs overview](https://docs.geotools.org/latest/javadocs/overview-summary.md).
 
     As an example package `org.geotools.data.shapefile` is listed, allowing level of shapefile logging to be controlled:
 
@@ -179,7 +179,7 @@ In this case it is convenient to set a separate log location for each GeoServer 
 
   This setting overrides global setting, and is applied to `geoserverlogfile` appender as a template for filename and filePattern.
 
-- This same effect may be obtained using Log4J [property substitution](https://logging.apache.org/log4j/2.x/manual/configuration.html#PropertySubstitution), where a wide range of [property lookups](https://logging.apache.org/log4j/2.x/manual/lookups.html) are available.
+- This same effect may be obtained using Log4J [property substitution](https://logging.apache.org/log4j/2.x/manual/configuration.md#PropertySubstitution), where a wide range of [property lookups](https://logging.apache.org/log4j/2.x/manual/lookups.md) are available.
 
   ``` xml
   <RollingFile name="geoserverlogfile">
@@ -205,7 +205,7 @@ If you wish GeoServer not to override the normal Log4J behavior you can set the 
 
     RELINQUISH_LOG4J_CONTROL=true
 
-This can be combined with `log4j2.configurationFile` system property to [configure Log4J externally](https://logging.apache.org/log4j/2.x/manual/configuration.html#AutomaticConfiguration) :
+This can be combined with `log4j2.configurationFile` system property to [configure Log4J externally](https://logging.apache.org/log4j/2.x/manual/configuration.md#AutomaticConfiguration) :
 
     -DRELINQUISH_LOG4J_CONTROL=true -Dlog4j2.configurationFile=logging_configuration.xml
 

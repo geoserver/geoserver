@@ -10,13 +10,13 @@ GeoServer provides a REST service to expose a listing of all loaded JARs and res
 
 This endpoint retrieves details on all loaded JARs.
 
-All the GeoServer manifest JARs are marked with the property `GeoServerModule` and classified by type, so you can use filtering capabilities to search for a set of manifests using regular expressions (see the [manifest](manifests.md#rest_api_manifests_manifest) parameter) or a type category (see the [key](manifests.md#rest_api_manifests_key) and [value](manifests.md#rest_api_manifests_value) parameter).
+All the GeoServer manifest JARs are marked with the property `GeoServerModule` and classified by type, so you can use filtering capabilities to search for a set of manifests using regular expressions (see the [manifest](#rest_api_manifests_manifest) parameter) or a type category (see the [key](#rest_api_manifests_key) and [value](#rest_api_manifests_value) parameter).
 
 The available types are `core`, `extension`, or `community`. To filter modules by a particular type, append a request with `key=GeoServerModule&value=<type>`
 
 | Method | Action | Status Code | Formats | Default Format | Parameters |
 |----|----|----|----|----|----|
-| GET | List all manifests into the classpath | 200 | HTML, XML, JSON | HTML | [manifest](manifests.md#rest_api_manifests_manifest), [key](manifests.md#rest_api_manifests_key), [value](manifests.md#rest_api_manifests_value) |
+| GET | List all manifests into the classpath | 200 | HTML, XML, JSON | HTML | [manifest](#rest_api_manifests_manifest), [key](#rest_api_manifests_key), [value](#rest_api_manifests_value) |
 | POST |  | 405 |  |  |  |
 | PUT |  | 405 |  |  |  |
 | DELETE |  | 405 |  |  |  |
@@ -64,7 +64,7 @@ This endpoint shows only the details for the high-level components: GeoServer, G
 
 | Method | Action | Status Code | Formats | Default Format | Parameters |
 |----|----|----|----|----|----|
-| GET | List GeoServer, GeoWebCache and GeoTools manifests | 200 | HTML, XML, JSON | HTML | [manifest](manifests.md#rest_api_manifests_manifest), [key](manifests.md#rest_api_manifests_key), [value](manifests.md#rest_api_manifests_value) |
+| GET | List GeoServer, GeoWebCache and GeoTools manifests | 200 | HTML, XML, JSON | HTML | [manifest](#rest_api_manifests_manifest), [key](#rest_api_manifests_key), [value](#rest_api_manifests_value) |
 | POST |  | 405 |  |  |  |
 | PUT |  | 405 |  |  |  |
 | DELETE |  | 405 |  |  |  |

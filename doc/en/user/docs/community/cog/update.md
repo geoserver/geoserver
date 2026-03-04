@@ -21,7 +21,7 @@ Verifying that a sample GeoTIFF is a valid COG can be achieved using COG validat
 
 `Cloud Optimized GeoTIFF Validator: result Validation succeeded !  https://sample.s3.eu-central-1.amazonaws.com/test/cog.tif  is a valid Cloud Optimized GeoTIFF.`
 
-In case the file isn't a valid COG, you can use GDAL 3.1 or above to convert your file to COG format. See the related [GDAL documentation](https://gdal.org/drivers/raster/cog.html) for further details.
+In case the file isn't a valid COG, you can use GDAL 3.1 or above to convert your file to COG format. See the related [GDAL documentation](https://gdal.org/drivers/raster/cog.md) for further details.
 
 Once the data has been verified, all of your granules need to be stored to an S3 bucket.
 

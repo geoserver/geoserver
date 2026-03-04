@@ -509,4 +509,4 @@ As a final variation, the style can be made more compact by leveraging rule nest
 
 ### CSS Workshop
 
-For more details, visit the next section, the [CSS workshop](../workshop/index.html). This workshop has been used in the past for classroom settings to teach the CSS extension and has been ported to the user documentation.
+For more details, visit the next section, the [CSS workshop](../workshop/index.md). This workshop has been used in the past for classroom settings to teach the CSS extension and has been ported to the user documentation.

@@ -23,7 +23,7 @@ The parameters are:
 
 ### Ant patterns {: #security_rest_ant_patterns }
 
-Ant patterns are commonly used for pattern matching directory and file paths. The [examples](rest.md#security_rest_examples) section contains some basic instructions. The Apache ant [user manual](http://ant.apache.org/manual/dirtasks.html) contains more sophisticated use cases.
+Ant patterns are commonly used for pattern matching directory and file paths. The [examples](#security_rest_examples) section contains some basic instructions. The Apache ant [user manual](http://ant.apache.org/manual/dirtasks.md) contains more sophisticated use cases.
 
 ## Examples {: #security_rest_examples }
 

@@ -8,8 +8,8 @@ Controls all feature types in a given data store / workspace.
 
 | Method | Action | Status code | Formats | Default Format | Parameters |
 |----|----|----|----|----|----|
-| GET | List all feature types in data store `ds` | 200 | HTML, XML, JSON | HTML | [list](featuretypes.md#rest_api_featuretypes_list) |
-| POST | Create a new feature type, [see note below](featuretypes.md#rest_api_featuretypes_post) | 201 with `Location` header | XML, JSON |  |  |
+| GET | List all feature types in data store `ds` | 200 | HTML, XML, JSON | HTML | [list](#rest_api_featuretypes_list) |
+| POST | Create a new feature type, [see note below](#rest_api_featuretypes_post) | 201 with `Location` header | XML, JSON |  |  |
 | PUT |  | 405 |  |  |  |
 | DELETE |  | 405 |  |  |  |
 
@@ -42,10 +42,10 @@ Controls a particular feature type in a given data store and workspace.
 
 | Method | Action | Status code | Formats | Default Format | Parameters |
 |----|----|----|----|----|----|
-| GET | Return feature type `ft` | 200 | HTML, XML, JSON | HTML | [quietOnNotFound](featuretypes.md#rest_api_featuretypes_quietOnNotFound) |
+| GET | Return feature type `ft` | 200 | HTML, XML, JSON | HTML | [quietOnNotFound](#rest_api_featuretypes_quietOnNotFound) |
 | POST |  | 405 |  |  |  |
-| PUT | Modify feature type `ft` | 200 | XML,JSON |  | [recalculate](featuretypes.md#rest_api_featuretypes_recalculate) |
-| DELETE | Delete feature type `ft` | 200 |  |  | [recurse](featuretypes.md#rest_api_featuretypes_recurse) |
+| PUT | Modify feature type `ft` | 200 | XML,JSON |  | [recalculate](#rest_api_featuretypes_recalculate) |
+| DELETE | Delete feature type `ft` | 200 |  |  | [recurse](#rest_api_featuretypes_recurse) |
 
 ### Exceptions
 

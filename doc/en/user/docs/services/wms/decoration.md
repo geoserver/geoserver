@@ -12,7 +12,7 @@ Each decoration element has several attributes:
 
 | Attribute | Meaning |
 |----|----|
-| `type` | the type of decoration to use (see [Decoration Types](decoration.md#wms_decoration_types)) |
+| `type` | the type of decoration to use (see [Decoration Types](#wms_decoration_types)) |
 | `affinity` | the region of the map image to which the decoration is anchored |
 | `offset` | how far from the anchor point the decoration is drawn |
 | `size` | the maximum size to render the decoration. Note that some decorations may dynamically resize themselves. |
@@ -40,8 +40,8 @@ The **scaleratio** decoration (`type="scaleratio"`) overlays a text description 
 |----|----|
 | `bgcolor` | the background color for the text. supports RGB or RGBA colors specified as hex values. |
 | `fgcolor` | the color for the text and border. follows the color specification from bgcolor. |
-| `format` | the number format pattern, specified using Java own [DecimalFormat](https://docs.oracle.com/javase/8/docs/api/java/text/DecimalFormat.html) syntax |
-| `formatLanguage` | the language used to drive number formatting (applies only if also `format` is used), using a valid Java [Locale](https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html) |
+| `format` | the number format pattern, specified using Java own [DecimalFormat](https://docs.oracle.com/javase/8/docs/api/java/text/DecimalFormat.md) syntax |
+| `formatLanguage` | the language used to drive number formatting (applies only if also `format` is used), using a valid Java [Locale](https://docs.oracle.com/javase/8/docs/api/java/util/Locale.md) |
 
 The **scaleline** decoration (`type="scaleline"`) overlays a graphic showing the scale of the map in world units.
 
@@ -57,7 +57,7 @@ The **legend** decoration (`type="legend"`) overlays a graphic containing legend
 
 | Option Name | Meaning |
 |----|----|
-| `legend_options` | the list of legend_options used as in [GetLegendGraphic](./get_legend_graphic/index.html#controlling-legend-appearance-with-legend-options) |
+| `legend_options` | the list of legend_options used as in [GetLegendGraphic](./get_legend_graphic/index.md#controlling-legend-appearance-with-legend-options) |
 | `opacity` | the legend opacity with a value between 0 and 1 |
 
 The **text** decoration (`type="text"`) overlays a parametric, single line text message on top of the map. The parameter values can be fed via the `env` request parameter, just like SLD environment parameters.

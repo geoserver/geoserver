@@ -133,7 +133,7 @@ In general, SQL parameters must be used with care. They should always include va
 
 Defining effective validation regular expressions is important for security. Regular expressions are a complex topic that cannot be fully addressed here. The following are some resources for constructing regular expressions:
 
-> - GeoServer uses the standard Java regular expression engine. The [Pattern class Javadocs](http://java.sun.com/javase/6/docs/api/java/util/regex/Pattern.html) contain the full specification of the allowed syntax.
+> - GeoServer uses the standard Java regular expression engine. The [Pattern class Javadocs](http://java.sun.com/javase/6/docs/api/java/util/regex/Pattern.md) contain the full specification of the allowed syntax.
 > - <http://www.regular-expressions.info> has many tutorials and examples of regular expressions.
 > - The [myregexp](http://myregexp.com/) applet can be used to test regular expressions online.
 

@@ -10,7 +10,7 @@ The name of the AWS S3 bucket where the tiles are stored.
 
 ## AWS Access Key
 
-The AWS Access Key ID. If AWS Access Key and AWS Secret Access Key are left blank, [AWS Default Credential Chain](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html) will be used.
+The AWS Access Key ID. If AWS Access Key and AWS Secret Access Key are left blank, [AWS Default Credential Chain](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.md) will be used.
 
 ## AWS Secret Key
 

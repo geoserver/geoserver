@@ -10,11 +10,11 @@ Cloud Foundry runs micro services written in multiple languages using the abstra
 
 ## Cloud Foundry client
 
-To interact with Cloud Foundry, install the [command line tool](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html) for your platform.
+To interact with Cloud Foundry, install the [command line tool](https://docs.cloudfoundry.org/cf-cli/install-go-cli.md) for your platform.
 
 ## Get a Cloud Foundry trial account (or use your organization paid plan)
 
-Register for a free trial account with [SAP](https://www.sap.com/cmp/td/sap-cloud-platform-trial.html) or IBM.
+Register for a free trial account with [SAP](https://www.sap.com/cmp/td/sap-cloud-platform-trial.md) or IBM.
 
 **Warning** At this time, [IBM](https://www.ibm.com/cloud/free) doesn't allow more 64 MB of memory in free instances which prevents from starting the geoserver. The tutorial will be updated if this changes, however, the Cloud Foundry commands and manifest files are identical because Cloud Foundry truly is multi cloud!
 

@@ -181,7 +181,7 @@ The import can also have a list of default transformations, that will be applied
       }
     }
 
-To get more information about transformations see the [Transformation reference](rest_reference.md#transformations).
+To get more information about transformations see the [Transformation reference](#transformations).
 
 ### Import object
 
@@ -212,7 +212,7 @@ The representation of a remote resource looks as follows:
       "domain" : "mydomain"
     }
 
-The location can be [any URI supported by Commons VFS](http://commons.apache.org/proper/commons-vfs/filesystems.html), including HTTP and FTP servers. The `username`, `password` and `domain` elements are all optional, and required only if the remote server demands an authentication of sorts. In case the referred file is compressed, it will be unpacked as the download completes, and the tasks will be created over the result of unpacking.
+The location can be [any URI supported by Commons VFS](http://commons.apache.org/proper/commons-vfs/filesystems.md), including HTTP and FTP servers. The `username`, `password` and `domain` elements are all optional, and required only if the remote server demands an authentication of sorts. In case the referred file is compressed, it will be unpacked as the download completes, and the tasks will be created over the result of unpacking.
 
 ### Tasks
 
@@ -221,7 +221,7 @@ The location can be [any URI supported by Commons VFS](http://commons.apache.org
 | Method | Action | Status Code/Headers | Input | Output |
 |----|----|----|----|----|
 | GET | Retrieve all tasks for import with id <importId> | 200 | n/a | Task Collection |
-| POST | Create a new task | 201 with Location header | [Multipart form data](rest_reference.md#file_upload) | Tasks |
+| POST | Create a new task | 201 with Location header | [Multipart form data](#file_upload) | Tasks |
 
 #### Getting the list of tasks {: #file_upload }
 
@@ -687,7 +687,7 @@ Parses a string representation of a date into a Date/Timestamp object
 | Parameter | Optional | Description |
 |----|----|----|
 | field | N | The field to be parsed |
-| format | Y | A date parsing pattern, setup using the Java [SimpleDateFormat syntax](http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html). In case it's missing, a number of built-in formats will be tried instead (short and full ISO date formats, dates without any separators). |
+| format | Y | A date parsing pattern, setup using the Java [SimpleDateFormat syntax](http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.md). In case it's missing, a number of built-in formats will be tried instead (short and full ISO date formats, dates without any separators). |
 | enddate | Y | The field used as end date for the time dimension. |
 | presentation | Y | The time dimension presentation type; one of {LIST; DISCRETE_INTERVAL; CONTINUOUS_INTERVAL} |
 

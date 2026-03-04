@@ -1,6 +1,6 @@
 # MBStyle references
 
-As MBstyle is heavily modeled on [JSON](http://json.org), it may be useful to refer to the [JSON-Schema documentation](http://json-schema.org/documentation.html) for basic syntax.
+As MBstyle is heavily modeled on [JSON](http://json.org), it may be useful to refer to the [JSON-Schema documentation](http://json-schema.org/documentation.md) for basic syntax.
 
 ## Mapbox Style Specification
 
@@ -12,7 +12,7 @@ The implementation used by GeoServer is documented here. The GeoTools project is
 
 This documentation is actively maintained and matches the capabilities in GeoServer:
 
-- [Specification](https://docs.geotools.org/latest/userguide/extension/mbstyle/spec/index.html)
+- [Specification](https://docs.geotools.org/latest/userguide/extension/mbstyle/spec/index.md)
 
 When reading the above reference keep in mind the specification is written in an additive fashion, where new features are documented along with the version number range for which they are supported.
 

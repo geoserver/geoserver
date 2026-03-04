@@ -19,10 +19,10 @@ Controls a particular coverage store in a given workspace.
 
 | Method | Action | Status code | Formats | Default Format | Parameters |
 |----|----|----|----|----|----|
-| GET | Return coverage store `cs` | 200 | HTML, XML, JSON | HTML | [quietOnNotFound](coveragestores.md#rest_api_coveragestores_quietOnNotFound) |
+| GET | Return coverage store `cs` | 200 | HTML, XML, JSON | HTML | [quietOnNotFound](#rest_api_coveragestores_quietOnNotFound) |
 | POST |  | 405 |  |  |  |
 | PUT | Modify coverage store `cs` |  |  |  |  |
-| DELETE | Delete coverage store `cs` |  |  |  | [recurse](coveragestores.md#rest_api_coveragestores_recurse), [purge](coveragestores.md#rest_api_coveragestores_purge) |
+| DELETE | Delete coverage store `cs` |  |  |  | [recurse](#rest_api_coveragestores_recurse), [purge](#rest_api_coveragestores_purge) |
 
 ### Exceptions
 
@@ -58,8 +58,8 @@ This end point allows a file containing spatial data to be added (via a POST or 
 | Method | Action | Status code | Formats | Default Format | Parameters |
 |----|----|----|----|----|----|
 | GET | *Deprecated*. Get the underlying files for the coverage store as a zip file with MIME type `application/zip`. | 200 |  |  |  |
-| POST | If the coverage store is a simple one (e.g. GeoTiff) it will return a 405, if the coverage store is a structured one (e.g., mosaic) it will harvest the specified files into it, which in turn will integrate the files into the store. Harvest meaning is store dependent, for mosaic the new files will be added as new granules of the mosaic, and existing files will get their attribute updated, other stores might have a different behavior. | 405 if the coverage store is a simple one, 200 if structured and the harvest operation succeeded |  |  | [recalculate](coveragestores.md#rest_api_coveragestores_recalculate), [filename](coveragestores.md#rest_api_coveragestores_filename) |
-| PUT | Creates or overwrites the files for coverage store `cs` | 200 | [See note below](coveragestores.md#rest_api_coveragestores_file_put) |  | [configure](coveragestores.md#rest_api_coveragestores_configure), [coverageName](coveragestores.md#rest_api_coveragestores_coveragename) |
+| POST | If the coverage store is a simple one (e.g. GeoTiff) it will return a 405, if the coverage store is a structured one (e.g., mosaic) it will harvest the specified files into it, which in turn will integrate the files into the store. Harvest meaning is store dependent, for mosaic the new files will be added as new granules of the mosaic, and existing files will get their attribute updated, other stores might have a different behavior. | 405 if the coverage store is a simple one, 200 if structured and the harvest operation succeeded |  |  | [recalculate](#rest_api_coveragestores_recalculate), [filename](#rest_api_coveragestores_filename) |
+| PUT | Creates or overwrites the files for coverage store `cs` | 200 | [See note below](#rest_api_coveragestores_file_put) |  | [configure](#rest_api_coveragestores_configure), [coverageName](#rest_api_coveragestores_coveragename) |
 | DELETE |  | 405 |  |  |  |
 
 ### coveragestores file PUT {: #rest_api_coveragestores_file_put }

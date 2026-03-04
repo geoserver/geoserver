@@ -6,11 +6,11 @@ The collected metrics are exposed through ``geoserver/rest/monitor/requests/metr
 
 !!! note
 
-    The metrics page will initially be empty if no requests have been made to GeoServer. To verify whether requests have been recorded by the monitoring system, you can [query the Monitor request data storage via HTTP](https://docs.geoserver.org/latest/en/user/extensions/monitoring/query.html#all-requests-as-html), accessible at ``geoserver/rest/monitor/requests.html``.
+    The metrics page will initially be empty if no requests have been made to GeoServer. To verify whether requests have been recorded by the monitoring system, you can [query the Monitor request data storage via HTTP](https://docs.geoserver.org/latest/en/user/extensions/monitoring/query.md#all-requests-as-html), accessible at ``geoserver/rest/monitor/requests.html``.
 
 ## Metrics Collected
 
-The following is a list of metrics collected by the Monitor Micrometer extension, formatted for compatibility with Prometheus as displayed on the ``metrics`` page. For further details, refer to the [Monitoring Extension documentation](https://docs.geoserver.org/latest/en/user/extensions/monitoring/reference.html#data-reference).
+The following is a list of metrics collected by the Monitor Micrometer extension, formatted for compatibility with Prometheus as displayed on the ``metrics`` page. For further details, refer to the [Monitoring Extension documentation](https://docs.geoserver.org/latest/en/user/extensions/monitoring/reference.md#data-reference).
 
 - `requests_total_seconds`
 

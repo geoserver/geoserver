@@ -1,6 +1,6 @@
 # KML Super-Overlays
 
-Super-overlays are a form of KML in which data is broken up into regions. This allows Google Earth to refresh/request only particular regions of the map when the view area changes. Super-overlays are used to efficiently publish large sets of data. (Please see [Google's page on super-overlays](http://code.google.com/apis/kml/documentation/kml_21tutorial.html#superoverlays) for more information.)
+Super-overlays are a form of KML in which data is broken up into regions. This allows Google Earth to refresh/request only particular regions of the map when the view area changes. Super-overlays are used to efficiently publish large sets of data. (Please see [Google's page on super-overlays](http://code.google.com/apis/kml/documentation/kml_21tutorial.md#superoverlays) for more information.)
 
 GeoServer supports two types of super-overlays: **raster** and **vector**. With raster super-overlays, GeoServer intelligently produces imagery appropriate to the current zoom level and dynamically outputs new imagery when the zoom level changes. With vector super-overlays, feature data is requested for only the visible features and new features are dynamically loaded as necessary. Raster super-overlays require less resources on the client, but vector super-overlays have a higher output quality.
 

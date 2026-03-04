@@ -20,7 +20,7 @@ However, a challenge with this approach is that the number of metric groups can 
 
 To mitigate this, the Monitor Micrometer extension provides the `micrometer.metric.reset_count` configuration option to enforce a maximum number of tracked requests. Once this limit is reached, the Micrometer registry resets, clearing the existing metrics and starting fresh. This prevents the system from accumulating an unbounded number of metrics over time.
 
-The default value for this configuration option is `100`, aligning with the limit set for the [Memory Storage](https://docs.geoserver.org/latest/en/user/extensions/monitoring/configuration.html#memory-storage) of request data. Like request data storage, the Micrometer registry is also volatile, meaning it resets whenever the GeoServer instance is restarted.
+The default value for this configuration option is `100`, aligning with the limit set for the [Memory Storage](https://docs.geoserver.org/latest/en/user/extensions/monitoring/configuration.md#memory-storage) of request data. Like request data storage, the Micrometer registry is also volatile, meaning it resets whenever the GeoServer instance is restarted.
 
 ## Remote Host Metrics
 

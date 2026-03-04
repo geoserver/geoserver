@@ -23,10 +23,10 @@ Controls a particular coverage in a given coverage store and workspace.
 
 | Method | Action | Status code | Formats | Default Format | Parameters |
 |----|----|----|----|----|----|
-| GET | Return coverage `c` | 200 | HTML, XML, JSON | HTML | [quietOnNotFound](coverages.md#rest_api_coverages_quietOnNotFound) |
+| GET | Return coverage `c` | 200 | HTML, XML, JSON | HTML | [quietOnNotFound](#rest_api_coverages_quietOnNotFound) |
 | POST |  | 405 |  |  |  |
 | PUT | Modify coverage `c` | 200 | XML,JSON |  |  |
-| DELETE | Delete coverage `c` | 200 |  |  | [recurse](coverages.md#rest_api_coverages_recurse) |
+| DELETE | Delete coverage `c` | 200 |  |  | [recurse](#rest_api_coverages_recurse) |
 
 ### Exceptions
 
@@ -69,10 +69,10 @@ Returns the full list of granules, each with its attributes vales and geometry, 
 
 | Method | Action | Status code | Formats | Default Format | Parameters |
 |----|----|----|----|----|----|
-| GET | Returns the list of granules and their attributes, either in GML (when XML is used) or GeoJSON (when JSON is used) | 200 | XML, JSON | XML | [offset](coverages.md#rest_api_coverages_offset), [limit](coverages.md#rest_api_coverages_limit), [filter](coverages.md#rest_api_coverages_filter) |
+| GET | Returns the list of granules and their attributes, either in GML (when XML is used) or GeoJSON (when JSON is used) | 200 | XML, JSON | XML | [offset](#rest_api_coverages_offset), [limit](#rest_api_coverages_limit), [filter](#rest_api_coverages_filter) |
 | POST |  | 405 |  |  |  |
 | PUT |  | 405 |  |  |  |
-| DELETE | Deletes the granules (all, or just the ones selected via the filter parameter) | 200 |  |  | [filter](coverages.md#rest_api_coverages_filter) |
+| DELETE | Deletes the granules (all, or just the ones selected via the filter parameter) | 200 |  |  | [filter](#rest_api_coverages_filter) |
 
 ### Parameters
 
@@ -94,7 +94,7 @@ Returns a single granule and allows for its removal.
 
 | Method | Action | Status code | Formats | Default Format | Parameters |
 |----|----|----|----|----|----|
-| GET | Returns the specified of granules and its attributes, either in GML (when XML is used) or GeoJSON (when JSON is used) | 200 | XML, JSON | XML | [quietOnNotFound](coverages.md#rest_api_structuredcoverages_quietOnNotFound) |
+| GET | Returns the specified of granules and its attributes, either in GML (when XML is used) or GeoJSON (when JSON is used) | 200 | XML, JSON | XML | [quietOnNotFound](#rest_api_structuredcoverages_quietOnNotFound) |
 | POST |  | 405 |  |  |  |
 | PUT |  | 405 |  |  |  |
 | DELETE | Deletes the granule | 200 |  |  |  |

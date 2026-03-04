@@ -43,7 +43,7 @@ There are two rules in this CSS, the outer one matches all features, and asks th
 
 ## Simple point with stroke {: #css_cookbook_points_simplepointwithstroke }
 
-This example adds a stroke (or border) around the [Simple point](point.md#css_cookbook_points_simplepoint), with the stroke colored black and given a thickness of 2 pixels.
+This example adds a stroke (or border) around the [Simple point](#css_cookbook_points_simplepoint), with the stroke colored black and given a thickness of 2 pixels.
 
 ![](../../sld/cookbook/images/point_simplepointwithstroke.png)
 *Simple point with stroke*
@@ -64,7 +64,7 @@ This example adds a stroke (or border) around the [Simple point](point.md#css_co
 
 ### Details
 
-This example is similar to the [Simple point](point.md#css_cookbook_points_simplepoint) example, in this case a stroke and a stroke width have been specified in the mark selector in order to apply them to the circle symbols.
+This example is similar to the [Simple point](#css_cookbook_points_simplepoint) example, in this case a stroke and a stroke width have been specified in the mark selector in order to apply them to the circle symbols.
 
 ## Rotated square
 
@@ -92,7 +92,7 @@ In this example, **line 2** sets the shape to be a square, with **line 6** setti
 
 ## Transparent triangle
 
-This example draws a triangle, creates a black stroke identical to the [Simple point with stroke](point.md#css_cookbook_points_simplepointwithstroke) example, and sets the fill of the triangle to 20% opacity (mostly transparent).
+This example draws a triangle, creates a black stroke identical to the [Simple point with stroke](#css_cookbook_points_simplepointwithstroke) example, and sets the fill of the triangle to 20% opacity (mostly transparent).
 
 ![](../../sld/cookbook/images/point_transparenttriangle.png)
 *Transparent triangle*
@@ -141,7 +141,7 @@ This style uses a graphic instead of a simple shape to render the points. **Line
 
 ## Point with default label {: #css_cookbook_points_pointwithdefaultlabel }
 
-This example shows a text label on the [Simple point](point.md#css_cookbook_points_simplepoint) that displays the "name" attribute of the point. This is how a label will be displayed in the absence of any other customization.
+This example shows a text label on the [Simple point](#css_cookbook_points_simplepoint) that displays the "name" attribute of the point. This is how a label will be displayed in the absence of any other customization.
 
 ![](../../sld/cookbook/images/point_pointwithdefaultlabel.png)
 *Point with default label*
@@ -162,11 +162,11 @@ This example shows a text label on the [Simple point](point.md#css_cookbook_poin
 
 ### Details
 
-This style is quite similar to the [Simple point](point.md#css_cookbook_points_simplepoint), but two new properties have been added to specify the labelling options. **Line 4** indicates that the label contents come from the "name" attribute (anything in square brackets is a CQL expression, the attribute name being the simplest case) while **Line 5** sets the label color to black.
+This style is quite similar to the [Simple point](#css_cookbook_points_simplepoint), but two new properties have been added to specify the labelling options. **Line 4** indicates that the label contents come from the "name" attribute (anything in square brackets is a CQL expression, the attribute name being the simplest case) while **Line 5** sets the label color to black.
 
 ## Point with styled label {: #css_cookbook_points_pointwithstyledlabel }
 
-This example improves the label style from the [Point with default label](point.md#css_cookbook_points_pointwithdefaultlabel) example by centering the label above the point and providing a different font name and size.
+This example improves the label style from the [Point with default label](#css_cookbook_points_pointwithdefaultlabel) example by centering the label above the point and providing a different font name and size.
 
 ![](../../sld/cookbook/images/point_pointwithstyledlabel.png)
 *Point with styled label*
@@ -193,13 +193,13 @@ This example improves the label style from the [Point with default label](point.
 
 ### Details
 
-This example expands on [Point with default label](point.md#css_cookbook_points_pointwithdefaultlabel) and specifies the font attributes, in particular, the text is Aria, bold, 12px wide. Moreover, the label is moved on top of the point, by specifying an anchor of `0.5 0`, which sets the point to be centered (0.5) horizontally axis and bottom aligned (0.0) vertically with the label, and an offset which moves the label 5 pixels up vertically.
+This example expands on [Point with default label](#css_cookbook_points_pointwithdefaultlabel) and specifies the font attributes, in particular, the text is Aria, bold, 12px wide. Moreover, the label is moved on top of the point, by specifying an anchor of `0.5 0`, which sets the point to be centered (0.5) horizontally axis and bottom aligned (0.0) vertically with the label, and an offset which moves the label 5 pixels up vertically.
 
 The result is a centered bold label placed slightly above each point.
 
 ## Point with rotated label
 
-This example builds on the previous example, [Point with styled label](point.md#css_cookbook_points_pointwithstyledlabel), by rotating the label by 45 degrees, positioning the labels farther away from the points, and changing the color of the label to purple.
+This example builds on the previous example, [Point with styled label](#css_cookbook_points_pointwithstyledlabel), by rotating the label by 45 degrees, positioning the labels farther away from the points, and changing the color of the label to purple.
 
 ![](../../sld/cookbook/images/point_pointwithrotatedlabel.png)
 *Point with rotated label*
@@ -226,7 +226,7 @@ This example builds on the previous example, [Point with styled label](point.md#
 
 ### Details
 
-This example is similar to the [Point with styled label](point.md#css_cookbook_points_pointwithstyledlabel), but there are three important differences. **Line 10** specifies 25 pixels of vertical displacement. **Line 11** specifies a rotation of "-45" or 45 degrees counter-clockwise. (Rotation values increase clockwise, which is why the value is negative.) Finally, **line 5** sets the font color to be a shade of purple (`#99099`).
+This example is similar to the [Point with styled label](#css_cookbook_points_pointwithstyledlabel), but there are three important differences. **Line 10** specifies 25 pixels of vertical displacement. **Line 11** specifies a rotation of "-45" or 45 degrees counter-clockwise. (Rotation values increase clockwise, which is why the value is negative.) Finally, **line 5** sets the font color to be a shade of purple (`#99099`).
 
 Note that the displacement takes effect before the rotation during rendering, so in this example, the 25 pixel vertical displacement is itself rotated 45 degrees.
 
@@ -261,7 +261,7 @@ This example alters the size of the symbol based on the value of the population 
 
 !!! note
 
-    Refer to the [Example points layer](point.md#css_cookbook_points_attributes) to see the attributes for this data. This example has eschewed labels in order to simplify the style, but you can refer to the example [Point with styled label](point.md#css_cookbook_points_pointwithstyledlabel) to see which attributes correspond to which points.
+    Refer to the [Example points layer](#css_cookbook_points_attributes) to see the attributes for this data. This example has eschewed labels in order to simplify the style, but you can refer to the example [Point with styled label](#css_cookbook_points_pointwithstyledlabel) to see which attributes correspond to which points.
 
 This style shows how the basic mark setup (red circle, default size) can be overridden via cascading/nesting, changing the size depending on the pop attribute value, with smaller values yielding a smaller circle, and larger values yielding a larger circle.
 

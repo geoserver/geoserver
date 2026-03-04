@@ -65,7 +65,7 @@ Other parameters to setup connection pool:
 - removeAbandonedTimeout (default 300) Timeout in seconds before an abandoned connection can be removed.
 - logAbandoned (default false) Flag to log stack traces for application code which abandoned a Statement or Connection.
 
-For more information about the possible parameters and their values refer to the [DBCP documentation](http://commons.apache.org/dbcp/configuration.html).
+For more information about the possible parameters and their values refer to the [DBCP documentation](http://commons.apache.org/dbcp/configuration.md).
 
 ## GeoServer setup
 

@@ -53,7 +53,7 @@ To apply to be listed on the service-provider page:
 
 2.  To save time make a pull-request to [geoserver.github.io](https://github.com/geoserver/geoserver.github.io) directly.
 
-    Navigate to [support page](https://github.com/geoserver/geoserver.github.io/blob/main/support/index.html) and use the **Edit** option to edit the page - adding an entry similar to:
+    Navigate to [support page](https://github.com/geoserver/geoserver.github.io/blob/main/support/index.md) and use the **Edit** option to edit the page - adding an entry similar to:
 
     ``` html
     <div class="row tbl">
@@ -66,7 +66,7 @@ To apply to be listed on the service-provider page:
     </div>
     ```
 
-    For step-by-step instructions on editing in directly in GitHub see documentation guide [quickfix](../docguide/quickfix.html) instructions.
+    For step-by-step instructions on editing in directly in GitHub see documentation guide [quickfix](../docguide/quickfix.md) instructions.
 
 3.  You may also wish to vist osgeo.org and follow the instructions to [add a service provider page](https://www.osgeo.org/community/getting-started-osgeo/add-service-provider/) for your organization.
 
@@ -74,7 +74,7 @@ Experienced Providers:
 
 1.  Please email the developers list with your request to be listed, or attend one of the bi-weekly meetings announced on the developer list.
 2.  Help us out by including the checklist in your email with some links demonstrating your experience and expertise:
-    - [Commercial support, requirements to move terrestris to experienced providers](https://www.mail-archive.com/geoserver-devel@lists.sourceforge.net/msg46359.html)
+    - [Commercial support, requirements to move terrestris to experienced providers](https://www.mail-archive.com/geoserver-devel@lists.sourceforge.net/msg46359.md)
 
 Core Contributors:
 

@@ -4,7 +4,7 @@ This tutorial introduces GeoServer CAS support and walks through the process of 
 
 ## CAS server certificates
 
-A running [CAS server](https://apereo.github.io/cas/5.3.x/index.html) is needed.
+A running [CAS server](https://apereo.github.io/cas/5.3.x/index.md) is needed.
 
 The first step is to import the server certificates into the GeoServer JVM.
 

@@ -31,7 +31,7 @@ Each of these files may be used to customize the associated field in the GeoRSS 
 
 How to create a Google Maps mashup with a GeoRSS overlay produced by GeoServer.
 
-1.  Obtain a [Google Maps API Key](http://www.google.com/apis/maps/signup.html) from Google.
+1.  Obtain a [Google Maps API Key](http://www.google.com/apis/maps/signup.md) from Google.
 
 2.  Create an html file called `gmaps.html`:
 

@@ -12,7 +12,7 @@ The following modules are part of the OGC Testbed experiments.
 
 Images
 
-An extra API, images, based on engineering reports of [Testbed 15](https://docs.ogc.org/per/19-018.html), allowing to update a image mosaic.
+An extra API, images, based on engineering reports of [Testbed 15](https://docs.ogc.org/per/19-018.md), allowing to update a image mosaic.
 
 To install this module:
 
@@ -38,7 +38,7 @@ To install this module:
 
 ## DGGS
 
-The DGGS functionality exposes data structured as DGGS, based on either H2 or rHealPix, based on engineering reports of [Testbed 18](https://docs.ogc.org/per/20-039r2.html).
+The DGGS functionality exposes data structured as DGGS, based on either H2 or rHealPix, based on engineering reports of [Testbed 18](https://docs.ogc.org/per/20-039r2.md).
 
 To make full usage of the DGGS functionality, a ClickHouse installation is also needed.
 

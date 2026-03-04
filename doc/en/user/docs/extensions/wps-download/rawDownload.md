@@ -28,10 +28,10 @@ The *Download Process* calls the *Download Estimator Process*, checks the file s
 > - `targetSizeX` : size X in pixels of the output (optional, applies for raster input only)
 > - `targetSizeY` : size Y in pixels of the output (optional, applies for raster input only)
 > - `selectedBands` : a set of the band indices of the original raster that will be used for producing the final result (optional, applies for raster input only)
-> - `writeParameters` : a set of writing parameters (optional, applies for raster input only). See [Writing parameters](rawDownload.md#writing_params) below section for more details on writing parameters defintion.
-> - `minimizeReprojections` : since 2.17, parameter to control CRS management when dealing with heterogeneous CRS's coverages, in order to minimize reprojections when granules in ROI match the TargetCRS. See [RasterDownload of Heterogeneous CRS ImageMosaic](rawDownload.md#heterogeneous_imagemosaic) below section for more details on this param.
-> - `bestResolutionOnMatchingCRS` : since 2.17, parameter to control CRS and resolution management when dealing with heterogeneous CRS's coverages. See [RasterDownload of Heterogeneous CRS ImageMosaic](rawDownload.md#heterogeneous_imagemosaic) below section for more details on this param.
-> - `targetVerticalCRS` : optional TargetVerticalCRS, to be used to transform elevation data from a VerticalCRS to another one. See [Vertical data resampling on download](rawDownload.md#vertical_resampling) below section for more details on this param
+> - `writeParameters` : a set of writing parameters (optional, applies for raster input only). See [Writing parameters](#writing_params) below section for more details on writing parameters defintion.
+> - `minimizeReprojections` : since 2.17, parameter to control CRS management when dealing with heterogeneous CRS's coverages, in order to minimize reprojections when granules in ROI match the TargetCRS. See [RasterDownload of Heterogeneous CRS ImageMosaic](#heterogeneous_imagemosaic) below section for more details on this param.
+> - `bestResolutionOnMatchingCRS` : since 2.17, parameter to control CRS and resolution management when dealing with heterogeneous CRS's coverages. See [RasterDownload of Heterogeneous CRS ImageMosaic](#heterogeneous_imagemosaic) below section for more details on this param.
+> - `targetVerticalCRS` : optional TargetVerticalCRS, to be used to transform elevation data from a VerticalCRS to another one. See [Vertical data resampling on download](#vertical_resampling) below section for more details on this param
 > - `resolutionsDifferenceTolerance` : the parameter allows to specify a tolerance value to control the use of native resolution of the data, when no target size has been specified and granules are reprojected. If
 >   - the percentage difference between original and reprojected coverages resolutions is below the specified tolerance value,
 >   - native resolution is the same for all the requested granules,
@@ -429,7 +429,7 @@ The supported writing parameters are:
 > - `quality` : Compression quality. Value is in the range [0 : 1]
 >   - for `JPEG` lossy compression, 0 is for worst quality/higher compression and 1 is for best quality/lower compression. (default is 1).
 >   - for `Deflate` lossless compression, input value in the range [0 : 1] is linearly mapped to output deflate level in the range [1 : 9]: `(deflate level = 1 + 8 * (quality))`, where level 1 is for best speed and level 9 is for best compression. (default level is 9)
-> - `writenodata` : Supported value is one of true/false. Note that, by default, a [nodata TAG](https://www.awaresystems.be/imaging/tiff/tifftags/gdal_nodata.html) is produced as part of the output GeoTIFF file as soon as a nodata is found in the GridCoverage2D to be written. Therefore, not specifying this parameter will result into writing nodata to preserve default behavior. Setting it to false will avoid writing that TAG.
+> - `writenodata` : Supported value is one of true/false. Note that, by default, a [nodata TAG](https://www.awaresystems.be/imaging/tiff/tifftags/gdal_nodata.md) is produced as part of the output GeoTIFF file as soon as a nodata is found in the GridCoverage2D to be written. Therefore, not specifying this parameter will result into writing nodata to preserve default behavior. Setting it to false will avoid writing that TAG.
 
 # Direct download
 

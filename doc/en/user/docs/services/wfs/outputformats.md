@@ -10,7 +10,7 @@ where `<format>` is one of the following options:
 |----|----|----|
 | GML2 | `outputFormat=GML2` | Default option for WFS 1.0.0 |
 | GML3 | `outputFormat=GML3` | Default option for WFS 1.1.0 and 2.0.0 |
-| Shapefile | `outputFormat=shape-zip` | ZIP archive will be generated containing the shapefile (see [Shapefile output](outputformats.md#wfs_outputformat_shapezip) below). |
+| Shapefile | `outputFormat=shape-zip` | ZIP archive will be generated containing the shapefile (see [Shapefile output](#wfs_outputformat_shapezip) below). |
 | JSON | `outputFormat=application/json` | Returns a GeoJSON or a JSON output. Note `outputFormat=json` is only supported for getFeature (for backward compatibility). |
 | JSONP | `outputFormat=text/javascript` | Returns a [JSONP](http://en.wikipedia.org/wiki/JSONP) in the form: `parseResponse(...json...)`. See [WMS vendor parameters](../wms/vendor.md) to change the callback name. Note that this format is disabled by default (See [Global variables affecting WMS](../wms/global.md)). |
 | CSV | `outputFormat=csv` | Returns a CSV (comma-separated values) file |

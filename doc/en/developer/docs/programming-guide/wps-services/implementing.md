@@ -6,7 +6,7 @@ The example process used is a simple "Hello World" process which accepts a singl
 
 !!! note
 
-    See also GeoTools [process tutorial](https://docs.geotools.org/latest/userguide/tutorial/process.html)
+    See also GeoTools [process tutorial](https://docs.geotools.org/latest/userguide/tutorial/process.md)
 
 ## Prerequisites
 

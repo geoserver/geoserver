@@ -445,7 +445,7 @@ The above example turns on Relief shading in WHAT WAY?
 
     Support for this element has not been implemented yet.
 
-Sometimes raster data is comprised of multiple image sets. Take, for example, a [satellite view of the Earth at night](http://apod.nasa.gov/apod/ap001127.html) . As all of the Earth can't be in nighttime at once, a composite of multiple images are taken. These images are georeferenced, and pieced together to make the finished product. That said, it is possible that two images from the same dataset could overlap slightly, and the OverlapBehavior element is designed to determine how this is handled. There are four types of OverlapBehavior:
+Sometimes raster data is comprised of multiple image sets. Take, for example, a [satellite view of the Earth at night](http://apod.nasa.gov/apod/ap001127.md) . As all of the Earth can't be in nighttime at once, a composite of multiple images are taken. These images are georeferenced, and pieced together to make the finished product. That said, it is possible that two images from the same dataset could overlap slightly, and the OverlapBehavior element is designed to determine how this is handled. There are four types of OverlapBehavior:
 
 - AVERAGE
 - RANDOM

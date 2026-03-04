@@ -202,7 +202,7 @@ Expression
 
 ### FormatDateTimezone
 
-A function to format a date/time using a [SimpleDateFormat pattern](https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html) in a [time zone supported by Java](http://joda-time.sourceforge.net/timezones.html). This function improves on `dateFormat`, which formats date/time in the server time zone and can produce unintended results. Note that the term "date" is derived from a Java class name; this class represents a date/time, not just a single day.
+A function to format a date/time using a [SimpleDateFormat pattern](https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.md) in a [time zone supported by Java](http://joda-time.sourceforge.net/timezones.md). This function improves on `dateFormat`, which formats date/time in the server time zone and can produce unintended results. Note that the term "date" is derived from a Java class name; this class represents a date/time, not just a single day.
 
 **Syntax**:
 
@@ -210,7 +210,7 @@ A function to format a date/time using a [SimpleDateFormat pattern](https://docs
 
 pattern
 
-:   formatting pattern supported by [SimpleDateFormat](http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html), for example `'yyyy-MM-dd'`. Use two single quotes to include a literal single quote in a CQL string literal, for example `'yyyy-MM-dd''T''HH:mm:ss''Z'''`.
+:   formatting pattern supported by [SimpleDateFormat](http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.md), for example `'yyyy-MM-dd'`. Use two single quotes to include a literal single quote in a CQL string literal, for example `'yyyy-MM-dd''T''HH:mm:ss''Z'''`.
 
 date
 

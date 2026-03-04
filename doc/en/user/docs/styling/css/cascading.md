@@ -18,7 +18,7 @@ The core of the algorithm allows to prepare rather succinct style sheets for oth
 
 ## Understanding specificity
 
-In web pages CSS [specificity](http://www.w3.org/TR/CSS21/cascade.html#specificity) is setup as a tuple of four numbers called a,b,c,d:
+In web pages CSS [specificity](http://www.w3.org/TR/CSS21/cascade.md#specificity) is setup as a tuple of four numbers called a,b,c,d:
 
 - `a`: set to 1 if the style is local to an element, that is, defined in the element `style` attribute
 - `b`: counts the number of ID attributes in the selector

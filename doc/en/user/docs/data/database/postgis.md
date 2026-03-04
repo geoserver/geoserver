@@ -68,7 +68,7 @@ Connection parameters managing database interaction:
 
 | Connection Parameter | Description |
 |----|----|
-| **Loose bbox** | Performs only the primary filter on the bounding box. See the section on [Using loose bounding box](postgis.md#postgis_loose_bbox) for details. |
+| **Loose bbox** | Performs only the primary filter on the bounding box. See the section on [Using loose bounding box](#postgis_loose_bbox) for details. |
 | **Estimated extends** | Use spatial index to quickly estimate bounds, rather than check every row. |
 | **Encode functions** | Generate supported filter functions into their SQL equivalent. |
 | **Support on the fly geometry simplification** | Enables use of PostGIS geometry simplification |
@@ -84,7 +84,7 @@ When finished, click **Save**.
 
 ### Using JNDI
 
-GeoServer can also connect to a PostGIS database using [JNDI](https://docs.oracle.com/javase/tutorial/jndi/overview/index.html) (Java Naming and Directory Interface). This is used to allow a PostGIS DataStore to share a named connection pool of PostGIS connections configured in your application server.
+GeoServer can also connect to a PostGIS database using [JNDI](https://docs.oracle.com/javase/tutorial/jndi/overview/index.md) (Java Naming and Directory Interface). This is used to allow a PostGIS DataStore to share a named connection pool of PostGIS connections configured in your application server.
 
 To begin, navigate to **Stores --> Add a new store --> PostGIS (JNDI)**.
 

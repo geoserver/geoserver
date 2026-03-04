@@ -24,7 +24,7 @@ WMS requests can perform the following operations:
 | **Operation** | **Description** |
 |----|----|
 | [GetCapabilities](#getcapabilities) | Retrieves metadata about the service, including supported operations and parameters, and a list of the available layers |
-| [GetMap](reference.md#wms_getmap) | Retrieves a map image for a specified area and content |
+| [GetMap](#wms_getmap) | Retrieves a map image for a specified area and content |
 | [GetFeatureInfo](#getfeatureinfo) | Retrieves the underlying data, including geometry and attribute values, for a pixel location on a map |
 | [DescribeLayer](#describelayer) | Indicates the WFS or WCS to retrieve additional information about the layer. |
 | [GetLegendGraphic](get_legend_graphic/index.md) | Retrieves a generated legend for a map |
@@ -153,12 +153,12 @@ The standard parameters for the GetFeatureInfo operation are:
 | `service` | Yes | Service name. Value is `WMS`. |
 | `version` | Yes | Service version. Value is one of `1.0.0`, `1.1.0`, `1.1.1`, `1.3.0`. |
 | `request` | Yes | Operation name. Value is `GetFeatureInfo`. |
-| `layers` | Yes | See [GetMap](reference.md#wms_getmap) |
-| `styles` | Yes | See [GetMap](reference.md#wms_getmap) |
-| `srs` *or* `crs` | Yes | See [GetMap](reference.md#wms_getmap) |
-| `bbox` | Yes | See [GetMap](reference.md#wms_getmap) |
-| `width` | Yes | See [GetMap](reference.md#wms_getmap) |
-| `height` | Yes | See [GetMap](reference.md#wms_getmap) |
+| `layers` | Yes | See [GetMap](#wms_getmap) |
+| `styles` | Yes | See [GetMap](#wms_getmap) |
+| `srs` *or* `crs` | Yes | See [GetMap](#wms_getmap) |
+| `bbox` | Yes | See [GetMap](#wms_getmap) |
+| `width` | Yes | See [GetMap](#wms_getmap) |
+| `height` | Yes | See [GetMap](#wms_getmap) |
 | `query_layers` | Yes | Comma-separated list of one or more layers to query. |
 | `info_format` | No | Format for the feature information response. See below for values. |
 | `feature_count` | No | Maximum number of features to return. Default is 1. |
@@ -291,7 +291,7 @@ The standard parameters for the DescribeLayer operation are:
 | `service` | Yes | Service name. Value is `WMS`. |
 | `version` | Yes | Service version. Value is `1.1.1`. |
 | `request` | Yes | Operation name. Value is `DescribeLayer`. |
-| `layers` | Yes | See [GetMap](reference.md#wms_getmap) |
+| `layers` | Yes | See [GetMap](#wms_getmap) |
 | `exceptions` | No | Format in which to report exceptions. The default value is `application/vnd.ogc.se_xml`. |
 
 GeoServer supports a number of output formats for the `DescribeLayer` response. Server-styled HTML is the most commonly-used format. The supported formats are:

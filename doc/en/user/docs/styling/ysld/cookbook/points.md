@@ -49,7 +49,7 @@ There is one rule in one feature style for this YSLD, which is the simplest poss
 
 ## Simple point with stroke {: #ysld_cookbook_points_simplepointwithstroke }
 
-This example adds a stroke (or border) around the [Simple point](points.md#ysld_cookbook_points_simplepoint), with the stroke colored black and given a thickness of 2 pixels.
+This example adds a stroke (or border) around the [Simple point](#ysld_cookbook_points_simplepoint), with the stroke colored black and given a thickness of 2 pixels.
 
 ![](../../sld/cookbook/images/point_simplepointwithstroke.png)
 *Simple point with stroke*
@@ -76,7 +76,7 @@ feature-styles:
 
 ### Details
 
-This example is similar to the [Simple point](points.md#ysld_cookbook_points_simplepoint) example. **Lines 11-12** specify the stroke, with **line 11** setting the color to black (`'#000000'`) and **line 12** setting the width to 2 pixels.
+This example is similar to the [Simple point](#ysld_cookbook_points_simplepoint) example. **Lines 11-12** specify the stroke, with **line 11** setting the color to black (`'#000000'`) and **line 12** setting the width to 2 pixels.
 
 ## Rotated square
 
@@ -110,7 +110,7 @@ In this example, **line 11** sets the shape to be a square, with **line 12** set
 
 ## Transparent triangle
 
-This example draws a triangle, creates a black stroke identical to the [Simple point with stroke](points.md#ysld_cookbook_points_simplepointwithstroke) example, and sets the fill of the triangle to 20% opacity (mostly transparent).
+This example draws a triangle, creates a black stroke identical to the [Simple point with stroke](#ysld_cookbook_points_simplepointwithstroke) example, and sets the fill of the triangle to 20% opacity (mostly transparent).
 
 ![](../../sld/cookbook/images/point_transparenttriangle.png)
 *Transparent triangle*
@@ -174,7 +174,7 @@ This style uses a graphic instead of a simple shape to render the points. In YSL
 
 ## Point with default label {: #ysld_cookbook_points_pointwithdefaultlabel }
 
-This example shows a text label on the [Simple point](points.md#ysld_cookbook_points_simplepoint) that displays the "name" attribute of the point. This is how a label will be displayed in the absence of any other customization.
+This example shows a text label on the [Simple point](#ysld_cookbook_points_simplepoint) that displays the "name" attribute of the point. This is how a label will be displayed in the absence of any other customization.
 
 ![](../../sld/cookbook/images/point_pointwithdefaultlabel.png)
 *Point with default label*
@@ -207,11 +207,11 @@ feature-styles:
 
 ### Details
 
-**Lines 2-11**, which contain the point symbolizer, are identical to the [Simple point](points.md#ysld_cookbook_points_simplepoint) example above. The label is set in the text symbolizer on **lines 12-19**. **Line 13** determines what text to display in the label, which in this case is the value of the "name" attribute. (Refer to the attribute table in the [Example points layer](points.md#ysld_cookbook_points_attributes) section if necessary.) **Line 15** sets the text color. All other details about the label are set to the renderer default, which here is Times New Roman font, font color black, and font size of 10 pixels. The bottom left of the label is aligned with the center of the point.
+**Lines 2-11**, which contain the point symbolizer, are identical to the [Simple point](#ysld_cookbook_points_simplepoint) example above. The label is set in the text symbolizer on **lines 12-19**. **Line 13** determines what text to display in the label, which in this case is the value of the "name" attribute. (Refer to the attribute table in the [Example points layer](#ysld_cookbook_points_attributes) section if necessary.) **Line 15** sets the text color. All other details about the label are set to the renderer default, which here is Times New Roman font, font color black, and font size of 10 pixels. The bottom left of the label is aligned with the center of the point.
 
 ## Point with styled label {: #ysld_cookbook_points_pointwithstyledlabel }
 
-This example improves the label style from the [Point with default label](points.md#ysld_cookbook_points_pointwithdefaultlabel) example by centering the label above the point and providing a different font name and size.
+This example improves the label style from the [Point with default label](#ysld_cookbook_points_pointwithdefaultlabel) example by centering the label above the point and providing a different font name and size.
 
 ![](../../sld/cookbook/images/point_pointwithstyledlabel.png)
 *Point with styled label*
@@ -246,13 +246,13 @@ feature-styles:
 
 ### Details
 
-In this example, **lines 2-11** are identical to the [Simple point](points.md#ysld_cookbook_points_simplepoint) example above. The `<TextSymbolizer>` on **lines 12-21** contains many more details about the label styling than the previous example, [Point with default label](points.md#ysld_cookbook_points_pointwithdefaultlabel). **Line 13** once again specifies the "name" attribute as text to display. **Lines 15-18** set the font information: **line 15** sets the font family to be "Arial", **line 16** sets the font size to 12, **line 17** sets the font style to "normal" (as opposed to "italic" or "oblique"), and **line 18** sets the font weight to "bold" (as opposed to "normal"). **Lines 19-21** determine the placement of the label relative to the point. The `anchor` (**line 20**) sets the point of intersection between the label and point, which here sets the point to be centered (0.5) horizontally axis and bottom aligned (0.0) vertically with the label. There is also `displacement` (**line 21**), which sets the offset of the label relative to the line, which in this case is 0 pixels horizontally and 5 pixels vertically . Finally, **line 14** sets the font color of the label to black (`'#000000'`).
+In this example, **lines 2-11** are identical to the [Simple point](#ysld_cookbook_points_simplepoint) example above. The `<TextSymbolizer>` on **lines 12-21** contains many more details about the label styling than the previous example, [Point with default label](#ysld_cookbook_points_pointwithdefaultlabel). **Line 13** once again specifies the "name" attribute as text to display. **Lines 15-18** set the font information: **line 15** sets the font family to be "Arial", **line 16** sets the font size to 12, **line 17** sets the font style to "normal" (as opposed to "italic" or "oblique"), and **line 18** sets the font weight to "bold" (as opposed to "normal"). **Lines 19-21** determine the placement of the label relative to the point. The `anchor` (**line 20**) sets the point of intersection between the label and point, which here sets the point to be centered (0.5) horizontally axis and bottom aligned (0.0) vertically with the label. There is also `displacement` (**line 21**), which sets the offset of the label relative to the line, which in this case is 0 pixels horizontally and 5 pixels vertically . Finally, **line 14** sets the font color of the label to black (`'#000000'`).
 
 The result is a centered bold label placed slightly above each point.
 
 ## Point with rotated label
 
-This example builds on the previous example, [Point with styled label](points.md#ysld_cookbook_points_pointwithstyledlabel), by rotating the label by 45 degrees, positioning the labels farther away from the points, and changing the color of the label to purple.
+This example builds on the previous example, [Point with styled label](#ysld_cookbook_points_pointwithstyledlabel), by rotating the label by 45 degrees, positioning the labels farther away from the points, and changing the color of the label to purple.
 
 ![](../../sld/cookbook/images/point_pointwithrotatedlabel.png)
 *Point with rotated label*
@@ -288,7 +288,7 @@ feature-styles:
 
 ### Details
 
-This example is similar to the [Point with styled label](points.md#ysld_cookbook_points_pointwithstyledlabel), but there are three important differences. **Line 21** specifies 25 pixels of vertical displacement. **Line 22** specifies a rotation of "-45" or 45 degrees counter-clockwise. (Rotation values increase clockwise, which is why the value is negative.) Finally, **line 14** sets the font color to be a shade of purple (`'#99099'`).
+This example is similar to the [Point with styled label](#ysld_cookbook_points_pointwithstyledlabel), but there are three important differences. **Line 21** specifies 25 pixels of vertical displacement. **Line 22** specifies a rotation of "-45" or 45 degrees counter-clockwise. (Rotation values increase clockwise, which is why the value is negative.) Finally, **line 14** sets the font color to be a shade of purple (`'#99099'`).
 
 Note that the displacement takes effect before the rotation during rendering, so in this example, the 25 pixel vertical displacement is itself rotated 45 degrees.
 
@@ -344,7 +344,7 @@ feature-styles:
 
 !!! note
 
-    Refer to the [Example points layer](points.md#ysld_cookbook_points_attributes) to see the attributes for this data. This example has eschewed labels in order to simplify the style, but you can refer to the example [Point with styled label](points.md#ysld_cookbook_points_pointwithstyledlabel) to see which attributes correspond to which points.
+    Refer to the [Example points layer](#ysld_cookbook_points_attributes) to see the attributes for this data. This example has eschewed labels in order to simplify the style, but you can refer to the example [Point with styled label](#ysld_cookbook_points_pointwithstyledlabel) to see which attributes correspond to which points.
 
 This style contains three rules. Each rule varies the style based on the value of the population ("pop") attribute for each point, with smaller values yielding a smaller circle, and larger values yielding a larger circle.
 

@@ -545,7 +545,7 @@ Requirements: - GeoServer - teamengine - PostgreSQL - PostGIS
 
 ### Run OGC Features 1.0 tests
 
-Newer test suites like the `ogcapi-features10` one, are executed by calling teamengine's REST API, with a teamengine Docker image [provided by OGC](https://hub.docker.com/r/ogccite/ets-ogcapi-features10) (see [Using the REST API](https://opengeospatial.github.io/teamengine/users.html) section on the teamengine's user guide).
+Newer test suites like the `ogcapi-features10` one, are executed by calling teamengine's REST API, with a teamengine Docker image [provided by OGC](https://hub.docker.com/r/ogccite/ets-ogcapi-features10) (see [Using the REST API](https://opengeospatial.github.io/teamengine/users.md) section on the teamengine's user guide).
 
 As a result of the test run, a `logs/testng-results.xml` file will be generated, and a human readable summary of test failures, if any, will be printed to the console.
 

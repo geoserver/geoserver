@@ -243,7 +243,7 @@ There are several options:
 
 #### Reveal Email at Click {: #config_globalsettings_web_admin_interface_reveal_email_at_click }
 
-When enabled, clicking a partially visible email address in the GeoServer Web UI reveals the complete user's email address. This setting is only available when the [Email Display Mode](globalsettings.md#config_globalsettings_web_admin_interface_email_display_mode) option is set to **DOMAIN_ONLY** or **MASKED**.
+When enabled, clicking a partially visible email address in the GeoServer Web UI reveals the complete user's email address. This setting is only available when the [Email Display Mode](#config_globalsettings_web_admin_interface_email_display_mode) option is set to **DOMAIN_ONLY** or **MASKED**.
 
 #### Display creation timestamps on administration lists {: #config_globalsettings_web_admin_interface_display_creation }
 

@@ -70,7 +70,7 @@ The following request uploads an app-schema mapping file called `LandCoverVector
 
 !!! note
 
-    If the set of feature types mapped in the new configuration file differs from the set of feature types mapped in the old one (either some are missing, or some are new, or both), the best way to proceed is to delete the data store and create it anew issuing another PUT request, [as shown above](appschema.md#appschema_upload_create).
+    If the set of feature types mapped in the new configuration file differs from the set of feature types mapped in the old one (either some are missing, or some are new, or both), the best way to proceed is to delete the data store and create it anew issuing another PUT request, [as shown above](#appschema_upload_create).
 
 ## Uploading multiple app-schema mapping files
 

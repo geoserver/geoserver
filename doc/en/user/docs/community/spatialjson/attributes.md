@@ -92,7 +92,7 @@ When a comma-separated list of property names is specified for the `sharedstring
 
 - Commas in property names (really?) may be escaped with a backslash character ``.
 
-- The prefix `re:` may be prepended to the list in order to designate each item a *Java Regular Expression*: (e. g. `format_options=sharedstrings:re:adm_.*,\d\d_[a-z]+$`). See Java [Pattern](https://docs.oracle.com/javase/8/docs/api/index.html?java/util/regex/Pattern.html) class.
+- The prefix `re:` may be prepended to the list in order to designate each item a *Java Regular Expression*: (e. g. `format_options=sharedstrings:re:adm_.*,\d\d_[a-z]+$`). See Java [Pattern](https://docs.oracle.com/javase/8/docs/api/index.html?java/util/regex/Pattern.md) class.
 
   Specifying an invalid regular expression results in a Service Exception.
 

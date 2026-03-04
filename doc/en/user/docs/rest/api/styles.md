@@ -9,7 +9,7 @@ Controls all styles.
 | Method | Action | Status code | Formats | Default Format | Parameters |
 |----|----|----|----|----|----|
 | GET | Return all styles | 200 | HTML, XML, JSON | HTML |  |
-| POST | Create a new style | 201 with `Location` header | SLD, XML, JSON, ZIP [See note below](styles.md#rest_api_styles_post_put) |  | [name](styles.md#rest_api_styles_name) [raw](styles.md#rest_api_styles_raw) |
+| POST | Create a new style | 201 with `Location` header | SLD, XML, JSON, ZIP [See note below](#rest_api_styles_post_put) |  | [name](#rest_api_styles_name) [raw](#rest_api_styles_raw) |
 | PUT |  | 405 |  |  |  |
 | DELETE |  | 405 |  |  |  |
 
@@ -39,10 +39,10 @@ Controls a given style.
 
 | Method | Action | Status code | Formats | Default Format | Parameters |
 |----|----|----|----|----|----|
-| GET | Return style `s` | 200 | SLD, HTML, XML, JSON | HTML | [quietOnNotFound](styles.md#rest_api_styles_quietOnNotFound) [pretty](styles.md#rest_api_styles_pretty) |
+| GET | Return style `s` | 200 | SLD, HTML, XML, JSON | HTML | [quietOnNotFound](#rest_api_styles_quietOnNotFound) [pretty](#rest_api_styles_pretty) |
 | POST |  | 405 |  |  |  |
-| PUT | Modify style `s` | 200 | SLD, XML, JSON, ZIP [See note above](styles.md#rest_api_styles_post_put) |  | [raw](styles.md#rest_api_styles_raw) |
-| DELETE | Delete style `s` | 200 |  | [purge](styles.md#rest_api_styles_purge) | [recurse](styles.md#rest_api_styles_recurse) |
+| PUT | Modify style `s` | 200 | SLD, XML, JSON, ZIP [See note above](#rest_api_styles_post_put) |  | [raw](#rest_api_styles_raw) |
+| DELETE | Delete style `s` | 200 |  | [purge](#rest_api_styles_purge) | [recurse](#rest_api_styles_recurse) |
 
 ### Exceptions
 
@@ -77,9 +77,9 @@ Controls all styles in a given workspace.
 | Method | Action | Status code | Formats | Default Format | Parameters |
 |----|----|----|----|----|----|
 | GET | Return all styles within workspace `ws` | 200 | HTML, XML, JSON | HTML |  |
-| POST | Create a new style within workspace `ws` | 201 with `Location` header | SLD, XML, JSON, ZIP [See note above](styles.md#rest_api_styles_post_put) |  | [name](styles.md#rest_api_styles_name) [raw](styles.md#rest_api_styles_raw) |
+| POST | Create a new style within workspace `ws` | 201 with `Location` header | SLD, XML, JSON, ZIP [See note above](#rest_api_styles_post_put) |  | [name](#rest_api_styles_name) [raw](#rest_api_styles_raw) |
 | PUT |  | 405 |  |  |  |
-| DELETE |  | 405 |  |  | [purge](styles.md#rest_api_styles_purge) |
+| DELETE |  | 405 |  |  | [purge](#rest_api_styles_purge) |
 
 ## `/workspaces/<ws>/styles/<s>[.<format>]`
 
@@ -87,9 +87,9 @@ Controls a particular style in a given workspace.
 
 | Method | Action | Status code | Formats | Default Format | Parameters |
 |----|----|----|----|----|----|
-| GET | Return style `s` within workspace `ws` | 200 | SLD, HTML, XML, JSON | HTML | [quietOnNotFound](styles.md#rest_api_styles_quietOnNotFound) |
+| GET | Return style `s` within workspace `ws` | 200 | SLD, HTML, XML, JSON | HTML | [quietOnNotFound](#rest_api_styles_quietOnNotFound) |
 | POST |  | 405 |  |  |  |
-| PUT | Modify style `s` within workspace `ws` | 200 | SLD, XML, JSON, ZIP [See note above](styles.md#rest_api_styles_post_put) |  | [raw](styles.md#rest_api_styles_raw) |
+| PUT | Modify style `s` within workspace `ws` | 200 | SLD, XML, JSON, ZIP [See note above](#rest_api_styles_post_put) |  | [raw](#rest_api_styles_raw) |
 | DELETE | Delete style `s` within workspace `ws` | 200 |  |  |  |
 
 ### Exceptions

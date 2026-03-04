@@ -19,7 +19,7 @@ Controls a particular namespace.
 
 | Method | Action | Status code | Formats | Default Format | Parameters |
 |----|----|----|----|----|----|
-| GET | Return namespace `ns` | 200 | HTML, XML, JSON | HTML | [quietOnNotFound](namespaces.md#rest_api_namespaces_quietOnNotFound) |
+| GET | Return namespace `ns` | 200 | HTML, XML, JSON | HTML | [quietOnNotFound](#rest_api_namespaces_quietOnNotFound) |
 | POST |  | 405 |  |  |  |
 | PUT | 200 | Modify namespace `ns` | XML, JSON |  |  |
 | DELETE | 200 | Delete namespace `ns` | XML, JSON |  |  |

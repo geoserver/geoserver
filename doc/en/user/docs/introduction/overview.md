@@ -4,7 +4,7 @@ GeoServer is an open source software server written in Java that allows users to
 
 Being a community-driven project, GeoServer is developed, tested, and supported by a diverse group of individuals and organizations from around the world.
 
-GeoServer is [OGC certified](https://geoserver.org/announcements/2025/07/16/cite-certification.html), implementing Web Feature Service (WFS), Web Map Service (WMS), Web Coverage Service (WCS) and Web Map Tile Service (WMTS). Additional formats and publication options are available as extensions to install including OGC API - Features and Web Processing Service (WPS):
+GeoServer is [OGC certified](https://geoserver.org/announcements/2025/07/16/cite-certification.md), implementing Web Feature Service (WFS), Web Map Service (WMS), Web Coverage Service (WCS) and Web Map Tile Service (WMTS). Additional formats and publication options are available as extensions to install including OGC API - Features and Web Processing Service (WPS):
 
 - GeoServer is compliant with OGC Web Map Service, Revision 1.3, 1.1.
 - GeoServer is compliant with OGC Web Feature Service, Revision 2.0, 1.1, 1.0.

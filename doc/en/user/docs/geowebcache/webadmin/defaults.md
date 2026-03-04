@@ -59,7 +59,7 @@ HTTP RESTful API is available through the existing GWC integration allowing clie
 - tile
 - feature info
 
-For more information read [GWC WMTS documentation](https://geowebcache.osgeo.org/docs/current/services/wmts.html).
+For more information read [GWC WMTS documentation](https://geowebcache.osgeo.org/docs/current/services/wmts.md).
 
 ### Enable Data Security
 

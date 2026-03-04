@@ -44,7 +44,7 @@ This simple rule applies a dark blue (`#000080`) fill to all the polygons in the
 
 ## Simple polygon with stroke {: #css_cookbook_polygons_simplepolygonwithstroke }
 
-This example adds a 2 pixel white stroke to the [Simple polygon](polygon.md#css_cookbook_polygons_simplepolygon) example.
+This example adds a 2 pixel white stroke to the [Simple polygon](#css_cookbook_polygons_simplepolygon) example.
 
 ![](../../sld/cookbook/images/polygon_simplepolygonwithstroke.png)
 *Simple polygon with stroke*
@@ -61,11 +61,11 @@ This example adds a 2 pixel white stroke to the [Simple polygon](polygon.md#css_
 
 ### Details
 
-This example is similar to the [Simple polygon](polygon.md#css_cookbook_polygons_simplepolygon) example above, with the addition of the "stroke" and "stroke-width" attributes, that add a white, 2 pixels wide border around each polygon.
+This example is similar to the [Simple polygon](#css_cookbook_polygons_simplepolygon) example above, with the addition of the "stroke" and "stroke-width" attributes, that add a white, 2 pixels wide border around each polygon.
 
 ## Transparent polygon
 
-This example builds on the [Simple polygon with stroke](polygon.md#css_cookbook_polygons_simplepolygonwithstroke) example and makes the fill partially transparent by setting the opacity to 50%.
+This example builds on the [Simple polygon with stroke](#css_cookbook_polygons_simplepolygonwithstroke) example and makes the fill partially transparent by setting the opacity to 50%.
 
 ![](../../sld/cookbook/images/polygon_transparentpolygon.png)
 *Transparent polygon*
@@ -83,7 +83,7 @@ This example builds on the [Simple polygon with stroke](polygon.md#css_cookbook_
 
 ### Details
 
-This example is similar to the [Simple polygon with stroke](polygon.md#css_cookbook_polygons_simplepolygonwithstroke) example, save for defining the fill's opacity in **line 3**. The value of 0.5 results in partially transparent fill that is 50% opaque. An opacity value of 1 would draw the fill as 100% opaque, while an opacity value of 0 would result in a completely transparent (0% opaque) fill. In this example, since the background is white, the dark blue looks lighter. Were the points imposed on a dark background, the resulting color would be darker.
+This example is similar to the [Simple polygon with stroke](#css_cookbook_polygons_simplepolygonwithstroke) example, save for defining the fill's opacity in **line 3**. The value of 0.5 results in partially transparent fill that is 50% opaque. An opacity value of 1 would draw the fill as 100% opaque, while an opacity value of 0 would result in a completely transparent (0% opaque) fill. In this example, since the background is white, the dark blue looks lighter. Were the points imposed on a dark background, the resulting color would be darker.
 
 ## Graphic fill {: #css_cookbook_polygons_graphicfill }
 
@@ -159,7 +159,7 @@ The single rule in the CSS applies to all feature: first it fills all polygons a
 
 ## Label halo
 
-This example alters the look of the [Polygon with default label](polygon.md#css_cookbook_polygons_polygonwithdefaultlabel) by adding a white halo to the label.
+This example alters the look of the [Polygon with default label](#css_cookbook_polygons_polygonwithdefaultlabel) by adding a white halo to the label.
 
 ![](../../sld/cookbook/images/polygon_labelhalo.png)
 *Label halo*
@@ -180,11 +180,11 @@ This example alters the look of the [Polygon with default label](polygon.md#css_
 
 ### Details
 
-This example builds on [Polygon with default label](polygon.md#css_cookbook_polygons_polygonwithdefaultlabel), with the addition of a halo around the labels on **lines 7-8**. A halo creates a color buffer around the label to improve label legibility. **Line 9** sets the radius of the halo, extending the halo 3 pixels around the edge of the label, and **line 8** sets the color of the halo to white. Since halos are most useful when set to a sharp contrast relative to the text color, this example uses a white halo around black text to ensure optimum readability.
+This example builds on [Polygon with default label](#css_cookbook_polygons_polygonwithdefaultlabel), with the addition of a halo around the labels on **lines 7-8**. A halo creates a color buffer around the label to improve label legibility. **Line 9** sets the radius of the halo, extending the halo 3 pixels around the edge of the label, and **line 8** sets the color of the halo to white. Since halos are most useful when set to a sharp contrast relative to the text color, this example uses a white halo around black text to ensure optimum readability.
 
 ## Polygon with styled label {: #css_cookbook_polygons_polygonwithstyledlabel }
 
-This example improves the label style from the [Polygon with default label](polygon.md#css_cookbook_polygons_polygonwithdefaultlabel) example by centering the label on the polygon, specifying a different font name and size, and setting additional label placement optimizations.
+This example improves the label style from the [Polygon with default label](#css_cookbook_polygons_polygonwithdefaultlabel) example by centering the label on the polygon, specifying a different font name and size, and setting additional label placement optimizations.
 
 ![](../../sld/cookbook/images/polygon_polygonwithstyledlabel.png)
 *Polygon with styled label*
@@ -210,7 +210,7 @@ This example improves the label style from the [Polygon with default label](poly
 
 ### Details
 
-This example is similar to the [Polygon with default label](polygon.md#css_cookbook_polygons_polygonwithdefaultlabel) example, with additional styling options for the labels.
+This example is similar to the [Polygon with default label](#css_cookbook_polygons_polygonwithdefaultlabel) example, with additional styling options for the labels.
 
 The font is setup to be Arial, 11 pixels, "normal" (as opposed to "italic") and bold.
 
@@ -245,7 +245,7 @@ This example styles the polygons differently based on the "pop" (Population) att
 
 !!! note
 
-    Refer to the [Example polygons layer](polygon.md#css_cookbook_polygons_attributes) to see the attributes for the layer. This example has eschewed labels in order to simplify the style, but you can refer to the example [Polygon with styled label](polygon.md#css_cookbook_polygons_polygonwithstyledlabel) to see which attributes correspond to which polygons.
+    Refer to the [Example polygons layer](#css_cookbook_polygons_attributes) to see the attributes for the layer. This example has eschewed labels in order to simplify the style, but you can refer to the example [Polygon with styled label](#css_cookbook_polygons_polygonwithstyledlabel) to see which attributes correspond to which polygons.
 
 Each polygon in our fictional country has a population that is represented by the population ("pop") attribute. This style contains three rules that alter the fill based on the value of "pop" attribute, with smaller values yielding a lighter color and larger values yielding a darker color.
 

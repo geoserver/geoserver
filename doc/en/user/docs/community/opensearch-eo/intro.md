@@ -5,7 +5,7 @@ This plugin adds support for the OpenSearch for Earth Observation protocol to Ge
 - [OpenSearch](http://www.opensearch.org)
 - [OpenSearch parameter extension](http://www.opensearch.org/Specifications/OpenSearch/Extensions/Parameter/1.0)
 - [OpenSearch Geo and Time extension](http://www.opengeospatial.org/standards/opensearchgeo)
-- [OpenSearch for Earth Observation](http://docs.opengeospatial.org/is/13-026r8/13-026r8.html)
+- [OpenSearch for Earth Observation](http://docs.opengeospatial.org/is/13-026r8/13-026r8.md)
 
 The OpenSearch plugin organizes data in "Collections" and "Products":
 

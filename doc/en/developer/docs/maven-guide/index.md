@@ -54,7 +54,7 @@ In offline mode Maven will not download external dependencies, and will not upda
 
 ## Building extensions
 
-By default, extensions are not included in the build. They are added to the build explicitly via [profiles](index.md#profiles). For example the following command adds the `restconfig` extension to the build:
+By default, extensions are not included in the build. They are added to the build explicitly via [profiles](#profiles). For example the following command adds the `restconfig` extension to the build:
 
     mvn clean install -P restconfig 
 

@@ -46,7 +46,7 @@ This schema would be mapped to the following XML schema, available via a `Descri
 The GeoServer WFS supports a limited amount of schema output customization. A custom schema may be useful for the following:
 
 - Limiting the attributes which are exposed in the feature type schema
-- [Changing](schemamapping.md#wfs_schema_type_changing) the types of attributes in the schema
+- [Changing](#wfs_schema_type_changing) the types of attributes in the schema
 - Changing the structure of the schema (for example, changing the base feature type)
 
 For example, it may be useful to limit the exposed attributes in the example dataset described above. Start by retrieving the default output as a benchmark of the complete schema. With the feature type schema listed above, the `GetFeature` request would be as follows:

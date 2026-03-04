@@ -63,7 +63,7 @@ GeoServer operates with a time boxed release cycle, maintaining "stable" and "ma
 
       If you do see several releases being made concurrently, in response to an urgent vulnerability, the developers will not be in a position to tell you what is going on. Their goal is to provide you an opportunity to upgrade prior to public disclosure.
     
-      Those seeking more information, or with a legal obligation to be informed, are welcome to volunteer on the geoserver-security email list. See [Security Process](https://docs.geoserver.org/latest/en/developer/policies/security.html) for details on how to participate.
+      Those seeking more information, or with a legal obligation to be informed, are welcome to volunteer on the geoserver-security email list. See [Security Process](https://docs.geoserver.org/latest/en/developer/policies/security.md) for details on how to participate.
 
 ### Troubleshooting
 
@@ -281,7 +281,7 @@ Due to the above compatibility issues, **some** layers based on underlying GRIB 
 > - gribfile.ncx3
 > - gribfile.ncx4
 > - gribfile.gbx9
-> - .gribfile_hash folder (if not previously deleted) either located beside the original file, or within the configured [NETCDF_DATA_DIR](https://docs.geoserver.org/main/en/user/extensions/netcdf/netcdf.html#netcdf-files-in-read-only-directories) (if defined).
+> - .gribfile_hash folder (if not previously deleted) either located beside the original file, or within the configured [NETCDF_DATA_DIR](https://docs.geoserver.org/main/en/user/extensions/netcdf/netcdf.md#netcdf-files-in-read-only-directories) (if defined).
 > - The screenshot below represents an actual example of a tpcprblty.2019100912.incremental.grib2 file with related auxiliary/cache files
 >
 > > ![](images/grib_auxiliary_files.png)
@@ -295,7 +295,7 @@ Due to the above compatibility issues, **some** layers based on underlying GRIB 
 2.  If using a datastore.properties connecting to an actual DB, clean up the tables from the DB
     - Assuming that all the GRIB files belonging to the same ImageMosaic are affected by the same issue, you can delete the related tables and allow the imageMosaic reconfiguration to recreate them.
     - Based on the above example, the naming convention is that granules for VariableA are stored on table named VariableA and so on.
-3.  Recreate the indexer.xml and {%raw%}[auxiliary.xml]{#auxiliary.xml}{%endraw%} file as reported in the [NetCDF documentation](https://docs.geoserver.org/main/en/user/extensions/netcdf/netcdf.html#setting-up-a-basic-mosaic) . (At the end, GRIB file are served through the NetCDF libraries)
+3.  Recreate the indexer.xml and {%raw%}[auxiliary.xml]{#auxiliary.xml}{%endraw%} file as reported in the [NetCDF documentation](https://docs.geoserver.org/main/en/user/extensions/netcdf/netcdf.md#setting-up-a-basic-mosaic) . (At the end, GRIB file are served through the NetCDF libraries)
 
 #### Configuration cleanup
 

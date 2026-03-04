@@ -2,7 +2,7 @@
 
 !!! note
 
-    For an more in-depth discussion of using GeoWebCache, please see the [GeoWebCache documentation](https://geowebcache.osgeo.org/docs/current/index.html).
+    For an more in-depth discussion of using GeoWebCache, please see the [GeoWebCache documentation](https://geowebcache.osgeo.org/docs/current/index.md).
 
 ## Direct integration with GeoServer WMS {: #gwc_directwms }
 
@@ -103,7 +103,7 @@ Disk quotas are turned off by default, but can be configured on the [Disk Quotas
 
 ## Integration with external mapping sites
 
-The documentation on the [GeoWebCache homepage](https://geowebcache.osgeo.org/docs/current/index.html) contains examples for creating applications that integrate with Google Maps, Google Earth, Bing Maps, and more.
+The documentation on the [GeoWebCache homepage](https://geowebcache.osgeo.org/docs/current/index.md) contains examples for creating applications that integrate with Google Maps, Google Earth, Bing Maps, and more.
 
 ## Support for custom projections
 

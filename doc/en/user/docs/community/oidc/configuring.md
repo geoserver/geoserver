@@ -28,8 +28,8 @@ The following table describes each field:
 |----|----|----|
 | Name | A unique name for this filter (e.g. `keycloak-oidc`). | Used internally and in the filter chain configuration. |
 | Provider | Select the OAuth2 / OpenID Connect provider type from the dropdown. | Choose **OpenID Connect Provider** for generic OIDC IDPs, or a specific provider (Google, GitHub, Microsoft) to pre-fill well-known endpoints. |
-| Redirect Base URI | The public base URL of your GeoServer instance, ending with the context path (e.g. `https://geoserver.example.com/geoserver`). | Automatically resolved --- see [Redirect Base URI](configuring.md#community_oidc_redirect_base_uri) below. |
-| After-Logout Redirect URI | The URI the user is sent to after the IDP completes a logout. | Must be registered with the IDP as a permitted redirect URI. See [Logout Behavior](configuring.md#community_oidc_logout_behavior). |
+| Redirect Base URI | The public base URL of your GeoServer instance, ending with the context path (e.g. `https://geoserver.example.com/geoserver`). | Automatically resolved --- see [Redirect Base URI](#community_oidc_redirect_base_uri) below. |
+| After-Logout Redirect URI | The URI the user is sent to after the IDP completes a logout. | Must be registered with the IDP as a permitted redirect URI. See [Logout Behavior](#community_oidc_logout_behavior). |
 | Redirect URI | The full OAuth2 callback URL that GeoServer uses to receive the authorization code from the IDP. | **Read-only.** Automatically calculated from the Redirect Base URI. Copy this value when registering GeoServer with your IDP. |
 | Skip GeoServer login dialog | When checked and only one provider is active, unauthenticated users are redirected directly to the IDP login page. | Bypasses the GeoServer login form entirely. Use with caution --- local administrator login will no longer be available through the web UI. |
 | Enable Resource Server (Bearer JWT) | When checked, the same filter also accepts machine-to-machine requests using an `Authorization: Bearer <JWT>` header. | Enabled by default. Disable if you only need browser-based interactive login. |

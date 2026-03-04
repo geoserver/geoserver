@@ -16,7 +16,7 @@ During the development cycle community members propose new features and improvem
 1.  The feature has a sponsor. This means either a developer willing to carry out the work or a customer who is paying for it.
 2.  The feature has gone through the [GSIP](gsip.md) process **if necessary**. Whether a feature requires a GSIP is decided by the community when the feature is proposed.
 
-The determining factor for what release a feature should be included in is based on the estimate of the time to implement the feature, and the current [Release cycle](community-process.md#release_cycle).
+The determining factor for what release a feature should be included in is based on the estimate of the time to implement the feature, and the current [Release cycle](#release_cycle).
 
 New features may be backported to the stable series (if technically feasible) after being tried out on the main development branch for a month.
 

@@ -18,7 +18,7 @@ In the default configuration the following formats are supported:
 - Arc/Info ASCII Grid
 - ASCII Gridded XYZ
 
-The list might be shorter if gdal_translate has not been built with support for the above formats (for example, the default JPEG-2000 format relies on the [JasPer-based GDAL driver](http://www.gdal.org/frmt_jpeg2000.html)).
+The list might be shorter if gdal_translate has not been built with support for the above formats (for example, the default JPEG-2000 format relies on the [JasPer-based GDAL driver](http://www.gdal.org/frmt_jpeg2000.md)).
 
 Once installed in GeoServer, a bunch of new supported formats will be listed in the `ServiceMetadata` section of the WCS 2.0 GetCapabilities document, e.g. `image/jp2` and `application/pdf`.
 
@@ -32,7 +32,7 @@ and you'll get the full set of options usable by the program, along with the sup
 
 {% include-markdown "./usage_example.txt" %}
 
-The full list of formats that gdal_translate is able to support is available on the [GDAL site](http://www.gdal.org/formats_list.html). Mind that this output format can handle only outputs that are file based and that do support creation. So, for example, you won't be able to use the PostGIS Raster output (since it's database based) or the Arc/Info Binary Grid (creation not supported).
+The full list of formats that gdal_translate is able to support is available on the [GDAL site](http://www.gdal.org/formats_list.md). Mind that this output format can handle only outputs that are file based and that do support creation. So, for example, you won't be able to use the PostGIS Raster output (since it's database based) or the Arc/Info Binary Grid (creation not supported).
 
 ## Customisation
 
@@ -107,7 +107,7 @@ The file showcases all possible usage of the configuration elements:
   - `toolFormat`: the name of the format to be passed to gdal_translate with the -of option (case insensitive).
   - `geoserverFormat`: is the name of the output format as advertised by GeoServer
   - `fileExtension`: is the extension of the file generated after the translation, if any (can be omitted)
-  - `option`: can be used to add one or more options to the gdal_translate command line. As you can see by the JPEG2000 example, each item must be contained in its own `option` tag. You can get a full list of options by running `gdal_translate --help` or by visiting the [GDAL website](http://www.gdal.org)). Also, consider that each format supports specific creation options, listed in the description page for each format (for example, here is the [JPEG2000 one](http://www.gdal.org/frmt_jpeg2000.html)).
+  - `option`: can be used to add one or more options to the gdal_translate command line. As you can see by the JPEG2000 example, each item must be contained in its own `option` tag. You can get a full list of options by running `gdal_translate --help` or by visiting the [GDAL website](http://www.gdal.org)). Also, consider that each format supports specific creation options, listed in the description page for each format (for example, here is the [JPEG2000 one](http://www.gdal.org/frmt_jpeg2000.md)).
   - `singleFile`: if true the output of the conversion is supposed to be a single file that can be streamed directly back without the need to wrap it into a zip file
   - `mimeType`: the mime type of the file returned when using `singleFile`. If not specified `application/octet-stream` will be used as a default.
   - `formatAdapters`: transformations on the coverage that might need to be applied in order to successfully encode the output. The transformations are applied only if their input conditions are met.

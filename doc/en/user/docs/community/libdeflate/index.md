@@ -13,7 +13,7 @@ As a community module, the package needs to be downloaded from the [nightly buil
 
 To install the module, unpack the zip file contents into the GeoServer `WEB-INF/lib` directory and restart GeoServer.
 
-When the community module is not installed, the TIFF Deflate compression/decompression goes through ZLIB based [ZIP Deflater](https://docs.oracle.com/javase/8/docs/api/java/util/zip/Deflater.html) and Inflater counterpart. Once the community module plugin is installed, TIFF Deflate compression/decompression goes through libdeflate by default. This can be however customized, by changing the plugin priority in the Global Settings page of GeoServer.
+When the community module is not installed, the TIFF Deflate compression/decompression goes through ZLIB based [ZIP Deflater](https://docs.oracle.com/javase/8/docs/api/java/util/zip/Deflater.md) and Inflater counterpart. Once the community module plugin is installed, TIFF Deflate compression/decompression goes through libdeflate by default. This can be however customized, by changing the plugin priority in the Global Settings page of GeoServer.
 
 ## Global Settings
 

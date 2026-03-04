@@ -12,14 +12,14 @@ This tutorial shows how to build an image pyramid with open source utilities and
 
 For this tutorial we have prepared a sample BlueMarble TNG subset in GeoTIFF form. The image is tiled and JPEG compressed, without overviews. Not exactly what you'd want to use for high performance data serving, but good for redistribution and as a starting point to build a pyramid.
 
-In order to build the pyramid we'll use the [gdal_retile.py](http://www.gdal.org/gdal_retile.html) utility, part of the GDAL command line utilities and available for various operating systems (if you're using Microsoft Windows look for [FWTools](http://fwtools.maptools.org/)).
+In order to build the pyramid we'll use the [gdal_retile.py](http://www.gdal.org/gdal_retile.md) utility, part of the GDAL command line utilities and available for various operating systems (if you're using Microsoft Windows look for [FWTools](http://fwtools.maptools.org/)).
 
 The following commands will build a pyramid on disk:
 
     mkdir bmpyramid
     gdal_retile.py -v -r bilinear -levels 4 -ps 2048 2048 -co "TILED=YES" -co "COMPRESS=JPEG" -targetDir bmpyramid bmreduced.tiff
 
-The [gdal_retile.py](http://www.gdal.org/gdal_retile.html) user guide provides a detailed explanation for all the possible parameters, here is a description of the ones used in the command line above:
+The [gdal_retile.py](http://www.gdal.org/gdal_retile.md) user guide provides a detailed explanation for all the possible parameters, here is a description of the ones used in the command line above:
 
 > - `-v`: verbose output, allows the user to see each file creation scroll by, thus knowing progress is being made (a big pyramid construction can take hours)
 > - `-r bilinear`: use bilinear interpolation when building the lower resolution levels. This is key to get good image quality without asking GeoServer to perform expensive interpolations in memory

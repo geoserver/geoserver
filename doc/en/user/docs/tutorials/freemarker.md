@@ -6,7 +6,7 @@ This tutorial will introduce you to a more in depth view of what FreeMarker temp
 
 [Freemarker](http://www.freemarker.org/) is a simple yet powerful template engine that GeoServer uses to allow user customization of outputs. In particular, at the time of writing it's used to allow customization of GetFeatureInfo, GeoRSS and KML outputs.
 
-Freemarker allows for simple variable expansions, as in `${myVarName}`, expansion of nested properties, such as in `${feature.myAtt.value}`, up to little programs using loops, ifs and variables. Most of the relevant information about how to approach template writing is included in the Freemarker's [Designer guide](http://www.freemarker.org/docs/dgui.html) and won't be repeated here: the guide, along with the [KML Placemark Templates](../extensions/kml/tutorials/kmlplacemark/index.md) and [GetFeatureInfo Templates](GetFeatureInfo/index.md) tutorials should be good enough to give you a good grip on how a template is built.
+Freemarker allows for simple variable expansions, as in `${myVarName}`, expansion of nested properties, such as in `${feature.myAtt.value}`, up to little programs using loops, ifs and variables. Most of the relevant information about how to approach template writing is included in the Freemarker's [Designer guide](http://www.freemarker.org/docs/dgui.md) and won't be repeated here: the guide, along with the [KML Placemark Templates](../extensions/kml/tutorials/kmlplacemark/index.md) and [GetFeatureInfo Templates](GetFeatureInfo/index.md) tutorials should be good enough to give you a good grip on how a template is built.
 
 ### Template Lookup
 

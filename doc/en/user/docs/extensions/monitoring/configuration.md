@@ -7,7 +7,7 @@ Many aspects of the monitor extension are configurable. All configuration files 
             filter.properties
             monitor.properties
 
-The `monitor.properties` file is the main configuration file whose contents are described in the following sections. The `filter.properties` allows for [filtering](configuration.md#request_filters) out those requests from being monitored.
+The `monitor.properties` file is the main configuration file whose contents are described in the following sections. The `filter.properties` allows for [filtering](#request_filters) out those requests from being monitored.
 
 ## Monitor Storage {: #monitor_storage }
 
@@ -85,7 +85,7 @@ You can choose the number of post processor threads by configuring the `postProc
 
 ## DNS cache configuration
 
-The reverseDNS post processor caches its result. You can modify the cache configuration by configuring the `dnsCacheConfiguration` property in the `monitor.properties` file. The default policy is `expireAfterWrite=15m,maximumSize=1000` . Consult the [guava cache builder documentation](https://guava.dev/releases/32.0.0-jre/api/docs/com/google/common/cache/CacheBuilderSpec.html) for all possibilities.
+The reverseDNS post processor caches its result. You can modify the cache configuration by configuring the `dnsCacheConfiguration` property in the `monitor.properties` file. The default policy is `expireAfterWrite=15m,maximumSize=1000` . Consult the [guava cache builder documentation](https://guava.dev/releases/32.0.0-jre/api/docs/com/google/common/cache/CacheBuilderSpec.md) for all possibilities.
 
 ### How to determine the filter path
 
@@ -105,7 +105,7 @@ In general, the path used in filters is comprised of the portion of the URL afte
 
 !!! note
 
-    For more information about ant-style pattern matching, see the [Apache Ant manual](http://ant.apache.org/manual/dirtasks.html).
+    For more information about ant-style pattern matching, see the [Apache Ant manual](http://ant.apache.org/manual/dirtasks.md).
 
 ## Samples
 

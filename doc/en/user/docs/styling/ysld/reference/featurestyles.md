@@ -97,7 +97,7 @@ The following properties are equivalent to SLD "vendor options".
 | Property | Required? | Description | Default value |
 |----|----|----|----|
 | `x-ruleEvaluation` | No | When equals to `first` - stops rule evaluation after the first match. Can make the rendering more efficient by reducing the number of rules that need to be traversed by features, as well as simplyfing the rule filters. | `all` |
-| `x-composite` | No | Allows for both alpha compositing and color blending options between buffers. There are many options; [see below](featurestyles.md#ysld_reference_featurestyles_composite). | N/A |
+| `x-composite` | No | Allows for both alpha compositing and color blending options between buffers. There are many options; [see below](#ysld_reference_featurestyles_composite). | N/A |
 | `x-composite-base` | No | Allows the rendering engine to use that feature-style as a "base", and will compose all subsequent feature-styles and layers on top of it, until another base is found. Once the full set of layers against a base is composed, then the base itself will be composed against the next set of composed layers using its own compositing operator, if present. This is useful to fine-tune the use of `x-composite`, and to make sure that only the desired content is composited/blended and not all of the drawn content. | `false` |
 | `x-inclusion` | No | Define if rule should be included in style for `legendOnly` or `mapOnly` (see [Rendering Selection](../../sld/extensions/rendering-selection.md)) | `normal` |
 

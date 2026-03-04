@@ -47,7 +47,7 @@ Styling can be defined externally to the server in a number of ways:
 - An SLD document can be provided directly in a WMS [GetMap](../../services/wms/reference.md#wms_getmap) GET request using the `SLD_BODY=style` parameter. The SLD XML must be URL-encoded.
 - A [StyledLayerDescriptor](reference/sld.md) element can be included in a WMS `GetMap` POST request XML document.
 
-In all of these cases, if the WMS `layers` parameter is not supplied then the map content is defined completely by the layers and styles present in the external SLD. If the `layers` parameter is present, then styling operates in [Library Mode](working.md#sld_library_mode).
+In all of these cases, if the WMS `layers` parameter is not supplied then the map content is defined completely by the layers and styles present in the external SLD. If the `layers` parameter is present, then styling operates in [Library Mode](#sld_library_mode).
 
 The structure of an external style is the same as a Style Layer Descriptor style, as described above.
 

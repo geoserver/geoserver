@@ -25,7 +25,7 @@ Missing functionality at the time of writing, and known issues:
 
 | [OGC API - Maps](https://github.com/opengeospatial/ogcapi-maps) | Version | Implementation status |
 |----|----|----|
-| Part 1: Core | [Draft](https://docs.ogc.org/DRAFTS/20-057.html) | Implementation based on early specification draft. |
+| Part 1: Core | [Draft](https://docs.ogc.org/DRAFTS/20-057.md) | Implementation based on early specification draft. |
 | Part 2: Partitioning | [Draft](https://github.com/opengeospatial/ogcapi-maps/tree/master/extensions/partitioning/standard) | Implementation based on early specification draft. |
 
 ## Installing the GeoServer OGC API - Maps module

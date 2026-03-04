@@ -129,7 +129,7 @@ All tools work against a live Java Virtual Machine, the one running GeoServer in
 
 ### jps
 
-[jps](http://java.sun.com/javase/6/docs/technotes/tools/share/jps.html) is a tool listing all the Java processing running. It can be used to retrieve the `pid` (process id) of the virtual machine that is running GeoServer. For example:
+[jps](http://java.sun.com/javase/6/docs/technotes/tools/share/jps.md) is a tool listing all the Java processing running. It can be used to retrieve the `pid` (process id) of the virtual machine that is running GeoServer. For example:
 
     > jps -mlv
 
@@ -141,7 +141,7 @@ The output shows the `pid`, the main class name if available, and the parameters
 
 ### jstack
 
-[jstack](http://java.sun.com/javase/6/docs/technotes/tools/share/jstack.html) is a tool for extracting the current stack trace for each thread running in the virtual machine. It can be used to identify scalability issues and to gather what the program is actually doing.
+[jstack](http://java.sun.com/javase/6/docs/technotes/tools/share/jstack.md) is a tool for extracting the current stack trace for each thread running in the virtual machine. It can be used to identify scalability issues and to gather what the program is actually doing.
 
 It usually requires detailed understanding of the inner workings of GeoServer to properly interpret the jstack output.
 
@@ -194,7 +194,7 @@ And the file contents might look like:
 
 ### jmap
 
-[jmap](http://java.sun.com/javase/6/docs/technotes/tools/share/jmap.html) is a tool to gather information about the Java virtual machine. It can be used in a few interesting ways.
+[jmap](http://java.sun.com/javase/6/docs/technotes/tools/share/jmap.md) is a tool to gather information about the Java virtual machine. It can be used in a few interesting ways.
 
 By running it without arguments (other than the process id of the JVM) it will print out a **dump of the native libraries used by the JVM**. This can come in handy when one wants to double check GeoServer is actually using a certain version of a native library (e.g., GDAL):
 

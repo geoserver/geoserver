@@ -561,7 +561,7 @@ The same can be achieved with the property interpolation directive if a cql func
 
 !!! warning
 
-    the `xpath('some xpath)` cql function is meant to be used in the scope of this plugin. For general usage please refer to the [property function](https://docs.geotools.org/latest/userguide/library/main/function_list.html#property-propertyname-returns-propertyvalue).
+    the `xpath('some xpath)` cql function is meant to be used in the scope of this plugin. For general usage please refer to the [property function](https://docs.geotools.org/latest/userguide/library/main/function_list.md#property-propertyname-returns-propertyvalue).
 
 ### Template Options
 

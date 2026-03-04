@@ -12,7 +12,7 @@ GeoServer fully supports the **Styled Layer Descriptor (SLD)** standard, and use
 
 The major differences between versions 1.1.1 and 1.3.0 are:
 
-- In 1.1.1 geographic coordinate systems specified with the `EPSG` namespace are defined to have an axis ordering of longitude/latitude. In 1.3.0 the ordering is latitude/longitude. See [Axis Ordering](basics.md#axis_ordering) below for more details.
+- In 1.1.1 geographic coordinate systems specified with the `EPSG` namespace are defined to have an axis ordering of longitude/latitude. In 1.3.0 the ordering is latitude/longitude. See [Axis Ordering](#axis_ordering) below for more details.
 - In the GetMap operation the `srs` parameter is called `crs` in 1.3.0. GeoServer supports both keys regardless of version.
 - In the GetFeatureInfo operation the `x` and `y` parameters are called `i` and `j` in 1.3.0. GeoServer supports both keys regardless of version, except when in CITE-compliance mode.
 

@@ -36,7 +36,7 @@ The parameters include:
   > - `w`---Write access
   > - `a`---Admin access
   >
-  > See [Access modes](layer.md#access_mode) for more details.
+  > See [Access modes](#access_mode) for more details.
 
 - `role[,role2,...]` is the name(s) of predefined roles. The wildcard `*` is used to indicate the permission is applied to all users, including anonymous users.
 

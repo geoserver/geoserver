@@ -54,7 +54,7 @@ Descriptions for the new introduced operations and associated formats will also 
 
 ## Operations
 
-This module adds three new operations to the WMTS service that are described in detail in this [document](http://demo.geo-solutions.it/share/wmts-multidim/wmts_multidim_geosolutions.html):
+This module adds three new operations to the WMTS service that are described in detail in this [document](http://demo.geo-solutions.it/share/wmts-multidim/wmts_multidim_geosolutions.md):
 
 | Operation | Description |
 |----|----|

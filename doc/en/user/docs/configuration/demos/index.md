@@ -4,17 +4,17 @@ This page contains helpful links to various information pages regarding GeoServe
 
 The page contains the following options
 
-- [Demo Requests](index.md#demos_demorequests)
-- [SRS List](index.md#srs_list)
-- [Reprojection console](index.md#demos_reprojectionconsole)
-- [WCS Request Builder](index.md#demos_wcsrequestbuilder)
+- [Demo Requests](#demos_demorequests)
+- [SRS List](#srs_list)
+- [Reprojection console](#demos_reprojectionconsole)
+- [WCS Request Builder](#demos_wcsrequestbuilder)
 
 ![](img/demos_view.png)
 *Demos page*
 
 If you have the [WPS](../../services/wps/index.md) extension installed, you will see an additional option:
 
-- [WPS Request Builder](index.md#demos_wpsrequestbuilder)
+- [WPS Request Builder](#demos_wpsrequestbuilder)
 
 ![](img/demos_viewwps.png)
 *Demos page with WPS extension installed*

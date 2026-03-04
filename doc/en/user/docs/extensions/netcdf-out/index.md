@@ -96,7 +96,7 @@ NetCDF output settings can be configured for each raster layer. The similar sect
 
 ## CF Standard names support
 
-Note that the output name can also be chosen from the list of CF Standard names. Check [CF standard names](http://cfconventions.org/standard-names.html) page for more info on it.
+Note that the output name can also be chosen from the list of CF Standard names. Check [CF standard names](http://cfconventions.org/standard-names.md) page for more info on it.
 
 Once you click on the dropdown, you may choose from the set of available standard names.
 
@@ -113,7 +113,7 @@ The list of standard names is populated by taking the entries from a standard na
 You have three ways to provide it to GeoServer.
 
 1.  Add a `-DNETCDF_STANDARD_TABLE=/path/to/the/table/tablename.xml` property to the startup script.
-2.  Put that xml file within the `NETCDF_DATA_DIR` which is the folder where all NetCDF auxiliary files are located. ([More info](http://geoserver.geo-solutions.it/multidim/en/mosaic_config/netcdf_mosaic.html#customizing-netcdf-ancillary-files-location))
+2.  Put that xml file within the `NETCDF_DATA_DIR` which is the folder where all NetCDF auxiliary files are located. ([More info](http://geoserver.geo-solutions.it/multidim/en/mosaic_config/netcdf_mosaic.md#customizing-netcdf-ancillary-files-location))
 3.  Put that xml file within the `GEOSERVER_DATA_DIR`.
 
 !!! note

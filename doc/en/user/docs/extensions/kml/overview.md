@@ -6,7 +6,7 @@
 
 ## Why use GeoServer with Google Earth?
 
-GeoServer is useful when one wants to put a lot of data on to Google Earth. GeoServer automatically generates KML that can be easily and quickly served and visualized in Google Earth. GeoServer operates entirely through a [Network Link](http://code.google.com/apis/kml/documentation/kml_tut.html#network_links), which allows it to selectively return information for the area being viewed. With GeoServer as a robust and powerful server and Google Earth providing rich visualizations, they are a perfect match for sharing your data.
+GeoServer is useful when one wants to put a lot of data on to Google Earth. GeoServer automatically generates KML that can be easily and quickly served and visualized in Google Earth. GeoServer operates entirely through a [Network Link](http://code.google.com/apis/kml/documentation/kml_tut.md#network_links), which allows it to selectively return information for the area being viewed. With GeoServer as a robust and powerful server and Google Earth providing rich visualizations, they are a perfect match for sharing your data.
 
 ## Standards-based implementation
 

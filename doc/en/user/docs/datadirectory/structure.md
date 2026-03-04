@@ -148,7 +148,7 @@ The `templates` directory contains files used by the GeoServer templating subsys
 
 ## `user_projections`
 
-The `user_projections` directory contains a file called **`epsg.properties`** which is used to define custom spatial reference systems that are not part of the official [EPSG database](http://www.epsg.org/CurrentDB.html).
+The `user_projections` directory contains a file called **`epsg.properties`** which is used to define custom spatial reference systems that are not part of the official [EPSG database](http://www.epsg.org/CurrentDB.md).
 
 !!! note
 

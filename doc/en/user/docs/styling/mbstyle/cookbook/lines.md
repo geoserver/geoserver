@@ -122,7 +122,7 @@ The result is a 3 pixel blue line with a 1 pixel gray border, since the 5 pixel 
 
 ## Dashed line
 
-This example alters the [Simple line](lines.md#mbstyle_cookbook_lines_simpleline) to create a dashed line consisting of 5 pixels of drawn line alternating with 2 pixels of blank space.
+This example alters the [Simple line](#mbstyle_cookbook_lines_simpleline) to create a dashed line consisting of 5 pixels of drawn line alternating with 2 pixels of blank space.
 
 ![](../../sld/cookbook/images/line_dashedline.png)
 *Dashed line*
@@ -155,7 +155,7 @@ In this example, **line 9** sets the color of the lines to be blue (`"#0000FF"`)
 
 ## Offset line
 
-This example alters the [Simple line](lines.md#mbstyle_cookbook_lines_simpleline) to add a perpendicular offset line on the left side of the line, at five pixels distance.
+This example alters the [Simple line](#mbstyle_cookbook_lines_simpleline) to add a perpendicular offset line on the left side of the line, at five pixels distance.
 
 ![](../../sld/cookbook/images/line_offset.png)
 *Dashed line*

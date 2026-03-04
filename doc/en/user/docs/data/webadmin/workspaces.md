@@ -12,7 +12,7 @@ The buttons for adding and removing a workspace can be found at the top of the W
 ![](img/data_workspaces_add_remove.png)
 *Buttons to add and remove*
 
-To add a workspace, select the **Add new workspace** button. You will be prompted to enter the workspace name and URI (as described in [Edit a Workspace](workspaces.md#data_webadmin_workspaces_edit) below).
+To add a workspace, select the **Add new workspace** button. You will be prompted to enter the workspace name and URI (as described in [Edit a Workspace](#data_webadmin_workspaces_edit) below).
 
 ![](img/data_workspaces_sde.png)
 *New Workspace page with example*

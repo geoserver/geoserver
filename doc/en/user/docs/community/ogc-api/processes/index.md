@@ -27,7 +27,7 @@ Missing functionality at the time of writing, and known issues:
 
 | [OGC API - Maps](https://github.com/opengeospatial/ogcapi-processes) | Version | Implementation status |
 |----|----|----|
-| Part 1: Core | [Draft](https://docs.ogc.org/is/18-062r2/18-062r2.html) | Implementation based on current specification draft (KVP is not part of Processes 1.0, but it's part of the current draft) |
+| Part 1: Core | [Draft](https://docs.ogc.org/is/18-062r2/18-062r2.md) | Implementation based on current specification draft (KVP is not part of Processes 1.0, but it's part of the current draft) |
 
 ## Installing the GeoServer OGC API - Processes module
 

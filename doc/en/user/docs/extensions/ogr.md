@@ -86,7 +86,7 @@ and you'll get the full set of options usable by the program, along with the sup
     or a well known definition (ie. EPSG:4326) or a file with a WKT
     definition.
 
-The full list of formats that ogr2ogr is able to support is available on the [OGR site](http://www.gdal.org/ogr2ogr.html). Mind that this output format can handle only outputs that are file based and that do support creation. So, for example, you won't be able to use the Postgres output (since it's database based) or the ArcInfo binary coverage (creation not supported).
+The full list of formats that ogr2ogr is able to support is available on the [OGR site](http://www.gdal.org/ogr2ogr.md). Mind that this output format can handle only outputs that are file based and that do support creation. So, for example, you won't be able to use the Postgres output (since it's database based) or the ArcInfo binary coverage (creation not supported).
 
 ## Customisation
 

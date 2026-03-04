@@ -58,7 +58,7 @@ Inside this directory, there are four directories:
 
 ## Make changes
 
-Documentation in Sphinx is written in [reStructuredText](https://docutils.sourceforge.io/rst.html), a lightweight markup syntax. For suggestions on writing reStructuredText for use with Sphinx, please see the section on [Sphinx Syntax](sphinx.md). For suggestions about writing style, please see the [Style Guidelines](style.md).
+Documentation in Sphinx is written in [reStructuredText](https://docutils.sourceforge.io/rst.md), a lightweight markup syntax. For suggestions on writing reStructuredText for use with Sphinx, please see the section on [Sphinx Syntax](sphinx.md). For suggestions about writing style, please see the [Style Guidelines](style.md).
 
 ## Build and test locally
 

@@ -270,7 +270,7 @@ Each line in **`epsg_operations.properties`** will describe a coordinate operati
 
     <source crs code>,<target crs code>=<WKT math transform>
 
-Math transform is described in [Well-Known Text](http://www.geoapi.org/3.0/javadoc/org/opengis/referencing/doc-files/WKT.html) syntax. Parameter names and value ranges are described in the [EPSG Geodetic Parameter Registry](http://www.epsg-registry.org/).
+Math transform is described in [Well-Known Text](http://www.geoapi.org/3.0/javadoc/org/opengis/referencing/doc-files/WKT.md) syntax. Parameter names and value ranges are described in the [EPSG Geodetic Parameter Registry](http://www.epsg-registry.org/).
 
 !!! note
 

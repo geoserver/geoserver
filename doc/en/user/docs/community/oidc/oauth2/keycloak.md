@@ -14,7 +14,7 @@ See the [Keycloak Documentation](https://www.keycloak.org/guides) for more infor
 
 ## Configure Keycloak
 
-This will setup a Docker container running Keycloak and setup a [Keycloak Realm](https://www.keycloak.org/docs/latest/server_admin/index.html#_configuring-realms) and Client for GeoServer. For more information on the Keycloak Docker container see [here](https://www.keycloak.org/getting-started/getting-started-docker) and [here](https://www.keycloak.org/server/containers) and [here](https://hub.docker.com/r/keycloak/keycloak).
+This will setup a Docker container running Keycloak and setup a [Keycloak Realm](https://www.keycloak.org/docs/latest/server_admin/index.md#_configuring-realms) and Client for GeoServer. For more information on the Keycloak Docker container see [here](https://www.keycloak.org/getting-started/getting-started-docker) and [here](https://www.keycloak.org/server/containers) and [here](https://hub.docker.com/r/keycloak/keycloak).
 
 ### Docker Install and Basic Setup
 

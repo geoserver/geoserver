@@ -96,7 +96,7 @@ The following Jetty server configuration file configures a JNDI data source `jav
         </New>
     </Configure>
 
-Jetty does not mandate a `reference-ref` in GeoServer `WEB-INF/web.xml`, so there is no need to modify that file. No Jetty-specific information is required inside the GeoServer `web-app` module or data directory, so JNDI resources can be tested under Jetty for later deployment under Tomcat. See also the tutorial [Setting up a JNDI connection pool with Tomcat](http://docs.geoserver.org/stable/en/user/tutorials/tomcat-jndi/tomcat-jndi.html) in the GeoServer User Manual.
+Jetty does not mandate a `reference-ref` in GeoServer `WEB-INF/web.xml`, so there is no need to modify that file. No Jetty-specific information is required inside the GeoServer `web-app` module or data directory, so JNDI resources can be tested under Jetty for later deployment under Tomcat. See also the tutorial [Setting up a JNDI connection pool with Tomcat](http://docs.geoserver.org/stable/en/user/tutorials/tomcat-jndi/tomcat-jndi.md) in the GeoServer User Manual.
 
 ### Starting Jetty with an open SSL port
 

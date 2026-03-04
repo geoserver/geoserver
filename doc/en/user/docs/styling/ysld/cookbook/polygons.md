@@ -44,7 +44,7 @@ There is one rule in one feature style for this style, which is the simplest pos
 
 ## Simple polygon with stroke {: #ysld_cookbook_polygons_simplepolygonwithstroke }
 
-This example adds a 2 pixel white stroke to the [Simple polygon](polygons.md#ysld_cookbook_polygons_simplepolygon) example.
+This example adds a 2 pixel white stroke to the [Simple polygon](#ysld_cookbook_polygons_simplepolygon) example.
 
 ![](../../sld/cookbook/images/polygon_simplepolygonwithstroke.png)
 *Simple polygon with stroke*
@@ -59,11 +59,11 @@ This example adds a 2 pixel white stroke to the [Simple polygon](polygons.md#ysl
 
 ### Details
 
-This example is similar to the [Simple polygon](polygons.md#ysld_cookbook_polygons_simplepolygon) example above, with the addition of `stroke` parameters (**lines 7-8**). **Line 7** sets the color of stroke to white (`'#FFFFFF'`) and **line 8** sets the width of the stroke to 2 pixels.
+This example is similar to the [Simple polygon](#ysld_cookbook_polygons_simplepolygon) example above, with the addition of `stroke` parameters (**lines 7-8**). **Line 7** sets the color of stroke to white (`'#FFFFFF'`) and **line 8** sets the width of the stroke to 2 pixels.
 
 ## Transparent polygon
 
-This example builds on the [Simple polygon with stroke](polygons.md#ysld_cookbook_polygons_simplepolygonwithstroke) example and makes the fill partially transparent by setting the opacity to 50%.
+This example builds on the [Simple polygon with stroke](#ysld_cookbook_polygons_simplepolygonwithstroke) example and makes the fill partially transparent by setting the opacity to 50%.
 
 ![](../../sld/cookbook/images/polygon_transparentpolygon.png)
 *Transparent polygon*
@@ -78,7 +78,7 @@ This example builds on the [Simple polygon with stroke](polygons.md#ysld_cookboo
 
 ### Details
 
-This example is similar to the [Simple polygon with stroke](polygons.md#ysld_cookbook_polygons_simplepolygonwithstroke) example, save for defining the fill's opacity in **line 10**. The value of 0.5 results in partially transparent fill that is 50% opaque. An opacity value of 1 would draw the fill as 100% opaque, while an opacity value of 0 would result in a completely transparent (0% opaque) fill. In this example, since the background is white, the dark blue looks lighter. Were the points imposed on a dark background, the resulting color would be darker.
+This example is similar to the [Simple polygon with stroke](#ysld_cookbook_polygons_simplepolygonwithstroke) example, save for defining the fill's opacity in **line 10**. The value of 0.5 results in partially transparent fill that is 50% opaque. An opacity value of 1 would draw the fill as 100% opaque, while an opacity value of 0 would result in a completely transparent (0% opaque) fill. In this example, since the background is white, the dark blue looks lighter. Were the points imposed on a dark background, the resulting color would be darker.
 
 ## Graphic fill {: #ysld_cookbook_polygons_graphicfill }
 
@@ -119,7 +119,7 @@ This example fills the polygons with a hatching pattern.
 
 ### Details
 
-In this example, there is a `fill-graphic` parameter as in the [Graphic fill](polygons.md#ysld_cookbook_polygons_graphicfill) example, but a `mark` (**lines 11-14**) is used instead of an `external`. **Line 12** specifies a "times" symbol (an "x") be tiled throughout the polygon. **Line 13** sets the color to purple (`'#990099'`), **line 14** sets the width of the hatches to 1 pixel, and **line 9** sets the size of the tile to 16 pixels. Because hatch tiles are always square, the `size` sets both the width and the height.
+In this example, there is a `fill-graphic` parameter as in the [Graphic fill](#ysld_cookbook_polygons_graphicfill) example, but a `mark` (**lines 11-14**) is used instead of an `external`. **Line 12** specifies a "times" symbol (an "x") be tiled throughout the polygon. **Line 13** sets the color to purple (`'#990099'`), **line 14** sets the width of the hatches to 1 pixel, and **line 9** sets the size of the tile to 16 pixels. Because hatch tiles are always square, the `size` sets both the width and the height.
 
 ## Polygon with default label {: #ysld_cookbook_polygons_polygonwithdefaultlabel }
 
@@ -138,11 +138,11 @@ This example shows a text label on the polygon. In the absence of any other cust
 
 ### Details
 
-In this example there is a polygon symbolizer and a text symbolizer. **Lines 6-9** comprise the polygon symbolizer. The fill of the polygon is set on **line 7** to a light green (`'#40FF40'`) while the stroke of the polygon is set on **lines 8-9** to white (`'#FFFFFF'`) with a thickness of 2 pixels. The label is set in the text symbolizer on **lines 10-12**, with **line 11** determining what text to display, in this case the value of the "name" attribute. (Refer to the attribute table in the [Example polygons layer](polygons.md#ysld_cookbook_polygons_attributes) section if necessary.) All other details about the label are set to the renderer default, which here is Times New Roman font, font color black, and font size of 10 pixels.
+In this example there is a polygon symbolizer and a text symbolizer. **Lines 6-9** comprise the polygon symbolizer. The fill of the polygon is set on **line 7** to a light green (`'#40FF40'`) while the stroke of the polygon is set on **lines 8-9** to white (`'#FFFFFF'`) with a thickness of 2 pixels. The label is set in the text symbolizer on **lines 10-12**, with **line 11** determining what text to display, in this case the value of the "name" attribute. (Refer to the attribute table in the [Example polygons layer](#ysld_cookbook_polygons_attributes) section if necessary.) All other details about the label are set to the renderer default, which here is Times New Roman font, font color black, and font size of 10 pixels.
 
 ## Label halo
 
-This example alters the look of the [Polygon with default label](polygons.md#ysld_cookbook_polygons_polygonwithdefaultlabel) by adding a white halo to the label.
+This example alters the look of the [Polygon with default label](#ysld_cookbook_polygons_polygonwithdefaultlabel) by adding a white halo to the label.
 
 ![](../../sld/cookbook/images/polygon_labelhalo.png)
 *Label halo*
@@ -157,11 +157,11 @@ This example alters the look of the [Polygon with default label](polygons.md#ysl
 
 ### Details
 
-This example is similar to the [Polygon with default label](polygons.md#ysld_cookbook_polygons_polygonwithdefaultlabel), with the addition of a halo around the labels on **lines 12-14**. A halo creates a color buffer around the label to improve label legibility. **Line 14** sets the radius of the halo, extending the halo 3 pixels around the edge of the label, and **line 13** sets the color of the halo to white (`'#FFFFFF'`). Since halos are most useful when set to a sharp contrast relative to the text color, this example uses a white halo around black text to ensure optimum readability.
+This example is similar to the [Polygon with default label](#ysld_cookbook_polygons_polygonwithdefaultlabel), with the addition of a halo around the labels on **lines 12-14**. A halo creates a color buffer around the label to improve label legibility. **Line 14** sets the radius of the halo, extending the halo 3 pixels around the edge of the label, and **line 13** sets the color of the halo to white (`'#FFFFFF'`). Since halos are most useful when set to a sharp contrast relative to the text color, this example uses a white halo around black text to ensure optimum readability.
 
 ## Polygon with styled label {: #ysld_cookbook_polygons_polygonwithstyledlabel }
 
-This example improves the label style from the [Polygon with default label](polygons.md#ysld_cookbook_polygons_polygonwithdefaultlabel) example by centering the label on the polygon, specifying a different font name and size, and setting additional label placement optimizations.
+This example improves the label style from the [Polygon with default label](#ysld_cookbook_polygons_polygonwithdefaultlabel) example by centering the label on the polygon, specifying a different font name and size, and setting additional label placement optimizations.
 
 ![](../../sld/cookbook/images/polygon_polygonwithstyledlabel.png)
 *Polygon with styled label*
@@ -176,7 +176,7 @@ This example improves the label style from the [Polygon with default label](poly
 
 ### Details
 
-This example is similar to the [Polygon with default label](polygons.md#ysld_cookbook_polygons_polygonwithdefaultlabel) example, with additional styling options within the text symbolizer on lines **13-21**. **Lines 13-16** set the font styling. **Line 13** sets the font family to be Arial, **line 14** sets the font size to 11 pixels, **line 15** sets the font style to "normal" (as opposed to "italic" or "oblique"), and **line 16** sets the font weight to "bold" (as opposed to "normal").
+This example is similar to the [Polygon with default label](#ysld_cookbook_polygons_polygonwithdefaultlabel) example, with additional styling options within the text symbolizer on lines **13-21**. **Lines 13-16** set the font styling. **Line 13** sets the font family to be Arial, **line 14** sets the font size to 11 pixels, **line 15** sets the font style to "normal" (as opposed to "italic" or "oblique"), and **line 16** sets the font weight to "bold" (as opposed to "normal").
 
 The `anchor` parameter on **line 18** centers the label by positioning it 50% (or 0.5) of the way horizontally and vertically along the centroid of the polygon.
 
@@ -201,7 +201,7 @@ This example styles the polygons differently based on the "pop" (Population) att
 
 !!! note
 
-    Refer to the [Example polygons layer](polygons.md#ysld_cookbook_polygons_attributes) to see the attributes for the layer. This example has eschewed labels in order to simplify the style, but you can refer to the example [Polygon with styled label](polygons.md#ysld_cookbook_polygons_polygonwithstyledlabel) to see which attributes correspond to which polygons.
+    Refer to the [Example polygons layer](#ysld_cookbook_polygons_attributes) to see the attributes for the layer. This example has eschewed labels in order to simplify the style, but you can refer to the example [Polygon with styled label](#ysld_cookbook_polygons_polygonwithstyledlabel) to see which attributes correspond to which polygons.
 
 Each polygon in our fictional country has a population that is represented by the population ("pop") attribute. This style contains three rules that alter the fill based on the value of "pop" attribute, with smaller values yielding a lighter color and larger values yielding a darker color.
 
@@ -260,7 +260,7 @@ This style contains three rules, defined as follows:
 | 2 | Medium | 1:100,000,000 to 1:200,000,000 | 4 | No |
 | 3 | Small | Greater than 1:200,000,000 | 2 | No |
 
-The first rule, on **lines 5-20**, is for the smallest scale denominator, corresponding to when the view is "zoomed in". The scale rule is set on **line 6** such that the rule will apply only where the scale denominator is 100,000,000 or less. **Line 11** defines the fill as blue (`'#0000CC'`). Note that the fill is kept constant across all rules regardless of the scale denominator. As in the [Polygon with default label](polygons.md#ysld_cookbook_polygons_polygonwithdefaultlabel) or [Polygon with styled label](polygons.md#ysld_cookbook_polygons_polygonwithstyledlabel) examples, the rule also contains a text symbolizer at **lines 12-20** for drawing a text label on top of the polygon. **Lines 15-18** set the font information to be Arial, 14 pixels, and bold with no italics. The label is centered both horizontally and vertically along the centroid of the polygon on by setting `anchor` to be `[0.5, 0.5]` (or 50%) on **line 20**. Finally, the color of the font is set to white (`'#FFFFFF'`) in **line 14**.
+The first rule, on **lines 5-20**, is for the smallest scale denominator, corresponding to when the view is "zoomed in". The scale rule is set on **line 6** such that the rule will apply only where the scale denominator is 100,000,000 or less. **Line 11** defines the fill as blue (`'#0000CC'`). Note that the fill is kept constant across all rules regardless of the scale denominator. As in the [Polygon with default label](#ysld_cookbook_polygons_polygonwithdefaultlabel) or [Polygon with styled label](#ysld_cookbook_polygons_polygonwithstyledlabel) examples, the rule also contains a text symbolizer at **lines 12-20** for drawing a text label on top of the polygon. **Lines 15-18** set the font information to be Arial, 14 pixels, and bold with no italics. The label is centered both horizontally and vertically along the centroid of the polygon on by setting `anchor` to be `[0.5, 0.5]` (or 50%) on **line 20**. Finally, the color of the font is set to white (`'#FFFFFF'`) in **line 14**.
 
 The second rule, on **lines 21-27**, is for the intermediate scale denominators, corresponding to when the view is "partially zoomed". The scale rules on **lines 22** set the rule such that it will apply to any map with a scale denominator between 100,000,000 and 200,000,000. (The lower bound is inclusive and the upper bound is exclusive, so a zoom level of exactly 200,000,000 would *not* apply here.) Aside from the scale, there are two differences between this rule and the first: the width of the stroke is set to 4 pixels on **line 26** and a text symbolizer is not present so that no labels will be displayed.
 

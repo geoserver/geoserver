@@ -2,7 +2,7 @@
 
 This section will detail the usage and syntax of the YSLD markup language.
 
-As YSLD is heavily modeled on [YAML](http://yaml.org), it may be useful to refer to the [YAML specification](http://yaml.org/spec/1.2/spec.html) for basic syntax.
+As YSLD is heavily modeled on [YAML](http://yaml.org), it may be useful to refer to the [YAML specification](http://yaml.org/spec/1.2/spec.md) for basic syntax.
 
 <div class="grid cards" markdown>
 

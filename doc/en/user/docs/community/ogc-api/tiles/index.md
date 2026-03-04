@@ -16,7 +16,7 @@ GeoServer implementation is based on an ealier specification draft (the specific
 
 | [OGC API - Tiles](https://github.com/opengeospatial/ogcapi-tiles) | Version | Implementation status |
 |----|----|----|
-| Part 1: Core | [Draft](https://docs.ogc.org/DRAFTS/20-057.html) | Implementation based on early specification draft, not yet updated to final version |
+| Part 1: Core | [Draft](https://docs.ogc.org/DRAFTS/20-057.md) | Implementation based on early specification draft, not yet updated to final version |
 
 ## Installing the GeoServer OGC API - Tiles module
 

@@ -64,7 +64,7 @@ REST service security access rules are specified in a file named **`rest.propert
 The parameters include:
 
 - `[]`---Denote optional parameters
-- `uriPattern`---The [ant pattern](service.md#security_service_ant_patterns) that matches a set of request URIs
+- `uriPattern`---The [ant pattern](#security_service_ant_patterns) that matches a set of request URIs
 - `method`---HTTP request method, one of `GET`, `POST`, `PUT`, `POST`, `DELETE`, or `HEAD`
 - `role`---Name of a predefined role. The wildcard `*` is used to indicate all users, including anonymous users.
 
@@ -75,7 +75,7 @@ The parameters include:
 
 ### Ant patterns {: #security_service_ant_patterns }
 
-Ant patterns are commonly used for pattern matching directory and file paths. The following examples provide some basic instructions. The Apache ant [user manual](http://ant.apache.org/manual/dirtasks.html) contains more sophisticated use cases.
+Ant patterns are commonly used for pattern matching directory and file paths. The following examples provide some basic instructions. The Apache ant [user manual](http://ant.apache.org/manual/dirtasks.md) contains more sophisticated use cases.
 
 These examples are specific to GeoServer [REST](../rest/index.md), but any RESTful GeoServer service could be configured in the same manner.
 

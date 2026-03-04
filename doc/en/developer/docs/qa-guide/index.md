@@ -66,7 +66,7 @@ In case of parallel build, the specific error messages will be in the body of th
 
 If you do have a ***PMD*** failure it is worth checking the pmd website which offers quite clear suggestions:
 
-- [Java Rules](https://pmd.github.io/latest/pmd_rules_java_bestpractices.html)
+- [Java Rules](https://pmd.github.io/latest/pmd_rules_java_bestpractices.md)
 
 ### PMD false positive suppression
 

@@ -118,7 +118,7 @@ The result is a 3 pixel blue line with a 1 pixel gray border, since the 5 pixel 
 
 ## Dashed line
 
-This example alters the [Simple line](lines.md#sld_cookbook_lines_simpleline) to create a dashed line consisting of 5 pixels of drawn line alternating with 2 pixels of blank space.
+This example alters the [Simple line](#sld_cookbook_lines_simpleline) to create a dashed line consisting of 5 pixels of drawn line alternating with 2 pixels of blank space.
 
 ![](images/line_dashedline.png)
 *Dashed line*
@@ -147,7 +147,7 @@ In this example, **line 5** sets the color of the lines to be blue (`#0000FF`) a
 
 ## Offset line
 
-This example alters the [Simple line](lines.md#sld_cookbook_lines_simpleline) to add a perpendicular offset line on the left side of the line, at five pixels distance.
+This example alters the [Simple line](#sld_cookbook_lines_simpleline) to add a perpendicular offset line on the left side of the line, at five pixels distance.
 
 ![](images/line_offset.png)
 *Offset line*
@@ -370,7 +370,7 @@ This example shows a text label on the simple line. This is how a label will be 
 
 ### Details
 
-In this example, there is one rule with a `<LineSymbolizer>` and a `<TextSymbolizer>`. The `<LineSymbolizer>` (**lines 3-7**) draws red lines (`#FF0000`). Since no width is specified, the default is set to 1 pixel. The `<TextSymbolizer>` (**lines 8-15**) determines the labeling of the lines. **Lines 9-11** specify that the text of the label will be determined by the value of the "name" attribute for each line. (Refer to the attribute table in the [Example lines layer](lines.md#sld_cookbook_lines_attributes) section if necessary.) **Line 13** sets the text color to black. All other details about the label are set to the renderer default, which here is Times New Roman font, font color black, and font size of 10 pixels.
+In this example, there is one rule with a `<LineSymbolizer>` and a `<TextSymbolizer>`. The `<LineSymbolizer>` (**lines 3-7**) draws red lines (`#FF0000`). Since no width is specified, the default is set to 1 pixel. The `<TextSymbolizer>` (**lines 8-15**) determines the labeling of the lines. **Lines 9-11** specify that the text of the label will be determined by the value of the "name" attribute for each line. (Refer to the attribute table in the [Example lines layer](#sld_cookbook_lines_attributes) section if necessary.) **Line 13** sets the text color to black. All other details about the label are set to the renderer default, which here is Times New Roman font, font color black, and font size of 10 pixels.
 
 ## Label following line {: #sld_cookbook_lines_labelfollowingline }
 
@@ -413,13 +413,13 @@ This example renders the text label to follow the contour of the lines.
 
 ### Details
 
-As the [Alternating symbols with dash offsets](lines.md#sld_cookbook_lines_defaultlabel) example showed, the default label behavior isn't optimal. The label is displayed at a tangent to the line itself, leading to uncertainty as to which label corresponds to which line.
+As the [Alternating symbols with dash offsets](#sld_cookbook_lines_defaultlabel) example showed, the default label behavior isn't optimal. The label is displayed at a tangent to the line itself, leading to uncertainty as to which label corresponds to which line.
 
-This example is similar to the [Alternating symbols with dash offsets](lines.md#sld_cookbook_lines_defaultlabel) example with the exception of **lines 12-18**. **Line 18** sets the option to have the label follow the line, while **lines 12-14** specify that the label is placed along a line. If `<LinePlacement />` is not specified in an SLD, then `<PointPlacement />` is assumed, which isn't compatible with line-specific rendering options.
+This example is similar to the [Alternating symbols with dash offsets](#sld_cookbook_lines_defaultlabel) example with the exception of **lines 12-18**. **Line 18** sets the option to have the label follow the line, while **lines 12-14** specify that the label is placed along a line. If `<LinePlacement />` is not specified in an SLD, then `<PointPlacement />` is assumed, which isn't compatible with line-specific rendering options.
 
 !!! note
 
-    Not all labels are shown due to label conflict resolution. See the next section on [Optimized label placement](lines.md#sld_cookbook_lines_optimizedlabel) for an example of how to maximize label display.
+    Not all labels are shown due to label conflict resolution. See the next section on [Optimized label placement](#sld_cookbook_lines_optimizedlabel) for an example of how to maximize label display.
 
 ## Optimized label placement {: #sld_cookbook_lines_optimizedlabel }
 
@@ -465,13 +465,13 @@ This example optimizes label placement for lines such that the maximum number of
 
 ### Details
 
-GeoServer uses "conflict resolution" to ensure that labels aren't drawn on top of other labels, obscuring them both. This accounts for the reason why many lines don't have labels in the previous example, [Label following line](lines.md#sld_cookbook_lines_labelfollowingline). While this setting can be toggled, it is usually a good idea to leave it on and use other label placement options to ensure that labels are drawn as often as desired and in the correct places. This example does just that.
+GeoServer uses "conflict resolution" to ensure that labels aren't drawn on top of other labels, obscuring them both. This accounts for the reason why many lines don't have labels in the previous example, [Label following line](#sld_cookbook_lines_labelfollowingline). While this setting can be toggled, it is usually a good idea to leave it on and use other label placement options to ensure that labels are drawn as often as desired and in the correct places. This example does just that.
 
-This example is similar to the previous example, [Label following line](lines.md#sld_cookbook_lines_labelfollowingline). The only differences are contained in **lines 18-21**. **Line 19** sets the maximum angle that the label will follow. This sets the label to never bend more than 90 degrees to prevent the label from becoming illegible due to a pronounced curve or angle. **Line 20** sets the maximum displacement of the label to be 400 pixels. In order to resolve conflicts with overlapping labels, GeoServer will attempt to move the labels such that they are no longer overlapping. This value sets how far the label can be moved relative to its original placement. Finally, **line 21** sets the labels to be repeated every 150 pixels. A feature will typically receive only one label, but this can cause confusion for long lines. Setting the label to repeat ensures that the line is always labeled locally.
+This example is similar to the previous example, [Label following line](#sld_cookbook_lines_labelfollowingline). The only differences are contained in **lines 18-21**. **Line 19** sets the maximum angle that the label will follow. This sets the label to never bend more than 90 degrees to prevent the label from becoming illegible due to a pronounced curve or angle. **Line 20** sets the maximum displacement of the label to be 400 pixels. In order to resolve conflicts with overlapping labels, GeoServer will attempt to move the labels such that they are no longer overlapping. This value sets how far the label can be moved relative to its original placement. Finally, **line 21** sets the labels to be repeated every 150 pixels. A feature will typically receive only one label, but this can cause confusion for long lines. Setting the label to repeat ensures that the line is always labeled locally.
 
 ## Optimized and styled label {: #sld_cookbook_lines_optimizedstyledlabel }
 
-This example improves the style of the labels from the [Optimized label placement](lines.md#sld_cookbook_lines_optimizedlabel) example.
+This example improves the style of the labels from the [Optimized label placement](#sld_cookbook_lines_optimizedlabel) example.
 
 ![](images/line_optimizedstyledlabel.png)
 *Optimized and styled label*
@@ -515,7 +515,7 @@ This example improves the style of the labels from the [Optimized label placemen
 
 ### Details
 
-This example is similar to the [Optimized label placement](lines.md#sld_cookbook_lines_optimizedlabel). The only difference is in the font information, which is contained in **lines 18-23**. **Line 19** sets the font family to be "Arial", **line 20** sets the font size to 10, **line 21** sets the font style to "normal" (as opposed to "italic" or "oblique"), and **line 22** sets the font weight to "bold" (as opposed to "normal").
+This example is similar to the [Optimized label placement](#sld_cookbook_lines_optimizedlabel). The only difference is in the font information, which is contained in **lines 18-23**. **Line 19** sets the font family to be "Arial", **line 20** sets the font size to 10, **line 21** sets the font style to "normal" (as opposed to "italic" or "oblique"), and **line 22** sets the font weight to "bold" (as opposed to "normal").
 
 ## Attribute-based line
 
@@ -586,7 +586,7 @@ This example styles the lines differently based on the "type" (Road class) attri
 
 !!! note
 
-    Refer to the [Example lines layer](lines.md#sld_cookbook_lines_attributes) to see the attributes for the layer. This example has eschewed labels in order to simplify the style, but you can refer to the example [Optimized and styled label](lines.md#sld_cookbook_lines_optimizedstyledlabel) to see which attributes correspond to which points.
+    Refer to the [Example lines layer](#sld_cookbook_lines_attributes) to see the attributes for the layer. This example has eschewed labels in order to simplify the style, but you can refer to the example [Optimized and styled label](#sld_cookbook_lines_optimizedstyledlabel) to see which attributes correspond to which points.
 
 There are three types of road classes in our fictional country, ranging from back roads to high-speed freeways: "highway", "secondary", and "local-road". In order to handle each case separately, there is more than one `<FeatureTypeStyle>`, each containing a single rule. This ensures that each road type is rendered in order, as each `<FeatureTypeStyle>` is drawn based on the order in which it appears in the SLD.
 
@@ -606,7 +606,7 @@ The three rules are designed as follows:
 
 ## Zoom-based line
 
-This example alters the [Simple line](lines.md#sld_cookbook_lines_simpleline) style at different zoom levels.
+This example alters the [Simple line](#sld_cookbook_lines_simpleline) style at different zoom levels.
 
 ![](images/line_zoombasedlinelarge.png)
 *Zoom-based line: Zoomed in*

@@ -19,10 +19,10 @@ Controls a particular data store in a given workspace.
 
 | Method | Action | Status code | Formats | Default Format | Parameters |
 |----|----|----|----|----|----|
-| GET | Return data store `ds` | 200 | HTML, XML, JSON | HTML | [quietOnNotFound](datastores.md#rest_api_datastores_quietOnNotFound) |
+| GET | Return data store `ds` | 200 | HTML, XML, JSON | HTML | [quietOnNotFound](#rest_api_datastores_quietOnNotFound) |
 | POST |  | 405 |  |  |  |
 | PUT | Modify data store `ds` |  |  |  |  |
-| DELETE | Delete data store `ds` |  |  |  | [recurse](datastores.md#rest_api_datastores_recurse) |
+| DELETE | Delete data store `ds` |  |  |  | [recurse](#rest_api_datastores_recurse) |
 
 ### Exceptions
 
@@ -55,7 +55,7 @@ These endpoints (`file`, `url`, and `external`) allow a file containing either s
 |----|----|----|----|----|----|
 | GET | *Deprecated*. Retrieve the underlying files for the data store as a zip file with MIME type `application/zip` | 200 |  |  |  |
 | POST |  | 405 |  |  |  |
-| PUT | Uploads files to the data store `ds`, creating it if necessary | 200 | [See note below](datastores.md#rest_api_datastores_file_put) |  | [configure](datastores.md#rest_api_datastores_configure), [target](datastores.md#rest_api_datastores_target), [update](datastores.md#rest_api_datastores_update), [charset](datastores.md#rest_api_datastores_charset) |
+| PUT | Uploads files to the data store `ds`, creating it if necessary | 200 | [See note below](#rest_api_datastores_file_put) |  | [configure](#rest_api_datastores_configure), [target](#rest_api_datastores_target), [update](#rest_api_datastores_update), [charset](#rest_api_datastores_charset) |
 | DELETE |  | 405 |  |  |  |
 
 ### Exceptions
@@ -103,7 +103,7 @@ The `configure` parameter controls how the data store is configured upon file up
 
 #### `target` {: #rest_api_datastores_target }
 
-The `target` parameter determines what format or storage engine will be used when a new data store is created on the server for uploaded data. When importing data into an existing data store, it is ignored. The allowed values for this parameter are the same as for the [extension parameter](datastores.md#rest_api_datastores_extension), except for `appschema`, which doesn't make sense in this context.
+The `target` parameter determines what format or storage engine will be used when a new data store is created on the server for uploaded data. When importing data into an existing data store, it is ignored. The allowed values for this parameter are the same as for the [extension parameter](#rest_api_datastores_extension), except for `appschema`, which doesn't make sense in this context.
 
 #### `update` {: #rest_api_datastores_update }
 

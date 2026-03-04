@@ -88,7 +88,7 @@ The result is a 3 pixel blue line with a 1 pixel gray border, since the 5 pixel 
 
 ## Dashed line
 
-This example alters the [Simple line](line.md#css_cookbook_lines_simpleline) to create a dashed line consisting of 5 pixels of drawn line alternating with 2 pixels of blank space.
+This example alters the [Simple line](#css_cookbook_lines_simpleline) to create a dashed line consisting of 5 pixels of drawn line alternating with 2 pixels of blank space.
 
 ![](../../sld/cookbook/images/line_dashedline.png)
 *Dashed line*
@@ -265,9 +265,9 @@ This example renders the text label to follow the contour of the lines.
 
 ### Details
 
-As the [Line with default label](line.md#css_cookbook_lines_defaultlabel) example showed, the default label behavior isn't optimal.
+As the [Line with default label](#css_cookbook_lines_defaultlabel) example showed, the default label behavior isn't optimal.
 
-This example is similar to the [Line with default label](line.md#css_cookbook_lines_defaultlabel) example with the exception of **line 5** where the "label-follow-line" option is specified, which forces the labels to strickly follow the line.
+This example is similar to the [Line with default label](#css_cookbook_lines_defaultlabel) example with the exception of **line 5** where the "label-follow-line" option is specified, which forces the labels to strickly follow the line.
 
 Not all labels are visible partly because of conflict resolution, and partly because the renderer cannot find a line segment long and "straight" enough to paint the label (labels are not painted over sharp turns by default).
 
@@ -294,11 +294,11 @@ This example optimizes label placement for lines such that the maximum number of
 
 ### Details
 
-This example is similar to the previous example, [Label following line](line.md#css_cookbook_lines_labelfollowingline). The only differences are contained in **lines 6-8**. **Line 6** sets the maximum angle that the label will follow. This sets the label to never bend more than 90 degrees to prevent the label from becoming illegible due to a pronounced curve or angle. **Line 7** sets the maximum displacement of the label to be 400 pixels. In order to resolve conflicts with overlapping labels, GeoServer will attempt to move the labels such that they are no longer overlapping. This value sets how far the label can be moved relative to its original placement. Finally, **line 8** sets the labels to be repeated every 150 pixels. A feature will typically receive only one label, but this can cause confusion for long lines. Setting the label to repeat ensures that the line is always labeled locally.
+This example is similar to the previous example, [Label following line](#css_cookbook_lines_labelfollowingline). The only differences are contained in **lines 6-8**. **Line 6** sets the maximum angle that the label will follow. This sets the label to never bend more than 90 degrees to prevent the label from becoming illegible due to a pronounced curve or angle. **Line 7** sets the maximum displacement of the label to be 400 pixels. In order to resolve conflicts with overlapping labels, GeoServer will attempt to move the labels such that they are no longer overlapping. This value sets how far the label can be moved relative to its original placement. Finally, **line 8** sets the labels to be repeated every 150 pixels. A feature will typically receive only one label, but this can cause confusion for long lines. Setting the label to repeat ensures that the line is always labeled locally.
 
 ## Optimized and styled label {: #css_cookbook_lines_optimizedstyledlabel }
 
-This example improves the style of the labels from the [Optimized label placement](line.md#css_cookbook_lines_optimizedlabel) example.
+This example improves the style of the labels from the [Optimized label placement](#css_cookbook_lines_optimizedlabel) example.
 
 ![](../../sld/cookbook/images/line_optimizedstyledlabel_with_halo.png)
 *Optimized and styled label*
@@ -324,7 +324,7 @@ This example improves the style of the labels from the [Optimized label placemen
 
 ### Details
 
-This example is similar to the [Optimized label placement](line.md#css_cookbook_lines_optimizedlabel). The only differences are:
+This example is similar to the [Optimized label placement](#css_cookbook_lines_optimizedlabel). The only differences are:
 
 > - The font family and weight have been specified
 > - In order to make the labels easier to read, a white "halo" has been added. The halo draws a thin 1 pixel white border around the text, making it stand out from the background.
@@ -362,7 +362,7 @@ This example styles the lines differently based on the "type" (Road class) attri
 
 !!! note
 
-    Refer to the [Example lines layer](line.md#css_cookbook_lines_attributes) to see the attributes for the layer. This example has eschewed labels in order to simplify the style, but you can refer to the example [Optimized and styled label](line.md#css_cookbook_lines_optimizedstyledlabel) to see which attributes correspond to which points.
+    Refer to the [Example lines layer](#css_cookbook_lines_attributes) to see the attributes for the layer. This example has eschewed labels in order to simplify the style, but you can refer to the example [Optimized and styled label](#css_cookbook_lines_optimizedstyledlabel) to see which attributes correspond to which points.
 
 There are three types of road classes in our fictional country, ranging from back roads to high-speed freeways: "highway", "secondary", and "local-road". In order to make sure the roads are rendered in the proper order of importance, a "z-index" attribute has been placed in each rule.
 
@@ -382,7 +382,7 @@ The three rules are designed as follows:
 
 ## Zoom-based line
 
-This example alters the [Simple line](line.md#css_cookbook_lines_simpleline) style at different zoom levels.
+This example alters the [Simple line](#css_cookbook_lines_simpleline) style at different zoom levels.
 
 ![](../../sld/cookbook/images/line_zoombasedlinelarge.png)
 *Zoom-based line: Zoomed in*

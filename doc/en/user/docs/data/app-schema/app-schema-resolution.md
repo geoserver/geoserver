@@ -4,7 +4,7 @@ To be able to encode XML responses conforming to a GML application schema, the a
 
 ## Schema downloading is now automatic for most users
 
-GeoServer will automatically download and cache (see [Cache](app-schema-resolution.md#app-schema-cache) below) all the schemas it needs the first time it starts if:
+GeoServer will automatically download and cache (see [Cache](#app-schema-cache) below) all the schemas it needs the first time it starts if:
 
 1.  All the application schemas you use are accessed via http/https URLs, and
 2.  Your GeoServer instance is deployed on a network that permits it to download them.
@@ -27,7 +27,7 @@ Every attempt to load a schema works down this list, so imports can be resolved 
 
 ## OASIS Catalog
 
-An [OASIS XML Catalog](http://www.oasis-open.org/committees/entity/spec-2001-08-06.html) is a standard configuration file format that instructs an XML processing system how to process entity references. The GeoServer app-schema resolver uses catalog URI semantics to locate application schemas, so `uri` or `rewriteURI` entries should be present in your catalog. The optional mapping file `catalog` element provides the location of the OASIS XML Catalog configuration file, given as a path relative to the mapping file, for example:
+An [OASIS XML Catalog](http://www.oasis-open.org/committees/entity/spec-2001-08-06.md) is a standard configuration file format that instructs an XML processing system how to process entity references. The GeoServer app-schema resolver uses catalog URI semantics to locate application schemas, so `uri` or `rewriteURI` entries should be present in your catalog. The optional mapping file `catalog` element provides the location of the OASIS XML Catalog configuration file, given as a path relative to the mapping file, for example:
 
     <catalog>../../../schemas/catalog.xml</catalog>
 

@@ -10,7 +10,7 @@ render_macros: true
 
 !!! note
 
-    GeoServer does not come built-in with support for ArcGrid; it must be installed through an extension. Proceed to [Installing the ArcGrid extension](arcgrid.md#arcgrid_install) for installation details.
+    GeoServer does not come built-in with support for ArcGrid; it must be installed through an extension. Proceed to [Installing the ArcGrid extension](#arcgrid_install) for installation details.
 
 ArcGrid is a coverage file format created by ESRI.
 

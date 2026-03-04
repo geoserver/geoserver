@@ -22,7 +22,7 @@ require(["esri/config"], function (esriConfig) {
 
 CORS support also needs to be enabled on the server. Without these settings, it will attempt to use JSONP, which may not be as well supported.
 
-For information on enabling CORS in GeoServer, see [here](http://suite.opengeo.org/docs/latest/sysadmin/cors/index.html).
+For information on enabling CORS in GeoServer, see [here](http://suite.opengeo.org/docs/latest/sysadmin/cors/index.md).
 
 ## Web Mercator Spatial Reference
 

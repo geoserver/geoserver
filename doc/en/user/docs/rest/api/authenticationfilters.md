@@ -2,8 +2,8 @@
 
 This section documents the REST endpoints for managing authentication filters in GeoServer.
 
-- Collection endpoint: [/security/authfilters](authenticationfilters.md#security_authfilters)
-- Item endpoint: [/security/authfilters/{authfilter}](authenticationfilters.md#security_authfilters_authfilter)
+- Collection endpoint: [/security/authfilters](#security_authfilters)
+- Item endpoint: [/security/authfilters/{authfilter}](#security_authfilters_authfilter)
 
 !!! note
 

@@ -149,7 +149,7 @@ This is a step by step guide to style a GeoServer demo layer, `sfdem`.
 
 The next example shows how to style an aerial image instead.
 
-1.  Download an aerial image (for example from [USGS Landsat image archives](https://landsatlook.usgs.gov/sentinel2/viewer.html)) if you do not already have one. Give it a name (`aerial` in this example) and **save it as GeoTIFF**
+1.  Download an aerial image (for example from [USGS Landsat image archives](https://landsatlook.usgs.gov/sentinel2/viewer.md)) if you do not already have one. Give it a name (`aerial` in this example) and **save it as GeoTIFF**
 
     ``` raw_markdown
     ![](images/landsat_usgs_sentinel2.png)

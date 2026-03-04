@@ -6,21 +6,21 @@ Keyhole Markup Langauge (KML), when created and output by GeoServer, is styled u
 
 ### Contents
 
-> [SLD Generation from CSS](kmlstyling.md#kml-styling-basic)
+> [SLD Generation from CSS](#kml-styling-basic)
 >
-> [Creating SLD by hand](kmlstyling.md#kml-styling-sld-hand)
+> [Creating SLD by hand](#kml-styling-sld-hand)
 >
-> [SLD Structure](kmlstyling.md#kml-styling-sld-structure)
+> [SLD Structure](#kml-styling-sld-structure)
 >
-> [Points](kmlstyling.md#kml-styling-points)
+> [Points](#kml-styling-points)
 >
-> [Lines](kmlstyling.md#kml-styling-lines)
+> [Lines](#kml-styling-lines)
 >
-> [Polygons](kmlstyling.md#kml-styling-polygons)
+> [Polygons](#kml-styling-polygons)
 >
-> [Text Labels](kmlstyling.md#kml-styling-text-labels)
+> [Text Labels](#kml-styling-text-labels)
 >
-> [Descriptions](kmlstyling.md#kml-styling-descriptions)
+> [Descriptions](#kml-styling-descriptions)
 
 ## SLD Generation from CSS {: #kml-styling-basic }
 
@@ -392,4 +392,4 @@ It is also possible to create one description template for all featureTypes in a
 
 One can also create more complex descriptions using a combination of HTML and the attributes of the data. A full tutorial on how to use templates to create descriptions is available in our page on KML Placemark Templates. (LINK?)
 
-[SLD Generation from CSS](kmlstyling.md#kml-styling-basic) [SLD Structure](kmlstyling.md#kml-styling-sld-structure) [Points](kmlstyling.md#kml-styling-points) [Lines](kmlstyling.md#kml-styling-lines) [Polygons](kmlstyling.md#kml-styling-polygons) [Text Labels](kmlstyling.md#kml-styling-text-labels) [Descriptions](kmlstyling.md#kml-styling-descriptions)
+[SLD Generation from CSS](#kml-styling-basic) [SLD Structure](#kml-styling-sld-structure) [Points](#kml-styling-points) [Lines](#kml-styling-lines) [Polygons](#kml-styling-polygons) [Text Labels](#kml-styling-text-labels) [Descriptions](#kml-styling-descriptions)

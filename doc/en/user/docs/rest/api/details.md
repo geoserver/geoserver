@@ -8,7 +8,7 @@ REST requires that the client be authenticated. By default, the method of authen
 
 ## Status codes
 
-An HTTP request uses a status code to relay the outcome of the request to the client. Different status codes are used for various purposes throughout this document. These codes are described in detail by the [HTTP specification](http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html).
+An HTTP request uses a status code to relay the outcome of the request to the client. Different status codes are used for various purposes throughout this document. These codes are described in detail by the [HTTP specification](http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.md).
 
 The most common status codes are listed below, along with their descriptions:
 

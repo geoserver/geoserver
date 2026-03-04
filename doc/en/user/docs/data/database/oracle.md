@@ -10,7 +10,7 @@ render_macros: true
 
 !!! note
 
-    GeoServer does not come built-in with support for Oracle; it must be installed through an extension. Proceed to [Installing the Oracle extension](oracle.md#oracle_install) for installation details.
+    GeoServer does not come built-in with support for Oracle; it must be installed through an extension. Proceed to [Installing the Oracle extension](#oracle_install) for installation details.
 
 [Oracle Spatial and Locator](https://www.oracle.com/database/spatial/) are the spatial components of Oracle. **Locator** is provided with all Oracle versions, but has limited spatial functions. **Spatial** is Oracle's full-featured spatial offering, but requires a specific license to use.
 
@@ -48,7 +48,7 @@ Once the extension is properly installed **Oracle** appears as an option in the 
 | `user` | The name of the user to use when connecting to the database. |
 | `password` | The password to use when connecting to the database. Leave blank for no password. |
 | `max connections` `min connections` `fetch size` `Connection timeout` `validate connections` | Connection pool configuration parameters. See [Database Connection Pooling](connection-pooling.md) for details. |
-| `Loose bbox` | Controls how bounding box filters are made against geometries in the database. See the [Using loose bounding box](oracle.md#oracle_loose_bbox) section below. |
+| `Loose bbox` | Controls how bounding box filters are made against geometries in the database. See the [Using loose bounding box](#oracle_loose_bbox) section below. |
 | `Metadata bbox` | Flag controlling the use of MDSYS.USER_SDO_GEOM_METADATA or MDSYS.ALL_SDO_GEOM_METADATA table for bounding box calculations, this brings a better performance if the views access is fast and the bounds are configured right in the tables default is false |
 | `Get remarks` | Boolean flag specifies whether REMARKS metadata will be returned. |
 

@@ -35,7 +35,7 @@ Upon selection of a Store, a list is displayed of resources within the store. Re
 ![](img/data_layers_add_view.png)
 *List of published and available resources in a store*
 
-To add a layer for an available resource click **Publish**. To add a new layer for a published resource click **Publish Again**. (Note that when re-publishing the name of the new layer may have to be modified to avoid conflict with an existing layer.) The actions display an [Edit Layer](layers.md#data_webadmin_layers_edit_data) page to enter the definition of the new layer.
+To add a layer for an available resource click **Publish**. To add a new layer for a published resource click **Publish Again**. (Note that when re-publishing the name of the new layer may have to be modified to avoid conflict with an existing layer.) The actions display an [Edit Layer](#data_webadmin_layers_edit_data) page to enter the definition of the new layer.
 
 ## Remove a Layer
 
@@ -318,7 +318,7 @@ Sets the WFS specific publishing parameters.
 - **Request SRS**---Provides a list of SRSs the layer can be converted to. **New Request SRS** allows you to add an SRS to that list.
 - **Interpolation Methods**---Sets the raster rendering process, if applicable.
 - **Formats**---Lists which output formats a layer supports.
-- **GeoSearch**---When enabled, allows the Google GeoSearch crawler to index from this particular layer. Obsolete since 2012. See [Google Retired Geo Sitemap Support](https://www.seroundtable.com/geo-sitemaps-gone-14941.html) for more information.
+- **GeoSearch**---When enabled, allows the Google GeoSearch crawler to index from this particular layer. Obsolete since 2012. See [Google Retired Geo Sitemap Support](https://www.seroundtable.com/geo-sitemaps-gone-14941.md) for more information.
 
 ### KML Format Settings
 

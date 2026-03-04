@@ -53,7 +53,7 @@ There is one layer in this MBStyle, which is the simplest possible situation. Th
 
 ## Simple point with stroke {: #mbstyle_cookbook_points_simplepointwithstroke }
 
-This example adds a stroke (or border) around the [Simple point](points.md#mbstyle_cookbook_points_simplepoint), with the stroke colored black and given a thickness of 2 pixels.
+This example adds a stroke (or border) around the [Simple point](#mbstyle_cookbook_points_simplepoint), with the stroke colored black and given a thickness of 2 pixels.
 
 ![](../../sld/cookbook/images/point_simplepointwithstroke.png)
 *Simple point with stroke*
@@ -84,4 +84,4 @@ This example adds a stroke (or border) around the [Simple point](points.md#mbsty
 
 ### Details
 
-This example is similar to the [Simple point](points.md#mbstyle_cookbook_points_simplepoint) example. **Lines 12-13** specify the stroke, with **line 12** setting the color to black (`'#000000'`) and **line 13** setting the width to 2 pixels.
+This example is similar to the [Simple point](#mbstyle_cookbook_points_simplepoint) example. **Lines 12-13** specify the stroke, with **line 12** setting the color to black (`'#000000'`) and **line 13** setting the width to 2 pixels.

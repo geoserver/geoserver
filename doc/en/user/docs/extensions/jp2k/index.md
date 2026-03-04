@@ -1,6 +1,6 @@
 # JP2K Plugin
 
-GeoServer can leverage the JP2K Geotools plugin to read JP2K coverage formats. In case you have a Kakadu license and you have built your set of native libraries, you will be able to access the JP2K data with higher performances leveraging on it. Otherwise you will use the standard SUN's JP2K. See [GeoTools JP2K Plugin](https://docs.geotools.org/latest/userguide/library/coverage/jp2k.html) for further information.
+GeoServer can leverage the JP2K Geotools plugin to read JP2K coverage formats. In case you have a Kakadu license and you have built your set of native libraries, you will be able to access the JP2K data with higher performances leveraging on it. Otherwise you will use the standard SUN's JP2K. See [GeoTools JP2K Plugin](https://docs.geotools.org/latest/userguide/library/coverage/jp2k.md) for further information.
 
 ## Installing Kakadu
 

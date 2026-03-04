@@ -4,7 +4,7 @@ This REST API allows you to create and manage URL External Access Checks in GeoS
 
 !!! note
 
-    Read the [API reference for /urlchecks](api/urlchecks.yaml).
+    Read the [API reference for /urlchecks](/api/urlchecks.yaml).
 
 ## Listing all URL Checks
 

@@ -31,8 +31,9 @@ def scan_download_links(docs_dir: str) -> Set[Tuple[str, str]]:
     
     # Pattern to match Markdown links: [text](file.ext)
     # Matches common download file extensions
+    # Excludes absolute paths starting with /
     link_pattern = re.compile(
-        r'\[([^\]]+)\]\(([^)]+\.(?:zip|xml|properties|sld|json|csv|yaml|yml|txt|sql|sh|bat|jar))\)',
+        r'\[([^\]]+)\]\(([^/)][^)]*\.(?:zip|xml|properties|sld|json|csv|yaml|yml|txt|sql|sh|bat|jar))\)',
         re.IGNORECASE
     )
     
@@ -133,24 +134,85 @@ def on_pre_build(config, **kwargs):
         config['_download_links'] = set()
 
 
+def copy_api_directory(config) -> int:
+    """
+    Copy the API directory (Swagger/OpenAPI specs) to the site output.
+    
+    The API directory contains OpenAPI YAML specifications that are referenced
+    throughout the REST API documentation. This function copies the entire
+    doc/en/api/ directory to the site output, preserving the directory structure.
+    
+    Args:
+        config: MkDocs configuration object
+        
+    Returns:
+        Number of API files successfully copied
+    """
+    # Get the base documentation directory (doc/en/)
+    docs_dir = Path(config.get('docs_dir', 'docs'))
+    site_dir = Path(config.get('site_dir', 'site'))
+    
+    # API directory is at doc/en/api/ (sibling to docs directory)
+    # docs_dir is typically doc/en/user/docs, so we need to go up two levels to get to doc/en/
+    api_source = docs_dir.parent.parent / 'api'
+    api_dest = site_dir / 'api'
+    
+    if not api_source.exists():
+        logger.warning(f"API directory not found at {api_source}")
+        return 0
+    
+    copied_count = 0
+    
+    try:
+        # Create destination directory
+        api_dest.mkdir(parents=True, exist_ok=True)
+        
+        # Copy all files from api directory, preserving structure
+        for item in api_source.rglob('*'):
+            if item.is_file():
+                # Calculate relative path from api_source
+                rel_path = item.relative_to(api_source)
+                dest_file = api_dest / rel_path
+                
+                # Create parent directories if needed
+                dest_file.parent.mkdir(parents=True, exist_ok=True)
+                
+                # Copy the file
+                shutil.copy2(item, dest_file)
+                logger.debug(f"Copied API file: {rel_path}")
+                copied_count += 1
+        
+        logger.info(f"Successfully copied {copied_count} API specification files")
+        
+    except Exception as e:
+        logger.error(f"Error copying API directory: {e}")
+    
+    return copied_count
+
+
 def on_post_build(config, **kwargs):
     """
     Hook called after the build completes.
     
-    Copies download files from docs directory to site output directory.
+    Copies download files from docs directory to site output directory,
+    and copies the API directory (Swagger/OpenAPI specs) to the site output.
     """
     docs_dir = config.get('docs_dir', 'docs')
     site_dir = config.get('site_dir', 'site')
     download_links = config.get('_download_links', set())
     
-    if not download_links:
-        logger.info("No download files to copy")
-        return
-    
-    logger.info(f"Copying {len(download_links)} download files to output directory...")
-    copied_count = copy_download_files(docs_dir, site_dir, download_links)
-    
-    if copied_count > 0:
-        logger.info(f"Successfully copied {copied_count} download files")
+    # Copy download files
+    if download_links:
+        logger.info(f"Copying {len(download_links)} download files to output directory...")
+        copied_count = copy_download_files(docs_dir, site_dir, download_links)
+        
+        if copied_count > 0:
+            logger.info(f"Successfully copied {copied_count} download files")
+        else:
+            logger.warning("No download files were copied")
     else:
-        logger.warning("No download files were copied")
+        logger.info("No download files to copy")
+    
+    # Copy API directory (Swagger/OpenAPI specs)
+    logger.info("Copying API specifications to output directory...")
+    copy_api_directory(config)

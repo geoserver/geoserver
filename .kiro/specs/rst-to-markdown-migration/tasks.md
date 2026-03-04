@@ -346,7 +346,7 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - Test locally that macros render correctly in built documentation
     - _Requirements: 1.3, 1.4, 5.5, 5.6_
 
-  - [ ] 5.5.3 Configure Swagger API spec deployment (CRITICAL BLOCKER)
+  - [-] 5.5.3 Configure Swagger API spec deployment (CRITICAL BLOCKER)
     - **CRITICAL BLOCKER**: REST API Swagger/OpenAPI YAML specs are not being deployed with MkDocs build
     - **Issue**: Documentation links to API specs (e.g., `api/styles.yaml`, `api/layergroups.yaml`) but these files are not packaged or deployed
     - **Current state**:

@@ -4,7 +4,7 @@ The REST API allows you to list, create, upload, update, and delete styles in Ge
 
 !!! note
 
-    Read the [API reference for /styles](api/styles.yaml).
+    Read the [API reference for /styles](/api/styles.yaml).
 
 ## Listing all styles
 

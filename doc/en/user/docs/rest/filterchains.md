@@ -4,7 +4,7 @@ The REST API allows you to list, create, upload, update, and delete filterChains
 
 !!! note
 
-    Read the [API reference for security/filterChains](api/filterchains.yaml).
+    Read the [API reference for security/filterChains](/api/filterchains.yaml).
 
 ## View a Filter Chain
 

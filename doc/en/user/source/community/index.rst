@@ -75,6 +75,7 @@ Community modules are provided "as is" alongside the `nightly builds <https://bu
    ogr-store/index
    oidc/index
    pmtiles-store/index
+   png-wind/index
    proxy-base-ext/index
    remote-wps/index
    s3-geotiff/index

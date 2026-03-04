@@ -180,7 +180,7 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - Commit removals with message: "Remove RST infrastructure after migration to Markdown"
     - _Requirements: 20.1, 20.2, 20.3, 20.4, 20.5, 20.6, 20.7_
 
-  - [ ] 3.8 Create migration summary report
+  - [x] 3.8 Create migration summary report
     - Count total RST files converted
     - Count total lines of documentation converted
     - List unconverted directives or issues
@@ -189,7 +189,7 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - List files added (Markdown docs, updated workflows)
     - _Requirements: 19.1, 19.2, 19.3, 19.4, 19.5, 19.6_
 
-  - [ ] 3.9 Create pull request for 2.28.x branch
+  - [x] 3.9 Create pull request for 2.28.x branch
     - Create PR: "Migrate 2.28.x documentation from RST to Markdown"
     - Include migration summary report in PR description
     - Document known minor issues

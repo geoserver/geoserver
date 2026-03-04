@@ -2,7 +2,7 @@
 
 This guide is designed to get developers up and running as quick as possible. For a more comprehensive guide see the [Maven Guide](../maven-guide/index.md).
 
-{%raw%}{% include-markdown "./checkout.txt" %}{%endraw%}
+{% include-markdown "./checkout.txt" %}
 
 ## Command line build
 

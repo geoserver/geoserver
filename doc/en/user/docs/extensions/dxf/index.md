@@ -2,9 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
 
 # DXF OutputFormat for WFS and WPS PPIO
 

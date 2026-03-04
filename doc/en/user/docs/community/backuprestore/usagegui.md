@@ -76,13 +76,8 @@ The steps are almost the same of the backup. Just select the `.zip` archive full
 >
 > ![](images/usagegui006.png)
 >
-> :::: note
-> ::: title
-> Note
-> :::
->
-> Please notice that the dry run should always being executed when trying to restore a new configuration.
-> ::::
+!!! note
+    Please notice that the dry run should always being executed when trying to restore a new configuration.
 >
 > A **failing** restore dry-run will appear like this
 >

@@ -54,7 +54,7 @@ To make a GSIP:
 
 One of the duties of the [GeoServer Project Steering Committee](psc.md) is to vote on GSIPs. The voting process works as follows:
 
-{%raw%}{% include-markdown "./gsip_voting.txt" %}{%endraw%}
+{% include-markdown "./gsip_voting.txt" %}
 
 ## GSIP FAQ
 

@@ -2,9 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
 
 # Key authentication module
 
@@ -119,13 +116,8 @@ First thing to do is to:
 
 5\. Provide a suitable `Roles Regex` to apply to your Web Service Response
 
-> :::: note
-> ::: title
-> Note
-> :::
->
-> This is the only real mandatory value to provide. The others are optional and will allow you to customize the User Group Service behavior (see below)
-> ::::
+!!! note
+    This is the only real mandatory value to provide. The others are optional and will allow you to customize the User Group Service behavior (see below)
 >
 > ![](images/004_user_group_service.png)
 

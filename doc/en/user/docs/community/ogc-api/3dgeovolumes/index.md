@@ -2,9 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
 
 # OGC API - 3D GeoVolumes
 

@@ -2,9 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
 
 # Installing the HTTP Based Authorization plug-in
 

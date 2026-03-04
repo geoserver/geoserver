@@ -20,13 +20,8 @@ Install the plugin-in, see [Installing the GeoServer GeoFence Server extension](
 
 Restart GeoServer.
 
-> :::: note
-> ::: title
-> Note
-> :::
->
-> Since we defined no rules yet, the default behavior of GeoFence is to deny access to all resources.
-> ::::
+!!! note
+    Since we defined no rules yet, the default behavior of GeoFence is to deny access to all resources.
 
 There should now be a **GeoFence Data Rules** link on the left side of the screen after logging in. Click on it. This is the configuration page of your internal GeoFence.
 

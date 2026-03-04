@@ -2,9 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
 
 # Installing the WCS 1.0 and 1.1 extensions
 

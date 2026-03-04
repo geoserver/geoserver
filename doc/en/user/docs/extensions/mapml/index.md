@@ -4,21 +4,11 @@ Map Markup Language (MapML) is a text-based format which allows map authors to e
 
 The MapML module for GeoServer adds new MapML resources to access WMS, WMTS and WFS services configured in Geoserver. The MapML modules includes support for styles, tiling, querying, and dimensions options for WMS layers, and also provides a MapML outputFormat for WMS GetFeatureInfo and WFS GetFeatures requests. See below for information on installing and configuring the MapML module.
 
-> :::: note
-> ::: title
-> Note
-> :::
+!!! note
+    The Maps for HTML community kindly requests that if you use MapML and the software provided here or elsewhere, that you give us feedback about your experience: open an issue or start a discussion on [GitHub](https://github.com/Maps4HTML).
 >
-> The Maps for HTML community kindly requests that if you use MapML and the software provided here or elsewhere, that you give us feedback about your experience: open an issue or start a discussion on [GitHub](https://github.com/Maps4HTML).
-> ::::
->
-> :::: warning
-> ::: title
-> Warning
-> :::
->
-> MapML is an experimental proposed extension of HTML for the Web. The objective of the project is to standardize map, layer and feature semantics in HTML. As the format progresses towards a Web standard, it may change slightly. Always use the latest version of this extension, and follow or join in the project's progress at <https://maps4html.org>.
-> ::::
+!!! warning
+    MapML is an experimental proposed extension of HTML for the Web. The objective of the project is to standardize map, layer and feature semantics in HTML. As the format progresses towards a Web standard, it may change slightly. Always use the latest version of this extension, and follow or join in the project's progress at <https://maps4html.org>.
 
 <div class="grid cards" markdown>
 

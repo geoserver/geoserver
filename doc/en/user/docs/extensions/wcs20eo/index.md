@@ -2,9 +2,6 @@
 render_macros: true
 ---
 
----
-render_macros: true
----
 
 # Web Coverage Service 2.0 Earth Observation extensions
 

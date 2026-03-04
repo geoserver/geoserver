@@ -1,65 +1,72 @@
 #!/usr/bin/env python3
 """
-Fix include-markdown statements by wrapping them in raw tags.
+Fix include-markdown statements wrapped in {%raw%} tags.
 
-The mkdocs-macros plugin tries to parse include-markdown as Jinja2 syntax,
-causing Macro Syntax Errors. We need to wrap these in {%raw%}...{%endraw%} tags.
+These should be processed by mkdocs-macros, not rendered as literal text.
 """
 
 import os
 import re
 from pathlib import Path
 
-def fix_include_markdown_in_file(filepath):
-    """Fix include-markdown statements in a single file."""
-    with open(filepath, 'r', encoding='utf-8') as f:
-        content = f.read()
+
+def fix_raw_includes(content):
+    """
+    Remove {%raw%} and {%endraw%} tags around {% include-markdown %} statements.
+    """
+    # Pattern to match {%raw%}{% include-markdown ... %}{%endraw%}
+    pattern = r'\{%raw%\}(\{% include-markdown .*? %\})\{%endraw%\}'
     
-    original_content = content
+    # Replace with just the include-markdown statement
+    new_content = re.sub(pattern, r'\1', content)
     
-    # Pattern to match {% include-markdown "..." %}
-    # We need to wrap it in {%raw%}...{%endraw%}
-    pattern = r'(\s*)({% include-markdown "([^"]+)" %})'
+    return new_content, new_content != content
+
+
+def process_file(filepath):
+    """Process a single markdown file."""
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        new_content, modified = fix_raw_includes(content)
+        
+        if modified:
+            with open(filepath, 'w', encoding='utf-8') as f:
+                f.write(new_content)
+            print(f"  ✓ Fixed: {filepath}")
+            return True
+        
+        return False
     
-    def replace_func(match):
-        indent = match.group(1)
-        full_statement = match.group(2)
-        # Wrap in raw tags
-        return f'{indent}{{%raw%}}{full_statement}{{%endraw%}}'
-    
-    content = re.sub(pattern, replace_func, content)
-    
-    if content != original_content:
-        with open(filepath, 'w', encoding='utf-8') as f:
-            f.write(content)
-        return True
-    return False
+    except Exception as e:
+        print(f"  ✗ Error processing {filepath}: {e}")
+        return False
+
 
 def main():
-    """Main function to fix all include-markdown statements."""
-    docs_dir = Path('doc/en/user/docs')
+    """Main function to process all markdown files in developer docs."""
     
-    if not docs_dir.exists():
-        print(f"Error: {docs_dir} does not exist")
-        return
+    print("Fixing include-markdown statements wrapped in raw tags...")
+    print()
     
-    fixed_count = 0
-    total_replacements = 0
+    modified_count = 0
+    total_count = 0
     
-    # Process all .md files recursively
+    # Process all markdown files in developer docs
+    docs_dir = Path('doc/en/developer/docs')
+    
     for md_file in docs_dir.rglob('*.md'):
-        if fix_include_markdown_in_file(md_file):
-            # Count replacements
-            with open(md_file, 'r', encoding='utf-8') as f:
-                content = f.read()
-            count = content.count('{%raw%}{% include-markdown')
-            total_replacements += count
-            fixed_count += 1
-            print(f"Fixed {md_file.relative_to(docs_dir)}: {count} include-markdown statements")
+        total_count += 1
+        if process_file(md_file):
+            modified_count += 1
     
-    print(f"\nSummary:")
-    print(f"  Files fixed: {fixed_count}")
-    print(f"  Total include-markdown statements wrapped: {total_replacements}")
+    print()
+    print(f"Summary:")
+    print(f"  Total files scanned: {total_count}")
+    print(f"  Files modified: {modified_count}")
+    print(f"  Files skipped: {total_count - modified_count}")
+
 
 if __name__ == '__main__':
     main()

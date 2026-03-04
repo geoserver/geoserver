@@ -102,13 +102,8 @@ Once the workspace is created we are ready to add a new store. The store tells G
 
 <!-- mkdocs-translate: removed 3 spaces indentation -->
 
-> :::: note
-> ::: title
-> Note
-> :::
->
-> Leave all other fields at their default values.
-> ::::
+!!! note
+    Leave all other fields at their default values.
 >
 > ![](connectionParameters.png)
 > *Connection Parameters*

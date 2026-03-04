@@ -816,10 +816,5 @@ In a classroom setting you are encouraged to team up into groups, with each grou
 >
 >     ![image](../style/img/polygon_zorder.png)
 >
-> :::: note
-> ::: title
-> Note
-> :::
->
-> Answer [provided](#css.polygon.a6) at the end of the workbook.
-> ::::
+!!! note
+    Answer [provided](#css.polygon.a6) at the end of the workbook.

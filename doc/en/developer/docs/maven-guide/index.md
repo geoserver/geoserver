@@ -10,13 +10,8 @@ See [Tools](../tools.md).
 
 Maven provides a wide range of commands used to do everything from compiling a module to generating test coverage reports. Most maven commands can be run from the root the source tree, or from a particular module.
 
-> :::: note
-> ::: title
-> Note
-> :::
->
-> When attempting to run a maven command from the root of the source tree remember to change directory from the root the checkout into the `src` directory.
-> ::::
+!!! note
+    When attempting to run a maven command from the root of the source tree remember to change directory from the root the checkout into the `src` directory.
 
 When running a command from the root of the source tree, or from a directory that contains other modules the command will be run for all modules. When running the command from a single module, it is run only for that module.
 

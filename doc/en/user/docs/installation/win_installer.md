@@ -12,7 +12,7 @@ The Windows installer provides an easy way to set up GeoServer on your system, a
 
 1.  Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 17** or **Java 21** environment.
 
-    {%include-markdown "./jdk-windows-guidance.txt"%}
+    {% include-markdown "./jdk-windows-guidance.txt"%}
 
     !!! note
 

@@ -4,7 +4,7 @@ For complete license information [NOTICE.txt](../../../../licenses/NOTICE.md).
 
 GeoServer is free software and is licensed under the [GNU General Public License](../../../../licenses/GPL.md):
 
-{%
+{% 
    include-markdown "../../../../LICENSE.md"
    start="GeoServer is distributed under the GNU General Public License Version 2.0 license:"
    end="For latest contact information of Open Source Geospatial Foundation see the website at"

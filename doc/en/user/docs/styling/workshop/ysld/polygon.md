@@ -767,7 +767,7 @@ In a classroom setting you are encouraged to team up into groups, with each grou
 
     !!! note
 
-        Answer [provided](../polygon/index.md#ysld.polygon.a1) at the end of the workbook.
+        Answer [provided](polygon.md#ysld.polygon.a1) at the end of the workbook.
 
 ### Explore Categorize {: #ysld.polygon.q2 }
 
@@ -803,7 +803,7 @@ In a classroom setting you are encouraged to team up into groups, with each grou
 
     !!! note
 
-        Answer [provided](../polygon/index.md#ysld.polygon.a2) at the end of the workbook.
+        Answer [provided](polygon.md#ysld.polygon.a2) at the end of the workbook.
 
 ### Challenge Goodness of Fit {: #ysld.polygon.q3 }
 
@@ -830,7 +830,7 @@ In a classroom setting you are encouraged to team up into groups, with each grou
 
     !!! note
 
-        Answer [provided](../polygon/index.md#ysld.polygon.a4) at the end of the workbook.
+        Answer [provided](polygon.md#ysld.polygon.a4) at the end of the workbook.
 
 ### Challenge Theming using Multiple Attributes {: #ysld.polygon.q5 }
 
@@ -842,7 +842,7 @@ In a classroom setting you are encouraged to team up into groups, with each grou
 
     !!! note
 
-        Answer [provided](../polygon/index.md#ysld.polygon.a5) at the end of the workbook.
+        Answer [provided](polygon.md#ysld.polygon.a5) at the end of the workbook.
 
 ### Challenge Use of Z-Index {: #ysld.polygon.q6 }
 
@@ -854,4 +854,4 @@ In a classroom setting you are encouraged to team up into groups, with each grou
 
     !!! note
 
-        Answer [provided](../polygon/index.md#ysld.polygon.a6) at the end of the workbook.
+        Answer [provided](polygon.md#ysld.polygon.a6) at the end of the workbook.

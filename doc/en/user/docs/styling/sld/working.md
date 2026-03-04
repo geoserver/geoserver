@@ -35,7 +35,7 @@ Within a Style Layer Descriptor document, the name of any `<NamedLayer>` element
 
 Style Layer Descriptor styles can define new layers of styled data, by using the [InlineFeature](reference/layers.md#sld_reference_inlinefeature) element to provide feature data.
 
-Within GeoServer, when Style Layer Descriptor styles are used they are typically in the form of style groups. Style groups can be added to layer groups as an alternative way of defining a collection of styled layers, using either the [Web Administration interface](../../data/webadmin/layergroups.md) or the [REST API](../api/1.0.0/layergroups.yaml).
+Within GeoServer, when Style Layer Descriptor styles are used they are typically in the form of style groups. Style groups can be added to layer groups as an alternative way of defining a collection of styled layers, using either the [Web Administration interface](../../data/webadmin/layergroups.md) or the [REST API](../../../api/1.0.0/layergroups.yaml).
 
 Style Layer Descriptor styles can still be assigned to layers and used like a layer style, in which case only the first `<NamedLayer>` will be used. Style Layer Descriptor styles can also be used as an External Style, via the geoserver styles endpoint (`/geoserver/styles`) or the geoserver REST api.
 

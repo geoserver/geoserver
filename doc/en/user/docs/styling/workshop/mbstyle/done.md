@@ -415,7 +415,7 @@ Answer for [Explore Dynamic Symbolization](point.md#mbstyle.point.q2):
 
 ### Raster Opacity {: #mbstyle.raster.a4 }
 
-Discussion for [Challenge Raster Opacity](../raster/index.md#mbstyle.raster.q4):
+Discussion for [Challenge Raster Opacity](raster.md#mbstyle.raster.q4):
 
 1.  There is a quick way to make raster data transparent, raster **opacity** property works in the same fashion as with vector data. The raster as a whole will be drawn partially transparent allow content from other layers to provide context.
 

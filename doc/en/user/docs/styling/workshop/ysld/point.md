@@ -792,7 +792,7 @@ The **text** symbolizer with the **label** property are required to label Point 
 
     !!! note
 
-        Answer [provided](../point/index.md#ysld.point.a2) at the end of the workbook.
+        Answer [provided](point.md#ysld.point.a2) at the end of the workbook.
 
 > 1.  Challenge: Use the **Interpolate** function to smoothly change the mark **size** based on city population.
 
@@ -832,7 +832,7 @@ The **text** symbolizer with the **label** property are required to label Point 
 
     !!! note
 
-        Answer [provided](../point/index.md#ysld.point.a3) at the end of the workbook.
+        Answer [provided](point.md#ysld.point.a3) at the end of the workbook.
 
 ### Explore True Type Fonts
 

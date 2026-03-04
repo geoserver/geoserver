@@ -599,7 +599,7 @@ In a classroom setting please divide the challenges between teams (this allows u
 
     !!! note
 
-        Answer [provided](../line/index.md#mbstyle.line.a1) at the end of the workbook.
+        Answer [provided](linestring.md#mbstyle.line.a1) at the end of the workbook.
 
 ### Challenge One Rule Classification {: #mbstyle.line.q2 }
 
@@ -609,7 +609,7 @@ In a classroom setting please divide the challenges between teams (this allows u
 
     !!! note
 
-        Answer [provided](../line/index.md#mbstyle.line.a2) at the end of the workbook.
+        Answer [provided](linestring.md#mbstyle.line.a2) at the end of the workbook.
 
 ### Challenge Label Shields {: #mbstyle.line.q3 }
 
@@ -621,4 +621,4 @@ In a classroom setting please divide the challenges between teams (this allows u
 
     !!! note
 
-        Answer [provided](../line/index.md#mbstyle.line.a3) at the end of the workbook.
+        Answer [provided](linestring.md#mbstyle.line.a3) at the end of the workbook.

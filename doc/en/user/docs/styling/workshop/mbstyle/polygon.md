@@ -818,7 +818,7 @@ In a classroom setting you are encouraged to team up into groups, with each grou
 
     !!! note
 
-        Answer [provided](../polygon/index.md#mbstyle.polygon.a2) at the end of the workbook.
+        Answer [provided](polygon.md#mbstyle.polygon.a2) at the end of the workbook.
 
 ### Challenge Halo {: #mbstyle.polygon.q4 }
 
@@ -830,7 +830,7 @@ In a classroom setting you are encouraged to team up into groups, with each grou
 
     !!! note
 
-        Answer [provided](../polygon/index.md#mbstyle.polygon.a4) at the end of the workbook.
+        Answer [provided](polygon.md#mbstyle.polygon.a4) at the end of the workbook.
 
 ### Challenge Theming using Multiple Attributes {: #mbstyle.polygon.q5 }
 
@@ -842,7 +842,7 @@ In a classroom setting you are encouraged to team up into groups, with each grou
 
     !!! note
 
-        Answer [provided](../polygon/index.md#mbstyle.polygon.a5) at the end of the workbook.
+        Answer [provided](polygon.md#mbstyle.polygon.a5) at the end of the workbook.
 
 ### Challenge Use of Z-Index {: #mbstyle.polygon.q6 }
 
@@ -854,4 +854,4 @@ In a classroom setting you are encouraged to team up into groups, with each grou
 
     !!! note
 
-        Answer [provided](../polygon/index.md#mbstyle.polygon.a6) at the end of the workbook.
+        Answer [provided](polygon.md#mbstyle.polygon.a6) at the end of the workbook.

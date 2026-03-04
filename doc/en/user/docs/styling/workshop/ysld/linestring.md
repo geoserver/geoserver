@@ -562,7 +562,7 @@ Vendor options can be used to enable some quite spectacular effects, while still
 
     !!! note
 
-        Answer [provided](../line/index.md#ysld.line.a2) at the end of the workbook.
+        Answer [provided](linestring.md#ysld.line.a2) at the end of the workbook.
 
 ### Challenge Label Shields {: #ysld.line.q3 }
 
@@ -574,4 +574,4 @@ Vendor options can be used to enable some quite spectacular effects, while still
 
     !!! note
 
-        Answer [provided](../line/index.md#ysld.line.a3) at the end of the workbook.
+        Answer [provided](linestring.md#ysld.line.a3) at the end of the workbook.

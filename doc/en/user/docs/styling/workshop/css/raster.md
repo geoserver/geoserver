@@ -256,7 +256,7 @@ This exploration focuses on accurately communicating differences in value, rathe
 
     !!! note
 
-        Discussion [provided](../raster/index.md#ysld.raster.a1) at the end of the workbook.
+        Discussion [provided](raster.md#ysld.raster.a1) at the end of the workbook.
 
 ## Challenge Intervals {: #css.raster.q2 }
 
@@ -270,7 +270,7 @@ This exploration focuses on accurately communicating differences in value, rathe
 
     !!! note
 
-        Answer [provided](../raster/index.md#ysld.raster.a2) at the end of the workbook.
+        Answer [provided](raster.md#ysld.raster.a2) at the end of the workbook.
 
     !!! abstract "Instructor Notes"
 
@@ -343,7 +343,7 @@ Image processing can be used to enhance the output to highlight small details or
 
     !!! note
 
-        Answer [provided](../raster/index.md#ysld.raster.a3) at the end of the workbook.
+        Answer [provided](raster.md#ysld.raster.a3) at the end of the workbook.
 
     !!! abstract "Instructor Notes"
 
@@ -368,4 +368,4 @@ Image processing can be used to enhance the output to highlight small details or
 
     !!! note
 
-        Discussion [provided](../raster/index.md#ysld.raster.a4) at the end of the workbook.
+        Discussion [provided](raster.md#ysld.raster.a4) at the end of the workbook.

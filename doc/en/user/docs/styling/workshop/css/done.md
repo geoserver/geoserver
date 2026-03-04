@@ -357,7 +357,7 @@ Answer for [Challenge Layer Group](point.md#css.point.q3):
 
 ### Contrast Enhancement {: #css.raster.a1 }
 
-Discussion for [Explore Contrast Enhancement](../raster/index.md#css.raster.q1):
+Discussion for [Explore Contrast Enhancement](raster.md#css.raster.q1):
 
 1.  A special effect that is effective with grayscale information is automatic contrast adjustment.
 
@@ -382,7 +382,7 @@ Discussion for [Explore Contrast Enhancement](../raster/index.md#css.raster.q1):
 
 ### Intervals {: #css.raster.a2 }
 
-Answer for [Challenge Intervals](../raster/index.md#css.raster.q2):
+Answer for [Challenge Intervals](raster.md#css.raster.q2):
 
 1.  The color-map **type** property dictates how the values are used to generate a resulting color.
 
@@ -418,7 +418,7 @@ Answer for [Challenge Intervals](../raster/index.md#css.raster.q2):
 
 ### Clear Digital Elevation Model Presentation {: #css.raster.a3 }
 
-Answer for [Challenge Clear Digital Elevation Model Presentation](../raster/index.md#css.raster.q3):
+Answer for [Challenge Clear Digital Elevation Model Presentation](raster.md#css.raster.q3):
 
 1.  Now that you have seen the data on screen and have a better understanding how would you modify our initial gray-scale example?
 
@@ -439,7 +439,7 @@ Answer for [Challenge Clear Digital Elevation Model Presentation](../raster/inde
 
 ### Raster Opacity {: #css.raster.a4 }
 
-Discussion for [Challenge Clear Digital Elevation Model Presentation](../raster/index.md#css.raster.q3):
+Discussion for [Challenge Clear Digital Elevation Model Presentation](raster.md#css.raster.q3):
 
 1.  There is a quick way to make raster data transparent, raster **opacity** property works in the same fashion as with vector data. The raster as a whole will be drawn partially transparent allow content from other layers to provide context.
 

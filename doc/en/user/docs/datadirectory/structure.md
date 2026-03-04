@@ -4,7 +4,7 @@ This section gives an overview of the structure and contents of the GeoServer da
 
 This is not intended to be a complete reference to the GeoServer configuration information, since generally the data directory configuration files should not be accessed directly.
 
-Instead, the ``web_admin`` can be used to view and modify the configuration, and for programmatic access and manipulation the [REST API](.../rest/index.md)_ should be used.
+Instead, the ``web_admin`` can be used to view and modify the configuration, and for programmatic access and manipulation the [REST API](../rest/index.md)_ should be used.
 
 The directories that do contain user-modifiable content are:
 

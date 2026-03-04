@@ -18,4 +18,4 @@ To use a super-overlay in GeoWebCache select the KML (vector) option display for
 
 When Google Earth finishes loading you should be viewing a the topp:states layers.
 
-![](../../img/googleearth.jpg)
+![](../img/googleearth.jpg)

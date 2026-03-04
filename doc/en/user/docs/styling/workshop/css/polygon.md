@@ -731,7 +731,7 @@ In a classroom setting you are encouraged to team up into groups, with each grou
 
     !!! note
 
-        Answer [provided](../polygon/index.md#css.polygon.a1) at the end of the workbook.
+        Answer [provided](polygon.md#css.polygon.a1) at the end of the workbook.
 
 ### Explore Categorize {: #css.polygon.q2 }
 
@@ -769,7 +769,7 @@ In a classroom setting you are encouraged to team up into groups, with each grou
 
     !!! note
 
-        Answer [provided](../polygon/index.md#css.polygon.a2) at the end of the workbook.
+        Answer [provided](polygon.md#css.polygon.a2) at the end of the workbook.
 
 ### Challenge Goodness of Fit {: #css.polygon.q3 }
 
@@ -796,7 +796,7 @@ In a classroom setting you are encouraged to team up into groups, with each grou
 
     !!! note
 
-        Answer [provided](../polygon/index.md#css.polygon.a4) at the end of the workbook.
+        Answer [provided](polygon.md#css.polygon.a4) at the end of the workbook.
 
 ### Challenge Theming using Multiple Attributes {: #css.polygon.q5 }
 
@@ -808,7 +808,7 @@ In a classroom setting you are encouraged to team up into groups, with each grou
 
     !!! note
 
-        Answer [provided](../polygon/index.md#css.polygon.a5) at the end of the workbook.
+        Answer [provided](polygon.md#css.polygon.a5) at the end of the workbook.
 
 ### Challenge Use of Z-Index {: #css.polygon.q6 }
 
@@ -823,5 +823,5 @@ In a classroom setting you are encouraged to team up into groups, with each grou
 > Note
 > :::
 >
-> Answer [provided](../polygon/index.md#css.polygon.a6) at the end of the workbook.
+> Answer [provided](polygon.md#css.polygon.a6) at the end of the workbook.
 > ::::

@@ -434,7 +434,7 @@ Options can be used to enable some quite useful effects, while still providing a
 
     !!! note
 
-        Answer [provided](../line/index.md#css.line.a0) at the end of the workbook.
+        Answer [provided](linestring.md#css.line.a0) at the end of the workbook.
 
 ### Challenge Classification {: #css.line.q1 }
 
@@ -450,7 +450,7 @@ Options can be used to enable some quite useful effects, while still providing a
 
     !!! note
 
-        Answer [provided](../line/index.md#css.line.a1) at the end of the workbook.
+        Answer [provided](linestring.md#css.line.a1) at the end of the workbook.
 
 ### Challenge SLD Z-Index Generation {: #css.line.q2 }
 
@@ -468,7 +468,7 @@ Options can be used to enable some quite useful effects, while still providing a
 
     !!! note
 
-        Answer [provided](../line/index.md#css.line.a2) at the end of the workbook.
+        Answer [provided](linestring.md#css.line.a2) at the end of the workbook.
 
 ### Challenge Label Shields {: #css.line.q3 }
 
@@ -480,4 +480,4 @@ Options can be used to enable some quite useful effects, while still providing a
 
     !!! note
 
-        Answer [provided](../line/index.md#css.line.a3) at the end of the workbook.
+        Answer [provided](linestring.md#css.line.a3) at the end of the workbook.

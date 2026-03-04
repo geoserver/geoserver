@@ -19,7 +19,7 @@ The following questions were listed throughout the workshop as an opportunity to
 
 ### Classification {: #mbstyle.line.a1 }
 
-Answer for [Challenge Classification](../line/index.md#mbstyle.line.q1):
+Answer for [Challenge Classification](linestring.md#mbstyle.line.q1):
 
 1.  **Challenge:** Create a new style adjust road appearance based on **type**.
 
@@ -84,7 +84,7 @@ Answer for [Challenge Classification](../line/index.md#mbstyle.line.q1):
 
 ### One Rule Classification {: #mbstyle.line.a2 }
 
-Answer for [Challenge One Rule Classification](../line/index.md#mbstyle.line.q2):
+Answer for [Challenge One Rule Classification](linestring.md#mbstyle.line.q2):
 
 1.  **Challenge:** Create a new style and classify the roads based on their scale rank using expressions in a single rule instead of multiple rules with filters.
 2.  This exercise requires looking up information in the MBstyle user guide.
@@ -92,7 +92,7 @@ Answer for [Challenge One Rule Classification](../line/index.md#mbstyle.line.q2)
 
 ### Label Shields {: #mbstyle.line.a3 }
 
-Answer for [Challenge Label Shields](../line/index.md#mbstyle.line.q3):
+Answer for [Challenge Label Shields](linestring.md#mbstyle.line.q3):
 
 1.  *Challenge:* Have a look at the documentation for putting a graphic on a text symbolizer in SLD and reproduce this technique in MBStyle.
 
@@ -153,7 +153,7 @@ Answer for [Challenge Label Shields](../line/index.md#mbstyle.line.q3):
 
 ### Interval {: #mbstyle.polygon.a2 }
 
-Answer for [Explore Interval](../polygon/index.md#mbstyle.polygon.q2):
+Answer for [Explore Interval](polygon.md#mbstyle.polygon.q2):
 
 1.  An exciting use of the GeoServer **fill-pattern** symbols is theming by changing the pattern used.
 
@@ -190,7 +190,7 @@ Answer for [Explore Interval](../polygon/index.md#mbstyle.polygon.q2):
 
 ### Halo {: #mbstyle.polygon.a4 }
 
-Answer for [Challenge Halo](../polygon/index.md#mbstyle.polygon.q4):
+Answer for [Challenge Halo](polygon.md#mbstyle.polygon.q4):
 
 1.  The halo example used the fill color and opacity for a muted halo, while this improved readability it did not bring attention to our labels.
 
@@ -237,7 +237,7 @@ Answer for [Challenge Halo](../polygon/index.md#mbstyle.polygon.q4):
 
 ### Theming using Multiple Attributes {: #mbstyle.polygon.a5 }
 
-Answer for [Challenge Theming using Multiple Attributes](../polygon/index.md#mbstyle.polygon.q5):
+Answer for [Challenge Theming using Multiple Attributes](polygon.md#mbstyle.polygon.q5):
 
 1.  A powerful tool is theming using multiple attributes. This is an important concept allowing map readers to perform "integration by eyeball" (detecting correlations between attribute values information).
 
@@ -297,7 +297,7 @@ Answer for [Challenge Theming using Multiple Attributes](../polygon/index.md#mbs
 
 ### Use of Z-Index {: #mbstyle.polygon.a6 }
 
-Answer for [Challenge Use of Z-Index](../polygon/index.md#mbstyle.polygon.q6):
+Answer for [Challenge Use of Z-Index](polygon.md#mbstyle.polygon.q6):
 
 1.  Using multiple **layers** to simulate line string casing. The resulting effect is similar to text halos - providing breathing space around complex line work allowing it to stand out.
 
@@ -355,7 +355,7 @@ Answer for [Challenge Use of Z-Index](../polygon/index.md#mbstyle.polygon.q6):
 
 ### Geometry Location {: #mbstyle.point.a1 }
 
-Answer for [Challenge Geometry Location](../point/index.md#mbstyle.point.q1):
+Answer for [Challenge Geometry Location](point.md#mbstyle.point.q1):
 
 1.  The **symbol** layer can be used to render any geometry content.
 
@@ -370,7 +370,7 @@ Answer for [Challenge Geometry Location](../point/index.md#mbstyle.point.q1):
 
 ### Dynamic Symbolization {: #mbstyle.point.a2 }
 
-Answer for [Explore Dynamic Symbolization](../point/index.md#mbstyle.point.q2):
+Answer for [Explore Dynamic Symbolization](point.md#mbstyle.point.q2):
 
 1.  `icon-image` provides an opportunity for dynamic symbolization.
 

@@ -63,7 +63,7 @@ The configuration is stored in a **download.properties** file found in the root 
 
 The file can also be manually modified while GeoServer is running, the file is under watch and gets reloaded on modification.
 
-The configuration can also be edited via [the REST API](../../../api/1.0.0/wpsdownload.yaml).
+The configuration can also be edited via [the REST API](../api/1.0.0/wpsdownload.yaml).
 
 ## The processes and their usage
 

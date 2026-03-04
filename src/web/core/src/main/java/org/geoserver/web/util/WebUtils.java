@@ -70,9 +70,9 @@ public class WebUtils {
         try {
             PackageResourceReference packageResourceReference =
                     new PackageResourceReference(clazz, clazz.getSimpleName() + ".css");
-            try (var stream =
+            try (InputStream stream =
                     packageResourceReference.getResource().getResourceStream().getInputStream()) {
-                var text = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+                String text = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
                 text = patternSimpleComment.matcher(text).replaceAll("");
                 text = patternWhiteSpace.matcher(text).replaceAll("");
                 return text.isEmpty();

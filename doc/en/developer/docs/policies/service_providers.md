@@ -66,7 +66,7 @@ To apply to be listed on the service-provider page:
     </div>
     ```
 
-    For step-by-step instructions on editing in directly in GitHub see documentation guide [quickfix](../docguide/quickfix.md) instructions.
+    For step-by-step instructions on editing in directly in GitHub see documentation guide [quickfix](https://docs.geoserver.org/latest/en/docguide/quickfix.html) instructions.
 
 3.  You may also wish to vist osgeo.org and follow the instructions to [add a service provider page](https://www.osgeo.org/community/getting-started-osgeo/add-service-provider/) for your organization.
 

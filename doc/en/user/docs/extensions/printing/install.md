@@ -38,7 +38,7 @@ render_macros: true
 
 4.  When the module is installed and configured properly, then you will also be able to retrieve a list of configured printing parameters from <http://localhost:8080/geoserver/pdf/info.json> . This service must be working properly for JavaScript clients to use the printing service.
 
-5.  Finally, you can test printing in this [sample page](files/print-example.md). You can load it directly to produce a map from a GeoServer running at <http://localhost:8080/geoserver/>.
+5.  Finally, you can test printing in this <!-- MISSING: sample page (files/print-example.md) -->sample page. You can load it directly to produce a map from a GeoServer running at <http://localhost:8080/geoserver/>.
 
     If you are running at a different host and port, you can download the file and modify it with your HTML editor of choice to use the proper URL.
 

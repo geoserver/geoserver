@@ -272,7 +272,7 @@ During composition these two off-screen buffers are combined into the final map.
 
 When drawn, the outer line has a width of 8 pixels and the inner line has a width of 6 pixels, so the line "border" is 1 pixel (on each side).
 
-![](img/fs_roadcasing.svg)
+<!-- MISSING IMAGE: img/fs_roadcasing.svg -->
 *Example showing road casing*
 
 ### First match

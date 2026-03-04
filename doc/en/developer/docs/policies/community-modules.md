@@ -302,7 +302,7 @@ The following properties must hold true in order to promote a community module:
 
         1.  A license called **`<module>-LICENSE.md`** which contains the license notice for the extension (linking to full ``licenses/`` documents included below).
 
-            Follow the [dxf-LICENSE.md](../../../../src/release/extensions/dxf/dxf-LICENSE.md) example:
+            Follow the [dxf-LICENSE.md](https://github.com/geoserver/geoserver/blob/main/src/release/extensions/dxf/dxf-LICENSE.md) example:
 
             ```markdown
             <!-- Include path goes outside docs directory: ../../../../src/release/extensions/dxf/dxf-LICENSE.md -->
@@ -311,7 +311,7 @@ The following properties must hold true in order to promote a community module:
 
         2.  A readme called **`<module>-README.md`** which contains instructions on how to install the extension.
 
-            Follow the [dxf-README.md](../../../../src/release/extensions/dxf/dxf-README.md) example:
+            Follow the [dxf-README.md](https://github.com/geoserver/geoserver/blob/main/src/release/extensions/dxf/dxf-README.md) example:
 
             ```markdown
             <!-- Include path goes outside docs directory: ../../../../src/release/extensions/dxf/dxf-README.md -->
@@ -328,7 +328,7 @@ The following properties must hold true in order to promote a community module:
 
     3.  Create a release assembly called **`ext-<module>.xml`** under the release ``src/assembly`` directory.
 
-        Follow the example of [ext-dxf-xml](../../../../src/release/ext-dxf.xml):
+        Follow the example of [ext-dxf-xml](https://github.com/geoserver/geoserver/blob/main/src/release/ext-dxf.xml):
 
         ```xml
         <!-- Include path goes outside docs directory: ../../../../src/release/ext-dxf.xml -->

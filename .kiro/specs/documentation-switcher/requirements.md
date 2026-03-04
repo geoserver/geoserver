@@ -57,23 +57,3 @@ This document specifies requirements for a documentation switcher component in t
 1. THE Documentation_Switcher SHALL use a structure that can be extended to include version selection
 2. THE Documentation_Switcher SHALL maintain separation between documentation type selection and future version selection functionality
 3. THE Documentation_Switcher configuration SHALL be defined in a way that allows Mike integration without breaking existing functionality
-
-### Requirement 5: Handle Missing Documentation Types
-
-**User Story:** As a documentation reader, I want clear feedback when a documentation type is unavailable, so that I understand why navigation didn't work as expected.
-
-#### Acceptance Criteria
-
-1. IF a Documentation_Type is not available for the current version, THEN THE Documentation_Switcher SHALL either hide that option or mark it as unavailable
-2. WHEN a user attempts to navigate to an unavailable Documentation_Type, THE Documentation_Switcher SHALL display an appropriate message
-3. THE Documentation_Switcher SHALL gracefully handle cases where documentation paths are not configured
-
-### Requirement 6: Preserve User Context
-
-**User Story:** As a documentation reader, I want the switcher to remember my position when possible, so that I don't lose my place when switching between documentation types.
-
-#### Acceptance Criteria
-
-1. WHEN switching between Documentation_Type options, THE Documentation_Switcher SHALL attempt to navigate to an equivalent page if one exists
-2. IF no equivalent page exists, THEN THE Documentation_Switcher SHALL navigate to the root page of the selected Documentation_Type
-3. THE Documentation_Switcher SHALL maintain the current URL structure pattern when navigating between documentation types where applicable

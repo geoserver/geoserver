@@ -67,7 +67,7 @@ One end of the interval must be a time value, but the other may be a duration va
 
 !!! note
 
-    The final example could be paired with the KML service to provide a [Kml Extension](../../kml_extension-broken.md) network link which is always updated with the last 36 hours of data.
+    The final example could be paired with the KML service to provide a <!-- BROKEN LINK: Kml Extension --> network link which is always updated with the last 36 hours of data.
 
 ## Reduced accuracy times
 

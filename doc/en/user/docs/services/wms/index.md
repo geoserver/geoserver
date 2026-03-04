@@ -2,7 +2,7 @@
 
 This section describes the Web Map Service (WMS).
 
-For details about KML/KMZ output, see the [Kml Extension](../../kml_extension-broken.md) documentation in the extensions section.
+For details about KML/KMZ output, see the <!-- BROKEN LINK: Kml Extension --> documentation in the extensions section.
 
 <div class="grid cards" markdown>
 

@@ -178,7 +178,7 @@ Let's use these basics to start translating the states style. The first rule in 
 </Rule>
 ```
 
-Using a [CQL</tutorials/cql/cql_tutorial>](CQL</tutorials/cql/cql_tutorial>.md)-based selector, and copying the names and values of the CssParameters over, we get:
+Using a [CQL</tutorials/cql/cql_tutorial>](../../tutorials/cql/cql_tutorial.md)-based selector, and copying the names and values of the CssParameters over, we get:
 
 ``` css
 [PERSONS < 2000000] {

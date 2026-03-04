@@ -20,12 +20,12 @@ In addition to the built-in profiles you may setup a custom logging profile, or 
 
 GeoServer includes several built-in logging profiles:
 
-- [DEFAULT_LOGGING](../../../../src/main/src/main/resources/DEFAULT_LOGGING.xml)
-- [GEOSERVER_DEVELOPER_LOGGING](../../../../src/main/src/main/resources/GEOSERVER_DEVELOPER_LOGGING.xml)
-- [GEOTOOLS_DEVELOPER_LOGGING](../../../../src/main/src/main/resources/GEOTOOLS_DEVELOPER_LOGGING.xml)
-- [PRODUCTION_LOGGING](../../../../src/main/src/main/resources/PRODUCTION_LOGGING.xml)
-- [QUIET_LOGGING](../../../../src/main/src/main/resources/QUIET_LOGGING.xml)
-- [VERBOSE_LOGGING](../../../../src/main/src/main/resources/VERBOSE_LOGGING.xml)
+- [DEFAULT_LOGGING](https://github.com/geoserver/geoserver/blob/main/src/main/src/main/resources/DEFAULT_LOGGING.xml)
+- [GEOSERVER_DEVELOPER_LOGGING](https://github.com/geoserver/geoserver/blob/main/src/main/src/main/resources/GEOSERVER_DEVELOPER_LOGGING.xml)
+- [GEOTOOLS_DEVELOPER_LOGGING](https://github.com/geoserver/geoserver/blob/main/src/main/src/main/resources/GEOTOOLS_DEVELOPER_LOGGING.xml)
+- [PRODUCTION_LOGGING](https://github.com/geoserver/geoserver/blob/main/src/main/src/main/resources/PRODUCTION_LOGGING.xml)
+- [QUIET_LOGGING](https://github.com/geoserver/geoserver/blob/main/src/main/src/main/resources/QUIET_LOGGING.xml)
+- [VERBOSE_LOGGING](https://github.com/geoserver/geoserver/blob/main/src/main/src/main/resources/VERBOSE_LOGGING.xml)
 
 The built-in logging profiles are installed into your data directory the first time the application is run. If you have customized (see the next section) these files and wish to restore the original contents:
 
@@ -33,7 +33,7 @@ The built-in logging profiles are installed into your data directory the first t
 - Delete the file and restart GeoServer, the missing file will be restored; or
 - Copy the contents from the download links above
 
-For a description of these logging profiles see [Logging Profile](globalsettings.md#config_globalsettings_log_profile). Additional built-in logging profiles are supplied by installed extensions (example [IMPORTER_LOGGING](../../../../src/extension/importer/core/src/main/resources/IMPORTER_LOGGING.xml) profile is built into the importer extension).
+For a description of these logging profiles see [Logging Profile](globalsettings.md#config_globalsettings_log_profile). Additional built-in logging profiles are supplied by installed extensions (example [IMPORTER_LOGGING](https://github.com/geoserver/geoserver/blob/main/src/extension/importer/core/src/main/resources/IMPORTER_LOGGING.xml) profile is built into the importer extension).
 
 ## Custom logging profiles {: #logging_custom }
 
@@ -41,7 +41,7 @@ Anyone can write a new logging profile by adding a Log4J configuration file to t
 
 Profiles in this folder that match **`*_LOGGING.*`** will be listed on the global settings page as available for use. The name of the file, excluding the extension, will be presented as the profile name.
 
-Here is an example, taken from the [DEFAULT_LOGGING.xml](../../../../src/main/src/main/resources/DEFAULT_LOGGING.xml) configuration, which enables additional GeoServer log messages to be included in the logs:
+Here is an example, taken from the [DEFAULT_LOGGING.xml](https://github.com/geoserver/geoserver/blob/main/src/main/src/main/resources/DEFAULT_LOGGING.xml) configuration, which enables additional GeoServer log messages to be included in the logs:
 
 ```xml
 {%raw%}{%endraw%}<!-- Include path goes outside docs directory: ../../../../src/main/src/main/resources/DEFAULT_LOGGING.xml -->
@@ -123,7 +123,7 @@ There are however a few rules to follow:
 
 Copy built-in logging profile and customize:
 
-1.  Copy an example such as [QUIET_LOGGING.xml](../../../../src/main/src/main/resources/QUIET_LOGGING.xml) to **`CONSOLE_LOGGING.xml`**:
+1.  Copy an example such as [QUIET_LOGGING.xml](https://github.com/geoserver/geoserver/blob/main/src/main/src/main/resources/QUIET_LOGGING.xml) to **`CONSOLE_LOGGING.xml`**:
 
 2.  Update the initial part of **`CONSOLE_LOGGING.xml`** with the new name:
 

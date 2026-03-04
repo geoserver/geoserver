@@ -48,7 +48,7 @@ The limitation of these approach is the startup time associated with restarting 
 
   This prevents the needs to restart nodes, but requires a microservice environment.
 
-- The community module [../-broken.md](../-broken.md) uses a bus to communicate configuration changes in real time between all the nodes in a cluster.
+- The community module <!-- BROKEN LINK: ../-broken.md --> uses a bus to communicate configuration changes in real time between all the nodes in a cluster.
 
   Each mode is updated when configuration changes are made, preventing the need to restart nodes, while providing full web service performance.
 

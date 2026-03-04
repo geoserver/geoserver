@@ -126,7 +126,7 @@ Code formatting is covered by our build [Quality Assurance](../qa-guide/index.md
 
 ### Code templates
 
-1.  Download [codetemplates.xml](../../../../build/codetemplates.xml).
+1.  Download [codetemplates.xml](https://github.com/geoserver/geoserver/blob/main/build/codetemplates.xml).
 2.  Navigate to `Java`, `Code Style`, `Code Templates` and click `Import...`
 3.  Select the `codetemplates.xml` file downloaded in step 1
 4.  Click `Apply`

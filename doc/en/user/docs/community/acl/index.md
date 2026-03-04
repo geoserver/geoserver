@@ -14,7 +14,7 @@ The GeoServer ACL service is distributed as a Docker image in dockerhub: [geoser
 
 For the plugin to work in GeoServer, you need a running GeoServer ACL service.
 
-Please check the accompanying [compose.yml](./compose.yml) example docker composition for a complete set up.
+Please check the accompanying [compose.yml](https://github.com/geoserver/geoserver/blob/main/doc/en/user/docs/community/acl/compose.yml) example docker composition for a complete set up.
 
 ## Plugin Configuration
 

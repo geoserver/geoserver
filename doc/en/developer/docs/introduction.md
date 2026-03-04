@@ -26,9 +26,9 @@ Question and answer:
 
 ## License
 
-For complete notice of license information [LICENSE](../../../../licenses/NOTICE.md).
+For complete notice of license information [LICENSE](https://github.com/geoserver/geoserver/blob/main/licenses/NOTICE.md).
 
-- GeoServer is free software and is licensed under the [GNU General Public License](../../../../licenses/GPL.md):
+- GeoServer is free software and is licensed under the [GNU General Public License](https://github.com/geoserver/geoserver/blob/main/licenses/GPL.md):
 
       GeoServer, open geospatial information server
       Copyright (C) 2014 - Open Source Geospatial Foundation
@@ -81,9 +81,9 @@ Additionally:
        * Modified by David Winslow <dwinslow@openplans.org>
        */
 
-- SetCharacterEncodingFilter and RewindableInputStream makes use of code provided under [Apache License Version 2.0](../../../../licenses/apache-2.0.md).
+- SetCharacterEncodingFilter and RewindableInputStream makes use of code provided under [Apache License Version 2.0](https://github.com/geoserver/geoserver/blob/main/licenses/apache-2.0.md).
 
-- UCSReader is provided using [Apache License Version 1.1](../../../../licenses/apache-1.1.md).
+- UCSReader is provided using [Apache License Version 1.1](https://github.com/geoserver/geoserver/blob/main/licenses/apache-1.1.md).
 
 - Snippets from the Prototype library (www.prototypejs.org) under a MIT license.
 

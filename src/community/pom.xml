@@ -182,6 +182,7 @@
         <module>wps-download-netcdf</module>
         <module>singlestore</module>
         <module>pmtiles-store</module>
+        <module>png-wind</module>
       </modules>
     </profile>
     <profile>
@@ -592,6 +593,12 @@
       <id>pmtiles-store</id>
       <modules>
         <module>pmtiles-store</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>png-wind</id>
+      <modules>
+        <module>png-wind</module>
       </modules>
     </profile>
     <profile>

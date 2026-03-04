@@ -336,7 +336,7 @@ public class VirtualRelationshipsPanel extends Panel {
     private class RelationshipFormPanel extends Panel {
 
         private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+                java.lang.invoke.MethodHandles.lookup().lookupClass());
 
         private final CompoundPropertyModel<VirtualRelationshipBean> formModel;
         private final FeedbackPanel modalFeedback;

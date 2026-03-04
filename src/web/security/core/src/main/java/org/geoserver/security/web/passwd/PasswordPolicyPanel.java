@@ -64,7 +64,7 @@ public class PasswordPolicyPanel extends SecurityNamedServicePanel<PasswordPolic
     static class MaxLengthPanel extends FormComponentPanel<PasswordPolicyConfig> {
 
         private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+                java.lang.invoke.MethodHandles.lookup().lookupClass());
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

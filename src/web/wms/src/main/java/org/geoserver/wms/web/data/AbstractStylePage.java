@@ -94,7 +94,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
     static class ChooseColorPanel extends Panel {
 
         private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
-            java.lang.invoke.MethodHandles.lookup().lookupClass());
+                java.lang.invoke.MethodHandles.lookup().lookupClass());
 
         final TextField<String> chooser;
         final String initialColor;

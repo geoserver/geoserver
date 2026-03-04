@@ -317,7 +317,7 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - Test locally with `mkdocs serve` to verify images display correctly
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 6.4, 6.5_
 
-  - [-] 5.5.2 Fix missing version/release macros throughout documentation (3.0 branch)
+  - [x] 5.5.2 Fix missing version/release macros throughout documentation (3.0 branch)
     - **CRITICAL**: The conversion tool dropped |version| and |release| macros in ~79 locations
     - Create automated fix script to restore {{ version }} and {{ release }} macros in:
       - Extension installation instructions (download links, version warnings)

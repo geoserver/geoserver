@@ -4,7 +4,7 @@ The REST API allows you to list, create, upload, update, and delete authFilters 
 
 !!! note
 
-    Read the [API reference for security/authFilters](/api/authenticationfilters.yaml).
+    Read the [API reference for security/authFilters]({{ api_url }}/authenticationfilters.yaml).
 
 ## View an Authentication Filter
 

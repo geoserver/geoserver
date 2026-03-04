@@ -4,7 +4,7 @@ The REST API allows you to list---but not modify---fonts available in GeoServer.
 
 !!! note
 
-    Read the [API reference for /fonts](/api/fonts.yaml).
+    Read the [API reference for /fonts]({{ api_url }}/fonts.yaml).
 
 ## Getting a list of all fonts
 

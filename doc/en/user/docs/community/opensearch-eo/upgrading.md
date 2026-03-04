@@ -10,7 +10,7 @@ In order for the default [collection.ftl](https://github.com/geoserver/geoserver
 
 As a result of these changes, the REST resources previously used to manage the description templates have been removed, and residual HTML description templates included in product or collection zips will be ignored.
 
-The replacement Freemarker templates are [located in the data directory<oseo_html_templates>](#located in the data directory<oseo_html_templates>) and can be thus managed via the [/resource](/api/resource.yaml) REST API.
+The replacement Freemarker templates are [located in the data directory<oseo_html_templates>](#located in the data directory<oseo_html_templates>) and can be thus managed via the [/resource]({{ api_url }}/resource.yaml) REST API.
 
 ## Removal of `collection_metadata` and `product_metadata`
 
@@ -20,4 +20,4 @@ The default templates are automatically used, and the old metadata tables are ig
 
 As a result of these changes, the REST resources previously used to manage the metadata have been removed, and residual metadata xml files included in product or collection zips will be ignored.
 
-The replacement Freemarker templates are [located in the data directory<oseo_metadata_templates>](#located in the data directory<oseo_metadata_templates>) and can be thus managed via the [/resource](/api/resource.yaml) REST API.
+The replacement Freemarker templates are [located in the data directory<oseo_metadata_templates>](#located in the data directory<oseo_metadata_templates>) and can be thus managed via the [/resource]({{ api_url }}/resource.yaml) REST API.

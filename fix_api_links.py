@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """
-Fix API YAML links in REST documentation to use absolute paths.
+Fix API YAML links in REST documentation to use the api_url macro.
 
-This script updates all relative API links (api/*.yaml) to absolute paths (/api/*.yaml)
-so they resolve correctly in the MkDocs build output.
+This script updates all API links to use {{ api_url }}/filename.yaml
+which is a macro defined in doc/version.py that resolves to the correct
+relative path regardless of deployment structure.
 """
 
 import re
@@ -12,7 +13,7 @@ from pathlib import Path
 
 def fix_api_links_in_file(file_path: Path) -> bool:
     """
-    Fix API links in a single Markdown file.
+    Fix API links in a single Markdown file to use the api_url macro.
     
     Args:
         file_path: Path to the Markdown file
@@ -26,13 +27,20 @@ def fix_api_links_in_file(file_path: Path) -> bool:
         
         original_content = content
         
-        # Pattern to match: [text](api/filename.yaml)
-        # Replace with: [text](/api/filename.yaml)
-        # Only replace if it doesn't already start with /
-        pattern = r'\]\(api/([^)]+\.yaml)\)'
-        replacement = r'](/api/\1)'
+        # Pattern 1: [text](/api/filename.yaml) -> [text]({{ api_url }}/filename.yaml)
+        pattern1 = r'\]\(/api/([^)]+\.yaml)\)'
+        replacement1 = r']({{ api_url }}/\1)'
+        content = re.sub(pattern1, replacement1, content)
         
-        content = re.sub(pattern, replacement, content)
+        # Pattern 2: [text](api/filename.yaml) -> [text]({{ api_url }}/filename.yaml)
+        pattern2 = r'\]\(api/([^)]+\.yaml)\)'
+        replacement2 = r']({{ api_url }}/\1)'
+        content = re.sub(pattern2, replacement2, content)
+        
+        # Pattern 3: [text](../api/1.0.0/filename.yaml) -> [text]({{ api_url }}/filename.yaml)
+        pattern3 = r'\]\(\.\./api/1\.0\.0/([^)]+\.yaml)\)'
+        replacement3 = r']({{ api_url }}/\1)'
+        content = re.sub(pattern3, replacement3, content)
         
         if content != original_content:
             with open(file_path, 'w', encoding='utf-8') as f:
@@ -76,6 +84,8 @@ def main():
             modified_count += 1
     
     print(f"\nFixed {modified_count} files")
+    print(f"\nAPI links now use {{{{ api_url }}}}/filename.yaml macro")
+    print(f"The api_url macro is defined in doc/version.py and resolves to '../api/1.0.0'")
     
     return 0
 

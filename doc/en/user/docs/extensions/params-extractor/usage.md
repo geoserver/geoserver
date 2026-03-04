@@ -135,7 +135,7 @@ Note that the first rule (the advanced one) is not active.
 
 ## REST API
 
-The rules and echo parameters can also be managed by means of a REST API found at `geoserver/rest/params-extractor`. Documentation for it is available in [Swagger format](/api/params-extractor.yaml)
+The rules and echo parameters can also be managed by means of a REST API found at `geoserver/rest/params-extractor`. Documentation for it is available in [Swagger format]({{ api_url }}/params-extractor.yaml)
 
 ## Intercepting the security filters chain
 

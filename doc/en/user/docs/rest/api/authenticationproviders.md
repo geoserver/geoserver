@@ -144,4 +144,4 @@ Validation: - The list must be non-empty - All names must correspond to known pr
 
 ## OpenAPI
 
-See the [Authentication-provider OpenAPI spec](api/authenticationproviders.yaml) for schemas and machine-readable definitions.
+See the [Authentication-provider OpenAPI spec](authenticationproviders.md) for schemas and machine-readable definitions.

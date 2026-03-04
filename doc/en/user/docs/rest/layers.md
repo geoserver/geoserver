@@ -4,7 +4,7 @@ The REST API allows you to list, create, upload, update, and delete layers in Ge
 
 !!! note
 
-    Read the [API reference for /layers](api/layers.md).
+    Read the [API reference for /layers](api/layers.yaml).
 
 ## Listing all layers
 

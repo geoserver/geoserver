@@ -4,7 +4,7 @@ The REST API allows you to adjust GeoServer security settings.
 
 !!! note
 
-    Read the [API reference for /security](api/security.md).
+    Read the [API reference for /security](api/security.yaml).
 
 ## Listing the keystore password {: #rest_security_keystore }
 

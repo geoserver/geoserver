@@ -4,7 +4,7 @@ The REST API allows you to list, create, update, and delete **user/group service
 
 !!! note
 
-    Read the [API reference for security/userGroupServices](api/usergroupservices.yaml).
+    Read the [API reference for security/userGroupServices](api/usergroupservices.md).
 
 ## View a User/Group Service
 

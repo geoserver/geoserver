@@ -277,4 +277,4 @@ All errors use a simple payload:
 
 ## See also
 
-- [OpenAPI reference](api/authenticationproviders.yaml)
+- [OpenAPI reference](api/authenticationproviders.md)

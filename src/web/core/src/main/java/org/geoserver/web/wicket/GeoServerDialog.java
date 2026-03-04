@@ -25,6 +25,19 @@ import org.apache.wicket.model.Model;
 @SuppressWarnings("serial")
 public class GeoServerDialog extends Panel {
 
+    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
     GSModalWindow window;
     Component userPanel;
     DialogDelegate delegate;
@@ -141,6 +154,19 @@ public class GeoServerDialog extends Panel {
      */
     protected class ContentsPage extends Panel {
 
+        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
         public ContentsPage(Component contents) {
             super("content");
             Form<?> form = new Form<>("form");
@@ -154,6 +180,20 @@ public class GeoServerDialog extends Panel {
     }
 
     protected static class InfoPage extends Panel {
+
+        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
         @SafeVarargs
         public InfoPage(String id, IModel<String> title, IModel<String>... messages) {
             super(id);

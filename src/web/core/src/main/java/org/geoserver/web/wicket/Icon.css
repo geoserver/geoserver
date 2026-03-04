@@ -1,0 +1,17 @@
+/*
+ ----------------------------------------------------------
+
+
+This is the panel-specific .css file for the panel defined in class Icon
+
+The panel's html will be contained in a <div class='gs-panel-Icon'>
+
+Your css selectors should look like this to avoid modifying styles outside the panel:
+
+.gs-panel-Icon ...specific css selector... {
+      ... styling ...
+}
+
+
+ ----------------------------------------------------------
+*/

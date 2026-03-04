@@ -55,6 +55,19 @@ import org.geotools.coverage.grid.io.GridCoverage2DReader;
  */
 public class CoverageViewEditor extends FormComponentPanel<List<String>> {
 
+    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
     private static final List<CompositionType> SUPPORTED_MODES = Arrays.stream(CompositionType.values())
             .filter(v -> v != CompositionType.UNSUPPORTED)
             .collect(Collectors.toList());

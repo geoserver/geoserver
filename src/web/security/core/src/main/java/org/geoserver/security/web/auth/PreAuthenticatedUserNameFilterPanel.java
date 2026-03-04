@@ -94,6 +94,20 @@ public abstract class PreAuthenticatedUserNameFilterPanel<T extends PreAuthentic
     }
 
     static class HeaderPanel extends Panel {
+
+        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
         public HeaderPanel(String id) {
             super(id, new Model<>());
             add(new TextField("rolesHeaderAttribute").setRequired(true).setRequired(true));
@@ -101,6 +115,20 @@ public abstract class PreAuthenticatedUserNameFilterPanel<T extends PreAuthentic
     }
 
     static class UserGroupServicePanel extends Panel {
+
+        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
         public UserGroupServicePanel(String id) {
             super(id, new Model<>());
             add(new UserGroupServiceChoice("userGroupServiceName").setRequired(true));
@@ -108,6 +136,20 @@ public abstract class PreAuthenticatedUserNameFilterPanel<T extends PreAuthentic
     }
 
     static class RoleServicePanel extends Panel {
+
+        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
         public RoleServicePanel(String id) {
             super(id, new Model<>());
             add(new RoleServiceChoice("roleServiceName"));

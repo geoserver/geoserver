@@ -1,0 +1,17 @@
+/*
+ ----------------------------------------------------------
+
+
+This is the panel-specific .css file for the panel defined in class AuthorityURLListEditor
+
+The panel's html will be contained in a <div class='gs-panel-AuthorityURLListEditor'>
+
+Your css selectors should look like this to avoid modifying styles outside the panel:
+
+.gs-panel-AuthorityURLListEditor ...specific css selector... {
+      ... styling ...
+}
+
+
+ ----------------------------------------------------------
+*/

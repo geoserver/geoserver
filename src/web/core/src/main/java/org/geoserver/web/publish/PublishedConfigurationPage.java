@@ -384,6 +384,19 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo> extend
 
     protected abstract class ListEditTabPanel extends PublishedEditTabPanel<T> {
 
+        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+
+        @Override
+        public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+            super.renderHead(response);
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
+        }
+
         @Serial
         private static final long serialVersionUID = -7279044666531992361L;
 

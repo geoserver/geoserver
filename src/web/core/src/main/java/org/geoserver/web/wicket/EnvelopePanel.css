@@ -1,0 +1,17 @@
+/*
+ ----------------------------------------------------------
+
+
+This is the panel-specific .css file for the panel defined in class EnvelopePanel
+
+The panel's html will be contained in a <div class='gs-panel-EnvelopePanel'>
+
+Your css selectors should look like this to avoid modifying styles outside the panel:
+
+.gs-panel-EnvelopePanel ...specific css selector... {
+      ... styling ...
+}
+
+
+ ----------------------------------------------------------
+*/

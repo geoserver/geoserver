@@ -44,6 +44,19 @@ import org.geoserver.web.util.MetadataMapModel;
 // TODO WICKET8 - Verify this page works OK
 public class VectorCustomDimensionsPanel extends Panel {
 
+    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+
+    @Override
+    public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
+        super.renderHead(response);
+        // if the panel-specific CSS file contains actual css then have the browser load the css
+        if (!isCssEmpty) {
+            response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                    new org.apache.wicket.request.resource.PackageResourceReference(
+                            getClass(), getClass().getSimpleName() + ".css")));
+        }
+    }
+
     private final IModel<FeatureTypeInfo> typeInfoModel;
     private final IModel<MetadataMap> metadata;
     private final WebMarkupContainer mainDiv;

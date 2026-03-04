@@ -1,0 +1,12 @@
+title: 'YSLD Cook Book: Polygon with default label'
+feature-styles:
+- name: name
+  rules:
+  - symbolizers:
+    - polygon:
+        stroke-color: '#FFFFFF'
+        stroke-width: 2
+        fill-color: '#40FF40'
+    - text:
+        label: ${name}
+        placement: point

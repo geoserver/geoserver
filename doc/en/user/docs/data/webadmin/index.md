@@ -1,0 +1,19 @@
+# Data settings
+
+This section describes how to manage load, manage, and publish data in the GeoServer web interface.
+
+It describes the core configuration data types that GeoServer uses to access and publish geospatial information. Each subsection describes the data type pages which provide add, view, edit, and delete capabilities.
+
+<div class="grid cards" markdown>
+
+- [DataWebadminLayerpreview](layerpreview.md)
+- [DataWebadminWorkspaces](workspaces.md)
+- [DataWebadminStores](stores.md)
+- [DataWebadminLayers](layers.md)
+- [DataWebadminLayergroups](layergroups.md)
+
+</div>
+
+!!! note
+
+    Information on the Styles pages can be found on the [Styles](../../styling/webadmin/index.md) page.

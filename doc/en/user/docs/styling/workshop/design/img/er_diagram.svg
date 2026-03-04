@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="795px" height="459px" viewBox="0 0 795 459" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <title>er_diagram</title>
+    <description>Created with Sketch (http://www.bohemiancoding.com/sketch)</description>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="er_diagram" sketch:type="MSArtboardGroup">
+            <text id="scalerank" fill="#000000" sketch:type="MSTextLayer" font-family="Cantarell" font-size="11" font-weight="normal">
+                <tspan x="32" y="112">scalerank</tspan>
+                <tspan x="32" y="127">featurecla</tspan>
+                <tspan x="32" y="142">type</tspan>
+                <tspan x="32" y="157">sov_a3</tspan>
+                <tspan x="32" y="172">note</tspan>
+                <tspan x="32" y="187">edited</tspan>
+                <tspan x="32" y="202">name</tspan>
+                <tspan x="32" y="217">namealt</tspan>
+                <tspan x="32" y="232">namealtt</tspan>
+                <tspan x="32" y="247">routeraw</tspan>
+                <tspan x="32" y="262">question</tspan>
+                <tspan x="32" y="277">length_km</tspan>
+                <tspan x="32" y="292">toll</tspan>
+                <tspan x="32" y="307">ne_part </tspan>
+                <tspan x="32" y="322">label</tspan>
+                <tspan x="32" y="337">label2</tspan>
+                <tspan x="32" y="352">local</tspan>
+                <tspan x="32" y="367">...</tspan>
+                <tspan x="32" y="382">expressway = 0</tspan>
+                <tspan x="32" y="397">level = Other</tspan>
+                <tspan x="32" y="412">geom  (MultiLineString)</tspan>
+            </text>
+            <text id="FeatureId" fill="#000000" sketch:type="MSTextLayer" font-family="Cantarell" font-size="10" font-weight="bold">
+                <tspan x="35" y="61">FeatureId</tspan>
+                <tspan x="87" y="61" font-weight="normal"></tspan>
+                <tspan x="35" y="76">Default Geometry</tspan>
+                <tspan x="130" y="76" font-weight="normal"></tspan>
+                <tspan x="35" y="91" font-weight="normal">Bounds</tspan>
+            </text>
+            <rect id="Rectangle-1" stroke="#000000" sketch:type="MSShapeGroup" x="8" y="97" width="204" height="331"></rect>
+            <rect id="Rectangle-1-copy" stroke="#000000" sketch:type="MSShapeGroup" x="8" y="47" width="204" height="50"></rect>
+            <rect id="Rectangle-2" stroke="#000000" fill="#393939" sketch:type="MSShapeGroup" x="8" y="6" width="204" height="41"></rect>
+            <text id="roads" fill="#FFFFFF" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="24" font-weight="526">
+                <tspan x="80" y="40">roads</tspan>
+            </text>
+            <text id="the_geom-(MultiPolyg" fill="#000000" sketch:type="MSTextLayer" font-family="Cantarell" font-size="11" font-weight="normal">
+                <tspan x="263" y="111">the_geom (MultiPolygon)</tspan>
+                <tspan x="263" y="126">adm1_code</tspan>
+                <tspan x="263" y="141">Shape_Leng</tspan>
+                <tspan x="263" y="156">Shape_Area</tspan>
+                <tspan x="263" y="171">diss_me</tspan>
+                <tspan x="263" y="186">adm1_code_</tspan>
+                <tspan x="263" y="201">iso_3166_2</tspan>
+                <tspan x="263" y="216">wikipedia</tspan>
+                <tspan x="263" y="231">iso_a2</tspan>
+                <tspan x="263" y="246">adm0_sr</tspan>
+                <tspan x="263" y="261">admin0_lab</tspan>
+                <tspan x="263" y="276">name</tspan>
+                <tspan x="263" y="291">...</tspan>
+                <tspan x="263" y="306">scalerank</tspan>
+                <tspan x="263" y="321">abbrev</tspan>
+                <tspan x="263" y="336">postal</tspan>
+                <tspan x="263" y="351">area_sqkm</tspan>
+                <tspan x="263" y="366">featurecla</tspan>
+                <tspan x="263" y="381">admin</tspan>
+                <tspan x="263" y="396">name_len</tspan>
+                <tspan x="263" y="411">mapcolor9</tspan>
+                <tspan x="263" y="426">mapcolor13</tspan>
+            </text>
+            <text id="FeatureId" fill="#000000" sketch:type="MSTextLayer" font-family="Cantarell" font-size="10" font-weight="bold">
+                <tspan x="263" y="61">FeatureId</tspan>
+                <tspan x="315" y="61" font-weight="normal"></tspan>
+                <tspan x="263" y="76">Default Geometry</tspan>
+                <tspan x="358" y="76" font-weight="normal"></tspan>
+                <tspan x="263" y="91" font-weight="normal">Bounds</tspan>
+            </text>
+            <rect id="Rectangle-1-copy" stroke="#000000" sketch:type="MSShapeGroup" x="239" y="97" width="262" height="351"></rect>
+            <rect id="Rectangle-1-copy-2" stroke="#000000" sketch:type="MSShapeGroup" x="239" y="47" width="262" height="50"></rect>
+            <rect id="Rectangle-2-copy" stroke="#000000" fill="#393939" sketch:type="MSShapeGroup" x="239" y="6" width="262" height="41"></rect>
+            <text id="states_provinces_shp" fill="#FFFFFF" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="24" font-weight="526">
+                <tspan x="250" y="37">states_provinces_shp</tspan>
+            </text>
+            <text id="the_geom-=-(Point)" fill="#000000" sketch:type="MSTextLayer" font-family="Cantarell" font-size="11" font-weight="normal">
+                <tspan x="544" y="113">the_geom = (Point)</tspan>
+                <tspan x="544" y="128">SCALERANK</tspan>
+                <tspan x="544" y="143">NATSCALE</tspan>
+                <tspan x="544" y="158">LABELRANK</tspan>
+                <tspan x="544" y="173">FEATURECLA</tspan>
+                <tspan x="544" y="188">SOV0NAME</tspan>
+                <tspan x="544" y="203">SOV_A3 </tspan>
+                <tspan x="544" y="218">ADM0NAME</tspan>
+                <tspan x="544" y="233">ADM0_A3</tspan>
+                <tspan x="544" y="248">ADM1NAME</tspan>
+                <tspan x="544" y="263">ISO_A2</tspan>
+                <tspan x="544" y="278">...</tspan>
+                <tspan x="544" y="293">POP2010</tspan>
+                <tspan x="544" y="308">POP2015</tspan>
+                <tspan x="544" y="323">POP2020</tspan>
+                <tspan x="544" y="338">POP2025</tspan>
+                <tspan x="544" y="353">POP2050</tspan>
+                <tspan x="544" y="368">CITYALT</tspan>
+            </text>
+            <text id="FeatureId-copy" fill="#000000" sketch:type="MSTextLayer" font-family="Cantarell" font-size="10" font-weight="bold">
+                <tspan x="544" y="63">FeatureId</tspan>
+                <tspan x="596" y="63" font-weight="normal"></tspan>
+                <tspan x="544" y="78">Default Geometry</tspan>
+                <tspan x="639" y="78" font-weight="normal"></tspan>
+                <tspan x="544" y="93" font-weight="normal">Bounds</tspan>
+            </text>
+            <rect id="Rectangle-1-copy-2" stroke="#000000" sketch:type="MSShapeGroup" x="520" y="100" width="262" height="284"></rect>
+            <rect id="Rectangle-1-copy-3" stroke="#000000" sketch:type="MSShapeGroup" x="520" y="49" width="262" height="50"></rect>
+            <rect id="Rectangle-2-copy-2" stroke="#000000" fill="#393939" sketch:type="MSShapeGroup" x="520" y="8" width="262" height="41"></rect>
+            <text id="populated_places" fill="#FFFFFF" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="24" font-weight="526">
+                <tspan x="531" y="39">populated_places</tspan>
+            </text>
+        </g>
+    </g>
+</svg>

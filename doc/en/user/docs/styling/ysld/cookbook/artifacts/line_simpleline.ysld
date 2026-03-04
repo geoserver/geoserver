@@ -1,0 +1,8 @@
+title: 'YSLD Cook Book: Simple Line'
+feature-styles:
+- name: name
+  rules:
+  - symbolizers:
+    - line:
+        stroke-color: '#000000'
+        stroke-width: 3

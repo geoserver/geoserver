@@ -1,0 +1,24 @@
+{
+  "version": 8,
+  "name": "simple-offsetline",
+  "layers": [
+    {
+      "id": "simple-line",
+      "type": "line",
+      "paint": {
+        "line-color": "#000000",
+        "line-width": 1
+      }
+    },
+    {
+      "id": "simple-offsetline",
+      "type": "line",
+      "paint": {
+        "line-color": "#FF0000",
+        "line-width": 1,
+        "line-dasharray": [5, 2],
+        "line-offset": 5
+      }
+    }
+  ]
+}

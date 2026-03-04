@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!-- 
+  Mapped Feature mapping file
+-->
+<as:AppSchemaDataAccess xmlns:as="http://www.geotools.org/app-schema"
+	xmlns:ogc="http://www.opengis.net/ogc" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.geotools.org/app-schema AppSchemaDataAccess.xsd
+                      http://www.opengis.net/ogc http://schemas.opengis.net/filter/1.1.0/expr.xsd">
+	<namespaces>
+		<Namespace>
+			<prefix>gml</prefix>
+			<uri>http://www.opengis.net/gml</uri>
+		</Namespace>
+		<Namespace>
+			<prefix>gsml</prefix>
+			<uri>http://www.cgi-iugs.org/xml/GeoSciML/2</uri>
+		</Namespace>
+	</namespaces>
+	<sourceDataStores>
+		<DataStore>
+			<id>MappedFeaturePropertyfile</id>
+			<parameters>
+				<Parameter>
+					<name>directory</name>
+					<!-- path can be relative to this file if starts with "file: -->
+					<value>file:./</value>
+				</Parameter>
+			</parameters>
+		</DataStore>
+	</sourceDataStores>
+	<catalog>mappedPolygons.oasis.xml</catalog>
+	<targetTypes>
+		<FeatureType>
+			<schemaUri>
+				commonSchemas_new/GeoSciML/geosciml.xsd
+            </schemaUri>
+		</FeatureType>
+	</targetTypes>
+	<typeMappings>
+		<FeatureTypeMapping>
+			<sourceDataStore>MappedFeaturePropertyfile</sourceDataStore>
+			<sourceType>MappedFeaturePropertyfile</sourceType>
+			<targetElement>
+				gsml:MappedFeature
+			</targetElement>
+			<groupBy />
+			<attributeMappings>
+				<AttributeMapping>
+					<targetAttribute>
+						gsml:MappedFeature
+					</targetAttribute>
+				</AttributeMapping>
+				<AttributeMapping>
+					<targetAttribute>gml:name</targetAttribute>
+					<sourceExpression>
+						<OCQL>LEX_D</OCQL>
+					</sourceExpression>
+					<ClientProperty>
+						<name>codeSpace</name>
+						<value>'urn:cgi:classifierScheme:GSV:GeologicalUnitLabel'</value>
+					</ClientProperty>
+				</AttributeMapping>
+				<AttributeMapping>
+					<targetAttribute>gsml:specification</targetAttribute>
+					<sourceExpression>
+						<OCQL>GEOLOGIC_UNIT_ID</OCQL>
+						<linkElement>gsml:GeologicUnit</linkElement>
+						<linkField>gml:name[3]</linkField>
+					</sourceExpression>
+				</AttributeMapping>
+			</attributeMappings>
+		</FeatureTypeMapping>
+	</typeMappings>
+</as:AppSchemaDataAccess>

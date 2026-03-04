@@ -206,7 +206,7 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
   - Ensure all validation passes, all tests pass, PR is ready for review. Ask the user if questions arise.
 
 - [ ] 5. Phase 4: 3.0 (main) Branch Conversion (Days 9-11)
-  - [-] 5.1 Execute full conversion on 3.0 branch
+  - [x] 5.1 Execute full conversion on 3.0 branch
     - Switch to migration/3.0-rst-to-md branch
     - Run migration.py to convert all RST files in doc/en/user/, doc/en/developer/, doc/en/docguide/
     - **NOTE**: Chinese documentation (doc/zhCN/) is NOT included in 3.0 branch conversion
@@ -234,9 +234,25 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - Commit with message: "Convert 3.0 documentation from RST to Markdown"
     - _Requirements: 2.1, 2.2, 2.5_
 
+  - [-] 5.4.1 Fix unknown interpreted text roles (NEW - 3.0 specific issue)
+    - **CRITICAL**: 219 unknown role occurrences detected (62% unconverted rate)
+    - Create fix_unknown_roles.py script with mappings:
+      - `nightly_community` → `https://build.geoserver.org/geoserver/main/community-latest/`
+      - `nightly_extension` → `https://build.geoserver.org/geoserver/main/ext-latest/`
+      - `doc` → relative path (use URL as-is, add .md extension)
+      - `abbr` → convert to HTML `<abbr title="definition">text</abbr>`
+      - Verify `wiki` and `docguide` mappings work correctly
+    - Run fix_unknown_roles.py on all three manuals
+    - Validate converted links in sample files
+    - Re-run validation to confirm 99%+ conversion success rate
+    - Document results in 3.0_conversion_issues.md
+    - Commit fixes with message: "Fix 219 unknown interpreted text roles"
+    - _Requirements: 5.5, 5.6_
+
   - [ ] 5.5 Validate 3.0 conversion
     - Run same validation steps as 2.28.x branch (HTML comparison, link validation, build tests)
     - Fix any issues specific to 3.0 branch
+    - **NOTE**: Unknown interpreted text roles should be fixed in task 5.4.1 before this validation
     - **FIX USER MANUAL INDEX**: Update doc/en/user/docs/index.md to use grid cards format (like developer/docguide manuals) instead of definition list format. The conversion tool incorrectly converted RST definition lists to Markdown definition lists instead of grid cards.
     - **FIX GRID CARD TITLES** (CRITICAL - learned from 2.28.x branch):
       - **Issue**: The conversion tool creates malformed grid card titles by concatenating section names with page titles

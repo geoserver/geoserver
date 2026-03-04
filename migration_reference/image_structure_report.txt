@@ -1,0 +1,499 @@
+Image Structure Analysis Report
+================================================================================
+
+Total Markdown files: 793
+Total image references: 2113
+Images in img/images folders: 1950
+Images NOT in img/images folders: 163
+
+Issues Found:
+--------------------------------------------------------------------------------
+
+File: doc/en/user/docs\community\jdbcconfig\installing.md
+Image: h2message.png
+
+File: doc/en/user/docs\data\app-schema\index.md
+Image: app-schema.png
+
+File: doc/en/user/docs\data\app-schema\joining.md
+Image: joining.png
+
+File: doc/en/user/docs\extensions\grib\grib.md
+Image: gribcreate.png
+
+File: doc/en/user/docs\extensions\grib\grib.md
+Image: gribconfigure.png
+
+File: doc/en/user/docs\extensions\netcdf\netcdf.md
+Image: netcdfcreate.png
+
+File: doc/en/user/docs\extensions\netcdf\netcdf.md
+Image: netcdfconfigure.png
+
+File: doc/en/user/docs\extensions\netcdf\netcdf.md
+Image: dataset.png
+
+File: doc/en/user/docs\extensions\netcdf\netcdf.md
+Image: dataset2dcoords.png
+
+File: doc/en/user/docs\extensions\netcdf\netcdf.md
+Image: gridmapping.png
+
+File: doc/en/user/docs\extensions\netcdf-out\index.md
+Image: netcdfoutpanel.png
+
+File: doc/en/user/docs\extensions\netcdf-out\index.md
+Image: cfnames.png
+
+File: doc/en/user/docs\extensions\netcdf-out\index.md
+Image: cfunit.png
+
+File: doc/en/user/docs\geowebcache\index.md
+Image: geowebcache.png
+
+File: doc/en/user/docs\gettingstarted\postgis-quickstart\index.md
+Image: ../shapefile-quickstart/new_workspace.png
+
+File: doc/en/user/docs\gettingstarted\postgis-quickstart\index.md
+Image: datastores.png
+
+File: doc/en/user/docs\gettingstarted\postgis-quickstart\index.md
+Image: basicStore.png
+
+File: doc/en/user/docs\gettingstarted\postgis-quickstart\index.md
+Image: connectionParameters.png
+
+File: doc/en/user/docs\gettingstarted\postgis-quickstart\index.md
+Image: newlayerchooser.png
+
+File: doc/en/user/docs\gettingstarted\postgis-quickstart\index.md
+Image: layerrow.png
+
+File: doc/en/user/docs\gettingstarted\postgis-quickstart\index.md
+Image: basicInfo.png
+
+File: doc/en/user/docs\gettingstarted\postgis-quickstart\index.md
+Image: boundingbox.png
+
+File: doc/en/user/docs\gettingstarted\postgis-quickstart\index.md
+Image: style.png
+
+File: doc/en/user/docs\gettingstarted\postgis-quickstart\index.md
+Image: openlayers.png
+
+File: doc/en/user/docs\gettingstarted\shapefile-quickstart\index.md
+Image: new_workspace.png
+
+File: doc/en/user/docs\gettingstarted\shapefile-quickstart\index.md
+Image: workspace_nycroads.png
+
+File: doc/en/user/docs\gettingstarted\shapefile-quickstart\index.md
+Image: stores_nycroads.png
+
+File: doc/en/user/docs\gettingstarted\shapefile-quickstart\index.md
+Image: new_shapefile.png
+
+File: doc/en/user/docs\gettingstarted\shapefile-quickstart\index.md
+Image: new_layer.png
+
+File: doc/en/user/docs\gettingstarted\shapefile-quickstart\index.md
+Image: new_data.png
+
+File: doc/en/user/docs\gettingstarted\shapefile-quickstart\index.md
+Image: boundingbox.png
+
+File: doc/en/user/docs\gettingstarted\shapefile-quickstart\index.md
+Image: style.png
+
+File: doc/en/user/docs\gettingstarted\shapefile-quickstart\index.md
+Image: layer_preview.png
+
+File: doc/en/user/docs\gettingstarted\shapefile-quickstart\index.md
+Image: openlayers.png
+
+File: doc/en/user/docs\gettingstarted\web-admin-quickstart\index.md
+Image: login-page.png
+
+File: doc/en/user/docs\gettingstarted\web-admin-quickstart\index.md
+Image: logged_in.png
+
+File: doc/en/user/docs\services\wms\googleearth\kmlstyling.md
+Image: pointDefault.png
+
+File: doc/en/user/docs\services\wms\googleearth\kmlstyling.md
+Image: pointColor.png
+
+File: doc/en/user/docs\services\wms\googleearth\kmlstyling.md
+Image: pointOpacity.png
+
+File: doc/en/user/docs\services\wms\googleearth\kmlstyling.md
+Image: pointCustomIcon.png
+
+File: doc/en/user/docs\services\wms\googleearth\kmlstyling.md
+Image: lineDefault.png
+
+File: doc/en/user/docs\services\wms\googleearth\kmlstyling.md
+Image: lineColor.png
+
+File: doc/en/user/docs\services\wms\googleearth\kmlstyling.md
+Image: lineWidth.png
+
+File: doc/en/user/docs\services\wms\googleearth\kmlstyling.md
+Image: lineOpacity.png
+
+File: doc/en/user/docs\services\wms\googleearth\kmlstyling.md
+Image: polygonOutlineColor.png
+
+File: doc/en/user/docs\services\wms\googleearth\kmlstyling.md
+Image: polygonOutlineWidth.png
+
+File: doc/en/user/docs\services\wms\googleearth\kmlstyling.md
+Image: polygonOutlineOpacity.png
+
+File: doc/en/user/docs\services\wms\googleearth\kmlstyling.md
+Image: polygonFillColor.png
+
+File: doc/en/user/docs\services\wms\googleearth\kmlstyling.md
+Image: polygonFillOpacity.png
+
+File: doc/en/user/docs\services\wms\googleearth\kmlstyling.md
+Image: labelTemplate.png
+
+File: doc/en/user/docs\services\wms\googleearth\kmlstyling.md
+Image: labelSymbolizer.png
+
+File: doc/en/user/docs\services\wms\googleearth\kmlstyling.md
+Image: labelColor.png
+
+File: doc/en/user/docs\services\wms\googleearth\kmlstyling.md
+Image: labelOpacity.png
+
+File: doc/en/user/docs\services\wms\googleearth\kmlstyling.md
+Image: descriptionDefault.png
+
+File: doc/en/user/docs\services\wms\googleearth\kmlstyling.md
+Image: descriptionTemplate.png
+
+File: doc/en/user/docs\services\wms\googleearth\quickstart.md
+Image: openingkml.png
+
+File: doc/en/user/docs\services\wms\googleearth\quickstart.md
+Image: googleearth.jpg
+
+File: doc/en/user/docs\services\wms\googleearth\quickstart.md
+Image: networklink.png
+
+File: doc/en/user/docs\services\wms\googleearth\tutorials\superoverlaysgwc.md
+Image: ../googleearth.jpg
+
+File: doc/en/user/docs\services\wms\googleearth\tutorials\heights\heights.md
+Image: height-none.png
+
+File: doc/en/user/docs\services\wms\googleearth\tutorials\heights\heights.md
+Image: height-toomuch.png
+
+File: doc/en/user/docs\services\wms\googleearth\tutorials\heights\heights.md
+Image: height-math.png
+
+File: doc/en/user/docs\services\wms\googleearth\tutorials\kmlplacemark\index.md
+Image: default.jpg
+
+File: doc/en/user/docs\services\wms\googleearth\tutorials\kmlplacemark\index.md
+Image: helloworld.png
+
+File: doc/en/user/docs\services\wms\googleearth\tutorials\kmlplacemark\index.md
+Image: refresh.png
+
+File: doc/en/user/docs\services\wms\googleearth\tutorials\kmlplacemark\index.md
+Image: topplink.png
+
+File: doc/en/user/docs\services\wms\googleearth\tutorials\kmlplacemark\index.md
+Image: topplogo.png
+
+File: doc/en/user/docs\services\wms\googleearth\tutorials\kmlplacemark\index.md
+Image: fid.png
+
+File: doc/en/user/docs\services\wms\googleearth\tutorials\kmlplacemark\index.md
+Image: attributes.png
+
+File: doc/en/user/docs\services\wms\googleearth\tutorials\kmlplacemark\index.md
+Image: wmsexample.png
+
+File: doc/en/user/docs\services\wms\googleearth\tutorials\time\time.md
+Image: style.png
+
+File: doc/en/user/docs\services\wms\googleearth\tutorials\time\time.md
+Image: gettingStarted.png
+
+File: doc/en/user/docs\services\wms\googleearth\tutorials\time\time.md
+Image: try1.png
+
+File: doc/en/user/docs\services\wms\googleearth\tutorials\time\time.md
+Image: try2.png
+
+File: doc/en/user/docs\services\wms\googleearth\tutorials\time\time.md
+Image: try3.png
+
+File: doc/en/user/docs\tutorials\cloud-foundry\run_cf.md
+Image: ./sap_cp_trial1.png
+
+File: doc/en/user/docs\tutorials\cloud-foundry\run_cf.md
+Image: ./sap_cp_trial2.png
+
+File: doc/en/user/docs\tutorials\cql\cql_tutorial.md
+Image: gettingStarted.png
+
+File: doc/en/user/docs\tutorials\cql\cql_tutorial.md
+Image: more15M.png
+
+File: doc/en/user/docs\tutorials\cql\cql_tutorial.md
+Image: between.png
+
+File: doc/en/user/docs\tutorials\cql\cql_tutorial.md
+Image: startn.png
+
+File: doc/en/user/docs\tutorials\cql\cql_tutorial.md
+Image: malefemale.png
+
+File: doc/en/user/docs\tutorials\cql\cql_tutorial.md
+Image: employ.png
+
+File: doc/en/user/docs\tutorials\cql\cql_tutorial.md
+Image: idfilter.png
+
+File: doc/en/user/docs\tutorials\cql\cql_tutorial.md
+Image: statenames.png
+
+File: doc/en/user/docs\tutorials\cql\cql_tutorial.md
+Image: mstates.png
+
+File: doc/en/user/docs\tutorials\cql\cql_tutorial.md
+Image: bbox.png
+
+File: doc/en/user/docs\tutorials\cql\cql_tutorial.md
+Image: disjoint.png
+
+File: doc/en/user/docs\tutorials\feature-pregeneralized\feature-pregeneralized_tutorial.md
+Image: createdatastore.png
+
+File: doc/en/user/docs\tutorials\feature-pregeneralized\feature-pregeneralized_tutorial.md
+Image: editdatastore1.png
+
+File: doc/en/user/docs\tutorials\feature-pregeneralized\feature-pregeneralized_tutorial.md
+Image: editdatastore2.png
+
+File: doc/en/user/docs\tutorials\feature-pregeneralized\feature-pregeneralized_tutorial.md
+Image: editfeaturestore1.png
+
+File: doc/en/user/docs\tutorials\feature-pregeneralized\feature-pregeneralized_tutorial.md
+Image: streams.png
+
+File: doc/en/user/docs\tutorials\feature-pregeneralized\feature-pregeneralized_tutorial.md
+Image: streams_0_ds.png
+
+File: doc/en/user/docs\tutorials\feature-pregeneralized\feature-pregeneralized_tutorial.md
+Image: streams_0_ds2.png
+
+File: doc/en/user/docs\tutorials\feature-pregeneralized\feature-pregeneralized_tutorial.md
+Image: streams_0_ds4.png
+
+File: doc/en/user/docs\tutorials\feature-pregeneralized\feature-pregeneralized_tutorial.md
+Image: createdatastore2.png
+
+File: doc/en/user/docs\tutorials\feature-pregeneralized\feature-pregeneralized_tutorial.md
+Image: editdatastore3.png
+
+File: doc/en/user/docs\tutorials\feature-pregeneralized\feature-pregeneralized_tutorial.md
+Image: editfeaturestore2.png
+
+File: doc/en/user/docs\tutorials\georss\georss.md
+Image: browser.png
+
+File: doc/en/user/docs\tutorials\georss\georss.md
+Image: ve.png
+
+File: doc/en/user/docs\tutorials\GetFeatureInfo\html.md
+Image: default.png
+
+File: doc/en/user/docs\tutorials\GetFeatureInfo\html.md
+Image: ul.png
+
+File: doc/en/user/docs\tutorials\GetFeatureInfo\html.md
+Image: thumb.png
+
+File: doc/en/user/docs\tutorials\imagepyramid\imagepyramid.md
+Image: configureStore.png
+
+File: doc/en/user/docs\tutorials\imagepyramid\imagepyramid.md
+Image: chooseLayer.png
+
+File: doc/en/user/docs\tutorials\imagepyramid\imagepyramid.md
+Image: layerParams.png
+
+File: doc/en/user/docs\tutorials\imagepyramid\imagepyramid.md
+Image: preview.png
+
+File: doc/en/user/docs\tutorials\palettedimage\palettedimage.md
+Image: antialiasing.png
+
+File: doc/en/user/docs\tutorials\palettedimage\palettedimage.md
+Image: tiger-ny-png24.png
+
+File: doc/en/user/docs\tutorials\palettedimage\palettedimage.md
+Image: tiger-ny-png8.png
+
+File: doc/en/user/docs\tutorials\palettedimage\palettedimage.md
+Image: tiger-ny-png-safe-palette.png
+
+File: doc/en/user/docs\tutorials\palettedimage\palettedimage.md
+Image: tiger-ny-png-custom-palette.png
+
+File: doc/en/user/docs\tutorials\palettedimage\palettedimage.md
+Image: dem-png24.png
+
+File: doc/en/user/docs\tutorials\palettedimage\palettedimage.md
+Image: dem-jpeg.jpg
+
+File: doc/en/user/docs\tutorials\palettedimage\palettedimage.md
+Image: dem-png8.png
+
+File: doc/en/user/docs\tutorials\palettedimage\palettedimage.md
+Image: dem-png-custom-palette.png
+
+File: doc/en/user/docs\tutorials\palettedimage\palettedimage.md
+Image: dem-png-safe-palette.png
+
+File: doc/en/user/docs\tutorials\tomcat-jndi\tomcat-jndi.md
+Image: oracle_start.png
+
+File: doc/en/user/docs\tutorials\tomcat-jndi\tomcat-jndi.md
+Image: oracle_conf.png
+
+File: doc/en/user/docs\tutorials\tomcat-jndi\tomcat-jndi.md
+Image: postgis_start.png
+
+File: doc/en/user/docs\tutorials\tomcat-jndi\tomcat-jndi.md
+Image: postgis_conf.png
+
+File: doc/en/user/docs\tutorials\tomcat-jndi\tomcat-jndi.md
+Image: sqlserver_start.png
+
+File: doc/en/user/docs\tutorials\tomcat-jndi\tomcat-jndi.md
+Image: sqlserver_conf.png
+
+File: doc/en/developer/docs\cite-test-guide\index.md
+Image: ./image/old-report.png
+
+File: doc/en/developer/docs\cite-test-guide\index.md
+Image: ./image/full-report.png
+
+File: doc/en/developer/docs\cite-test-guide\index.md
+Image: ./image/seccion.png
+
+File: doc/en/developer/docs\cite-test-guide\index.md
+Image: ./image/tewfs-1_0a.png
+
+File: doc/en/developer/docs\cite-test-guide\index.md
+Image: ./image/tewfs-1_0.png
+
+File: doc/en/developer/docs\cite-test-guide\index.md
+Image: ./image/tewfs-1_1a.png
+
+File: doc/en/developer/docs\cite-test-guide\index.md
+Image: ./image/tewfs-1_1b.png
+
+File: doc/en/developer/docs\cite-test-guide\index.md
+Image: ./image/tewms-1_1a.png
+
+File: doc/en/developer/docs\cite-test-guide\index.md
+Image: ./image/tewms-1_1b.png
+
+File: doc/en/developer/docs\cite-test-guide\index.md
+Image: ./image/tewcs-1_0a.png
+
+File: doc/en/developer/docs\cite-test-guide\index.md
+Image: ./image/tewcs-1_0b.png
+
+File: doc/en/developer/docs\cite-test-guide\index.md
+Image: ./image/tewcs-1_0c.png
+
+File: doc/en/developer/docs\cite-test-guide\index.md
+Image: ./image/tewcs-1_1a.png
+
+File: doc/en/developer/docs\cite-test-guide\index.md
+Image: ./image/tewms-1_3.png
+
+File: doc/en/developer/docs\eclipse-guide\index.md
+Image: dd1.jpg
+
+File: doc/en/developer/docs\eclipse-guide\index.md
+Image: dd2.jpg
+
+File: doc/en/developer/docs\eclipse-guide\index.md
+Image: port.jpg
+
+File: doc/en/developer/docs\eclipse-guide\index.md
+Image: ssl.jpeg
+
+File: doc/en/developer/docs\eclipse-guide\index.md
+Image: code-template.png
+
+File: doc/en/developer/docs\eclipse-guide\index.md
+Image: text_editors.png
+
+File: doc/en/developer/docs\policies\community-process.md
+Image: release-cycle.png
+
+File: doc/en/developer/docs\programming-guide\ows-services\implementing.md
+Image: firefox_helloworld.png
+
+File: doc/en/developer/docs\programming-guide\rest-services\implementing-mapper.md
+Image: settings.png
+
+File: doc/en/developer/docs\programming-guide\rest-services\overview.md
+Image: rest-dispatch.png
+
+File: doc/en/developer/docs\programming-guide\web-ui\implementing.md
+Image: test.jpg
+
+File: doc/en/developer/docs\release\guide\old.md
+Image: sfnotice.png
+
+File: doc/en/developer/docs\release\schedule\index.md
+Image: timeboxed.png
+
+File: doc/en/developer/docs\release\testing\index.md
+Image: arc_sample.png
+
+File: doc/en/developer/docs\release\testing\index.md
+Image: states_georss.png
+
+File: doc/en/developer/docs\release\testing\index.md
+Image: states_cql.png
+
+File: doc/en/developer/docs\release\testing\index.md
+Image: states_kml_bestguess.png
+
+File: doc/en/developer/docs\release\testing\index.md
+Image: states_kml_sort.png
+
+File: doc/en/developer/docs\release\testing\index.md
+Image: img_sample_kml.png
+
+File: doc/en/developer/docs\release\testing\index.md
+Image: states_template.png
+
+File: doc/en/developer/docs\release\testing\index.md
+Image: states_rasterized.png
+
+File: doc/en/docguide/docs\quickfix.md
+Image: github_edit1.png
+
+File: doc/en/docguide/docs\quickfix.md
+Image: github_edit1.png
+
+File: doc/en/docguide/docs\sphinx.md
+Image: pagelogo.png
+
+File: doc/en/docguide/docs\sphinx.md
+Image: pagelogo.png

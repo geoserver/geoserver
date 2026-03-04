@@ -435,7 +435,7 @@ A remote sensing tool is generating CSV files with some locations and measuremen
 2.  Then, we are going to POST the csv file to the tasks list.
 
     ```text
-    {% include "./files/values.csv" %}
+    {%raw%}{% include "./files/values.csv" %}{%endraw%}
     ```
 
     In order to create an import task for it:
@@ -482,7 +482,7 @@ A remote sensing tool is generating CSV files with some locations and measuremen
 3.  Force the CRS by updating the layer:
 
     ```json
-    {% include "./files/layerUpdate.json" %}
+    {%raw%}{% include "./files/layerUpdate.json" %}{%endraw%}
     ```
 
     Using PUT to update task layer:
@@ -543,7 +543,7 @@ A remote sensing tool is generating CSV files with some locations and measuremen
 4.  Then, we are going to create a transformation mapping the Lat/Lon columns to a point:
 
     ```json
-    {% include "./files/toPoint.json" %}
+    {%raw%}{% include "./files/toPoint.json" %}{%endraw%}
     ```
 
     The above will be uploaded task transforms:
@@ -593,7 +593,7 @@ To update the `values` layer with new content:
     The csv file has an additional column:
 
     ```text
-    {% include "./files/replace.csv" %}
+    {%raw%}{% include "./files/replace.csv" %}{%endraw%}
     ```
 
 3.  Update task with as a "REPLACE" and supply srs information:
@@ -607,7 +607,7 @@ To update the `values` layer with new content:
     Using:
 
     ```json
-    {% include "./files/taskUpdate.json" %}
+    {%raw%}{% include "./files/taskUpdate.json" %}{%endraw%}
     ```
 
 4.  Update transform to supply a geometry column:
@@ -621,7 +621,7 @@ To update the `values` layer with new content:
     Using:
 
     ```json
-    {% include "./files/toPoint.json" %}
+    {%raw%}{% include "./files/toPoint.json" %}{%endraw%}
     ```
 
 5.  Double check import:

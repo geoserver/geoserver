@@ -31,7 +31,7 @@ The actual plugin configuration and execution is defined as:
 Rules are configured in our build [build/qa/pmd-ruleset.xml](https://github.com/geoserver/geoserver/blob/main/build/qa/pmd-ruleset.xml):
 
 ```xml
-{%raw%}<!-- Include with start/end not supported: ../../../../build/qa/pmd-ruleset.xml -->
+{%raw%}<!-- Include with start/end not supported: ../../../../build/qa/pmd-ruleset.xml -->{%endraw%}
 <!-- Extract: from "</description>" to "</ruleset>" -->
 <!-- TODO: Copy relevant section to docs directory -->
 ```
@@ -246,7 +246,7 @@ The actual plugin configuration and execution is defined as:
 The checkstyle ruleset checks the following:
 
 ```xml
-{%raw%}<!-- Include path goes outside docs directory: ../../../../build/qa/checkstyle.xml -->
+{%raw%}<!-- Include path goes outside docs directory: ../../../../build/qa/checkstyle.xml -->{%endraw%}
 <!-- TODO: Copy file to docs directory or use alternative approach -->
 ```
 

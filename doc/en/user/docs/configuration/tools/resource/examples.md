@@ -43,7 +43,7 @@ To create a **`controlflow.properties`** file:
       > ```properties
       > {%raw%}
       > {% 
-      >   include "extensions/controlflow/controlflow.properties"
+{%raw%}<!--       >   include "extensions/controlflow/controlflow.properties" -->{%endraw%}
       > %}
       > {%endraw%}
       > ```

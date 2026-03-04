@@ -12,7 +12,7 @@ Each component that is plugged in is described by a **component descriptor**. A 
 
 > ```
 > {% 
->   include "./ComponentInfo.java"
+{%raw%}<!-- >   include "./ComponentInfo.java" -->{%endraw%}
 > %}
 > ```
 

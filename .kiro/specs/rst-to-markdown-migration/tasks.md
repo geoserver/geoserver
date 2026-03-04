@@ -202,7 +202,7 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - Request review from documentation maintainers
     - _Requirements: 2.3, 2.4, 5.9, 19.7_
 
-- [ ] 4. Checkpoint - Ensure 2.28.x migration is complete
+- [x] 4. Checkpoint - Ensure 2.28.x migration is complete
   - Ensure all validation passes, all tests pass, PR is ready for review. Ask the user if questions arise.
 
 - [ ] 5. Phase 4: 3.0 (main) Branch Conversion (Days 9-11)

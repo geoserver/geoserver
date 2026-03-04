@@ -44,8 +44,6 @@ theme:
     - content.action.edit
 
 extra:
-  version: "3.0"
-  release: "3.0.0"
   version_selector:
     - version: latest
       title: 最新版 (3.0)
@@ -68,12 +66,13 @@ plugins:
   - macros:
       render_by_default: true
       include_dir: docs
+      module_name: ../../version
   - with-pdf:
       enabled_if_env: ENABLE_PDF_EXPORT
       author: GeoServer Project
       copyright: Copyright © 2024 Open Source Geospatial Foundation
       cover_title: GeoServer 用户手册
-      cover_subtitle: 版本 3.0
+      cover_subtitle: 版本 2.28.x
       output_path: pdf/geoserver-user-manual-zh.pdf
 
 markdown_extensions:

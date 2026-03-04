@@ -43,8 +43,6 @@ theme:
     - content.action.edit
 
 extra:
-  version: "3.0"
-  release: "3.0.0"
   version_selector:
     - version: latest
       title: Latest (3.0)
@@ -67,6 +65,7 @@ plugins:
   - macros:
       render_by_default: true
       include_dir: docs
+      module_name: ../../version
 
 hooks:
   - hooks/download_files.py

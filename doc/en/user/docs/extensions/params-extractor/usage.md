@@ -55,9 +55,8 @@ Basic rules allow us to handle simple uses cases where we only want to extract a
 
 A basic rule is defined by three mandatory attributes:
 
-|  |  |
-|----|----|
 | **Attribute** | **Description** |
+|----|----|
 | `Position` | The position of the URL base path element to be selected |
 | `Parameter` | The name of the parameter produced by this rule |
 | `Transform` | Expression that defines the value of the parameter, use {PARAMETER} as a placeholder for the selected path element |
@@ -83,9 +82,8 @@ Advanced rules allow us to handle more complex uses cases where more flexibility
 
 An advanced rule is defined by three mandatory attributes and four optional ones:
 
-|  |  |  |
-|----|----|----|
 | **Attribute** | **Description** | **Mandatory** |
+|----|----|----|
 | `Match` | Regex match expression with groups, for example \^(?:/[\^/]*){3}(/([\^/]+)).*\$ selects the URL base path third element | Yes |
 | `Activation` | If defined this rule will only be applied to URLs that match this regex expression | No |
 | `Parameter` | The name of the parameter produced by this rule | Yes |

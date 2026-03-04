@@ -16,9 +16,8 @@ This request only specifies that you want the reflector (wms/reflect) to return 
 
 To use the WMS reflector all one must do is specify `wms/reflect?` as opposed to `wms?` in a request. The only mandatory parameter to a WMS reflector call is the **layers** parameter. As stated above the reflector fills in sensible defaults for the rest of the parameters. The following table lists all the defaults used:
 
-|         |                               |
-|---------|-------------------------------|
 | request | getmap                        |
+|---------|-------------------------------|
 | service | wms                           |
 | version | 1.1.1                         |
 | format  | image/png                     |

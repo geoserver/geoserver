@@ -26,9 +26,8 @@ There are several warnings shown when we first start up GeoServer and login as a
 
     User this screen to change the ``admin`` user password from the default:
 
-|                   |                          |
-|-------------------|--------------------------|
 | User name         | ``admin``      |
+|-------------------|--------------------------|
 | Password          | (make up a new password) |
 | Confirm password: | (confirm new password)   |
 
@@ -46,9 +45,8 @@ There are several warnings shown when we first start up GeoServer and login as a
 
     Use this screen to change the master or keystore password.
 
-|                  |                          |
-|------------------|--------------------------|
 | Current password | ``geoserver``  |
+|------------------|--------------------------|
 | New password     | (make up a new password) |
 | Confirmation:    | (confirm new password)   |
 

@@ -12,9 +12,8 @@ To add a NetCDF data store the user must go to **Stores --> Add New Store --> Ne
 ![](netcdfconfigure.png)
 *Configuring a NetCDF data store*
 
-|                    |                 |
-|--------------------|-----------------|
 | **Option**         | **Description** |
+|--------------------|-----------------|
 | `Workspace`        |                 |
 | `Data Source Name` |                 |
 | `Description`      |                 |

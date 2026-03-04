@@ -50,9 +50,8 @@ If you create a jar with these three files and add it to the GeoServer classpath
 
 At this point you've added a page to the UI, but it's not very interesting. In Wicket, pages provide their content with an HTML file stored with the same name as the Java code except for the extension. There are a few details about these files that differ from standard HTML; for one thing, they must be valid XML for Wicket's parser to work. In addition, Wicket uses a few "special" elements to specify where the Java code should hook into the HTML. The following are used quite extensively in the GeoServer administrative console.
 
-|  |  |
-|----|----|
 | **Wicket Element** | **Purpose** |
+|----|----|
 | `<foo wicket:id="bar"></foo>` | A wicket:id attribute tells Wicket the name to be used for an element when attaching Wicket Components |
 | `<wicket:child/>` | Requires no contents, but specifies that classes extending this page can insert content at this position. |
 | `<wicket:extend></wicket:extend>` | Specifies that the enclosed content will be inserted into a parent page at the point indicated by <wicket:child/> |
@@ -234,9 +233,8 @@ A brief listing of UI design guidelines for Wicket pages in GeoServer follows.
 >
 >     Some other sizing used to set the width of an element and its pixel equivalent:
 
-|           |                |                                    |
-|-----------|----------------|------------------------------------|
 | **Class** | **Size in em** | **Size in pixels** (approximately) |
+|-----------|----------------|------------------------------------|
 | `*-5-em`  | 5em            | 100px                              |
 | `*-20-em` | 20em           | 325px                              |
 | `*-25-em` | 25em           | 400px                              |

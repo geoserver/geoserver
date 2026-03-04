@@ -47,9 +47,8 @@ After both modules have been installed, `SAP HANA` will show up as an option whe
 
 The following options are relevant for SAP HANA:
 
-|  |  |
-|----|----|
 | `host` | The machine name or IP address to connect to. |
+|----|----|
 | `port` | The port to connect to. If set and different from 0, the parameters `instance` and `database` are ignored. If not set or 0, the `instance` parameter must be set. |
 | `instance` | The instance to connect to. This parameter is ignored if a port is set. The `instance` field is at the bottom of the configuration form in case you have difficulties locating it. |
 | `database` | The database to connect to. Leave empty in case of single-container databases. Set to `SYSTEMDB` to connect to the system database of a multi-container database. This parameter is ignored if a port is set. |

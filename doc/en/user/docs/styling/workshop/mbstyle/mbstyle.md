@@ -22,9 +22,8 @@ All MBStyles consist of a JSON document. There are three types of structures in 
 2.  Array, a collection of values.
 3.  Value, the value in a key-value pair, or an entry in an array. Values can be objects, arrays, strings, numbers, ``true``, ``false``, or ``null``.
 
-|  |  |
-|----|----|
 | Object | A collection of key-value pairs, enclosed by curly braces and delimited by commas. Keys are surrounded by quotes and separated from values by a colon. |
+|----|----|
 | Array | A collection values, enclosed by square brackets and delimited by commas. |
 | String | Text value. Must be surrounded by quotes. |
 | Number | Numerical value. Must not be surrounded by quotes. |
@@ -41,9 +40,8 @@ Root level properties of a Mapbox style specify the map's layers, tile sources a
 
 The following root-level properties are required for all MBStyles. Additional root-level properties which are supported but not required can be found in the spec.
 
-|  |  |
-|----|----|
 | ``version`` | The version of the Mapbox Style specification to use. Must be set to ``8``. |
+|----|----|
 | ``name`` | The name of the style. |
 | ``sources`` | An object defining the source data. Not used by GeoServer. |
 | ``layers`` | An array of layer style objects |
@@ -120,9 +118,8 @@ To confirm everything works, let's reproduce the airports style above.
 1.  Navigate to the **Styles** page.
 2.  Each time we edit a style, the contents of the associated SLD file are replaced. Rather than disrupt any of our existing styles we will create a new style. Click **Add a new style** and choose the following:
 
-|            |                         |
-|------------|-------------------------|
 | Name:      | ``airports0`` |
+|------------|-------------------------|
 | Workspace: | (leave empty)           |
 | Format:    | ``MBStyle``   |
 

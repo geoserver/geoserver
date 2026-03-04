@@ -30,21 +30,21 @@ The structure of a typical YSLD file is as follows:
 | `Scale grid / zoom levels`          | Used to define style based on tile set zoom level                                                  |
 | `style header`                      | Document name, title, and abstract followed by feature-styles                                      |
 |                                     |                                                                                                    |
-|                                     | ![image](img/structure_header.*)                                                                   |
+|                                     | ![image](img/structure_header.svg)                                                                   |
 | [feature style](featurestyles.md)   | Independent block that can contain one or many rules.                                              |
 |                                     |                                                                                                    |
-|                                     | ![image](img/structure_feature_style.*)                                                            |
+|                                     | ![image](img/structure_feature_style.svg)                                                            |
 | [rule](rules.md)                    | Directive that can contain one or many [symbolizers](symbolizers/index.md).                        |
 |                                     |                                                                                                    |
-|                                     | ![image](img/structure_rule_all.*)                                                                 |
+|                                     | ![image](img/structure_rule_all.svg)                                                                 |
 | [filter](filters.md)                | A rule "includes" all features unless made to be selective by the use of a [filter](filters.md). |
 |                                     |                                                                                                    |
-|                                     | ![image](img/structure_rule.*)                                                                     |
+|                                     | ![image](img/structure_rule.svg)                                                                     |
 | [symbolizers](symbolizers/index.md) | basic unit of a style containing the actual visualization instructions for individual features.    |
 
 The structure YSLD files is outlined using indentation.
 
-![](img/structure_example.*)
+![](img/structure_example.svg)
 *Structure of YSLD style_example*
 
 ## Property syntax

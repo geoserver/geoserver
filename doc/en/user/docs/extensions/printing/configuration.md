@@ -346,19 +346,15 @@ The "header" and "footer" sections are optional. If the "items" that are in the 
 Here is a short list of supported **pageSizes**:
 
 | name   | width | height |
-|        |       |        |
-|        |       |        |
 | ------ | ----- | ------ |
+|        |       |        |
 | LETTER | 612   | 792    |
-|        |       |        |
-|        |       |        |
 | LEGAL  | 612   | 1008   |
-|        |       |        |
 |        |       |        |
 | A4     | 595   | 842    |
 |        |       |        |
-|        |       |        |
 | A3     | 842   | 1191   |
+|        |       |        |
 |        |       |        |
 |        |       |        |
 

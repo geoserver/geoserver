@@ -38,9 +38,8 @@ The **raster-channels** is the **key property** for display of images and raster
 1.  Navigate to the **Styles** page.
 2.  Click **Add a new style** and choose the following:
 
-|            |                             |
-|------------|-----------------------------|
 | Name:      | ``image_example`` |
+|------------|-----------------------------|
 | Workspace: | ``No workspace``  |
 | Format:    | ``CSS``           |
 
@@ -79,9 +78,8 @@ The `usgs:dem` layer used for this exercise:
 1.  Return to the **Styles** page.
 2.  Click **Add a new style** and choose the following:
 
-|            |                              |
-|------------|------------------------------|
 | Name:      | ``raster_example`` |
+|------------|------------------------------|
 | Workspace: | ``No workspace``   |
 | Format:    | ``CSS``            |
 

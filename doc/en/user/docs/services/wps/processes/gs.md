@@ -10,9 +10,8 @@ The aggregation process is used to perform common aggregation functions (sum, av
 
 The process parameters are described in the table bellow:
 
-|  |  |  |  |
-|----|----|----|----|
 | **Parameter** | **Description** | **Mandatory** | **Multiple** |
+|----|----|----|----|
 | `features` | Input feature collection. | yes | no |
 | `aggregationAttribute` | Attribute on which to perform aggregation. | yes | no |
 | `function` | An aggregate function to compute. Functions include Count, Average, Max, Median, Min, StdDev, and Sum. | yes | yes |
@@ -57,9 +56,8 @@ The value of ``AggregationResults`` attribute should be read in a tabular way. T
 
 This result should be interpreted like this:
 
-|          |         |                   |           |           |
-|----------|---------|-------------------|-----------|-----------|
 | **Max**  | **Min** | **Average**       | **Sum**   | **Count** |
+|----------|---------|-------------------|-----------|-----------|
 | 29760021 | 453588  | 5038397.020408163 | 246881454 | 49        |
 
 To obtain the result in the XML format the request ``wps:ResponseForm`` element needs to be changed to:
@@ -121,9 +119,8 @@ Since there is a group by attribute the result contains a row for each different
 
 This result should be interpreted like this:
 
-|                |                    |           |
-|----------------|--------------------|-----------|
 | **Sub Region** | **Average**        | **count** |
+|----------------|--------------------|-----------|
 | N Eng          | 2201157.1666666665 | 6         |
 | W N Cen        | 2522812.8571428573 | 7         |
 | Pacific        | 12489678           | 3         |

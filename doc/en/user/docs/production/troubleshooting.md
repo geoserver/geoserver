@@ -118,7 +118,7 @@ GeoServer provides a built-in [JVM Console](../configuration/status.md#config_se
 
 This page can be used to check current status and download the results for careful review.
 
-![](configuration/img/thread_dump.png)
+![](../configuration/img/thread_dump.png)
 *JVM Console*
 
 ## Using JDK tools to get stack and memory dumps

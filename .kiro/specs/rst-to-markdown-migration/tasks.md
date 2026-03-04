@@ -300,7 +300,7 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
       - **Verification**: Check that tables display headers correctly without empty rows above them
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7_
 
-  - [ ] 5.5.1 Fix image paths and wildcard references for 3.0 branch
+  - [x] 5.5.1 Fix image paths and wildcard references for 3.0 branch
     - **REQUIREMENT**: All images must be in an img subfolder relative to the calling Markdown file (same as 2.28.x branch)
     - **CORRECT**: docs/eclipse-guide/img/code-template.png
     - **INCORRECT**: docs/eclipse-guide/code-template.png
@@ -317,7 +317,7 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - Test locally with `mkdocs serve` to verify images display correctly
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 6.4, 6.5_
 
-  - [ ] 5.5.2 Fix missing version/release macros throughout documentation (3.0 branch)
+  - [-] 5.5.2 Fix missing version/release macros throughout documentation (3.0 branch)
     - **CRITICAL**: The conversion tool dropped |version| and |release| macros in ~79 locations
     - Create automated fix script to restore {{ version }} and {{ release }} macros in:
       - Extension installation instructions (download links, version warnings)

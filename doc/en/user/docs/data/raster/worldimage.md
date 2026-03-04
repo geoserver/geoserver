@@ -39,9 +39,8 @@ Once the extension is properly installed **WorldImage** will be an option in the
 ![](images/worldimageconfigure.png)
 *Configuring a WorldImage data store*
 
-|                    |                 |
-|--------------------|-----------------|
 | **Option**         | **Description** |
+|--------------------|-----------------|
 | `Workspace`        |                 |
 | `Data Source Name` |                 |
 | `Description`      |                 |

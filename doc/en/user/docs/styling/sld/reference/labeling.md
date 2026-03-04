@@ -13,9 +13,8 @@ The SLD specification defines two alternative label placement strategies which c
 
 When `<PointPlacement>` is used the geometry is labelled at a single **label point**. For lines, this point lies at the middle of the visible portion of the line. For polygons, the point is the centroid of the visible portion of the polygon. The position of the label relative to the label point can be controlled by the following sub-elements:
 
-|  |  |
-|----|----|
 | **Element** | **Description** |
+|----|----|
 | `<AnchorPoint>` | Determines the placement of the label relative to the label point. Values given as decimals between 0-1. |
 | `<Displacement>` | Offsets the label from the anchor point. Values given in pixels. |
 | `<Rotation>` | Rotates the label clockwise by a given number of degrees. |
@@ -239,9 +238,8 @@ The `group` option allows displaying a single label for multiple features in a l
 
 Grouping works by collecting all features with the same label text, then choosing a representative geometry for the group, according to the following rules:
 
-|  |  |
-|----|----|
 | **Geometry** | **Label Point** |
+|----|----|
 | Point Set | The first point inside the view rectangle is used. |
 | Line Set | Lines are joined together, clipped to the view rectangle, and the longest path is used. |
 | Polygon Set | Polygons are clipped to the view rectangle, and the largest polygon is used. |
@@ -384,9 +382,8 @@ By default labels are subject to **conflict resolution**, meaning the renderer w
 
 GeoServer will remove labels if they are a particularly bad fit for the geometry they are labeling.
 
-|  |  |
-|----|----|
 | **Geometry** | **Goodness of Fit Algorithm** |
+|----|----|
 | Point | Always returns 1.0 since the label is at the point |
 | Line | Always returns 1.0 since the label is always placed on the line. |
 | Polygon | The label is sampled approximately at every letter. The distance from these points to the polygon is determined and each sample votes based on how close it is to the polygon. (see LabelCacheDefault#goodnessOfFit()) |
@@ -405,9 +402,8 @@ GeoServer normally tries to place labels horizontally within a polygon, and give
 <VendorOption name="polygonAlign">mbr</VendorOption>
 ```
 
-|  |  |
-|----|----|
 | **Option** | **Description** |
+|----|----|
 | `manual` | The default value. Only a rotation manually specified in the `<Rotation>` tag will be used |
 | `ortho` | If the label does not fit horizontally and the polygon is taller than wider then vertical alignment will also be tried |
 | `mbr` | If the label does not fit horizontally the minimum bounding rectangle will be computed and a label aligned to it will be tried out as well |
@@ -420,9 +416,8 @@ When a `<Graphic>` is specified for a label by default it is displayed at its na
 <VendorOption name="graphic-resize">stretch</VendorOption>
 ```
 
-|  |  |
-|----|----|
 | **Option** | **Description** |
+|----|----|
 | `none` | Graphic is displayed at its native size (default) |
 | `proportional` | Graphic size is increased uniformly to contain the label text |
 | `stretch` | Graphic size is increased anisotropically to contain the label text |

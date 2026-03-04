@@ -12,9 +12,8 @@ The following constitutes a summary of all the template directives and it is mea
 
 The following are the directives available in JSON based templates.
 
-|  |  |  |
-|----|----|----|
 | **Usage** | **Syntax** | **Description** |
+|----|----|----|
 | property interpolation | \${property} | specify it as an attribute value (`"json_attribute":"${property}"`) |
 | cql evaluation | \$\${cql} | specify it as an element value (`"json_attribute":"$${cql}"`) |
 | setting the evaluation context for child attributes. | \${source}. | specify it as the first nested object in arrays (`{"$source":"property"}`) or as an attribute in objects (`"$source":"property"`) |
@@ -28,9 +27,8 @@ The following are the directives available in JSON based templates.
 
 The following are the directives available in XML based templates.
 
-|  |  |  |
-|----|----|----|
 | **Usage** | **Syntax** | **Description** |
+|----|----|----|
 | property interpolation | \${property} | specify it either as an element value (`<element>${property}</element>`) or as an xml attribute value (`<element attribute:"${property}"/>`) |
 | cql evaluation | \$\${cql} | specify them either as an element value (`<element>$${cql}</element>`) or as an xml attribute value (`<element attribute:"$${cql}"/>`) |
 | setting the evaluation context for property interpolation and cql evaluation in child elements. | gft:source | specify it as an xml attribute (`<element gft:source:"property">`) |

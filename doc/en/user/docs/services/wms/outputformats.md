@@ -10,9 +10,8 @@ where `<format>` is any of the options below.
 
     The list of output formats supported by a GeoServer instance can be found by a WMS [GetCapabilities](reference.md) request.
 
-|  |  |  |
-|----|----|----|
 | **Format** | **Syntax** | **Notes** |
+|----|----|----|
 | PNG | `format=image/png` | Default |
 | PNG8 | `format=image/png8` | Same as PNG, but computes an optimal 256 color (8 bit) palette, so the image size is usually smaller |
 | JPEG | `format=image/jpeg` |  |

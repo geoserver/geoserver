@@ -8,9 +8,8 @@ The **UserStyle** element defines styling for a layer.
 
 The `<UserStyle>` element contains the following elements:
 
-|  |  |  |
-|----|----|----|
 | **Tag** | **Required?** | **Description** |
+|----|----|----|
 | `<Name>` | No | The name of the style, used to reference it externally. (Ignored for catalog styles.) |
 | `<Title>` | No | The title of the style. |
 | `<Abstract>` | No | The description for the style. |
@@ -23,9 +22,8 @@ The **FeatureTypeStyle** element specifies the styling that is applied to a sing
 
 The `<FeatureTypeStyle>` element contains the following elements:
 
-|  |  |  |
-|----|----|----|
 | **Tag** | **Required?** | **Description** |
+|----|----|----|
 | `<Name>` | No | Not used at present |
 | `<Title>` | No | The title for the style. |
 | `<Abstract>` | No | The description for the style. |

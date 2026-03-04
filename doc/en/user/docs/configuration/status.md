@@ -80,9 +80,8 @@ Use the checkbox **Enable All Statistics** to start and stop the collecting and 
 
 The available system information is:
 
-|  |  |  |
-|----|----|----|
 | **Info** | **Example** | **Description** |
+|----|----|----|
 | Operating system | Linux Mint 18 | Name of the operating system and the used version |
 | Uptime | 08:34:50 | Up time of the system |
 | System average load 1 minute | 0.90 | System average load for the last minute |

@@ -206,9 +206,8 @@ You can configure the default service strategy by modifying the **`web.xml`** fi
 
 The possible strategies are:
 
-|  |  |
-|----|----|
 | **Strategy** | **Description** |
+|----|----|
 | `SPEED` | Serves output right away. This is the fastest strategy, but proper OGC errors are usually omitted. |
 | `BUFFER` | Stores the whole result in memory, and then serves it after the output is complete. This ensures proper OGC error reporting, but delays the response quite a bit and can exhaust memory if the response is large. |
 | `FILE` | Similar to `BUFFER`, but stores the whole result in a file instead of in memory. Slower than `BUFFER`, but ensures there won't be memory issues. |

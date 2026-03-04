@@ -66,9 +66,8 @@ Otherwise the usage of a shapefile could be useful in development and test envir
 
 Here is shown an example of datastore.properties suitable for Postgis.
 
-|  |  |  |
-|----|----|----|
 | **Parameter** | **Mandatory** | **Description** |
+|----|----|----|
 | *SPI* | **Y** | The factory class used for the datastore e.g. org.geotools.data.postgis.PostgisNGDataStoreFactory |
 | *host* | **Y** | The host name of the database. |
 | *port* | **Y** | The port of the database |
@@ -88,9 +87,8 @@ Here is shown an example of datastore.properties suitable for Postgis.
 
 #### indexer.properties
 
-|  |  |  |
-|----|----|----|
 | **Parameter** | **Mandatory** | **Description** |
+|----|----|----|
 | *TimeAttribute* | N | Specifies the name of the time-variant attribute |
 | *ElevationAttribute* | N | Specifies the name of the elevation attribute. |
 | *Schema* | Y | A comma separated sequence that describes the mapping between attribute and the data type. |
@@ -102,9 +100,8 @@ Here is shown an example of datastore.properties suitable for Postgis.
 
 #### timeregex.properties
 
-|  |  |  |
-|----|----|----|
 | **Parameter** | **Mandatory** | **Description** |
+|----|----|----|
 | *regex* | Y | Specifies the pattern used for extracting the information from the file |
 
 After this you can create a new ImageMosaic datastore.

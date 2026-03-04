@@ -21,9 +21,8 @@ WMS provides a standard interface for requesting a geospatial map image. The ben
 
 WMS requests can perform the following operations:
 
-|  |  |
-|----|----|
 | **Operation** | **Description** |
+|----|----|
 | [GetCapabilities](#getcapabilities) | Retrieves metadata about the service, including supported operations and parameters, and a list of the available layers |
 | [GetMap](reference.md#wms_getmap) | Retrieves a map image for a specified area and content |
 | [GetFeatureInfo](#getfeatureinfo) | Retrieves the underlying data, including geometry and attribute values, for a pixel location on a map |
@@ -36,18 +35,16 @@ The **GetCapabilities** operation requests metadata about the operations, servic
 
 The parameters for the GetCapabilities operation are:
 
-|  |  |  |
-|----|----|----|
 | **Parameter** | **Required?** | **Description** |
+|----|----|----|
 | `service` | Yes | Service name. Value is `WMS`. |
 | `version` | Yes | Service version. Value is one of `1.0.0`, `1.1.0`, `1.1.1`, `1.3.0`. |
 | `request` | Yes | Operation name. Value is `GetCapabilities`. |
 
 GeoServer provides the following vendor-specific parameters for the GetCapabilities operation. They are fully documented in the [WMS vendor parameters](vendor.md) section.
 
-|  |  |  |
-|----|----|----|
 | **Parameter** | **Required?** | **Description** |
+|----|----|----|
 | `namespace` | No | limits response to layers in a given namespace |
 | `format` | No | request the capabilities document in a certain format |
 | `rootLayer` | No | Flag to enable/disable the standard Root top level Layer element. Values are true or false. When false, the Root element will be included only if there are multiple top level layers, if there is only one, it will be the root layer itself. When specified, will override the global WMS setting or layer / group setting for the same behaviour. |
@@ -63,9 +60,8 @@ There are three parameters being passed to the WMS server, `service=wms`, `versi
 
 The response is a Capabilities XML document that is a detailed description of the WMS service. It contains three main sections:
 
-|  |  |
-|----|----|
 | **Service** | Contains service metadata such as the service name, keywords, and contact information for the organization operating the server. |
+|----|----|
 | **Request** | Describes the operations the WMS service provides and the parameters and output formats for each operation. If desired GeoServer can be configured to disable support for certain WMS operations. |
 | **Layer** | Lists the available coordinate systems and layers. In GeoServer layers are named in the form "namespace:layer". Each layer provides service metadata such as title, abstract and keywords. |
 
@@ -77,9 +73,8 @@ The response is a map image, or other map output artifact, depending on the form
 
 The standard parameters for the GetMap operation are:
 
-|  |  |  |
-|----|----|----|
 | **Parameter** | **Required?** | **Description** |
+|----|----|----|
 | `service` | Yes | Service name. Value is `WMS`. |
 | `version` | Yes | Service version. Value is one of `1.0.0`, `1.1.0`, `1.1.1`, `1.3.0`. |
 | `request` | Yes | Operation name. Value is `GetMap`. |
@@ -153,9 +148,8 @@ The one advantage of `GetFeatureInfo` is that the request uses an (x,y) pixel va
 
 The standard parameters for the GetFeatureInfo operation are:
 
-|  |  |  |
-|----|----|----|
 | **Parameter** | **Required?** | **Description** |
+|----|----|----|
 | `service` | Yes | Service name. Value is `WMS`. |
 | `version` | Yes | Service version. Value is one of `1.0.0`, `1.1.0`, `1.1.1`, `1.3.0`. |
 | `request` | Yes | Operation name. Value is `GetFeatureInfo`. |
@@ -176,9 +170,8 @@ The standard parameters for the GetFeatureInfo operation are:
 
 GeoServer supports a number of output formats for the `GetFeatureInfo` response. Server-styled HTML is the most commonly-used format. For maximum control and customisation the client should use GML3 and style the raw data itself. The supported formats are:
 
-|  |  |  |
-|----|----|----|
 | **Format** | **Syntax** | **Notes** |
+|----|----|----|
 | TEXT | `info_format=text/plain` | Simple text output. (The default format) |
 | GML 2 | `info_format=application/vnd.ogc.gml` | Works only for Simple Features (see [app-schema.complex-features](#app-schema.complex-features)) |
 | GML 3 | `info_format=application/vnd.ogc.gml/3.1.1` | Works for both Simple and Complex Features (see [app-schema.complex-features](#app-schema.complex-features)) |
@@ -188,9 +181,8 @@ GeoServer supports a number of output formats for the `GetFeatureInfo` response.
 
 GeoServer provides the following vendor-specific parameters for the GetFeatureInfo operation. They are fully documented in the [WMS vendor parameters](vendor.md) section.
 
-|  |  |  |
-|----|----|----|
 | **Parameter** | **Required?** | **Description** |
+|----|----|----|
 | `buffer` | No | width of search radius around query point (in pixels). |
 | `cql_filter` | No | Filter for returned data, in ECQL format |
 | `filter` | No | Filter for returned data, in OGC Filter format |
@@ -294,9 +286,8 @@ The **DescribeLayer** operation is used primarily by clients that understand SLD
 
 The standard parameters for the DescribeLayer operation are:
 
-|  |  |  |
-|----|----|----|
 | **Parameter** | **Required?** | **Description** |
+|----|----|----|
 | `service` | Yes | Service name. Value is `WMS`. |
 | `version` | Yes | Service version. Value is `1.1.1`. |
 | `request` | Yes | Operation name. Value is `DescribeLayer`. |
@@ -305,9 +296,8 @@ The standard parameters for the DescribeLayer operation are:
 
 GeoServer supports a number of output formats for the `DescribeLayer` response. Server-styled HTML is the most commonly-used format. The supported formats are:
 
-|  |  |  |
-|----|----|----|
 | **Format** | **Syntax** | **Notes** |
+|----|----|----|
 | TEXT | `output_format=text/xml` | Same as default. |
 | GML 2 | `output_format=application/vnd.ogc.wms_xml` | The default format. |
 | JSON | `output_format=application/json` | Simple JSON representation. |
@@ -368,9 +358,8 @@ The **GetLegendGraphic** operation provides a mechanism for generating legend gr
 
 Formats in which WMS can report exceptions. The supported values for exceptions are:
 
-|  |  |  |
-|----|----|----|
 | **Format** | **Syntax** | **Notes** |
+|----|----|----|
 | XML | `EXCEPTIONS=application/vnd.ogc.se_xml` | XML output. (The default format) |
 | INIMAGE | `EXCEPTIONS=application/vnd.ogc.se_inimage` | Generates an image |
 | BLANK | `EXCEPTIONS=application/vnd.ogc.se_blank` | Generates a blank image |

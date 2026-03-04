@@ -32,9 +32,8 @@ This exercise makes use of the `ne:states_provinces_shp` layer.
 1.  Navigate to **Styles**.
 2.  Create a new style ``polygon_example``.
 
-|            |                               |
-|------------|-------------------------------|
 | Name:      | ``polygon_example`` |
+|------------|-------------------------------|
 | Workspace: | ``No workspace``    |
 | Format:    | ``CSS``             |
 
@@ -252,9 +251,8 @@ The fill pattern is defined by repeating one of the built-in symbols, or making 
 
 12. The well-known symbols are more suited for marking individual points. Now that we understand how a pattern can be controlled it is time to look at the patterns GeoServer provides.
 
-    |                   |                                          |
-    |-------------------|------------------------------------------|
     | shape://horizline | horizontal hatching                      |
+    |-------------------|------------------------------------------|
     | shape://vertline  | vertical hatching                        |
     | shape://backslash | right hatching pattern                   |
     | shape://slash     | left hatching pattern                    |

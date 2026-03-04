@@ -39,9 +39,8 @@ Once the extension is properly installed **ArcGrid** will be an option in the **
 ![](images/arcgridconfigure.png)
 *Configuring an ArcGrid data store*
 
-|                    |                 |
-|--------------------|-----------------|
 | **Option**         | **Description** |
+|--------------------|-----------------|
 | `Workspace`        |                 |
 | `Data Source Name` |                 |
 | `Description`      |                 |

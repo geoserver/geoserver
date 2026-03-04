@@ -14,9 +14,8 @@ This section provides a quick introduction to CSS syntax for mapping professiona
 
 As we work through CSS styling examples you will note the use of **key properties**. These properties are required to trigger the creation of an appropriate symbolizer in SLD.
 
-|             |                                                     |
-|-------------|-----------------------------------------------------|
 | stroke      | Color (or graphic) for LineString or Polygon border |
+|-------------|-----------------------------------------------------|
 | fill        | Color (or graphic) for Polygon Fill                 |
 | mark        | Well-known Mark or graphic used for Point           |
 | label       | Text expression labeling                            |
@@ -225,9 +224,8 @@ To confirm everything works, let's reproduce the airports style above.
 1.  Navigate to the **Styles** page.
 2.  Each time we edit a style, the contents of the associated SLD file are replaced. Rather than disrupt any of our existing styles we will create a new style. Click **Add a new style** and choose the following:
 
-|            |                        |
-|------------|------------------------|
 | Name:      | ``airport0`` |
+|------------|------------------------|
 | Workspace: | (none specified)       |
 | Format:    | ``CSS``      |
 

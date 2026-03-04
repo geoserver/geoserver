@@ -102,9 +102,8 @@ The initial layer configuration panel for an Elasticsearch layer will include an
 | ![field_list](images/elasticsearch_fieldlist.png){.align-middle} |
 +------------------------------------------------------------------+
 
-|  |  |
-|----|----|
 | Item | Description |
+|----|----|
 | `Use All` | Use all fields in the layer feature type |
 | `Use` | Used to select the fields that will make up the layer feature type |
 | `Name` | Name of the field |
@@ -323,9 +322,8 @@ The store may update the precision to a smaller value, if it finds it goes beyon
 
 `gridStrategy`: Parameter to identify the `org.geoserver.process.elasticsearch.GeoHashGrid` implementation that will be used to convert each geohashgrid bucket into a raster value (number).
 
-|  |  |  |  |
-|----|----|----|----|
 | Name | gridStrategy | gridStrategyArgs | Description |
+|----|----|----|----|
 | Basic | `basic` | no | Raster value is geohashgrid bucket `doc_count`. |
 | Metric | `metric` | yes | Raster value is geohashgrid bucket metric value. |
 | Nested | `nested_agg` | yes | Extract raster value from nested aggregation results. |
@@ -365,9 +363,8 @@ Extracted raster value: `1`
 
 Raster value is geohashgrid bucket metric value.
 
-|  |  |  |
-|----|----|----|
 | Argument Index | Default Value | Description |
+|----|----|----|
 | 0 | `metric` | Key used to pluck metric object from top level bucket. Empty string results in plucking doc_count. |
 | 1 | `value` | Key used to pluck the value from the metric object. |
 
@@ -404,9 +401,8 @@ Extracted raster value: `4.9`
 
 Extract raster value from nested aggregation results.
 
-|  |  |  |
-|----|----|----|
 | Argument Index | Default Value | Description |
+|----|----|----|
 | 0 | `nested` | Key used to pluck nested aggregation results from the geogrid bucket. |
 | 1 | empty string | Key used to pluck metric object from each nested aggregation bucket. Empty string results in plucking doc_count. |
 | 2 | `value` | Key used to pluck the value from the metric object. |

@@ -47,9 +47,8 @@ Once the extension is properly installed `SQL Server` will show up as an option 
 ![](images/sqlserverconfigure.png)
 *Configuring a SQL Server data store*
 
-|  |  |
-|----|----|
 | `host` | The sql server instance host name or ip address, only. Note that `server\instance` notation is not accepted - specify the port below, instead, if you have a non-default instance. |
+|----|----|
 | `port` | The port on which the SQL server instance is accepting connections. See the [note](sqlserver.md#port_notes) below. |
 | `database` | The name of the database to connect to. Might be left blank if the user connecting to SQL Server has a "default database" set in the user configuration |
 | `schema` | The database schema to access tables from (optional). |

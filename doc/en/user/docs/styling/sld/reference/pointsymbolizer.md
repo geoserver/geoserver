@@ -6,9 +6,8 @@ A **PointSymbolizer** styles features as **points**. Points are depicted as grap
 
 A `<PointSymbolizer>` contains an optional `<Geometry>` element, and a required `<Graphic>` element specifying the point symbology.
 
-|              |               |                                             |
-|--------------|---------------|---------------------------------------------|
 | **Tag**      | **Required?** | **Description**                             |
+|--------------|---------------|---------------------------------------------|
 | `<Geometry>` | No            | Specifies the geometry to be rendered.      |
 | `<Graphic>`  | Yes           | Specifies the styling for the point symbol. |
 
@@ -24,9 +23,8 @@ Symbology is specified using a `<Graphic>` element. The symbol is specified by e
 
 There are five possible sub-elements of the `<Graphic>` element. One of `<ExternalGraphic>` or `<Mark>` must be specified; the others are optional.
 
-|  |  |  |
-|----|----|----|
 | **Tag** | **Required?** | **Description** |
+|----|----|----|
 | `<ExternalGraphic>` | No (when using `<Mark>`) | Specifies an external image file to use as the symbol. |
 | `<Mark>` | No (when using `<ExternalGraphic>`) | Specifies a named shape to use as the symbol. |
 | `<Opacity>` | No | Specifies the opacity (transparency) of the symbol. Values range from `0` (completely transparent) to `1` (completely opaque). Value may contain [expressions](pointsymbolizer.md#sld_reference_parameter_expressions). Default is `1` (opaque). |
@@ -39,9 +37,8 @@ There are five possible sub-elements of the `<Graphic>` element. One of `<Extern
 
 The `<ExternalGraphic>` element has the sub-elements:
 
-|  |  |  |
-|----|----|----|
 | **Tag** | **Required?** | **Description** |
+|----|----|----|
 | `<OnlineResource>` | Yes | The `xlink:href` attribute specifies the location of the image file. The value can be either a URL or a local pathname relative to the SLD directory. The value can contain CQL expressions delimited by `${ }`. The attribute `xlink:type="simple"` is also required. The element does not contain any content. |
 | `<Format>` | Yes | The MIME type of the image format. Most standard web image formats are supported. Common MIME types are `image/png`, `image/jpeg`, `image/gif`, and `image/svg+xml` |
 
@@ -51,9 +48,8 @@ The `<ExternalGraphic>` element has the sub-elements:
 
 The `<Mark>` element has the sub-elements:
 
-|  |  |  |
-|----|----|----|
 | **Tag** | **Required?** | **Description** |
+|----|----|----|
 | `<WellKnownName>` | No | The name of the shape. Standard SLD shapes are `circle`, `square`, `triangle`, `star`, `cross`, or `x`. Default is `square`. |
 | `<Fill>` | No | Specifies how the symbol should be filled (for closed shapes). Options are to use `<CssParameter name="fill">` to specify a solid fill color, or using `<GraphicFill>` for a tiled graphic fill. See the `PolygonSymbolizer` [Fill](polygonsymbolizer.md#sld_reference_fill) for the full syntax. |
 | `<Stroke>` | No | Specifies how the symbol linework should be drawn. Some options are using `<CssParameter name="stroke">` to specify a stroke color, or using `<GraphicStroke>` for a repeated graphic. See the `LineSymbolizer` [Stroke](linesymbolizer.md#sld_reference_stroke) for the full syntax. |

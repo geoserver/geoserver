@@ -18,9 +18,8 @@ By default, **Properties** will be an option in the **Vector Data Sources** list
 ![](images/propertiesconfigure.png)
 *Configuring a Properties data store*
 
-|  |  |
-|----|----|
 | **Option** | **Description** |
+|----|----|
 | `Workspace` | Sets the namespace prefix of the feature types (layers) and their properties |
 | `Data Source Name` | Unique identifier to distinguish this data store |
 | `Description` | Optional text giving a verbose description of the data store |

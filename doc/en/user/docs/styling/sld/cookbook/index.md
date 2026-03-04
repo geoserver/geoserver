@@ -6,9 +6,8 @@ The SLD Cookbook is divided into four sections: the first three for each of the 
 
 Each section uses data created especially for the SLD Cookbook, with shapefiles for vector data and GeoTIFFs for raster data. The projection for data is EPSG:4326. All files can be easily loaded into GeoServer in order to recreate the examples.
 
-|  |  |
-|----|----|
 | **Data Type** | **Shapefile** |
+|----|----|
 | Point | [sld_cookbook_point.zip](artifacts/sld_cookbook_point.zip) |
 | Line | [sld_cookbook_line.zip](artifacts/sld_cookbook_line.zip) |
 | Polygon | [sld_cookbook_polygon.zip](artifacts/sld_cookbook_polygon.zip) |

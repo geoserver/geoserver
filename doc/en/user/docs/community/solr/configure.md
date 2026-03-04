@@ -34,9 +34,8 @@ Once the extension is properly installed `SOLR` will show up as an option when c
 ![](images/solr_configuration.png)
 *Configuring a SOLR data store*
 
-|            |                                                               |
-|------------|---------------------------------------------------------------|
 | `solr_url` | Provide a link to the SOLR server that provides the documents |
+|------------|---------------------------------------------------------------|
 
 Once the parameters are entered and confirmed, GeoServer will contact the SOLR server and fetch a list of layer names and fill the layer chooser page accordingly:
 
@@ -50,9 +49,8 @@ Once the layer name is chosen, the usual layer configuration panel will appear, 
 ![](images/solr_fieldlist.png)
 *The layer field list configuration*
 
-|  |  |
-|----|----|
 | `Is empty` | Read only fields, checked if the field has no values in the documents associated to this layer |
+|----|----|
 | `Use` | Used to select the fields that will make up this layer features |
 | `Name` | Name of the field |
 | `Type` | Type of the field, as derived from the SOLR schema. For geometry types, you have the option to provide a more specific data type |

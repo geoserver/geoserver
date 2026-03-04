@@ -6,7 +6,7 @@ In KML a "Placemark" is used to mark a position on a map, often visualized with 
 
 By default GeoServer produces placemark descriptions which are HTML tables describing all the attributes available for a particular feature in a dataset. In the following image we see the placemark description for the feature representing Idaho state:
 
-![](default.jpg)
+![](img/default.jpg)
 *The default placemark*
 
 This is great, but what about if one wanted some other sort of information to be conveyed in the description. Or perhaps one does not want to show all the attributes of the dataset. The answer is Templates!!
@@ -42,12 +42,12 @@ And thats it. We can now test out our template by adding the following network l
 
 And voila. Your first template
 
-> ![](helloworld.png)
+> ![](img/helloworld.png)
 > *Hello World template.*
 
 **Refreshing Templates**: One nice aspect of templates is that they are read upon every request. So one can simply edit the template in place and have it picked up by GeoServer as soon as the file is saved. So when after editing and saving a template simply "Refresh" the network link in Google Earth to have the new content picked up.
 
-> ![](refresh.png)
+> ![](img/refresh.png)
 > *Refresh Template*
 
 As stated before template descriptions are nothing more than html. Play around with `description.ftl` and add some of your own html. Some examples you may want to try:
@@ -58,7 +58,7 @@ As stated before template descriptions are nothing more than html. Play around w
 
 Homepage of Topp
 
-> ![](topplink.png)
+> ![](img/topplink.png)
 > *Homepage of Topp*
 
 2.  The logo of your organization:
@@ -67,7 +67,7 @@ Homepage of Topp
 
 Logo of Topp
 
-> ![](topplogo.png)
+> ![](img/topplogo.png)
 > *Logo of Topp*
 
 The possibilities are endless. Now this is all great and everything but these examples are some what lacking in that the content is static. In the next section we will create more realistic template which actually access some the attributes of our data set.
@@ -88,7 +88,7 @@ Simple fid/typename access:
 
 This is a feature of 3.1 of type states.
 
-![](fid.png)
+![](img/fid.png)
 *FID*
 
 Access to the values of two attributes named `STATE_NAME`, and `PERSONS`:
@@ -97,7 +97,7 @@ Access to the values of two attributes named `STATE_NAME`, and `PERSONS`:
 
 ID This is Idaho state which has a population of 1.006.749.
 
-![](attributes.png)
+![](img/attributes.png)
 *Attributes*
 
 ## Attribute Variables
@@ -124,7 +124,7 @@ You will notice that hovering the mouse over one of the points on the map displa
 
 Poi.4
 
-![](wmsexample.png)
+![](img/wmsexample.png)
 *WMS Example*
 
 !!! note

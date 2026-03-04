@@ -16,7 +16,7 @@ At any given time GeoServer is undergoing two to three main branches of developm
 
 On the stable branches release follow a monthly cycle in a which a new minor release occurs once a month. On the unstable branch releases follow a 6 month cycle in which a new major release occurs once every 6 months. The following diagram illustrates the cycle:
 
-![image](timeboxed.png)
+![image](img/timeboxed.png)
 
 Things to note:
 

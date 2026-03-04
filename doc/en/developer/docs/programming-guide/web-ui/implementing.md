@@ -169,4 +169,4 @@ At this point, the `hello_web` module should look like the following:
 
 Upon success a link titled `Hello` should appear in the menu on the left side of the main GeoServer page. Following the link brings up the `HelloPage`
 
-> ![image](test.jpg)
+> ![image](img/test.jpg)

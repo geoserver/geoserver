@@ -13,12 +13,12 @@ Once GeoServer is installed and running, open up a web browser and go to the web
 
 If Google Earth is correctly installed on your computer, you will see a dialog asking how to open the file. Select **Open with Google Earth**.
 
-> ![](openingkml.png)
+> ![](img/openingkml.png)
 > *Open with Google Earth*
 
 When Google Earth is finished loading the result will be similar to below.
 
-> ![](googleearth.jpg)
+> ![](img/googleearth.jpg)
 > *The topp:states layer rendered in Google Earth*
 
 ## Direct access to KML
@@ -49,7 +49,7 @@ To add a Network Link, pull down the **Add** menu, and go to **Network Link**. T
 
 (Don't forget to replace the GEOSERVER_URL.) Click **OK**. You can now save this layer in your **My Places**.
 
-> ![](networklink.png)
+> ![](img/networklink.png)
 > *Adding a network link*
 
 Check out the sections on [Tutorials](tutorials/index.md) and the [KML Styling](kmlstyling.md) for more information.

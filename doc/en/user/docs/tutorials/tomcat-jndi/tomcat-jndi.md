@@ -73,12 +73,12 @@ Login into the GeoServer web administration interface and configure the datastor
 
 First, choose the *Oracle (JNDI)* datastore and give it a name:
 
-![](oracle_start.png)
+![](img/oracle_start.png)
 *Choosing a JNDI enabled datastore*
 
 Then, configure the connection parameters so that the JNDI path matches the one specified in the Tomcat configuration:
 
-![](oracle_conf.png)
+![](img/oracle_conf.png)
 *Configuring the JNDI connection*
 
 When you are doing this, make sure the *schema* is properly setup, or the datastore will list all the tables it can find in the schema it can access. In the case of Oracle the schema is usually the user name, upper cased.
@@ -124,11 +124,11 @@ Login into the GeoServer web administration interface.
 
 First, choose the *PostGIS (JNDI)* datastore and give it a name:
 
-![](postgis_start.png)
+![](img/postgis_start.png)
 
 Then configure the associated parameters. The value for jndiReferenceName corresponds to the Resource name given in **`{TOMCAT_HOME}/conf/context.xml`**.
 
-![](postgis_conf.png)
+![](img/postgis_conf.png)
 
 ### Configuring a SQLServer connection pool
 
@@ -172,8 +172,8 @@ Login into the GeoServer web administration interface.
 
 First, choose the *Microsoft SQL Server (JNDI)* datastore and give it a name:
 
-![](sqlserver_start.png)
+![](img/sqlserver_start.png)
 
 Then configure the associated params:
 
-![](sqlserver_conf.png)
+![](img/sqlserver_conf.png)

@@ -42,11 +42,11 @@ If unset, GeoServer will default to the `minimal` directory inside of the `web-a
 
 > 1.  Open `Debug Configurations...` from the Eclipse menu
 >
->     ![image](dd1.jpg)
+>     ![image](img/dd1.jpg)
 >
 > 2.  Select the `Start` configuration, select the `Arguments` panel and specify the `-DGEOSERVER_DATA_DIR` parameter, setting it to the absolute path of the data directory
 >
->     ![image](dd2.jpg)
+>     ![image](img/dd2.jpg)
 
 ### Changing the default port for Jetty
 
@@ -56,7 +56,7 @@ If unset, Jetty will default to port `8080`. To change this:
 >
 > 2.  Specify the `-Djetty.port` parameter, setting it to the desired port
 >
->     ![image](port.jpg)
+>     ![image](img/port.jpg)
 
 ### Configuring JNDI resources in Jetty
 
@@ -106,7 +106,7 @@ The SSL port used `8443`.
 >
 > 2.  Specify the `-Dssl.hostname` parameter, setting it to the full qualified host name of the box running Jetty.
 >
->     ![image](ssl.jpeg)
+>     ![image](img/ssl.jpeg)
 
 On first time startup, a key store is created in `<home directory>/.geoserver/keystore.jks`. The password is **changeit** and the key store contains a self-signed certificate for the host name passed in the `ssl.hostname` parameter.
 
@@ -131,7 +131,7 @@ Code formatting is covered by our build [Quality Assurance](../qa-guide/index.md
 3.  Select the `codetemplates.xml` file downloaded in step 1
 4.  Click `Apply`
 
-![image](code-template.png)
+![image](img/code-template.png)
 
 ### Text editors
 
@@ -149,6 +149,6 @@ Code formatting is covered by our build [Quality Assurance](../qa-guide/index.md
 
         Showing whitespace characters can help ensure that unnecessary whitespace is not unintentionally committed.
 
-    ![image](text_editors.png)
+    ![image](img/text_editors.png)
 
 6.  Click `Apply`

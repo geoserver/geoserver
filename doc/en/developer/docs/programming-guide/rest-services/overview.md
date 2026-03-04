@@ -6,7 +6,7 @@ GeoServer uses a library known as [Restlet](http://www.restlet.org/) for all RES
 
 In GeoServer, all requests under the path `/rest` are considered a call to a restful service. Every call of this nature is handled by a *rest dispatcher*. The job of the dispatcher is to route the request to the appropriate end point. This end point is known as a *restlet*.
 
-![image](rest-dispatch.png)
+![image](img/rest-dispatch.png)
 
 Restlets are loaded from the spring context, and therefore are pluggable.
 

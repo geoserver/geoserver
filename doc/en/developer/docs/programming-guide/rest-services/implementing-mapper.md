@@ -78,4 +78,4 @@ The steps for creating the GUI panel are:
 
 3.  Then the result will be added at the bottom of the GeoServer *Global Settings* and *Edit WorkSpace* Pages:
 
-    > ![](settings.png)
+    > ![](img/settings.png)

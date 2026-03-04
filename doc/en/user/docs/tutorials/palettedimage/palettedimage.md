@@ -24,7 +24,7 @@ Antialiasing plays a role too. Let's take a road layer, where each road is depic
 
 The following zoom of an image shows antialiasing in action:
 
-![](antialiasing.png)
+![](img/antialiasing.png)
 *Antialiasing*
 
 These output formats, if no other parameters are provided, do compute the optimal palette on the fly. As you'll see, this is an expensive process (CPU bound), but as you'll see, depending on the speed of the network connecting the server and the client, the extra cost can be ignored (especially if the bottleneck can be found in the network instead of the server CPU).
@@ -51,22 +51,22 @@ And we'll change various parameters in order to play with formats and palettes. 
 
 **Parameters**:`FORMAT=image/png` | Size: 257 KB | Map generation time: 0.3s
 
-![](tiger-ny-png24.png)
+![](img/tiger-ny-png24.png)
 *The standard PNG full color output*
 
 **Parameters**:`FORMAT=image/png8` | Size: 60 KB | Map generation time: 0.6s
 
-![](tiger-ny-png8.png)
+![](img/tiger-ny-png8.png)
 *The PNG8 output*
 
 **Parameters**:`FORMAT=image/png` | Size: 257 KB | Map generation time: 0.3s
 
-![](tiger-ny-png-safe-palette.png)
+![](img/tiger-ny-png-safe-palette.png)
 *PNG + internet safe palette*
 
 **Parameters**:`FORMAT=image/png` & `palette=nyp` | Size: 56KB | Map generation time: 0.3s
 
-![](tiger-ny-png-custom-palette.png)
+![](img/tiger-ny-png-custom-palette.png)
 *PNG + `custom palette <http://geoserver.org/download/attachments/1278244/nyp.pal?version=1>`_*
 
 The attachments include also the GIF outputs, whose size, appearance and generation time does not differ significantly from the PNG outputs.
@@ -101,27 +101,27 @@ To give you an example when paletted images may not fit the bill, let's consider
 
 **Parameters**:`FORMAT=image/png` Size: 117 KB | Map generation time: 0.2s
 
-![](dem-png24.png)
+![](img/dem-png24.png)
 *The standard PNG full color output.*
 
 **Parameters**:`FORMAT=image/jpeg` Size: 23KB | Map generation time: 0.12s
 
-![](dem-jpeg.jpg)
+![](img/dem-jpeg.jpg)
 *JPEG output*
 
 **Parameters**:`FORMAT=image/png8` Size: 60 KB | Map generation time: 0.5s
 
-![](dem-png8.png)
+![](img/dem-png8.png)
 *The PNG8 output.*
 
 **Parameters**:`FORMAT=image/png` & `palette=dem-png8` Size: 48KB | Map generation time: 0.15s
 
-![](dem-png-custom-palette.png)
+![](img/dem-png-custom-palette.png)
 *PNG + custom palette (using the png8 output as the palette).*
 
 **Parameters**:`FORMAT=image/png` & `palette=safe` Size: 17KB | Map generation time: 0.15s
 
-![](dem-png-safe-palette.png)
+![](img/dem-png-safe-palette.png)
 *PNG + internet safe palette.*
 
 As the sample shows, the JPEG output has the same quality as the full color image, is generated faster and uses only 1/5 of its size. On the other hand, the version using the internet safe palette is fast and small, but the output is totally ruined. Everything considered, JPEG is the clear winner, sporting good quality, fast image generation and a size that's half of the best png output we can get.

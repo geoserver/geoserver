@@ -181,18 +181,18 @@ There are 2 ways to run the suites. One is running with `make` that will automat
     - the default URL for the teamengine webUI is <http://localhost:8888/teamengine/>
     - The output of the old suite tests might not appear in the Result page. So you should click on the link below **detailed old test report**, to get the full report. Ex.
     
-    ![image](./image/old-report.png)
+    ![image](img/old-report.png)
     
-    ![image](./image/full-report.png)
+    ![image](img/full-report.png)
     
     - Since you are running teamengine inside a container, the localhost in the URL of GeoServer for the tests can't be used, for that, get the IP address of the host where the GeoServer is running. You will use it later.
     - after you log in to teamengine webUI you have to create a session.
     
-    ![image](./image/seccion.png)
+    ![image](img/seccion.png)
     
     - to run the tests you have to choose which one you want, and then click on **Start a new test session**. This is an example:
     
-    ![image](./image/tewfs-1_0a.png)
+    ![image](img/tewfs-1_0a.png)
 
 Requirements:
 
@@ -297,7 +297,7 @@ Requirements:
 
     2.  `Enable tests with multiple namespaces` tests included
 
-        ![image](./image/tewfs-1_0.png)
+        ![image](img/tewfs-1_0.png)
 
 ### Run WFS 1.1 tests
 
@@ -366,11 +366,11 @@ Requirements: - GeoServer - teamengine - PostgreSQL - PostGIS
         - Ensure `WFS-Locking` is *checked*
         - Ensure `WFS-Xlink` is *unchecked*
 
-        ![image](./image/tewfs-1_1a.png)
+        ![image](img/tewfs-1_1a.png)
 
     3.  `GML Simple Features`: `SF-0`
 
-    ![image](./image/tewfs-1_1b.png)
+    ![image](img/tewfs-1_1b.png)
 
 ### Run WMS 1.1 tests
 
@@ -416,9 +416,9 @@ Requirements: - GeoServer - teamengine - PostgreSQL - PostGIS
 
     5.  Click `OK`
 
-    ![image](./image/tewms-1_1a.png)
+    ![image](img/tewms-1_1a.png)
 
-    ![image](./image/tewms-1_1b.png)
+    ![image](img/tewms-1_1b.png)
 
 ### Run WCS 1.0 tests
 
@@ -470,11 +470,11 @@ Requirements: - GeoServer - teamengine - PostgreSQL - PostGIS
 
     7.  Click `OK`
 
-    ![image](./image/tewcs-1_0a.png)
+    ![image](img/tewcs-1_0a.png)
 
-    ![image](./image/tewcs-1_0b.png)
+    ![image](img/tewcs-1_0b.png)
 
-    ![image](./image/tewcs-1_0c.png)
+    ![image](img/tewcs-1_0c.png)
 
 ### Run WCS 1.1 tests
 
@@ -505,7 +505,7 @@ Requirements: - GeoServer - teamengine - PostgreSQL - PostGIS
 
     Click `Next`
 
-    ![image](./image/tewcs-1_1a.png)
+    ![image](img/tewcs-1_1a.png)
 
 ### Run WMS 1.3 tests
 
@@ -545,7 +545,7 @@ Requirements: - GeoServer - teamengine - PostgreSQL - PostGIS
 
     Click `OK`
 
-    ![image](./image/tewms-1_3.png)
+    ![image](img/tewms-1_3.png)
 
 ### Run OGC Features 1.0 tests
 

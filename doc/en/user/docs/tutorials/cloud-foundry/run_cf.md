@@ -22,11 +22,11 @@ Register for a free trial account with [SAP](https://www.sap.com/cmp/td/sap-clou
 
 [Logon to your cockpit](https://account.hanatrial.ondemand.com/cockpit/) and select your trial organization
 
-![image](./sap_cp_trial1.png)
+![image](img/sap_cp_trial1.png)
 
 Notice the field **organization name** and the Cloud Foundry **API endpoint**.
 
-![image](./sap_cp_trial2.png)
+![image](img/sap_cp_trial2.png)
 
 Use those 2 values to login with the command line:
 

@@ -34,7 +34,7 @@ This will produce a number of TIFF files in bmpyramid along with the sub-directo
 
 Once that is done, and assuming the GeoServer image pyramid plug-in is already installed, it's possible to create the coverage store by pointing at the directory containing the pyramid and clicking save:
 
-![](configureStore.png)
+![](img/configureStore.png)
 *Configuring a image pyramid store*
 
 When clicking save the store will look into the directory, recognize a ``gdal_retile`` generated structure and perform some background operations:
@@ -45,17 +45,17 @@ When clicking save the store will look into the directory, recognize a ``gdal_re
 
 Once that is done the user will be asked to choose a coverage, which will be named after the pyramid root directory:
 
-![](chooseLayer.png)
+![](img/chooseLayer.png)
 *Choosing the coverage for publishing*
 
 Publish the layer, and then setup the layer parameter ``USE_IMAGEN_IMAGEREAD`` to ``false`` to get better scalability:
 
-![](layerParams.png)
+![](img/layerParams.png)
 *Tuning the pyramid parameters*
 
 Submit and go to the preview, the pyramid should be ready to use:
 
-![](preview.png)
+![](img/preview.png)
 *Previewing the pyramid*
 
 ## Notes on big pyramids

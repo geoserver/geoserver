@@ -2,7 +2,7 @@
 
 The default HTML output is a sequence of titled tables, each one for a different layer. The following example shows the default output for the tiger-ny basemap (included in the above cited releases, and onwards).
 
-![](default.png)
+![](img/default.png)
 *Default Output*
 
 ## Standard Templates
@@ -127,7 +127,7 @@ For example, let's say you would prefer a bulleted list appearance for your feat
 
 With this template in place, the output would be:
 
-![](ul.png)
+![](img/ul.png)
 *Bulleted List Output*
 
 Looking at the output we notice that point of interest features refer to image files, which we know are stored inside the default GeoServer distribution in the `demo_app/pics` path. So, we could provide a POI specific override that actually loads the images.
@@ -144,7 +144,7 @@ This is easy: just put the following template in the feature type folder, which 
 
 With this additional template, the output is:
 
-![](thumb.png)
+![](img/thumb.png)
 *Output with Thumbnail Image*
 
 As you can see, roads are still using the generic template, whilst POI is using its own custom template.

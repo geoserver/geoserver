@@ -4,12 +4,12 @@
 
 To add a NetCDF data store the user must go to **Stores --> Add New Store --> NetCDF**.
 
-![](netcdfcreate.png)
+![](img/netcdfcreate.png)
 *NetCDF in the list of raster data stores*
 
 ## Configuring a NetCDF data store
 
-![](netcdfconfigure.png)
+![](img/netcdfconfigure.png)
 *Configuring a NetCDF data store*
 
 | **Option**         | **Description** |
@@ -26,7 +26,7 @@ The NetCDF plugin for GeoServer supports gridded NetCDF files having dimensions 
 
 [ToolsUI](ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.6/toolsUI-4.6.jar) is an useful java tool developed by UCAR which can be useful for a preliminary check on your dataset. Opening a sample NetCDF using that tool will show an output like this in the Viewer tab:
 
-![](dataset.png)
+![](img/dataset.png)
 *NetCDF viewer in ToolsUI*
 
 - This dataset has 4 dimensions (time, z, lat, lon, marked by the D icon in the left side of the GUI. They have been marked by a blue rectangle in the screenshot).
@@ -35,7 +35,7 @@ The NetCDF plugin for GeoServer supports gridded NetCDF files having dimensions 
 
 The NetCDF plugin fully supports datasets where each variable's axis is identified by an independent coordinate variable, as shown in the previous example. There is limited support for coordinate variables with two dimensions (see [Two-Dimensional Coordinate Variables](netcdf.md#netcdf_multidim)), as part of the result of an aggregation (such as time,runtime - in the case of a runtime aggregation). Two dimensional non-independent latitude-longitude coordinate variables aren't currently supported. A similar dataset will look like this in ToolsUI. Look at the red marked latitude and longitude coordinate variables, each one identified by a y,x 2D matrix.
 
-![](dataset2dcoords.png)
+![](img/dataset2dcoords.png)
 *NetCDF viewer in ToolsUI for 2D coordinate variables*
 
 ## Two-Dimensional Coordinate Variables {: #netcdf_multidim }
@@ -100,7 +100,7 @@ Starting with GeoServer 2.8.x, NetCDF related modules (both NetCDF/GRIB store, i
 
 The GeoTools NetCDF machinery will parse the attributes (if any) contained in the underlying NetCDF dataset to setup an OGC CoordinateReferenceSystem object. Once created, a CRS lookup will be made to identify a custom EPSG (if any) defined by the user to match that Projection. In case the NetCDF gridMapping is basically the same of the one exposed as EPSG entry but the matching doesn't happen, you may consider tuning the comparison tolerance: See [Coordinate Reference System Configuration](../../configuration/crshandling/configurecrs.md), *Increase Comparison Tolerance section*.
 
-![](gridmapping.png)
+![](img/gridmapping.png)
 *Grid Mapping and related custom EPSG definition*
 
 User defined NetCDF Coordinate Reference Systems with their custom EPSG need to be provided in **`user_projections\netcdf.projections.properties`** file inside your data directory (you have to create that file if missing).

@@ -73,7 +73,7 @@ For each GeoServer release, we spend six month "prerelease" in a development cyc
 
 We alternate between releasing the stable and maintenance branches. A release goes out each month forming a yearly release cycle.
 
-![](release-cycle.png)
+![](img/release-cycle.png)
 *GeoServer 2.8 Release Cycle*
 
 Here is what that looks like:

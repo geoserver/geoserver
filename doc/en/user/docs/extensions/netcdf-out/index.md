@@ -21,7 +21,7 @@ NetCDF-4 output is supported but requires native libraries (see [Installing requ
 
 NetCDF output settings can be configured for each raster layer. The similar section in the *Global Settings* page configures the default settings used for newly created raster layers.
 
-![](netcdfoutpanel.png)
+![](img/netcdfoutpanel.png)
 
 - 
 
@@ -100,12 +100,12 @@ Note that the output name can also be chosen from the list of CF Standard names.
 
 Once you click on the dropdown, you may choose from the set of available standard names.
 
-![](cfnames.png)
+![](img/cfnames.png)
 *NetCDF CF Standard names list*
 
 Note that once you specify the standard name, the unit will be automatically configured, using the canonical unit associated with that standard name.
 
-![](cfunit.png)
+![](img/cfunit.png)
 *NetCDF CF Standard names and canonical unit*
 
 The list of standard names is populated by taking the entries from a standard name table xml. At time of writing, a valid example is available [Here](http://cfconventions.org/Data/cf-standard-names/27/src/cf-standard-name-table.xml)

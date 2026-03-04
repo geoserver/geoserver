@@ -36,12 +36,12 @@ In order to change any server settings or configure data, a user must first be a
 
         These can be changed in the [Security](../../security/index.md) section.
 
-    ![](login-page.png)
+    ![](img/login-page.png)
     *Login*
 
 2.  Once logged in, the Welcome screen changes to show the available admin functions. These are primarily shown in the menus on the left side of the page.
 
-    ![](logged_in.png)
+    ![](img/logged_in.png)
     *Additional options when logged in*
 
 ## Layer Preview

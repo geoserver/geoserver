@@ -174,7 +174,7 @@ hello/
 
     :   the version we passed to the Service descriptor in the applicationContext.xml
 
-![](firefox_helloworld.png)
+![](img/firefox_helloworld.png)
 
 !!! note
 

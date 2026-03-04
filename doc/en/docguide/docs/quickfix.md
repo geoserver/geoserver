@@ -8,12 +8,12 @@ For really quick fixes:
 
 2.  Navigate to the file you wish to change and click the **edit** icon
 
-    ![](github_edit1.png)
+    ![](img/github_edit1.png)
     *GitHub Preview of style.rst page*
 
 3.  Use the editor to modify the file
 
-    ![](github_edit1.png)
+    ![](img/github_edit1.png)
     *GitHub Editor for style.rst page*
 
 4.  Scroll to the bottom of the page, provide a commit comment and submit.

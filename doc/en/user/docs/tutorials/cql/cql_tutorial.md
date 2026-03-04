@@ -12,7 +12,7 @@ This tutorial introduces the CQL/ECQL language by example. For a full reference,
 
 The following examples use the `topp:states` sample layer shipped with GeoServer. They demonstrate how CQL filters work by using the WMS [CQL_FILTER vendor parameter](../../../services/wms/vendor.md) to alter the data displayed by WMS requests. The easiest way to follow the tutorial is to open the GeoServer Map Preview for the `topp:states` layer. Click on the *Options* button at the top of the map preview to open the advanced options toolbar. The example filters can be entered in the *Filter: CQL* box.
 
-![](gettingStarted.png)
+![](img/gettingStarted.png)
 *topp:states preview with advanced toolbar open.*
 
 The attributes used in the filter examples are those included in the layer. For example, the following are the attribute names and values for the Colorado feature:
@@ -46,41 +46,41 @@ The attributes used in the filter examples are those included in the layer. For 
 
 Let's get started with a simple example. In CQL arithmetic and comparisons are expressed using plain text. The filter `PERSONS > 15000000` will select states that have more than 15 million inhabitants:
 
-![](more15M.png)
+![](img/more15M.png)
 *PERSONS > 15000000*
 
 The full list of comparison operators is: `=`, `<>`, `>`, `>=`, `<`, `<=`.
 
 To select a range of values the BETWEEN operator can be used: `PERSONS BETWEEN 1000000 AND 3000000`:
 
-![](between.png)
+![](img/between.png)
 *PERSONS BETWEEN 1000000 AND 3000000*
 
 Comparison operators also support text values. For instance, to select only the state of California, the filter is `STATE_NAME = 'California'`. More general text comparisons can be made using the `LIKE` operator. `STATE_NAME LIKE 'N%'` will extract all states starting with an "N":
 
-![](startn.png)
+![](img/startn.png)
 *STATE_NAME LIKE 'N%'*
 
 It is also possible to compare two attributes with each other. `MALE > FEMALE` selects the states in which the male population surpasses the female one (a rare occurrence):
 
-![](malefemale.png)
+![](img/malefemale.png)
 *MALE > FEMALE*
 
 Arithmetic expressions can be computed using the `+, -, *, /` operators. The filter `UNEMPLOY / (EMPLOYED + UNEMPLOY) > 0.07` selects all states whose unemployment ratio is above 7% (remember the sample data is very old, so don't draw any conclusion from the results!)
 
-![](employ.png)
+![](img/employ.png)
 *UNEMPLOY / (EMPLOYED + UNEMPLOY) > 0.07*
 
 ## Id and list comparisons
 
 If we want to extract only the states with specific feature ids we can use the `IN` operator without specifying any attribute, as in `IN ('states.1', 'states.12')`:
 
-![](idfilter.png)
+![](img/idfilter.png)
 *IN ('states.1', 'states.12')*
 
 If instead we want to extract the states whose name is in a given list we can use the `IN` operator specifying an attribute name, as in `STATE_NAME IN ('New York', 'California', 'Montana', 'Texas')`:
 
-![](statenames.png)
+![](img/statenames.png)
 *STATE_NAME IN ('New York', 'California', 'Montana', 'Texas')*
 
 !!! warning
@@ -93,19 +93,19 @@ CQL/ECQL can use any of the [filter functions](../../filter/function_reference.m
 
 For example, suppose we want to find all states whose name contains an "m", regardless of letter case. We can use the `strToLowerCase` to turn all the state names to lowercase and then use a like comparison: `strToLowerCase(STATE_NAME) like '%m%'`:
 
-![](mstates.png)
+![](img/mstates.png)
 *strToLowerCase(STATE_NAME) like '%m%'*
 
 ## Geometric filters
 
 CQL provides a full set of geometric filter capabilities. Say, for example, you want to display only the states that intersect the (-90,40,-60,45) bounding box. The filter will be `BBOX(the_geom, -90, 40, -60, 45)`
 
-![](bbox.png)
+![](img/bbox.png)
 *BBOX(the_geom, -90, 40, -60, 45)*
 
 Conversely, you can select the states that do *not* intersect the bounding box with the filter: `DISJOINT(the_geom, POLYGON((-90 40, -90 45, -60 45, -60 40, -90 40)))`:
 
-![](disjoint.png)
+![](img/disjoint.png)
 *DISJOINT(the_geom, POLYGON((-90 40, -90 45, -60 45, -60 40, -90 40)))*
 
 The full list of geometric predicates is: `EQUALS`, `DISJOINT`, `INTERSECTS`, `TOUCHES`, `CROSSES`, `WITHIN`, `CONTAINS`, `OVERLAPS`, `RELATE`, `DWITHIN`, `BEYOND`.

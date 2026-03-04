@@ -178,7 +178,7 @@ Send an email to both the developers list and users list announcing the release.
 
 3.  Check the **I'm sure** check box, and click the **Send Notice** button.
 
-    ![](sfnotice.png)
+    ![](img/sfnotice.png)
 
 4.  Repeat for the extension release.
 

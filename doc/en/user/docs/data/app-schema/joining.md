@@ -39,7 +39,7 @@ Not specifying "app-schema.joining" parameter will enable joining by default.
 
 Typical curves of response time for configurations with and without joining against the amount of features produced will be shaped like this:
 
-![image](joining.png)
+![image](img/joining.png)
 
 In the default implementation, response time increases rapidly with respect to the amount of produced features. This is because feature chaining is implemented by sending multiple SQL requests to the DBMS per feature, so the amount of requests increases with the amount of features produced. When Joining is turned on, response time will be almost constant with respect to the number of features. This is because in this implementation a small amount of larger queries is sent to the DBMS, independent of the amount of features produced. In summary, difference in performance becomes greater as the amount of features requested gets bigger. General performance of joining will be dependant on database and mapping design (see above) and database size.
 

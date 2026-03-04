@@ -10,4 +10,4 @@ To install the JDBCConfig module:
 6.  Start GeoServer again. This time JDBCConfig will connect to the specified database, initialize it, import the old catalog into it, and take over from the old catalog. Subsequent start ups will skip the initialize and import steps unless you re-enable them in `jdbcconfig.properties`.
 7.  Log in as admin and a message should appear on the welcome page:
 
-![image](h2message.png)
+![image](img/h2message.png)

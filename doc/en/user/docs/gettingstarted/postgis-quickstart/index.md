@@ -52,7 +52,7 @@ The next step is to create a workspace for the data. A workspace is a container 
 
 5.  You will be prompted to enter a workspace **Name** and **Namespace URI**.
 
-    ![](../shapefile-quickstart/new_workspace.png)
+    ![](img/new_workspace.png)
     *Configure a new workspace*
 
 6.  Enter the **Name** as `nyc` and the **Namespace URI** as `http://geoserver.org/nyc`.
@@ -73,7 +73,7 @@ Once the workspace is created we are ready to add a new store. The store tells G
 
 3.  You should see a list of stores, including the type of store and the workspace that the store belongs to.
 
-    ![](datastores.png)
+    ![](img/datastores.png)
     *Adding a new data source*
 
 4.  Create a new store by clicking the `PostGIS` link.
@@ -84,7 +84,7 @@ Once the workspace is created we are ready to add a new store. The store tells G
     - Enter the **Data Source Name** as `nyc_buildings`
     - Add a brief **Description**
 
-    ![](basicStore.png)
+    ![](img/basicStore.png)
     *Basic Store Info*
 
 6.  Specify the PostGIS database **Connection Parameters**:
@@ -110,7 +110,7 @@ Once the workspace is created we are ready to add a new store. The store tells G
 > Leave all other fields at their default values.
 > ::::
 >
-> ![](connectionParameters.png)
+> ![](img/connectionParameters.png)
 > *Connection Parameters*
 
 1.  Click **Save**.
@@ -125,29 +125,29 @@ Now that the store is loaded we can publish the layer.
 
 3.  From the **New Layer chooser** menu, select `nyc:nyc_buidings`.
 
-    ![](newlayerchooser.png)
+    ![](img/newlayerchooser.png)
     *Store selection*
 
 4.  On the resulting layer row, select the layer name `nyc_buildings`.
 
-    ![](layerrow.png)
+    ![](img/layerrow.png)
     *New layer selection*
 
 5.  The **Edit Layer** page defines the data and publishing parameters for a layer. Enter a short **Title** and an **Abstract** for the `nyc_buildings` layer.
 
-    ![](basicInfo.png)
+    ![](img/basicInfo.png)
     *Basic Resource Info*
 
 6.  Generate the layer's bounding boxes by clicking the **Compute from data** and then **Compute from native bounds** links.
 
-    ![](boundingbox.png)
+    ![](img/boundingbox.png)
     *Generating bounding boxes*
 
 7.  Click the **Publishing** tab at the top of the page.
 
 8.  We can set the layer's style here. Under **WMS Settings**, ensure that the **Default Style** is set to **polygon**.
 
-    ![](style.png)
+    ![](img/style.png)
     *Select Default Style*
 
 9.  Finalize the layer configuration by scrolling to the bottom of the page and clicking **Save**.
@@ -162,5 +162,5 @@ In order to verify that the `nyc_buildings` layer is published correctly, we can
 
 3.  An OpenLayers map will load in a new tab and display the shapefile data with the default line style. You can use this preview map to zoom and pan around the dataset, as well as display the attributes of features.
 
-    ![](openlayers.png)
+    ![](img/openlayers.png)
     *Preview map of nyc_buildings*

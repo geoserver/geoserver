@@ -51,7 +51,7 @@ The next step is to create a workspace for the shapefile. A workspace is a conta
 
         A workspace name is an identifier describing your project. It must not exceed ten characters or contain spaces. A Namespace URI (Uniform Resource Identifier) can usually be a URL associated with your project with an added trailing identifier indicating the workspace. The Namespace URI filed does not need to resolve to an actual valid web address.
 
-    ![](workspace_nycroads.png)
+    ![](img/workspace_nycroads.png)
     *nyc workspace*
 
 7.  Click the **Submit** button. The `nyc` workspace will be added to the **Workspaces** list.
@@ -66,7 +66,7 @@ Once the workspace is created we are ready to add a new store. The store tells G
 
 3.  In order to add the shapefile, you need to create a new store. Click the **Add new Store** button. You will be redirected to a list of the data sources supported by GeoServer. Note that the data sources are extensible, so your list may look slightly different.
 
-    ![](stores_nycroads.png)
+    ![](img/stores_nycroads.png)
     *Stores*
 
 4.  Click **Shapefile**. The **New Vector Data Source** page will display.
@@ -79,7 +79,7 @@ Once the workspace is created we are ready to add a new store. The store tells G
 
 6.  Under **Connection Parameters**, browse to the location **URL** of the shapefile, typically **`nyc_roads/nyc_roads.shp`**.
 
-    ![](new_shapefile.png)
+    ![](img/new_shapefile.png)
     *Basic Store Info and Connection Parameters*
 
 7.  Click **Save**. You will be redirected to the **New Layer** page in order to configure the `nyc_roads` layer.
@@ -90,24 +90,24 @@ Now that the store is loaded, we can publish the layer.
 
 1.  On the **New Layer** page, click **Publish** beside the `nyc_roads` layer name.
 
-    ![](new_layer.png)
+    ![](img/new_layer.png)
     *New layer*
 
 2.  The **Edit Layer** page defines the data and publishing parameters for a layer. Enter a short **Title** and an **Abstract** for the `nyc_roads` layer.
 
-    ![](new_data.png)
+    ![](img/new_data.png)
     *Basic Resource Information*
 
 3.  Generate the layer's bounding boxes by clicking the **Compute from data** and then **Compute from native bounds** links.
 
-    ![](boundingbox.png)
+    ![](img/boundingbox.png)
     *Generating bounding boxes*
 
 4.  Click the **Publishing** tab at the top of the page.
 
 5.  We can set the layer's style here. Under **WMS Settings**, ensure that the **Default Style** is set to **line**.
 
-    ![](style.png)
+    ![](img/style.png)
     *Select Default Style*
 
 6.  Finalize the layer configuration by scrolling to the bottom of the page and clicking **Save**.
@@ -118,12 +118,12 @@ In order to verify that the `nyc_roads` layer is published correctly, we can pre
 
 1.  Navigate to the **Layer Preview** screen and find the `nyc:nyc_roads` layer.
 
-    ![](layer_preview.png)
+    ![](img/layer_preview.png)
     *Layer Preview*
 
 2.  Click the **OpenLayers** link in the **Common Formats** column.
 
 3.  An OpenLayers map will load in a new tab and display the shapefile data with the default line style. You can use this preview map to zoom and pan around the dataset, as well as display the attributes of features.
 
-    ![](openlayers.png)
+    ![](img/openlayers.png)
     *Preview map of nyc_roads*

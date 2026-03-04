@@ -29,11 +29,11 @@ Go to the sample request page, <http://localhost:8080/geoserver/web/?wicket:book
 
 2.  Click the `OpenLayers` link next to `nurc:ArcSample`
 
-    ![image](arc_sample.png)
+    ![image](img/arc_sample.png)
 
 3.  Go back to the map preview and click the `GeoRSS` item in the drop down choice next to `topp:states`
 
-    ![image](states_georss.png)
+    ![image](img/states_georss.png)
 
 4.  Go back to the map preview and click the `OpenLayers` link next to `topp:states`.
 
@@ -41,7 +41,7 @@ Go to the sample request page, <http://localhost:8080/geoserver/web/?wicket:book
 
         STATE_ABBR EQ 'TX'
 
-    ![image](states_cql.png)
+    ![image](img/states_cql.png)
 
 ## KML
 
@@ -51,7 +51,7 @@ Go to the sample request page, <http://localhost:8080/geoserver/web/?wicket:book
 
 3.  Zoom out as far as possible and notice the smaller states (on the east coast) disappear.
 
-    ![image](states_kml_bestguess.png)
+    ![image](img/states_kml_bestguess.png)
 
 4.  Close Google Earth
 
@@ -71,11 +71,11 @@ Go to the sample request page, <http://localhost:8080/geoserver/web/?wicket:book
 
 9.  Zoom out as far as possible and notice the smaller population states (green) disappear
 
-    ![image](states_kml_sort.png)
+    ![image](img/states_kml_sort.png)
 
 10. Go back to the map preview page and click the `KML` link next to `nurc:Img_Sample`, opening the result in Google Earth
 
-    ![image](img_sample_kml.png)
+    ![image](img/img_sample_kml.png)
 
 11. Zoom in and notice tiles load
 
@@ -93,13 +93,13 @@ Go to the sample request page, <http://localhost:8080/geoserver/web/?wicket:book
 
 15. Refresh the KML by moving the camera and click on a placemark
 
-    ![image](states_template.png)
+    ![image](img/states_template.png)
 
 16. Append the parameter "kmscore=0" to the above link and open the result in Google Earth
 
 17. Notice the rasterized version of the KML
 
-    ![image](states_rasterized.png)
+    ![image](img/states_rasterized.png)
 
 18. Follow the link <http://localhost:8080/geoserver/wms/kml?layers=topp:states&mode=download> , saving the result to disk.
 

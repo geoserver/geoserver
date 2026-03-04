@@ -20,7 +20,7 @@ To view the `topp:states` layer (packaged with all releases of GeoServer) in Goo
 
     http://localhost:8080/geoserver/wms/reflect?layers=topp:states&format=application/vnd.google-earth.kml+xml
 
-![](height-none.png)
+![](img/height-none.png)
 *topp:states in Google Earth*
 
 ## Step Two
@@ -31,7 +31,7 @@ An interesting value to use for the height would be the population of each state
 
 This uses the value of the `PERSONS` attribute as the height for each feature. To admire our handiwork, we can refresh our view by right-clicking on our temporary place (called `topp:states`) and selecting **Refresh**:
 
-![](height-toomuch.png)
+![](img/height-toomuch.png)
 *Height by Population*
 
 ## Step Three
@@ -51,7 +51,7 @@ However, we know that the `PERSONS` field is numeric, even if it is declared in 
 
 One final **Refresh** brings us to a nicely sized map of the US:
 
-![](height-math.png)
+![](img/height-math.png)
 *Scaled Height*
 
 ## Step Four

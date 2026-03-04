@@ -79,13 +79,13 @@ Save this file as **`geninfo_shapefile.xml`** into **`{GEOSERVER_DATA_DIR}/data/
 
 Start GeoServer and go to **Config-->Data-->DataStores-->New** and fill in the form
 
-![image](createdatastore.png)
+![image](img/createdatastore.png)
 
 Press **Submit**.
 
 The next form you see is
 
-![image](editdatastore1.png)
+![image](img/editdatastore1.png)
 
 !!! note
 
@@ -93,19 +93,19 @@ The next form you see is
 
 The configuration should look like this
 
-![image](editdatastore2.png)
+![image](img/editdatastore2.png)
 
 Press **Submit**, afterward a form for the feature type opens.
 
 Alter the **Style** to *line*, **SRS** is *26713* and press the **Generate** button labeled by **Bounding Box**.
 
-![image](editfeaturestore1.png)
+![image](img/editfeaturestore1.png)
 
 Afterward, press **Submit**, **Apply** and **Save**.
 
 Examine the result by pressing "**My GeoServer**, **Demo** and **Map Preview**. In this list there must be an entry **topp:GenStreams**. Press it and you will see
 
-![image](streams.png)
+![image](img/streams.png)
 
 Now start zooming in and out and look at the log file of GeoServer. If the deployment is correct you should see something like this:
 
@@ -122,7 +122,7 @@ Now start zooming in and out and look at the log file of GeoServer. If the deplo
 
 First we have to configure all our shape files
 
-![image](streams_0_ds.png)
+![image](img/streams_0_ds.png)
 
 The **Feature Data Set ID** for the other shape files is
 
@@ -131,7 +131,7 @@ The **Feature Data Set ID** for the other shape files is
 3.  Streams_20
 4.  Streams_50
 
-![image](streams_0_ds2.png)
+![image](img/streams_0_ds2.png)
 
 The **URL** needed for the other shape files
 
@@ -140,7 +140,7 @@ The **URL** needed for the other shape files
 3.  `file:data/streams/20.0/streams.shp`
 4.  `file:data/streams/50.0/streams.shp`
 
-![image](streams_0_ds4.png)
+![image](img/streams_0_ds4.png)
 
 Each feature needs an **Alias**, here it is *streams_0*. For the other shape files use
 
@@ -169,15 +169,15 @@ Save this file as **`geninfo_shapefile2.xml`** into **`{GEOSERVER_DATA_DIR}/data
 
 Create the pregeneralized datastore
 
-![image](createdatastore2.png)
+![image](img/createdatastore2.png)
 
 Now we use the **CatalogRepository** class to find our needed data stores
 
-![image](editdatastore3.png)
+![image](img/editdatastore3.png)
 
 Last step
 
-![image](editfeaturestore2.png)
+![image](img/editfeaturestore2.png)
 
 In the **Map Preview** you should find **topp:GenStreams2** and all other generalizations. Test in the same manner we discussed in the hidden deployment and you should see something like this in the GeoServer log:
 

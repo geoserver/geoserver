@@ -4,12 +4,12 @@
 
 To add a GRIB data store the user must go to **Stores --> Add New Store --> GRIB**.
 
-![](gribcreate.png)
+![](img/gribcreate.png)
 *GRIB in the list of raster data stores*
 
 ## Configuring a GRIB data store
 
-![](gribconfigure.png)
+![](img/gribconfigure.png)
 *Configuring a GRIB data store*
 
 | **Option**         | **Description** |

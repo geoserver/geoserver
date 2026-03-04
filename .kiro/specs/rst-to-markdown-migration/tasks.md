@@ -47,6 +47,7 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
 
   - [x] 2.2 Update mkdocs.yml configurations
     - Merge generated navigation from nav_generated.yml into mkdocs.yml for each manual
+    - **NOTE**: Once navigation is merged, remove nav_generated.yml files (they are temporary conversion artifacts)
     - Configure mkdocs-macros-plugin with version and release variables
     - Configure pymdownx extensions (tabbed, superfences, admonition)
     - Configure theme branding (logo, colors, dark mode)
@@ -159,14 +160,19 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - Verify navigation is fully accessible on all screen sizes
     - _Requirements: 7.5, 14.7_
 
-  - [ ] 3.6 Test PDF generation
-    - SKIP this obsolete requirement!!!
-    - Build PDFs with ENABLE_PDF_EXPORT=1
-    - Verify PDF generated for User Manual
-    - Verify PDF generated for Developer Manual
-    - Verify PDF generated for Documentation Guide
-    - Review PDF formatting (table of contents, code blocks, images)
-    - _Requirements: 17.1, 17.2, 17.3, 17.4, 17.5_
+  - [x] 3.5.2 Move images to img subfolders (2.28.x branch)
+    - **REQUIREMENT**: All images must be in an img subfolder relative to the calling Markdown file
+    - **CORRECT**: docs/eclipse-guide/img/code-template.png
+    - **INCORRECT**: docs/eclipse-guide/code-template.png
+    - Scan all Markdown files for image references
+    - Identify images not in img subfolders
+    - Create img subfolders where needed
+    - Move images to appropriate img subfolders
+    - Update all image references in Markdown files
+    - Verify all images display correctly after move
+    - Test locally with `mkdocs serve`
+    - **NOTE**: This must be completed in 2.28.x branch before continuing to 3.0 branch
+    - _Requirements: 6.4, 6.5_
 
   - [ ] 3.7 Remove RST infrastructure after successful validation
     - Remove doc/en/user/source/ directory (RST files)
@@ -203,15 +209,17 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
   - [ ] 5.1 Execute full conversion on 3.0 branch
     - Switch to migration/3.0-rst-to-md branch
     - Run migration.py to convert all RST files in doc/en/user/, doc/en/developer/, doc/en/docguide/
-    - Convert Chinese documentation in doc/zhCN/
+    - **NOTE**: Chinese documentation (doc/zhCN/) is NOT included in 3.0 branch conversion
     - Generate mkdocs.yml configurations with navigation structure
     - Review conversion logs for warnings and errors
-    - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 15.1, 15.2_
+    - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6_
 
   - [ ] 5.2 Update mkdocs.yml configurations for 3.0
     - Apply same configuration as 2.28.x branch (theme, plugins, extensions)
     - Update version variables to 3.0
     - Configure version selector with correct version number
+    - **NOTE**: No Chinese language configuration needed (doc/zhCN/ not in 3.0 branch)
+    - **NOTE**: PDF generation configuration removed for 3.0 branch
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 16.1, 16.2, 16.3_
 
   - [ ] 5.3 Update GitHub Actions workflow for 3.0
@@ -277,6 +285,9 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7_
 
   - [ ] 5.5.1 Fix image paths and wildcard references for 3.0 branch
+    - **REQUIREMENT**: All images must be in an img subfolder relative to the calling Markdown file (same as 2.28.x branch)
+    - **CORRECT**: docs/eclipse-guide/img/code-template.png
+    - **INCORRECT**: docs/eclipse-guide/code-template.png
     - Run fix_image_paths.py to convert absolute paths to relative
     - Run fix_anchor_case.py to fix anchor case sensitivity
     - Run fix_variable_substitution.py to replace variable placeholders
@@ -284,7 +295,10 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - Run fix_all_image_paths.py for comprehensive multi-strategy fix
     - Run fix_wildcard_images.py to replace wildcard image references with .svg
     - Run fix_ysld_image_paths.py to fix YSLD reference image paths
+    - Ensure all images are moved to img subfolders (if not already)
+    - Update all image references to point to img subfolders
     - Verify all 2,071 images are fixed (expect 100% success rate)
+    - Test locally with `mkdocs serve` to verify images display correctly
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 6.4, 6.5_
 
   - [ ] 5.5.2 Fix missing version/release macros throughout documentation (3.0 branch)

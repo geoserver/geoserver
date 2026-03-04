@@ -174,6 +174,15 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - **NOTE**: This must be completed in 2.28.x branch before continuing to 3.0 branch
     - _Requirements: 6.4, 6.5_
 
+  - [ ] 3.6 Configure Swagger API spec deployment for 2.28.x (CRITICAL BLOCKER)
+    - **CRITICAL BLOCKER**: Same issue as 3.0 branch - REST API Swagger/OpenAPI YAML specs not deployed
+    - Apply same fix as task 5.5.3 for 3.0 branch
+    - Configure MkDocs to copy `doc/en/api/` directory to build output
+    - Ensure API specs are accessible at `/en/api/1.0.0/*.yaml` in deployed site
+    - Verify all REST API documentation links work correctly
+    - **Must be fixed before 2.28.x migration is complete**
+    - _Requirements: 6.1, 6.2, 6.3, 7.1, 7.2_
+
   - [ ] 3.7 Remove RST infrastructure after successful validation
     - Remove doc/en/user/source/ directory (RST files)
     - Remove doc/en/developer/source/ directory (RST files)
@@ -336,6 +345,26 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - Verify with check_missing_version_macros.py (should report 0 issues)
     - Test locally that macros render correctly in built documentation
     - _Requirements: 1.3, 1.4, 5.5, 5.6_
+
+  - [ ] 5.5.3 Configure Swagger API spec deployment (CRITICAL BLOCKER)
+    - **CRITICAL BLOCKER**: REST API Swagger/OpenAPI YAML specs are not being deployed with MkDocs build
+    - **Issue**: Documentation links to API specs (e.g., `api/styles.yaml`, `api/layergroups.yaml`) but these files are not packaged or deployed
+    - **Current state**:
+      - Swagger specs exist at `doc/en/api/1.0.0/*.yaml`
+      - Documentation links to these specs throughout REST API docs
+      - MkDocs build does NOT copy these YAML files to output
+      - Result: All API spec links return 404 errors
+    - **Example broken link**: https://petersmythe.github.io/geoserver/migration/3.0-rst-to-md/en/api/ does not exist
+    - **Working example**: https://docs.geoserver.org/main/en/user/rest/styles.html → "API reference for /styles" link works
+    - **Required fix**:
+      - Configure MkDocs to copy `doc/en/api/` directory to build output
+      - Update mkdocs.yml to include API directory in docs_dir or use extra_files
+      - Ensure API specs are accessible at `/en/api/1.0.0/*.yaml` in deployed site
+      - Verify all REST API documentation links work correctly
+      - Test with sample links from rest/index.md, rest/styles.md, rest/layers.md, etc.
+    - **Impact**: HIGH - All REST API Swagger spec links are broken, making API documentation unusable
+    - **Must be fixed for both 3.0 and 2.28.x branches before migration is complete**
+    - _Requirements: 6.1, 6.2, 6.3, 7.1, 7.2_
 
   - [ ] 5.6 Remove RST infrastructure for 3.0 after validation
     - Remove all RST source directories and Sphinx configuration

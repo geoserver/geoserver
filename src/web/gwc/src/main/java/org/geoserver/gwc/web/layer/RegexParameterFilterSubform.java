@@ -25,7 +25,8 @@ import org.geowebcache.filter.parameters.RegexParameterFilter;
  */
 public class RegexParameterFilterSubform extends AbstractParameterFilterSubform<RegexParameterFilter> {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
+            java.lang.invoke.MethodHandles.lookup().lookupClass());
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

@@ -45,7 +45,8 @@ import org.geotools.util.logging.Logging;
  */
 public class VirtualRelationshipsPanel extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
+            java.lang.invoke.MethodHandles.lookup().lookupClass());
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -334,7 +335,8 @@ public class VirtualRelationshipsPanel extends Panel {
 
     private class RelationshipFormPanel extends Panel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
+            java.lang.invoke.MethodHandles.lookup().lookupClass());
 
         private final CompoundPropertyModel<VirtualRelationshipBean> formModel;
         private final FeedbackPanel modalFeedback;

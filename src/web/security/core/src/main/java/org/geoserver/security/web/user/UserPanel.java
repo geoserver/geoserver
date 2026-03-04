@@ -24,7 +24,8 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 @SuppressWarnings("serial")
 public class UserPanel extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
+            java.lang.invoke.MethodHandles.lookup().lookupClass());
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

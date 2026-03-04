@@ -37,7 +37,8 @@ import org.apache.wicket.request.cycle.RequestCycle;
  */
 public class TreeView<T> extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
+            java.lang.invoke.MethodHandles.lookup().lookupClass());
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -445,7 +446,8 @@ public class TreeView<T> extends Panel {
     /** View for an expandable tree node (directory node) */
     protected class TreeExpandableNodeView extends TreeNodeView {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
+            java.lang.invoke.MethodHandles.lookup().lookupClass());
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -522,7 +524,8 @@ public class TreeView<T> extends Panel {
     /** View for an tree node leaf */
     protected class TreeLeafView extends TreeNodeView {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
+            java.lang.invoke.MethodHandles.lookup().lookupClass());
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

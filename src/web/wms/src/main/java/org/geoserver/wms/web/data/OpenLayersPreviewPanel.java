@@ -63,7 +63,8 @@ import org.geotools.util.logging.Logging;
 // TODO: WICKET 9 test this page
 public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeaderContributor {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
+            java.lang.invoke.MethodHandles.lookup().lookupClass());
 
     @Serial
     private static final long serialVersionUID = -8742721113748106000L;

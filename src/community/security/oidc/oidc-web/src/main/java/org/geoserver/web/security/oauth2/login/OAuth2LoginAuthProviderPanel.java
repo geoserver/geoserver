@@ -85,7 +85,8 @@ public class OAuth2LoginAuthProviderPanel
 
     private class DiscoveryPanel extends Panel {
 
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
+            java.lang.invoke.MethodHandles.lookup().lookupClass());
 
         @Override
         public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {
@@ -140,7 +141,8 @@ public class OAuth2LoginAuthProviderPanel
     }
 
     static class TokenClaimPanel extends Panel {
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
+            java.lang.invoke.MethodHandles.lookup().lookupClass());
 
         @Serial
         private static final long serialVersionUID = 1L;
@@ -179,7 +181,8 @@ public class OAuth2LoginAuthProviderPanel
     }
 
     static class MSGraphPanel extends Panel {
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
+            java.lang.invoke.MethodHandles.lookup().lookupClass());
 
         @Serial
         private static final long serialVersionUID = 1L;

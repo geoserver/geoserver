@@ -23,7 +23,8 @@ import org.geoserver.web.GeoServerApplication;
 /** A form component that can be used to edit user to group assignments */
 public class UserGroupPaletteFormComponent extends PaletteFormComponent<GeoServerUserGroup> {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
+            java.lang.invoke.MethodHandles.lookup().lookupClass());
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

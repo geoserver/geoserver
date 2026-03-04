@@ -43,7 +43,8 @@ import org.geoserver.web.wicket.SimpleAjaxLink;
 /** Allows to edit the list of layers contained in a layer group */
 public abstract class LayerGroupEntryPanel<T> extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
+            java.lang.invoke.MethodHandles.lookup().lookupClass());
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

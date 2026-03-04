@@ -20,7 +20,8 @@ import org.geowebcache.sqlite.SqliteInfo;
 /** Properties that will be common to all SQLite based blob stores. */
 abstract class SqliteBlobStorePanel<T extends SqliteInfo> extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
+            java.lang.invoke.MethodHandles.lookup().lookupClass());
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

@@ -143,7 +143,8 @@ public class JwtHeadersAuthFilterPanel extends PreAuthenticatedUserNameFilterPan
     }
 
     static class JsonClaimPanel extends Panel {
-        private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+        private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
+            java.lang.invoke.MethodHandles.lookup().lookupClass());
 
         public JsonClaimPanel(String id) {
             super(id, new Model<>());

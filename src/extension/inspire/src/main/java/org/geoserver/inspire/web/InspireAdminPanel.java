@@ -43,7 +43,8 @@ import org.geoserver.wfs.WFSInfo;
 /** Panel for the service admin page to set the service INSPIRE extension preferences. */
 public class InspireAdminPanel extends AdminPagePanel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
+            java.lang.invoke.MethodHandles.lookup().lookupClass());
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

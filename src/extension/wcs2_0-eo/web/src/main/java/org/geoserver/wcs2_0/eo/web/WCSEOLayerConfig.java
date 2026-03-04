@@ -20,7 +20,8 @@ import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 /** A configuration panel for CoverageInfo properties that related to WCS publication */
 public class WCSEOLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
+            java.lang.invoke.MethodHandles.lookup().lookupClass());
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

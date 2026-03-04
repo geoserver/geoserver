@@ -17,7 +17,8 @@ import org.apache.wicket.request.resource.PackageResourceReference;
 
 public class StatusBar extends Panel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
+            java.lang.invoke.MethodHandles.lookup().lookupClass());
 
     @Serial
     private static final long serialVersionUID = 1L;

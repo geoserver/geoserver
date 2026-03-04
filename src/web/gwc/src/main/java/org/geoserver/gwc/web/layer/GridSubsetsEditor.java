@@ -47,7 +47,8 @@ import org.geowebcache.grid.GridSetBroker;
 
 class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
+            java.lang.invoke.MethodHandles.lookup().lookupClass());
 
     @Serial
     private static final long serialVersionUID = 5098470663723800345L;

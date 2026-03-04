@@ -14,7 +14,8 @@ import org.geoserver.web.data.store.panel.TextParamPanel;
 /** Just a basic data store info panel that skips the file based validation present in the GeoServer data store */
 public class S3InfoPanel extends StoreEditPanel {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
+            java.lang.invoke.MethodHandles.lookup().lookupClass());
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

@@ -21,7 +21,8 @@ import org.geoserver.catalog.ResourceInfo;
 // TODO WICKET8 - Verify this page works OK
 public class VectorCustomDimensionEditor extends DimensionEditorBase<VectorCustomDimensionEntry> {
 
-    private boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(getClass());
+    private static final boolean isCssEmpty = org.geoserver.web.util.WebUtils.IsWicketCssFileEmpty(
+            java.lang.invoke.MethodHandles.lookup().lookupClass());
 
     @Override
     public void renderHead(org.apache.wicket.markup.head.IHeaderResponse response) {

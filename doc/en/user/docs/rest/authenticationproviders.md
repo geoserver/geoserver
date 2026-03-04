@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Auth Providers (How-To)
 
 The Security REST service lets administrators **list, create, update, delete, enable/disable, and re-order** authentication-provider configurations.
@@ -277,4 +281,4 @@ All errors use a simple payload:
 
 ## See also
 
-- [OpenAPI reference](api/authenticationproviders.yaml)
+- [OpenAPI reference]({{ api_url }}/authenticationproviders.yaml)

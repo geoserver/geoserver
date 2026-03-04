@@ -68,7 +68,7 @@ plugins:
       module_name: ../../version
 
 hooks:
-  - hooks/download_files.py
+  - ../../download_files.py
 
 markdown_extensions:
   - admonition

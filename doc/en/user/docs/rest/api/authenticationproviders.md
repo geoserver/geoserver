@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Auth Providers (Endpoint Reference)
 
 This page summarizes the REST endpoints for managing authentication providers. For request/response shapes and full examples, see [Auth Providers (Endpoint Reference)](authenticationproviders.md).
@@ -144,4 +148,4 @@ Validation: - The list must be non-empty - All names must correspond to known pr
 
 ## OpenAPI
 
-See the [Authentication-provider OpenAPI spec](api/authenticationproviders.yaml) for schemas and machine-readable definitions.
+See the [Authentication-provider OpenAPI spec]({{ api_url }}/authenticationproviders.yaml) for schemas and machine-readable definitions.

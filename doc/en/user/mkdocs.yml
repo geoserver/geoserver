@@ -43,6 +43,7 @@ theme:
     - content.action.edit
 
 extra:
+  api_url: ../api/#1.0.0
   version_selector:
     - version: latest
       title: Latest (3.0)
@@ -68,7 +69,7 @@ plugins:
       module_name: ../../version
 
 hooks:
-  - hooks/download_files.py
+  - ../../download_files.py
 
 markdown_extensions:
   - admonition

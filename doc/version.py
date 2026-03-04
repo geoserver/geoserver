@@ -24,3 +24,9 @@ def define_env(env):
     # Additional useful variables
     env.variables['geoserver_repo'] = 'https://github.com/geoserver/geoserver'
     env.variables['docs_url'] = 'https://docs.geoserver.org'
+    
+    # API base URL for REST API Swagger/OpenAPI specs
+    # The Swagger UI is hosted at ../api/ and uses URL fragments to load specific YAML files
+    # This resolves to the correct path regardless of where the documentation is deployed
+    # Usage in Markdown: [API reference]({{ api_url }}/styles.yaml)
+    env.variables['api_url'] = '../api/#1.0.0'

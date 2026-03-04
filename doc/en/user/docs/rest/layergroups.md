@@ -1,3 +1,7 @@
+---
+render_macros: true
+---
+
 # Layer groups
 
 The REST API allows you to create and modify layer groups in GeoServer.
@@ -8,7 +12,7 @@ The REST API allows you to create and modify layer groups in GeoServer.
 
 !!! note
 
-    Read the [API reference for /layergroups](api/layergroups.yaml).
+    Read the [API reference for /layergroups]({{ api_url }}/layergroups.yaml).
 
 ## Creating a layer group
 

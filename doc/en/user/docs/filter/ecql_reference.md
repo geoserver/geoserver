@@ -81,7 +81,7 @@ An expression specifies a attribute, literal, or computed value. The type of the
 | *function* `(` [ [Expression](ecql_reference.md#ecql_expr) { `,` [Expression](ecql_reference.md#ecql_expr) } ] `)` | Value computed by evaluation of a [filter function](function_reference.md) with zero or more arguments. |
 | `(` \| `[` [Expression](ecql_reference.rst#ecql_expr) `]` \| `)` | Bracketing with `(` or ```` controls evaluation order |
 
-## Attribute {#ecql_attr}
+## Attribute {%raw%}{#ecql_attr}{%endraw%}
 
 An attribute name denotes the value of a feature attribute.
 
@@ -89,7 +89,7 @@ An attribute name denotes the value of a feature attribute.
 - Attribute names quoted with double-quotes may be any sequence of characters, e.g. ``\"States!@#\"``
 - [Note](https://gis.stackexchange.com/a/475826/68995): ``id`` is one of a few [reserved keywords](https://github.com/geotools/geotools/blob/2058be01323c3dea23d6df4d84b623be7f0b4102/modules/library/cql/src/main/jjtree/ECQLGrammar.jjt#L180) in ECQL and thus an attribute (or database column) named ``id`` must be quoted, e.g. ``\"id\"``
 
-## Literal {#ecql_literal}
+## Literal {%raw%}{#ecql_literal}{%endraw%}
 
 Literals specify constant values of various types.
 
@@ -102,7 +102,7 @@ Literals specify constant values of various types.
 | *Time* | A UTC date/time value in the format `YYYY-MM-DDTHH:mm:ss`. The seconds value may have a decimal fraction. The time zone may be specified as `Z` or `+/-HH:mm`. Example: `2006-11-30T00:30:00Z` |
 | *Duration* | A time duration specified as `P` **\[** y `Y` m `M` d `D` **\]** `T` **\[** h `H` m `M` s `S` **\]**. The duration can be specified to any desired precision by including only the required year, month, day, hour, minute and second components. Examples: `P1Y2M`, `P4Y2M20D`, `P4Y2M1DT20H3M36S` |
 
-### Time Period {#ecql_period}
+### Time Period {%raw%}{#ecql_period}{%endraw%}
 
 Specifies a period of time, in several different formats.
 

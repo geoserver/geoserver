@@ -102,7 +102,7 @@ If this information is not provided the contact information from the global [Con
 
 #### Service Settings
 
-::: {#data_webadmin_workspaces_service_settings}
+::: {%raw%}{#data_webadmin_workspaces_service_settings}{%endraw%}
 Other settings provide additional [Global Settings](../../configuration/globalsettings.md) can be overridden on a workspace-by-workspace basis.
 :::
 

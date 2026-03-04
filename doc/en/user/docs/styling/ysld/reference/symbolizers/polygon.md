@@ -34,28 +34,28 @@ The full syntax of a polygon symbolizer is:
 
 where:
 
-{% include-markdown "./include/stroke.md" %}
+{%raw%}{% include-markdown "./include/stroke.md" %}{%endraw%}
 
-{% include-markdown "./include/fill.md" %}
+{%raw%}{% include-markdown "./include/fill.md" %}{%endraw%}
 
 | Property | Required? | Description | Default value |
 |----|----|----|----|
 | `offset` | No | Value in pixels for moving the drawn line relative to the location of the feature. | `0` |
 | `displacement` | No | Specifies a distance to which to move the symbol relative to the feature. Value is an `[x,y]` tuple with values expressed in pixels, so [10,5] will displace the symbol 10 pixels to the right, and 5 pixels down. | `[0,0]` |
 
-{% include-markdown "./include/symbol.md" %}
+{%raw%}{% include-markdown "./include/symbol.md" %}{%endraw%}
 
 The following properties are equivalent to SLD "vendor options".
 
-{% include-markdown "./include/misc.md" %}
+{%raw%}{% include-markdown "./include/misc.md" %}{%endraw%}
 
 Additional "vendor options" properties for [Color compositing and color blending](../../../sld/extensions/composite-blend/index.md):
 
-{% include-markdown "./include/composite.md" %}
+{%raw%}{% include-markdown "./include/composite.md" %}{%endraw%}
 
 Additional "vendor options" properties for [Rendering Selection](../../../sld/extensions/rendering-selection.md):
 
-{% include-markdown "./include/inclusion.md" %}
+{%raw%}{% include-markdown "./include/inclusion.md" %}{%endraw%}
 
 ## Examples
 

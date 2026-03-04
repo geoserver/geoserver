@@ -29,19 +29,19 @@ The full syntax of a line symbolizer is:
 
 where:
 
-{% include-markdown "./include/stroke.md" %}
+{%raw%}{% include-markdown "./include/stroke.md" %}{%endraw%}
 
 | Property | Required? | Description | Default value |
 |----|----|----|----|
 | `offset` | No | Value in pixels for moving the drawn line relative to the location of the feature. | `0` |
 
-{% include-markdown "./include/symbol.md" %}
+{%raw%}{% include-markdown "./include/symbol.md" %}{%endraw%}
 
-{% include-markdown "./include/misc.md" %}
+{%raw%}{% include-markdown "./include/misc.md" %}{%endraw%}
 
-{% include-markdown "./include/composite.md" %}
+{%raw%}{% include-markdown "./include/composite.md" %}{%endraw%}
 
-{% include-markdown "./include/inclusion.md" %}
+{%raw%}{% include-markdown "./include/inclusion.md" %}{%endraw%}
 
 ## Examples
 

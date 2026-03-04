@@ -18,7 +18,7 @@ The platform-independent binary is a GeoServer web application bundled with [Jet
 
 1.  Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 17** or **Java 21** environment.
 
-    {% include-markdown "./jdk-linux-guidance.txt" %}
+    {%raw%}{% include-markdown "./jdk-linux-guidance.txt" %}{%endraw%}
 
     !!! note
 

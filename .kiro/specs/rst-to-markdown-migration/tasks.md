@@ -183,6 +183,19 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - **Must be fixed before 2.28.x migration is complete**
     - _Requirements: 6.1, 6.2, 6.3, 7.1, 7.2_
 
+  - [ ] 3.6.1 Apply 3.0 branch fixes to 2.28.x branch
+    - **IMPORTANT**: Apply all post-conversion fixes from 3.0 branch to 2.28.x branch
+    - Run fix_download_links.py to fix broken extension/community download links (51 files)
+    - Run fix_duplicate_frontmatter.py to remove duplicate frontmatter blocks (86 files)
+    - Run fix_include_markdown_raw.py to remove raw tags from include statements (6 files)
+    - Run fix_blockquote_admonitions.py to convert blockquote admonitions to proper syntax (9 files)
+    - Run fix_include_markdown_syntax.py to fix include-markdown macro syntax (6 files)
+    - Update doc/version.py to add `snapshot` macro variable (e.g., '2.28-SNAPSHOT')
+    - Verify all fixes apply cleanly to 2.28.x branch
+    - Test locally with `mkdocs serve` to ensure no regressions
+    - Commit all fixes with descriptive messages
+    - _Requirements: 5.5, 5.6, 6.1, 6.2, 6.3_
+
   - [ ] 3.7 Remove RST infrastructure after successful validation
     - Remove doc/en/user/source/ directory (RST files)
     - Remove doc/en/developer/source/ directory (RST files)

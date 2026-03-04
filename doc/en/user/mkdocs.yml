@@ -7,6 +7,10 @@ edit_uri: edit/main/doc/en/user/docs/
 docs_dir: docs
 site_dir: target/html
 
+# Exclude include files from the build (they are included by other pages)
+exclude_docs: |
+  styling/ysld/reference/symbolizers/include/
+
 theme:
   name: material
   custom_dir: ../../themes/geoserver
@@ -789,7 +793,11 @@ nav:
     - community/jms-cluster/activemq/activemqBroker.md
     - community/jms-cluster/activemq/JDBC.md
     - community/jms-cluster/activemq/SharedFolder.md
-  - community/jwt-headers/index.md
+  - Jwt Headers:
+    - community/jwt-headers/index.md
+    - community/jwt-headers/overview.md
+    - community/jwt-headers/installing.md
+    - community/jwt-headers/configuration.md
   - community/libdeflate/index.md
   - Mbtiles:
     - community/mbtiles/index.md

@@ -7,6 +7,11 @@ edit_uri: edit/main/doc/en/developer/docs/
 docs_dir: docs
 site_dir: target/html
 
+# Exclude include files from the build (they are included by other pages)
+exclude_docs: |
+  policies/gsip_voting.md
+  quickstart/checkout.md
+
 theme:
   name: material
   custom_dir: ../../themes/geoserver

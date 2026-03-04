@@ -366,7 +366,7 @@ This example shows the process for uploading a Shapefile (in a zip file) to an e
 2.  Create the import definition:
 
     ```json
-    {% include "./files/import.json" %}
+    {%raw%}{% include "./files/import.json" %}{%endraw%}
     ```
 
     POST this definition to /geoserver/rest/imports:
@@ -429,7 +429,7 @@ A remote sensing tool is generating CSV files with some locations and measuremen
     Where **`import.json`** is:
 
     ```json
-    {% include "./files/import.json" %}
+    {%raw%}{% include "./files/import.json" %}{%endraw%}
     ```
 
 2.  Then, we are going to POST the csv file to the tasks list.
@@ -579,7 +579,7 @@ To update the `values` layer with new content:
     Using:
 
     ```json
-    {% include "./files/import.json" %}
+    {%raw%}{% include "./files/import.json" %}{%endraw%}
     ```
 
 2.  Use **`replace.csv`** to create a new task:

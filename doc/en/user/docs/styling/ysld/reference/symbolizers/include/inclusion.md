@@ -1,4 +1,4 @@
-Additional "vendor options" properties for [Rendering Selection](../../../../sld/extensions/rendering-selection.md):
+Additional "vendor options" properties for [Rendering Selection](../../../sld/extensions/rendering-selection.md):
 
 | Property | Required? | Description | Default value |
 |----|----|----|----|

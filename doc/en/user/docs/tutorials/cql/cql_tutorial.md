@@ -10,7 +10,7 @@ This tutorial introduces the CQL/ECQL language by example. For a full reference,
 
 ## Getting started
 
-The following examples use the `topp:states` sample layer shipped with GeoServer. They demonstrate how CQL filters work by using the WMS [CQL_FILTER vendor parameter](../../../services/wms/vendor.md) to alter the data displayed by WMS requests. The easiest way to follow the tutorial is to open the GeoServer Map Preview for the `topp:states` layer. Click on the *Options* button at the top of the map preview to open the advanced options toolbar. The example filters can be entered in the *Filter: CQL* box.
+The following examples use the `topp:states` sample layer shipped with GeoServer. They demonstrate how CQL filters work by using the WMS [CQL_FILTER vendor parameter](../../services/wms/vendor.md) to alter the data displayed by WMS requests. The easiest way to follow the tutorial is to open the GeoServer Map Preview for the `topp:states` layer. Click on the *Options* button at the top of the map preview to open the advanced options toolbar. The example filters can be entered in the *Filter: CQL* box.
 
 ![](img/gettingStarted.png)
 *topp:states preview with advanced toolbar open.*

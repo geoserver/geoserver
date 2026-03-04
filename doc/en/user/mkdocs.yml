@@ -7,6 +7,10 @@ edit_uri: edit/main/doc/en/user/docs/
 docs_dir: docs
 site_dir: target/html
 
+# Exclude include files from the build (they are included by other pages)
+exclude_docs: |
+  styling/ysld/reference/symbolizers/include/
+
 theme:
   name: material
   custom_dir: ../themes/geoserver
@@ -67,9 +71,6 @@ plugins:
       render_by_default: true
       include_dir: docs
       module_name: ../../version
-
-not_in_nav: |
-  styling/ysld/reference/symbolizers/include/*.md
 
 hooks:
   - ../../download_files.py

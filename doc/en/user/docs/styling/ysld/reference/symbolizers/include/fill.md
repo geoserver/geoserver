@@ -2,7 +2,7 @@
 |----|----|----|----|
 | `fill-color` | No | Color of inside of features. | `'#808080'` (gray) |
 | `fill-opacity` | No | Opacity of the fill. Valid values are a decimal value between `0` (completely transparent) and `1` (completely opaque). | `1` |
-| `fill-graphic` | No | A design or pattern to be used for the fill of the feature. Can either be a mark consisting of a common shape or a URL that points to a graphic. The `<graphic_options>` should consist of a mapping containing `symbols:` followed by an `external:` or `mark:`, with appropriate parameters as detailed in the [Point symbolizer](../point.md) section. | None |
+| `fill-graphic` | No | A design or pattern to be used for the fill of the feature. Can either be a mark consisting of a common shape or a URL that points to a graphic. The `<graphic_options>` should consist of a mapping containing `symbols:` followed by an `external:` or `mark:`, with appropriate parameters as detailed in the [Point symbolizer](point.md) section. | None |
 
 The use of `fill-graphic` allows for the following extra options:
 

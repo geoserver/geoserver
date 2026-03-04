@@ -11,8 +11,8 @@ This section will use the following definitions for the common terms "source" an
 
 <div class="grid cards" markdown>
 
-- [StylingSldExtensionsComposite BlendSyntax](syntax.md)
-- [StylingSldExtensionsComposite BlendModes](modes.md)
-- [StylingSldExtensionsComposite BlendExample](example.md)
+- [Specifying compositing and blending in SLD](syntax.md)
+- [Composite and blending modes](modes.md)
+- [Compositing and blending example](example.md)
 
 </div>

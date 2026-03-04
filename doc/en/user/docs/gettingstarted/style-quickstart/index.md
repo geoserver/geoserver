@@ -75,11 +75,9 @@ First let's gather the data that we'll be publishing.
 
 6.  Edit your style by inserting `fill-opacity` value of `0.25`.
 
-    ~~~xml
-    {% 
-      include "./files/background.sld"
-    %}
-    ~~~
+    ```xml
+    {% include "./files/background.sld" %}
+    ```
 
 7.  Press **Apply** to edit your style and check the resulting visual change in the layer preview.
 

@@ -2,9 +2,9 @@
 
 <div class="grid cards" markdown>
 
-- [ExtensionsKmlTutorialsKmlplacemarkIndex](kmlplacemark/index.md)
-- [ExtensionsKmlTutorialsHeightsHeights](heights/heights.md)
-- [ExtensionsKmlTutorialsTimeTime](time/time.md)
-- [ExtensionsKmlTutorialsSuperoverlaysgwc](superoverlaysgwc.md)
+- [KML Placemark Templates](kmlplacemark/index.md)
+- [Heights Templates](heights/heights.md)
+- [Time](time/time.md)
+- [Super-Overlays and GeoWebCache](superoverlaysgwc.md)
 
 </div>

@@ -9,11 +9,11 @@ The pages in this menu can be accessed on the left side of the screen under the 
 
 <div class="grid cards" markdown>
 
-- [GeowebcacheWebadminLayers](layers.md)
-- [GeowebcacheWebadminDemopage](demopage.md)
-- [GeowebcacheWebadminDefaults](defaults.md)
-- [GeowebcacheWebadminGridsets](gridsets.md)
-- [GeowebcacheWebadminDiskquotas](diskquotas.md)
-- [GeowebcacheWebadminBlobstores](blobstores.md)
+- [Tile Layers](layers.md)
+- [Demo page](demopage.md)
+- [Caching defaults](defaults.md)
+- [Gridsets](gridsets.md)
+- [Disk Quotas](diskquotas.md)
+- [BlobStores](blobstores.md)
 
 </div>

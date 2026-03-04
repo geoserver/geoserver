@@ -8,7 +8,7 @@ This feature is also accessible on the **Layer Preview** page in GeoServer, wher
 
 <div class="grid cards" markdown>
 
-- [CommunityWfs FreemarkerInstalling](installing.md)
-- [CommunityWfs FreemarkerConfiguration](configuration.md)
+- [Installing the WFS FreeMarker Extension](installing.md)
+- [WFS FreeMarker Extension configuration](configuration.md)
 
 </div>

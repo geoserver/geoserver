@@ -40,11 +40,11 @@ To create a **`controlflow.properties`** file:
 
     - **Content**: file contents
 
-      > ~~~properties
+      > ```properties
       > {% 
       >   include "extensions/controlflow/controlflow.properties"
       > %}
-      > ~~~
+      > ```
 
 3.  Press **OK** to create the resource.
 

@@ -10,11 +10,11 @@ GeoServer takes this concept one step further to provide a pluggable user interf
 
 Each component that is plugged in is described by a **component descriptor**. A component descriptor is an instance of the `org.geoserver.web.ComponentInfo` class:
 
-> ~~~
+> ```
 > {% 
 >   include "./ComponentInfo.java"
 > %}
-> ~~~
+> ```
 
 A `ComponentInfo` instance contains meta information about the component being plugged in such as its title and description, as well as the class which implements the component.
 

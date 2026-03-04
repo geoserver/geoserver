@@ -44,11 +44,9 @@ To make a GSIP:
 
     GSIP [template](gsip_template.txt):
 
-    ~~~text
-    {% 
-      include "./gsip_template.txt"
-    %}
-    ~~~
+    ```text
+    {% include "./gsip_template.txt" %}
+    ```
 
 5.  Fill in the information in the page template, and click `Save` when complete.
 

@@ -11,9 +11,9 @@ Template:
 
 <div class="grid cards" markdown>
 
-- [TutorialsFreemarker](freemarker.md)
-- [TutorialsGeorssGeorss](georss/georss.md)
-- [TutorialsGetfeatureinfoIndex](GetFeatureInfo/index.md)
+- [Freemarker Templates](freemarker.md)
+- [GeoRSS](georss/georss.md)
+- [GetFeatureInfo Templates](GetFeatureInfo/index.md)
 
 </div>
 
@@ -21,9 +21,9 @@ WMS Tutorials:
 
 <div class="grid cards" markdown>
 
-- [TutorialsPalettedimagePalettedimage](palettedimage/palettedimage.md)
-- [TutorialsStaticfiles](staticfiles.md)
-- [TutorialsWmsreflector](wmsreflector.md)
+- [Paletted Images](palettedimage/palettedimage.md)
+- [Serving Static Files](staticfiles.md)
+- [WMS Reflector](wmsreflector.md)
 - [TutorialsCqlCql Tutorial](cql/cql_tutorial.md)
 
 </div>
@@ -41,7 +41,7 @@ Imagery tutorials:
 - [TutorialsImagemosaic TimeseriesImagemosaic Timeseries](imagemosaic_timeseries/imagemosaic_timeseries.md)
 - [TutorialsImagemosaic TimeseriesImagemosaic Time Elevationseries](imagemosaic_timeseries/imagemosaic_time-elevationseries.md)
 - [TutorialsImagemosaic FootprintImagemosaic Footprint](imagemosaic_footprint/imagemosaic_footprint.md)
-- [TutorialsImagepyramidImagepyramid](imagepyramid/imagepyramid.md)
+- [Building and using an image pyramid](imagepyramid/imagepyramid.md)
 
 </div>
 
@@ -57,7 +57,7 @@ Catalogue tutorials:
 
 <div class="grid cards" markdown>
 
-- [TutorialsMetadataIndex](metadata/index.md)
+- [INSPIRE metadata configuration using metadata and CSW](metadata/index.md)
 
 </div>
 

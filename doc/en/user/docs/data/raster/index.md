@@ -6,10 +6,10 @@ The standard GeoServer installation supports the loading and serving of the foll
 
 <div class="grid cards" markdown>
 
-- [DataRasterGeotiff](geotiff.md)
-- [DataRasterWorldimage](worldimage.md)
-- [DataRasterImagemosaicIndex](imagemosaic/index.md)
-- [DataRasterGeopkg](geopkg.md)
+- [GeoTIFF](geotiff.md)
+- [WorldImage](worldimage.md)
+- [ImageMosaic](imagemosaic/index.md)
+- [GeoPackage](geopkg.md)
 
 </div>
 
@@ -21,9 +21,9 @@ Other data sources are supplied as GeoServer extensions. Extensions are download
 
 <div class="grid cards" markdown>
 
-- [DataRasterArcgrid](arcgrid.md)
-- [DataRasterGdal](gdal.md)
-- [DataRasterImagepyramid](imagepyramid.md)
+- [ArcGrid](arcgrid.md)
+- [GDAL Image Formats](gdal.md)
+- [ImagePyramid](imagepyramid.md)
 
 </div>
 
@@ -31,6 +31,6 @@ GeoServer provides extensive facilities for controlling how rasters are accessed
 
 <div class="grid cards" markdown>
 
-- [DataRasterCoverageview](coverageview.md)
+- [Coverage Views](coverageview.md)
 
 </div>

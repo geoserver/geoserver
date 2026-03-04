@@ -4,11 +4,11 @@ GeoServer styling can be used for a range of creative effects. This section intr
 
 <div class="grid cards" markdown>
 
-- [StylingWorkshopMbstyleMbstyle](mbstyle.md)
-- [StylingWorkshopMbstyleLinestring](linestring.md)
-- [StylingWorkshopMbstylePolygon](polygon.md)
-- [StylingWorkshopMbstylePoint](point.md)
-- [StylingWorkshopMbstyleRaster](raster.md)
-- [StylingWorkshopMbstyleDone](done.md)
+- [MBStyle Quickstart](mbstyle.md)
+- [Lines](linestring.md)
+- [Polygons](polygon.md)
+- [Points](point.md)
+- [Rasters](raster.md)
+- [MBStyle Workbook Conclusion](done.md)
 
 </div>

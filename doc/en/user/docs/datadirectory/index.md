@@ -12,10 +12,10 @@ For production use, it is **highly** recommended to define an *external* data di
 
 <div class="grid cards" markdown>
 
-- [DatadirectoryLocation](location.md)
-- [DatadirectorySetting](setting.md)
-- [DatadirectoryStructure](structure.md)
-- [DatadirectoryMigrating](migrating.md)
-- [DatadirectoryConfigtemplate](configtemplate.md)
+- [Data directory location](location.md)
+- [Setting the data directory location](setting.md)
+- [Structure of the data directory](structure.md)
+- [Migrating a data directory between versions](migrating.md)
+- [Parameterize catalog settings](configtemplate.md)
 
 </div>

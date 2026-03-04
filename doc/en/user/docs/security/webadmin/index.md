@@ -4,13 +4,13 @@ GeoServer has a robust [security subsystem](../index.md), modeled on [Spring Sec
 
 <div class="grid cards" markdown>
 
-- [SecurityWebadminSettings](settings.md)
-- [SecurityWebadminAuth](auth.md)
-- [SecurityWebadminPasswords](passwords.md)
-- [SecurityWebadminUgr](ugr.md)
-- [SecurityWebadminData](data.md)
-- [SecurityWebadminServices](services.md)
-- [SecurityWebadminFilebrowse](filebrowse.md)
-- [SecurityWebadminCsrf](csrf.md)
+- [Settings](settings.md)
+- [Authentication](auth.md)
+- [Passwords](passwords.md)
+- [Users, Groups, Roles](ugr.md)
+- [Data](data.md)
+- [Services](services.md)
+- [File Browsing](filebrowse.md)
+- [CSRF Protection](csrf.md)
 
 </div>

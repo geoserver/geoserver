@@ -4,9 +4,9 @@ The `Vector Mosaic datastore` is a datastore that mosaics several vector dataset
 
 <div class="grid cards" markdown>
 
-- [CommunityVector MosaicInstalling](installing.md)
-- [CommunityVector MosaicConfiguration](configuration.md)
-- [CommunityVector MosaicDelegate](delegate.md)
-- [CommunityVector MosaicRestingestion](restingestion.md)
+- [Installing Vector Mosaic Datastore](installing.md)
+- [Vector Mosaic Datastore configuration](configuration.md)
+- [Vector Mosaic Datastore Delegate Requirements](delegate.md)
+- [Vector Mosaic Datastore REST ingestion](restingestion.md)
 
 </div>

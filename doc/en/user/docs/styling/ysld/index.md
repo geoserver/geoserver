@@ -8,9 +8,9 @@ YSLD is not a part of GeoServer by default, but is available as an optional inst
 
 <div class="grid cards" markdown>
 
-- [StylingYsldInstalling](installing.md)
-- [StylingYsldGs Extensions](gs-extensions.md)
-- [StylingYsldReferenceIndex](reference/index.md)
-- [StylingYsldCookbookIndex](cookbook/index.md)
+- [YSLD Extension Installation](installing.md)
+- [GeoServer Specific Extensions](gs-extensions.md)
+- [YSLD reference](reference/index.md)
+- [YSLD Cookbook](cookbook/index.md)
 
 </div>

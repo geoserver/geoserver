@@ -4,7 +4,7 @@ This section provides an overview of how GeoServer Dispatcher implements OGC Ope
 
 <div class="grid cards" markdown>
 
-- [Programming GuideOws ServicesOverview](overview.md)
-- [Programming GuideOws ServicesImplementing](implementing.md)
+- [OWS Services Overview](overview.md)
+- [Implementing a simple OWS service](implementing.md)
 
 </div>

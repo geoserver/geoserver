@@ -4,8 +4,8 @@ This section describes the COG plugin usage and it also contains an example on h
 
 <div class="grid cards" markdown>
 
-- [CommunityCogCog](cog.md)
-- [CommunityCogMosaic](mosaic.md)
-- [CommunityCogUpdate](update.md)
+- [COG (Cloud Optimized GeoTIFF) Support](cog.md)
+- [ImageMosaic example with Modis COG datasets](mosaic.md)
+- [COG ImageMosaic from local storage to S3](update.md)
 
 </div>

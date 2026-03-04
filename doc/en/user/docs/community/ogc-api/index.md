@@ -16,14 +16,14 @@ Community modules:
 
 <div class="grid cards" markdown>
 
-- [CommunityOgc ApiTilesIndex](tiles/index.md)
-- [CommunityOgc ApiMapsIndex](maps/index.md)
-- [CommunityOgc ApiCoveragesIndex](coverages/index.md)
-- [CommunityOgc ApiProcessesIndex](processes/index.md)
-- [CommunityOgc ApiStylesIndex](styles/index.md)
-- [CommunityOgc ApiTiled FeaturesIndex](tiled-features/index.md)
-- [CommunityOgc Api3DgeovolumesIndex](3dgeovolumes/index.md)
-- [CommunityOgc ApiTestbed](testbed.md)
+- [OGC API - Tiles](tiles/index.md)
+- [OGC API - Maps](maps/index.md)
+- [OGC API - Coverages](coverages/index.md)
+- [OGC API - Processes](processes/index.md)
+- [OGC API - Styles](styles/index.md)
+- [OGC API - Tiled features demonstration](tiled-features/index.md)
+- [OGC API - 3D GeoVolumes](3dgeovolumes/index.md)
+- [OGC Testbed Experiments](testbed.md)
 
 </div>
 

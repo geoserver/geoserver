@@ -8,10 +8,10 @@ Filtering allows selecting features that satisfy a specific set of conditions. F
 
 <div class="grid cards" markdown>
 
-- [FilterSyntax](syntax.md)
+- [Supported filter languages](syntax.md)
 - [FilterFilter Reference](filter_reference.md)
 - [FilterEcql Reference](ecql_reference.md)
-- [FilterFunction](function.md)
+- [Filter functions](function.md)
 - [FilterFunction Reference](function_reference.md)
 
 </div>

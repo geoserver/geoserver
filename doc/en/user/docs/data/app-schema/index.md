@@ -18,7 +18,7 @@ The app-schema module looks to GeoServer just like any other data store and so c
 - [DataApp SchemaComplex Features](complex-features.md)
 - [DataApp SchemaInstallation](installation.md)
 - [DataApp SchemaWfs Service Settings](wfs-service-settings.md)
-- [DataApp SchemaConfiguration](configuration.md)
+- [Configuration](configuration.md)
 - [DataApp SchemaMapping File](mapping-file.md)
 - [DataApp SchemaApp Schema Resolution](app-schema-resolution.md)
 - [DataApp SchemaSupported Gml Versions](supported-gml-versions.md)

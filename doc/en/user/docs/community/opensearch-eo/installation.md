@@ -20,11 +20,10 @@ Create a PostgreSQL database and run the following SQL script:
 
     https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-core/src/test/resources/postgis.sql
 
-~~~sql
-{% 
-  include "../../../../src/community/oseo/oseo-core/src/test/resources/postgis.sql"
-%}
-~~~
+```sql
+{%raw%}{%endraw%}<!-- Include path goes outside docs directory: ../../../../src/community/oseo/oseo-core/src/test/resources/postgis.sql -->
+<!-- TODO: Copy file to docs directory or use alternative approach -->
+```
 
 ## Downloading and installing the OpenSearch extension
 

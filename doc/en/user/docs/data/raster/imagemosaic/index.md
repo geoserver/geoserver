@@ -8,7 +8,7 @@ The plugin can be used with GeoTIFFs, as well as rasters accompanied by a world 
 
 <div class="grid cards" markdown>
 
-- [DataRasterImagemosaicConfiguration](configuration.md)
-- [DataRasterImagemosaicTutorial](tutorial.md)
+- [ImageMosaic configuration](configuration.md)
+- [Using the ImageMosaic extension](tutorial.md)
 
 </div>

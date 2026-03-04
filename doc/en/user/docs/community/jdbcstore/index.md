@@ -4,7 +4,7 @@ The `JDBCStore module` allows efficient sharing of configuration data in a clust
 
 <div class="grid cards" markdown>
 
-- [CommunityJdbcstoreInstalling](installing.md)
-- [CommunityJdbcstoreConfiguration](configuration.md)
+- [Installing JDBCStore](installing.md)
+- [JDBCStore configuration](configuration.md)
 
 </div>

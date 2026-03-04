@@ -20,11 +20,11 @@ The first part of the plug-in documentation will go through the template syntax.
 
 <div class="grid cards" markdown>
 
-- [CommunityFeatures TemplatingInstalling](installing.md)
-- [CommunityFeatures TemplatingDirectives](directives.md)
-- [CommunityFeatures TemplatingConfiguration](configuration.md)
-- [CommunityFeatures TemplatingQuerying](querying.md)
-- [CommunityFeatures TemplatingRest](rest.md)
-- [CommunityFeatures TemplatingSchemas](schemas.md)
+- [Installing the GeoServer FEATURES-TEMPLATING extension](installing.md)
+- [Template Directives](directives.md)
+- [Template Configuration](configuration.md)
+- [Backward Mapping](querying.md)
+- [Features Templatring Rest API](rest.md)
+- [Schemas Configuration](schemas.md)
 
 </div>

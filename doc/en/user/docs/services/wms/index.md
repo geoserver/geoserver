@@ -6,16 +6,16 @@ For details about KML/KMZ output, see the [Kml Extension](../../kml_extension-br
 
 <div class="grid cards" markdown>
 
-- [ServicesWmsWebadmin](webadmin.md)
-- [ServicesWmsBasics](basics.md)
-- [ServicesWmsReference](reference.md)
-- [ServicesWmsTime](time.md)
-- [ServicesWmsOutputformats](outputformats.md)
-- [ServicesWmsVendor](vendor.md)
-- [ServicesWmsNonstandardautonamespace](nonstandardautonamespace.md)
-- [ServicesWmsConfiguration](configuration.md)
-- [ServicesWmsGlobal](global.md)
+- [WMS settings](webadmin.md)
+- [WMS basics](basics.md)
+- [WMS reference](reference.md)
+- [Time Support in GeoServer WMS](time.md)
+- [WMS output formats](outputformats.md)
+- [WMS vendor parameters](vendor.md)
+- [Non Standard AUTO Namespace](nonstandardautonamespace.md)
+- [WMS configuration](configuration.md)
+- [Global variables affecting WMS](global.md)
 - [ServicesWmsGet Legend GraphicIndex](get_legend_graphic/index.md)
-- [ServicesWmsDecoration](decoration.md)
+- [WMS Decorations](decoration.md)
 
 </div>

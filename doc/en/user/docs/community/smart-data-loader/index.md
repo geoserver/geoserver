@@ -8,7 +8,7 @@ This plugin allows automation of the configuration for `Application-Schema` base
 
 <div class="grid cards" markdown>
 
-- [CommunitySmart Data LoaderInstall](install.md)
-- [CommunitySmart Data LoaderData Store](data-store.md)
+- [Installing the Smart Data Loader extension](install.md)
+- [Smart Data Loader](data-store.md)
 
 </div>

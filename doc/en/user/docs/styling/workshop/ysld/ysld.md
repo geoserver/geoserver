@@ -239,21 +239,17 @@ As noted above, YSLD has a one-to-one correspondence with SLD, it merely uses a 
 
 Here is an example [SLD file](../files/airports0.sld) for reference:
 
-~~~xml
-{% 
-  include "../files/airports0.sld"
-%}
-~~~
+```xml
+{%raw%}{%endraw%}{% include "../files/airports0.sld" %}
+```
 
 ### YSLD Style
 
 Here is the same example as [YSLD](../files/airports0.ysld):
 
-~~~yaml
-{% 
-  include "../files/airports0.ysld"
-%}
-~~~
+```yaml
+{%raw%}{%endraw%}{% include "../files/airports0.ysld" %}
+```
 
 We use a point symbolizer to indicate we want this content drawn as a **Point** (line 16 in the SLD, line 5 in the YSLD). The point symbolizer declares an external graphic, which contains the URL ``airports.svg`` indicating the image that should be drawn (line 20 in the SLD, line 9 in the YSLD).
 
@@ -274,11 +270,11 @@ To confirm everything works, let's reproduce the airports style above.
 
 1.  Replace the initial YSLD definition with our airport YSLD example and click **Apply**:
 
-    > ~~~yaml
+    > ```yaml
     > {% 
     >   include "../files/airports0.ysld"
     > %}
-    > ~~~
+    > ```
 
 2.  Click the **Layer Preview** tab to preview the style. We want to preview on the airports layer, so click the name of the current layer and select ``ne:airports`` from the list that appears. You can use the mouse buttons to pan and scroll wheel to change scale.
 

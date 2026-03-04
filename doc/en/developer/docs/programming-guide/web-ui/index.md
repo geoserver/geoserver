@@ -2,7 +2,7 @@
 
 <div class="grid cards" markdown>
 
-- [Programming GuideWeb UiOverview](overview.md)
-- [Programming GuideWeb UiImplementing](implementing.md)
+- [Overview](overview.md)
+- [Implementing a Wicket UI Extension](implementing.md)
 
 </div>

@@ -19,9 +19,9 @@ This module adds two additional WFS output formats for requesting simple feature
 
 <div class="grid cards" markdown>
 
-- [CommunitySpatialjsonInstallation](installation.md)
-- [CommunitySpatialjsonDevelopment](development.md)
-- [CommunitySpatialjsonSchema](schema.md)
-- [CommunitySpatialjsonAttributes](attributes.md)
+- [Installation](installation.md)
+- [Development Status](development.md)
+- [Opt. 1: Removing Redundant Schema Information](schema.md)
+- [Opt. 2: Removing Redundant Attribute Values](attributes.md)
 
 </div>

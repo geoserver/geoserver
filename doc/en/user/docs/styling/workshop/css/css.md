@@ -197,11 +197,9 @@ Content can be drawn by more than one rule, allowing for a range of effects.
 
 Here is an example [SLD file](../files/airports2.sld) for reference:
 
-~~~xml
-{% 
-  include "../files/airports2.sld"
-%}
-~~~
+```xml
+{%raw%}{%endraw%}{% include "../files/airports2.sld" %}
+```
 
 ### CSS Style
 

@@ -15,9 +15,9 @@ Each section uses data created especially for the YSLD Cookbook, with shapefiles
 
 <div class="grid cards" markdown>
 
-- [StylingYsldCookbookPoints](points.md)
-- [StylingYsldCookbookLines](lines.md)
-- [StylingYsldCookbookPolygons](polygons.md)
-- [StylingYsldCookbookRasters](rasters.md)
+- [Points](points.md)
+- [Lines](lines.md)
+- [Polygons](polygons.md)
+- [Rasters](rasters.md)
 
 </div>

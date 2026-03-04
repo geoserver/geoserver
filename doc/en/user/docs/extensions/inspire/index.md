@@ -12,7 +12,7 @@ For more information on the INSPIRE directive, please see the European Commissio
 
 <div class="grid cards" markdown>
 
-- [ExtensionsInspireInstalling](installing.md)
-- [ExtensionsInspireUsing](using.md)
+- [Installing the INSPIRE extension](installing.md)
+- [Using the INSPIRE extension](using.md)
 
 </div>

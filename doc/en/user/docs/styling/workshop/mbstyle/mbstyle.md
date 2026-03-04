@@ -95,21 +95,17 @@ The MBStyle extension is built with the same GeoServer rendering engine in mind,
 
 Here is an example [SLD file](../files/airports0.sld) for reference:
 
-~~~xml
-{% 
-  include "../files/airports0.sld"
-%}
-~~~
+```xml
+{%raw%}{%endraw%}{% include "../files/airports0.sld" %}
+```
 
 ### MBStyle Style
 
 Here is the same example as [MBStyle](../files/airports0.json):
 
-~~~json
-{% 
-  include "../files/airports0.json"
-%}
-~~~
+```json
+{%raw%}{%endraw%}{% include "../files/airports0.json" %}
+```
 
 We use a point symbolizer to indicate we want this content drawn as a **Point** (line 16 in the SLD, line 8 in the MBStyle). The point symbolizer declares an external graphic, which contains the URL ``airports.svg`` indicating the image that should be drawn (line 20 in the SLD, line 10 in the MBStyle).
 
@@ -134,11 +130,11 @@ To confirm everything works, let's reproduce the airports style above.
 
 1.  Replace the initial MBStyle definition with our airport MBStyle example and click **Apply**:
 
-    > ~~~json
+    > ```json
     > {% 
     >   include "../files/airports0.json"
     > %}
-    > ~~~
+    > ```
 
 2.  Click the **Layer Preview** tab to preview the style. We want to preview on the airports layer, so click the name of the current layer and select ``ne:airports`` from the list that appears. You can use the mouse buttons to pan and scroll wheel to change scale.
 

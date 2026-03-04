@@ -6,12 +6,12 @@ In the integrated version, the users and roles service configured in geoserver a
 
 <div class="grid cards" markdown>
 
-- [ExtensionsGeofence ServerInstalling](installing.md)
-- [ExtensionsGeofence ServerGui](gui.md)
-- [ExtensionsGeofence ServerRest](rest.md)
-- [ExtensionsGeofence ServerRest Adminrule](rest-adminrule.md)
-- [ExtensionsGeofence ServerRest Batch Op](rest-batch-op.md)
-- [ExtensionsGeofence ServerTutorial](tutorial.md)
-- [ExtensionsGeofence ServerMigration](migration.md)
+- [Installing the GeoServer GeoFence Server extension](installing.md)
+- [GeoFence Server GUI](gui.md)
+- [GeoFence Rest API](rest.md)
+- [AdminRules Rest API](rest-adminrule.md)
+- [Batch Rest API](rest-batch-op.md)
+- [Using the Internal GeoFence server (Tutorial)](tutorial.md)
+- [Migrating GeoFence configuration](migration.md)
 
 </div>

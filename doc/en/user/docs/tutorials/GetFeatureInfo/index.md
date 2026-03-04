@@ -8,8 +8,8 @@ GetFeatureInfo is a WMS standard call that allows you to retrieve information ab
 
 <div class="grid cards" markdown>
 
-- [TutorialsGetfeatureinfoHtml](html.md)
-- [TutorialsGetfeatureinfoGeojson](geojson.md)
-- [TutorialsGetfeatureinfoRaster](raster.md)
+- [HTML output format](html.md)
+- [GeoJSON output format](geojson.md)
+- [Raster GetFeatureInfo Response Customization](raster.md)
 
 </div>

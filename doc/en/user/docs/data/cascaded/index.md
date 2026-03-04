@@ -6,9 +6,9 @@ GeoServer supports cascading the following services:
 
 <div class="grid cards" markdown>
 
-- [DataCascadedWfs](wfs.md)
+- [External Web Feature Server](wfs.md)
 - [DataCascadedStored Query](stored_query.md)
-- [DataCascadedWms](wms.md)
-- [DataCascadedWmts](wmts.md)
+- [External Web Map Server](wms.md)
+- [External Web Map Tile Server](wmts.md)
 
 </div>

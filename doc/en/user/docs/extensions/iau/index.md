@@ -4,7 +4,7 @@ This extension adds IAU planetary CRSs to the database recognized by GeoServer a
 
 <div class="grid cards" markdown>
 
-- [ExtensionsIauInstall](install.md)
-- [ExtensionsIauUsage](usage.md)
+- [Installing the IAU authority](install.md)
+- [Using IAU authority](usage.md)
 
 </div>

@@ -351,11 +351,9 @@ This example shows the process for uploading a Shapefile (in a zip file) to an e
 
 1.  Setup `cite:postgis` datastore:
 
-    ~~~json
-    {% 
-      include "./files/postgis.json"
-    %}
-    ~~~
+    ```json
+    {% include "./files/postgis.json" %}
+    ```
 
     Using curl POST:
 
@@ -367,11 +365,9 @@ This example shows the process for uploading a Shapefile (in a zip file) to an e
 
 2.  Create the import definition:
 
-    ~~~json
-    {% 
-      include "./files/import.json"
-    %}
-    ~~~
+    ```json
+    {% include "./files/import.json" %}
+    ```
 
     POST this definition to /geoserver/rest/imports:
 
@@ -432,19 +428,15 @@ A remote sensing tool is generating CSV files with some locations and measuremen
 
     Where **`import.json`** is:
 
-    ~~~json
-    {% 
-      include "./files/import.json"
-    %}
-    ~~~
+    ```json
+    {% include "./files/import.json" %}
+    ```
 
 2.  Then, we are going to POST the csv file to the tasks list.
 
-    ~~~text
-    {% 
-      include "./files/values.csv"
-    %}
-    ~~~
+    ```text
+    {% include "./files/values.csv" %}
+    ```
 
     In order to create an import task for it:
 
@@ -489,11 +481,9 @@ A remote sensing tool is generating CSV files with some locations and measuremen
 
 3.  Force the CRS by updating the layer:
 
-    ~~~json
-    {% 
-      include "./files/layerUpdate.json"
-    %}
-    ~~~
+    ```json
+    {% include "./files/layerUpdate.json" %}
+    ```
 
     Using PUT to update task layer:
 
@@ -552,11 +542,9 @@ A remote sensing tool is generating CSV files with some locations and measuremen
 
 4.  Then, we are going to create a transformation mapping the Lat/Lon columns to a point:
 
-    ~~~json
-    {% 
-      include "./files/toPoint.json"
-    %}
-    ~~~
+    ```json
+    {% include "./files/toPoint.json" %}
+    ```
 
     The above will be uploaded task transforms:
 
@@ -590,11 +578,9 @@ To update the `values` layer with new content:
 
     Using:
 
-    ~~~json
-    {% 
-      include "./files/import.json"
-    %}
-    ~~~
+    ```json
+    {% include "./files/import.json" %}
+    ```
 
 2.  Use **`replace.csv`** to create a new task:
 
@@ -606,11 +592,9 @@ To update the `values` layer with new content:
 
     The csv file has an additional column:
 
-    ~~~text
-    {% 
-      include "./files/replace.csv"
-    %}
-    ~~~
+    ```text
+    {% include "./files/replace.csv" %}
+    ```
 
 3.  Update task with as a "REPLACE" and supply srs information:
 
@@ -622,11 +606,9 @@ To update the `values` layer with new content:
 
     Using:
 
-    ~~~json
-    {% 
-      include "./files/taskUpdate.json"
-    %}
-    ~~~
+    ```json
+    {% include "./files/taskUpdate.json" %}
+    ```
 
 4.  Update transform to supply a geometry column:
 
@@ -638,11 +620,9 @@ To update the `values` layer with new content:
 
     Using:
 
-    ~~~json
-    {% 
-      include "./files/toPoint.json"
-    %}
-    ~~~
+    ```json
+    {% include "./files/toPoint.json" %}
+    ```
 
 5.  Double check import:
 

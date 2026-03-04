@@ -6,7 +6,7 @@ The standard GeoServer installation supports accessing the following databases:
 
 <div class="grid cards" markdown>
 
-- [DataDatabasePostgis](postgis.md)
+- [PostGIS](postgis.md)
 
 </div>
 
@@ -18,10 +18,10 @@ Other data sources are supplied as GeoServer extensions. Extensions are download
 
 <div class="grid cards" markdown>
 
-- [DataDatabaseDb2](db2.md)
-- [DataDatabaseMysql](mysql.md)
-- [DataDatabaseOracle](oracle.md)
-- [DataDatabaseSqlserver](sqlserver.md)
+- [Db2](db2.md)
+- [MySQL](mysql.md)
+- [Oracle](oracle.md)
+- [Microsoft SQL Server and SQL Azure](sqlserver.md)
 
 </div>
 
@@ -30,9 +30,9 @@ GeoServer provides extensive facilities for controlling how databases are access
 <div class="grid cards" markdown>
 
 - [DataDatabaseConnection Pooling](connection-pooling.md)
-- [DataDatabaseJndi](jndi.md)
-- [DataDatabaseSqlview](sqlview.md)
-- [DataDatabasePrimarykey](primarykey.md)
-- [DataDatabaseSqlsession](sqlsession.md)
+- [JNDI](jndi.md)
+- [SQL Views](sqlview.md)
+- [Controlling feature ID generation in spatial databases](primarykey.md)
+- [Custom SQL session start/stop scripts](sqlsession.md)
 
 </div>

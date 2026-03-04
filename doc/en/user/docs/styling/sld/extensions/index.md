@@ -4,16 +4,16 @@ GeoServer provides a number of vendor-specific extensions to SLD 1.0. Although n
 
 <div class="grid cards" markdown>
 
-- [StylingSldExtensionsGeometry Transformations](geometry-transformations.md)
-- [StylingSldExtensionsRendering Transform](rendering-transform.md)
-- [StylingSldExtensionsPointsymbols](pointsymbols.md)
-- [StylingSldExtensionsSubstitution](substitution.md)
-- [StylingSldExtensionsUom](uom.md)
-- [StylingSldExtensionsLabel Obstacles](label-obstacles.md)
-- [StylingSldExtensionsMargins](margins.md)
-- [StylingSldExtensionsRandomized](randomized.md)
-- [StylingSldExtensionsComposite BlendIndex](composite-blend/index.md)
-- [StylingSldExtensionsZ OrderIndex](z-order/index.md)
-- [StylingSldExtensionsRendering Selection](rendering-selection.md)
+- [Geometry transformations in SLD](geometry-transformations.md)
+- [Rendering Transformations](rendering-transform.md)
+- [Graphic symbology in GeoServer](pointsymbols.md)
+- [Variable substitution in SLD](substitution.md)
+- [Specifying symbolizer sizes in ground units](uom.md)
+- [Label Obstacles](label-obstacles.md)
+- [Adding space around graphic fills](margins.md)
+- [Fills with randomized symbols](randomized.md)
+- [Color compositing and color blending](composite-blend/index.md)
+- [Z ordering features within and across feature types and layers](z-order/index.md)
+- [Rendering Selection](rendering-selection.md)
 
 </div>

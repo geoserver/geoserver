@@ -12,8 +12,8 @@ The format uses a hierarchical directory structure that allows random access to 
 
 <div class="grid cards" markdown>
 
-- [CommunityPmtiles StoreInstalling](installing.md)
-- [CommunityPmtiles StoreUsage](usage.md)
+- [Installing the PMTiles DataStore Extension](installing.md)
+- [Using PMTiles DataStores](usage.md)
 
 </div>
 

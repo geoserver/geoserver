@@ -227,7 +227,7 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - Verify workflow triggers on 3.0 branch
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7_
 
-  - [ ] 5.4 Commit converted files for 3.0 (DO NOT remove RST yet)
+  - [x] 5.4 Commit converted files for 3.0 (DO NOT remove RST yet)
     - Stage all converted Markdown files
     - Stage updated mkdocs.yml files
     - Stage updated .github/workflows/mkdocs.yml
@@ -249,7 +249,7 @@ This plan executes the one-time migration of GeoServer documentation from RST/Sp
     - Commit fixes with message: "Fix 219 unknown interpreted text roles"
     - _Requirements: 5.5, 5.6_
 
-  - [ ] 5.5 Validate 3.0 conversion
+  - [-] 5.5 Validate 3.0 conversion
     - Run same validation steps as 2.28.x branch (HTML comparison, link validation, build tests)
     - Fix any issues specific to 3.0 branch
     - **NOTE**: Unknown interpreted text roles should be fixed in task 5.4.1 before this validation

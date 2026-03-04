@@ -6,18 +6,18 @@ The first page discusses configuration options in the web administration interfa
 
 <div class="grid cards" markdown>
 
-- [SecurityWebadminIndex](webadmin/index.md)
-- [SecurityUsergrouproleIndex](usergrouprole/index.md)
-- [SecurityAuthIndex](auth/index.md)
-- [SecurityPasswd](passwd.md)
-- [SecurityRoot](root.md)
-- [SecurityService](service.md)
-- [SecurityLayer](layer.md)
-- [SecuritySandbox](sandbox.md)
-- [SecurityRest](rest.md)
-- [SecurityUrlchecks](urlchecks.md)
-- [SecurityCsp](csp.md)
-- [SecurityDisable](disable.md)
-- [SecurityTutorialsIndex](tutorials/index.md)
+- [Security settings](webadmin/index.md)
+- [Role system](usergrouprole/index.md)
+- [Authentication](auth/index.md)
+- [Passwords](passwd.md)
+- [Root account](root.md)
+- [Service Security](service.md)
+- [Layer security](layer.md)
+- [Filesystem sandboxing](sandbox.md)
+- [REST Security](rest.md)
+- [URL Checks](urlchecks.md)
+- [Content Security Policy](csp.md)
+- [Disabling security](disable.md)
+- [Tutorials](tutorials/index.md)
 
 </div>

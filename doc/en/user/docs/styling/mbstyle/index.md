@@ -24,9 +24,9 @@ Mapbox style document support is not a part of GeoServer by default, but is avai
 
 <div class="grid cards" markdown>
 
-- [StylingMbstyleInstalling](installing.md)
-- [StylingMbstyleSource](source.md)
-- [StylingMbstyleReferenceIndex](reference/index.md)
-- [StylingMbstyleCookbookIndex](cookbook/index.md)
+- [Installing the GeoServer MBStyle extension](installing.md)
+- [Publishing a GeoServer Layer for use with Mapbox Styles](source.md)
+- [MBStyle references](reference/index.md)
+- [MBStyle Cookbook](cookbook/index.md)
 
 </div>

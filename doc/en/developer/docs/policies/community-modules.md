@@ -304,21 +304,19 @@ The following properties must hold true in order to promote a community module:
 
             Follow the [dxf-LICENSE.md](../../../../src/release/extensions/dxf/dxf-LICENSE.md) example:
 
-            ~~~markdown
-            {% 
-              include "../../../../src/release/extensions/dxf/dxf-LICENSE.md"
-            %}
-            ~~~
+            ```markdown
+            <!-- Include path goes outside docs directory: ../../../../src/release/extensions/dxf/dxf-LICENSE.md -->
+<!-- TODO: Copy file to docs directory or use alternative approach -->
+            ```
 
         2.  A readme called **`<module>-README.md`** which contains instructions on how to install the extension.
 
             Follow the [dxf-README.md](../../../../src/release/extensions/dxf/dxf-README.md) example:
 
-            ~~~markdown
-            {% 
-              include "../../../../src/release/extensions/dxf/dxf-README.md"
-            %}
-            ~~~
+            ```markdown
+            <!-- Include path goes outside docs directory: ../../../../src/release/extensions/dxf/dxf-README.md -->
+<!-- TODO: Copy file to docs directory or use alternative approach -->
+            ```
 
             !!! warning
 
@@ -332,11 +330,10 @@ The following properties must hold true in order to promote a community module:
 
         Follow the example of [ext-dxf-xml](../../../../src/release/ext-dxf.xml):
 
-        ~~~xml
-        {% 
-          include "../../../../src/release/ext-dxf.xml"
-        %}
-        ~~~
+        ```xml
+        <!-- Include path goes outside docs directory: ../../../../src/release/ext-dxf.xml -->
+<!-- TODO: Copy file to docs directory or use alternative approach -->
+        ```
 
         - Add additional `include` elements in the root folder (outputDirectory empty) for the jar dependencies of the module
         - Add additional `include` elements in the licenses folder (outputDirectory `licenses`) for licenses required

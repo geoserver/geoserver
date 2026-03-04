@@ -4,8 +4,8 @@ This section introduces mapping as a tool for visual communication.
 
 <div class="grid cards" markdown>
 
-- [StylingWorkshopDesignSymbology](symbology.md)
-- [StylingWorkshopDesignStyle](style.md)
+- [Symbology](symbology.md)
+- [Style](style.md)
 
 </div>
 

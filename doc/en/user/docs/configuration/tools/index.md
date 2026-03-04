@@ -4,7 +4,7 @@ This page contains helpful tools for administrators to manage or automate config
 
 <div class="grid cards" markdown>
 
-- [ConfigurationToolsBulkIndex](bulk/index.md)
-- [ConfigurationToolsResourceIndex](resource/index.md)
+- [Bulk Load tool](bulk/index.md)
+- [Resource Browser tool](resource/index.md)
 
 </div>

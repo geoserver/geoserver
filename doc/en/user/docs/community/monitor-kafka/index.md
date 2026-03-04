@@ -4,9 +4,9 @@ The Monitor Kafka storage extension allows to track the requests made against a 
 
 <div class="grid cards" markdown>
 
-- [CommunityMonitor KafkaInstallation](installation.md)
-- [CommunityMonitor KafkaConfiguration](configuration.md)
-- [CommunityMonitor KafkaUsage](usage.md)
+- [Installing the Kafka Monitor Extension](installation.md)
+- [Kafka storage Configuration](configuration.md)
+- [Usage of Monitoring Kafka extension](usage.md)
 
 </div>
 

@@ -1,7 +1,5 @@
 # Feature Table Example
 
-~~~html
-{% 
-  include "./feature_table/featuretable.html"
-%}
-~~~
+```html
+{%raw%}{%endraw%}{% include "./feature_table/featuretable.html" %}
+```

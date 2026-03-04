@@ -4,10 +4,10 @@ This section provides an overview of how RESTful services work in GeoServer.
 
 <div class="grid cards" markdown>
 
-- [Programming GuideRest ServicesOverview](overview.md)
-- [Programming GuideRest ServicesImplementing](implementing.md)
-- [Programming GuideRest ServicesImplementing Map](implementing-map.md)
-- [Programming GuideRest ServicesImplementing Reflection](implementing-reflection.md)
-- [Programming GuideRest ServicesImplementing Mapper](implementing-mapper.md)
+- [Overview](overview.md)
+- [Implementing a RESTful Service](implementing.md)
+- [Implementing a RESTful Service with Maps](implementing-map.md)
+- [Implementing a RESTful Service with Reflection](implementing-reflection.md)
+- [Implementing a REST PathMapper](implementing-mapper.md)
 
 </div>

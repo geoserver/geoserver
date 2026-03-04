@@ -4,7 +4,7 @@ This plugin supports the use of the [AWS](https://aws.amazon.com) Simple Storage
 
 <div class="grid cards" markdown>
 
-- [ExtensionsGwc S3Install](install.md)
-- [ExtensionsGwc S3Configuration](configuration.md)
+- [Installing the GWC S3 extension](install.md)
+- [Configuring the S3 BlobStore plugin](configuration.md)
 
 </div>

@@ -10,12 +10,12 @@ For the official WPS 1.0.0 specification, see [OGC Web Processing Service 05-007
 
 <div class="grid cards" markdown>
 
-- [ServicesWpsInstall](install.md)
-- [ServicesWpsOperations](operations.md)
-- [ServicesWpsAdministration](administration.md)
-- [ServicesWpsSecurity](security.md)
-- [ServicesWpsRequestbuilder](requestbuilder.md)
-- [ServicesWpsProcessesIndex](processes/index.md)
+- [Installing the WPS extension](install.md)
+- [WPS Operations](operations.md)
+- [WPS Service page](administration.md)
+- [WPS Security and input limits](security.md)
+- [WPS Request Builder](requestbuilder.md)
+- [Process Cookbook](processes/index.md)
 - [ServicesWpsHazelcast Clustering](hazelcast-clustering.md)
 
 </div>

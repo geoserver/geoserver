@@ -6,10 +6,10 @@ The standard GeoServer installation supports the loading and serving of the foll
 
 <div class="grid cards" markdown>
 
-- [DataVectorShapefile](shapefile.md)
-- [DataVectorDirectory](directory.md)
-- [DataVectorProperties](properties.md)
-- [DataVectorGeopkg](geopkg.md)
+- [Shapefile](shapefile.md)
+- [Directory of spatial files](directory.md)
+- [Java Properties](properties.md)
+- [GeoPackage](geopkg.md)
 
 </div>
 
@@ -21,6 +21,6 @@ Other data sources are supplied as GeoServer extensions. Extensions are download
 
 <div class="grid cards" markdown>
 
-- [DataVectorFeaturepregen](featurepregen.md)
+- [Pregeneralized Features](featurepregen.md)
 
 </div>

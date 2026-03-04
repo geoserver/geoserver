@@ -69,11 +69,10 @@ Example showing how to customize a collections being listed:
 
 1.  The file **`ogc/features/collections.ftl`** lists published collection:
 
-    ~~~
-    {% 
-      include "../../../../src/extension/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/collections.ftl"
-    %}
-    ~~~
+    ```
+    <!-- Include path goes outside docs directory: ../../../../src/extension/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/v1/features/collections.ftl -->
+<!-- TODO: Copy file to docs directory or use alternative approach -->
+    ```
 
 2.  Save file to **`GEOSERVER_DATA_DIR/workspace/templates/ogc/collections.ftl`**, and rewrite as:
 

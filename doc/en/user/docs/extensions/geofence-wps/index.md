@@ -8,7 +8,7 @@ Using this plugin, you can create authorization rules for the single WPS process
 
 <div class="grid cards" markdown>
 
-- [ExtensionsGeofence WpsInstalling](installing.md)
-- [ExtensionsGeofence WpsGui](gui.md)
+- [Installing the GeoServer GeoFence WPS Integration](installing.md)
+- [GeoFence WPS rules setup](gui.md)
 
 </div>

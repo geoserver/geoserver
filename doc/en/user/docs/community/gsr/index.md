@@ -4,9 +4,9 @@ This plugin provides a GeoService REST compatibility API. Please reference <http
 
 <div class="grid cards" markdown>
 
-- [CommunityGsrInstalling](installing.md)
-- [CommunityGsrUsage](usage.md)
-- [CommunityGsrFunctionality](functionality.md)
-- [CommunityGsrExamples](examples.md)
+- [Installing the GeoServer GSR extension](installing.md)
+- [GSR Usage](usage.md)
+- [Functionality](functionality.md)
+- [Examples](examples.md)
 
 </div>

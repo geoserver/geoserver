@@ -73,6 +73,12 @@ public abstract class SecurityNamedServicesTogglePanel<T extends SecurityNamedSe
                      }\
                     """;
             response.render(CssHeaderItem.forCSS(css, "org-geoserver-security-web-data-DataSecurityPage-1"));
+            // if the panel-specific CSS file contains actual css then have the browser load the css
+            if (!isCssEmpty) {
+                response.render(org.apache.wicket.markup.head.CssHeaderItem.forReference(
+                        new org.apache.wicket.request.resource.PackageResourceReference(
+                                getClass(), getClass().getSimpleName() + ".css")));
+            }
         }
 
         public ContentPanel(String id, final IModel<T> model) {

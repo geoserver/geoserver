@@ -9,6 +9,8 @@ import ar.com.hjg.pngj.FilterType;
 import it.geosolutions.imageio.plugins.png.PNGWriter;
 import java.awt.image.RenderedImage;
 import java.io.OutputStream;
+import java.util.Map;
+
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.api.style.ColorMap;
@@ -26,6 +28,11 @@ public class PNGJWriter {
 
     public RenderedImage writePNG(
             RenderedImage image, OutputStream outStream, float quality, WMSMapContent mapContent) {
+        return writePNG(image, outStream, quality, mapContent, null);
+    }
+
+    public RenderedImage writePNG(
+            RenderedImage image, OutputStream outStream, float quality, WMSMapContent mapContent, Map<String,String> metadata) {
         // what kind of scaline filtering are we going to use?
         FilterType filterType = getFilterType(mapContent);
         // Creation of a new PNGWriter object
@@ -43,7 +50,7 @@ public class PNGJWriter {
         RenderedImage output = null;
         // Image writing
         try {
-            output = writer.writePNG(image, outStream, quality, filterType);
+            output = writer.writePNG(image, outStream, quality, filterType, metadata);
         } catch (Exception e) {
             throw new ServiceException("Failed to encode the PNG", e);
         }

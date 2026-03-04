@@ -34,21 +34,15 @@ GeoServer is tested using Tomcat 11.0.x, and this is the recommended application
 
     **Linux**
 
-    {%
-       include-markdown "./jdk-linux-guidance.txt"
-    %}
+    {%include-markdown "./jdk-linux-guidance.txt"%}
 
     **Windows**
 
-    {%
-       include-markdown "./jdk-windows-guidance.txt"
-    %}
+    {%include-markdown "./jdk-windows-guidance.txt"%}
 
     **MacOS**
 
-    {%
-       include-markdown "./jdk-macos-guidance.txt"
-    %}
+    {%include-markdown "./jdk-macos-guidance.txt"%}
 
     !!! note
 

@@ -2,9 +2,7 @@
 
 This guide is designed to get developers up and running as quick as possible. For a more comprehensive guide see the [Eclipse Guide](../eclipse-guide/index.md).
 
-{%
-   include-markdown "./checkout.txt"
-%}
+{%include-markdown "./checkout.txt"%}
 
 ## Generate Eclipse project files with Maven
 

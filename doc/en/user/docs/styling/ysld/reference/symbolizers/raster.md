@@ -48,15 +48,11 @@ where:
 
 Additional "vendor options" properties for [Color compositing and color blending](../../../sld/extensions/composite-blend/index.md):
 
-{%
-   include-markdown "./include/composite.md"
-%}
+{%include-markdown "./include/composite.md"%}
 
 Additional "vendor options" properties for [Rendering Selection](../../../sld/extensions/rendering-selection.md):
 
-{%
-   include-markdown "./include/inclusion.md"
-%}
+{%include-markdown "./include/inclusion.md"%}
 
 ## Examples
 

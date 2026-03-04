@@ -2,9 +2,7 @@
 
 WFS vendor parameters are non-standard request parameters defined by an implementation to provide enhanced capabilities. GeoServer supports a variety of vendor-specific WFS parameters.
 
-{%
-   include-markdown "./../generic_vendor_options.txt"
-%}
+{%include-markdown "./../generic_vendor_options.txt"%}
 
 ## XML request validation
 
